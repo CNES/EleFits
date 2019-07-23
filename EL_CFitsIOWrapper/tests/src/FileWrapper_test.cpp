@@ -22,8 +22,11 @@
  */
 
 #include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
 
 #include "EL_CFitsIOWrapper//FileWrapper.h"
+
+using namespace Cfitsio::File;
 
 //-----------------------------------------------------------------------------
 
@@ -32,9 +35,15 @@ BOOST_AUTO_TEST_SUITE (FileWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+    std::string filename("/tmp/dummy.fits"); //TODO use Elements temp files
+    fitsfile* fptr = create_and_open(filename, false);
+    close(fptr);
+    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+    BOOST_CHECK(not fptr);
+    fptr = open(filename);
+    close_and_delete_fits(fptr);
+    BOOST_CHECK(not boost::filesystem::is_regular_file(filename));
+    BOOST_CHECK(not fptr);
 }
 
 //-----------------------------------------------------------------------------

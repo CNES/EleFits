@@ -31,7 +31,7 @@ namespace File {
 fitsfile* create_and_open(std::string filename, bool overwrite) {
     std::string cfitsio_name = filename;
     if(overwrite)
-        cfitsio_name.insert (0, 1, '!');
+        cfitsio_name.insert (0, 1, '!'); // CFitsIO convention
     fitsfile *fptr;
     int status = 0;
     fits_create_file(&fptr, cfitsio_name.c_str(), &status);
@@ -50,19 +50,21 @@ fitsfile* open(std::string filename) {
 }
 
 void close(fitsfile *fptr) {
-    if(!fptr)
+    if(not fptr)
         return;
     int status = 0;
     fits_close_file(fptr, &status);
     throw_cfitsio_error(status);
+    fptr = nullptr;
 }
 
 void close_and_delete_fits(fitsfile *fptr) {
-    if(!fptr)
+    if(not fptr)
         return;
     int status = 0;
     fits_delete_file(fptr, &status);
     throw_cfitsio_error(status);
+    fptr = nullptr;
 }
 
 }
