@@ -34,15 +34,15 @@ BOOST_AUTO_TEST_SUITE (FileWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+BOOST_AUTO_TEST_CASE( file_operations_test ) {
     std::string filename("/tmp/dummy.fits"); //TODO use Elements temp files
     fitsfile* fptr = create_and_open(filename, false);
     close(fptr);
     BOOST_CHECK(boost::filesystem::is_regular_file(filename));
     BOOST_CHECK(not fptr);
     fptr = open(filename);
-    close_and_delete_fits(fptr);
-    BOOST_CHECK(not boost::filesystem::is_regular_file(filename));
+    close_and_delete(fptr);
+    BOOST_CHECK(not boost::filesystem::exists(filename));
     BOOST_CHECK(not fptr);
 }
 

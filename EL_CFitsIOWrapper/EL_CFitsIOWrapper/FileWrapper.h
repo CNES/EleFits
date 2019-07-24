@@ -36,7 +36,7 @@ fitsfile* open(std::string filename);
 
 void close(fitsfile *fptr);
 
-void close_and_delete_fits(fitsfile *fptr);
+void close_and_delete(fitsfile *fptr);
 
 }
 }

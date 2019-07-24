@@ -34,26 +34,40 @@ BOOST_AUTO_TEST_SUITE (TypeWrapper_test)
 //-----------------------------------------------------------------------------
 
 template<typename T>
-void check_cfitsio_type(int expected_code) {
-    BOOST_CHECK_EQUAL(cfitsio_type<T>::code, expected_code);
+void check_cfitsio_types(int record, int table, int image) {
+    if(record)
+        BOOST_CHECK_EQUAL(TypeCode<T>::for_record(), record);
+    else
+        BOOST_CHECK_THROW(TypeCode<T>::for_record(), TypeError<T>);
+    if(table)
+        BOOST_CHECK_EQUAL(TypeCode<T>::for_table(), table);
+    else
+        BOOST_CHECK_THROW(TypeCode<T>::for_table(), TypeError<T>);
+    if(image)
+        BOOST_CHECK_EQUAL(TypeCode<T>::for_image(), image);
+    else
+        BOOST_CHECK_THROW(TypeCode<T>::for_image(), TypeError<T>);
 }
 
-BOOST_AUTO_TEST_CASE( cfitsio_type_code_test ) {
+BOOST_AUTO_TEST_CASE( cfitsio_type_codes_test ) {
 
-    check_cfitsio_type<bool>(TLOGICAL); //TODO check mapping
-    check_cfitsio_type<unsigned char>(TBYTE);
-    check_cfitsio_type<bool>(TLOGICAL);
-    check_cfitsio_type<std::string>(TSTRING);
-    check_cfitsio_type<short>(TSHORT);
-    check_cfitsio_type<long>(TLONG);
-    check_cfitsio_type<long long>(TLONGLONG);
-    check_cfitsio_type<float>(TFLOAT);
-    check_cfitsio_type<double>(TDOUBLE);
-    check_cfitsio_type<int>(TINT);
-    check_cfitsio_type<char>(TSBYTE);
-    check_cfitsio_type<unsigned int>(TUINT);
-    check_cfitsio_type<unsigned short>(TUSHORT);
-    check_cfitsio_type<unsigned long>(TULONG);
+    check_cfitsio_types<bool>(TLOGICAL, TBIT, 0);
+    check_cfitsio_types<char>(TSBYTE, TSBYTE, SBYTE_IMG);
+    check_cfitsio_types<short>(TSHORT, TSHORT, SHORT_IMG);
+    check_cfitsio_types<int>(TINT, 0, 0);
+    check_cfitsio_types<long>(TLONG, TLONGLONG, LONG_IMG);
+    check_cfitsio_types<long long>(TLONGLONG, TLONGLONG, LONGLONG_IMG);
+    check_cfitsio_types<float>(TFLOAT, TFLOAT, FLOAT_IMG);
+    check_cfitsio_types<double>(TDOUBLE, TDOUBLE, DOUBLE_IMG);
+    check_cfitsio_types<std::complex<float>>(TCOMPLEX, TCOMPLEX, 0);
+    check_cfitsio_types<std::complex<double>>(TDBLCOMPLEX, TDBLCOMPLEX, 0);
+    check_cfitsio_types<std::string>(TSTRING, TSTRING, 0);
+    check_cfitsio_types<char*>(TSTRING, TSTRING, 0);
+    check_cfitsio_types<unsigned char>(TBYTE, TBYTE, BYTE_IMG);
+    check_cfitsio_types<unsigned short>(TUSHORT, TUSHORT, USHORT_IMG);
+    check_cfitsio_types<unsigned int>(TUINT, TUINT, 0);
+    check_cfitsio_types<unsigned long>(TULONG, 0, ULONG_IMG);
+    check_cfitsio_types<unsigned long long>(0, 0, 0);
 
 }
 

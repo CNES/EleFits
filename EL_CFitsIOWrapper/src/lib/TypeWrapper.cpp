@@ -21,26 +21,13 @@
  *
  */
 
+#include <complex>
+#include <limits>
+#include <string>
+
 #include "EL_CFitsIOWrapper/TypeWrapper.h"
 
 namespace Cfitsio {
 
-//TODO TBIT
-
-template<> const int cfitsio_type<unsigned char>::code = TBYTE;
-template<> const int cfitsio_type<bool>::code = TLOGICAL;
-template<> const int cfitsio_type<std::string>::code = TSTRING;
-template<> const int cfitsio_type<short>::code = TSHORT;
-template<> const int cfitsio_type<long>::code = TLONG;
-template<> const int cfitsio_type<long long>::code = TLONGLONG;
-template<> const int cfitsio_type<float>::code = TFLOAT;
-template<> const int cfitsio_type<double>::code = TDOUBLE;
-//TODO TCOMPLEX
-//TODO TDBLCOMPLEX
-template<> const int cfitsio_type<int>::code = TINT;
-template<> const int cfitsio_type<char>::code = TSBYTE;
-template<> const int cfitsio_type<unsigned int>::code = TUINT;
-template<> const int cfitsio_type<unsigned short>::code = TUSHORT;
-template<> const int cfitsio_type<unsigned long>::code = TULONG;
-
 }
+

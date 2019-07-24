@@ -33,7 +33,7 @@ T read_value(fitsfile* fptr, std::string keyword) {
   T value;
   char *ckey = keyword.c_str();
   int status = 0;
-  fits_read_key(fptr, cfitsio_type<T>::code, ckey, &value, nullptr, &status);
+  fits_read_key(fptr, TypeCode<T>::for_record(), ckey, &value, nullptr, &status);
   throw_cfitsio_error(status);
   return value;
 }

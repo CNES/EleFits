@@ -25,14 +25,126 @@
 #define _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
 
 #include <cfitsio/fitsio.h>
+#include <stdexcept>
+#include <typeinfo>
+
+#include <complex>
+#include <limits>
 #include <string>
 
 namespace Cfitsio {
 
+/**
+
+Type code for       record      table       image
+--------------------------------------------------------
+bool                TLOGICAL    TBIT        -
+char                TSBYTE      TSBYTE?     SBYTE_IMG
+short?              TSHORT      TSHORT      SHORT_IMG
+int	                TINT?       -           -
+long?               TLONG       TLONGLONG   LONG_IMG
+long long?          TLONGLONG   TLONGLONG   LONGLONG_IMG
+float               TFLOAT      TFLOAT      FLOAT_IMG
+double              TDOUBLE     TDOUBLE     DOUBLE_IMG
+complex<float>      TCOMPLEX    TCOMPLEX    -
+complex<double>     TDBLCOMPLEX TDBLCOMPLEX -
+string              TSTRING     TSTRING     -
+unsigned char       TBYTE       TBYTE       BYTE_IMG
+unsigned short?     TUSHORT     TUSHORT     USHORT_IMG
+unsigned int        TUINT       TUINT       -
+unsigned long?      TULONG      TULONGLONG? ULONG_IMG
+unsigned long long?	TULONGLONG? TULONGLONG? ULONGLONG_IMG
+
+ */
 template<typename T>
-struct cfitsio_type {
-    static const int code;
+struct TypeCode;
+
+template<typename T>
+class TypeError : public std::runtime_error {
+public:
+    TypeError() :
+        std::runtime_error("Unknown type: " + TypeCode<T>::type_name()) {}
 };
+
+template<typename T>
+struct TypeCode {
+
+    inline static int for_record() {
+        throw TypeError<T>();
+    }
+
+    inline static int for_table() {
+        throw TypeError<T>();
+    }
+
+    inline static int for_image() {
+        throw TypeError<T>();
+    }
+
+    inline static std::string type_name() {
+        return typeid(T).name();
+    }
+
+};
+
+
+/*
+template<typename T>
+struct TypeCode<T*> : public TypeCode<T> {};
+*/
+
+#define DEF_RECORD_TYPE_CODE(type, code) \
+    template<> inline int TypeCode<type>::for_record() { return code; }
+#define DEF_TABLE_TYPE_CODE(type, code) \
+    template<> inline int TypeCode<type>::for_table() { return code; }
+#define DEF_IMAGE_TYPE_CODE(type, code) \
+    template<> inline int TypeCode<type>::for_image() { return code; }
+
+DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
+DEF_RECORD_TYPE_CODE(char, TSBYTE)
+DEF_RECORD_TYPE_CODE(short, TSHORT)
+DEF_RECORD_TYPE_CODE(int, TINT)
+DEF_RECORD_TYPE_CODE(long, TLONG)
+DEF_RECORD_TYPE_CODE(long long, TLONGLONG)
+DEF_RECORD_TYPE_CODE(float, TFLOAT)
+DEF_RECORD_TYPE_CODE(double, TDOUBLE)
+DEF_RECORD_TYPE_CODE(std::complex<float>, TCOMPLEX)
+DEF_RECORD_TYPE_CODE(std::complex<double>, TDBLCOMPLEX)
+DEF_RECORD_TYPE_CODE(std::string, TSTRING)
+DEF_RECORD_TYPE_CODE(char*, TSTRING)
+DEF_RECORD_TYPE_CODE(unsigned char, TBYTE)
+DEF_RECORD_TYPE_CODE(unsigned short, TUSHORT)
+DEF_RECORD_TYPE_CODE(unsigned int, TUINT)
+DEF_RECORD_TYPE_CODE(unsigned long, TULONG)
+//DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG) // Not defined in our version
+
+DEF_TABLE_TYPE_CODE(bool, TBIT)
+DEF_TABLE_TYPE_CODE(char, TSBYTE)
+DEF_TABLE_TYPE_CODE(short, TSHORT)
+DEF_TABLE_TYPE_CODE(long, TLONGLONG)
+DEF_TABLE_TYPE_CODE(long long, TLONGLONG)
+DEF_TABLE_TYPE_CODE(float, TFLOAT)
+DEF_TABLE_TYPE_CODE(double, TDOUBLE)
+DEF_TABLE_TYPE_CODE(std::complex<float>, TCOMPLEX)
+DEF_TABLE_TYPE_CODE(std::complex<double>, TDBLCOMPLEX)
+DEF_TABLE_TYPE_CODE(std::string, TSTRING)
+DEF_TABLE_TYPE_CODE(char*, TSTRING)
+DEF_TABLE_TYPE_CODE(unsigned char, TBYTE)
+DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT)
+DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
+//DEF_TABLE_TYPE_CODE(unsigned long, TULONGLONG) // Not defined in our version
+//DEF_TABLE_TYPE_CODE(unsigned long, TULONGLONG) // Not defined in our version
+
+DEF_IMAGE_TYPE_CODE(char, SBYTE_IMG)
+DEF_IMAGE_TYPE_CODE(short, SHORT_IMG)
+DEF_IMAGE_TYPE_CODE(long, LONG_IMG)
+DEF_IMAGE_TYPE_CODE(long long, LONGLONG_IMG)
+DEF_IMAGE_TYPE_CODE(float, FLOAT_IMG)
+DEF_IMAGE_TYPE_CODE(double, DOUBLE_IMG)
+DEF_IMAGE_TYPE_CODE(unsigned char, BYTE_IMG)
+DEF_IMAGE_TYPE_CODE(unsigned short, USHORT_IMG)
+DEF_IMAGE_TYPE_CODE(unsigned long, ULONG_IMG)
+//DEF_IMAGE_TYPE_CODE(unsigned long long, ULONGLONG_IMG) // Not defined in our version
 
 }
 

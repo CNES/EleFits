@@ -58,7 +58,7 @@ void close(fitsfile *fptr) {
     fptr = nullptr;
 }
 
-void close_and_delete_fits(fitsfile *fptr) {
+void close_and_delete(fitsfile *fptr) {
     if(not fptr)
         return;
     int status = 0;
