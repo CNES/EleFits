@@ -30,9 +30,22 @@
 namespace Cfitsio {
 namespace File {
 
-fitsfile* create_and_open(std::string filename, bool overwrite);
+enum class CreatePolicy {
+    CREATE_ONLY,
+    OVER_WRITE
+};
 
-fitsfile* open(std::string filename);
+enum class OpenPolicy {
+    READ_ONLY,
+    READ_WRITE
+};
+
+
+fitsfile* create_and_open(std::string filename, CreatePolicy policy);
+
+fitsfile* open(std::string filename, OpenPolicy policy);
+
+bool is_writable(fitsfile* fptr);
 
 void close(fitsfile *fptr);
 

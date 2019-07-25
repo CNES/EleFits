@@ -28,9 +28,9 @@
 namespace Cfitsio {
 namespace File {
 
-fitsfile* create_and_open(std::string filename, bool overwrite) {
+fitsfile* create_and_open(std::string filename, CreatePolicy policy) {
     std::string cfitsio_name = filename;
-    if(overwrite)
+    if(policy == CreatePolicy::OVER_WRITE)
         cfitsio_name.insert (0, 1, '!'); // CFitsIO convention
     fitsfile *fptr;
     int status = 0;
@@ -40,31 +40,39 @@ fitsfile* create_and_open(std::string filename, bool overwrite) {
     return fptr;
 }
 
-fitsfile* open(std::string filename) {
+fitsfile* open(std::string filename, OpenPolicy policy) {
     fitsfile *fptr;
     int status = 0;
-    fits_open_file(&fptr, filename.c_str(), READWRITE, &status);
+    int permission = READONLY;
+    if(policy == OpenPolicy::READ_WRITE)
+        permission = READWRITE;
+    fits_open_file(&fptr, filename.c_str(), permission, &status);
     throw_cfitsio_error(status);
     HDU::init_primary(fptr);
     return fptr;
 }
 
-void close(fitsfile *fptr) {
+void close(fitsfile* fptr) {
     if(not fptr)
         return;
     int status = 0;
     fits_close_file(fptr, &status);
     throw_cfitsio_error(status);
-    fptr = nullptr;
 }
 
-void close_and_delete(fitsfile *fptr) {
+void close_and_delete(fitsfile* fptr) {
     if(not fptr)
         return;
+    if(not is_writable(fptr))
+        throw_cfitsio_error(READONLY_FILE);
     int status = 0;
     fits_delete_file(fptr, &status);
     throw_cfitsio_error(status);
-    fptr = nullptr;
+}
+
+bool is_writable(fitsfile* fptr) {
+    // Needed to forbid deletion of readonly files
+    return fptr->Fptr->writemode == READWRITE;
 }
 
 }

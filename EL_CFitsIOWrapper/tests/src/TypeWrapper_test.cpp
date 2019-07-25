@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( cfitsio_type_codes_test ) {
     check_cfitsio_types<short>(TSHORT, TSHORT, TSHORT);
     check_cfitsio_types<int>(TINT, 0, TINT);
     check_cfitsio_types<long>(TLONG, TLONGLONG, TLONG);
-    check_cfitsio_types<long long>(TLONGLONG, TLONGLONG, TLONGLONG);
+    check_cfitsio_types<LONGLONG>(TLONGLONG, TLONGLONG, TLONGLONG);
     check_cfitsio_types<float>(TFLOAT, TFLOAT, TFLOAT);
     check_cfitsio_types<double>(TDOUBLE, TDOUBLE, TDOUBLE);
     check_cfitsio_types<std::complex<float>>(TCOMPLEX, TCOMPLEX, 0);

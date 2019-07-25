@@ -24,9 +24,10 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
 
+#include "EL_CFitsIOWrapper//ErrorWrapper.h"
 #include "EL_CFitsIOWrapper//FileWrapper.h"
 
-using namespace Cfitsio::File;
+using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
@@ -36,14 +37,20 @@ BOOST_AUTO_TEST_SUITE (FileWrapper_test)
 
 BOOST_AUTO_TEST_CASE( file_operations_test ) {
     std::string filename("/tmp/dummy.fits"); //TODO use Elements temp files
-    fitsfile* fptr = create_and_open(filename, false);
-    close(fptr);
+    fitsfile* fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+    BOOST_CHECK_THROW(File::create_and_open(filename, File::CreatePolicy::CREATE_ONLY), CfitsioError);
+    BOOST_CHECK(fptr);
+    File::close(fptr);
     BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-    BOOST_CHECK(not fptr);
-    fptr = open(filename);
-    close_and_delete(fptr);
+//    BOOST_CHECK(not fptr); //TODO CFitsIO doesn't set pointers to null
+    fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
+    BOOST_CHECK(fptr);
+    BOOST_CHECK_THROW(File::close_and_delete(fptr), CfitsioError);
+    File::close(fptr);
+    fptr = File::open(filename, File::OpenPolicy::READ_WRITE);
+    File::close_and_delete(fptr);
     BOOST_CHECK(not boost::filesystem::exists(filename));
-    BOOST_CHECK(not fptr);
+//    BOOST_CHECK(not fptr); //TODO CFitsIO doesn't set pointers to null
 }
 
 //-----------------------------------------------------------------------------
