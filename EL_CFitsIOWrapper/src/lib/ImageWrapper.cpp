@@ -23,10 +23,11 @@
 
 #include "EL_CFitsIOWrapper/ImageWrapper.h"
 
-namespace EL_CFitsIOWrapper {
+namespace Cfitsio {
+namespace Image {
 
-
-}  // namespace EL_CFitsIOWrapper
+}
+}
 
 
 

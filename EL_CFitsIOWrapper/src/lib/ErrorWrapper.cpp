@@ -25,13 +25,12 @@
 
 namespace Cfitsio {
 
-bool throw_cfitsio_error(int status) {
+void throw_cfitsio_error(int status) {
     if(status == 0)
-        return false;
+        return;
     char msg[FLEN_ERRMSG];
     fits_get_errstatus(status, msg);
     throw CfitsioError(msg);
-    return true;
 }
 
 }

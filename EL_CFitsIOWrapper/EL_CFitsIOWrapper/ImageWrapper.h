@@ -36,6 +36,9 @@
 namespace Cfitsio {
 namespace Image {
 
+/**
+ * A simplistic structure to store a 2D image raster and shape.
+ */
 template<typename T>
 struct Raster2D {
     using size_type = long;
@@ -47,12 +50,21 @@ struct Raster2D {
     T& operator()(size_type x, size_type y);
 };
 
+/**
+ * Read a 2D image raster.
+ */
 template<typename T>
 Raster2D<T> read_raster_2d(fitsfile* fptr);
 
+
+///////////////////////
+/// IMPLEMENTATION ///
+/////////////////////
+
+
 template<typename T>
 const T& Raster2D<T>::operator()(size_type x, size_type y) const {
-    return data[x + y*shape[2]];
+    return data[x + y*shape[1]];
 }
 
 template<typename T>

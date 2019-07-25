@@ -34,31 +34,6 @@
 
 namespace Cfitsio {
 
-/**
-
-Type code for       record      table       image
---------------------------------------------------------
-bool                TLOGICAL    TBIT        -
-char                TSBYTE      TSBYTE?     SBYTE_IMG
-short?              TSHORT      TSHORT      SHORT_IMG
-int	                TINT?       -           -
-long?               TLONG       TLONGLONG   LONG_IMG
-long long?          TLONGLONG   TLONGLONG   LONGLONG_IMG
-float               TFLOAT      TFLOAT      FLOAT_IMG
-double              TDOUBLE     TDOUBLE     DOUBLE_IMG
-complex<float>      TCOMPLEX    TCOMPLEX    -
-complex<double>     TDBLCOMPLEX TDBLCOMPLEX -
-string              TSTRING     TSTRING     -
-unsigned char       TBYTE       TBYTE       BYTE_IMG
-unsigned short?     TUSHORT     TUSHORT     USHORT_IMG
-unsigned int        TUINT       TUINT       -
-unsigned long?      TULONG      TULONGLONG? ULONG_IMG
-unsigned long long?	TULONGLONG? TULONGLONG? ULONGLONG_IMG
-
-/!\ Wrong image table
-/!\ See LONGLONG typedef
-
- */
 template<typename T>
 struct TypeCode;
 
@@ -69,37 +44,49 @@ public:
         std::runtime_error("Unknown type: " + TypeCode<T>::type_name()) {}
 };
 
+/**
+ * Type traits to convert C++ types to CFitsIO type codes for:
+ * * records,
+ * * images,
+ * * bintables (ASCII tables are not supported).
+ */
 template<typename T>
 struct TypeCode {
 
+    /**
+     * Get the type code for a record.
+     */
     inline static int for_record() {
         throw TypeError<T>();
     }
 
-    inline static int for_table() {
+    /**
+     * Get the type code for a bintable.
+     */
+    inline static int for_bintable() {
         throw TypeError<T>();
     }
 
+    /**
+     * Get the type code for an image.
+     */
     inline static int for_image() {
         throw TypeError<T>();
     }
 
+    /**
+     * Get the compiler type name.
+     */
     inline static std::string type_name() {
         return typeid(T).name();
     }
 
 };
 
-
-/*
-template<typename T>
-struct TypeCode<T*> : public TypeCode<T> {};
-*/
-
 #define DEF_RECORD_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_record() { return code; }
 #define DEF_TABLE_TYPE_CODE(type, code) \
-    template<> inline int TypeCode<type>::for_table() { return code; }
+    template<> inline int TypeCode<type>::for_bintable() { return code; }
 #define DEF_IMAGE_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_image() { return code; }
 
@@ -108,8 +95,12 @@ DEF_RECORD_TYPE_CODE(char, TSBYTE)
 DEF_RECORD_TYPE_CODE(short, TSHORT)
 DEF_RECORD_TYPE_CODE(int, TINT)
 DEF_RECORD_TYPE_CODE(long, TLONG)
+/*
+ * From CFitsIO documentation "64-Bit Long Integers"
+ * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node117.html
+ * LONGLONG adapts to the system encoding for 64-bit integers (= long or long long)
+ */
 DEF_RECORD_TYPE_CODE(LONGLONG, TLONGLONG)
-// LONGLONG adapts to the system encoding for 64-bit integers (= long or long long)
 DEF_RECORD_TYPE_CODE(float, TFLOAT)
 DEF_RECORD_TYPE_CODE(double, TDOUBLE)
 DEF_RECORD_TYPE_CODE(std::complex<float>, TCOMPLEX)
@@ -120,12 +111,22 @@ DEF_RECORD_TYPE_CODE(unsigned char, TBYTE)
 DEF_RECORD_TYPE_CODE(unsigned short, TUSHORT)
 DEF_RECORD_TYPE_CODE(unsigned int, TUINT)
 DEF_RECORD_TYPE_CODE(unsigned long, TULONG)
-//DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG) // Not defined in our version
+//DEF_RECORD_TYPE_CODE(unsigned LONGLONG, TULONGLONG) // Not defined in our version
 
+/*
+ * From CFitsIO documentation "Read and Write Column Data Routines"
+ * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node46.html
+ *
+ * Allowed types for ASCII tables:
+ * TSTRING, TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TULONGLONG, TFLOAT, TDOUBLE
+ * Additionnal types for binary tables:
+ * TLOGICAL (internally mapped to the `char' data type), TCOMPLEX, TDBLCOMPLEX
+ */
 DEF_TABLE_TYPE_CODE(bool, TBIT)
-DEF_TABLE_TYPE_CODE(char, TSBYTE)
+DEF_TABLE_TYPE_CODE(char, TSBYTE) //TODO should it be TLOGICAL???
 DEF_TABLE_TYPE_CODE(short, TSHORT)
-DEF_TABLE_TYPE_CODE(long, TLONGLONG)
+DEF_TABLE_TYPE_CODE(int, TINT)
+DEF_TABLE_TYPE_CODE(long, TLONG) //TODO TLONGLONG in TFits => check
 DEF_TABLE_TYPE_CODE(LONGLONG, TLONGLONG)
 DEF_TABLE_TYPE_CODE(float, TFLOAT)
 DEF_TABLE_TYPE_CODE(double, TDOUBLE)
@@ -136,9 +137,16 @@ DEF_TABLE_TYPE_CODE(char*, TSTRING)
 DEF_TABLE_TYPE_CODE(unsigned char, TBYTE)
 DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
-//DEF_TABLE_TYPE_CODE(unsigned long, TULONGLONG) // Not defined in our version
-//DEF_TABLE_TYPE_CODE(unsigned long, TULONGLONG) // Not defined in our version
+DEF_TABLE_TYPE_CODE(unsigned long, TULONG)
+//DEF_TABLE_TYPE_CODE(unsigned LONGLONG, TULONGLONG) // Not defined in our version
 
+/*
+ * From CFitsIO documentation "Primary Array or IMAGE Extension I/O Routines"
+ * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node40.html
+ *
+ * Allowed types:
+ * TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TULONGLONG, TFLOAT, TDOUBLE
+ */
 DEF_IMAGE_TYPE_CODE(char, TSBYTE)
 DEF_IMAGE_TYPE_CODE(short, TSHORT)
 DEF_IMAGE_TYPE_CODE(int, TINT)
@@ -150,7 +158,7 @@ DEF_IMAGE_TYPE_CODE(unsigned char, TBYTE)
 DEF_IMAGE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_IMAGE_TYPE_CODE(unsigned int, TUINT)
 DEF_IMAGE_TYPE_CODE(unsigned long, TULONG)
-//DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG) // Not defined in our version
+//DEF_IMAGE_TYPE_CODE(unsigned LONGLONG, TULONGLONG) // Not defined in our version
 
 }
 

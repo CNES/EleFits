@@ -28,9 +28,6 @@
 namespace Cfitsio {
 namespace Record {
 
-/**
- * Read the value of a given keyword as a string.
- */
 std::string read_value(fitsfile* fptr, std::string keyword) {
     std::vector<char> cvalue(FLEN_VALUE);
     int status = 0;
@@ -39,9 +36,6 @@ std::string read_value(fitsfile* fptr, std::string keyword) {
     return std::string(&cvalue[0]);
 }    
 
-/**
- * Read the values of a given set of keywords as a set of strings.
- */
 std::vector<std::string> read_values(fitsfile* fptr, std::vector<std::string> keywords) {
     std::vector<std::string> values(keywords.size());
     std::transform(keywords.begin(), keywords.end(), values.begin(), [fptr](std::string k) { return read_value(fptr, k); });

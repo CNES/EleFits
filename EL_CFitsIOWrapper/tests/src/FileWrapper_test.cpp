@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( file_operations_test ) {
     BOOST_CHECK(fptr);
     File::close(fptr);
     BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-//    BOOST_CHECK(not fptr); //TODO CFitsIO doesn't set pointers to null
+//    BOOST_CHECK(not fptr); // CFitsIO doesn't set the pointer to null
     fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
     BOOST_CHECK(fptr);
     BOOST_CHECK_THROW(File::close_and_delete(fptr), CfitsioError);
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( file_operations_test ) {
     fptr = File::open(filename, File::OpenPolicy::READ_WRITE);
     File::close_and_delete(fptr);
     BOOST_CHECK(not boost::filesystem::exists(filename));
-//    BOOST_CHECK(not fptr); //TODO CFitsIO doesn't set pointers to null
+//    BOOST_CHECK(not fptr); // CFitsIO doesn't set the pointer to null
 }
 
 //-----------------------------------------------------------------------------

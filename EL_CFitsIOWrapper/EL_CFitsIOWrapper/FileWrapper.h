@@ -30,25 +30,51 @@
 namespace Cfitsio {
 namespace File {
 
+/**
+ * File creation policy.
+ * * Create only (abort if file exists), or
+ * * Allow overwriting if file already exists.
+ */
 enum class CreatePolicy {
     CREATE_ONLY,
     OVER_WRITE
 };
 
+/**
+ * File opening policy.
+ * * Read permission only, or
+ * * Read and write permissions.
+ */
 enum class OpenPolicy {
     READ_ONLY,
     READ_WRITE
 };
 
 
+/**
+ * Create or overwrite a Fits file and open it.
+ */
 fitsfile* create_and_open(std::string filename, CreatePolicy policy);
 
+/**
+ * Open an existing Fits file with optional write permission.
+ */
 fitsfile* open(std::string filename, OpenPolicy policy);
 
+/**
+ * Check whether a Fits file is open with write permission.
+ */
 bool is_writable(fitsfile* fptr);
 
+/**
+ * Close a Fits file.
+ */
 void close(fitsfile *fptr);
 
+/**
+ * Close and delete a Fits file.
+ * Throw an exception if writing is not permitted.
+ */
 void close_and_delete(fitsfile *fptr);
 
 }

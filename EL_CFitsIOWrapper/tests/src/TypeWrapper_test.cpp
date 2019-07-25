@@ -40,9 +40,9 @@ void check_cfitsio_types(int record, int table, int image) {
     else
         BOOST_CHECK_THROW(TypeCode<T>::for_record(), TypeError<T>);
     if(table)
-        BOOST_CHECK_EQUAL(TypeCode<T>::for_table(), table);
+        BOOST_CHECK_EQUAL(TypeCode<T>::for_bintable(), table);
     else
-        BOOST_CHECK_THROW(TypeCode<T>::for_table(), TypeError<T>);
+        BOOST_CHECK_THROW(TypeCode<T>::for_bintable(), TypeError<T>);
     if(image)
         BOOST_CHECK_EQUAL(TypeCode<T>::for_image(), image);
     else
@@ -54,8 +54,8 @@ BOOST_AUTO_TEST_CASE( cfitsio_type_codes_test ) {
     check_cfitsio_types<bool>(TLOGICAL, TBIT, 0);
     check_cfitsio_types<char>(TSBYTE, TSBYTE, TSBYTE);
     check_cfitsio_types<short>(TSHORT, TSHORT, TSHORT);
-    check_cfitsio_types<int>(TINT, 0, TINT);
-    check_cfitsio_types<long>(TLONG, TLONGLONG, TLONG);
+    check_cfitsio_types<int>(TINT, TINT, TINT);
+    check_cfitsio_types<long>(TLONG, TLONG, TLONG);
     check_cfitsio_types<LONGLONG>(TLONGLONG, TLONGLONG, TLONGLONG);
     check_cfitsio_types<float>(TFLOAT, TFLOAT, TFLOAT);
     check_cfitsio_types<double>(TDOUBLE, TDOUBLE, TDOUBLE);
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( cfitsio_type_codes_test ) {
     check_cfitsio_types<unsigned char>(TBYTE, TBYTE, TBYTE);
     check_cfitsio_types<unsigned short>(TUSHORT, TUSHORT, TUSHORT);
     check_cfitsio_types<unsigned int>(TUINT, TUINT, TUINT);
-    check_cfitsio_types<unsigned long>(TULONG, 0, TULONG);
+    check_cfitsio_types<unsigned long>(TULONG, TULONG, TULONG);
     check_cfitsio_types<unsigned long long>(0, 0, 0);
 
 }

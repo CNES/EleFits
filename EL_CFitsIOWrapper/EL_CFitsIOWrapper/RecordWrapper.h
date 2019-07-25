@@ -57,6 +57,12 @@ std::string read_value(fitsfile* fptr, std::string keyword);
  */
 std::vector<std::string> read_values(fitsfile* fptr, std::vector<std::string> keywords);
 
+
+/////////////////////////
+/// HELPER FUNCTIONS ///
+///////////////////////
+
+
 // Signature change (output argument) for further use with variadic templates.
 template<typename T>
 inline void _parse_value(fitsfile* fptr, std::string keyword, T& value) {
@@ -79,6 +85,11 @@ struct _parse_values<0, Ts...> {
         _parse_value(fptr, keywords[0], std::get<0>(values));
     }
 };
+
+
+///////////////////////
+/// IMPLEMENTATION ///
+/////////////////////
 
 
 template<typename T>
