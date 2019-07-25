@@ -52,21 +52,21 @@ void check_cfitsio_types(int record, int table, int image) {
 BOOST_AUTO_TEST_CASE( cfitsio_type_codes_test ) {
 
     check_cfitsio_types<bool>(TLOGICAL, TBIT, 0);
-    check_cfitsio_types<char>(TSBYTE, TSBYTE, SBYTE_IMG);
-    check_cfitsio_types<short>(TSHORT, TSHORT, SHORT_IMG);
-    check_cfitsio_types<int>(TINT, 0, 0);
-    check_cfitsio_types<long>(TLONG, TLONGLONG, LONG_IMG);
-    check_cfitsio_types<long long>(TLONGLONG, TLONGLONG, LONGLONG_IMG);
-    check_cfitsio_types<float>(TFLOAT, TFLOAT, FLOAT_IMG);
-    check_cfitsio_types<double>(TDOUBLE, TDOUBLE, DOUBLE_IMG);
+    check_cfitsio_types<char>(TSBYTE, TSBYTE, TSBYTE);
+    check_cfitsio_types<short>(TSHORT, TSHORT, TSHORT);
+    check_cfitsio_types<int>(TINT, 0, TINT);
+    check_cfitsio_types<long>(TLONG, TLONGLONG, TLONG);
+    check_cfitsio_types<long long>(TLONGLONG, TLONGLONG, TLONGLONG);
+    check_cfitsio_types<float>(TFLOAT, TFLOAT, TFLOAT);
+    check_cfitsio_types<double>(TDOUBLE, TDOUBLE, TDOUBLE);
     check_cfitsio_types<std::complex<float>>(TCOMPLEX, TCOMPLEX, 0);
     check_cfitsio_types<std::complex<double>>(TDBLCOMPLEX, TDBLCOMPLEX, 0);
     check_cfitsio_types<std::string>(TSTRING, TSTRING, 0);
     check_cfitsio_types<char*>(TSTRING, TSTRING, 0);
-    check_cfitsio_types<unsigned char>(TBYTE, TBYTE, BYTE_IMG);
-    check_cfitsio_types<unsigned short>(TUSHORT, TUSHORT, USHORT_IMG);
-    check_cfitsio_types<unsigned int>(TUINT, TUINT, 0);
-    check_cfitsio_types<unsigned long>(TULONG, 0, ULONG_IMG);
+    check_cfitsio_types<unsigned char>(TBYTE, TBYTE, TBYTE);
+    check_cfitsio_types<unsigned short>(TUSHORT, TUSHORT, TUSHORT);
+    check_cfitsio_types<unsigned int>(TUINT, TUINT, TUINT);
+    check_cfitsio_types<unsigned long>(TULONG, 0, TULONG);
     check_cfitsio_types<unsigned long long>(0, 0, 0);
 
 }

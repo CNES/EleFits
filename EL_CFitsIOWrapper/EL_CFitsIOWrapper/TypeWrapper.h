@@ -135,16 +135,18 @@ DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
 //DEF_TABLE_TYPE_CODE(unsigned long, TULONGLONG) // Not defined in our version
 //DEF_TABLE_TYPE_CODE(unsigned long, TULONGLONG) // Not defined in our version
 
-DEF_IMAGE_TYPE_CODE(char, SBYTE_IMG)
-DEF_IMAGE_TYPE_CODE(short, SHORT_IMG)
-DEF_IMAGE_TYPE_CODE(long, LONG_IMG)
-DEF_IMAGE_TYPE_CODE(long long, LONGLONG_IMG)
-DEF_IMAGE_TYPE_CODE(float, FLOAT_IMG)
-DEF_IMAGE_TYPE_CODE(double, DOUBLE_IMG)
-DEF_IMAGE_TYPE_CODE(unsigned char, BYTE_IMG)
-DEF_IMAGE_TYPE_CODE(unsigned short, USHORT_IMG)
-DEF_IMAGE_TYPE_CODE(unsigned long, ULONG_IMG)
-//DEF_IMAGE_TYPE_CODE(unsigned long long, ULONGLONG_IMG) // Not defined in our version
+DEF_IMAGE_TYPE_CODE(char, TSBYTE)
+DEF_IMAGE_TYPE_CODE(short, TSHORT)
+DEF_IMAGE_TYPE_CODE(int, TINT)
+DEF_IMAGE_TYPE_CODE(long, TLONG)
+DEF_IMAGE_TYPE_CODE(long long, TLONGLONG)
+DEF_IMAGE_TYPE_CODE(float, TFLOAT)
+DEF_IMAGE_TYPE_CODE(double, TDOUBLE)
+DEF_IMAGE_TYPE_CODE(unsigned char, TBYTE)
+DEF_IMAGE_TYPE_CODE(unsigned short, TUSHORT)
+DEF_IMAGE_TYPE_CODE(unsigned int, TUINT)
+DEF_IMAGE_TYPE_CODE(unsigned long, TULONG)
+//DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG) // Not defined in our version
 
 }
 
