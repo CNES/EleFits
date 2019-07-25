@@ -26,12 +26,76 @@
 
 #include <cfitsio/fitsio.h>
 #include <string>
+#include <tuple>
+#include <vector>
+
+#include "EL_CFitsIOWrapper/ErrorWrapper.h"
+#include "EL_CFitsIOWrapper/TypeWrapper.h"
 
 namespace Cfitsio {
 namespace Record {
 
+/**
+ * Read the value of a given keyword with specified type.
+ */
 template<typename T>
-T read_value(fitsfile* fptr, std::string keyword);
+T parse_value(fitsfile* fptr, std::string keyword);
+
+/**
+ * Read the values of a given set of keywords with specified types.
+ */
+template<typename... TRecords>
+std::tuple<TRecords...> parse_values(fitsfile* fptr, std::vector<std::string> keywords);
+
+/**
+ * Read the value of a given keyword as a string.
+ */
+std::string read_value(fitsfile* fptr, std::string keyword);
+
+/**
+ * Read the values of a given set of keywords as a set of strings.
+ */
+std::vector<std::string> read_values(fitsfile* fptr, std::vector<std::string> keywords);
+
+// Signature change (output argument) for further use with variadic templates.
+template<typename T>
+inline void _parse_value(fitsfile* fptr, std::string keyword, T& value) {
+    value = parse_value<T>(fptr, keyword);
+}
+
+// Parse the values of the i+1 first keywords of a given list (recursive approach).
+template<int i, typename ...Ts>
+struct _parse_values {
+    void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<Ts...>& values) {
+        _parse_value(fptr, keywords[i], std::get<i>(values));
+        _parse_values<i-1, Ts...>{}(fptr, keywords, values);
+    }
+};
+
+// Parse the value of the first keyword of a given list (terminal case of the recursion).
+template<typename ...Ts>
+struct _parse_values<0, Ts...> {
+    void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<Ts...>& values) {
+        _parse_value(fptr, keywords[0], std::get<0>(values));
+    }
+};
+
+
+template<typename T>
+T parse_value(fitsfile* fptr, std::string keyword) {
+    T value;
+    int status = 0;
+    fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, nullptr, &status);
+    throw_cfitsio_error(status);
+    return value;
+}
+
+template<typename ...Ts>
+std::tuple<Ts...> parse_values(fitsfile* fptr, std::vector<std::string> keywords) {
+    std::tuple<Ts...> values;
+    _parse_values<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, values);
+    return values;
+}
 
 }
 }

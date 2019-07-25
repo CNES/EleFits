@@ -21,22 +21,33 @@
  *
  */
 
-#include "EL_CFitsIOWrapper/ErrorWrapper.h"
+#include <algorithm>
+
 #include "EL_CFitsIOWrapper/RecordWrapper.h"
-#include "EL_CFitsIOWrapper/TypeWrapper.h"
 
 namespace Cfitsio {
 namespace Record {
 
-template<typename T>
-T read_value(fitsfile* fptr, std::string keyword) {
-  T value;
-  char *ckey = keyword.c_str();
-  int status = 0;
-  fits_read_key(fptr, TypeCode<T>::for_record(), ckey, &value, nullptr, &status);
-  throw_cfitsio_error(status);
-  return value;
+/**
+ * Read the value of a given keyword as a string.
+ */
+std::string read_value(fitsfile* fptr, std::string keyword) {
+    std::vector<char> cvalue(FLEN_VALUE);
+    int status = 0;
+    fits_read_keyword(fptr, keyword.c_str(), &cvalue[0], nullptr, &status);
+    throw_cfitsio_error(status);
+    return std::string(&cvalue[0]);
+}    
+
+/**
+ * Read the values of a given set of keywords as a set of strings.
+ */
+std::vector<std::string> read_values(fitsfile* fptr, std::vector<std::string> keywords) {
+    std::vector<std::string> values(keywords.size());
+    std::transform(keywords.begin(), keywords.end(), values.begin(), [fptr](std::string k) { return read_value(fptr, k); });
+    return values;
 }
 
 }
 }
+
