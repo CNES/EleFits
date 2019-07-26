@@ -21,16 +21,27 @@
  *
  */
 
+#include "EL_CFitsIOWrapper/FileWrapper.h"
 #include "EL_CFitsIOWrapper/ErrorWrapper.h"
 
 namespace Cfitsio {
 
-void throw_cfitsio_error(int status) {
+void may_throw_cfitsio_error(int status) {
     if(status == 0)
         return;
     char msg[FLEN_ERRMSG];
     fits_get_errstatus(status, msg);
     throw CfitsioError(msg);
+}
+
+void may_throw_readonly_error(fitsfile* fptr) {
+    if(not File::is_writable(fptr))
+        may_throw_cfitsio_error(READONLY_FILE);
+}
+
+void may_throw_invalid_file_error(fitsfile* fptr) {
+    if(not fptr)
+        may_throw_cfitsio_error(BAD_FILEPTR);
 }
 
 }

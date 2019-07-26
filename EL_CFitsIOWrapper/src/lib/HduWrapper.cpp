@@ -35,7 +35,7 @@ bool init_primary(fitsfile *fptr) {
     long naxes = 0;
     int status = 0;
     fits_create_img(fptr, default_type, naxes, nullptr, &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
     return true;
 }
 
@@ -43,7 +43,7 @@ int read_HDU_count(fitsfile *fptr) {
     int count;
     int status = 0;
     fits_get_num_hdus(fptr, &count, &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
     return count;
 }
 

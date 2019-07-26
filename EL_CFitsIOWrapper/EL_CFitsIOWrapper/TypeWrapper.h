@@ -41,7 +41,7 @@ template<typename T>
 class TypeError : public std::runtime_error {
 public:
     TypeError() :
-        std::runtime_error("Unknown type: " + TypeCode<T>::type_name()) {}
+        std::runtime_error("Unknown type with id: " + TypeCode<T>::type_name()) {}
 };
 
 /**
@@ -75,6 +75,13 @@ struct TypeCode {
     }
 
     /**
+     * Get the BITPIX value to handle image HDUs.
+     */
+    inline static int bitpix() {
+        throw TypeError<T>();
+    }
+
+    /**
      * Get the compiler type name.
      */
     inline static std::string type_name() {
@@ -85,10 +92,15 @@ struct TypeCode {
 
 #define DEF_RECORD_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_record() { return code; }
+
 #define DEF_TABLE_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_bintable() { return code; }
+
 #define DEF_IMAGE_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_image() { return code; }
+
+#define DEF_IMAGE_BITPIX(type, code) \
+    template<> inline int TypeCode<type>::bitpix() { return code; }
 
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
@@ -159,6 +171,25 @@ DEF_IMAGE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_IMAGE_TYPE_CODE(unsigned int, TUINT)
 DEF_IMAGE_TYPE_CODE(unsigned long, TULONG)
 //DEF_IMAGE_TYPE_CODE(unsigned LONGLONG, TULONGLONG) // Not defined in our version
+
+/*
+ * From CFitsIO documentation?
+ *
+ * Allowed types:
+ * BYTE_IMG, SHORT_IMG, LONG_IMG, LONGLONG_IMG, FLOAT_IMG, DOUBLE_IMG
+ * //TODO Check:
+ * SBYTE_IMG, USHORT_IMG, ULONG_IMG, ULONGLONG_IMG
+ */
+DEF_IMAGE_BITPIX(char, SBYTE_IMG)
+DEF_IMAGE_BITPIX(short, SHORT_IMG)
+DEF_IMAGE_BITPIX(long, LONG_IMG)
+DEF_IMAGE_BITPIX(LONGLONG, LONGLONG_IMG)
+DEF_IMAGE_BITPIX(float, FLOAT_IMG)
+DEF_IMAGE_BITPIX(double, DOUBLE_IMG)
+DEF_IMAGE_BITPIX(unsigned char, BYTE_IMG)
+DEF_IMAGE_BITPIX(unsigned short, USHORT_IMG)
+DEF_IMAGE_BITPIX(unsigned long, ULONG_IMG)
+//DEF_IMAGE_BITPIX(unsigned LONGLONG, ULONGLONG_IMG)
 
 }
 

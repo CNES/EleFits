@@ -32,7 +32,7 @@ std::string read_value(fitsfile* fptr, std::string keyword) {
     std::vector<char> cvalue(FLEN_VALUE);
     int status = 0;
     fits_read_keyword(fptr, keyword.c_str(), &cvalue[0], nullptr, &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
     return std::string(&cvalue[0]);
 }    
 

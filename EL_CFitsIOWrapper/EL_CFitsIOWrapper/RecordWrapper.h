@@ -97,7 +97,7 @@ T parse_value(fitsfile* fptr, std::string keyword) {
     T value;
     int status = 0;
     fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, nullptr, &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
     return value;
 }
 

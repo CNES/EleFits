@@ -35,13 +35,19 @@ BOOST_AUTO_TEST_SUITE (ErrorWrapper_test)
 
 BOOST_AUTO_TEST_CASE( noerror_test ) {
 
-  BOOST_CHECK_NO_THROW(throw_cfitsio_error(0));
+  BOOST_CHECK_NO_THROW(may_throw_cfitsio_error(0));
 
 }
 
 BOOST_AUTO_TEST_CASE( error_test ) {
 
-  BOOST_CHECK_THROW(throw_cfitsio_error(1), CfitsioError);
+  BOOST_CHECK_THROW(may_throw_cfitsio_error(1), CfitsioError);
+
+}
+
+BOOST_AUTO_TEST_CASE( nullptr_test ) {
+
+    BOOST_CHECK_THROW(may_throw_invalid_file_error(nullptr), CfitsioError);
 
 }
 

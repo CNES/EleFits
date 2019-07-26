@@ -35,7 +35,7 @@ fitsfile* create_and_open(std::string filename, CreatePolicy policy) {
     fitsfile *fptr;
     int status = 0;
     fits_create_file(&fptr, cfitsio_name.c_str(), &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
     HDU::init_primary(fptr);
     return fptr;
 }
@@ -47,7 +47,7 @@ fitsfile* open(std::string filename, OpenPolicy policy) {
     if(policy == OpenPolicy::READ_WRITE)
         permission = READWRITE;
     fits_open_file(&fptr, filename.c_str(), permission, &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
     HDU::init_primary(fptr);
     return fptr;
 }
@@ -57,21 +57,19 @@ void close(fitsfile* fptr) {
         return;
     int status = 0;
     fits_close_file(fptr, &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
 }
 
 void close_and_delete(fitsfile* fptr) {
     if(not fptr)
         return;
-    if(not is_writable(fptr))
-        throw_cfitsio_error(READONLY_FILE);
+    may_throw_readonly_error(fptr);
     int status = 0;
     fits_delete_file(fptr, &status);
-    throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status);
 }
 
 bool is_writable(fitsfile* fptr) {
-    // Needed to forbid deletion of readonly files
     return fptr->Fptr->writemode == READWRITE;
 }
 

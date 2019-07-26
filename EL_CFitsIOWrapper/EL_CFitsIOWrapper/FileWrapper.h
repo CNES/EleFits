@@ -77,6 +77,11 @@ void close(fitsfile *fptr);
  */
 void close_and_delete(fitsfile *fptr);
 
+/**
+ * Check whether a file is writable.
+ */
+bool is_writable(fitsfile* fptr);
+
 }
 }
 
