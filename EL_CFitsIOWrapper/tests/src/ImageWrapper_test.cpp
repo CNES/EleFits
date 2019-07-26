@@ -22,8 +22,11 @@
  */
 
 #include <boost/test/unit_test.hpp>
+#include <cstdlib>
 
 #include "EL_CFitsIOWrapper//ImageWrapper.h"
+
+using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
@@ -31,9 +34,23 @@ BOOST_AUTO_TEST_SUITE (ImageWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+BOOST_AUTO_TEST_CASE( index_test ) {
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+    Image::pos_type<4> shape;
+    for(auto& length : shape)
+        length = std::rand();
+    Image::pos_type<4> pos;
+    for(auto& coord : pos)
+        coord = std::rand();
+    auto index = Image::internal::Index<3>::offset(shape, pos);
+    BOOST_CHECK_EQUAL(index,
+        pos[0] + shape[0] * (
+            pos[1] + shape[1] * (
+                pos[2] + shape[2] * 
+                    (pos[3])
+                )
+            )
+        );
 
 }
 

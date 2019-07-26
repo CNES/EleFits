@@ -36,7 +36,7 @@ public:
         std::runtime_error(message) {}
 };
 
-bool throw_cfitsio_error(int status);
+void throw_cfitsio_error(int status);
 
 }
 
