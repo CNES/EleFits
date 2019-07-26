@@ -54,6 +54,16 @@ BOOST_AUTO_TEST_CASE( index_test ) {
 
 }
 
+BOOST_AUTO_TEST_CASE( raster_2D_test ) {
+
+    std::size_t width(3), height(2);
+    std::size_t size(width*height);
+    Image::Raster<int> raster({width, height});
+    BOOST_CHECK_EQUAL(raster.size(), size);
+    BOOST_CHECK_EQUAL(raster.data.size(), size);
+
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()

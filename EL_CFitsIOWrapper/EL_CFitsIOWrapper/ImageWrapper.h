@@ -60,15 +60,17 @@ using pos_type = std::array<coord_type, n>;
 template<typename T, std::size_t n=2>
 struct Raster {
 
-    /**
-     * Raw data.
-     */
-    std::vector<T> data;
+    Raster(pos_type<n> shape);
 
     /**
      * Raster shape, i.e. length along each axis.
      */
     pos_type<n> shape;
+
+    /**
+     * Raw data.
+     */
+    std::vector<T> data;
 
     /**
      * Number of pixels.
@@ -149,6 +151,11 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 /// IMPLEMENTATION ///
 /////////////////////
 
+template<typename T, std::size_t n>
+Raster<T, n>::Raster(pos_type<n> shape) :
+        shape(shape),
+        data(size()) {
+}
 
 template<typename T, std::size_t n>
 inline std::size_t Raster<T, n>::size() const {
