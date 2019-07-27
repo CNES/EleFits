@@ -1,6 +1,6 @@
 /**
- * @file EL_CFitsIOWrapper/ErrorWrapper.h
- * @date 07/23/19
+ * @file EL_CFitsIOWrapper/CfitsioUtils.h
+ * @date 07/27/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,40 +21,25 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
-#define _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
+#ifndef _EL_CFITSIOWRAPPER_CFITSIOUTILS_H
+#define _EL_CFITSIOWRAPPER_CFITSIOUTILS_H
 
-#include <stdexcept>
-#include <cfitsio/fitsio.h>
 #include <string>
 
 namespace Cfitsio {
 
 /**
- * @brief Runtime error printing CFitsIO messages.
+ * @brief Convert a string to a char*.
+ * 
+ * Used to work around non-const correctness of CFitsIO.
  */
-class CfitsioError : public std::runtime_error {
-public:
-    CfitsioError(std::string message) :
-        std::runtime_error(message) {}
-};
+char* to_char_ptr(std::string str);
 
-/**
- * @brief Check whether status is OK (=0) and throw an error if not.
- */
-void may_throw_cfitsio_error(int status);
-
-/**
- * @brief Check whether the file is valid and throw an error if not.
- */
-void may_throw_invalid_file_error(fitsfile* fptr);
-
-/**
- * @brief Check whether the file is writable and throw an error if not.
- */
-void may_throw_readonly_error(fitsfile* fptr);
+inline char* to_char_ptr(std::string str) {
+    return const_cast<char*>(str.c_str());
+}
 
 }
 
-#endif
 
+#endif

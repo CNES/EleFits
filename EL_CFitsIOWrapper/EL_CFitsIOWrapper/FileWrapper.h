@@ -28,57 +28,57 @@
 #include <string>
 
 namespace Cfitsio {
+
+/**
+ * @brief File-related functions.
+ */
 namespace File {
 
 /**
- * File creation policy.
- * * Create only (abort if file exists), or
- * * Allow overwriting if file already exists.
+ * @brief File creation policy.
  */
 enum class CreatePolicy {
-    CREATE_ONLY,
-    OVER_WRITE
+    CREATE_ONLY, ///< Create only (abort if file exists)
+    OVER_WRITE ///< Allow overwriting if file already exists.
 };
 
 /**
- * File opening policy.
- * * Read permission only, or
- * * Read and write permissions.
+ * @brief File opening policy.
  */
 enum class OpenPolicy {
-    READ_ONLY,
-    READ_WRITE
+    READ_ONLY, ///< Read persmission only
+    READ_WRITE ///< Read and write permissions
 };
 
-
 /**
- * Create or overwrite a Fits file and open it.
+ * @brief Create or overwrite a Fits file and open it.
  */
 fitsfile* create_and_open(std::string filename, CreatePolicy policy);
 
 /**
- * Open an existing Fits file with optional write permission.
+ * @brief Open an existing Fits file with optional write permission.
  */
 fitsfile* open(std::string filename, OpenPolicy policy);
 
 /**
- * Check whether a Fits file is open with write permission.
+ * @brief Check whether a Fits file is open with write permission.
  */
 bool is_writable(fitsfile* fptr);
 
 /**
- * Close a Fits file.
+ * @brief Close a Fits file.
  */
 void close(fitsfile *fptr);
 
 /**
- * Close and delete a Fits file.
+ * @brief Close and delete a Fits file.
+ * 
  * Throw an exception if writing is not permitted.
  */
 void close_and_delete(fitsfile *fptr);
 
 /**
- * Check whether a file is writable.
+ * @brief Check whether a file is writable.
  */
 bool is_writable(fitsfile* fptr);
 

@@ -42,6 +42,11 @@ std::vector<std::string> read_values(fitsfile* fptr, std::vector<std::string> ke
     return values;
 }
 
+template<>
+std::string parse_value<std::string>(fitsfile* fptr, std::string keyword) {
+    return read_value(fptr, keyword);
+}
+
 }
 }
 

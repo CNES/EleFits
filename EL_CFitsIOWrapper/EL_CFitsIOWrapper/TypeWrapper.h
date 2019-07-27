@@ -32,8 +32,16 @@
 #include <limits>
 #include <string>
 
+#include "EL_CFitsIOWrapper/ErrorWrapper.h"
+
 namespace Cfitsio {
 
+/**
+ * @brief Type traits to convert C++ types to CFitsIO type codes for:
+ * * records,
+ * * images,
+ * * bintables (ASCII tables are not supported).
+ */
 template<typename T>
 struct TypeCode;
 
@@ -41,51 +49,42 @@ template<typename T>
 class TypeError : public std::runtime_error {
 public:
     TypeError() :
-        std::runtime_error("Unknown type with id: " + TypeCode<T>::type_name()) {}
+        std::runtime_error("Unknown type") {}
 };
 
-/**
- * Type traits to convert C++ types to CFitsIO type codes for:
- * * records,
- * * images,
- * * bintables (ASCII tables are not supported).
- */
 template<typename T>
 struct TypeCode {
 
     /**
-     * Get the type code for a record.
+     * @brief Get the type code for a record.
      */
     inline static int for_record() {
-        throw TypeError<T>();
+        may_throw_cfitsio_error(BAD_DATATYPE);
+        return 0;
     }
 
     /**
-     * Get the type code for a bintable.
+     * @brief Get the type code for a bintable.
      */
     inline static int for_bintable() {
-        throw TypeError<T>();
+        may_throw_cfitsio_error(BAD_DATATYPE);
+        return 0;
     }
 
     /**
-     * Get the type code for an image.
+     * @brief Get the type code for an image.
      */
     inline static int for_image() {
-        throw TypeError<T>();
+        may_throw_cfitsio_error(BAD_DATATYPE);
+        return 0;
     }
 
     /**
-     * Get the BITPIX value to handle image HDUs.
+     * @brief Get the BITPIX value to handle image HDUs.
      */
     inline static int bitpix() {
-        throw TypeError<T>();
-    }
-
-    /**
-     * Get the compiler type name.
-     */
-    inline static std::string type_name() {
-        return typeid(T).name();
+        may_throw_cfitsio_error(BAD_DATATYPE);
+        return 0;
     }
 
 };

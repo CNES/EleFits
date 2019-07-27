@@ -37,24 +37,29 @@
 
 
 namespace Cfitsio {
+
+/**
+ * @brief Image HDU-related functions.
+ */
 namespace Image {
 
 /**
- * Type for a coordinate along one axis.
+ * @brief Type for a coordinate along one axis.
  */
 using coord_type = long;
 //TODO Would be nice to have std::array<T, n>::std::size_t
 // but not compliant with CFitsIO which uses long for subscripts
 
 /**
- * Type for a position or shape, i.e. set of coordinates.
+ * @brief Type for a position or shape, i.e. set of coordinates.
  */
 template<std::size_t n>
 using pos_type = std::array<coord_type, n>;
 
 
 /**
- * A simplistic structure to store a n-dimension raster and shape.
+ * @brief A simplistic structure to store a n-dimension raster and shape.
+ * 
  * 2D by default.
  */
 template<typename T, std::size_t n=2>
@@ -63,65 +68,53 @@ struct Raster {
     Raster(pos_type<n> shape);
 
     /**
-     * Raster shape, i.e. length along each axis.
+     * @brief Raster shape type, i.e. length along each axis.
      */
     pos_type<n> shape;
 
     /**
-     * Raw data.
+     * @brief Raw data type.
      */
     std::vector<T> data;
 
     /**
-     * Number of pixels.
+     * @brief Number of pixels.
      */
     std::size_t size() const;
 
     /**
-     * Raw index of a position.
+     * @brief Raw index of a position.
      */
     std::size_t index(const pos_type<n>& pos) const;
 
     /**
-     * Pixel at given position.
+     * @brief Pixel at given position.
      */
     const T& operator()(const pos_type<n>& pos) const;
 
     /**
-     * Pixel at given position.
+     * @brief Pixel at given position.
      */
     T& operator()(const pos_type<n>& pos);
 
 };
 
 /**
- * Read a raster in current image HDU.
+ * @brief Read a raster in current image HDU.
  */
 template<typename T, std::size_t n=2>
 Raster<T, n> read_raster(fitsfile* fptr);
 
 /**
- * Write a raster in current image HDU.
+ * @brief Write a raster in current image HDU.
  */
 template<typename T, std::size_t n=2>
 void write_raster(fitsfile* fptr, const Raster<T, n>& raster);
 
-/**
- * Create a new image HDU with given name, type and shape.
- */
-template<typename T, std::size_t n=2>
-void create_image_HDU(fitsfile *fptr, std::string name, const pos_type<n>& shape);
 
-/**
- * Write a raster in a new image HDU.
- */
-template<typename T, std::size_t n=2>
-void create_image_HDU(fitsfile *fptr, std::string name, const Raster<T, n>& raster);
-
-
-/////////////////
-/// INTERNAL ///
 ///////////////
+// INTERNAL //
+/////////////
 
 
 namespace internal {
@@ -147,9 +140,10 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 }
 
 
-///////////////////////
-/// IMPLEMENTATION ///
 /////////////////////
+// IMPLEMENTATION //
+///////////////////
+
 
 template<typename T, std::size_t n>
 Raster<T, n>::Raster(pos_type<n> shape) :
@@ -198,23 +192,6 @@ void write_raster(fitsfile* fptr, const Raster<T, n>& raster) {
     std::vector<T> nonconst_data = raster.data; //TODO const-correctness issue?
     fits_write_img(fptr, TypeCode<T>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
     may_throw_cfitsio_error(status);
-}
-
-template<typename T, std::size_t n=2>
-void create_image_HDU(fitsfile *fptr, std::string name, const pos_type<n>& shape) {
-    may_throw_readonly_error(fptr);
-    int status = 0;
-    auto nonconst_shape = shape; //TODO const-correctness issue?
-    fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
-    may_throw_cfitsio_error(status);
-    //TODO write name
-}
-
-template<typename T, std::size_t n>
-void create_image_HDU(fitsfile *fptr, std::string name, const Raster<T, n>& raster) {
-    may_throw_readonly_error(fptr);
-    create_image_HDU<T, n>(fptr, name, raster.shape);
-    write_raster<T, n>(fptr, raster);
 }
 
 }

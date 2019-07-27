@@ -1,6 +1,6 @@
 /**
- * @file EL_CFitsIOWrapper/ErrorWrapper.h
- * @date 07/23/19
+ * @file src/lib/CfitsioUtils.cpp
+ * @date 07/27/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,40 +21,12 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
-#define _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
+#include "EL_CFitsIOWrapper/CfitsioUtils.h"
 
-#include <stdexcept>
-#include <cfitsio/fitsio.h>
-#include <string>
+namespace EL_CFitsIOWrapper {
 
-namespace Cfitsio {
 
-/**
- * @brief Runtime error printing CFitsIO messages.
- */
-class CfitsioError : public std::runtime_error {
-public:
-    CfitsioError(std::string message) :
-        std::runtime_error(message) {}
-};
+}  // namespace EL_CFitsIOWrapper
 
-/**
- * @brief Check whether status is OK (=0) and throw an error if not.
- */
-void may_throw_cfitsio_error(int status);
 
-/**
- * @brief Check whether the file is valid and throw an error if not.
- */
-void may_throw_invalid_file_error(fitsfile* fptr);
-
-/**
- * @brief Check whether the file is writable and throw an error if not.
- */
-void may_throw_readonly_error(fitsfile* fptr);
-
-}
-
-#endif
 

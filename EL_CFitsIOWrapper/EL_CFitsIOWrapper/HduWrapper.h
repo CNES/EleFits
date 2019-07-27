@@ -27,12 +27,127 @@
 #include <cfitsio/fitsio.h>
 #include <string>
 
+#include "EL_CFitsIOWrapper/ImageWrapper.h"
+
 namespace Cfitsio {
+
+/**
+ * @brief HDU-related functions.
+ * 
+ * An HDU can be of three types (ASCII tables are not supported):
+ * * metadata (image HDU with empty data, e.g. primary of MEFs)
+ * * image
+ * * table
+ * 
+ * Getter functions generally apply to the current HDU.
+ * Functions to go to an HDU return false if current HDU is already target HDU.
+ * Functions to create an HDU append it at the end of the file.
+ */
 namespace HDU {
 
+/**
+ * @brief HDU type (ASCII tables not supported).
+ */
+enum class Type {
+    METADATA, ///< Image HDU with empty data or Primary HDU
+    IMAGE, ///< Image HDU
+    BINTABLE ///< Binary table HDU
+};
+
+/**
+ * @brief Read the number of HDUs in a Fits file.
+ */
+std::size_t count(fitsfile *fptr);
+
+/**
+ * @brief Get the index of the current HDU.
+ */
+std::size_t current_index(fitsfile *fptr);
+
+/**
+ * @brief Get the name of the current HDU.
+ */
+std::string current_name(fitsfile *fptr);
+
+/**
+ * @brief Get the type of the current HDU.
+ */
+Type current_type(fitsfile *fptr);
+
+/**
+ * @brief Check whether current HDU contains data.
+ */
+bool current_has_data(fitsfile *fptr);
+
+/**
+ * @brief Check whether current Fits HDU is the primary HDU.
+ */
+bool current_is_primary(fitsfile *fptr);
+
+/**
+ * @brief Go to an HDU specified by its index.
+ */
+bool goto_index(fitsfile *fptr, std::size_t index);
+
+/**
+ * @brief Go to an HDU specified by its name.
+ */
+bool goto_name(fitsfile *fptr, std::string name);
+
+/**
+ * @brief Go to an HDU specified by incrementing the index by a given amount.
+ */
+bool goto_next(fitsfile *fptr, std::size_t step=1);
+
+/**
+ * @brief Go to the primary HDU.
+ */
+bool goto_primary(fitsfile *fptr);
+
+/**
+ * @brief Initialize the primary HDU if not done.
+ */
 bool init_primary(fitsfile *fptr);
 
-int read_HDU_count(fitsfile *fptr);
+/**
+ * @brief Create a HDU of given type metadata.
+ */
+void create_metadata_extension(fitsfile *fptr, std::string name);
+
+/**
+ * @brief Create a new image HDU with given name, type and shape.
+ */
+template<typename T, std::size_t n=2>
+void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_type<n>& shape);
+
+/**
+ * @brief Write a raster in a new image HDU.
+ */
+template<typename T, std::size_t n=2>
+void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster);
+
+
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+template<typename T, std::size_t n>
+void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_type<n>& shape) {
+    may_throw_readonly_error(fptr);
+    int status = 0;
+    auto nonconst_shape = shape; //TODO const-correctness issue?
+    fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
+    may_throw_cfitsio_error(status);
+    //TODO write name
+}
+
+template<typename T, std::size_t n>
+void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster) {
+    may_throw_readonly_error(fptr);
+    create_image_extension<T, n>(fptr, name, raster.shape);
+    Image::write_raster<T, n>(fptr, raster);
+}
 
 }
 }

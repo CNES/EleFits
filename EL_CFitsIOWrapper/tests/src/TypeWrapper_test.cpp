@@ -38,15 +38,15 @@ void check_cfitsio_types(int record, int table, int image) {
     if(record)
         BOOST_CHECK_EQUAL(TypeCode<T>::for_record(), record);
     else
-        BOOST_CHECK_THROW(TypeCode<T>::for_record(), TypeError<T>);
+        BOOST_CHECK_THROW(TypeCode<T>::for_record(), CfitsioError);
     if(table)
         BOOST_CHECK_EQUAL(TypeCode<T>::for_bintable(), table);
     else
-        BOOST_CHECK_THROW(TypeCode<T>::for_bintable(), TypeError<T>);
+        BOOST_CHECK_THROW(TypeCode<T>::for_bintable(), CfitsioError);
     if(image)
         BOOST_CHECK_EQUAL(TypeCode<T>::for_image(), image);
     else
-        BOOST_CHECK_THROW(TypeCode<T>::for_image(), TypeError<T>);
+        BOOST_CHECK_THROW(TypeCode<T>::for_image(), CfitsioError);
 }
 
 BOOST_AUTO_TEST_CASE( cfitsio_type_codes_test ) {
