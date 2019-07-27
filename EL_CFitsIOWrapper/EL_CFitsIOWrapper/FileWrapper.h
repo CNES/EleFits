@@ -73,7 +73,7 @@ void close(fitsfile *fptr);
 /**
  * @brief Close and delete a Fits file.
  * 
- * Throw an exception if writing is not permitted.
+ * @warning Throw an exception if writing is not permitted.
  */
 void close_and_delete(fitsfile *fptr);
 

@@ -88,6 +88,8 @@ void write_record(fitsfile* fptr, const record_type<T>& record);
 /////////////////////
 
 
+namespace internal {
+
 // Signature change (output argument) for further use with variadic templates.
 template<typename T>
 inline void _parse_value(fitsfile* fptr, std::string keyword, T& value) {
@@ -111,6 +113,7 @@ struct _parse_values<0, Ts...> {
     }
 };
 
+}
 
 /////////////////////
 // IMPLEMENTATION //
@@ -129,13 +132,10 @@ T parse_value(fitsfile* fptr, std::string keyword) {
 template<typename ...Ts>
 std::tuple<Ts...> parse_values(fitsfile* fptr, std::vector<std::string> keywords) {
     std::tuple<Ts...> values;
-    _parse_values<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, values);
+    internal::_parse_values<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, values);
     return values;
 }
 
-/**
- * Write a new record with given keyword and value.
- */
 template<typename T>
 void write_record(fitsfile* fptr, std::string keyword, T value) {
     int status = 0;
@@ -143,9 +143,6 @@ void write_record(fitsfile* fptr, std::string keyword, T value) {
     may_throw_cfitsio_error(status);
 }
 
-/**
- * Write a new record with unit and comment.
- */
 template<typename T>
 void write_record(fitsfile* fptr, const record_type<T>& record) {
     const std::string& keyword = to_char_ptr(std::get<0>(record));

@@ -79,6 +79,10 @@ elements_add_unit_test(CfitsioUtils tests/src/CfitsioUtils_test.cpp
                      EXECUTABLE EL_CFitsIOWrapper_CfitsioUtils_test
                      LINK_LIBRARIES EL_CFitsIOWrapper
                      TYPE Boost)
+elements_add_unit_test(BintableWrapper tests/src/BintableWrapper_test.cpp 
+                     EXECUTABLE EL_CFitsIOWrapper_BintableWrapper_test
+                     LINK_LIBRARIES EL_CFitsIOWrapper
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

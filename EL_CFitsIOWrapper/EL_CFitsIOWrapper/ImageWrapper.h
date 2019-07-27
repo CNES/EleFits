@@ -39,7 +39,7 @@
 namespace Cfitsio {
 
 /**
- * @brief Image HDU-related functions.
+ * @brief Image-related functions.
  */
 namespace Image {
 
@@ -58,22 +58,25 @@ using pos_type = std::array<coord_type, n>;
 
 
 /**
- * @brief A simplistic structure to store a n-dimension raster and shape.
+ * @brief A simplistic structure to store a n-dimension raster.
  * 
  * 2D by default.
  */
 template<typename T, std::size_t n=2>
 struct Raster {
 
+    /**
+     * @brief Create a Raster with given shape.
+     */
     Raster(pos_type<n> shape);
 
     /**
-     * @brief Raster shape type, i.e. length along each axis.
+     * @brief Raster shape, i.e. length along each axis.
      */
     pos_type<n> shape;
 
     /**
-     * @brief Raw data type.
+     * @brief Raw data.
      */
     std::vector<T> data;
 
@@ -100,13 +103,13 @@ struct Raster {
 };
 
 /**
- * @brief Read a raster in current image HDU.
+ * @brief Read a Raster in current Image HDU.
  */
 template<typename T, std::size_t n=2>
 Raster<T, n> read_raster(fitsfile* fptr);
 
 /**
- * @brief Write a raster in current image HDU.
+ * @brief Write a Raster in current Image HDU.
  */
 template<typename T, std::size_t n=2>
 void write_raster(fitsfile* fptr, const Raster<T, n>& raster);

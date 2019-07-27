@@ -34,13 +34,13 @@ namespace Cfitsio {
 /**
  * @brief HDU-related functions.
  * 
- * An HDU can be of three types (ASCII tables are not supported):
- * * metadata (image HDU with empty data, e.g. primary of MEFs)
- * * image
- * * table
+ * An HDU can be of three Types (ASCII tables are not supported):
+ * * METADATA (image HDU with empty data, e.g. Primary of MultiExtFile)
+ * * IMAGE
+ * * TABLE
  * 
  * Getter functions generally apply to the current HDU.
- * Functions to go to an HDU return false if current HDU is already target HDU.
+ * Functions to go to an HDU return false if target HDU is already current HDU.
  * Functions to create an HDU append it at the end of the file.
  */
 namespace HDU {
@@ -70,7 +70,7 @@ std::size_t current_index(fitsfile *fptr);
 std::string current_name(fitsfile *fptr);
 
 /**
- * @brief Get the type of the current HDU.
+ * @brief Get the Type of the current HDU.
  */
 Type current_type(fitsfile *fptr);
 
@@ -80,7 +80,7 @@ Type current_type(fitsfile *fptr);
 bool current_has_data(fitsfile *fptr);
 
 /**
- * @brief Check whether current Fits HDU is the primary HDU.
+ * @brief Check whether current Fits HDU is the Primary HDU.
  */
 bool current_is_primary(fitsfile *fptr);
 
@@ -100,28 +100,28 @@ bool goto_name(fitsfile *fptr, std::string name);
 bool goto_next(fitsfile *fptr, std::size_t step=1);
 
 /**
- * @brief Go to the primary HDU.
+ * @brief Go to the Primary HDU.
  */
 bool goto_primary(fitsfile *fptr);
 
 /**
- * @brief Initialize the primary HDU if not done.
+ * @brief Initialize the Primary HDU if not done.
  */
 bool init_primary(fitsfile *fptr);
 
 /**
- * @brief Create a HDU of given type metadata.
+ * @brief Create a HDU of Type METADATA.
  */
 void create_metadata_extension(fitsfile *fptr, std::string name);
 
 /**
- * @brief Create a new image HDU with given name, type and shape.
+ * @brief Create a new Image HDU with given name, pixel type and shape.
  */
 template<typename T, std::size_t n=2>
 void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_type<n>& shape);
 
 /**
- * @brief Write a raster in a new image HDU.
+ * @brief Write a Raster in a new Image HDU.
  */
 template<typename T, std::size_t n=2>
 void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster);

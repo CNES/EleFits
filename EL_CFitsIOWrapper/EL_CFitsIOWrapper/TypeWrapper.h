@@ -37,26 +37,21 @@
 namespace Cfitsio {
 
 /**
- * @brief Type traits to convert C++ types to CFitsIO type codes for:
- * * records,
- * * images,
- * * bintables (ASCII tables are not supported).
+ * @brief Type traits to convert C++ types to CFitsIO type codes.
+ * 
+ * Used to read and write:
+ * * Record's,
+ * * Image's,
+ * * Bintable's (ASCII table not supported).
  */
 template<typename T>
 struct TypeCode;
 
 template<typename T>
-class TypeError : public std::runtime_error {
-public:
-    TypeError() :
-        std::runtime_error("Unknown type") {}
-};
-
-template<typename T>
 struct TypeCode {
 
     /**
-     * @brief Get the type code for a record.
+     * @brief Get the type code for a Record.
      */
     inline static int for_record() {
         may_throw_cfitsio_error(BAD_DATATYPE);
@@ -64,7 +59,7 @@ struct TypeCode {
     }
 
     /**
-     * @brief Get the type code for a bintable.
+     * @brief Get the type code for a Bintable.
      */
     inline static int for_bintable() {
         may_throw_cfitsio_error(BAD_DATATYPE);
@@ -72,7 +67,7 @@ struct TypeCode {
     }
 
     /**
-     * @brief Get the type code for an image.
+     * @brief Get the type code for an Image.
      */
     inline static int for_image() {
         may_throw_cfitsio_error(BAD_DATATYPE);
@@ -80,7 +75,7 @@ struct TypeCode {
     }
 
     /**
-     * @brief Get the BITPIX value to handle image HDUs.
+     * @brief Get the BITPIX value to handle Image HDUs.
      */
     inline static int bitpix() {
         may_throw_cfitsio_error(BAD_DATATYPE);
