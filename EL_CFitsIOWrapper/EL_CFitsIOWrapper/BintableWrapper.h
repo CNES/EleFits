@@ -24,6 +24,11 @@
 #ifndef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_H
 #define _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_H
 
+#include <tuple>
+#include <vector>
+
+#include "EL_CFitsIOWrapper/TypeWrapper.h"
+
 namespace Cfitsio {
 
 /**
@@ -31,8 +36,81 @@ namespace Cfitsio {
  */
 namespace Bintable {
 
-}
+/**
+ * @brief Type for a column info, i.e. { name, width, unit }
+ */
+template<typename T>
+using column_info = std::tuple<std::string, std::size_t, std::string>;
+
+/**
+ * @brief Get the index of a Bintable column.
+ */
+std::size_t column_index(fitsfile *fptr, std::string name);
+
+/**
+ * @brief Read a Bintable column with given name.
+ */
+template<typename T>
+std::vector<T> read_column(fitsfile *fptr, std::string name);
+
+/**
+ * @brief Write a binary table column with given name.
+ */
+template<typename T>
+void write_column(fitsfile *fptr, const column_info<T>& info, const std::vector<T>& column);
+
+
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+template<typename T>
+std::vector<T> read_column(fitsfile* fptr, std::string name) {
+  size_t index = column_index(fptr, name);
+  long rows;
+  int status = 0;
+  fits_get_num_rows(fptr, &rows, &status);
+  may_throw_cfitsio_error(status);
+  std::vector<T> data(rows);
+  fits_read_col(
+      fptr,
+      TypeCode<T>::for_table(), // datatype
+      index, // colnum
+      1, // firstrow (1-based)
+      1, // firstelemn (1-based)
+      rows, // nelements
+      nullptr, // nulval
+      data.data(),
+      nullptr, // anynul
+      &status
+      );
+  may_throw_cfitsio_error(status);
+  return data;
 }
 
+template<typename T>
+void write_column(fitsfile* fptr, const column_info<T>& info, const std::vector<T>& data) {
+    size_t index = column_index(fptr, std::get<0>(info));
+    std::vector<T> nonconst_data = data; // We need a non-const data for CFitsIO
+    //TODO avoid copy
+    int status = 0;
+    fits_write_col(
+          fptr,
+          TypeCode<T>::for_table(), // datatype
+          index, // colnum
+          1, // firstrow (1-based)
+          1, // firstelem (1-based)
+          std::get<1>(info), // nelements
+          &data[0],
+          &status
+          );
+    may_throw_cfitsio_error(status);
+}
+
+
+}
+}
 
 #endif
+

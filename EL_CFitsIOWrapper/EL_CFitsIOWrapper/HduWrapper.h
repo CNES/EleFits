@@ -27,6 +27,7 @@
 #include <cfitsio/fitsio.h>
 #include <string>
 
+#include "EL_CFitsIOWrapper/BintableWrapper.h"
 #include "EL_CFitsIOWrapper/ImageWrapper.h"
 
 namespace Cfitsio {
@@ -126,6 +127,12 @@ void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_t
 template<typename T, std::size_t n=2>
 void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster);
 
+/**
+ * @brief Create a Bintable HDU.
+ */
+template<typename... Ts>
+void create_bintable_extension(fitsfile *fptr, std::string name, Bintable::column_info<Ts>... header);
+
 
 /////////////////////
 // IMPLEMENTATION //
@@ -147,6 +154,28 @@ void create_image_extension(fitsfile *fptr, std::string name, const Image::Raste
     may_throw_readonly_error(fptr);
     create_image_extension<T, n>(fptr, name, raster.shape);
     Image::write_raster<T, n>(fptr, raster);
+}
+
+template<typename... Ts>
+void create_table_extension(fitsfile* fptr, std::string name, Bintable::column_info<Ts>... header) {
+    constexpr std::size_t count = sizeof...(Ts);
+    std::string cname[] { std::get<0>(header) ... };
+    std::size_t cformat[] { (TypeCode<Ts>::bintable_format(std::get<1>(header))) ... };
+    std::string cunit[] { std::get<2>(header) ... };
+    //TODO avoid those temp
+    std::vector<char*> col_name(count);
+    std::vector<char*> col_format(count);
+    std::vector<char*> col_unit(count);
+    for(size_t i = 0; i < count; ++i) { //TODO iterators
+        col_name[i] = to_char_ptr(cname[i]);
+        col_format[i] = to_char_ptr(cformat[i]);
+        col_unit[i] = to_char_ptr(cunit[i]);
+    }
+    int status = 0;
+    fits_create_tbl(fptr, BINARY_TBL, 0, count,
+            col_name.data(), col_format.data(), col_unit.data(),
+            name.c_str(), &status);
+    may_throw_cfitsio_error(status);
 }
 
 }

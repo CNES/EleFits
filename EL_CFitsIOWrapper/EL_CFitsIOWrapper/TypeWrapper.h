@@ -33,6 +33,7 @@
 #include <string>
 
 #include "EL_CFitsIOWrapper/ErrorWrapper.h"
+#include "EL_CFitsIOWrapper/TypeWrapper.h"
 
 namespace Cfitsio {
 
@@ -44,9 +45,6 @@ namespace Cfitsio {
  * * Image's,
  * * Bintable's (ASCII table not supported).
  */
-template<typename T>
-struct TypeCode;
-
 template<typename T>
 struct TypeCode {
 
@@ -67,6 +65,14 @@ struct TypeCode {
     }
 
     /**
+     * @brief Get the TFORM value to handle Bintable columns.
+     */
+    inline static std::string bintable_column(int width) {
+        may_throw_cfitsio_error(BAD_DATATYPE);
+        return "";
+    }
+
+    /**
      * @brief Get the type code for an Image.
      */
     inline static int for_image() {
@@ -84,17 +90,22 @@ struct TypeCode {
 
 };
 
+
 #define DEF_RECORD_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_record() { return code; }
 
 #define DEF_TABLE_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_bintable() { return code; }
 
+#define DEF_TABLE_COLUMN(type, code) \
+    template<> inline std::string TypeCode<type>::bintable_column(int width) { return std::to_string(width) + code; }
+
 #define DEF_IMAGE_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_image() { return code; }
 
 #define DEF_IMAGE_BITPIX(type, code) \
     template<> inline int TypeCode<type>::bitpix() { return code; }
+
 
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
@@ -146,6 +157,21 @@ DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
 DEF_TABLE_TYPE_CODE(unsigned long, TULONG)
 //DEF_TABLE_TYPE_CODE(unsigned LONGLONG, TULONGLONG) // Not defined in our version
 
+/*
+ * From CFitsIO documentation?
+ */
+DEF_TABLE_COLUMN(bool, 'A')
+DEF_TABLE_COLUMN(char, 'A')
+DEF_TABLE_COLUMN(short, 'I')
+DEF_TABLE_COLUMN(long, 'J')
+DEF_TABLE_COLUMN(LONGLONG, 'K')
+DEF_TABLE_COLUMN(float, 'E')
+DEF_TABLE_COLUMN(double, 'D')
+DEF_TABLE_COLUMN(std::string, 'A')
+DEF_TABLE_COLUMN(char*, 'A')
+DEF_TABLE_COLUMN(unsigned char, 'B')
+DEF_TABLE_COLUMN(unsigned short, 'I')
+DEF_TABLE_COLUMN(unsigned long, 'J')
 /*
  * From CFitsIO documentation "Primary Array or IMAGE Extension I/O Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node40.html
