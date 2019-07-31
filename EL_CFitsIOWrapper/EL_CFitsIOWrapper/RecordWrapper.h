@@ -82,6 +82,12 @@ void write_record(fitsfile* fptr, std::string keyword, T value);
 template<typename T>
 void write_record(fitsfile* fptr, const record_type<T>& record);
 
+/**
+ * @brief Update an existing record or write a new one with given keyword and value.
+ */
+template<typename T>
+void update_record(fitsfile* fptr, std::string keyword, T value);
+
 
 ///////////////////////
 // HELPER FUNCTIONS //
@@ -152,6 +158,13 @@ void write_record(fitsfile* fptr, const record_type<T>& record) {
     int status = 0;
     fits_write_key(fptr, TypeCode<T>::for_record(), keyword, value, comment, &status);
     fits_write_key_unit(fptr, keyword.c_str(), unit.c_str(), &status);
+    may_throw_cfitsio_error(status);
+}
+
+template<typename T>
+void update_record(fitsfile* fptr, std::string keyword, T value) {
+    int status = 0;
+    fits_update_key(fptr, TypeCode<T>::for_record(), to_char_ptr(keyword), &value, nullptr, &status);
     may_throw_cfitsio_error(status);
 }
 

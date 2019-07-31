@@ -25,16 +25,29 @@
 
 #include "EL_CFitsIOWrapper//HduWrapper.h"
 
+#include "EL_CFitsIOWrapper//CfitsioFixture.h"
+
+using namespace Cfitsio;
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE (HduWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+BOOST_FIXTURE_TEST_CASE( minimal_file_test, Test::MinimalFile ) {
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+	BOOST_CHECK_EQUAL(HDU::count(this->fptr), 1);
+	
+}
 
+BOOST_FIXTURE_TEST_CASE( write_read_raster_test, Test::MinimalFile ) {
+
+	Test::SmallRaster input;
+	HDU::create_image_extension(this->fptr, "IMGEXT", input);
+	auto output = Image::read_raster<float, 2>(fptr);
+	BOOST_CHECK(input.approx(output));
+	
 }
 
 //-----------------------------------------------------------------------------

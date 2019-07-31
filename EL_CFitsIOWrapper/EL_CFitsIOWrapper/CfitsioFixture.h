@@ -27,6 +27,8 @@
 #include "ElementsKernel/Temporary.h"
 
 #include "FileWrapper.h"
+#include "HduWrapper.h"
+#include "ImageWrapper.h"
 
 namespace Cfitsio {
 namespace Test {
@@ -44,6 +46,20 @@ public:
 	std::string filename;
 	
 	fitsfile* fptr;
+
+};
+
+class SmallRaster : public Image::Raster<float> {
+
+public:
+
+	SmallRaster(long width=3, long height=2);
+	
+	virtual ~SmallRaster() = default;
+	
+	bool approx(const Image::Raster<float>& other, float tol=0.1) const;
+	
+	long width, height;
 
 };
 

@@ -29,101 +29,101 @@ namespace Cfitsio {
 namespace HDU {
 
 std::size_t count(fitsfile* fptr) {
-    int count;
-    int status = 0;
-    fits_get_num_hdus(fptr, &count, &status);
-    may_throw_cfitsio_error(status);
-    return count;
+	int count;
+	int status = 0;
+	fits_get_num_hdus(fptr, &count, &status);
+	may_throw_cfitsio_error(status);
+	return count;
 }
 
 std::size_t current_index(fitsfile* fptr) {
-    int index;
-    fits_get_hdu_num(fptr, &index);
-    return index;
+	int index;
+	fits_get_hdu_num(fptr, &index);
+	return index;
 }
 
 std::string current_name(fitsfile* fptr) {
-    return Record::read_value(fptr, "EXTNAME");
+	return Record::read_value(fptr, "EXTNAME");
 }
 
 Type current_type(fitsfile* fptr) {
-    int type = 0;
-    int status = 0;
-    fits_get_hdu_type(fptr, &type, &status);
-    if(type == BINARY_TBL)
-        return Type::BINTABLE;
-    if(current_has_data(fptr))
-        return Type::IMAGE;
-    return Type::METADATA;
+	int type = 0;
+	int status = 0;
+	fits_get_hdu_type(fptr, &type, &status);
+	if(type == BINARY_TBL)
+		return Type::BINTABLE;
+	if(current_has_data(fptr))
+		return Type::IMAGE;
+	return Type::METADATA;
 }
 
 bool current_is_primary(fitsfile* fptr) {
-    return current_index(fptr) == 1;
+	return current_index(fptr) == 1;
 }
 
 bool current_has_data(fitsfile* fptr) {
-    return true; //TODO
+	return true; //TODO
 }
 
 bool goto_index(fitsfile* fptr, std::size_t index) {
-    if(index == current_index(fptr))
-        return false;
-    int type = 0;
-    int status = 0;
-    fits_movabs_hdu(fptr, index, &type, &status);
-    may_throw_cfitsio_error(status);
-    return true;
+	if(index == current_index(fptr))
+		return false;
+	int type = 0;
+	int status = 0;
+	fits_movabs_hdu(fptr, index, &type, &status);
+	may_throw_cfitsio_error(status);
+	return true;
 }
 
 bool goto_name(fitsfile* fptr, std::string name) {
-    if(name == "")
-        return false;
-    if(name == "Primary")
-      return goto_primary(fptr);
-    if(name == current_name(fptr))
-        return false;
-    int status = 0;
-    fits_movnam_hdu(fptr, ANY_HDU, to_char_ptr(name), 0, &status);
-    may_throw_cfitsio_error(status);
-    return true;
+	if(name == "")
+		return false;
+	if(name == "Primary")
+	  return goto_primary(fptr);
+	if(name == current_name(fptr))
+		return false;
+	int status = 0;
+	fits_movnam_hdu(fptr, ANY_HDU, to_char_ptr(name), 0, &status);
+	may_throw_cfitsio_error(status);
+	return true;
 }
 
 bool goto_next(fitsfile* fptr, std::size_t step) {
-    if(step == 0)
-        return false;
-    int status = 0;
-    int type = 0;
-    fits_movrel_hdu(fptr, step, &type, &status);
-    may_throw_cfitsio_error(status);
-    return true;
+	if(step == 0)
+		return false;
+	int status = 0;
+	int type = 0;
+	fits_movrel_hdu(fptr, step, &type, &status);
+	may_throw_cfitsio_error(status);
+	return true;
 }
 
 bool goto_primary(fitsfile* fptr) {
-    return goto_index(fptr, 1);
+	return goto_index(fptr, 1);
 }
 
 bool init_primary(fitsfile* fptr) {
-    if(count(fptr) > 0)
-        return false;
-    create_metadata_extension(fptr, ""); //TODO need to write "Primary"?
-    return true;
+	if(count(fptr) > 0)
+		return false;
+	create_image_extension(fptr, "", Image::Raster<char, 1>());
+	return true;
 }
 
-bool write_name(fitsfile* fptr, std::string name) {
-    if(name == "")
-        return false;
-    Record::write_record<std::string>(fptr, "EXTNAME", name);
-    return true;
+bool update_name(fitsfile* fptr, std::string name) {
+	if(name == "")
+		return false;
+	Record::update_record<std::string>(fptr, "EXTNAME", name);
+	return true;
 }
 
 void create_metadata_extension(fitsfile* fptr, std::string name) {
-    may_throw_readonly_error(fptr);
-    const int default_type = BYTE_IMG;
-    long naxes = 0;
-    int status = 0;
-    fits_create_img(fptr, default_type, naxes, nullptr, &status);
-    may_throw_cfitsio_error(status);
-    write_name(fptr, name);
+	may_throw_readonly_error(fptr);
+	const int default_type = BYTE_IMG;
+	long naxes = 0;
+	int status = 0;
+	fits_create_img(fptr, default_type, naxes, nullptr, &status);
+	may_throw_cfitsio_error(status);
+	update_name(fptr, name);
 }
 
 }

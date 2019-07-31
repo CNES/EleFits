@@ -65,40 +65,50 @@ using pos_type = std::array<coord_type, n>;
 template<typename T, std::size_t n=2>
 struct Raster {
 
-    /**
-     * @brief Create a Raster with given shape.
-     */
-    Raster(pos_type<n> shape);
+	/**
+	 * @brief Create a Raster with given shape.
+	 */
+	Raster(pos_type<n> shape);
 
-    /**
-     * @brief Raster shape, i.e. length along each axis.
-     */
-    pos_type<n> shape;
+	/**
+	 * @brief Create an empty Raster.
+	 */
+	Raster() = default;
+	
+	/**
+	 * @brief Destructor.
+	 */
+	virtual ~Raster() = default;
 
-    /**
-     * @brief Raw data.
-     */
-    std::vector<T> data;
+	/**
+	 * @brief Raster shape, i.e. length along each axis.
+	 */
+	pos_type<n> shape;
 
-    /**
-     * @brief Number of pixels.
-     */
-    std::size_t size() const;
+	/**
+	 * @brief Raw data.
+	 */
+	std::vector<T> data;
 
-    /**
-     * @brief Raw index of a position.
-     */
-    std::size_t index(const pos_type<n>& pos) const;
+	/**
+	 * @brief Number of pixels.
+	 */
+	std::size_t size() const;
 
-    /**
-     * @brief Pixel at given position.
-     */
-    const T& operator()(const pos_type<n>& pos) const;
+	/**
+	 * @brief Raw index of a position.
+	 */
+	std::size_t index(const pos_type<n>& pos) const;
 
-    /**
-     * @brief Pixel at given position.
-     */
-    T& operator()(const pos_type<n>& pos);
+	/**
+	 * @brief Pixel at given position.
+	 */
+	const T& operator()(const pos_type<n>& pos) const;
+
+	/**
+	 * @brief Pixel at given position.
+	 */
+	T& operator()(const pos_type<n>& pos);
 
 };
 
@@ -124,20 +134,20 @@ namespace internal {
 
 template<std::size_t i>
 struct Index {
-    template<std::size_t n>
-    static std::size_t offset(const pos_type<n>& shape, const pos_type<n>& pos);
+	template<std::size_t n>
+	static std::size_t offset(const pos_type<n>& shape, const pos_type<n>& pos);
 };
 
 template<std::size_t i>
 template<std::size_t n>
 inline std::size_t Index<i>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
-    return std::get<n-1-i>(pos) + std::get<n-1-i>(shape) * Index<i-1>::offset(shape, pos);
+	return std::get<n-1-i>(pos) + std::get<n-1-i>(shape) * Index<i-1>::offset(shape, pos);
 }
 
 template<>
 template<std::size_t n>
 inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
-    return std::get<n-1>(pos);
+	return std::get<n-1>(pos);
 }
 
 }
@@ -150,51 +160,51 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 
 template<typename T, std::size_t n>
 Raster<T, n>::Raster(pos_type<n> shape) :
-        shape(shape),
-        data(size()) {
+		shape(shape),
+		data(size()) {
 }
 
 template<typename T, std::size_t n>
 inline std::size_t Raster<T, n>::size() const {
-    return std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<std::size_t>());
+	return std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<std::size_t>());
 }
 
 template<typename T, std::size_t n>
 inline std::size_t Raster<T, n>::index(const pos_type<n>& pos) const {
-    return internal::Index<n-1>::offset(shape, pos);
+	return internal::Index<n-1>::offset(shape, pos);
 }
 
 template<typename T, std::size_t n>
 inline const T& Raster<T, n>::operator()(const pos_type<n>& pos) const {
-    return data[index(pos)];
+	return data[index(pos)];
 }
 
 template<typename T, std::size_t n>
 inline T& Raster<T, n>::operator()(const pos_type<n>& pos) {
-    return const_cast<T&>(const_cast<const Raster*>(this)->operator()(pos));
+	return const_cast<T&>(const_cast<const Raster*>(this)->operator()(pos));
 }
 
 template<typename T, std::size_t n>
 Raster<T, n> read_raster(fitsfile* fptr) {
-    Raster<T, n> raster;
-    int status = 0;
-    fits_get_img_size(fptr, n, &raster.shape[0], &status);
-    may_throw_cfitsio_error(status);
-    const auto size = raster.size();
-    raster.data.resize(size);
-    fits_read_img(fptr, TypeCode<T>::for_image(), 1, size, nullptr, &raster.data.data()[0], nullptr, &status);
-    // Number 1 is a 1-base offset (so we read the whole raster here)
-    may_throw_cfitsio_error(status);
-    return raster;
+	Raster<T, n> raster;
+	int status = 0;
+	fits_get_img_size(fptr, n, &raster.shape[0], &status);
+	may_throw_cfitsio_error(status);
+	const auto size = raster.size();
+	raster.data.resize(size);
+	fits_read_img(fptr, TypeCode<T>::for_image(), 1, size, nullptr, &raster.data.data()[0], nullptr, &status);
+	// Number 1 is a 1-base offset (so we read the whole raster here)
+	may_throw_cfitsio_error(status);
+	return raster;
 }
 
 template<typename T, std::size_t n>
 void write_raster(fitsfile* fptr, const Raster<T, n>& raster) {
-    may_throw_readonly_error(fptr);
-    int status = 0;
-    std::vector<T> nonconst_data = raster.data; //TODO const-correctness issue?
-    fits_write_img(fptr, TypeCode<T>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
-    may_throw_cfitsio_error(status);
+	may_throw_readonly_error(fptr);
+	int status = 0;
+	std::vector<T> nonconst_data = raster.data; //TODO const-correctness issue?
+	fits_write_img(fptr, TypeCode<T>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
+	may_throw_cfitsio_error(status);
 }
 
 }

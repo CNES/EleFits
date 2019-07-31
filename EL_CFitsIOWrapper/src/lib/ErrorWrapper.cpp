@@ -31,7 +31,7 @@ void may_throw_cfitsio_error(int status) {
         return;
     char msg[FLEN_ERRMSG];
     fits_get_errstatus(status, msg);
-    throw CfitsioError(msg);
+    throw CfitsioError("CFitsIO error " + std::to_string(status) + ": " + msg);
 }
 
 void may_throw_readonly_error(fitsfile* fptr) {

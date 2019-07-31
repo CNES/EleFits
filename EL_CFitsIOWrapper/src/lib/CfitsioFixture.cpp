@@ -32,6 +32,29 @@ MinimalFile::MinimalFile() :
     fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
 }
 
+SmallRaster::SmallRaster(long width, long height) :
+		Raster<float>({width, height}),
+		width(width), height(height) {
+	for(int x=0; x<shape[0]; ++x)
+		for(int y=0; y<shape[1]; ++y)
+			operator()({x, y}) = 0.1 * y + x;
+}
+
+bool SmallRaster::approx(const Image::Raster<float>& other, float tol) const {
+	if(other.shape != this->shape)
+		return false;
+	for(std::size_t i=0; i<this->size(); ++i) {
+		const auto o = other.data[i];
+		const auto t = this->data[i];
+		const auto rel = (o - t) / t;
+		if(rel > 0 && rel > tol)
+			return false;
+		if(rel < 0 && -rel > tol)
+			return false;
+	}
+	return true;
+}
+
 }
 }
 

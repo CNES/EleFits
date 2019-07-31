@@ -50,9 +50,9 @@ namespace HDU {
  * @brief HDU type (ASCII tables not supported).
  */
 enum class Type {
-    METADATA, ///< Image HDU with empty data or Primary HDU
-    IMAGE, ///< Image HDU
-    BINTABLE ///< Binary table HDU
+	METADATA, ///< Image HDU with empty data or Primary HDU
+	IMAGE, ///< Image HDU
+	BINTABLE ///< Binary table HDU
 };
 
 /**
@@ -111,6 +111,11 @@ bool goto_primary(fitsfile *fptr);
 bool init_primary(fitsfile *fptr);
 
 /**
+ * @brief Write or update HDU name.
+ */
+bool update_name(fitsfile* fptr, std::string name);
+
+/**
  * @brief Create a HDU of Type METADATA.
  */
 void create_metadata_extension(fitsfile *fptr, std::string name);
@@ -141,41 +146,41 @@ void create_bintable_extension(fitsfile *fptr, std::string name, Bintable::colum
 
 template<typename T, std::size_t n>
 void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_type<n>& shape) {
-    may_throw_readonly_error(fptr);
-    int status = 0;
-    auto nonconst_shape = shape; //TODO const-correctness issue?
-    fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
-    may_throw_cfitsio_error(status);
-    //TODO write name
+	may_throw_readonly_error(fptr);
+	int status = 0;
+	auto nonconst_shape = shape; //TODO const-correctness issue?
+	fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
+	may_throw_cfitsio_error(status);
+	update_name(fptr, name);
 }
 
 template<typename T, std::size_t n>
 void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster) {
-    may_throw_readonly_error(fptr);
-    create_image_extension<T, n>(fptr, name, raster.shape);
-    Image::write_raster<T, n>(fptr, raster);
+	may_throw_readonly_error(fptr);
+	create_image_extension<T, n>(fptr, name, raster.shape);
+	Image::write_raster<T, n>(fptr, raster);
 }
 
 template<typename... Ts>
 void create_table_extension(fitsfile* fptr, std::string name, Bintable::column_info<Ts>... header) {
-    constexpr std::size_t count = sizeof...(Ts);
-    std::string cname[] { std::get<0>(header) ... };
-    std::size_t cformat[] { (TypeCode<Ts>::bintable_format(std::get<1>(header))) ... };
-    std::string cunit[] { std::get<2>(header) ... };
-    //TODO avoid those temp
-    std::vector<char*> col_name(count);
-    std::vector<char*> col_format(count);
-    std::vector<char*> col_unit(count);
-    for(size_t i = 0; i < count; ++i) { //TODO iterators
-        col_name[i] = to_char_ptr(cname[i]);
-        col_format[i] = to_char_ptr(cformat[i]);
-        col_unit[i] = to_char_ptr(cunit[i]);
-    }
-    int status = 0;
-    fits_create_tbl(fptr, BINARY_TBL, 0, count,
-            col_name.data(), col_format.data(), col_unit.data(),
-            name.c_str(), &status);
-    may_throw_cfitsio_error(status);
+	constexpr std::size_t count = sizeof...(Ts);
+	std::string cname[] { std::get<0>(header) ... };
+	std::size_t cformat[] { (TypeCode<Ts>::bintable_format(std::get<1>(header))) ... };
+	std::string cunit[] { std::get<2>(header) ... };
+	//TODO avoid those temp
+	std::vector<char*> col_name(count);
+	std::vector<char*> col_format(count);
+	std::vector<char*> col_unit(count);
+	for(size_t i = 0; i < count; ++i) { //TODO iterators
+		col_name[i] = to_char_ptr(cname[i]);
+		col_format[i] = to_char_ptr(cformat[i]);
+		col_unit[i] = to_char_ptr(cunit[i]);
+	}
+	int status = 0;
+	fits_create_tbl(fptr, BINARY_TBL, 0, count,
+			col_name.data(), col_format.data(), col_unit.data(),
+			name.c_str(), &status);
+	may_throw_cfitsio_error(status);
 }
 
 }

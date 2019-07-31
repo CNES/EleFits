@@ -22,9 +22,10 @@
  */
 
 #include <boost/test/unit_test.hpp>
-#include <cstdlib>
 
 #include "EL_CFitsIOWrapper//ImageWrapper.h"
+
+#include "EL_CFitsIOWrapper//CfitsioFixture.h"
 
 using namespace Cfitsio;
 
@@ -36,31 +37,29 @@ BOOST_AUTO_TEST_SUITE (ImageWrapper_test)
 
 BOOST_AUTO_TEST_CASE( index_test ) {
 
-    Image::pos_type<4> shape;
-    for(auto& length : shape)
-        length = std::rand();
-    Image::pos_type<4> pos;
-    for(auto& coord : pos)
-        coord = std::rand();
-    auto index = Image::internal::Index<3>::offset(shape, pos);
-    BOOST_CHECK_EQUAL(index,
-        pos[0] + shape[0] * (
-            pos[1] + shape[1] * (
-                pos[2] + shape[2] * 
-                    (pos[3])
-                )
-            )
-        );
+	Image::pos_type<4> shape;
+	for(auto& length : shape)
+		length = std::rand();
+	Image::pos_type<4> pos;
+	for(auto& coord : pos)
+		coord = std::rand();
+	auto index = Image::internal::Index<3>::offset(shape, pos);
+	BOOST_CHECK_EQUAL(index,
+		pos[0] + shape[0] * (
+			pos[1] + shape[1] * (
+				pos[2] + shape[2] * 
+					(pos[3])
+				)
+			)
+		);
 
 }
 
-BOOST_AUTO_TEST_CASE( raster_2D_test ) {
+BOOST_FIXTURE_TEST_CASE( raster_2D_test, Test::SmallRaster ) {
 
-    std::size_t width(3), height(2);
-    std::size_t size(width*height);
-    Image::Raster<int> raster({width, height});
-    BOOST_CHECK_EQUAL(raster.size(), size);
-    BOOST_CHECK_EQUAL(raster.data.size(), size);
+	std::size_t size(this->width * this->height);
+	BOOST_CHECK_EQUAL(this->size(), size);
+	BOOST_CHECK_EQUAL(this->data.size(), size);
 
 }
 
