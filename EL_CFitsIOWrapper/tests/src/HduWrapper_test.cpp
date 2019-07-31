@@ -41,12 +41,19 @@ BOOST_FIXTURE_TEST_CASE( minimal_file_test, Test::MinimalFile ) {
 	
 }
 
-BOOST_FIXTURE_TEST_CASE( write_read_raster_test, Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE( write_read_image_test, Test::MinimalFile ) {
 
 	Test::SmallRaster input;
 	HDU::create_image_extension(this->fptr, "IMGEXT", input);
 	auto output = Image::read_raster<float, 2>(fptr);
 	BOOST_CHECK(input.approx(output));
+	
+}
+
+BOOST_FIXTURE_TEST_CASE( write_read_table_test, Test::MinimalFile ) {
+
+	Test::SmallTable input;
+	HDU::write_table_extension<int, std::complex<float>, std::string>(this->fptr, "IMGEXT", input);
 	
 }
 

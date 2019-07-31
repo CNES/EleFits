@@ -138,6 +138,12 @@ void create_image_extension(fitsfile *fptr, std::string name, const Image::Raste
 template<typename... Ts>
 void create_bintable_extension(fitsfile *fptr, std::string name, Bintable::column_info<Ts>... header);
 
+/**
+ * @brief Write a Table in a new Bintable HDU.
+ */
+template<typename... Ts>
+void write_bintable_extension(fitsfile *fptr, std::string name, Bintable::Columns<Ts...> table);
+
 
 /////////////////////
 // IMPLEMENTATION //
@@ -181,6 +187,32 @@ void create_table_extension(fitsfile* fptr, std::string name, Bintable::column_i
 			col_name.data(), col_format.data(), col_unit.data(),
 			name.c_str(), &status);
 	may_throw_cfitsio_error(status);
+}
+
+template<typename... Ts>
+void write_table_extension(fitsfile* fptr, std::string name, Bintable::Columns<Ts...> table) {
+	constexpr std::size_t count = sizeof...(Ts);
+	std::vector<char*>  col_name {
+		to_char_ptr(table.names)
+		...
+	};
+	std::vector<char*>  col_format {
+		to_char_ptr(TypeCode<Ts>::bintable_format(table.widths))
+		...
+	};
+	std::vector<char*>  col_unit {
+		to_char_ptr(table.units)
+		...
+	};
+	int status = 0;
+	fits_create_tbl(fptr, BINARY_TBL, 0, count,
+			col_name.data(), col_format.data(), col_unit.data(),
+			name.c_str(), &status);
+	may_throw_cfitsio_error(status);
+	std::vector<void> res {
+		Bintable::write_column(fptr, table.names, table.datas)
+		...
+	};
 }
 
 }

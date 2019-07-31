@@ -42,27 +42,37 @@ namespace Bintable {
 template<typename T>
 using column_info = std::tuple<std::string, std::size_t, std::string>;
 
+template<typename... Ts>
+struct Columns {
+
+	std::vector<std::string> names;
+	std::vector<std::size_t> widths;
+	std::vector<std::string> units;
+	std::tuple<std::vector<Ts>...> datas;
+	
+};
+
 /**
  * @brief Get the index of a Bintable column.
  */
-std::size_t column_index(fitsfile *fptr, std::string name);
+std::size_t column_index(fitsfile* fptr, std::string name);
 
 /**
  * @brief Read a Bintable column with given name.
  */
 template<typename T>
-std::vector<T> read_column(fitsfile *fptr, std::string name);
+std::vector<T> read_column(fitsfile* fptr, std::string name);
 
 /**
  * @brief Write a binary table column with given name.
  */
 template<typename T>
-void write_column(fitsfile *fptr, const column_info<T>& info, const std::vector<T>& column);
+void write_column(fitsfile* fptr, const column_info<T>& info, const std::vector<T>& column);
 
 
 /////////////////////
 // IMPLEMENTATION //
-///////////////////
+///////////////////		
 
 
 template<typename T>

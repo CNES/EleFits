@@ -55,6 +55,17 @@ bool SmallRaster::approx(const Image::Raster<float>& other, float tol) const {
 	return true;
 }
 
+SmallTable::SmallTable() :
+		extname("MESSIER"),
+		id_info {"Id", 1, ""},
+		radec_info {"RA/dec", 2, "deg"},
+		name_info {"Name", 1, ""},
+		ids { 45, 7, 31 },
+		radecs { {56.8500, 24.1167}, {268.4667, -34.7928}, {10.6833, 41.2692} },
+		names { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" } {
+	
+}
+
 }
 }
 

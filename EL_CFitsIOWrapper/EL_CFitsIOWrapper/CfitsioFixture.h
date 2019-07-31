@@ -63,6 +63,29 @@ public:
 
 };
 
+class SmallTable : public Bintable::Columns<int, std::complex<float>, std::string> {
+
+public:
+
+	using id_t = int;
+	using radec_t = std::complex<float>;
+	using name_t = std::string;
+
+	SmallTable();
+	~SmallTable() = default;
+	
+	std::string extname;
+	
+	Bintable::column_info<id_t> id_info;
+	Bintable::column_info<radec_t> radec_info;
+	Bintable::column_info<name_t> name_info;
+	
+	std::vector<id_t> ids;
+	std::vector<radec_t> radecs;
+	std::vector<name_t> names;
+
+};
+
 }
 }
 
