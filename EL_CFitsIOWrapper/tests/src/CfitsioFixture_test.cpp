@@ -1,6 +1,6 @@
 /**
- * @file tests/src/FileWrapper_test.cpp
- * @date 07/23/19
+ * @file tests/src/CfitsioFixture_test.cpp
+ * @date 07/31/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -22,35 +22,19 @@
  */
 
 #include <boost/test/unit_test.hpp>
-#include <boost/filesystem.hpp>
 
-#include "EL_CFitsIOWrapper//ErrorWrapper.h"
-#include "EL_CFitsIOWrapper//FileWrapper.h"
 #include "EL_CFitsIOWrapper//CfitsioFixture.h"
 
-using namespace Cfitsio;
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE (CfitsioFixture_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (FileWrapper_test)
+BOOST_AUTO_TEST_CASE( example_test ) {
 
-//-----------------------------------------------------------------------------
+  BOOST_FAIL("!!!! Please implement your tests !!!!");
 
-BOOST_FIXTURE_TEST_CASE( file_operations_test, Test::MinimalFile ) {
-    fitsfile* fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
-    BOOST_CHECK_THROW(File::create_and_open(filename, File::CreatePolicy::CREATE_ONLY), CfitsioError);
-    BOOST_CHECK(fptr);
-    File::close(fptr);
-    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-//    BOOST_CHECK(not fptr); // CFitsIO doesn't set the pointer to null
-    fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
-    BOOST_CHECK(fptr);
-    BOOST_CHECK_THROW(File::close_and_delete(fptr), CfitsioError);
-    File::close(fptr);
-    fptr = File::open(filename, File::OpenPolicy::READ_WRITE);
-    File::close_and_delete(fptr);
-    BOOST_CHECK(not boost::filesystem::exists(filename));
-//    BOOST_CHECK(not fptr); // CFitsIO doesn't set the pointer to null
 }
 
 //-----------------------------------------------------------------------------
