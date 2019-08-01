@@ -21,6 +21,8 @@
  *
  */
 
+#include <algorithm>
+
 #include "EL_CFitsIOWrapper/BintableWrapper.h"
 #include "EL_CFitsIOWrapper/CfitsioUtils.h"
 
@@ -36,33 +38,11 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 }
 
 struct std::vector<std::string> internal::ColumnReader<std::string>::read(fitsfile* fptr, std::string name) {
-	size_t index = column_index(fptr, name);
-	long rows;
-	int status = 0;
-	fits_get_num_rows(fptr, &rows, &status);
-	may_throw_cfitsio_error(status);
-	long repeat;
-	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status);
-	char** char_data = new char*[rows];
-	for(std::size_t i=0; i<rows; ++i)
-		char_data[i] = new char[repeat];
-	fits_read_col(
-		fptr,
-		TypeCode<std::string>::for_bintable(), // datatype
-		index, // colnum
-		1, // firstrow (1-based)
-		1, // firstelemn (1-based)
-		rows, // nelements
-		nullptr, // nulval
-		char_data,
-		nullptr, // anynul
-		&status
-	);
-	may_throw_cfitsio_error(status);
-	std::vector<std::string> data(rows);
-	for(std::size_t i=0; i<rows; ++i) {
-		data[i] = std::string(char_data[i]);
-	}
+	auto char_ptr_data = internal::ColumnReader<std::vector<char>>::read(fptr, name);
+	const std::size_t size = char_ptr_data.size();
+	std::vector<std::string> data(size);
+	for(std::size_t i=0; i<size; ++i)
+		data[i] = std::string(char_ptr_data[i].data());
 	return data;
 }
 

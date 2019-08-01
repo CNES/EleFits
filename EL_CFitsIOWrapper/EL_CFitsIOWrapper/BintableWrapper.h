@@ -136,7 +136,8 @@ struct ColumnReader<std::vector<T>> {
 		may_throw_cfitsio_error(status);
 		std::vector<std::vector<T>> data(rows);
 		for(std::size_t i=0; i<rows; ++i) {
-			data[i] = std::vector<T>(ptr_data[i]);
+			T* ptr_i = ptr_data[i];
+			data[i] = std::vector<T>(ptr_i, ptr_i + repeat);
 			delete[] ptr_data[i];
 		}
 		delete[] ptr_data;
