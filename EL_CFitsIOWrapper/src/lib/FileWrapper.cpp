@@ -53,11 +53,10 @@ fitsfile* open(std::string filename, OpenPolicy policy) {
 }
 
 void close(fitsfile* fptr) {
-	if(not fptr)
-		return;
 	int status = 0;
 	fits_close_file(fptr, &status);
-	may_throw_cfitsio_error(status);
+	if(status != BAD_FILEPTR)
+		may_throw_cfitsio_error(status);
 }
 
 void close_and_delete(fitsfile* fptr) {

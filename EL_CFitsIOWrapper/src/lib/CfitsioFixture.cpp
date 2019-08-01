@@ -30,6 +30,11 @@ MinimalFile::MinimalFile() :
 		tmp(),
 		filename(tmp.path().string()) {
     fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+    printf("Temporary filename: %s\n", filename.c_str());
+}
+
+MinimalFile::~MinimalFile() {
+	File::close(fptr);
 }
 
 SmallRaster::SmallRaster(long width, long height) :
@@ -60,9 +65,9 @@ SmallTable::SmallTable() :
 		ids { 45, 7, 31 },
 		radecs { {56.8500, 24.1167}, {268.4667, -34.7928}, {10.6833, 41.2692} },
 		names { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" },
-		id_col { "Id", 1, "", ids },
-		radec_col { "RA/dec", 2, "deg", radecs },
-		name_col { "Name", 1, "", names } {
+		id_col { "ID", 1, "", ids },
+		radec_col { "RADEC", 1, "deg", radecs }, // Could be std::pair<float> with width=2
+		name_col { "NAME", 68, "", names } { //TODO 68?
 }
 
 }

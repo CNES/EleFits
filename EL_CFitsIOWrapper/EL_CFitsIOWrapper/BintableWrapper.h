@@ -75,27 +75,30 @@ void write_column(fitsfile* fptr, const Column<T>& column);
 
 template<typename T>
 std::vector<T> read_column(fitsfile* fptr, std::string name) {
-  size_t index = column_index(fptr, name);
-  long rows;
-  int status = 0;
-  fits_get_num_rows(fptr, &rows, &status);
-  may_throw_cfitsio_error(status);
-  std::vector<T> data(rows);
-  fits_read_col(
-      fptr,
-      TypeCode<T>::for_bintable(), // datatype
-      index, // colnum
-      1, // firstrow (1-based)
-      1, // firstelemn (1-based)
-      rows, // nelements
-      nullptr, // nulval
-      data.data(),
-      nullptr, // anynul
-      &status
-      );
-  may_throw_cfitsio_error(status);
-  return data;
+	size_t index = column_index(fptr, name);
+	long rows;
+	int status = 0;
+	fits_get_num_rows(fptr, &rows, &status);
+	may_throw_cfitsio_error(status);
+	std::vector<T> data(rows);
+	fits_read_col(
+		fptr,
+		TypeCode<T>::for_bintable(), // datatype
+		index, // colnum
+		1, // firstrow (1-based)
+		1, // firstelemn (1-based)
+		rows, // nelements
+		nullptr, // nulval
+		data.data(),
+		nullptr, // anynul
+		&status
+	);
+	may_throw_cfitsio_error(status);
+	return data;
 }
+
+template<>
+std::vector<std::string> read_column(fitsfile* fptr, std::string name);
 
 template<typename T>
 void write_column(fitsfile* fptr, const Column<T>& column) {
@@ -104,15 +107,15 @@ void write_column(fitsfile* fptr, const Column<T>& column) {
     //TODO avoid copy
     int status = 0;
     fits_write_col(
-          fptr,
-          TypeCode<T>::for_bintable(), // datatype
-          index, // colnum
-          1, // firstrow (1-based)
-          1, // firstelem (1-based)
-          column.data.size(), // nelements
-          &nonconst_data[0],
-          &status
-          );
+		fptr,
+		TypeCode<T>::for_bintable(), // datatype
+		index, // colnum
+		1, // firstrow (1-based)
+		1, // firstelem (1-based)
+		column.data.size(), // nelements
+		&nonconst_data[0],
+		&status
+		);
     may_throw_cfitsio_error(status);
 }
 

@@ -35,6 +35,40 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 	return index;
 }
 
+template<>
+std::vector<std::string> read_column(fitsfile* fptr, std::string name) {
+	size_t index = column_index(fptr, name);
+	long rows;
+	int status = 0;
+	fits_get_num_rows(fptr, &rows, &status);
+	may_throw_cfitsio_error(status);
+	long repeat;
+	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status);
+	char** char_data = new char*[rows];
+	for(std::size_t i=0; i<rows; ++i)
+		char_data[i] = new char[repeat];
+	printf("%i x %i\n", rows, repeat);
+	fits_read_col(
+		fptr,
+		TypeCode<std::string>::for_bintable(), // datatype
+		index, // colnum
+		1, // firstrow (1-based)
+		1, // firstelemn (1-based)
+		rows, // nelements
+		nullptr, // nulval
+		char_data,
+		nullptr, // anynul
+		&status
+	);
+	may_throw_cfitsio_error(status);
+	std::vector<std::string> data(rows);
+	for(std::size_t i=0; i<rows; ++i) {
+		printf("%s\n", char_data[i]);
+		data[i] = std::string(char_data[i]);
+	}
+	return data;
+}
+
 }
 }
 

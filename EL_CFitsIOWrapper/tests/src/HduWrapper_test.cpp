@@ -22,12 +22,20 @@
  */
 
 #include <boost/test/unit_test.hpp>
+#define BOOST_NO_CXX11_SCOPED_ENUMS
+#include <boost/filesystem.hpp>
+#undef BOOST_NO_CXX11_SCOPED_ENUMS
 
 #include "EL_CFitsIOWrapper//HduWrapper.h"
 
 #include "EL_CFitsIOWrapper//CfitsioFixture.h"
 
 using namespace Cfitsio;
+
+template<typename T>
+void check_equal_vectors(const std::vector<T>& a, const std::vector<T>& b) {
+	BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(), b.begin(), b.end());
+}
 
 //-----------------------------------------------------------------------------
 
@@ -48,11 +56,6 @@ BOOST_FIXTURE_TEST_CASE( write_read_image_test, Test::MinimalFile ) {
 	const auto output = Image::read_raster<float, 2>(fptr);
 	BOOST_CHECK(input.approx(output));
 	
-}
-
-template<typename T>
-void check_equal_vectors(const std::vector<T>& a, const std::vector<T>& b) {
-	BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(), b.begin(), b.end());
 }
 
 BOOST_FIXTURE_TEST_CASE( write_read_table_test, Test::MinimalFile ) {

@@ -43,6 +43,8 @@ public:
 
 	MinimalFile();
 	
+	~MinimalFile();
+	
 	std::string filename;
 	
 	fitsfile* fptr;
@@ -67,7 +69,7 @@ class SmallTable {
 
 public:
 
-	using id_t = long;
+	using id_t = int;
 	using radec_t = std::complex<float>;
 	using name_t = std::string;
 
