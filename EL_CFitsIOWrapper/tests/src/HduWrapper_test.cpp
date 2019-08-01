@@ -61,7 +61,7 @@ BOOST_FIXTURE_TEST_CASE( write_read_image_test, Test::MinimalFile ) {
 BOOST_FIXTURE_TEST_CASE( write_read_table_test, Test::MinimalFile ) {
 
 	Test::SmallTable input;
-	HDU::create_table_extension(this->fptr, "IMGEXT",
+	HDU::create_bintable_extension(this->fptr, "IMGEXT",
 			input.id_col, input.radec_col, input.name_col);
 	const auto output_ids = Bintable::read_column<Test::SmallTable::id_t>(fptr, input.id_col.name);
 	check_equal_vectors(output_ids, input.id_col.data);

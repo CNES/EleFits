@@ -44,10 +44,12 @@ using column_info = std::tuple<std::string, std::size_t, std::string>;
 
 template<typename T>
 struct Column {
+
 	std::string name;
 	std::size_t width;
 	std::string unit;
 	std::vector<T> data;
+
 };
 
 /**
@@ -68,37 +70,91 @@ template<typename T>
 void write_column(fitsfile* fptr, const Column<T>& column);
 
 
+///////////////
+// INTERNAL //
+/////////////
+
+
+namespace internal {
+
+template<typename T>
+struct ColumnReader {
+    static std::vector<T> read(fitsfile* fptr, std::string name) {
+		size_t index = column_index(fptr, name);
+		long rows;
+		int status = 0;
+		fits_get_num_rows(fptr, &rows, &status);
+		may_throw_cfitsio_error(status);
+		std::vector<T> data(rows);
+		fits_read_col(
+			fptr,
+			TypeCode<T>::for_bintable(), // datatype
+			index, // colnum
+			1, // firstrow (1-based)
+			1, // firstelemn (1-based)
+			rows, // nelements
+			nullptr, // nulval
+			data.data(),
+			nullptr, // anynul
+			&status
+		);
+		may_throw_cfitsio_error(status);
+		return data;
+	}
+};
+
+template<>
+struct ColumnReader<std::string> {
+	static std::vector<std::string> read(fitsfile* fptr, std::string name);
+};
+
+template<typename T>
+struct ColumnReader<std::vector<T>> {
+    static std::vector<std::vector<T>> read(fitsfile* fptr, std::string name) {
+		size_t index = column_index(fptr, name);
+		long rows;
+		int status = 0;
+		fits_get_num_rows(fptr, &rows, &status);
+		may_throw_cfitsio_error(status);
+		long repeat;
+		fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status);
+		T** ptr_data = new T*[rows];
+		for(std::size_t i=0; i<rows; ++i)
+			ptr_data[i] = new T[repeat];
+		fits_read_col(
+			fptr,
+			TypeCode<std::string>::for_bintable(), // datatype
+			index, // colnum
+			1, // firstrow (1-based)
+			1, // firstelemn (1-based)
+			rows, // nelements
+			nullptr, // nulval
+			ptr_data,
+			nullptr, // anynul
+			&status
+		);
+		may_throw_cfitsio_error(status);
+		std::vector<std::vector<T>> data(rows);
+		for(std::size_t i=0; i<rows; ++i) {
+			data[i] = std::vector<T>(ptr_data[i]);
+			delete[] ptr_data[i];
+		}
+		delete[] ptr_data;
+		return data;
+	}
+};
+
+}
+
 /////////////////////
 // IMPLEMENTATION //
-///////////////////		
+///////////////////
 
 
 template<typename T>
 std::vector<T> read_column(fitsfile* fptr, std::string name) {
-	size_t index = column_index(fptr, name);
-	long rows;
-	int status = 0;
-	fits_get_num_rows(fptr, &rows, &status);
-	may_throw_cfitsio_error(status);
-	std::vector<T> data(rows);
-	fits_read_col(
-		fptr,
-		TypeCode<T>::for_bintable(), // datatype
-		index, // colnum
-		1, // firstrow (1-based)
-		1, // firstelemn (1-based)
-		rows, // nelements
-		nullptr, // nulval
-		data.data(),
-		nullptr, // anynul
-		&status
-	);
-	may_throw_cfitsio_error(status);
-	return data;
+	return internal::ColumnReader<T>::read(fptr, name);
 }
-
-template<>
-std::vector<std::string> read_column(fitsfile* fptr, std::string name);
 
 template<typename T>
 void write_column(fitsfile* fptr, const Column<T>& column) {
@@ -113,7 +169,7 @@ void write_column(fitsfile* fptr, const Column<T>& column) {
 		1, // firstrow (1-based)
 		1, // firstelem (1-based)
 		column.data.size(), // nelements
-		&nonconst_data[0],
+		nonconst_data.data(),
 		&status
 		);
     may_throw_cfitsio_error(status);

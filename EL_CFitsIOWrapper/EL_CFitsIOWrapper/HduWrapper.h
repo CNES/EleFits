@@ -138,13 +138,13 @@ void create_image_extension(fitsfile *fptr, std::string name, const Image::Raste
  * @brief Create a Bintable HDU.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, Bintable::column_info<Ts>... header);
+void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable::column_info<Ts>&... header);
 
 /**
  * @brief Write a Table in a new Bintable HDU.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, Bintable::Column<Ts...> table);
+void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable::Column<Ts...>& table);
 
 
 /////////////////////
@@ -170,7 +170,7 @@ void create_image_extension(fitsfile *fptr, std::string name, const Image::Raste
 }
 
 template<typename... Ts>
-void create_table_extension(fitsfile* fptr, std::string name, Bintable::column_info<Ts>... header) {
+void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::column_info<Ts>&... header) {
 	constexpr std::size_t count = sizeof...(Ts);
 	std::string cname[] { std::get<0>(header) ... };
 	std::size_t cformat[] { (TypeCode<Ts>::bintable_format(std::get<1>(header))) ... };
@@ -192,7 +192,7 @@ void create_table_extension(fitsfile* fptr, std::string name, Bintable::column_i
 }
 
 template<typename... Ts>
-void create_table_extension(fitsfile* fptr, std::string name, Bintable::Column<Ts>... table) {
+void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<Ts>&... table) {
 	constexpr std::size_t count = sizeof...(Ts);
 	std::vector<char*>  col_name {
 		to_char_ptr(table.name)
@@ -213,6 +213,20 @@ void create_table_extension(fitsfile* fptr, std::string name, Bintable::Column<T
 	may_throw_cfitsio_error(status);
 	using mock_unpack = int[];
     (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
+}
+
+template<typename T>
+void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<T>& table) {
+	constexpr std::size_t count = 1;
+	char* col_name[1] = { to_char_ptr(table.name) };
+	char* col_format[1] = { to_char_ptr(TypeCode<T>::bintable_format(table.width)) };
+	char* col_unit[1] = { to_char_ptr(table.unit) };
+	int status = 0;
+	fits_create_tbl(fptr, BINARY_TBL, 0, count,
+			col_name, col_format, col_unit,
+			name.c_str(), &status);
+	may_throw_cfitsio_error(status);
+	Bintable::write_column(fptr, table);
 }
 
 }

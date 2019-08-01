@@ -35,8 +35,7 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 	return index;
 }
 
-template<>
-std::vector<std::string> read_column(fitsfile* fptr, std::string name) {
+struct std::vector<std::string> internal::ColumnReader<std::string>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
@@ -47,7 +46,6 @@ std::vector<std::string> read_column(fitsfile* fptr, std::string name) {
 	char** char_data = new char*[rows];
 	for(std::size_t i=0; i<rows; ++i)
 		char_data[i] = new char[repeat];
-	printf("%i x %i\n", rows, repeat);
 	fits_read_col(
 		fptr,
 		TypeCode<std::string>::for_bintable(), // datatype
@@ -63,7 +61,6 @@ std::vector<std::string> read_column(fitsfile* fptr, std::string name) {
 	may_throw_cfitsio_error(status);
 	std::vector<std::string> data(rows);
 	for(std::size_t i=0; i<rows; ++i) {
-		printf("%s\n", char_data[i]);
 		data[i] = std::string(char_data[i]);
 	}
 	return data;

@@ -24,6 +24,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include "EL_CFitsIOWrapper//BintableWrapper.h"
+#include "EL_CFitsIOWrapper//CfitsioFixture.h"
+
+using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
@@ -31,9 +34,36 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+template<typename T>
+void check_scalar() {
+	Test::SmallScalarColumn<T> input;
+	Test::MinimalFile file;
+	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
+	const auto output = Bintable::read_column<T>(file.fptr, input.name);
+}
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+BOOST_AUTO_TEST_CASE( scalar_test ) {
+
+	check_scalar<char>();
+
+}
+
+void check_string() {
+	Test::SmallStringColumn input;
+	Test::MinimalFile file;
+	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
+	const auto output = Bintable::read_column<std::string>(file.fptr, input.name);
+}
+
+BOOST_AUTO_TEST_CASE( string_test ) {
+
+	check_string();
+
+}
+
+BOOST_AUTO_TEST_CASE( vector_test ) {
+
+	BOOST_FAIL("!!!! Please implement your tests !!!!");
 
 }
 

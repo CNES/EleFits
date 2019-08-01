@@ -30,7 +30,6 @@ MinimalFile::MinimalFile() :
 		tmp(),
 		filename(tmp.path().string()) {
     fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
-    printf("Temporary filename: %s\n", filename.c_str());
 }
 
 MinimalFile::~MinimalFile() {

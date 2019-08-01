@@ -87,6 +87,51 @@ public:
 
 };
 
+template<typename T>
+class SmallScalarColumn : public Bintable::Column<T> {
+
+public:
+
+	SmallScalarColumn();
+	virtual ~SmallScalarColumn() = default;
+
+};
+
+class SmallStringColumn : public Bintable::Column<std::string> {
+
+public:
+
+	SmallStringColumn();
+	virtual ~SmallStringColumn() = default;
+
+};
+
+template<typename T>
+class SmallVectorColumn : public Bintable::Column<std::vector<T>> {
+
+public:
+
+	SmallVectorColumn();
+	virtual ~SmallVectorColumn() = default;
+
+};
+
+
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+template<typename T>
+SmallScalarColumn<T>::SmallScalarColumn() :
+	Bintable::Column<T> { "SCALAR", 1, "m", { T(0), T(1), T(2) } } {
+}
+
+SmallStringColumn::SmallStringColumn() :
+	Bintable::Column<std::string> { "STRING", 4, "m", { "A", "AB", "ABC" } } {
+}
+
+
 }
 }
 

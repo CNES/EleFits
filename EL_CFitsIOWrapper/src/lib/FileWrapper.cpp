@@ -60,12 +60,11 @@ void close(fitsfile* fptr) {
 }
 
 void close_and_delete(fitsfile* fptr) {
-	if(not fptr)
-		return;
 	may_throw_readonly_error(fptr);
 	int status = 0;
 	fits_delete_file(fptr, &status);
-	may_throw_cfitsio_error(status);
+	if(status != BAD_FILEPTR)
+		may_throw_cfitsio_error(status);
 }
 
 bool is_writable(fitsfile* fptr) {
