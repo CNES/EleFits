@@ -28,7 +28,9 @@
 #include <string>
 
 #include "EL_CFitsIOWrapper/BintableWrapper.h"
+#include "EL_CFitsIOWrapper/CfitsioUtils.h"
 #include "EL_CFitsIOWrapper/ImageWrapper.h"
+#include "EL_CFitsIOWrapper/TypeWrapper.h"
 
 namespace Cfitsio {
 
@@ -142,7 +144,7 @@ void create_bintable_extension(fitsfile *fptr, std::string name, Bintable::colum
  * @brief Write a Table in a new Bintable HDU.
  */
 template<typename... Ts>
-void write_bintable_extension(fitsfile *fptr, std::string name, Bintable::Columns<Ts...> table);
+void create_bintable_extension(fitsfile *fptr, std::string name, Bintable::Column<Ts...> table);
 
 
 /////////////////////
@@ -190,18 +192,18 @@ void create_table_extension(fitsfile* fptr, std::string name, Bintable::column_i
 }
 
 template<typename... Ts>
-void write_table_extension(fitsfile* fptr, std::string name, Bintable::Columns<Ts...> table) {
+void create_table_extension(fitsfile* fptr, std::string name, Bintable::Column<Ts>... table) {
 	constexpr std::size_t count = sizeof...(Ts);
 	std::vector<char*>  col_name {
-		to_char_ptr(table.names)
+		to_char_ptr(table.name)
 		...
 	};
 	std::vector<char*>  col_format {
-		to_char_ptr(TypeCode<Ts>::bintable_format(table.widths))
+		to_char_ptr(TypeCode<Ts>::bintable_format(table.width))
 		...
 	};
 	std::vector<char*>  col_unit {
-		to_char_ptr(table.units)
+		to_char_ptr(table.unit)
 		...
 	};
 	int status = 0;
@@ -209,10 +211,8 @@ void write_table_extension(fitsfile* fptr, std::string name, Bintable::Columns<T
 			col_name.data(), col_format.data(), col_unit.data(),
 			name.c_str(), &status);
 	may_throw_cfitsio_error(status);
-	std::vector<void> res {
-		Bintable::write_column(fptr, table.names, table.datas)
-		...
-	};
+	using mock_unpack = int[];
+    (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
 }
 
 }

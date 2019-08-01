@@ -45,15 +45,27 @@ BOOST_FIXTURE_TEST_CASE( write_read_image_test, Test::MinimalFile ) {
 
 	Test::SmallRaster input;
 	HDU::create_image_extension(this->fptr, "IMGEXT", input);
-	auto output = Image::read_raster<float, 2>(fptr);
+	const auto output = Image::read_raster<float, 2>(fptr);
 	BOOST_CHECK(input.approx(output));
 	
+}
+
+template<typename T>
+void check_equal_vectors(const std::vector<T>& a, const std::vector<T>& b) {
+	BOOST_CHECK_EQUAL_COLLECTIONS(a.begin(), a.end(), b.begin(), b.end());
 }
 
 BOOST_FIXTURE_TEST_CASE( write_read_table_test, Test::MinimalFile ) {
 
 	Test::SmallTable input;
-	HDU::write_table_extension<int, std::complex<float>, std::string>(this->fptr, "IMGEXT", input);
+	HDU::create_table_extension(this->fptr, "IMGEXT",
+			input.id_col, input.radec_col, input.name_col);
+	const auto output_ids = Bintable::read_column<Test::SmallTable::id_t>(fptr, input.id_col.name);
+	check_equal_vectors(output_ids, input.id_col.data);
+	const auto output_radecs = Bintable::read_column<Test::SmallTable::radec_t>(fptr, input.radec_col.name);
+	check_equal_vectors(output_radecs, input.radec_col.data);
+	const auto output_names = Bintable::read_column<Test::SmallTable::name_t>(fptr, input.name_col.name);
+	check_equal_vectors(output_names, input.name_col.data);
 	
 }
 

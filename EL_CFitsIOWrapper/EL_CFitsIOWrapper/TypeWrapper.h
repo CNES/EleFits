@@ -67,7 +67,7 @@ struct TypeCode {
     /**
      * @brief Get the TFORM value to handle Bintable columns.
      */
-    inline static std::string bintable_column(int width) {
+    inline static std::string bintable_format(int width) {
         may_throw_cfitsio_error(BAD_DATATYPE);
         return "";
     }
@@ -98,7 +98,7 @@ struct TypeCode {
     template<> inline int TypeCode<type>::for_bintable() { return code; }
 
 #define DEF_TABLE_COLUMN(type, code) \
-    template<> inline std::string TypeCode<type>::bintable_column(int width) { return std::to_string(width) + code; }
+    template<> inline std::string TypeCode<type>::bintable_format(int width) { return std::to_string(width) + code; }
 
 #define DEF_IMAGE_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_image() { return code; }
@@ -163,14 +163,18 @@ DEF_TABLE_TYPE_CODE(unsigned long, TULONG)
 DEF_TABLE_COLUMN(bool, 'A')
 DEF_TABLE_COLUMN(char, 'A')
 DEF_TABLE_COLUMN(short, 'I')
+//TODO int?
 DEF_TABLE_COLUMN(long, 'J')
 DEF_TABLE_COLUMN(LONGLONG, 'K')
 DEF_TABLE_COLUMN(float, 'E')
 DEF_TABLE_COLUMN(double, 'D')
+DEF_TABLE_COLUMN(std::complex<float>, 'E')
+DEF_TABLE_COLUMN(std::complex<double>, 'D')
 DEF_TABLE_COLUMN(std::string, 'A')
 DEF_TABLE_COLUMN(char*, 'A')
 DEF_TABLE_COLUMN(unsigned char, 'B')
 DEF_TABLE_COLUMN(unsigned short, 'I')
+//TODO unisgned int?
 DEF_TABLE_COLUMN(unsigned long, 'J')
 /*
  * From CFitsIO documentation "Primary Array or IMAGE Extension I/O Routines"

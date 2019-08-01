@@ -22,9 +22,18 @@
  */
 
 #include "EL_CFitsIOWrapper/BintableWrapper.h"
+#include "EL_CFitsIOWrapper/CfitsioUtils.h"
 
 namespace Cfitsio {
 namespace Bintable {
+
+std::size_t column_index(fitsfile* fptr, std::string name) {
+	int index;
+	int status = 0;
+	fits_get_colnum(fptr, CASESEN, to_char_ptr(name), &index, &status);
+	may_throw_cfitsio_error(status);
+	return index;
+}
 
 }
 }

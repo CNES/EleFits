@@ -42,14 +42,12 @@ namespace Bintable {
 template<typename T>
 using column_info = std::tuple<std::string, std::size_t, std::string>;
 
-template<typename... Ts>
-struct Columns {
-
-	std::vector<std::string> names;
-	std::vector<std::size_t> widths;
-	std::vector<std::string> units;
-	std::tuple<std::vector<Ts>...> datas;
-	
+template<typename T>
+struct Column {
+	std::string name;
+	std::size_t width;
+	std::string unit;
+	std::vector<T> data;
 };
 
 /**
@@ -67,7 +65,7 @@ std::vector<T> read_column(fitsfile* fptr, std::string name);
  * @brief Write a binary table column with given name.
  */
 template<typename T>
-void write_column(fitsfile* fptr, const column_info<T>& info, const std::vector<T>& column);
+void write_column(fitsfile* fptr, const Column<T>& column);
 
 
 /////////////////////
@@ -85,7 +83,7 @@ std::vector<T> read_column(fitsfile* fptr, std::string name) {
   std::vector<T> data(rows);
   fits_read_col(
       fptr,
-      TypeCode<T>::for_table(), // datatype
+      TypeCode<T>::for_bintable(), // datatype
       index, // colnum
       1, // firstrow (1-based)
       1, // firstelemn (1-based)
@@ -100,19 +98,19 @@ std::vector<T> read_column(fitsfile* fptr, std::string name) {
 }
 
 template<typename T>
-void write_column(fitsfile* fptr, const column_info<T>& info, const std::vector<T>& data) {
-    size_t index = column_index(fptr, std::get<0>(info));
-    std::vector<T> nonconst_data = data; // We need a non-const data for CFitsIO
+void write_column(fitsfile* fptr, const Column<T>& column) {
+    size_t index = column_index(fptr, column.name);
+    std::vector<T> nonconst_data = column.data; // We need a non-const data for CFitsIO
     //TODO avoid copy
     int status = 0;
     fits_write_col(
           fptr,
-          TypeCode<T>::for_table(), // datatype
+          TypeCode<T>::for_bintable(), // datatype
           index, // colnum
           1, // firstrow (1-based)
           1, // firstelem (1-based)
-          std::get<1>(info), // nelements
-          &data[0],
+          column.data.size(), // nelements
+          &nonconst_data[0],
           &status
           );
     may_throw_cfitsio_error(status);
