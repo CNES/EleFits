@@ -37,7 +37,7 @@ namespace Cfitsio {
 namespace Bintable {
 
 /**
- * @brief Type for a column info, i.e. { name, width, unit }
+ * @brief Type for a column info, i.e. { name, repeat, unit }
  */
 template<typename T>
 using column_info = std::tuple<std::string, std::size_t, std::string>;
@@ -46,9 +46,11 @@ template<typename T>
 struct Column {
 
 	std::string name;
-	std::size_t width;
+	std::size_t repeat;
 	std::string unit;
 	std::vector<T> data;
+
+	std::size_t nelements() const;
 
 };
 
@@ -61,7 +63,7 @@ std::size_t column_index(fitsfile* fptr, std::string name);
  * @brief Read a Bintable column with given name.
  */
 template<typename T>
-std::vector<T> read_column(fitsfile* fptr, std::string name);
+Column<T> read_column(fitsfile* fptr, std::string name);
 
 /**
  * @brief Write a binary table column with given name.
@@ -78,55 +80,68 @@ void write_column(fitsfile* fptr, const Column<T>& column);
 namespace internal {
 
 template<typename T>
+std::size_t column_nelements(const Column<T>& column);
+
+template<typename T>
+inline std::size_t column_nelements(const Column<T>& column) {
+	return column.repeat * column.data.size();
+}
+
+template<>
+inline std::size_t column_nelements(const Column<std::string>& column) {
+	return column.data.size();
+}
+
+template<typename T>
 struct ColumnDispatcher {
-	static std::vector<T> read(fitsfile* fptr, std::string name);
+	static Column<T> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const Column<T>& column);
 };
 
 template<typename T>
 struct ColumnDispatcher<T*> {
-	static std::vector<T*> read(fitsfile* fptr, std::string name);
+	static Column<T*> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const Column<T*>& column);
 };
 
 template<>
 struct ColumnDispatcher<std::string> {
-	static std::vector<std::string> read(fitsfile* fptr, std::string name);
+	static Column<std::string> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const Column<std::string>& column);
 };
 
 template<typename T>
 struct ColumnDispatcher<std::vector<T>> {
-	static std::vector<std::vector<T>> read(fitsfile* fptr, std::string name);
+	static Column<std::vector<T>> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const Column<std::vector<T>>& column);
 };
 
 template<typename T>
-std::vector<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
+Column<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
 	fits_get_num_rows(fptr, &rows, &status);
 	may_throw_cfitsio_error(status);
-	std::vector<T> data(rows);
+	Column<T> column { name, 1, "", std::vector<T>(rows) };
 	fits_read_col(
 		fptr,
 		TypeCode<T>::for_bintable(), // datatype
 		index, // colnum
 		1, // firstrow (1-based)
 		1, // firstelemn (1-based)
-		rows, // nelements
+		column.nelements(), // nelements
 		nullptr, // nulval
-		data.data(),
+		column.data.data(),
 		nullptr, // anynul
 		&status
 	);
 	may_throw_cfitsio_error(status);
-	return data;
+	return column;
 }
 
 template<typename T>
-std::vector<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
+Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
@@ -134,41 +149,41 @@ std::vector<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 	may_throw_cfitsio_error(status);
 	long repeat;
 	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
-	std::vector<T*> data(rows);
+	Column<T*> column { name, repeat, "TODO", std::vector<T*>(rows) }; //TODO unit
 	for(long i=0; i<rows; ++i)
-		data[i] = new T[repeat];
+		column.data[i] = new T[repeat];
 	fits_read_col(
 		fptr,
 		TypeCode<T*>::for_bintable(), // datatype
 		index, // colnum
 		1, // firstrow (1-based)
 		1, // firstelemn (1-based)
-		rows * repeat, // nelements
+		column.nelements(), // nelements
 		nullptr, // nulval
-		data.data(),
+		column.data.data(),
 		nullptr, // anynul
 		&status
 	);
 	may_throw_cfitsio_error(status);
-	return data;
+	return column;
 }
 
 template<typename T>
-std::vector<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
+Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
 	auto index = column_index(fptr, name);
 	int status = 0;
 	long repeat;
 	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
 	may_throw_cfitsio_error(status);
-	auto ptr_data = ColumnDispatcher<T*>::read(fptr, name);
-	const auto rows = ptr_data.size();
-	std::vector<std::vector<T>> data(rows);
+	auto ptr_col = ColumnDispatcher<T*>::read(fptr, name);
+	const auto rows = ptr_col.data.size();
+	Column<std::vector<T>> column { name, repeat, "TODO", std::vector<std::vector<T>>(rows) }; //TODO unit
 	for(std::size_t i=0; i<rows; ++i) {
-		T* ptr_i = ptr_data[i];
-		data[i] = std::vector<T>(ptr_i, ptr_i + repeat);
-//		delete[] ptr_data[i]; //TODO keep?
+		T* ptr_i = ptr_col.data[i];
+		column.data[i] = std::vector<T>(ptr_i, ptr_i + repeat);
+		delete[] ptr_i; //TODO keep?
 	}
-	return data;
+	return column;
 }
 
 template<typename T>
@@ -183,7 +198,7 @@ void ColumnDispatcher<T>::write(fitsfile* fptr, const Column<T>& column) {
 		index, // colnum
 		1, // firstrow (1-based)
 		1, // firstelem (1-based)
-		column.data.size(), // nelements
+		column.nelements(), // nelements
 		nonconst_data.data(),
 		&status
 		);
@@ -195,7 +210,7 @@ void ColumnDispatcher<T*>::write(fitsfile* fptr, const Column<T*>& column) {
 	size_t index = column_index(fptr, column.name);
 	std::vector<T*> nonconst_data = column.data; // We need a non-const data for CFitsIO
 	//TODO avoid copy
-	printf("Size of %s: %i (w) x %i (h)\n", column.name.c_str(), column.width, nonconst_data.size());
+	printf("Size of %s: %i (w) x %i (h)\n", column.name.c_str(), column.repeat, nonconst_data.size());
 	printf("TFORM: %i\n", TypeCode<T*>::for_bintable());
 	int status = 0;
 	fits_write_col(
@@ -204,18 +219,19 @@ void ColumnDispatcher<T*>::write(fitsfile* fptr, const Column<T*>& column) {
 		index, // colnum
 		1, // firstrow (1-based)
 		1, // firstelem (1-based)
-		nonconst_data.size() * column.width, // nelements
+		column.nelements(), // nelements
 		nonconst_data.data(),
 		&status
 		);
+	printf("Vector written!\n");
 	may_throw_cfitsio_error(status);
 }
 
 template<typename T>
 void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const Column<std::vector<T>>& column) {
 	const auto rows = column.data.size();
-	Column<T*> ptr_column { column.name, column.width, column.unit, std::vector<T*>(rows) };
-	printf("Size of %s: %i (w) x %i (h)\n", column.name.c_str(), column.width, column.data.size());
+	Column<T*> ptr_column { column.name, column.repeat, column.unit, std::vector<T*>(rows) };
+	printf("Size of %s: %i (w) x %i (h)\n", column.name.c_str(), column.repeat, column.data.size());
 	for(std::size_t i=0; i<rows; ++i) {
 		const auto& data_i = column.data[i];
 		ptr_column.data[i] = new T[data_i.size()];
@@ -233,7 +249,12 @@ void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const Column<std::v
 
 
 template<typename T>
-std::vector<T> read_column(fitsfile* fptr, std::string name) {
+std::size_t Column<T>::nelements() const {
+	return internal::column_nelements(*this);
+}
+
+template<typename T>
+Column<T> read_column(fitsfile* fptr, std::string name) {
 	return internal::ColumnDispatcher<T>::read(fptr, name);
 }
 

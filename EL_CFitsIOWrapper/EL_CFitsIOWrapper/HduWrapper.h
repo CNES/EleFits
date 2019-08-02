@@ -199,7 +199,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 		...
 	};
 	std::vector<char*>  col_format {
-		to_char_ptr(TypeCode<Ts>::bintable_format(table.width))
+		to_char_ptr(TypeCode<Ts>::bintable_format(table.repeat))
 		...
 	};
 	std::vector<char*>  col_unit {
@@ -219,7 +219,7 @@ template<typename T>
 void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<T>& column) {
 	constexpr std::size_t count = 1;
 	char* col_name[] = { to_char_ptr(column.name) };
-	char* col_format[] = { to_char_ptr(TypeCode<T>::bintable_format(column.width)) };
+	char* col_format[] = { to_char_ptr(TypeCode<T>::bintable_format(column.repeat)) };
 	char* col_unit[] = { to_char_ptr(column.unit) };
 	int status = 0;
 	printf("%s\n", col_format[0]);

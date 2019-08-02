@@ -45,7 +45,7 @@ void check_scalar() {
 	Test::MinimalFile file;
 	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
 	const auto output = Bintable::read_column<T>(file.fptr, input.name);
-	check_equal_vectors(input.data, output);
+	check_equal_vectors(input.data, output.data);
 }
 
 BOOST_AUTO_TEST_CASE( scalar_test ) {
@@ -59,7 +59,7 @@ void check_string() {
 	Test::MinimalFile file;
 	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
 	const auto output = Bintable::read_column<std::string>(file.fptr, input.name);
-	check_equal_vectors(input.data, output);
+	check_equal_vectors(input.data, output.data);
 }
 
 BOOST_AUTO_TEST_CASE( string_test ) {
@@ -72,21 +72,12 @@ template<typename T>
 void check_vector() {
 	Test::SmallVectorColumn<T> input;
 	Test::MinimalFile file;
-	fitsfile* fptr = File::create_and_open("/tmp/test.fits", File::CreatePolicy::OVER_WRITE); //TODO
-	HDU::create_bintable_extension(fptr, "BINEXT", input);
-	File::close(fptr); //TODO
-	fptr = File::open("/tmp/test.fits", File::OpenPolicy::READ_ONLY); //TODO
-	printf("Lookaround for BINEXT...\n");
-	HDU::goto_name(fptr, "BINEXT");
-	printf("Found!\n");
-	const auto output = Bintable::read_column<std::vector<T>>(fptr, input.name);
-	for(std::size_t i=0; i<output.size(); ++i)
-		for(std::size_t j=0; j<output[i].size(); ++j)
-			printf("%f\t", output[i][j]);
+	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
+	const auto output = Bintable::read_column<std::vector<T>>(file.fptr, input.name);
 	const auto size = input.data.size();
-	BOOST_CHECK_EQUAL(output.size(), size);
+	BOOST_CHECK_EQUAL(output.data.size(), size);
 	for(std::size_t i=0; i<size; ++i)
-		check_equal_vectors(input.data[i], output[i]);
+		check_equal_vectors(input.data[i], output.data[i]);
 }
 
 BOOST_AUTO_TEST_CASE( vector_test ) {
