@@ -37,13 +37,24 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 	return index;
 }
 
-struct std::vector<std::string> internal::ColumnReader<std::string>::read(fitsfile* fptr, std::string name) {
-	auto char_ptr_data = internal::ColumnReader<std::vector<char>>::read(fptr, name);
-	const std::size_t size = char_ptr_data.size();
-	std::vector<std::string> data(size);
-	for(std::size_t i=0; i<size; ++i)
-		data[i] = std::string(char_ptr_data[i].data());
+std::vector<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
+	auto ptr_data = ColumnDispatcher<char*>::read(fptr, name);
+	const auto rows = ptr_data.size();
+	std::vector<std::string> data(rows);
+	for(std::size_t i=0; i<rows; ++i) {
+		char* ptr_i = ptr_data[i];
+		data[i] = std::string(ptr_i);
+		delete[] ptr_data[i]; //TODO keep?
+	}
 	return data;
+}
+
+void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const Column<std::string>& column) {
+	const auto rows = column.data.size();
+	Column<char*> char_ptr_column { column.name, column.width, column.unit, std::vector<char*>(rows) };
+	for(std::size_t i=0; i<rows; ++i)
+		char_ptr_column.data[i] = to_char_ptr(column.data[i]);
+	internal::ColumnDispatcher<char*>::write(fptr, char_ptr_column);
 }
 
 }

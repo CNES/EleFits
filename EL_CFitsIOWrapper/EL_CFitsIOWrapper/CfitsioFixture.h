@@ -28,6 +28,7 @@
 
 #include "FileWrapper.h"
 #include "HduWrapper.h"
+#include "BintableWrapper.h"
 #include "ImageWrapper.h"
 
 namespace Cfitsio {
@@ -70,8 +71,9 @@ class SmallTable {
 public:
 
 	using id_t = int;
-	using radec_t = std::complex<float>;
+	using radec_t = std::complex<float>; // Could be std::pair<float> with width=2
 	using name_t = std::string;
+	using dist_mag_t = std::vector<double>;
 
 	SmallTable();
 	
@@ -80,10 +82,12 @@ public:
 	std::vector<id_t> ids;
 	std::vector<radec_t> radecs;
 	std::vector<name_t> names;
+	std::vector<dist_mag_t> dists_mags;
 	
 	Bintable::Column<id_t> id_col;
 	Bintable::Column<radec_t> radec_col;
 	Bintable::Column<name_t> name_col;
+	Bintable::Column<dist_mag_t> dist_mag_col;
 
 };
 
@@ -128,7 +132,12 @@ SmallScalarColumn<T>::SmallScalarColumn() :
 }
 
 SmallStringColumn::SmallStringColumn() :
-	Bintable::Column<std::string> { "STRING", 4, "m", { "A", "AB", "ABC" } } {
+	Bintable::Column<std::string> { "STRING", 8, "", { "A", "GC", "ABGCMBC" } } {
+}
+
+template<typename T>
+SmallVectorColumn<T>::SmallVectorColumn() :
+	Bintable::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
 }
 
 

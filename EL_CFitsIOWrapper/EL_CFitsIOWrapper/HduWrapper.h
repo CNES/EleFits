@@ -216,17 +216,18 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 }
 
 template<typename T>
-void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<T>& table) {
+void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<T>& column) {
 	constexpr std::size_t count = 1;
-	char* col_name[1] = { to_char_ptr(table.name) };
-	char* col_format[1] = { to_char_ptr(TypeCode<T>::bintable_format(table.width)) };
-	char* col_unit[1] = { to_char_ptr(table.unit) };
+	char* col_name[] = { to_char_ptr(column.name) };
+	char* col_format[] = { to_char_ptr(TypeCode<T>::bintable_format(column.width)) };
+	char* col_unit[] = { to_char_ptr(column.unit) };
 	int status = 0;
+	printf("%s\n", col_format[0]);
 	fits_create_tbl(fptr, BINARY_TBL, 0, count,
 			col_name, col_format, col_unit,
 			name.c_str(), &status);
 	may_throw_cfitsio_error(status);
-	Bintable::write_column(fptr, table);
+	Bintable::write_column(fptr, column);
 }
 
 }

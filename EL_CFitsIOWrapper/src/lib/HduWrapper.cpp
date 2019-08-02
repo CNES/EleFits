@@ -43,7 +43,12 @@ std::size_t current_index(fitsfile* fptr) {
 }
 
 std::string current_name(fitsfile* fptr) {
-	return Record::read_value(fptr, "EXTNAME");
+	try {
+		return Record::read_value(fptr, "EXTNAME");
+	} catch(const std::exception& e) {
+		// EXTNAME not provided
+		return "";
+	}
 }
 
 Type current_type(fitsfile* fptr) {

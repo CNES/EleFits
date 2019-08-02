@@ -29,7 +29,7 @@ namespace Test {
 MinimalFile::MinimalFile() :
 		tmp(),
 		filename(tmp.path().string()) {
-    fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+	fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
 }
 
 MinimalFile::~MinimalFile() {
@@ -64,9 +64,11 @@ SmallTable::SmallTable() :
 		ids { 45, 7, 31 },
 		radecs { {56.8500, 24.1167}, {268.4667, -34.7928}, {10.6833, 41.2692} },
 		names { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" },
+		dists_mags { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900, 3.4 } },
 		id_col { "ID", 1, "", ids },
-		radec_col { "RADEC", 1, "deg", radecs }, // Could be std::pair<float> with width=2
-		name_col { "NAME", 68, "", names } { //TODO 68?
+		radec_col { "RADEC", 1, "deg", radecs },
+		name_col { "NAME", 68, "", names }, //TODO 68?
+		dist_mag_col { "DIST_MAG", 2, "kal", dists_mags } {
 }
 
 }

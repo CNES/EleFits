@@ -25,12 +25,9 @@
 #define _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
 
 #include <cfitsio/fitsio.h>
-#include <stdexcept>
-#include <typeinfo>
-
 #include <complex>
-#include <limits>
 #include <string>
+#include <vector>
 
 #include "EL_CFitsIOWrapper/ErrorWrapper.h"
 #include "EL_CFitsIOWrapper/TypeWrapper.h"
@@ -87,6 +84,50 @@ struct TypeCode {
         may_throw_cfitsio_error(BAD_DATATYPE);
         return 0;
     }
+
+};
+
+/**
+ * @brief Pointer specialization of TypeCode.
+ */
+template<typename T>
+struct TypeCode<T*> {
+
+	inline static int for_record() {
+		return TypeCode<T>::for_record();
+	}
+
+	inline static int for_bintable() {
+		return TypeCode<T>::for_bintable();
+	}
+
+	inline static std::string bintable_format(int width) {
+		return TypeCode<T>::bintable_format(width);
+	}
+
+	inline static int for_image() {
+		return TypeCode<T>::for_image();
+	}
+
+	inline static int bitpix() {
+		return TypeCode<T>::bitpix();
+	}
+
+};
+
+/**
+ * @brief Vector specialization of TypeCode for Bintable vector columns.
+ */
+template<typename T>
+struct TypeCode<std::vector<T>> {
+
+	inline static int for_bintable() {
+		return TypeCode<T*>::for_bintable();
+	}
+
+	inline static std::string bintable_format(int width) {
+		return TypeCode<T*>::bintable_format(width);
+	}
 
 };
 
