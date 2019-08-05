@@ -44,7 +44,6 @@ Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr
 	for(std::size_t i=0; i<rows; ++i) {
 		char* ptr_i = ptr_col.data[i];
 		column.data[i] = std::string(ptr_i);
-		delete[] ptr_i; //TODO keep?
 	}
 	return column;
 }

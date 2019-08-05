@@ -47,7 +47,7 @@ namespace Image {
  * @brief Type for a coordinate along one axis.
  */
 using coord_type = long;
-//TODO Would be nice to have std::array<T, n>::std::size_t
+// Would be nice to have std::array<T, n>::std::size_t
 // but not compliant with CFitsIO which uses long for subscripts
 
 /**
