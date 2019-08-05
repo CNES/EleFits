@@ -32,7 +32,7 @@ namespace Bintable {
 std::size_t column_index(fitsfile* fptr, std::string name) {
 	int index;
 	int status = 0;
-	fits_get_colnum(fptr, CASESEN, to_char_ptr(name), &index, &status);
+	fits_get_colnum(fptr, CASESEN, to_char_ptr(name).get(), &index, &status);
 	may_throw_cfitsio_error(status);
 	return index;
 }
@@ -50,10 +50,8 @@ Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr
 }
 
 void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const Column<std::string>& column) {
-	const auto rows = column.data.size();
-	Column<char*> char_ptr_column { column.name, column.repeat, column.unit, std::vector<char*>(rows) };
-	for(std::size_t i=0; i<rows; ++i)
-		char_ptr_column.data[i] = to_char_ptr(column.data[i]);
+	c_str_array array(column.data);
+	Column<char*> char_ptr_column { column.name, column.repeat, column.unit, std::move(array.c_str_vector) };
 	internal::ColumnDispatcher<char*>::write(fptr, char_ptr_column);
 }
 

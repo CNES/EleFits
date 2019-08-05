@@ -60,16 +60,17 @@ BOOST_FIXTURE_TEST_CASE( write_read_table_test, Test::MinimalFile ) {
 	Test::SmallTable input;
 	HDU::create_bintable_extension(this->fptr, "IMGEXT",
 			input.id_col, input.radec_col, input.name_col, input.dist_mag_col);
-	const auto output_ids = Bintable::read_column<Test::SmallTable::id_t>(fptr, input.id_col.name);
+	const auto output_ids = Bintable::read_column<Test::SmallTable::id_t>(this->fptr, input.id_col.name);
 	check_equal_vectors(output_ids.data, input.id_col.data);
-	const auto output_radecs = Bintable::read_column<Test::SmallTable::radec_t>(fptr, input.radec_col.name);
+	const auto output_radecs = Bintable::read_column<Test::SmallTable::radec_t>(this->fptr, input.radec_col.name);
 	check_equal_vectors(output_radecs.data, input.radec_col.data);
-	const auto output_names = Bintable::read_column<Test::SmallTable::name_t>(fptr, input.name_col.name);
+	const auto output_names = Bintable::read_column<Test::SmallTable::name_t>(this->fptr, input.name_col.name);
 	check_equal_vectors(output_names.data, input.name_col.data);
-	const auto output_dists_mags = Bintable::read_column<Test::SmallTable::dist_mag_t>(fptr, input.dist_mag_col.name);
+	const auto output_dists_mags = Bintable::read_column<Test::SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.name);
+	BOOST_CHECK_EQUAL(output_dists_mags.data.size(), input.dist_mag_col.data.size());
 	for(std::size_t i=0; i<output_dists_mags.data.size(); ++i)
 		check_equal_vectors(output_dists_mags.data[i], input.dist_mag_col.data[i]);
-	
+
 }
 
 //-----------------------------------------------------------------------------

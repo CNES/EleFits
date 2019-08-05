@@ -172,18 +172,9 @@ void create_image_extension(fitsfile *fptr, std::string name, const Image::Raste
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::column_info<Ts>&... header) {
 	constexpr std::size_t count = sizeof...(Ts);
-	std::string cname[] { std::get<0>(header) ... };
-	std::size_t cformat[] { (TypeCode<Ts>::bintable_format(std::get<1>(header))) ... };
-	std::string cunit[] { std::get<2>(header) ... };
-	//TODO avoid those temp
-	std::vector<char*> col_name(count);
-	std::vector<char*> col_format(count);
-	std::vector<char*> col_unit(count);
-	for(size_t i = 0; i < count; ++i) { //TODO iterators
-		col_name[i] = to_char_ptr(cname[i]);
-		col_format[i] = to_char_ptr(cformat[i]);
-		col_unit[i] = to_char_ptr(cunit[i]);
-	}
+	c_str_array col_name { std::get<0>(header) ... };
+	c_str_array col_format { TypeCode<Ts>::bintable_format(std::get<1>(header)) ... };
+	c_str_array col_unit { std::get<2>(header) ... };
 	int status = 0;
 	fits_create_tbl(fptr, BINARY_TBL, 0, count,
 			col_name.data(), col_format.data(), col_unit.data(),
@@ -194,18 +185,9 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<Ts>&... table) {
 	constexpr std::size_t count = sizeof...(Ts);
-	std::vector<char*>  col_name {
-		to_char_ptr(table.name)
-		...
-	};
-	std::vector<char*>  col_format {
-		to_char_ptr(TypeCode<Ts>::bintable_format(table.repeat))
-		...
-	};
-	std::vector<char*>  col_unit {
-		to_char_ptr(table.unit)
-		...
-	};
+	c_str_array col_name { table.name ... };
+	c_str_array col_format { TypeCode<Ts>::bintable_format(table.repeat) ... };
+	c_str_array col_unit { table.unit ... };
 	int status = 0;
 	fits_create_tbl(fptr, BINARY_TBL, 0, count,
 			col_name.data(), col_format.data(), col_unit.data(),
@@ -218,13 +200,15 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 template<typename T>
 void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<T>& column) {
 	constexpr std::size_t count = 1;
-	char* col_name[] = { to_char_ptr(column.name) };
-	char* col_format[] = { to_char_ptr(TypeCode<T>::bintable_format(column.repeat)) };
-	char* col_unit[] = { to_char_ptr(column.unit) };
+	std::string col_name = column.name;
+	char* c_name = &col_name[0];
+	std::string col_format = TypeCode<T>::bintable_format(column.repeat);
+	char* c_format = &col_format[0];
+	std::string col_unit = column.unit;
+	char* c_unit = &col_unit[0];
 	int status = 0;
-	printf("%s\n", col_format[0]);
 	fits_create_tbl(fptr, BINARY_TBL, 0, count,
-			col_name, col_format, col_unit,
+			&c_name, &c_format, &c_unit,
 			name.c_str(), &status);
 	may_throw_cfitsio_error(status);
 	Bintable::write_column(fptr, column);

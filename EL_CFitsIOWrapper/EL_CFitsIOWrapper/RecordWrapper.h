@@ -145,26 +145,26 @@ std::tuple<Ts...> parse_values(fitsfile* fptr, std::vector<std::string> keywords
 template<typename T>
 void write_record(fitsfile* fptr, std::string keyword, T value) {
     int status = 0;
-    fits_write_key(fptr, TypeCode<T>::for_record(), to_char_ptr(keyword), &value, nullptr, &status);
+    fits_write_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, nullptr, &status);
     may_throw_cfitsio_error(status);
 }
 
 template<typename T>
 void write_record(fitsfile* fptr, const record_type<T>& record) {
-    const std::string& keyword = to_char_ptr(std::get<0>(record));
+    const char* keyword = std::get<0>(record).c_str();
     const T& value = std::get<1>(record);
-    const std::string& unit = to_char_ptr(std::get<2>(record));
-    const std::string& comment = to_char_ptr(std::get<3>(record));
+    const char* unit = std::get<2>(record).c_str();
+    const char* comment = std::get<3>(record).c_str();
     int status = 0;
     fits_write_key(fptr, TypeCode<T>::for_record(), keyword, value, comment, &status);
-    fits_write_key_unit(fptr, keyword.c_str(), unit.c_str(), &status);
+    fits_write_key_unit(fptr, keyword, unit, &status);
     may_throw_cfitsio_error(status);
 }
 
 template<typename T>
 void update_record(fitsfile* fptr, std::string keyword, T value) {
     int status = 0;
-    fits_update_key(fptr, TypeCode<T>::for_record(), to_char_ptr(keyword), &value, nullptr, &status);
+    fits_update_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, nullptr, &status);
     may_throw_cfitsio_error(status);
 }
 

@@ -88,7 +88,7 @@ inline std::size_t column_nelements(const Column<T>& column) {
 }
 
 template<>
-inline std::size_t column_nelements(const Column<std::string>& column) {
+inline std::size_t column_nelements(const Column<char*>& column) {
 	return column.data.size();
 }
 
@@ -172,16 +172,13 @@ template<typename T>
 Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
 	auto index = column_index(fptr, name);
 	int status = 0;
-	long repeat;
-	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
 	may_throw_cfitsio_error(status);
-	auto ptr_col = ColumnDispatcher<T*>::read(fptr, name);
+	const auto ptr_col = ColumnDispatcher<T*>::read(fptr, name);
 	const auto rows = ptr_col.data.size();
-	Column<std::vector<T>> column { name, repeat, "TODO", std::vector<std::vector<T>>(rows) }; //TODO unit
+	Column<std::vector<T>> column { ptr_col.name, ptr_col.repeat, "TODO", std::vector<std::vector<T>>(rows) }; //TODO unit
 	for(std::size_t i=0; i<rows; ++i) {
-		T* ptr_i = ptr_col.data[i];
-		column.data[i] = std::vector<T>(ptr_i, ptr_i + repeat);
-		delete[] ptr_i; //TODO keep?
+		const T* ptr_i = ptr_col.data[i];
+		column.data[i].assign(ptr_i, ptr_i + ptr_col.repeat);
 	}
 	return column;
 }
@@ -210,8 +207,6 @@ void ColumnDispatcher<T*>::write(fitsfile* fptr, const Column<T*>& column) {
 	size_t index = column_index(fptr, column.name);
 	std::vector<T*> nonconst_data = column.data; // We need a non-const data for CFitsIO
 	//TODO avoid copy
-	printf("Size of %s: %i (w) x %i (h)\n", column.name.c_str(), column.repeat, nonconst_data.size());
-	printf("TFORM: %i\n", TypeCode<T*>::for_bintable());
 	int status = 0;
 	fits_write_col(
 		fptr,
@@ -223,7 +218,6 @@ void ColumnDispatcher<T*>::write(fitsfile* fptr, const Column<T*>& column) {
 		nonconst_data.data(),
 		&status
 		);
-	printf("Vector written!\n");
 	may_throw_cfitsio_error(status);
 }
 
@@ -231,7 +225,6 @@ template<typename T>
 void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const Column<std::vector<T>>& column) {
 	const auto rows = column.data.size();
 	Column<T*> ptr_column { column.name, column.repeat, column.unit, std::vector<T*>(rows) };
-	printf("Size of %s: %i (w) x %i (h)\n", column.name.c_str(), column.repeat, column.data.size());
 	for(std::size_t i=0; i<rows; ++i) {
 		const auto& data_i = column.data[i];
 		ptr_column.data[i] = new T[data_i.size()];

@@ -23,10 +23,25 @@
 
 #include "EL_CFitsIOWrapper/CfitsioUtils.h"
 
-namespace EL_CFitsIOWrapper {
+namespace Cfitsio {
 
+std::unique_ptr<char> to_char_ptr(std::string str) {
+	const std::size_t size = str.length();
+	std::unique_ptr<char> c_str(new char[size + 1]);
+	strcpy(c_str.get(), str.c_str());
+	return c_str;
+}
 
-}  // namespace EL_CFitsIOWrapper
+c_str_array::c_str_array(const std::vector<std::string>& data) :
+        c_str_array(data.begin(), data.end()) {
+}
 
+c_str_array::c_str_array(const std::initializer_list<std::string>& data) :
+        c_str_array(data.begin(), data.end()) {
+}
 
+char** c_str_array::data() {
+    return c_str_vector.data();
+}
 
+}
