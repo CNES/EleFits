@@ -23,7 +23,10 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "EL_CfitsioWrapper//CfitsioFixture.h"
 #include "EL_CfitsioWrapper//RecordWrapper.h"
+
+using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
@@ -31,11 +34,40 @@ BOOST_AUTO_TEST_SUITE (RecordWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+template<typename T>
+void check_record(std::string tag) {
+	Test::MinimalFile file;
+	T input = Test::generate_random_value<T>();
+	Record::write_value(file.fptr, "key", input);
+	std::cout << tag << '\t' << input << std::endl;
+	const auto output = Record::parse_value<T>(file.fptr, "key");
+  BOOST_CHECK_EQUAL(output, input);
 }
+
+#define TEST_RECORD_ALIAS(type, name) \
+	BOOST_AUTO_TEST_CASE( name##_test ) { check_record<type>(#name); }
+
+#define TEST_RECORD(type) \
+	TEST_RECORD_ALIAS(type, type)
+
+#define TEST_RECORD_UNSIGNED(type) \
+	TEST_RECORD_ALIAS(unsigned type, u##type)
+
+TEST_RECORD(bool)
+TEST_RECORD(char)
+TEST_RECORD(short)
+TEST_RECORD(int)
+TEST_RECORD(long)
+TEST_RECORD(LONGLONG)
+TEST_RECORD(float)
+TEST_RECORD(double)
+TEST_RECORD_ALIAS(std::complex<float>, complex_float)
+TEST_RECORD_ALIAS(std::complex<double>, complex_double)
+TEST_RECORD_ALIAS(std::string, string)
+TEST_RECORD_UNSIGNED(char)
+TEST_RECORD_UNSIGNED(short)
+TEST_RECORD_UNSIGNED(int)
+TEST_RECORD_UNSIGNED(long)
 
 //-----------------------------------------------------------------------------
 

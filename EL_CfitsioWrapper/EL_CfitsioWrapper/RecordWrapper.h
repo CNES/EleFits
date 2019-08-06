@@ -74,7 +74,7 @@ std::vector<std::string> read_values(fitsfile* fptr, std::vector<std::string> ke
  * @brief Write a new record with given keyword and value.
  */
 template<typename T>
-void write_record(fitsfile* fptr, std::string keyword, T value);
+void write_value(fitsfile* fptr, std::string keyword, T value);
 
 /**
  * @brief Write a new record with unit and comment.
@@ -86,7 +86,7 @@ void write_record(fitsfile* fptr, const record_type<T>& record);
  * @brief Update an existing record or write a new one with given keyword and value.
  */
 template<typename T>
-void update_record(fitsfile* fptr, std::string keyword, T value);
+void update_value(fitsfile* fptr, std::string keyword, T value);
 
 
 ///////////////
@@ -146,7 +146,7 @@ std::tuple<Ts...> parse_values(fitsfile* fptr, std::vector<std::string> keywords
 }
 
 template<typename T>
-void write_record(fitsfile* fptr, std::string keyword, T value) {
+void write_value(fitsfile* fptr, std::string keyword, T value) {
     int status = 0;
     fits_write_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, nullptr, &status);
     may_throw_cfitsio_error(status);
@@ -165,7 +165,7 @@ void write_record(fitsfile* fptr, const record_type<T>& record) {
 }
 
 template<typename T>
-void update_record(fitsfile* fptr, std::string keyword, T value) {
+void update_value(fitsfile* fptr, std::string keyword, T value) {
     int status = 0;
     fits_update_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, nullptr, &status);
     may_throw_cfitsio_error(status);

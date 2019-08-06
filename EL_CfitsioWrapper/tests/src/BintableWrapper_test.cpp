@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
 
 template<typename T>
 void check_scalar() {
-	Test::SmallScalarColumn<T> input;
+	Test::RandomScalarColumn<T> input;
 	Test::MinimalFile file;
 	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
 	const auto output = Bintable::read_column<T>(file.fptr, input.name);
