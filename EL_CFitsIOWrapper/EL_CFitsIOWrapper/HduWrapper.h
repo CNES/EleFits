@@ -83,7 +83,7 @@ Type current_type(fitsfile *fptr);
 bool current_has_data(fitsfile *fptr);
 
 /**
- * @brief Check whether current Fits HDU is the Primary HDU.
+ * @brief Check whether current HDU is the Primary HDU.
  */
 bool current_is_primary(fitsfile *fptr);
 
@@ -135,7 +135,7 @@ template<typename T, std::size_t n=2>
 void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster);
 
 /**
- * @brief Create a Bintable HDU.
+ * @brief Create a new Bintable HDU with given name and column infos.
  */
 template<typename... Ts>
 void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable::column_info<Ts>&... header);
@@ -144,7 +144,7 @@ void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable:
  * @brief Write a Table in a new Bintable HDU.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable::Column<Ts...>& table);
+void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable::Column<Ts>&... table);
 
 
 /////////////////////
@@ -197,6 +197,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
     (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
 }
 
+/// @cond INTERNAL
 template<typename T>
 void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<T>& column) {
 	constexpr std::size_t count = 1;
@@ -213,6 +214,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 	may_throw_cfitsio_error(status);
 	Bintable::write_column(fptr, column);
 }
+/// @endcond
 
 }
 }

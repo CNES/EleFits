@@ -32,11 +32,9 @@
 namespace Cfitsio {
 
 /**
- * @brief Convert a string to a char*.
+ * @brief Convert a string to a unique_ptr<char>.
  * 
  * Used to work around non-const correctness of CFitsIO.
- * 
- * @warning The pointer shoud be deleted by user.
  */
 std::unique_ptr<char> to_char_ptr(std::string str);
 

@@ -32,8 +32,15 @@
 #include "ImageWrapper.h"
 
 namespace Cfitsio {
+
+/**
+ * @brief Test-related classes and functions.
+ */
 namespace Test {
 
+/**
+ * @brief A minimal and temporary FITS file removed by destructor.
+ */
 class MinimalFile {
 
 protected:
@@ -52,6 +59,9 @@ public:
 
 };
 
+/**
+ * @brief A small 2D image raster.
+ */
 class SmallRaster : public Image::Raster<float> {
 
 public:
@@ -66,6 +76,9 @@ public:
 
 };
 
+/**
+ * @brief A small set of columns with various types.
+ */
 class SmallTable {
 
 public:
@@ -91,6 +104,9 @@ public:
 
 };
 
+/**
+ * @brief A small scalar column of given type.
+ */
 template<typename T>
 class SmallScalarColumn : public Bintable::Column<T> {
 
@@ -101,6 +117,9 @@ public:
 
 };
 
+/**
+ * @brief A small string column.
+ */
 class SmallStringColumn : public Bintable::Column<std::string> {
 
 public:
@@ -110,6 +129,9 @@ public:
 
 };
 
+/**
+ * @brief A small vector column of given type.
+ */
 template<typename T>
 class SmallVectorColumn : public Bintable::Column<std::vector<T>> {
 
@@ -139,7 +161,6 @@ template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
 	Bintable::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
 }
-
 
 }
 }

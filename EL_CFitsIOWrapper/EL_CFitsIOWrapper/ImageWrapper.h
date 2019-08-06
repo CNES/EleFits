@@ -45,10 +45,11 @@ namespace Image {
 
 /**
  * @brief Type for a coordinate along one axis.
+ * 
+ * Would be nice to use std::array<T, n>::std::size_t
+ * but not compliant with CFitsIO which uses long for subscripts
  */
 using coord_type = long;
-// Would be nice to have std::array<T, n>::std::size_t
-// but not compliant with CFitsIO which uses long for subscripts
 
 /**
  * @brief Type for a position or shape, i.e. set of coordinates.
@@ -58,7 +59,7 @@ using pos_type = std::array<coord_type, n>;
 
 
 /**
- * @brief A simplistic structure to store a n-dimension raster.
+ * @brief Raster of a n-dimensional image.
  * 
  * 2D by default.
  */
@@ -130,6 +131,7 @@ void write_raster(fitsfile* fptr, const Raster<T, n>& raster);
 /////////////
 
 
+/// @cond INTERNAL
 namespace internal {
 
 template<std::size_t i>
@@ -151,6 +153,7 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 }
 
 }
+/// @endcond
 
 
 /////////////////////

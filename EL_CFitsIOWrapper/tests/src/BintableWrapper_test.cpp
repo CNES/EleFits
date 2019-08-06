@@ -134,5 +134,3 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, Test::MinimalFile ) {
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-

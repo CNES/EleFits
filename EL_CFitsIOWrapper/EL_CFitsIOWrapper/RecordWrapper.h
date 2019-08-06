@@ -57,8 +57,8 @@ T parse_value(fitsfile* fptr, std::string keyword);
 /**
  * @brief Read the values of a given set of keywords with specified types.
  */
-template<typename... TRecords>
-std::tuple<TRecords...> parse_values(fitsfile* fptr, std::vector<std::string> keywords);
+template<typename... Ts>
+std::tuple<Ts...> parse_values(fitsfile* fptr, std::vector<std::string> keywords);
 
 /**
  * @brief Read the value of a given keyword as a string.
@@ -89,11 +89,12 @@ template<typename T>
 void update_record(fitsfile* fptr, std::string keyword, T value);
 
 
-///////////////////////
-// HELPER FUNCTIONS //
-/////////////////////
+///////////////
+// INTENRAL //
+/////////////
 
 
+/// @cond INTERNAL
 namespace internal {
 
 // Signature change (output argument) for further use with variadic templates.
@@ -120,6 +121,8 @@ struct _parse_values<0, Ts...> {
 };
 
 }
+/// @endcond
+
 
 /////////////////////
 // IMPLEMENTATION //

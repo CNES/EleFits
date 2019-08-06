@@ -42,15 +42,29 @@ namespace Bintable {
 template<typename T>
 using column_info = std::tuple<std::string, std::size_t, std::string>;
 
+/**
+ * @brief Bintable column data and metadata.
+ */
 template<typename T>
 struct Column {
 
 	std::string name;
-	std::size_t repeat;
+
+	/**
+	 * @brief Repeat count of the column, i.e. number of values per cell.
+	 * @warning CFitsIO uses long instead of size_t
+	 */
+	long repeat;
+
 	std::string unit;
+
 	std::vector<T> data;
 
-	std::size_t nelements() const;
+	/**
+	 * @brief Number of elements in the column, i.e. number of rows * repeat count.
+	 * @warning For strings, CFitsIO requires nelements to be just the number of rows.
+	 */
+	std::size_t nelements() const; //TODO long?
 
 };
 
@@ -77,21 +91,37 @@ void write_column(fitsfile* fptr, const Column<T>& column);
 /////////////
 
 
+/// @cond INTERNAL
 namespace internal {
 
+/**
+ * Helper function to specialize nelements for strings.
+ */
 template<typename T>
 std::size_t column_nelements(const Column<T>& column);
 
+/**
+ * In general, nelements is the number of values,
+ * i.e. number of rows * repeat count.
+ */
 template<typename T>
 inline std::size_t column_nelements(const Column<T>& column) {
 	return column.repeat * column.data.size();
 }
 
+/**
+ * For strings, nelements is the number of strings,
+ * not the number of characters.
+ */
 template<>
 inline std::size_t column_nelements(const Column<char*>& column) {
 	return column.data.size();
 }
 
+/**
+ * Helper structure to dispatch column IOs depending on the cell type
+ * (scalar, string or vector + pointer for internal implementation).
+ */
 template<typename T>
 struct ColumnDispatcher {
 	static Column<T> read(fitsfile* fptr, std::string name);
@@ -150,7 +180,7 @@ Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 	long repeat;
 	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
 	Column<T*> column { name, repeat, "TODO", std::vector<T*>(rows) }; //TODO unit
-	for(long i=0; i<rows; ++i)
+	for(std::size_t i=0; i<rows; ++i)
 		column.data[i] = new T[repeat];
 	fits_read_col(
 		fptr,
@@ -170,15 +200,13 @@ Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 
 template<typename T>
 Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
-	auto index = column_index(fptr, name);
-	int status = 0;
-	may_throw_cfitsio_error(status);
 	const auto ptr_col = ColumnDispatcher<T*>::read(fptr, name);
 	const auto rows = ptr_col.data.size();
 	Column<std::vector<T>> column { ptr_col.name, ptr_col.repeat, "TODO", std::vector<std::vector<T>>(rows) }; //TODO unit
 	for(std::size_t i=0; i<rows; ++i) {
-		const T* ptr_i = ptr_col.data[i];
+		T* ptr_i = ptr_col.data[i];
 		column.data[i].assign(ptr_i, ptr_i + ptr_col.repeat);
+		// delete[] ptr_i; //TODO keep?
 	}
 	return column;
 }
@@ -231,9 +259,12 @@ void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const Column<std::v
 		std::copy(data_i.data(), data_i.data() + data_i.size(), ptr_column.data[i]);
 	}
 	ColumnDispatcher<T*>::write(fptr, ptr_column);
+	// for(T* dptr : ptr_column.data)
+	// 	delete[] dptr; //TODO keep?
 }
 
 }
+/// @endcond
 
 
 /////////////////////

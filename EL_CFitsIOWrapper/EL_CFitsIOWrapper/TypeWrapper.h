@@ -132,6 +132,13 @@ struct TypeCode<std::vector<T>> {
 };
 
 
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+/// @cond IMPLEMENTATION
+
 #define DEF_RECORD_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_record() { return code; }
 
@@ -256,6 +263,8 @@ DEF_IMAGE_BITPIX(unsigned char, BYTE_IMG)
 DEF_IMAGE_BITPIX(unsigned short, USHORT_IMG)
 DEF_IMAGE_BITPIX(unsigned long, ULONG_IMG)
 //DEF_IMAGE_BITPIX(unsigned LONGLONG, ULONGLONG_IMG)
+
+/// @endcond
 
 }
 
