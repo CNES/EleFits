@@ -92,6 +92,12 @@ struct Raster {
 	std::vector<T> data;
 
 	/**
+	 * @brief Length along given axis.
+	 */
+	template<int i>
+	long length() const;
+
+	/**
 	 * @brief Number of pixels.
 	 */
 	std::size_t size() const;
@@ -165,6 +171,12 @@ template<typename T, std::size_t n>
 Raster<T, n>::Raster(pos_type<n> shape) :
 		shape(shape),
 		data(size()) {
+}
+
+template<typename T, std::size_t n>
+template<int i>
+inline long Raster<T, n>::length() const {
+	return std::get<i>(shape);
 }
 
 template<typename T, std::size_t n>
