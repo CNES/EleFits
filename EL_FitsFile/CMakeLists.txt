@@ -14,6 +14,7 @@ elements_subdir(EL_FitsFile)
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
+elements_depends_on_subdirs(EL_CfitsioWrapper)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -31,7 +32,7 @@ elements_depends_on_subdirs(ElementsKernel)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EL_FitsFile src/lib/*.cpp
-                     LINK_LIBRARIES ElementsKernel
+                     LINK_LIBRARIES ElementsKernel EL_CfitsioWrapper
                      PUBLIC_HEADERS EL_FitsFile)
 
 #===============================================================================
@@ -41,6 +42,8 @@ elements_add_library(EL_FitsFile src/lib/*.cpp
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
+elements_add_executable(EL_FitsIO_Example src/program/EL_FitsIO_Example.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -81,3 +84,4 @@ elements_add_unit_test(MultiExtFitsFile tests/src/MultiExtFitsFile_test.cpp
 # Examples:
 #          elements_install_conf_files()
 #===============================================================================
+elements_install_conf_files()

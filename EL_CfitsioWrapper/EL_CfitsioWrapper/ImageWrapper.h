@@ -104,12 +104,12 @@ struct Raster {
 	/**
 	 * @brief Pixel at given position.
 	 */
-	const T& operator()(const pos_type<n>& pos) const;
+	const T& operator[](const pos_type<n>& pos) const;
 
 	/**
 	 * @brief Pixel at given position.
 	 */
-	T& operator()(const pos_type<n>& pos);
+	T& operator[](const pos_type<n>& pos);
 
 };
 
@@ -178,13 +178,13 @@ inline std::size_t Raster<T, n>::index(const pos_type<n>& pos) const {
 }
 
 template<typename T, std::size_t n>
-inline const T& Raster<T, n>::operator()(const pos_type<n>& pos) const {
+inline const T& Raster<T, n>::operator[](const pos_type<n>& pos) const {
 	return data[index(pos)];
 }
 
 template<typename T, std::size_t n>
-inline T& Raster<T, n>::operator()(const pos_type<n>& pos) {
-	return const_cast<T&>(const_cast<const Raster*>(this)->operator()(pos));
+inline T& Raster<T, n>::operator[](const pos_type<n>& pos) {
+	return const_cast<T&>(const_cast<const Raster*>(this)->operator[](pos));
 }
 
 template<typename T, std::size_t n>

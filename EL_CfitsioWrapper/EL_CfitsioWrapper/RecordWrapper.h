@@ -152,6 +152,9 @@ void write_value(fitsfile* fptr, std::string keyword, T value) {
     may_throw_cfitsio_error(status);
 }
 
+template<>
+void write_value<std::string>(fitsfile* fptr, std::string keyword, std::string value);
+
 template<typename T>
 void write_record(fitsfile* fptr, const record_type<T>& record) {
     const char* keyword = std::get<0>(record).c_str();
@@ -164,12 +167,18 @@ void write_record(fitsfile* fptr, const record_type<T>& record) {
     may_throw_cfitsio_error(status);
 }
 
+template<>
+void write_record<std::string>(fitsfile* fptr, const record_type<std::string>& record);
+
 template<typename T>
 void update_value(fitsfile* fptr, std::string keyword, T value) {
     int status = 0;
     fits_update_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, nullptr, &status);
     may_throw_cfitsio_error(status);
 }
+
+template<>
+void update_value<std::string>(fitsfile* fptr, std::string keyword, std::string value);
 
 }
 }

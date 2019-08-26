@@ -117,7 +117,7 @@ bool init_primary(fitsfile* fptr) {
 bool update_name(fitsfile* fptr, std::string name) {
 	if(name == "")
 		return false;
-	Record::update_value<std::string>(fptr, "EXTNAME", name);
+	Record::update_value(fptr, "EXTNAME", name);
 	return true;
 }
 

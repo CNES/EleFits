@@ -41,7 +41,7 @@ SmallRaster::SmallRaster(long width, long height) :
 		width(width), height(height) {
 	for(int x=0; x<shape[0]; ++x)
 		for(int y=0; y<shape[1]; ++y)
-			operator()({x, y}) = 0.1 * y + x;
+			operator[]({x, y}) = 0.1 * y + x;
 }
 
 bool SmallRaster::approx(const Image::Raster<float>& other, float tol) const {
