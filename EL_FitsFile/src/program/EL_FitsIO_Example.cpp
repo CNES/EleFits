@@ -60,23 +60,51 @@ public:
 
         const std::string filename = args["output"].as<std::string>();
 
+        logger.info();
+
+        logger.info() << "Creating Fits file: " << filename;
         auto fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+        logger.info() << "Writing new record: VALUE = 1";
         Record::write_value(fptr, "VALUE", 1);
+        logger.info() << "Updating record: VALUE = 2";
+        Record::update_value(fptr, "VALUE", 2);
         Test::SmallTable table;
+        logger.info() << "Creating bintable extension: SMALLTBL";
         HDU::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
         Test::SmallRaster raster;
+        logger.info() << "Creating image extension: SMALLIMG";
         HDU::create_image_extension(fptr, "SMALLIMG", raster);
+        logger.info() << "Closing file.";
         File::close(fptr);
 
-        fptr = File::open(filename, File::OpenPolicy::READ_WRITE);
-        logger.info() << "Value: " << Record::parse_value<int>(fptr, "VALUE");
-        Record::update_value(fptr, "VALUE", 2);
-        logger.info() << "New value: " << Record::parse_value<int>(fptr, "VALUE");
+        logger.info();
+
+        logger.info() << "Reopening file.";
+        fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
+        logger.info() << "Reading record: VALUE = " << Record::parse_value<int>(fptr, "VALUE");
+
+        logger.info();
+
+        logger.info() << "Reading bintable.";
         HDU::goto_name(fptr, "SMALLTBL");
-        logger.info() << "First id: " << Bintable::read_column<int>(fptr, "ID").data[0];
+        const auto ids = Bintable::read_column<int>(fptr, "ID").data;
+        logger.info() << "First id: " << ids[0];
+        const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
+        logger.info() << "Last name: " << names[names.size()-1];
+
+        logger.info();
+        
+        logger.info() << "Reading image.";
         HDU::goto_name(fptr, "SMALLIMG");
-        logger.info() << "Some pixel: " << Image::read_raster<int>(fptr)[{0, 1}];
+        const auto image = Image::read_raster<float>(fptr);
+        logger.info() << "First pixel: " << image[{0, 0}];
+        const auto width = std::get<0>(image.shape);
+        const auto height = std::get<1>(image.shape);
+        logger.info() << "Last pixel: " << image[{width-1, height-1}];
+        logger.info() << "Reclosing file.";
         File::close(fptr);
+
+        logger.info();
 
         return Elements::ExitCode::OK;
 

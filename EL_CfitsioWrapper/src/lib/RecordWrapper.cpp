@@ -49,13 +49,16 @@ std::string parse_value<std::string>(fitsfile* fptr, std::string keyword) {
 
 template<>
 void write_value<std::string>(fitsfile* fptr, std::string keyword, std::string value) {
-    return write_value<char*>(fptr, keyword, &value[0]);
+    int status = 0;
+    fits_write_key(fptr, TypeCode<std::string>::for_record(), keyword.c_str(), &value[0], nullptr, &status);
+    may_throw_cfitsio_error(status);
 }
 
 template<>
 void update_value<std::string>(fitsfile* fptr, std::string keyword, std::string value) {
-    printf("Updating value %s of %s\n", value.c_str(), keyword.c_str());
-    return update_value<char*>(fptr, keyword, &value[0]);
+    int status = 0;
+    fits_update_key(fptr, TypeCode<std::string>::for_record(), keyword.c_str(), &value[0], nullptr, &status);
+    may_throw_cfitsio_error(status);
 }
 
 }

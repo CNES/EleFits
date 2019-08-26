@@ -110,7 +110,7 @@ bool goto_primary(fitsfile* fptr) {
 bool init_primary(fitsfile* fptr) {
 	if(count(fptr) > 0)
 		return false;
-	create_image_extension(fptr, "", Image::Raster<char, 1>());
+	create_image_extension(fptr, "", Image::Raster<unsigned char, 1>());
 	return true;
 }
 
