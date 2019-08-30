@@ -1,6 +1,6 @@
 /**
- * @file EL_FitsFile/MultiExtFitsFile.h
- * @date 07/23/19
+ * @file src/lib/MefFile.cpp
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,31 +21,12 @@
  *
  */
 
-#ifndef _EL_FITSFILE_MULTIEXTFITSFILE_H
-#define _EL_FITSFILE_MULTIEXTFITSFILE_H
+#include "EL_FitsFile/MefFile.h"
 
 namespace EL_FitsFile {
 
-/**
- * @class MultiExtFitsFile
- * @brief
- *
- */
-class MultiExtFitsFile {
-
-public:
-
-  /**
-   * @brief Destructor
-   */
-  virtual ~MultiExtFitsFile() = default;
-
-
-private:
-
-};  // End of MultiExtFitsFile class
 
 }  // namespace EL_FitsFile
 
 
-#endif
+

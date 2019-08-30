@@ -1,6 +1,6 @@
 /**
- * @file tests/src/MultiExtFitsFile_test.cpp
- * @date 07/23/19
+ * @file tests/src/MefFile_test.cpp
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -23,11 +23,11 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsFile//MultiExtFitsFile.h"
+#include "EL_FitsFile//MefFile.h"
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (MultiExtFitsFile_test)
+BOOST_AUTO_TEST_SUITE (MefFile_test)
 
 //-----------------------------------------------------------------------------
 

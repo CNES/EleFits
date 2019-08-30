@@ -33,7 +33,7 @@ std::string read_value(fitsfile* fptr, std::string keyword) {
     int status = 0;
     fits_read_keyword(fptr, keyword.c_str(), &cvalue[0], nullptr, &status);
     may_throw_cfitsio_error(status);
-    return std::string(&cvalue[0]);
+    return std::string(&cvalue[0]); //TODO remove '' for strings
 }    
 
 std::vector<std::string> read_values(fitsfile* fptr, std::vector<std::string> keywords) {

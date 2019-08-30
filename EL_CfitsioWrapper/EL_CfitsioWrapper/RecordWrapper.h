@@ -138,6 +138,9 @@ T parse_value(fitsfile* fptr, std::string keyword) {
     return value;
 }
 
+template<>
+std::string parse_value<std::string>(fitsfile* fptr, std::string keyword);
+
 template<typename ...Ts>
 std::tuple<Ts...> parse_values(fitsfile* fptr, std::vector<std::string> keywords) {
     std::tuple<Ts...> values;

@@ -1,6 +1,6 @@
 /**
- * @file EL_FitsFile/FitsFile.h
- * @date 07/23/19
+ * @file tests/src/Hdu_test.cpp
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,61 +21,24 @@
  *
  */
 
-#ifndef _EL_FITSFILE_FITSFILE_H
-#define _EL_FITSFILE_FITSFILE_H
+#include <boost/test/unit_test.hpp>
 
-#include <cfitsio/fitsio.h>
-#include <string>
+#include "EL_FitsFile//Hdu.h"
 
-namespace Euclid {
-namespace FitsIO {
+//-----------------------------------------------------------------------------
 
-/**
- * @brief Fits file handler.
- */
-class FitsFile {
+BOOST_AUTO_TEST_SUITE (Hdu_test)
 
-public:
+//-----------------------------------------------------------------------------
 
-	enum class Permission {
-		READ,
-		EDIT,
-		CREATE,
-		OVERWRITE
-	};
+BOOST_AUTO_TEST_CASE( example_test ) {
 
-	/**
-	 * @brief Create a new Fits file handler with given filename and permission.
-	 */
-	FitsFile(std::string filename, Permission permission);
-
-	/**
-	 * @brief Destroy the FitsFile handler.
-	 */
-	~FitsFile();
-
-	/**
-	 * @brief Open a Fits file.
-	 */
-	void open(std::string filename, Permission permission);
-
-	/**
-	 * @brief Close the Fits file.
-	 */
-	void close();
-
-	/**
-	 * @brief Close and delete the Fits file.
-	 */
-	void close_and_delete();
-
-private:
-
-	fitsfile* m_fptr;
-
-};
+  BOOST_FAIL("!!!! Please implement your tests !!!!");
 
 }
-}
 
-#endif
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE_END ()
+
+

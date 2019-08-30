@@ -1,6 +1,6 @@
 /**
- * @file src/lib/MultiExtFitsFile.cpp
- * @date 07/23/19
+ * @file tests/src/BintableHdu_test.cpp
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,12 +21,24 @@
  *
  */
 
-#include "EL_FitsFile/MultiExtFitsFile.h"
+#include <boost/test/unit_test.hpp>
 
-namespace EL_FitsFile {
+#include "EL_FitsFile//BintableHdu.h"
 
+//-----------------------------------------------------------------------------
 
-}  // namespace EL_FitsFile
+BOOST_AUTO_TEST_SUITE (BintableHdu_test)
 
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE( example_test ) {
+
+  BOOST_FAIL("!!!! Please implement your tests !!!!");
+
+}
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE_END ()
 
 

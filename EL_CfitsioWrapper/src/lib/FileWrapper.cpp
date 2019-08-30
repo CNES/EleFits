@@ -68,7 +68,7 @@ void close_and_delete(fitsfile* fptr) {
 }
 
 bool is_writable(fitsfile* fptr) {
-	return fptr->Fptr->writemode == READWRITE;
+	return fptr->Fptr->writemode == READWRITE; //TODO use dedicated CFitsIO function
 }
 
 }

@@ -48,11 +48,14 @@ void check_scalar() {
 	check_equal_vectors(output.data, input.data);
 }
 
+#define TEST_SCALAR_ALIAS(type, name) \
+	BOOST_AUTO_TEST_CASE( name##_test ) { check_scalar<type>(); }
+
 #define TEST_SCALAR(type) \
-	BOOST_AUTO_TEST_CASE( scalar_##type##_test ) { check_scalar<type>(); }
+	TEST_SCALAR_ALIAS(type, type)
 
 #define TEST_SCALAR_UNSIGNED(type) \
-	BOOST_AUTO_TEST_CASE( scalar_u##type##_test ) { check_scalar<unsigned type>(); }
+	TEST_SCALAR_ALIAS(unsigned type, u##type)
 
 // TEST_SCALAR(bool) //TODO won't compile
 TEST_SCALAR(char)
@@ -62,25 +65,11 @@ TEST_SCALAR(long)
 TEST_SCALAR(LONGLONG)
 TEST_SCALAR(float)
 TEST_SCALAR(double)
+TEST_SCALAR_ALIAS(std::string, string)
 TEST_SCALAR_UNSIGNED(char)
 TEST_SCALAR_UNSIGNED(short)
 TEST_SCALAR_UNSIGNED(int)
 TEST_SCALAR_UNSIGNED(long)
-
-
-void check_string() {
-	Test::SmallStringColumn input;
-	Test::MinimalFile file;
-	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
-	const auto output = Bintable::read_column<std::string>(file.fptr, input.name);
-	check_equal_vectors(output.data, input.data);
-}
-
-BOOST_AUTO_TEST_CASE( string_test ) {
-
-	check_string();
-
-}
 
 template<typename T>
 void check_vector() {

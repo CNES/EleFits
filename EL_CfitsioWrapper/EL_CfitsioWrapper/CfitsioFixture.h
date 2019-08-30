@@ -174,10 +174,6 @@ RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
 	Bintable::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
 }
 
-SmallStringColumn::SmallStringColumn() :
-	Bintable::Column<std::string> { "STRING", 8, "", { "A", "GC", "ABGCMBC" } } {
-}
-
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
 	Bintable::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
@@ -231,10 +227,7 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size) {
 	return vec;
 }
 
-
-
 }
 }
 
 #endif
-

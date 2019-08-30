@@ -1,6 +1,6 @@
 /**
- * @file EL_FitsFile/FitsFile.h
- * @date 07/23/19
+ * @file EL_FitsFile/SifFile.h
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,61 +21,31 @@
  *
  */
 
-#ifndef _EL_FITSFILE_FITSFILE_H
-#define _EL_FITSFILE_FITSFILE_H
+#ifndef _EL_FITSFILE_SIFFILE_H
+#define _EL_FITSFILE_SIFFILE_H
 
-#include <cfitsio/fitsio.h>
-#include <string>
-
-namespace Euclid {
-namespace FitsIO {
+namespace EL_FitsFile {
 
 /**
- * @brief Fits file handler.
+ * @class SifFile
+ * @brief
+ *
  */
-class FitsFile {
+class SifFile {
 
 public:
 
-	enum class Permission {
-		READ,
-		EDIT,
-		CREATE,
-		OVERWRITE
-	};
+  /**
+   * @brief Destructor
+   */
+  virtual ~SifFile() = default;
 
-	/**
-	 * @brief Create a new Fits file handler with given filename and permission.
-	 */
-	FitsFile(std::string filename, Permission permission);
-
-	/**
-	 * @brief Destroy the FitsFile handler.
-	 */
-	~FitsFile();
-
-	/**
-	 * @brief Open a Fits file.
-	 */
-	void open(std::string filename, Permission permission);
-
-	/**
-	 * @brief Close the Fits file.
-	 */
-	void close();
-
-	/**
-	 * @brief Close and delete the Fits file.
-	 */
-	void close_and_delete();
 
 private:
 
-	fitsfile* m_fptr;
+};  // End of SifFile class
 
-};
+}  // namespace EL_FitsFile
 
-}
-}
 
 #endif

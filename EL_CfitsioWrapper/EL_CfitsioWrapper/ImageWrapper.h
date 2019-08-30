@@ -94,7 +94,7 @@ struct Raster {
 	/**
 	 * @brief Length along given axis.
 	 */
-	template<int i>
+	template<std::size_t i>
 	long length() const;
 
 	/**
@@ -174,7 +174,7 @@ Raster<T, n>::Raster(pos_type<n> shape) :
 }
 
 template<typename T, std::size_t n>
-template<int i>
+template<std::size_t i>
 inline long Raster<T, n>::length() const {
 	return std::get<i>(shape);
 }

@@ -21,12 +21,45 @@
  *
  */
 
+#include "EL_CfitsioWrapper/FileWrapper.h"
+
 #include "EL_FitsFile/FitsFile.h"
 
-namespace EL_FitsFile {
+namespace Euclid {
+namespace FitsIO {
 
+FitsFile::FitsFile(std::string filename, Permission permission) {
+	open(filename, permission);
+}
 
-}  // namespace EL_FitsFile
+FitsFile::~FitsFile() {
+	close();
+}
 
+void FitsFile::open(std::string filename, Permission permission) {
+	switch (permission) {
+	case Permission::READ:
+		m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_ONLY);
+		break;
+	case Permission::EDIT:
+		m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_WRITE);
+		break;
+	case Permission::CREATE:
+		m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
+		break;
+	case Permission::OVERWRITE:
+		m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
+		break;
+	}
+}
 
+void FitsFile::close() {
+	Cfitsio::File::close(m_fptr);
+}
 
+void FitsFile::close_and_delete() {
+	Cfitsio::File::close_and_delete(m_fptr);
+}
+
+}
+}

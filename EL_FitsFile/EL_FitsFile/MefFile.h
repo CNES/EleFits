@@ -1,6 +1,6 @@
 /**
- * @file EL_FitsFile/SingleExtFitsFile.h
- * @date 07/23/19
+ * @file EL_FitsFile/MefFile.h
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,29 +21,29 @@
  *
  */
 
-#ifndef _EL_FITSFILE_SINGLEEXTFITSFILE_H
-#define _EL_FITSFILE_SINGLEEXTFITSFILE_H
+#ifndef _EL_FITSFILE_MEFFILE_H
+#define _EL_FITSFILE_MEFFILE_H
 
 namespace EL_FitsFile {
 
 /**
- * @class SingleExtFitsFile
+ * @class MefFile
  * @brief
  *
  */
-class SingleExtFitsFile {
+class MefFile {
 
 public:
 
   /**
    * @brief Destructor
    */
-  virtual ~SingleExtFitsFile() = default;
+  virtual ~MefFile() = default;
 
 
 private:
 
-};  // End of SingleExtFitsFile class
+};  // End of MefFile class
 
 }  // namespace EL_FitsFile
 

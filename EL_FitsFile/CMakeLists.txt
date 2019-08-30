@@ -57,12 +57,24 @@ elements_add_unit_test(FitsFile tests/src/FitsFile_test.cpp
                      EXECUTABLE EL_FitsFile_FitsFile_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
-elements_add_unit_test(SingleExtFitsFile tests/src/SingleExtFitsFile_test.cpp 
-                     EXECUTABLE EL_FitsFile_SingleExtFitsFile_test
+elements_add_unit_test(MefFile tests/src/MefFile_test.cpp 
+                     EXECUTABLE EL_FitsFile_MefFile_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
-elements_add_unit_test(MultiExtFitsFile tests/src/MultiExtFitsFile_test.cpp 
-                     EXECUTABLE EL_FitsFile_MultiExtFitsFile_test
+elements_add_unit_test(SifFile tests/src/SifFile_test.cpp 
+                     EXECUTABLE EL_FitsFile_SifFile_test
+                     LINK_LIBRARIES EL_FitsFile
+                     TYPE Boost)
+elements_add_unit_test(Hdu tests/src/Hdu_test.cpp 
+                     EXECUTABLE EL_FitsFile_Hdu_test
+                     LINK_LIBRARIES EL_FitsFile
+                     TYPE Boost)
+elements_add_unit_test(ImageHdu tests/src/ImageHdu_test.cpp 
+                     EXECUTABLE EL_FitsFile_ImageHdu_test
+                     LINK_LIBRARIES EL_FitsFile
+                     TYPE Boost)
+elements_add_unit_test(BintableHdu tests/src/BintableHdu_test.cpp 
+                     EXECUTABLE EL_FitsFile_BintableHdu_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
 

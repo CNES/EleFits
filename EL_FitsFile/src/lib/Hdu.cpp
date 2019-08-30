@@ -1,6 +1,6 @@
 /**
- * @file EL_FitsFile/FitsFile.h
- * @date 07/23/19
+ * @file src/lib/Hdu.cpp
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,61 +21,12 @@
  *
  */
 
-#ifndef _EL_FITSFILE_FITSFILE_H
-#define _EL_FITSFILE_FITSFILE_H
+#include "EL_FitsFile/Hdu.h"
 
-#include <cfitsio/fitsio.h>
-#include <string>
+namespace EL_FitsFile {
 
-namespace Euclid {
-namespace FitsIO {
 
-/**
- * @brief Fits file handler.
- */
-class FitsFile {
+}  // namespace EL_FitsFile
 
-public:
 
-	enum class Permission {
-		READ,
-		EDIT,
-		CREATE,
-		OVERWRITE
-	};
 
-	/**
-	 * @brief Create a new Fits file handler with given filename and permission.
-	 */
-	FitsFile(std::string filename, Permission permission);
-
-	/**
-	 * @brief Destroy the FitsFile handler.
-	 */
-	~FitsFile();
-
-	/**
-	 * @brief Open a Fits file.
-	 */
-	void open(std::string filename, Permission permission);
-
-	/**
-	 * @brief Close the Fits file.
-	 */
-	void close();
-
-	/**
-	 * @brief Close and delete the Fits file.
-	 */
-	void close_and_delete();
-
-private:
-
-	fitsfile* m_fptr;
-
-};
-
-}
-}
-
-#endif

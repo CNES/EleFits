@@ -38,10 +38,9 @@ template<typename T>
 void check_record(std::string tag) {
 	Test::MinimalFile file;
 	T input = Test::generate_random_value<T>();
-	Record::write_value(file.fptr, "key", input);
-	std::cout << tag << '\t' << input << std::endl;
-	const auto output = Record::parse_value<T>(file.fptr, "key");
-  BOOST_CHECK_EQUAL(output, input);
+	Record::write_value(file.fptr, tag, input);
+	const auto output = Record::parse_value<T>(file.fptr, tag);
+	BOOST_CHECK_EQUAL(output, input);
 }
 
 #define TEST_RECORD_ALIAS(type, name) \

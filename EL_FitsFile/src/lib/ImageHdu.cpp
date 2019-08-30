@@ -1,6 +1,6 @@
 /**
- * @file src/lib/SingleExtFitsFile.cpp
- * @date 07/23/19
+ * @file src/lib/ImageHdu.cpp
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,7 +21,7 @@
  *
  */
 
-#include "EL_FitsFile/SingleExtFitsFile.h"
+#include "EL_FitsFile/ImageHdu.h"
 
 namespace EL_FitsFile {
 

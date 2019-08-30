@@ -1,6 +1,6 @@
 /**
- * @file tests/src/SingleExtFitsFile_test.cpp
- * @date 07/23/19
+ * @file EL_FitsFile/ImageHdu.h
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,24 +21,31 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
+#ifndef _EL_FITSFILE_IMAGEHDU_H
+#define _EL_FITSFILE_IMAGEHDU_H
 
-#include "EL_FitsFile//SingleExtFitsFile.h"
+namespace EL_FitsFile {
 
-//-----------------------------------------------------------------------------
+/**
+ * @class ImageHdu
+ * @brief
+ *
+ */
+class ImageHdu {
 
-BOOST_AUTO_TEST_SUITE (SingleExtFitsFile_test)
+public:
 
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
-}
-
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE_END ()
+  /**
+   * @brief Destructor
+   */
+  virtual ~ImageHdu() = default;
 
 
+private:
+
+};  // End of ImageHdu class
+
+}  // namespace EL_FitsFile
+
+
+#endif
