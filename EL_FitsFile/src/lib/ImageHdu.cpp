@@ -23,10 +23,11 @@
 
 #include "EL_FitsFile/ImageHdu.h"
 
-namespace EL_FitsFile {
+namespace Euclid {
+namespace FitsIO {
 
+ImageHdu::ImageHdu(fitsfile* fptr, std::size_t index) :
+        Hdu(fptr, index) {}
 
-}  // namespace EL_FitsFile
-
-
-
+}
+}

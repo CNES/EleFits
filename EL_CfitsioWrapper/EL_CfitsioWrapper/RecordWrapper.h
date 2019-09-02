@@ -54,6 +54,9 @@ using record_type = std::tuple<std::string, T, std::string, std::string>;
 template<typename T>
 T parse_value(fitsfile* fptr, std::string keyword);
 
+template<typename T>
+record_type<T> parse_record(fitsfile* fptr, std::string keyword);
+
 /**
  * @brief Read the values of a given set of keywords with specified types.
  */
@@ -140,6 +143,14 @@ T parse_value(fitsfile* fptr, std::string keyword) {
 
 template<>
 std::string parse_value<std::string>(fitsfile* fptr, std::string keyword);
+
+template<typename T>
+record_type<T> parse_record(fitsfile* fptr, std::string keyword) {
+    record_type<T> record;
+    record.keyword = keyword;
+    record.value = parse_value<T>(fptr, keyword);
+    return record; //TODO unit & comment
+}
 
 template<typename ...Ts>
 std::tuple<Ts...> parse_values(fitsfile* fptr, std::vector<std::string> keywords) {

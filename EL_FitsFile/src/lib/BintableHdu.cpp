@@ -23,10 +23,11 @@
 
 #include "EL_FitsFile/BintableHdu.h"
 
-namespace EL_FitsFile {
+namespace Euclid {
+namespace FitsIO {
 
+BintableHdu::BintableHdu(fitsfile* fptr, std::size_t index) :
+        Hdu(fptr, index) {}
 
-}  // namespace EL_FitsFile
-
-
-
+}
+}

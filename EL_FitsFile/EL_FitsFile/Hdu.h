@@ -24,8 +24,7 @@
 #ifndef _EL_FITSFILE_HDU_H
 #define _EL_FITSFILE_HDU_H
 
-#include "EL_CfitsioWrapper/RecordWrapper.h"
-#include "EL_FitsFile/FitsFile.h"
+#include "EL_CfitsioWrapper/RecordWrapper.h" //TODO new module EL_FitsData for Record
 
 namespace Euclid {
 namespace FitsIO {
@@ -37,7 +36,7 @@ public:
 	template<typename T>
 	using Record = Cfitsio::Record::record_type<T>;
 
-	Hdu(FitsFile& file, std::size_t index);
+	Hdu(fitsfile* file, std::size_t index);
 
 	virtual ~Hdu() = default;
 
@@ -64,16 +63,51 @@ public:
 	template<typename T>
 	void write_record(const Record<T>& record) const;
 
-	template<typename T>
-	void update_record(const Record<T>& record) const;
-
 protected:
 
-	FitsFile& m_file;
+	void goto_this_hdu() const;
+
+	fitsfile* m_fptr;
 
 	std::size_t m_index;
 
 };
+
+
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+template<typename T>
+T Hdu::parse_value(std::string keyword) const {
+	goto_this_hdu();
+	return Cfitsio::Record::parse_value<T>(m_fptr, keyword);
+}
+
+template<typename T>
+void Hdu::write_value(std::string keyword, T value) const {
+	goto_this_hdu();
+	Cfitsio::Record::write_value(m_fptr, keyword, value);
+}
+
+template<typename T>
+void Hdu::update_value(std::string keyword, T value) const {
+	goto_this_hdu();
+	Cfitsio::Record::update_value(m_fptr, keyword, value);
+}
+
+template<typename T>
+Hdu::Record<T> Hdu::parse_record(std::string keyword) const {
+	goto_this_hdu();
+	Cfitsio::Record::parse_record<T>(m_fptr, keyword);
+}
+
+template<typename T>
+void Hdu::write_record(const Hdu::Record<T>& record) const {
+	goto_this_hdu();
+	Cfitsio::Record::write_record(m_fptr, record);
+}
 
 }
 }

@@ -24,28 +24,52 @@
 #ifndef _EL_FITSFILE_BINTABLEHDU_H
 #define _EL_FITSFILE_BINTABLEHDU_H
 
+#include "EL_CfitsioWrapper/BintableWrapper.h" // TODO New module EL_FitsData for Column
+#include "EL_FitsFile/Hdu.h"
+
 namespace Euclid {
 namespace FitsIO {
 
-
-/**
- * @class BintableHdu
- * @brief
- *
- */
-class BintableHdu {
+class BintableHdu : public Hdu {
 
 public:
 
-  /**
-   * @brief Destructor
-   */
-  virtual ~BintableHdu() = default;
+	template<typename T>
+	using Column = Cfitsio::Bintable::Column<T>;
 
+	BintableHdu(fitsfile* fptr, std::size_t index);
 
-private:
+	virtual ~BintableHdu() = default;
+
+	/**
+	 * @brief Read a Column with given name.
+	 */
+	template<typename T>
+	Column<T> read_column(std::string name) const;
+
+	/**
+	 * @brief Write a Column.
+	 */
+	template<typename T>
+	void write_column(const Column<T>& column) const;
 
 };
+
+
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+template<typename T>
+BintableHdu::Column<T> BintableHdu::read_column(std::string name) const {
+	return Cfitsio::Bintable::read_column<T>(m_fptr, name);
+}
+
+template<typename T>
+void BintableHdu::write_column(const BintableHdu::Column<T>& column) const {
+	Cfitsio::Bintable::write_column(m_fptr, column);
+}
 
 }
 }

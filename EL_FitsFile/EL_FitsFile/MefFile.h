@@ -24,28 +24,115 @@
 #ifndef _EL_FITSFILE_MEFFILE_H
 #define _EL_FITSFILE_MEFFILE_H
 
-namespace EL_FitsFile {
+#include "EL_CfitsioWrapper/HduWrapper.h"
+
+#include "EL_FitsFile/FitsFile.h"
+
+namespace Euclid {
+namespace FitsIO {
 
 /**
- * @class MefFile
- * @brief
- *
+ * @brief Multi-Extension Fits file reader-writer.
  */
-class MefFile {
+class MefFile : public FitsFile {
 
 public:
 
-  /**
-   * @brief Destructor
-   */
-  virtual ~MefFile() = default;
+	/**
+	 * @brief Create a new MefFile with given filename and permission.
+	 */
+	MefFile(std::string filename, Permission permission);
+
+	virtual ~MefFile() = default;
+
+	/**
+	 * @brief Access the Hdu at given index.
+	 * @tparam The type of Hdu: ImageHdu, BintableHdu or Hdu to just handle metadata.
+	 * @return A reference to the Hdu reader-writer.
+	 * @details
+	 * The type can be ImageHdu, BintableHdu or unspecified (base class Hdu).
+	 * In the latter case, if needs be, the returned Hdu can still be cast to an ImageHdu or BintableHdu,
+	 * or merely be used as a metadata reader-writer, e.g.:
+	 */
+/** @code
+auto ext = f.hdu<>(3);
+ext.write_value("KEYWORD", 2.0);
+auto image_ext = dynamic_cast<ImageHdu&>(ext);
+auto raster = image_ext.read_raster<double>();
+@endcode */
+	template<class T=Hdu>
+	T& access(std::size_t index);
+
+	/**
+	 * @brief Access the first Hdu with given name.
+	 * @see access
+	 */
+	template<class T=Hdu>
+	T& access_first(std::string name);
+
+	/**
+	 * @brief Access the Primary Hdu.
+	 * @see access
+	 */
+	template<class T=Hdu>
+	T& access_primary();
+
+	/**
+	 * @brief Append an Hdu with optional name.
+	 * @return A reference to the new Hdu reader-writer.
+	 * @details
+	 * Can be piped with write services, e.g.:
+	 */
+/** @code
+f.append<ImageHdu>("IMAGE").write_raster(raster);
+@endcode */
+	template<class T>
+	T& append(std::string name="");
+
+protected:
+
+	std::vector<std::unique_ptr<Hdu>> m_hdus;
+
+};
 
 
-private:
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
 
-};  // End of MefFile class
 
-}  // namespace EL_FitsFile
+template<class T>
+T& MefFile::access(std::size_t index) {
+    Cfitsio::HDU::goto_index(m_fptr, index);
+    auto hdu_type = Cfitsio::HDU::current_type(m_fptr);
+    std::unique_ptr<Hdu> ptr;
+    switch (hdu_type) {
+    case Cfitsio::HDU::Type::IMAGE:
+        ptr.reset(new ImageHdu(m_fptr, index));
+        break;
+    case Cfitsio::HDU::Type::BINTABLE:
+        ptr.reset(new BintableHdu(m_fptr, index));
+        break;
+    default:
+        break;
+    }
+	m_hdus.reserve(index + 1);
+    m_hdus.insert(m_hdus.begin() + index, std::move(ptr));
+    return dynamic_cast<T&>(m_hdus[index].get());
+}
 
+template<class T>
+T& MefFile::access_first(std::string name) {
+    Cfitsio::HDU::goto_name(m_fptr, name);
+    return access<T>(Cfitsio::HDU::current_index(m_fptr));
+}
+
+template<class T>
+T& MefFile::access_primary() {
+	return access<T>(1);
+}
+
+}
+}
 
 #endif

@@ -23,10 +23,13 @@
 
 #include "EL_FitsFile/MefFile.h"
 
-namespace EL_FitsFile {
+#include "EL_CfitsioWrapper/HduWrapper.h"
 
+namespace Euclid {
+namespace FitsIO {
 
-}  // namespace EL_FitsFile
+MefFile::MefFile(std::string filename, Permission permission) :
+        FitsFile(filename, permission) {}
 
-
-
+}
+}

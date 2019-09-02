@@ -37,9 +37,9 @@ class SifFile : public FitsFile, ImageHdu {
 
 public:
 
-	SifFile(std::string filename, FitsFile::Permission permission);
+	SifFile(std::string filename, Permission permission);
 
-	virtual ~SifFile();
+	virtual ~SifFile() = default;
 
 };
 

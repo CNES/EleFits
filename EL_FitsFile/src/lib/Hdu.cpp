@@ -23,10 +23,37 @@
 
 #include "EL_FitsFile/Hdu.h"
 
-namespace EL_FitsFile {
+#include "EL_CfitsioWrapper/HduWrapper.h"
+#include "EL_CfitsioWrapper/RecordWrapper.h"
 
+namespace Euclid {
+namespace FitsIO {
 
-}  // namespace EL_FitsFile
+Hdu::Hdu(fitsfile* fptr, std::size_t index) :
+		m_fptr(fptr), m_index(index) {}
 
+std::size_t Hdu::index() const {
+	return m_index;
+}
 
+std::string Hdu::name() const {
+	goto_this_hdu();
+	return Cfitsio::HDU::current_name(m_fptr);
+}
 
+void Hdu::rename(std::string name) const {
+	goto_this_hdu();
+	Cfitsio::HDU::update_name(m_fptr, name);
+}
+
+std::string Hdu::read_value(std::string keyword) const {
+	goto_this_hdu();
+	return Cfitsio::Record::read_value(m_fptr, keyword);
+}
+
+void Hdu::goto_this_hdu() const {
+	Cfitsio::HDU::goto_index(m_fptr, m_index);
+}
+
+}
+}
