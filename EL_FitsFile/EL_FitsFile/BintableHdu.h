@@ -24,7 +24,9 @@
 #ifndef _EL_FITSFILE_BINTABLEHDU_H
 #define _EL_FITSFILE_BINTABLEHDU_H
 
-namespace EL_FitsFile {
+namespace Euclid {
+namespace FitsIO {
+
 
 /**
  * @class BintableHdu
@@ -43,9 +45,9 @@ public:
 
 private:
 
-};  // End of BintableHdu class
+};
 
-}  // namespace EL_FitsFile
-
+}
+}
 
 #endif

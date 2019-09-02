@@ -24,28 +24,32 @@
 #ifndef _EL_FITSFILE_IMAGEHDU_H
 #define _EL_FITSFILE_IMAGEHDU_H
 
-namespace EL_FitsFile {
+#include "EL_CfitsioWrapper/ImageWrapper.h"
+#include "EL_FitsFile/Hdu.h"
 
-/**
- * @class ImageHdu
- * @brief
- *
- */
-class ImageHdu {
+namespace Euclid {
+namespace FitsIO {
+
+class ImageHdu : public Hdu {
 
 public:
 
-  /**
-   * @brief Destructor
-   */
-  virtual ~ImageHdu() = default;
+	template<typename T, std::size_t n>
+	using Raster = Cfitsio::Image::Raster<T, n>;
 
+	ImageHdu(FitsFile& file, std::size_t index);
 
-private:
+	virtual ~ImageHdu();
 
-};  // End of ImageHdu class
+	template<typename T, std::size_t n=2>
+	Raster<T, n> read_raster() const;
 
-}  // namespace EL_FitsFile
+	template<typename T, std::size_t n=2>
+	void write_raster(const Raster<T, n>& raster) const;
 
+};
+
+}
+}
 
 #endif

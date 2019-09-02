@@ -24,28 +24,58 @@
 #ifndef _EL_FITSFILE_HDU_H
 #define _EL_FITSFILE_HDU_H
 
-namespace EL_FitsFile {
+#include "EL_CfitsioWrapper/RecordWrapper.h"
+#include "EL_FitsFile/FitsFile.h"
 
-/**
- * @class Hdu
- * @brief
- *
- */
+namespace Euclid {
+namespace FitsIO {
+
 class Hdu {
 
 public:
 
-  /**
-   * @brief Destructor
-   */
-  virtual ~Hdu() = default;
+	template<typename T>
+	using Record = Cfitsio::Record::record_type<T>;
 
+	Hdu(FitsFile& file, std::size_t index);
 
-private:
+	virtual ~Hdu() = default;
 
-};  // End of Hdu class
+	std::size_t index() const;
 
-}  // namespace EL_FitsFile
+	std::string name() const;
 
+	void rename(std::string) const;
+
+	std::string read_value(std::string keyword) const;
+
+	template<typename T>
+	T parse_value(std::string keyword) const;
+
+	template<typename T>
+	void write_value(std::string keyword, T value) const;
+
+	template<typename T>
+	void update_value(std::string keyword, T value) const;
+
+	template<typename T>
+	Record<T> parse_record(std::string keyword) const;
+
+	template<typename T>
+	void write_record(const Record<T>& record) const;
+
+	template<typename T>
+	void update_record(const Record<T>& record) const;
+
+protected:
+
+	FitsFile& m_file;
+
+	std::size_t m_index;
+
+};
+
+}
+}
 
 #endif

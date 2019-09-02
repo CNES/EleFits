@@ -24,28 +24,26 @@
 #ifndef _EL_FITSFILE_SIFFILE_H
 #define _EL_FITSFILE_SIFFILE_H
 
-namespace EL_FitsFile {
+#include "EL_FitsFile/FitsFile.h"
+#include "EL_FitsFile/ImageHdu.h"
+
+namespace Euclid {
+namespace FitsIO {
 
 /**
- * @class SifFile
- * @brief
- *
+ * @brief Single image Fits file handler.
  */
-class SifFile {
+class SifFile : public FitsFile, ImageHdu {
 
 public:
 
-  /**
-   * @brief Destructor
-   */
-  virtual ~SifFile() = default;
+	SifFile(std::string filename, FitsFile::Permission permission);
 
+	virtual ~SifFile();
 
-private:
+};
 
-};  // End of SifFile class
-
-}  // namespace EL_FitsFile
-
+}
+}
 
 #endif
