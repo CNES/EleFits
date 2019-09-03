@@ -121,11 +121,12 @@ T& MefFile::access(std::size_t index) {
         ptr.reset(new BintableHdu(m_fptr, index));
         break;
     default:
+		ptr.reset(new Hdu(m_fptr, index));
         break;
     }
-	m_hdus.reserve(index + 1);
-    m_hdus.insert(m_hdus.begin() + index, std::move(ptr));
-    return dynamic_cast<T&>(*m_hdus[index].get());
+	m_hdus.reserve(index);
+    m_hdus.insert(m_hdus.begin() + index-1, std::move(ptr));
+    return dynamic_cast<T&>(*m_hdus[index-1].get());
 }
 
 template<class T>
@@ -142,19 +143,19 @@ T& MefFile::access_primary() {
 template<std::size_t n>
 ImageHdu& MefFile::init_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name) {
     Cfitsio::HDU::create_image_extension(m_fptr, name, shape);
-	const auto index = m_hdus.size();
-	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, index));
+	const auto size = m_hdus.size();
+	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, size+1));
 	m_hdus.push_back(ptr);
-	return dynamic_cast<ImageHdu&>(*m_hdus[index].get());
+	return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
 
 template<typename T, std::size_t n>
 ImageHdu& MefFile::assign_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name) {
     Cfitsio::HDU::create_image_extension(m_fptr, name, raster);
-	const auto index = m_hdus.size();
-	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, index));
+	const auto size = m_hdus.size();
+	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, size+1));
 	m_hdus.push_back(std::move(ptr));
-	return dynamic_cast<ImageHdu&>(*m_hdus[index].get());
+	return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
 
 }
