@@ -45,6 +45,7 @@ public:
 	options_description defineSpecificProgramOptions() override {
 
 		options_description options {};
+		options.add_options()
 				("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
 		return options;
 	}
@@ -69,7 +70,7 @@ public:
 		// HDU::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
 		Cfitsio::Test::SmallRaster raster; // Predefined image raster for testing purpose
 		logger.info() << "Creating image extension: SMALLIMG";
-		f.append<ImageHdu>("SMALLIMG").write_raster(raster);
+		f.assign_image_ext(raster, "SMALLIMG");
 		logger.info() << "Closing file.";
 		f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
 

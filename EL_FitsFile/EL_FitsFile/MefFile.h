@@ -55,7 +55,7 @@ public:
 	 * or merely be used as a metadata reader-writer, e.g.:
 	 */
 /** @code
-auto ext = f.hdu<>(3);
+auto ext = f.access<>(3);
 ext.write_value("KEYWORD", 2.0);
 auto image_ext = dynamic_cast<ImageHdu&>(ext);
 auto raster = image_ext.read_raster<double>();
@@ -78,16 +78,23 @@ auto raster = image_ext.read_raster<double>();
 	T& access_primary();
 
 	/**
-	 * @brief Append an Hdu with optional name.
-	 * @return A reference to the new Hdu reader-writer.
+	 * @brief Append an ImageHdu with given shape optional name.
+	 * @return A reference to the new ImageHdu reader-writer.
 	 * @details
 	 * Can be piped with write services, e.g.:
 	 */
 /** @code
-f.append<ImageHdu>("IMAGE").write_raster(raster);
+f.append_image_ext("IMAGE").write_raster(raster);
 @endcode */
-	template<class T>
-	T& append(std::string name="");
+	template<std::size_t n>
+	ImageHdu& init_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name=""); //TODO shape in EL_FitsData
+
+	/**
+	 * @brief Append an ImageHdu with given data and optional name.
+	 * @see prepare_image_ext
+	 */
+	template<typename T, std::size_t n>
+	ImageHdu& assign_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name=""); //TODO idem
 
 protected:
 
@@ -118,7 +125,7 @@ T& MefFile::access(std::size_t index) {
     }
 	m_hdus.reserve(index + 1);
     m_hdus.insert(m_hdus.begin() + index, std::move(ptr));
-    return dynamic_cast<T&>(m_hdus[index].get());
+    return dynamic_cast<T&>(*m_hdus[index].get());
 }
 
 template<class T>
@@ -130,6 +137,24 @@ T& MefFile::access_first(std::string name) {
 template<class T>
 T& MefFile::access_primary() {
 	return access<T>(1);
+}
+
+template<std::size_t n>
+ImageHdu& MefFile::init_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name) {
+    Cfitsio::HDU::create_image_extension(m_fptr, name, shape);
+	const auto index = m_hdus.size();
+	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, index));
+	m_hdus.push_back(ptr);
+	return dynamic_cast<ImageHdu&>(*m_hdus[index].get());
+}
+
+template<typename T, std::size_t n>
+ImageHdu& MefFile::assign_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name) {
+    Cfitsio::HDU::create_image_extension(m_fptr, name, raster);
+	const auto index = m_hdus.size();
+	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, index));
+	m_hdus.push_back(std::move(ptr));
+	return dynamic_cast<ImageHdu&>(*m_hdus[index].get());
 }
 
 }

@@ -91,7 +91,7 @@ public:
 	 */
 	void close_and_delete();
 
-private:
+protected:
 
 	fitsfile* m_fptr;
 
