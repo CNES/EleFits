@@ -1,6 +1,6 @@
 /**
- * @file src/lib/Hdu.cpp
- * @date 08/30/19
+ * @file EL_FitsData/Record.h
+ * @date 09/03/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,39 +21,57 @@
  *
  */
 
-#include "EL_FitsFile/Hdu.h"
+#ifndef _EL_FITSDATA_RECORD_H
+#define _EL_FITSDATA_RECORD_H
 
-#include "EL_CfitsioWrapper/HduWrapper.h"
-#include "EL_CfitsioWrapper/RecordWrapper.h"
+#include <string>
+#include <tuple>
 
 namespace Euclid {
 namespace FitsIO {
 
-Hdu::Hdu(fitsfile* fptr, std::size_t index) :
-		m_fptr(fptr), m_index(index) {}
+/**
+ * @brief Keyword-value pair with optional unit and comment.
+ */
+template<typename T>
+struct Record {
 
-std::size_t Hdu::index() const {
-	return m_index;
+	/**
+	 * @brief Assign a record.
+	 */
+	Record(std::string k, T v=T(), std::string u="", std::string c="");
+
+	/**
+	 * @brief Slice the record as its value.
+	 */
+	operator T () const;
+
+	std::string keyword;
+	T value;
+	std::string unit;
+	std::string comment;
+
+};
+
+
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+template<typename T>
+Record<T>::Record(std::string k, T v, std::string u, std::string c) :
+	keyword(k),
+	value(v),
+	unit(u),
+	comment(c) {}
+
+template<typename T>
+Record<T>::operator T() const {
+	return value;
 }
 
-std::string Hdu::name() const {
-	goto_this_hdu();
-	return Cfitsio::HDU::current_name(m_fptr);
+}
 }
 
-void Hdu::rename(std::string name) const {
-	goto_this_hdu();
-	Cfitsio::HDU::update_name(m_fptr, name);
-}
-
-std::string Hdu::read_value(std::string keyword) const {
-	goto_this_hdu();
-	return Cfitsio::Record::read_value(m_fptr, keyword);
-}
-
-void Hdu::goto_this_hdu() const {
-	Cfitsio::HDU::goto_index(m_fptr, m_index);
-}
-
-}
-}
+#endif

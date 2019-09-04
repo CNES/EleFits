@@ -1,5 +1,5 @@
 /**
- * @file tests/src/RecordWrapper_test.cpp
+ * @file tests/src/HeaderWrapper_test.cpp
  * @date 07/23/19
  * @author user
  *
@@ -24,23 +24,24 @@
 #include <boost/test/unit_test.hpp>
 
 #include "EL_CfitsioWrapper//CfitsioFixture.h"
-#include "EL_CfitsioWrapper//RecordWrapper.h"
+#include "EL_CfitsioWrapper//HeaderWrapper.h"
 
+using namespace Euclid;
 using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (RecordWrapper_test)
+BOOST_AUTO_TEST_SUITE (HeaderWrapper_test)
 
 //-----------------------------------------------------------------------------
 
 template<typename T>
 void check_record(std::string tag) {
-	Test::MinimalFile file;
-	T input = Test::generate_random_value<T>();
-	Record::write_value(file.fptr, tag, input);
-	const auto output = Record::parse_value<T>(file.fptr, tag);
-	BOOST_CHECK_EQUAL(output, input);
+	FitsIO::Test::MinimalFile file;
+	T input = FitsIO::Test::generate_random_value<T>();
+	Header::write_record(file.fptr, FitsIO::Record<T>(tag, input));
+	const auto output = Header::parse_record<T>(file.fptr, tag);
+	BOOST_CHECK_EQUAL(output.value, input);
 }
 
 #define TEST_RECORD_ALIAS(type, name) \
@@ -71,5 +72,3 @@ TEST_RECORD_UNSIGNED(long)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-

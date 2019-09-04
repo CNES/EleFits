@@ -1,6 +1,6 @@
 /**
- * @file src/lib/ErrorHandler.cpp
- * @date 07/23/19
+ * @file src/lib/Hdu.cpp
+ * @date 08/30/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,28 +21,38 @@
  *
  */
 
-#include "EL_CfitsioWrapper/FileWrapper.h"
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
+#include "EL_FitsFile/RecordHdu.h"
+
+#include "EL_CfitsioWrapper/HduWrapper.h"
+#include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {
-namespace Cfitsio {
+namespace FitsIO {
 
-void may_throw_cfitsio_error(int status) {
-    if(status == 0)
-        return;
-    char msg[FLEN_ERRMSG];
-    fits_get_errstatus(status, msg);
-    throw CfitsioError("CFitsIO error " + std::to_string(status) + ": " + msg);
+RecordHdu::RecordHdu(fitsfile* fptr, std::size_t index) :
+		m_fptr(fptr), m_index(index) {}
+
+std::size_t RecordHdu::index() const {
+	return m_index;
 }
 
-void may_throw_readonly_error(fitsfile* fptr) {
-    if(not File::is_writable(fptr))
-        may_throw_cfitsio_error(READONLY_FILE);
+std::string RecordHdu::name() const {
+	goto_this_hdu();
+	return Cfitsio::Hdu::current_name(m_fptr);
 }
 
-void may_throw_invalid_file_error(fitsfile* fptr) {
-    if(not fptr)
-        may_throw_cfitsio_error(BAD_FILEPTR);
+void RecordHdu::rename(std::string name) const {
+	goto_this_hdu();
+	Cfitsio::Hdu::update_name(m_fptr, name);
+}
+
+void RecordHdu::delete_record(std::string keyword) const {
+	goto_this_hdu();
+	Cfitsio::Header::delete_record(m_fptr, keyword);
+}
+
+void RecordHdu::goto_this_hdu() const {
+	Cfitsio::Hdu::goto_index(m_fptr, m_index);
 }
 
 }

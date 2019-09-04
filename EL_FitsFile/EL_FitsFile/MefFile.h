@@ -60,22 +60,28 @@ ext.write_value("KEYWORD", 2.0);
 auto image_ext = dynamic_cast<ImageHdu&>(ext);
 auto raster = image_ext.read_raster<double>();
 @endcode */
-	template<class T=Hdu>
+	template<class T=RecordHdu>
 	T& access(std::size_t index);
 
 	/**
 	 * @brief Access the first Hdu with given name.
 	 * @see access
 	 */
-	template<class T=Hdu>
+	template<class T=RecordHdu>
 	T& access_first(std::string name);
 
 	/**
 	 * @brief Access the Primary Hdu.
 	 * @see access
 	 */
-	template<class T=Hdu>
+	template<class T=RecordHdu>
 	T& access_primary();
+
+	/**
+	 * @brief Append an extension with optional name.
+	 */
+	template<class T=RecordHdu>
+	T& create_ext(T extension, std::string name="");
 
 	/**
 	 * @brief Append an ImageHdu with given shape optional name.
@@ -87,18 +93,18 @@ auto raster = image_ext.read_raster<double>();
 f.append_image_ext("IMAGE").write_raster(raster);
 @endcode */
 	template<std::size_t n>
-	ImageHdu& init_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name=""); //TODO shape in EL_FitsData
+	ImageHdu& create_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name=""); //TODO shape in EL_FitsData
 
 	/**
 	 * @brief Append an ImageHdu with given data and optional name.
-	 * @see prepare_image_ext
+	 * @see create_image_ext
 	 */
 	template<typename T, std::size_t n>
-	ImageHdu& assign_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name=""); //TODO idem
+	ImageHdu& create_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name=""); //TODO idem
 
 protected:
 
-	std::vector<std::unique_ptr<Hdu>> m_hdus;
+	std::vector<std::unique_ptr<RecordHdu>> m_hdus;
 
 };
 
@@ -110,29 +116,28 @@ protected:
 
 template<class T>
 T& MefFile::access(std::size_t index) {
-    Cfitsio::HDU::goto_index(m_fptr, index);
-    auto hdu_type = Cfitsio::HDU::current_type(m_fptr);
-    std::unique_ptr<Hdu> ptr;
+    Cfitsio::Hdu::goto_index(m_fptr, index);
+    auto hdu_type = Cfitsio::Hdu::current_type(m_fptr);
+	m_hdus.reserve(index);
+    auto& ptr = m_hdus[index-1];
     switch (hdu_type) {
-    case Cfitsio::HDU::Type::IMAGE:
+    case Cfitsio::Hdu::Type::IMAGE:
         ptr.reset(new ImageHdu(m_fptr, index));
         break;
-    case Cfitsio::HDU::Type::BINTABLE:
+    case Cfitsio::Hdu::Type::BINTABLE:
         ptr.reset(new BintableHdu(m_fptr, index));
         break;
     default:
-		ptr.reset(new Hdu(m_fptr, index));
+		ptr.reset(new RecordHdu(m_fptr, index));
         break;
     }
-	m_hdus.reserve(index);
-    m_hdus.insert(m_hdus.begin() + index-1, std::move(ptr));
-    return dynamic_cast<T&>(*m_hdus[index-1].get());
+    return dynamic_cast<T&>(*ptr.get());
 }
 
 template<class T>
 T& MefFile::access_first(std::string name) {
-    Cfitsio::HDU::goto_name(m_fptr, name);
-    return access<T>(Cfitsio::HDU::current_index(m_fptr));
+    Cfitsio::Hdu::goto_name(m_fptr, name);
+    return access<T>(Cfitsio::Hdu::current_index(m_fptr));
 }
 
 template<class T>
@@ -141,20 +146,18 @@ T& MefFile::access_primary() {
 }
 
 template<std::size_t n>
-ImageHdu& MefFile::init_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name) {
-    Cfitsio::HDU::create_image_extension(m_fptr, name, shape);
+ImageHdu& MefFile::create_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name) {
+    Cfitsio::Hdu::create_image_extension(m_fptr, name, shape);
 	const auto size = m_hdus.size();
-	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, size+1));
-	m_hdus.push_back(ptr);
+	m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
 	return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
 
 template<typename T, std::size_t n>
-ImageHdu& MefFile::assign_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name) {
-    Cfitsio::HDU::create_image_extension(m_fptr, name, raster);
+ImageHdu& MefFile::create_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name) {
+    Cfitsio::Hdu::create_image_extension(m_fptr, name, raster);
 	const auto size = m_hdus.size();
-	std::unique_ptr<Hdu> ptr(new ImageHdu(m_fptr, size+1));
-	m_hdus.push_back(std::move(ptr));
+	m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
 	return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
 

@@ -32,6 +32,7 @@
 #include "EL_CfitsioWrapper/ImageWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
+namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -46,13 +47,12 @@ namespace Cfitsio {
  * Functions to go to an HDU return false if target HDU is already current HDU.
  * Functions to create an HDU append it at the end of the file.
  */
-namespace HDU {
+namespace Hdu {
 
 /**
  * @brief HDU type (ASCII tables not supported).
  */
 enum class Type {
-	METADATA, ///< Image HDU with empty data or Primary HDU
 	IMAGE, ///< Image HDU
 	BINTABLE ///< Binary table HDU
 };
@@ -76,11 +76,6 @@ std::string current_name(fitsfile *fptr);
  * @brief Get the Type of the current HDU.
  */
 Type current_type(fitsfile *fptr);
-
-/**
- * @brief Check whether current HDU contains data.
- */
-bool current_has_data(fitsfile *fptr);
 
 /**
  * @brief Check whether current HDU is the Primary HDU.
@@ -218,6 +213,6 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 
 }
 }
+}
 
 #endif
-

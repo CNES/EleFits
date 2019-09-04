@@ -31,12 +31,13 @@
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/ImageWrapper.h"
-#include "EL_CfitsioWrapper/RecordWrapper.h"
+#include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
+using namespace Euclid;
 using namespace Cfitsio;
 
 
@@ -65,15 +66,15 @@ public:
 		logger.info() << "Creating Fits file: " << filename;
 		auto fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
 		logger.info() << "Writing new record: VALUE = 1";
-		Record::write_value(fptr, "VALUE", 1);
+		Header::write_record<int>(fptr, { "VALUE", 1 } );
 		logger.info() << "Updating record: VALUE = 2";
-		Record::update_value(fptr, "VALUE", 2);
-		Test::SmallTable table; // Predefined table for testing purpose
+		Header::update_record<int>(fptr, { "VALUE", 2 } );
+		FitsIO::Test::SmallTable table; // Predefined table for testing purpose
 		logger.info() << "Creating bintable extension: SMALLTBL";
-		HDU::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
-		Test::SmallRaster raster; // Predefined image raster for testing purpose
+		Hdu::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
+		FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
 		logger.info() << "Creating image extension: SMALLIMG";
-		HDU::create_image_extension(fptr, "SMALLIMG", raster);
+		Hdu::create_image_extension(fptr, "SMALLIMG", raster);
 		logger.info() << "Closing file.";
 		File::close(fptr);
 
@@ -81,12 +82,12 @@ public:
 
 		logger.info() << "Reopening file.";
 		fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
-		logger.info() << "Reading record: VALUE = " << Record::parse_value<int>(fptr, "VALUE");
+		logger.info() << "Reading record: VALUE = " << Header::parse_record<int>(fptr, "VALUE");
 
 		logger.info();
 
 		logger.info() << "Reading bintable.";
-		HDU::goto_name(fptr, "SMALLTBL");
+		Hdu::goto_name(fptr, "SMALLTBL");
 		const auto ids = Bintable::read_column<int>(fptr, "ID").data;
 		logger.info() << "First id: " << ids[0];
 		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
@@ -95,7 +96,7 @@ public:
 		logger.info();
 		
 		logger.info() << "Reading image.";
-		HDU::goto_name(fptr, "SMALLIMG");
+		Hdu::goto_name(fptr, "SMALLIMG");
 		const auto image = Image::read_raster<float>(fptr);
 		logger.info() << "First pixel: " << image[{0, 0}];
 		const auto width = image.length<0>();

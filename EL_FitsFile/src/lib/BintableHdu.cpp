@@ -27,7 +27,7 @@ namespace Euclid {
 namespace FitsIO {
 
 BintableHdu::BintableHdu(fitsfile* fptr, std::size_t index) :
-        Hdu(fptr, index) {}
+        RecordHdu(fptr, index) {}
 
 }
 }

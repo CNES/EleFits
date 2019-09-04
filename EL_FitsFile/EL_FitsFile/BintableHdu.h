@@ -25,12 +25,12 @@
 #define _EL_FITSFILE_BINTABLEHDU_H
 
 #include "EL_CfitsioWrapper/BintableWrapper.h" // TODO New module EL_FitsData for Column
-#include "EL_FitsFile/Hdu.h"
+#include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
 namespace FitsIO {
 
-class BintableHdu : public Hdu {
+class BintableHdu : public RecordHdu {
 
 public:
 

@@ -23,6 +23,7 @@
 
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 
+namespace Euclid {
 namespace Cfitsio {
 
 std::unique_ptr<char> to_char_ptr(std::string str) {
@@ -44,4 +45,5 @@ char** c_str_array::data() {
     return c_str_vector.data();
 }
 
+}
 }

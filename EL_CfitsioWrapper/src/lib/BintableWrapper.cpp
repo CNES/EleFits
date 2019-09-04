@@ -26,6 +26,7 @@
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 
+namespace Euclid {
 namespace Cfitsio {
 namespace Bintable {
 
@@ -56,4 +57,4 @@ void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const Column
 
 }
 }
-
+}

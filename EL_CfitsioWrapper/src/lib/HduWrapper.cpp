@@ -23,10 +23,11 @@
 
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
-#include "EL_CfitsioWrapper/RecordWrapper.h"
+#include "EL_CfitsioWrapper/HeaderWrapper.h"
 
+namespace Euclid {
 namespace Cfitsio {
-namespace HDU {
+namespace Hdu {
 
 std::size_t count(fitsfile* fptr) {
 	int count;
@@ -44,7 +45,7 @@ std::size_t current_index(fitsfile* fptr) {
 
 std::string current_name(fitsfile* fptr) {
 	try {
-		return Record::read_value(fptr, "EXTNAME");
+		return Header::parse_record<std::string>(fptr, "EXTNAME");
 	} catch(const std::exception& e) {
 		// EXTNAME not provided
 		return "";
@@ -57,17 +58,11 @@ Type current_type(fitsfile* fptr) {
 	fits_get_hdu_type(fptr, &type, &status);
 	if(type == BINARY_TBL)
 		return Type::BINTABLE;
-	if(current_has_data(fptr))
-		return Type::IMAGE;
-	return Type::METADATA;
+	return Type::IMAGE;
 }
 
 bool current_is_primary(fitsfile* fptr) {
 	return current_index(fptr) == 1;
-}
-
-bool current_has_data(fitsfile* fptr) {
-	return true; //TODO
 }
 
 bool goto_index(fitsfile* fptr, std::size_t index) {
@@ -117,7 +112,7 @@ bool init_primary(fitsfile* fptr) {
 bool update_name(fitsfile* fptr, std::string name) {
 	if(name == "")
 		return false;
-	Record::update_value(fptr, "EXTNAME", name);
+	Header::update_record(fptr, FitsIO::Record<std::string>("EXTNAME", name));
 	return true;
 }
 
@@ -133,4 +128,4 @@ void create_metadata_extension(fitsfile* fptr, std::string name) {
 
 }
 }
-
+}

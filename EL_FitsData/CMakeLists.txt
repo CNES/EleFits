@@ -6,7 +6,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 #   For declaring a project module:
 #         elements_subdir(ElementsExamples)
 #===============================================================================
-elements_subdir(EL_CfitsioWrapper)
+elements_subdir(EL_FitsData)
 
 #===============================================================================
 # Load elements_depends_on_subdirs macro here
@@ -14,7 +14,6 @@ elements_subdir(EL_CfitsioWrapper)
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
-elements_depends_on_subdirs(EL_FitsData)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -22,7 +21,6 @@ elements_depends_on_subdirs(EL_FitsData)
 # Examples:
 #          find_package(CppUnit)
 #===============================================================================
-find_package(Cfitsio REQUIRED)
 
 #===============================================================================
 # Declare the library dependencies here
@@ -32,9 +30,9 @@ find_package(Cfitsio REQUIRED)
 #                     INCLUDE_DIRS Boost ElementsKernel
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
-elements_add_library(EL_CfitsioWrapper src/lib/*.cpp
-                     LINK_LIBRARIES ElementsKernel Cfitsio
-                     PUBLIC_HEADERS EL_CfitsioWrapper)
+elements_add_library(EL_FitsData src/lib/*.cpp
+                     LINK_LIBRARIES ElementsKernel
+                     PUBLIC_HEADERS EL_FitsData)
 
 #===============================================================================
 # Declare the executables here
@@ -52,45 +50,9 @@ elements_add_library(EL_CfitsioWrapper src/lib/*.cpp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
-elements_add_unit_test(FileWrapper tests/src/FileWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_FileWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(HduWrapper tests/src/HduWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_HduWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(HeaderWrapper tests/src/HeaderWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_HeaderWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(TypeWrapper tests/src/TypeWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_TypeWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(ErrorWrapper tests/src/ErrorWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_ErrorWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(ImageWrapper tests/src/ImageWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_ImageWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(CfitsioUtils tests/src/CfitsioUtils_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_CfitsioUtils_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(BintableWrapper tests/src/BintableWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_BintableWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(CfitsioFixture tests/src/CfitsioFixture_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_CfitsioFixture_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(CfitsioWrapper tests/src/CfitsioWrapper_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_CfitsioWrapper_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
+elements_add_unit_test(Record tests/src/Record_test.cpp 
+                     EXECUTABLE EL_FitsData_Record_test
+                     LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
 
 #===============================================================================

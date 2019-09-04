@@ -25,12 +25,12 @@
 #define _EL_FITSFILE_IMAGEHDU_H
 
 #include "EL_CfitsioWrapper/ImageWrapper.h" // TODO New module EL_FitsData for Raster
-#include "EL_FitsFile/Hdu.h"
+#include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
 namespace FitsIO {
 
-class ImageHdu : public Hdu {
+class ImageHdu : public RecordHdu {
 
 public:
 

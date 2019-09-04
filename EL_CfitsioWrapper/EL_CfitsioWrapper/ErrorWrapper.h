@@ -28,6 +28,7 @@
 #include <cfitsio/fitsio.h>
 #include <string>
 
+namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -55,6 +56,6 @@ void may_throw_invalid_file_error(fitsfile* fptr);
 void may_throw_readonly_error(fitsfile* fptr);
 
 }
+}
 
 #endif
-

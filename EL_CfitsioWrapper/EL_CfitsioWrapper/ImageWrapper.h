@@ -36,6 +36,7 @@
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
 
+namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -224,6 +225,6 @@ void write_raster(fitsfile* fptr, const Raster<T, n>& raster) {
 
 }
 }
-
+}
 
 #endif

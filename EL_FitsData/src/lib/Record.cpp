@@ -1,6 +1,6 @@
 /**
- * @file src/lib/ErrorHandler.cpp
- * @date 07/23/19
+ * @file src/lib/Record.cpp
+ * @date 09/03/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,29 +21,12 @@
  *
  */
 
-#include "EL_CfitsioWrapper/FileWrapper.h"
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
+#include "EL_FitsData/Record.h"
 
-namespace Euclid {
-namespace Cfitsio {
+namespace EL_FitsData {
 
-void may_throw_cfitsio_error(int status) {
-    if(status == 0)
-        return;
-    char msg[FLEN_ERRMSG];
-    fits_get_errstatus(status, msg);
-    throw CfitsioError("CFitsIO error " + std::to_string(status) + ": " + msg);
-}
 
-void may_throw_readonly_error(fitsfile* fptr) {
-    if(not File::is_writable(fptr))
-        may_throw_cfitsio_error(READONLY_FILE);
-}
+}  // namespace EL_FitsData
 
-void may_throw_invalid_file_error(fitsfile* fptr) {
-    if(not fptr)
-        may_throw_cfitsio_error(BAD_FILEPTR);
-}
 
-}
-}
+

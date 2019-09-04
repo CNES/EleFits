@@ -26,6 +26,7 @@
 #include "EL_CfitsioWrapper//BintableWrapper.h"
 #include "EL_CfitsioWrapper//CfitsioFixture.h"
 
+using namespace Euclid;
 using namespace Cfitsio;
 
 template<typename T>
@@ -41,9 +42,9 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
 
 template<typename T>
 void check_scalar() {
-	Test::RandomScalarColumn<T> input;
-	Test::MinimalFile file;
-	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
+	FitsIO::Test::RandomScalarColumn<T> input;
+	FitsIO::Test::MinimalFile file;
+	Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
 	const auto output = Bintable::read_column<T>(file.fptr, input.name);
 	check_equal_vectors(output.data, input.data);
 }
@@ -73,9 +74,9 @@ TEST_SCALAR_UNSIGNED(long)
 
 template<typename T>
 void check_vector() {
-	Test::SmallVectorColumn<T> input;
-	Test::MinimalFile file;
-	HDU::create_bintable_extension(file.fptr, "BINEXT", input);
+	FitsIO::Test::SmallVectorColumn<T> input;
+	FitsIO::Test::MinimalFile file;
+	Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
 	const auto output = Bintable::read_column<std::vector<T>>(file.fptr, input.name);
 	const auto size = input.data.size();
 	BOOST_CHECK_EQUAL(output.data.size(), size);
@@ -102,18 +103,18 @@ TEST_VECTOR_UNSIGNED(short)
 TEST_VECTOR_UNSIGNED(int)
 TEST_VECTOR_UNSIGNED(long)
 
-BOOST_FIXTURE_TEST_CASE( small_table_test, Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
 
-	Test::SmallTable input;
-	HDU::create_bintable_extension(this->fptr, "IMGEXT",
+	FitsIO::Test::SmallTable input;
+	Hdu::create_bintable_extension(this->fptr, "IMGEXT",
 			input.id_col, input.radec_col, input.name_col, input.dist_mag_col);
-	const auto output_ids = Bintable::read_column<Test::SmallTable::id_t>(this->fptr, input.id_col.name);
+	const auto output_ids = Bintable::read_column<FitsIO::Test::SmallTable::id_t>(this->fptr, input.id_col.name);
 	check_equal_vectors(output_ids.data, input.id_col.data);
-	const auto output_radecs = Bintable::read_column<Test::SmallTable::radec_t>(this->fptr, input.radec_col.name);
+	const auto output_radecs = Bintable::read_column<FitsIO::Test::SmallTable::radec_t>(this->fptr, input.radec_col.name);
 	check_equal_vectors(output_radecs.data, input.radec_col.data);
-	const auto output_names = Bintable::read_column<Test::SmallTable::name_t>(this->fptr, input.name_col.name);
+	const auto output_names = Bintable::read_column<FitsIO::Test::SmallTable::name_t>(this->fptr, input.name_col.name);
 	check_equal_vectors(output_names.data, input.name_col.data);
-	const auto output_dists_mags = Bintable::read_column<Test::SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.name);
+	const auto output_dists_mags = Bintable::read_column<FitsIO::Test::SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.name);
 	BOOST_CHECK_EQUAL(output_dists_mags.data.size(), input.dist_mag_col.data.size());
 	for(std::size_t i=0; i<output_dists_mags.data.size(); ++i)
 		check_equal_vectors(output_dists_mags.data[i], input.dist_mag_col.data[i]);

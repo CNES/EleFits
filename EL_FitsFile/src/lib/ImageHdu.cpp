@@ -27,7 +27,7 @@ namespace Euclid {
 namespace FitsIO {
 
 ImageHdu::ImageHdu(fitsfile* fptr, std::size_t index) :
-        Hdu(fptr, index) {}
+        RecordHdu(fptr, index) {}
 
 }
 }

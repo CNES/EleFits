@@ -22,12 +22,3 @@
  */
 
 #include "EL_CfitsioWrapper/ImageWrapper.h"
-
-namespace Cfitsio {
-namespace Image {
-
-}
-}
-
-
-

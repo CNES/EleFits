@@ -29,16 +29,22 @@
 #include "ErrorWrapper.h"
 #include "FileWrapper.h"
 #include "HduWrapper.h"
-#include "RecordWrapper.h"
+#include "HeaderWrapper.h"
 #include "ImageWrapper.h"
 #include "BintableWrapper.h"
 
 /**
- * @brief Classes and functions to use CFitsIO with a modern C++ API.
+ * @brief Euclid SGS namespace.
+ */
+namespace Euclid {
+
+/**
+ * @brief Functions to use CFitsIO with a modern C++ API.
+ * @see Euclid::FitsIO for an Object-Oriented API.
  */
 namespace Cfitsio {
 
 }
-
+}
 
 #endif

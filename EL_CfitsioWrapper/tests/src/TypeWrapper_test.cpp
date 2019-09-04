@@ -25,6 +25,7 @@
 
 #include "EL_CfitsioWrapper//TypeWrapper.h"
 
+using namespace Euclid;
 using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------

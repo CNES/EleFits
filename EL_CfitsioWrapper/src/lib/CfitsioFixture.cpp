@@ -23,17 +23,18 @@
 
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 
-namespace Cfitsio {
+namespace Euclid {
+namespace FitsIO {
 namespace Test {
 
 MinimalFile::MinimalFile() :
 		tmp(),
 		filename(tmp.path().string()) {
-	fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+	fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
 }
 
 MinimalFile::~MinimalFile() {
-	File::close(fptr);
+	Cfitsio::File::close(fptr);
 }
 
 SmallRaster::SmallRaster(long width, long height) :
@@ -44,7 +45,7 @@ SmallRaster::SmallRaster(long width, long height) :
 			operator[]({x, y}) = 0.1 * y + x;
 }
 
-bool SmallRaster::approx(const Image::Raster<float>& other, float tol) const {
+bool SmallRaster::approx(const Cfitsio::Image::Raster<float>& other, float tol) const {
 	if(other.shape != this->shape)
 		return false;
 	for(std::size_t i=0; i<this->size(); ++i) {
@@ -73,4 +74,4 @@ SmallTable::SmallTable() :
 
 }
 }
-
+}

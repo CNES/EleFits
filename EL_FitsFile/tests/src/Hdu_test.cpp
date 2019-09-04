@@ -23,7 +23,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsFile//Hdu.h"
+#include "EL_FitsFile//RecordHdu.h"
 
 //-----------------------------------------------------------------------------
 

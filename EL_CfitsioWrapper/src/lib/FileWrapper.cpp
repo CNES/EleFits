@@ -25,6 +25,7 @@
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 
+namespace Euclid {
 namespace Cfitsio {
 namespace File {
 
@@ -36,7 +37,7 @@ fitsfile* create_and_open(std::string filename, CreatePolicy policy) {
 	int status = 0;
 	fits_create_file(&fptr, cfitsio_name.c_str(), &status);
 	may_throw_cfitsio_error(status);
-	HDU::init_primary(fptr);
+	Hdu::init_primary(fptr);
 	return fptr;
 }
 
@@ -48,7 +49,7 @@ fitsfile* open(std::string filename, OpenPolicy policy) {
 		permission = READWRITE;
 	fits_open_file(&fptr, filename.c_str(), permission, &status);
 	may_throw_cfitsio_error(status);
-	HDU::init_primary(fptr);
+	Hdu::init_primary(fptr);
 	return fptr;
 }
 
@@ -73,4 +74,4 @@ bool is_writable(fitsfile* fptr) {
 
 }
 }
-
+}

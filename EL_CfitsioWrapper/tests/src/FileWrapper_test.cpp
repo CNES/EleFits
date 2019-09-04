@@ -28,6 +28,7 @@
 #include "EL_CfitsioWrapper//FileWrapper.h"
 #include "EL_CfitsioWrapper//CfitsioFixture.h"
 
+using namespace Euclid;
 using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
@@ -36,7 +37,7 @@ BOOST_AUTO_TEST_SUITE (FileWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE( file_operations_test, Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE( file_operations_test, FitsIO::Test::MinimalFile ) {
     fitsfile* fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
     BOOST_CHECK_THROW(File::create_and_open(filename, File::CreatePolicy::CREATE_ONLY), CfitsioError);
     BOOST_CHECK(fptr);

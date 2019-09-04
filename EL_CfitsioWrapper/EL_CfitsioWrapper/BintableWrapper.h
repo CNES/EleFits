@@ -29,6 +29,7 @@
 
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
+namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -288,6 +289,7 @@ void write_column(fitsfile* fptr, const Column<T>& column) {
 }
 
 
+}
 }
 }
 

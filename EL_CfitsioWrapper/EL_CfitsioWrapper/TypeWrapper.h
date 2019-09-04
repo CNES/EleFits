@@ -32,6 +32,7 @@
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
+namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -267,6 +268,6 @@ DEF_IMAGE_BITPIX(unsigned long, ULONG_IMG)
 /// @endcond
 
 }
+}
 
 #endif
-

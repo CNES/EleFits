@@ -22,4 +22,3 @@
  */
 
 #include "EL_CfitsioWrapper/CfitsioWrapper.h"
-

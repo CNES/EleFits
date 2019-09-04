@@ -27,6 +27,7 @@
 #include <cfitsio/fitsio.h>
 #include <string>
 
+namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -84,6 +85,6 @@ bool is_writable(fitsfile* fptr);
 
 }
 }
+}
 
 #endif
-

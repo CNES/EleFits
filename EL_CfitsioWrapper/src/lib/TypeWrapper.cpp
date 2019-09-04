@@ -26,8 +26,3 @@
 #include <string>
 
 #include "EL_CfitsioWrapper/TypeWrapper.h"
-
-namespace Cfitsio {
-
-}
-

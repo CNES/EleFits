@@ -62,15 +62,15 @@ public:
 		MefFile f(filename, FitsFile::Permission::OVERWRITE);
 		logger.info() << "Writing new record: VALUE = 1";
 		auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
-		primary.write_value("VALUE", 1);
+		primary.write_record(Record<int>("VALUE", 1));
 		logger.info() << "Updating record: VALUE = 2";
-		primary.update_value("VALUE", 2);
+		primary.update_record(Record<int>("VALUE", 2));
 		// Test::SmallTable table; // Predefined table for testing purpose
 		// logger.info() << "Creating bintable extension: SMALLTBL";
 		// HDU::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
-		Cfitsio::Test::SmallRaster raster; // Predefined image raster for testing purpose
+		Test::SmallRaster raster; // Predefined image raster for testing purpose
 		logger.info() << "Creating image extension: SMALLIMG";
-		f.assign_image_ext(raster, "SMALLIMG");
+		f.create_image_ext(raster, "SMALLIMG");
 		logger.info() << "Closing file.";
 		f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
 
@@ -78,7 +78,7 @@ public:
 
 		logger.info() << "Reopening file.";
 		f.open(filename, FitsFile::Permission::READ);
-		logger.info() << "Reading record: VALUE = " << f.access_primary<>().parse_value<int>("VALUE");
+		logger.info() << "Reading record: VALUE = " << f.access_primary<>().parse_record<int>("VALUE");
 
 		logger.info();
 

@@ -25,7 +25,7 @@
 
 #include "EL_CfitsioWrapper//ErrorWrapper.h"
 
-using namespace Cfitsio;
+using namespace Euclid::Cfitsio;
 
 //-----------------------------------------------------------------------------
 

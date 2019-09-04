@@ -1,6 +1,6 @@
 /**
- * @file tests/src/ImageWrapper_test.cpp
- * @date 07/25/19
+ * @file tests/src/Record_test.cpp
+ * @date 09/03/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -23,47 +23,51 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_CfitsioWrapper//ImageWrapper.h"
+#include "EL_FitsData//Record.h"
 
-#include "EL_CfitsioWrapper//CfitsioFixture.h"
-
-using namespace Euclid;
-using namespace Cfitsio;
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (ImageWrapper_test)
+BOOST_AUTO_TEST_SUITE (Record_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( index_test ) {
+BOOST_AUTO_TEST_CASE( full_init_test ) {
 
-	Image::pos_type<4> shape;
-	for(auto& length : shape)
-		length = std::rand();
-	Image::pos_type<4> pos;
-	for(auto& coord : pos)
-		coord = std::rand();
-	auto index = Image::internal::Index<3>::offset(shape, pos);
-	BOOST_CHECK_EQUAL(index,
-		pos[0] + shape[0] * (
-			pos[1] + shape[1] * (
-				pos[2] + shape[2] * 
-					(pos[3])
-				)
-			)
-		);
+	Record<int> full { "FULL", 4, "m", "Full" };
+
+	BOOST_CHECK_EQUAL(full.keyword, "FULL");
+	BOOST_CHECK_EQUAL(full.value, 4);
+	BOOST_CHECK_EQUAL(full.unit, "m");
+	BOOST_CHECK_EQUAL(full.comment, "Full");
 
 }
 
-BOOST_FIXTURE_TEST_CASE( raster_2D_test, FitsIO::Test::SmallRaster ) {
+BOOST_AUTO_TEST_CASE( unit_init_test ) {
 
-	std::size_t size(this->width * this->height);
-	BOOST_CHECK_EQUAL(this->size(), size);
-	BOOST_CHECK_EQUAL(this->data.size(), size);
+	Record<int> unit { "UNIT", 3, "m" };
 
+	BOOST_CHECK_EQUAL(unit.keyword, "UNIT");
+	BOOST_CHECK_EQUAL(unit.value, 3);
+	BOOST_CHECK_EQUAL(unit.unit, "m");
+	BOOST_CHECK_EQUAL(unit.comment, "");
+	
+}
+
+BOOST_AUTO_TEST_CASE( mini_init_test ) {
+
+	Record<int> mini { "MINI", 2 };
+
+	BOOST_CHECK_EQUAL(mini.keyword, "MINI");
+	BOOST_CHECK_EQUAL(mini.value, 2);
+	BOOST_CHECK_EQUAL(mini.unit, "");
+	BOOST_CHECK_EQUAL(mini.comment, "");
+	
 }
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
+
+

@@ -29,6 +29,7 @@
 #include <string>
 #include <vector>
 
+namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -70,6 +71,6 @@ c_str_array::c_str_array(const T begin, const T end) :
 }
 
 }
-
+}
 
 #endif

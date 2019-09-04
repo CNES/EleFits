@@ -27,7 +27,7 @@
 #include <cfitsio/fitsio.h>
 #include <string>
 
-#include "EL_FitsFile/Hdu.h"
+#include "EL_FitsFile/RecordHdu.h"
 #include "EL_FitsFile/ImageHdu.h"
 #include "EL_FitsFile/BintableHdu.h"
 

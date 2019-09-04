@@ -37,7 +37,8 @@
 #include "BintableWrapper.h"
 #include "ImageWrapper.h"
 
-namespace Cfitsio {
+namespace Euclid {
+namespace FitsIO {
 
 /**
  * @brief Test-related classes and functions.
@@ -68,7 +69,7 @@ public:
 /**
  * @brief A small 2D image raster.
  */
-class SmallRaster : public Image::Raster<float> {
+class SmallRaster : public Cfitsio::Image::Raster<float> {
 
 public:
 
@@ -76,7 +77,7 @@ public:
 	
 	virtual ~SmallRaster() = default;
 	
-	bool approx(const Image::Raster<float>& other, float tol=0.1) const;
+	bool approx(const Cfitsio::Image::Raster<float>& other, float tol=0.1) const;
 	
 	long width, height;
 
@@ -103,10 +104,10 @@ public:
 	std::vector<name_t> names;
 	std::vector<dist_mag_t> dists_mags;
 	
-	Bintable::Column<id_t> id_col;
-	Bintable::Column<radec_t> radec_col;
-	Bintable::Column<name_t> name_col;
-	Bintable::Column<dist_mag_t> dist_mag_col;
+	Cfitsio::Bintable::Column<id_t> id_col;
+	Cfitsio::Bintable::Column<radec_t> radec_col;
+	Cfitsio::Bintable::Column<name_t> name_col;
+	Cfitsio::Bintable::Column<dist_mag_t> dist_mag_col;
 
 };
 
@@ -114,7 +115,7 @@ public:
  * @brief A small scalar column of given type.
  */
 template<typename T>
-class RandomScalarColumn : public Bintable::Column<T> {
+class RandomScalarColumn : public Cfitsio::Bintable::Column<T> {
 
 public:
 
@@ -126,7 +127,7 @@ public:
 /**
  * @brief A small string column.
  */
-class SmallStringColumn : public Bintable::Column<std::string> {
+class SmallStringColumn : public Cfitsio::Bintable::Column<std::string> {
 
 public:
 
@@ -139,7 +140,7 @@ public:
  * @brief A small vector column of given type.
  */
 template<typename T>
-class SmallVectorColumn : public Bintable::Column<std::vector<T>> {
+class SmallVectorColumn : public Cfitsio::Bintable::Column<std::vector<T>> {
 
 public:
 
@@ -171,12 +172,12 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
-	Bintable::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+	Cfitsio::Bintable::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
 }
 
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
-	Bintable::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
+	Cfitsio::Bintable::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
 }
 
 template<typename T>
@@ -227,6 +228,7 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size) {
 	return vec;
 }
 
+}
 }
 }
 
