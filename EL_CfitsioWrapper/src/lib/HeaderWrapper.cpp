@@ -38,17 +38,17 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
 }
 
 template<>
-void write_record<std::string>(fitsfile* fptr, FitsIO::Record<std::string> record) {
+void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
     int status = 0;
-    fits_write_key(fptr, TypeCode<std::string>::for_record(), record.keyword.c_str(), &record.value[0], &record.comment[0], &status);
+    fits_write_key(fptr, TypeCode<std::string>::for_record(), record.keyword.c_str(), &std::string(record.value)[0], &record.comment[0], &status);
     fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
     may_throw_cfitsio_error(status);
 }
 
 template<>
-void update_record<std::string>(fitsfile* fptr, FitsIO::Record<std::string> record) {
+void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
     int status = 0;
-    fits_update_key(fptr, TypeCode<std::string>::for_record(), record.keyword.c_str(), &record.value[0], nullptr, &status);
+    fits_update_key(fptr, TypeCode<std::string>::for_record(), record.keyword.c_str(), &std::string(record.value)[0], &record.comment[0], &status);
     may_throw_cfitsio_error(status);
 }
 

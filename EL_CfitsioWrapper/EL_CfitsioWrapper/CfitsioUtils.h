@@ -27,6 +27,7 @@
 #include <cstring>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace Euclid {

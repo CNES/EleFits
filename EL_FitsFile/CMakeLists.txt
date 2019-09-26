@@ -67,7 +67,7 @@ elements_add_unit_test(SifFile tests/src/SifFile_test.cpp
                      EXECUTABLE EL_FitsFile_SifFile_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
-elements_add_unit_test(Hdu tests/src/Hdu_test.cpp 
+elements_add_unit_test(RecordHdu tests/src/RecordHdu_test.cpp 
                      EXECUTABLE EL_FitsFile_Hdu_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)

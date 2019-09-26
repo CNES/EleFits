@@ -25,20 +25,19 @@
 
 #include "EL_FitsFile//RecordHdu.h"
 
+using namespace Euclid::FitsIO;
+
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (Hdu_test)
+BOOST_AUTO_TEST_SUITE (RecordHdu_test)
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( example_test ) {
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+	
 }
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-

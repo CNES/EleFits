@@ -39,7 +39,7 @@ struct Record {
 	/**
 	 * @brief Assign a record.
 	 */
-	Record(std::string k, T v=T(), std::string u="", std::string c="");
+	Record(std::string k="", T v=T(), std::string u="", std::string c="");
 
 	/**
 	 * @brief Slice the record as its value.

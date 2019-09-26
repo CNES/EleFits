@@ -29,7 +29,8 @@ namespace Euclid {
 namespace FitsIO {
 
 MefFile::MefFile(std::string filename, Permission permission) :
-        FitsFile(filename, permission) {}
+        FitsFile(filename, permission),
+        m_hdus(1) {}
 
 }
 }

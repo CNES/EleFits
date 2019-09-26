@@ -46,11 +46,26 @@ public:
 	template<typename T>
 	Record<T> parse_record(std::string keyword) const;
 
+	template<typename... Ts>
+	std::tuple<Record<Ts>...> parse_records(const std::vector<std::string>& keywords) const;
+
 	template<typename T>
 	void write_record(const Record<T>& record) const;
 
 	template<typename T>
+	void write_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
+
+	template<typename... Ts>
+	void write_records(const Record<Ts>&... records) const;
+
+	template<typename T>
 	void update_record(const Record<T>& record) const;
+
+	template<typename T>
+	void update_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
+
+	template<typename... Ts>
+	void update_records(const Record<Ts>&... records) const;
 
 	void delete_record(std::string keyword) const;
 
@@ -76,6 +91,12 @@ Record<T> RecordHdu::parse_record(std::string keyword) const {
 	return Cfitsio::Header::parse_record<T>(m_fptr, keyword);
 }
 
+template<typename... Ts>
+std::tuple<Record<Ts>...> RecordHdu::parse_records(const std::vector<std::string>& keywords) const {
+	goto_this_hdu();
+	return Cfitsio::Header::parse_records<Ts...>(m_fptr, keywords);
+}
+
 template<typename T>
 void RecordHdu::write_record(const Record<T>& record) const {
 	goto_this_hdu();
@@ -83,9 +104,31 @@ void RecordHdu::write_record(const Record<T>& record) const {
 }
 
 template<typename T>
+void RecordHdu::write_record(std::string keyword, T value, std::string unit, std::string comment) const {
+	write_record(Record<T>(keyword, value, unit, comment));
+}
+
+template<typename... Ts>
+void RecordHdu::write_records(const Record<Ts>&... records) const {
+	goto_this_hdu();
+	Cfitsio::Header::write_records(m_fptr, records...);
+}
+
+template<typename T>
 void RecordHdu::update_record(const Record<T>& record) const {
 	goto_this_hdu();
 	Cfitsio::Header::update_record(m_fptr, record);
+}
+
+template<typename T>
+void RecordHdu::update_record(std::string keyword, T value, std::string unit, std::string comment) const {
+	update_record(Record<T>(keyword, value, unit, comment));
+}
+
+template<typename... Ts>
+void RecordHdu::update_records(const Record<Ts>&... records) const {
+	goto_this_hdu();
+	Cfitsio::Header::update_records(m_fptr, records...);
 }
 
 }

@@ -53,13 +53,13 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword);
  * @brief Parse records.
  */
 template<typename... Ts>
-std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, std::vector<std::string> keywords);
+std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
  * @brief Write a new record.
  */
 template<typename T>
-void write_record(fitsfile* fptr, FitsIO::Record<T> record);
+void write_record(fitsfile* fptr, const FitsIO::Record<T>& record);
 
 /**
  * @brief Write new records.
@@ -71,13 +71,13 @@ void write_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
  * @brief Update an existing record or write a new one.
  */
 template<typename T>
-void update_record(fitsfile* fptr, FitsIO::Record<T> record);
+void update_record(fitsfile* fptr, const FitsIO::Record<T>& record);
 
 /**
  * @brief Update existing records or write new ones.
  */
 template<typename... Ts>
-void update_records(fitsfile* fptr, FitsIO::Record<Ts>... records);
+void update_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
 
 /**
  * @brief Delete an existing record.
@@ -112,7 +112,7 @@ struct _parse_records {
 template<typename ...Ts>
 struct _parse_records<0, Ts...> {
     void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
-        _parse_value(fptr, keywords[0], std::get<0>(records));
+        _parse_record(fptr, keywords[0], std::get<0>(records));
     }
 };
 
@@ -139,38 +139,42 @@ template<>
 FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::string keyword);
 
 template<typename ...Ts>
-std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, std::vector<std::string> keywords) {
+std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords) {
     std::tuple<FitsIO::Record<Ts>...> records;
     internal::_parse_records<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, records);
     return records;
 }
 
 template<typename T>
-void write_record(fitsfile* fptr, FitsIO::Record<T> record) {
+void write_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
     int status = 0;
-    fits_write_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &record.value, &record.comment[0], &status);
+    std::string comment = record.comment;
+    T value = record.value;
+    fits_write_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
     fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
     may_throw_cfitsio_error(status);
 }
 
 template<>
-void write_record<std::string>(fitsfile* fptr, FitsIO::Record<std::string> record);
+void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
 
 template<typename... Ts>
-void write_records(fitsfile* fptr, FitsIO::Record<Ts>... records) {
+void write_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records) {
     using mock_unpack = int[];
     (void)mock_unpack {(write_record(fptr, records), 0)...};
 }
 
 template<typename T>
-void update_record(fitsfile* fptr, FitsIO::Record<T> record) {
+void update_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
     int status = 0;
-    fits_update_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &record.value, record.comment.c_str(), &status);
+    std::string comment = record.comment;
+    T value = record.value;
+    fits_update_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
     may_throw_cfitsio_error(status);
 }
 
 template<>
-void update_record<std::string>(fitsfile* fptr, FitsIO::Record<std::string> record);
+void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
 
 }
 }

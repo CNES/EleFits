@@ -60,17 +60,20 @@ public:
 
 		logger.info() << "Creating Fits file: " << filename;
 		MefFile f(filename, FitsFile::Permission::OVERWRITE);
+		const auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
 		logger.info() << "Writing new record: VALUE = 1";
-		auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
-		primary.write_record(Record<int>("VALUE", 1));
+		primary.write_record("VALUE", 1);
 		logger.info() << "Updating record: VALUE = 2";
-		primary.update_record(Record<int>("VALUE", 2));
+		primary.update_record("VALUE", 2);
 		// Test::SmallTable table; // Predefined table for testing purpose
 		// logger.info() << "Creating bintable extension: SMALLTBL";
-		// HDU::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
+		// f.create_bintable_ext("SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
 		Test::SmallRaster raster; // Predefined image raster for testing purpose
 		logger.info() << "Creating image extension: SMALLIMG";
-		f.create_image_ext(raster, "SMALLIMG");
+		const auto& ext = f.create_image_ext(raster, "SMALLIMG");
+		Record<std::string> str_record("STRING", "string");
+		Record<int> int_record("INT", 1);
+		ext.write_records(str_record, int_record);
 		logger.info() << "Closing file.";
 		f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
 
@@ -79,6 +82,9 @@ public:
 		logger.info() << "Reopening file.";
 		f.open(filename, FitsFile::Permission::READ);
 		logger.info() << "Reading record: VALUE = " << f.access_primary<>().parse_record<int>("VALUE");
+		auto records = f.access<>(2).parse_records<std::string, int>({"STRING", "INT"});
+		logger.info() << "SMALLIMG.STRING = " << std::get<0>(records).value;
+		logger.info() << "SMALLIMG.INT = " << std::get<1>(records).value;
 
 		logger.info();
 
@@ -89,7 +95,7 @@ public:
 		// const auto names = bintable_ext.read_column<std::string>("NAME").data;
 		// logger.info() << "Last name: " << names[names.size()-1];
 
-		logger.info();
+		// logger.info();
 		
 		logger.info() << "Reading image.";
 		auto image_ext = f.access_first<ImageHdu>("SMALLIMG");

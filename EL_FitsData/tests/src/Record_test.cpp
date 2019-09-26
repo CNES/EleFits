@@ -25,6 +25,8 @@
 
 #include "EL_FitsData//Record.h"
 
+#include "FixtureRandom.h"
+
 using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
@@ -65,6 +67,31 @@ BOOST_AUTO_TEST_CASE( mini_init_test ) {
 	BOOST_CHECK_EQUAL(mini.comment, "");
 	
 }
+
+template<typename T>
+void check_equal(T value, T expected) {
+	BOOST_CHECK_EQUAL(value, expected);
+}
+
+template<typename T>
+void check_cast() {
+	T v = Test::generate_random_value<T>();
+	Record<T> r("KEY", v);
+	check_equal<T>(r, v);
+}
+
+#define TEST_CAST_ALIAS(type, name) \
+	BOOST_AUTO_TEST_CASE( name##_test ) { check_cast<type>(); }
+
+#define TEST_CAST(type) \
+	TEST_CAST_ALIAS(type, type)
+
+#define TEST_CAST_UNSIGNED(type) \
+	TEST_CAST_ALIAS(unsigned type, u##type)
+
+TEST_CAST(bool)
+TEST_CAST(int)
+TEST_CAST_ALIAS(std::string, string)
 
 //-----------------------------------------------------------------------------
 

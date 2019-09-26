@@ -24,6 +24,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "EL_CfitsioWrapper//CfitsioFixture.h"
+#include "EL_CfitsioWrapper//CfitsioUtils.h"
 #include "EL_CfitsioWrapper//HeaderWrapper.h"
 
 using namespace Euclid;
@@ -68,6 +69,31 @@ TEST_RECORD_UNSIGNED(char)
 TEST_RECORD_UNSIGNED(short)
 TEST_RECORD_UNSIGNED(int)
 TEST_RECORD_UNSIGNED(long)
+
+struct RecordList {
+	FitsIO::Record<bool> b { "BOOL" };
+	FitsIO::Record<int> i { "INT" };
+	FitsIO::Record<double> d { "DOUBLE" };
+	FitsIO::Record<std::string> s { "STRING" };
+};
+
+BOOST_AUTO_TEST_CASE( struct_io_test ) {
+	// FitsIO::Test::MinimalFile file;
+	// RecordList input {
+	// 		{ "BOOL", true },
+	// 		{ "INT", 2 },
+	// 		{ "DOUBLE", 3.},
+	// 		{ "STRING", "four"}
+	// };
+	// Header::write_records(file.fptr, input.b, input.i, input.d, input.s);
+	// auto t = Header::parse_records<bool, int, double, std::string>(file.fptr,
+	// 		{ "BOOL", "INT", "DOUBLE", "STRING" });
+	// RecordList output = tuple_to_struct<decltype(t), RecordList>(t);
+	// BOOST_CHECK_EQUAL(output.b, input.b);
+	// BOOST_CHECK_EQUAL(output.i, input.i);
+	// BOOST_CHECK_EQUAL(output.d, input.d);
+	// BOOST_CHECK_EQUAL(output.s, input.s);
+}
 
 //-----------------------------------------------------------------------------
 
