@@ -33,6 +33,7 @@
 
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
+#include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
 namespace Euclid {
@@ -131,7 +132,8 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword) {
     int status = 0;
     fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &record.value, &record.comment[0], &status);
     fits_read_key_unit(fptr, keyword.c_str(), &record.unit[0], &status);
-    may_throw_cfitsio_error(status);
+    std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+    may_throw_cfitsio_error(status, context);
     return record;
 }
 

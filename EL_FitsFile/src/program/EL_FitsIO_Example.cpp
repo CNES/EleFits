@@ -73,6 +73,9 @@ public:
 		FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
 		logger.info() << "Creating image extension: SMALLIMG";
 		Hdu::create_image_extension(fptr, "SMALLIMG", raster);
+		FitsIO::Record<std::string> str_record("STRING", "string");
+		FitsIO::Record<int> int_record("INTEGER", 8);
+		Header::write_records(fptr, str_record, int_record);
 		logger.info() << "Closing file.";
 		File::close(fptr);
 
@@ -86,6 +89,7 @@ public:
 
 		logger.info() << "Reading bintable.";
 		Hdu::goto_name(fptr, "SMALLTBL");
+		logger.info() << "HDU index = " << Hdu::current_index(fptr);
 		const auto ids = Bintable::read_column<int>(fptr, "ID").data;
 		logger.info() << "First id: " << ids[0];
 		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
@@ -94,6 +98,11 @@ public:
 		logger.info();
 		
 		logger.info() << "Reading image.";
+		Hdu::goto_index(fptr, 3);
+		logger.info() << "Name of HDU #3: " << Hdu::current_name(fptr);
+		const auto records = Header::parse_records<std::string, int>(fptr, {"STRING", "INTEGER"});
+		logger.info() << "SMALLIMG.STRING = " << std::get<0>(records).value;
+		logger.info() << "SMALLIMG.INTEGER = " << std::get<1>(records).value;
 		Hdu::goto_name(fptr, "SMALLIMG");
 		const auto image = Image::read_raster<float>(fptr);
 		logger.info() << "First pixel: " << image[{0, 0}];

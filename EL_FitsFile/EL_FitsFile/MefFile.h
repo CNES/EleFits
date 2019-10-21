@@ -81,29 +81,42 @@ auto raster = image_ext.read_raster<double>();
 	 * @brief Append an extension with optional name.
 	 */
 	template<class T=RecordHdu>
-	T& create_ext(T extension, std::string name="");
+	T& append_ext(T extension);
 
 	/**
-	 * @brief Append an ImageHdu with given shape optional name.
-	 * @return A reference to the new ImageHdu reader-writer.
-	 * @details
-	 * Can be piped with write services, e.g.:
+	 * @brief Append a new ImageHdu with given shape.
+	 * @return A reference to the new ImageHdu.
 	 */
-/** @code
-f.append_image_ext("IMAGE").write_raster(raster);
-@endcode */
 	template<std::size_t n>
-	ImageHdu& create_image_ext(pos_type<n>& shape, std::string name=""); //TODO shape in EL_FitsData
+	ImageHdu& init_image_ext(std::string name, pos_type<n>& shape);
 
 	/**
-	 * @brief Append an ImageHdu with given data and optional name.
-	 * @see create_image_ext
+	 * @brief Append an ImageHdu with given data.
+	 * @see init_image_ext
 	 */
 	template<typename T, std::size_t n>
-	ImageHdu& create_image_ext(Raster<T, n>& raster, std::string name=""); //TODO idem
+	ImageHdu& assign_image_ext(std::string name, Raster<T, n>& raster);
+
+	/**
+	 * @brief Append a BintableHdu with given column info.
+	 * @return A reference to the new BintableHdu.
+	 */
+	template<typename ...Ts>
+	BintableHdu& init_bintable_ext(std::string name, const column_info<Ts>&... header);
+
+	/**
+	 * @brief Append a BintableHdu with given data.
+	 * @see init_bintable_ext
+	 */
+	template<typename ...Ts>
+	BintableHdu& assign_bintable_ext(std::string name, const Column<Ts>&... header);
 
 protected:
 
+	/**
+	 * @brief Vector of RecordHdus (castable to ImageHdu or BintableHdu).
+	 * @warning m_hdus is 0-based while Cfitsio HDUs are 1-based.
+	 */
 	std::vector<std::unique_ptr<RecordHdu>> m_hdus;
 
 };
@@ -146,7 +159,7 @@ T& MefFile::access_primary() {
 }
 
 template<std::size_t n>
-ImageHdu& MefFile::create_image_ext(pos_type<n>& shape, std::string name) {
+ImageHdu& MefFile::init_image_ext(std::string name, pos_type<n>& shape) {
     Cfitsio::Hdu::create_image_extension(m_fptr, name, shape);
 	const auto size = m_hdus.size();
 	m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
@@ -154,12 +167,29 @@ ImageHdu& MefFile::create_image_ext(pos_type<n>& shape, std::string name) {
 }
 
 template<typename T, std::size_t n>
-ImageHdu& MefFile::create_image_ext(Raster<T, n>& raster, std::string name) {
+ImageHdu& MefFile::assign_image_ext(std::string name, Raster<T, n>& raster) {
     Cfitsio::Hdu::create_image_extension(m_fptr, name, raster);
 	const auto size = m_hdus.size();
 	m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
 	return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
+
+template<typename ...Ts>
+BintableHdu& MefFile::init_bintable_ext(std::string name, const column_info<Ts>&... header) {
+	Cfitsio::Hdu::create_bintable_extension(m_fptr, name, header...);
+	const auto size = m_hdus.size();
+	m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));
+	return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
+}
+
+template<typename ...Ts>
+BintableHdu& MefFile::assign_bintable_ext(std::string name, const Column<Ts>&... data) {
+	Cfitsio::Hdu::create_bintable_extension(m_fptr, name, data...);
+	const auto size = m_hdus.size();
+	m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));
+	return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
+}
+
 
 }
 }

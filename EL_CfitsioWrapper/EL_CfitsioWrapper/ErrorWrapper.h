@@ -43,7 +43,7 @@ public:
 /**
  * @brief Check whether status is OK (=0) and throw an error if not.
  */
-void may_throw_cfitsio_error(int status);
+void may_throw_cfitsio_error(int status, std::string context="");
 
 /**
  * @brief Check whether the file is valid and throw an error if not.

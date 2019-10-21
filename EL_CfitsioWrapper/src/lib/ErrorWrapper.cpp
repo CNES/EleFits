@@ -27,12 +27,15 @@
 namespace Euclid {
 namespace Cfitsio {
 
-void may_throw_cfitsio_error(int status) {
+void may_throw_cfitsio_error(int status, std::string context) {
     if(status == 0)
         return;
-    char msg[FLEN_ERRMSG];
-    fits_get_errstatus(status, msg);
-    throw CfitsioError("CFitsIO error " + std::to_string(status) + ": " + msg);
+    char cfitsio_msg[FLEN_ERRMSG];
+    fits_get_errstatus(status, cfitsio_msg);
+    std::string error_msg = "CFitsIO error " + std::to_string(status) + ": " + cfitsio_msg;
+    if(not context.empty())
+        error_msg += " (" + context + ")";
+    throw CfitsioError(error_msg);
 }
 
 void may_throw_readonly_error(fitsfile* fptr) {
