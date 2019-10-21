@@ -33,7 +33,7 @@ find_package(Cfitsio REQUIRED)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EL_CfitsioWrapper src/lib/*.cpp
-                     LINK_LIBRARIES ElementsKernel Cfitsio
+                     LINK_LIBRARIES ElementsKernel EL_FitsData Cfitsio
                      PUBLIC_HEADERS EL_CfitsioWrapper)
 
 #===============================================================================

@@ -27,7 +27,10 @@
 #include <tuple>
 #include <vector>
 
+#include "EL_FitsData/Column.h"
+
 #include "EL_CfitsioWrapper/TypeWrapper.h"
+
 
 namespace Euclid {
 namespace Cfitsio {
@@ -38,38 +41,6 @@ namespace Cfitsio {
 namespace Bintable {
 
 /**
- * @brief Type for a column info, i.e. { name, repeat, unit }
- */
-template<typename T>
-using column_info = std::tuple<std::string, std::size_t, std::string>;
-
-/**
- * @brief Bintable column data and metadata.
- */
-template<typename T>
-struct Column {
-
-	std::string name;
-
-	/**
-	 * @brief Repeat count of the column, i.e. number of values per cell.
-	 * @warning CFitsIO uses long instead of size_t
-	 */
-	long repeat;
-
-	std::string unit;
-
-	std::vector<T> data;
-
-	/**
-	 * @brief Number of elements in the column, i.e. number of rows * repeat count.
-	 * @warning For strings, CFitsIO requires nelements to be just the number of rows.
-	 */
-	std::size_t nelements() const; //TODO long?
-
-};
-
-/**
  * @brief Get the index of a Bintable column.
  */
 std::size_t column_index(fitsfile* fptr, std::string name);
@@ -78,13 +49,13 @@ std::size_t column_index(fitsfile* fptr, std::string name);
  * @brief Read a Bintable column with given name.
  */
 template<typename T>
-Column<T> read_column(fitsfile* fptr, std::string name);
+FitsIO::Column<T> read_column(fitsfile* fptr, std::string name);
 
 /**
  * @brief Write a binary table column with given name.
  */
 template<typename T>
-void write_column(fitsfile* fptr, const Column<T>& column);
+void write_column(fitsfile* fptr, const FitsIO::Column<T>& column);
 
 
 ///////////////
@@ -96,65 +67,41 @@ void write_column(fitsfile* fptr, const Column<T>& column);
 namespace internal {
 
 /**
- * Helper function to specialize nelements for strings.
- */
-template<typename T>
-std::size_t column_nelements(const Column<T>& column);
-
-/**
- * In general, nelements is the number of values,
- * i.e. number of rows * repeat count.
- */
-template<typename T>
-inline std::size_t column_nelements(const Column<T>& column) {
-	return column.repeat * column.data.size();
-}
-
-/**
- * For strings, nelements is the number of strings,
- * not the number of characters.
- */
-template<>
-inline std::size_t column_nelements(const Column<char*>& column) {
-	return column.data.size();
-}
-
-/**
  * Helper structure to dispatch column IOs depending on the cell type
  * (scalar, string or vector + pointer for internal implementation).
  */
 template<typename T>
 struct ColumnDispatcher {
-	static Column<T> read(fitsfile* fptr, std::string name);
-	static void write(fitsfile* fptr, const Column<T>& column);
+	static FitsIO::Column<T> read(fitsfile* fptr, std::string name);
+	static void write(fitsfile* fptr, const FitsIO::Column<T>& column);
 };
 
 template<typename T>
 struct ColumnDispatcher<T*> {
-	static Column<T*> read(fitsfile* fptr, std::string name);
-	static void write(fitsfile* fptr, const Column<T*>& column);
+	static FitsIO::Column<T*> read(fitsfile* fptr, std::string name);
+	static void write(fitsfile* fptr, const FitsIO::Column<T*>& column);
 };
 
 template<>
 struct ColumnDispatcher<std::string> {
-	static Column<std::string> read(fitsfile* fptr, std::string name);
-	static void write(fitsfile* fptr, const Column<std::string>& column);
+	static FitsIO::Column<std::string> read(fitsfile* fptr, std::string name);
+	static void write(fitsfile* fptr, const FitsIO::Column<std::string>& column);
 };
 
 template<typename T>
 struct ColumnDispatcher<std::vector<T>> {
-	static Column<std::vector<T>> read(fitsfile* fptr, std::string name);
-	static void write(fitsfile* fptr, const Column<std::vector<T>>& column);
+	static FitsIO::Column<std::vector<T>> read(fitsfile* fptr, std::string name);
+	static void write(fitsfile* fptr, const FitsIO::Column<std::vector<T>>& column);
 };
 
 template<typename T>
-Column<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
+FitsIO::Column<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
 	fits_get_num_rows(fptr, &rows, &status);
 	may_throw_cfitsio_error(status);
-	Column<T> column { name, 1, "", std::vector<T>(rows) };
+	FitsIO::Column<T> column { name, 1, "", std::vector<T>(rows) };
 	fits_read_col(
 		fptr,
 		TypeCode<T>::for_bintable(), // datatype
@@ -172,7 +119,7 @@ Column<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
 }
 
 template<typename T>
-Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
+FitsIO::Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
@@ -180,7 +127,7 @@ Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 	may_throw_cfitsio_error(status);
 	long repeat;
 	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
-	Column<T*> column { name, repeat, "TODO", std::vector<T*>(rows) }; //TODO unit
+	FitsIO::Column<T*> column { name, repeat, "TODO", std::vector<T*>(rows) }; //TODO unit
 	for(std::size_t i=0; i<rows; ++i)
 		column.data[i] = new T[repeat];
 	fits_read_col(
@@ -200,10 +147,10 @@ Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 }
 
 template<typename T>
-Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
+FitsIO::Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
 	const auto ptr_col = ColumnDispatcher<T*>::read(fptr, name);
 	const auto rows = ptr_col.data.size();
-	Column<std::vector<T>> column { ptr_col.name, ptr_col.repeat, "TODO", std::vector<std::vector<T>>(rows) }; //TODO unit
+	FitsIO::Column<std::vector<T>> column { ptr_col.name, ptr_col.repeat, "TODO", std::vector<std::vector<T>>(rows) }; //TODO unit
 	for(std::size_t i=0; i<rows; ++i) {
 		T* ptr_i = ptr_col.data[i];
 		column.data[i].assign(ptr_i, ptr_i + ptr_col.repeat);
@@ -213,7 +160,7 @@ Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, st
 }
 
 template<typename T>
-void ColumnDispatcher<T>::write(fitsfile* fptr, const Column<T>& column) {
+void ColumnDispatcher<T>::write(fitsfile* fptr, const FitsIO::Column<T>& column) {
 	size_t index = column_index(fptr, column.name);
 	std::vector<T> nonconst_data = column.data; // We need a non-const data for CFitsIO
 	//TODO avoid copy
@@ -232,7 +179,7 @@ void ColumnDispatcher<T>::write(fitsfile* fptr, const Column<T>& column) {
 }
 
 template<typename T>
-void ColumnDispatcher<T*>::write(fitsfile* fptr, const Column<T*>& column) {
+void ColumnDispatcher<T*>::write(fitsfile* fptr, const FitsIO::Column<T*>& column) {
 	size_t index = column_index(fptr, column.name);
 	std::vector<T*> nonconst_data = column.data; // We need a non-const data for CFitsIO
 	//TODO avoid copy
@@ -251,9 +198,9 @@ void ColumnDispatcher<T*>::write(fitsfile* fptr, const Column<T*>& column) {
 }
 
 template<typename T>
-void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const Column<std::vector<T>>& column) {
+void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const FitsIO::Column<std::vector<T>>& column) {
 	const auto rows = column.data.size();
-	Column<T*> ptr_column { column.name, column.repeat, column.unit, std::vector<T*>(rows) };
+	FitsIO::Column<T*> ptr_column { column.name, column.repeat, column.unit, std::vector<T*>(rows) };
 	for(std::size_t i=0; i<rows; ++i) {
 		const auto& data_i = column.data[i];
 		ptr_column.data[i] = new T[data_i.size()];
@@ -274,17 +221,12 @@ void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const Column<std::v
 
 
 template<typename T>
-std::size_t Column<T>::nelements() const {
-	return internal::column_nelements(*this);
-}
-
-template<typename T>
-Column<T> read_column(fitsfile* fptr, std::string name) {
+FitsIO::Column<T> read_column(fitsfile* fptr, std::string name) {
 	return internal::ColumnDispatcher<T>::read(fptr, name);
 }
 
 template<typename T>
-void write_column(fitsfile* fptr, const Column<T>& column) {
+void write_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
     internal::ColumnDispatcher<T>::write(fptr, column);
 }
 
@@ -294,4 +236,3 @@ void write_column(fitsfile* fptr, const Column<T>& column) {
 }
 
 #endif
-

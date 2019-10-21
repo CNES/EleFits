@@ -21,6 +21,7 @@
  *
  */
 
+#include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 
 namespace Euclid {
@@ -35,41 +36,6 @@ MinimalFile::MinimalFile() :
 
 MinimalFile::~MinimalFile() {
 	Cfitsio::File::close(fptr);
-}
-
-SmallRaster::SmallRaster(long width, long height) :
-		Raster<float>({width, height}),
-		width(width), height(height) {
-	for(int x=0; x<shape[0]; ++x)
-		for(int y=0; y<shape[1]; ++y)
-			operator[]({x, y}) = 0.1 * y + x;
-}
-
-bool SmallRaster::approx(const Cfitsio::Image::Raster<float>& other, float tol) const {
-	if(other.shape != this->shape)
-		return false;
-	for(std::size_t i=0; i<this->size(); ++i) {
-		const auto o = other.data[i];
-		const auto t = this->data[i];
-		const auto rel = (o - t) / t;
-		if(rel > 0 && rel > tol)
-			return false;
-		if(rel < 0 && -rel > tol)
-			return false;
-	}
-	return true;
-}
-
-SmallTable::SmallTable() :
-		extname("MESSIER"),
-		ids { 45, 7, 31 },
-		radecs { {56.8500, 24.1167}, {268.4667, -34.7928}, {10.6833, 41.2692} },
-		names { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" },
-		dists_mags { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900, 3.4 } },
-		id_col { "ID", 1, "", ids },
-		radec_col { "RADEC", 1, "deg", radecs },
-		name_col { "NAME", 68, "", names }, //TODO 68?
-		dist_mag_col { "DIST_MAG", 2, "kal", dists_mags } {
 }
 
 }

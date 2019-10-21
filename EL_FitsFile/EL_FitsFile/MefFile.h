@@ -93,14 +93,14 @@ auto raster = image_ext.read_raster<double>();
 f.append_image_ext("IMAGE").write_raster(raster);
 @endcode */
 	template<std::size_t n>
-	ImageHdu& create_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name=""); //TODO shape in EL_FitsData
+	ImageHdu& create_image_ext(pos_type<n>& shape, std::string name=""); //TODO shape in EL_FitsData
 
 	/**
 	 * @brief Append an ImageHdu with given data and optional name.
 	 * @see create_image_ext
 	 */
 	template<typename T, std::size_t n>
-	ImageHdu& create_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name=""); //TODO idem
+	ImageHdu& create_image_ext(Raster<T, n>& raster, std::string name=""); //TODO idem
 
 protected:
 
@@ -146,7 +146,7 @@ T& MefFile::access_primary() {
 }
 
 template<std::size_t n>
-ImageHdu& MefFile::create_image_ext(Cfitsio::Image::pos_type<n>& shape, std::string name) {
+ImageHdu& MefFile::create_image_ext(pos_type<n>& shape, std::string name) {
     Cfitsio::Hdu::create_image_extension(m_fptr, name, shape);
 	const auto size = m_hdus.size();
 	m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
@@ -154,7 +154,7 @@ ImageHdu& MefFile::create_image_ext(Cfitsio::Image::pos_type<n>& shape, std::str
 }
 
 template<typename T, std::size_t n>
-ImageHdu& MefFile::create_image_ext(Cfitsio::Image::Raster<T, n>& raster, std::string name) {
+ImageHdu& MefFile::create_image_ext(Raster<T, n>& raster, std::string name) {
     Cfitsio::Hdu::create_image_extension(m_fptr, name, raster);
 	const auto size = m_hdus.size();
 	m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));

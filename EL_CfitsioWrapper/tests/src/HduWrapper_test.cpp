@@ -23,8 +23,9 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_CfitsioWrapper//HduWrapper.h"
+#include "EL_FitsData/FitsDataFixture.h"
 
+#include "EL_CfitsioWrapper//HduWrapper.h"
 #include "EL_CfitsioWrapper//CfitsioFixture.h"
 
 using namespace Euclid;

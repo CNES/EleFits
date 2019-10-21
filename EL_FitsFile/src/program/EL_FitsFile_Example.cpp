@@ -27,6 +27,7 @@
 #include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
 
+#include "EL_FitsData/FitsDataFixture.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_FitsFile/MefFile.h"
 

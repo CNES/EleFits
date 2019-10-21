@@ -50,6 +50,18 @@ elements_add_library(EL_FitsData src/lib/*.cpp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
+elements_add_unit_test(Column tests/src/Column_test.cpp 
+                     EXECUTABLE EL_FitsData_Column_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
+elements_add_unit_test(FitsDataFixture tests/src/FitsDataFixture_test.cpp 
+                     EXECUTABLE EL_FitsData_FitsDataFixture_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
+elements_add_unit_test(Raster tests/src/Raster_test.cpp 
+                     EXECUTABLE EL_FitsData_Raster_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
 elements_add_unit_test(Record tests/src/Record_test.cpp 
                      EXECUTABLE EL_FitsData_Record_test
                      LINK_LIBRARIES EL_FitsData

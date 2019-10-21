@@ -24,7 +24,7 @@
 #ifndef _EL_FITSFILE_BINTABLEHDU_H
 #define _EL_FITSFILE_BINTABLEHDU_H
 
-#include "EL_CfitsioWrapper/BintableWrapper.h" // TODO New module EL_FitsData for Column
+#include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
@@ -33,9 +33,6 @@ namespace FitsIO {
 class BintableHdu : public RecordHdu {
 
 public:
-
-	template<typename T>
-	using Column = Cfitsio::Bintable::Column<T>;
 
 	BintableHdu(fitsfile* fptr, std::size_t index);
 
@@ -62,12 +59,12 @@ public:
 
 
 template<typename T>
-BintableHdu::Column<T> BintableHdu::read_column(std::string name) const {
+Column<T> BintableHdu::read_column(std::string name) const {
 	return Cfitsio::Bintable::read_column<T>(m_fptr, name);
 }
 
 template<typename T>
-void BintableHdu::write_column(const BintableHdu::Column<T>& column) const {
+void BintableHdu::write_column(const Column<T>& column) const {
 	Cfitsio::Bintable::write_column(m_fptr, column);
 }
 

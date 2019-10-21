@@ -1,6 +1,6 @@
 /**
- * @file tests/src/ImageWrapper_test.cpp
- * @date 07/25/19
+ * @file src/lib/Column.cpp
+ * @date 10/21/19
  * @author user
  *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
@@ -21,21 +21,12 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
+#include "EL_FitsData/Column.h"
 
-#include "EL_CfitsioWrapper//ImageWrapper.h"
+namespace EL_FitsData {
 
-#include "EL_CfitsioWrapper//CfitsioFixture.h"
 
-using namespace Euclid;
-using namespace Cfitsio;
+}  // namespace EL_FitsData
 
-//-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (ImageWrapper_test)
 
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE_END ()

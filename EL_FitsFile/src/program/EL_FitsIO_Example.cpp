@@ -27,11 +27,9 @@
 #include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
 
+#include "EL_FitsData/FitsDataFixture.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
-#include "EL_CfitsioWrapper/FileWrapper.h"
-#include "EL_CfitsioWrapper/HduWrapper.h"
-#include "EL_CfitsioWrapper/ImageWrapper.h"
-#include "EL_CfitsioWrapper/HeaderWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioWrapper.h"
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;

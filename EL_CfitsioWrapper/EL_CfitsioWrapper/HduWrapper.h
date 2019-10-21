@@ -121,25 +121,25 @@ void create_metadata_extension(fitsfile *fptr, std::string name);
  * @brief Create a new Image HDU with given name, pixel type and shape.
  */
 template<typename T, std::size_t n=2>
-void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_type<n>& shape);
+void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape);
 
 /**
  * @brief Write a Raster in a new Image HDU.
  */
 template<typename T, std::size_t n=2>
-void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster);
+void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Raster<T, n>& raster);
 
 /**
  * @brief Create a new Bintable HDU with given name and column infos.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable::column_info<Ts>&... header);
+void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::column_info<Ts>&... header);
 
 /**
  * @brief Write a Table in a new Bintable HDU.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable::Column<Ts>&... table);
+void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::Column<Ts>&... table);
 
 
 /////////////////////
@@ -148,7 +148,7 @@ void create_bintable_extension(fitsfile *fptr, std::string name, const Bintable:
 
 
 template<typename T, std::size_t n>
-void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_type<n>& shape) {
+void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape) {
 	may_throw_readonly_error(fptr);
 	int status = 0;
 	auto nonconst_shape = shape; //TODO const-correctness issue?
@@ -158,14 +158,14 @@ void create_image_extension(fitsfile *fptr, std::string name, const Image::pos_t
 }
 
 template<typename T, std::size_t n>
-void create_image_extension(fitsfile *fptr, std::string name, const Image::Raster<T, n>& raster) {
+void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Raster<T, n>& raster) {
 	may_throw_readonly_error(fptr);
 	create_image_extension<T, n>(fptr, name, raster.shape);
 	Image::write_raster<T, n>(fptr, raster);
 }
 
 template<typename... Ts>
-void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::column_info<Ts>&... header) {
+void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::column_info<Ts>&... header) {
 	constexpr std::size_t count = sizeof...(Ts);
 	c_str_array col_name { std::get<0>(header) ... };
 	c_str_array col_format { TypeCode<Ts>::bintable_format(std::get<1>(header)) ... };
@@ -178,7 +178,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 }
 
 template<typename... Ts>
-void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<Ts>&... table) {
+void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<Ts>&... table) {
 	constexpr std::size_t count = sizeof...(Ts);
 	c_str_array col_name { table.name ... };
 	c_str_array col_format { TypeCode<Ts>::bintable_format(table.repeat) ... };
@@ -194,7 +194,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable:
 
 /// @cond INTERNAL
 template<typename T>
-void create_bintable_extension(fitsfile* fptr, std::string name, const Bintable::Column<T>& column) {
+void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<T>& column) {
 	constexpr std::size_t count = 1;
 	std::string col_name = column.name;
 	char* c_name = &col_name[0];

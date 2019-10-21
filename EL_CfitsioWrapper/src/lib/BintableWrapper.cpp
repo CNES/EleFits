@@ -38,10 +38,10 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 	return index;
 }
 
-Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
+FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
 	auto ptr_col = ColumnDispatcher<char*>::read(fptr, name);
 	const auto rows = ptr_col.data.size();
-	Column<std::string> column { ptr_col.name, ptr_col.repeat, ptr_col.unit, std::vector<std::string>(rows) };
+	FitsIO::Column<std::string> column { ptr_col.name, ptr_col.repeat, ptr_col.unit, std::vector<std::string>(rows) };
 	for(std::size_t i=0; i<rows; ++i) {
 		char* ptr_i = ptr_col.data[i];
 		column.data[i] = std::string(ptr_i);
@@ -49,9 +49,9 @@ Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr
 	return column;
 }
 
-void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const Column<std::string>& column) {
+void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
 	c_str_array array(column.data);
-	Column<char*> char_ptr_column { column.name, column.repeat, column.unit, std::move(array.c_str_vector) };
+	FitsIO::Column<char*> char_ptr_column { column.name, column.repeat, column.unit, std::move(array.c_str_vector) };
 	internal::ColumnDispatcher<char*>::write(fptr, char_ptr_column);
 }
 
