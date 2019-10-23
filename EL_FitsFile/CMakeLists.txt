@@ -46,6 +46,8 @@ elements_add_executable(EL_FitsIO_Example src/program/EL_FitsIO_Example.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_FitsFile_Example src/program/EL_FitsFile_Example.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_Cfitsio_Example src/program/EL_Cfitsio_Example.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
 #===============================================================================
 # Declare the Boost tests here

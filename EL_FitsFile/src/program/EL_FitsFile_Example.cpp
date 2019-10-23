@@ -35,7 +35,9 @@ using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
-using namespace Euclid::FitsIO;
+using namespace Euclid;
+using namespace FitsIO;
+
 
 static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
 
@@ -53,7 +55,7 @@ public:
 
 	Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-	Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
+		Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
 
 		const std::string filename = args["output"].as<std::string>();
 
@@ -88,6 +90,7 @@ public:
 
 		logger.info() << "Reading bintable.";
 		auto bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
+		logger.info() << "HDU index = " + bintable_ext.index();
 		const auto ids = bintable_ext.read_column<int>("ID").data;
 		logger.info() << "First id: " << ids[0];
 		const auto names = bintable_ext.read_column<std::string>("NAME").data;
@@ -97,7 +100,7 @@ public:
 		
 		logger.info() << "Reading image.";
 		auto ext_3 = f.access<>(3);
-		logger.info() << "Name of HDU #3: " + ext_3.name();
+		logger.info() << "Name of HDU #3: " << ext_3.name();
 		auto records = ext_3.parse_records<std::string, int>({"STRING", "INTEGER"});
 		logger.info() << "SMALLIMG.STRING = " << std::get<0>(records).value;
 		logger.info() << "SMALLIMG.INTEGER = " << std::get<1>(records).value;
@@ -107,6 +110,7 @@ public:
 		const auto width = image.length<0>();
 		const auto height = image.length<1>();
 		logger.info() << "Last pixel: " << image[{width-1, height-1}];
+		logger.info() << "File will be closed at execution end.";
 
 		logger.info();
 
@@ -116,6 +120,3 @@ public:
 };
 
 MAIN_FOR(EL_FitsFile_Example)
-
-
-
