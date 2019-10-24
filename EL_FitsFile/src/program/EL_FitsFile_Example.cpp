@@ -69,14 +69,25 @@ public:
 		logger.info() << "Updating record: VALUE = 2";
 		primary.update_record("VALUE", 2);
 		Test::SmallTable table; // Predefined table for testing purpose
+
+		logger.info();
+
 		logger.info() << "Creating bintable extension: SMALLTBL";
 		f.assign_bintable_ext("SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
 		Test::SmallRaster raster; // Predefined image raster for testing purpose
+
+		logger.info();
+
 		logger.info() << "Creating image extension: SMALLIMG";
 		const auto& ext = f.assign_image_ext("SMALLIMG", raster);
+		logger.info() << "Writing record: STRING = string";
 		Record<std::string> str_record("STRING", "string");
+		logger.info() << "Writing record: INTEGER = 8";
 		Record<int> int_record("INTEGER", 8);
 		ext.write_records(str_record, int_record);
+
+		logger.info();
+
 		logger.info() << "Closing file.";
 		f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
 
@@ -90,7 +101,7 @@ public:
 
 		logger.info() << "Reading bintable.";
 		auto bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
-		logger.info() << "HDU index = " + bintable_ext.index();
+		logger.info() << "HDU index: " << bintable_ext.index();
 		const auto ids = bintable_ext.read_column<int>("ID").data;
 		logger.info() << "First id: " << ids[0];
 		const auto names = bintable_ext.read_column<std::string>("NAME").data;
@@ -102,14 +113,17 @@ public:
 		auto ext_3 = f.access<>(3);
 		logger.info() << "Name of HDU #3: " << ext_3.name();
 		auto records = ext_3.parse_records<std::string, int>({"STRING", "INTEGER"});
-		logger.info() << "SMALLIMG.STRING = " << std::get<0>(records).value;
-		logger.info() << "SMALLIMG.INTEGER = " << std::get<1>(records).value;
+		logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
+		logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
 		auto image_ext = f.access_first<ImageHdu>("SMALLIMG");
 		const auto image = image_ext.read_raster<float>();
 		logger.info() << "First pixel: " << image[{0, 0}];
 		const auto width = image.length<0>();
 		const auto height = image.length<1>();
 		logger.info() << "Last pixel: " << image[{width-1, height-1}];
+
+		logger.info();
+
 		logger.info() << "File will be closed at execution end.";
 
 		logger.info();

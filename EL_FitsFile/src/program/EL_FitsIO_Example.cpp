@@ -68,14 +68,25 @@ public:
 		logger.info() << "Updating record: VALUE = 2";
 		Header::update_record<int>(fptr, { "VALUE", 2 } );
 		FitsIO::Test::SmallTable table; // Predefined table for testing purpose
+
+		logger.info();
+
 		logger.info() << "Creating bintable extension: SMALLTBL";
 		Hdu::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
 		FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
+
+		logger.info();
+
 		logger.info() << "Creating image extension: SMALLIMG";
 		Hdu::create_image_extension(fptr, "SMALLIMG", raster);
+		logger.info() << "Writing record: STRING = string";
 		FitsIO::Record<std::string> str_record("STRING", "string");
+		logger.info() << "Writing record: INTEGER = 8";
 		FitsIO::Record<int> int_record("INTEGER", 8);
 		Header::write_records(fptr, str_record, int_record);
+
+		logger.info();
+
 		logger.info() << "Closing file.";
 		File::close(fptr);
 
@@ -89,7 +100,7 @@ public:
 
 		logger.info() << "Reading bintable.";
 		Hdu::goto_name(fptr, "SMALLTBL");
-		logger.info() << "HDU index = " << Hdu::current_index(fptr);
+		logger.info() << "HDU index: " << Hdu::current_index(fptr);
 		const auto ids = Bintable::read_column<int>(fptr, "ID").data;
 		logger.info() << "First id: " << ids[0];
 		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
@@ -101,21 +112,23 @@ public:
 		Hdu::goto_index(fptr, 3);
 		logger.info() << "Name of HDU #3: " << Hdu::current_name(fptr);
 		const auto records = Header::parse_records<std::string, int>(fptr, {"STRING", "INTEGER"});
-		logger.info() << "SMALLIMG.STRING = " << std::get<0>(records).value;
-		logger.info() << "SMALLIMG.INTEGER = " << std::get<1>(records).value;
+		logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
+		logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
 		Hdu::goto_name(fptr, "SMALLIMG");
 		const auto image = Image::read_raster<float>(fptr);
 		logger.info() << "First pixel: " << image[{0, 0}];
 		const auto width = image.length<0>();
 		const auto height = image.length<1>();
 		logger.info() << "Last pixel: " << image[{width-1, height-1}];
+
+		logger.info();
+
 		logger.info() << "Reclosing file.";
 		File::close(fptr);
 
 		logger.info();
 
 		return Elements::ExitCode::OK;
-
 	}
 
 };
