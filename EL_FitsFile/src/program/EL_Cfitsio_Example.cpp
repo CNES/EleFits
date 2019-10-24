@@ -52,6 +52,15 @@ struct SmallTable {
 };
 
 
+struct SmallImage {
+	static constexpr long naxis1 = 3;
+	static constexpr long naxis2 = 2;
+	static constexpr long size = naxis1*naxis2;
+	long naxes[2] = { naxis1, naxis2 };
+	float data[size] = { 0.0, 0.1, 1.0, 1.1, 2.0, 2.1 };
+};
+
+
 class EL_Cfitsio_Example : public Elements::Program {
 
 public:
@@ -90,25 +99,24 @@ public:
 		SmallTable table;
 		fits_create_tbl(fptr, BINARY_TBL, 0, table.cols, table.col_name, table.col_format, table.col_unit, "SMALLTBL", &status);
 		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while creating bintable extension");
-		fits_write_col(fptr, TINT, 1, 1, 1, 1, table.ids, &status);
-		fits_write_col(fptr, TCOMPLEX, 2, 1, 1, 1, table.radecs, &status);
-		fits_write_col(fptr, TSTRING, 3, 1, 1, 1, table.names, &status);
-		fits_write_col(fptr, TDOUBLE, 4, 1, 1, 2, table.dist_mags, &status);
+		fits_write_col(fptr, TINT, 1, 1, 1, table.rows, table.ids, &status);
+		fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.rows, table.radecs, &status);
+		fits_write_col(fptr, TSTRING, 3, 1, 1, table.rows, table.names, &status);
+		fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.rows*2, table.dist_mags, &status);
 		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing columns");
 
 		logger.info() << "Creating image extension: SMALLIMG";
-		long naxes[] = { 3, 2 };
-		fits_create_img(fptr, FLOAT_IMG, 2, naxes, &status);
+		SmallImage image;
+		fits_create_img(fptr, FLOAT_IMG, 2, image.naxes, &status);
 		char *extname = "SMALLIMG";
 		fits_write_key(fptr, TSTRING, "EXTNAME", extname, nullptr, &status);
 		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while creating image extension");
-		float data[] = { 0.0, 0.1, 1.0, 1.1, 2.0, 2.1 };
-		fits_write_img(fptr, FLOAT_IMG, 1, 6, data, &status);
+		fits_write_img(fptr, TFLOAT, 1, 6, image.data, &status);
 		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing raster");
 
 		char *record_string = "string";
 		int record_integer = 8;
-		fits_write_key(fptr, TSTRING, "STRING", &record_string, nullptr, &status);
+		fits_write_key(fptr, TSTRING, "STRING", record_string, nullptr, &status);
 		fits_write_key(fptr, TINT, "INTEGER", &record_integer, nullptr, &status);
 		Euclid::Cfitsio::may_throw_cfitsio_error(status);
 
@@ -128,36 +136,56 @@ public:
 
 		logger.info() << "Reading bintable.";
 		fits_movnam_hdu(fptr, ANY_HDU, "SMALLTBL", 0, &status);
-		Euclid::Cfitsio::may_throw_cfitsio_error(status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while moving to bintable extension");
 		int index;
 		fits_get_hdu_num(fptr, &index);
 		logger.info() << "HDU index = " << index;
-		int ids[3];
 		int colnum;
 		fits_get_colnum(fptr, CASESEN, "ID", &colnum, &status);
-		fits_read_col(fptr, TINT, colnum, 1, 1, 1, nullptr, ids, nullptr, &status);
+		int ids[table.rows];
+		fits_read_col(fptr, TINT, colnum, 1, 1, table.rows, nullptr, ids, nullptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading ID column");
 		logger.info() << "First id: " << ids[0];
 		fits_get_colnum(fptr, CASESEN, "NAME", &colnum, &status);
-		char names[3][68];
-		fits_read_col(fptr, TSTRING, colnum, 1, 1, 68, nullptr, names, nullptr, &status);
-		logger.info() << "Last name: " << names[2];
+		char *names[table.rows];
+		for(int i=0; i<table.rows; ++i)
+			names[i] = (char*) malloc(68);
+		fits_read_col(fptr, TSTRING, colnum, 1, 1, table.rows, nullptr, names, nullptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading NAME column");
+		logger.info() << "Last name: " << names[table.rows-1];
+		for(int i=0; i<table.rows; ++i)
+			free(names[i]);
 
-		// logger.info();
+		logger.info();
 		
-		// logger.info() << "Reading image.";
-		// Hdu::goto_index(fptr, 3);
-		// logger.info() << "Name of HDU #3: " << Hdu::current_name(fptr);
-		// const auto records = Header::parse_records<std::string, int>(fptr, {"STRING", "INTEGER"});
-		// logger.info() << "SMALLIMG.STRING = " << std::get<0>(records).value;
-		// logger.info() << "SMALLIMG.INTEGER = " << std::get<1>(records).value;
-		// Hdu::goto_name(fptr, "SMALLIMG");
+		logger.info() << "Reading image.";
+		fits_movabs_hdu(fptr, 3, nullptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while moving to image extension");
+		char* extname_read = (char*) malloc(69);
+		fits_read_key(fptr, TSTRING, "EXTNAME", extname_read, nullptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading extension name");
+		logger.info() << "Name of HDU #3: " << extname_read;
+		free(extname_read);
+		char* string_read = (char*) malloc(69);
+		fits_read_key(fptr, TSTRING, "STRING", string_read, nullptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading STRING record");
+		logger.info() << "SMALLIMG.STRING = " << string_read;
+		free(string_read);
+		int integer_read;
+		fits_read_key(fptr, TINT, "INTEGER", &integer_read, nullptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading INTEGER record");
+		logger.info() << "SMALLIMG.INTEGER = " << integer_read;
+
 		// const auto image = Image::read_raster<float>(fptr);
-		// logger.info() << "First pixel: " << image[{0, 0}];
-		// const auto width = image.length<0>();
-		// const auto height = image.length<1>();
-		// logger.info() << "Last pixel: " << image[{width-1, height-1}];
-		// logger.info() << "Reclosing file.";
-		// File::close(fptr);
+		float data[image.size];
+		fits_read_img(fptr, TFLOAT, 1, image.size, nullptr, data, nullptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading image raster");
+		logger.info() << "First pixel: " << data[0];
+		logger.info() << "Last pixel: " << data[image.size-1];
+
+		logger.info() << "Reclosing file.";
+		fits_close_file(fptr, &status);
+		Euclid::Cfitsio::may_throw_cfitsio_error(status, "while closing file");
 
 		logger.info();
 
