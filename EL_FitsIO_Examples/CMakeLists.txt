@@ -6,7 +6,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 #   For declaring a project module:
 #         elements_subdir(ElementsExamples)
 #===============================================================================
-elements_subdir(EL_FitsFile)
+elements_subdir(EL_FitsIO_Examples)
 
 #===============================================================================
 # Load elements_depends_on_subdirs macro here
@@ -14,7 +14,7 @@ elements_subdir(EL_FitsFile)
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
-elements_depends_on_subdirs(EL_CfitsioWrapper)
+elements_depends_on_subdirs(EL_FitsFile)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -31,9 +31,6 @@ elements_depends_on_subdirs(EL_CfitsioWrapper)
 #                     INCLUDE_DIRS Boost ElementsKernel
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
-elements_add_library(EL_FitsFile src/lib/*.cpp
-                     LINK_LIBRARIES ElementsKernel EL_CfitsioWrapper
-                     PUBLIC_HEADERS EL_FitsFile)
 
 #===============================================================================
 # Declare the executables here
@@ -42,6 +39,12 @@ elements_add_library(EL_FitsFile src/lib/*.cpp
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
+elements_add_executable(EL_FitsIO_Example src/program/EL_FitsIO_Example.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_FitsFile_Example src/program/EL_FitsFile_Example.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_Cfitsio_Example src/program/EL_Cfitsio_Example.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -51,30 +54,6 @@ elements_add_library(EL_FitsFile src/lib/*.cpp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
-elements_add_unit_test(FitsFile tests/src/FitsFile_test.cpp 
-                     EXECUTABLE EL_FitsFile_FitsFile_test
-                     LINK_LIBRARIES EL_FitsFile
-                     TYPE Boost)
-elements_add_unit_test(MefFile tests/src/MefFile_test.cpp 
-                     EXECUTABLE EL_FitsFile_MefFile_test
-                     LINK_LIBRARIES EL_FitsFile
-                     TYPE Boost)
-elements_add_unit_test(SifFile tests/src/SifFile_test.cpp 
-                     EXECUTABLE EL_FitsFile_SifFile_test
-                     LINK_LIBRARIES EL_FitsFile
-                     TYPE Boost)
-elements_add_unit_test(RecordHdu tests/src/RecordHdu_test.cpp 
-                     EXECUTABLE EL_FitsFile_Hdu_test
-                     LINK_LIBRARIES EL_FitsFile
-                     TYPE Boost)
-elements_add_unit_test(ImageHdu tests/src/ImageHdu_test.cpp 
-                     EXECUTABLE EL_FitsFile_ImageHdu_test
-                     LINK_LIBRARIES EL_FitsFile
-                     TYPE Boost)
-elements_add_unit_test(BintableHdu tests/src/BintableHdu_test.cpp 
-                     EXECUTABLE EL_FitsFile_BintableHdu_test
-                     LINK_LIBRARIES EL_FitsFile
-                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:
@@ -94,4 +73,3 @@ elements_add_unit_test(BintableHdu tests/src/BintableHdu_test.cpp
 # Examples:
 #          elements_install_conf_files()
 #===============================================================================
-elements_install_conf_files()
