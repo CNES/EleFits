@@ -41,7 +41,7 @@ find_package(Cfitsio REQUIRED)
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
 elements_add_executable(EL_FitsIO_WritePerf src/program/EL_FitsIO_WritePerf.cpp
-                     LINK_LIBRARIES ElementsKernel)
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_Cfitsio_WritePerf src/program/EL_Cfitsio_WritePerf.cpp
                      LINK_LIBRARIES ElementsKernel Cfitsio)
 
