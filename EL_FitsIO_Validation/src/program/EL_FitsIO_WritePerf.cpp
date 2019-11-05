@@ -40,12 +40,34 @@ using namespace Euclid::FitsIO;
 
 Raster<float> generate_raster(int naxis1, int naxis2) {
 	int order = 10;
-	while(order <= naxis2)
+	while(order < naxis2)
 		order *= 10;
 	Raster<float, 2> raster({naxis1, naxis2});
 	for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
 		raster[{i, j}] = float(i) + float(j)/order;
 	return raster;
+}
+
+struct table_t {
+	Column<std::string> string_col;
+	Column<float> float_col;
+	Column<int> int_col;
+};
+
+table_t generate_columns(int naxis2) {
+	std::vector<std::string> strings(naxis2);
+	std::vector<float> floats(naxis2);
+	std::vector<int> ints(naxis2);
+	for(int i=0; i<naxis2; ++i) {
+		strings[i] = "Text";
+		floats[i] = float(i) / naxis2;
+		ints[i] = i * naxis2;
+	}
+	table_t table;
+	table.string_col = Column<std::string> { "STRINGS", 8, "", std::move(strings) };
+	table.float_col = Column<float> { "FLOATS", 1, "", std::move(floats) };
+	table.int_col = Column<int> { "INTS", 1, "", std::move(ints) };
+	return table;
 }
 
 
@@ -77,6 +99,7 @@ public:
 		const auto filename = args["output"].as<std::string>();
 
 		/* const */ auto raster = generate_raster(naxis1, naxis2);
+		const auto table = generate_columns(naxis2);
 
 		MefFile f(filename, FitsFile::Permission::OVERWRITE);
 		
@@ -93,11 +116,12 @@ public:
 		logger.info() << "\tElapsed: " << duration_ms << " ms";
 
 		logger.info() << "Generating " << table_count << " bintable extension(s)"
-				<< " of size " << naxis1 << " x " << naxis2;
+				<< " of size " << 3 << " x " << naxis2;
 
 		begin = std::chrono::steady_clock::now();
-		// for(int i=0; i<image_count; ++i)
-		// 	create_table_ext(fptr, "T_" + std::to_string(i), naxes, raster.data());
+		for(int i=0; i<table_count; ++i)
+			f.assign_bintable_ext("T_" + std::to_string(i),
+					table.string_col, table.float_col, table.int_col);
 		end = std::chrono::steady_clock::now();
 		duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 

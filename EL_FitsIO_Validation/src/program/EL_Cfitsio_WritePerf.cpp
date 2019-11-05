@@ -31,33 +31,52 @@
 
 #include "ElementsKernel/ProgramHeaders.h"
 
-//#include "EL_CfitsioWrapper/ErrorWrapper.h"
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
-namespace std {
-/*
- * Required to get program_options accept vector default values.
- * @see https://stackoverflow.com/questions/40754810
- */
-template<typename T>
-std::ostream& operator<<(std::ostream &os, const std::vector<T>& vec) {
-	for (auto item : vec)
-		os << item << " ";
-	return os;
-}
-}
 
 std::vector<float> generate_raster(int naxis1, int naxis2) {
 	int order = 10;
-	while(order <= naxis2)
+	while(order < naxis2)
 		order *= 10;
 	std::vector<float> raster(naxis1 * naxis2);
 	for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
 		raster[i + j * naxis1] = float(i) + float(j)/order;
 	return raster;
+}
+
+struct colinfo_t {
+	std::vector<char*> names;
+	std::vector<char*> formats;
+	std::vector<char*> units;
+};
+
+colinfo_t generate_colinfo() {
+	std::vector<char*> names = { "STRINGS", "FLOATS", "INTS" };
+	std::vector<char*> formats = { "8A", "1E", "1J" };
+	std::vector<char*> units = { "", "", "" };
+	return colinfo_t { std::move(names), std::move(formats), std::move(units) };
+}
+
+struct table_t {
+	std::vector<std::string> strings;
+	std::vector<float> floats;
+	std::vector<int> ints;
+};
+
+table_t generate_columns(int naxis2) {
+	std::vector<std::string> strings(naxis2);
+	std::vector<float> floats(naxis2);
+	std::vector<int> ints(naxis2);
+	for(int i=0; i<naxis2; ++i) {
+		strings[i] = "Text";
+		floats[i] = float(i) / naxis2;
+		ints[i] = i * naxis2;
+	}
+	table_t table;
+	return table_t { std::move(strings), std::move(floats), std::move(ints) };
 }
 
 void create_image_ext(fitsfile* fptr, std::string extname, long* naxes, float* data) {
@@ -69,8 +88,15 @@ void create_image_ext(fitsfile* fptr, std::string extname, long* naxes, float* d
 	fits_write_img(fptr, TFLOAT, 1, naxes[0] * naxes[1], data, &status);
 }
 
-void create_table_ext(fitsfile* fptr, std::string extname, long* naxes, float* data) {
-
+void create_table_ext(fitsfile* fptr, std::string extname, colinfo_t& colinfo, table_t& table) {
+	int status = 0;
+	int naxis2 = table.strings.size();
+	fits_create_tbl(fptr, BINARY_TBL, 0, 3,
+			colinfo.names.data(), colinfo.formats.data(), colinfo.units.data(),
+			extname.c_str(), &status);
+	fits_write_col(fptr, TSTRING, 1, 1, 1, naxis2, table.strings.data(), &status);
+	fits_write_col(fptr, TFLOAT, 2, 1, 1, naxis2, table.floats.data(), &status);
+	fits_write_col(fptr, TINT, 3, 1, 1, naxis2, table.ints.data(), &status);
 }
 
 static Elements::Logging logger = Elements::Logging::getLogger("EL_Cfitsio_WritePerf");
@@ -101,8 +127,10 @@ public:
 		const auto naxis2 = args["naxis2"].as<int>();
 		const auto filename = args["output"].as<std::string>();
 
-		auto raster = generate_raster(naxis1, naxis2); // Not const to avoid copies
 		long naxes[] = {naxis1, naxis2};
+		auto raster = generate_raster(naxis1, naxis2); // Not const to avoid copies
+		auto colinfo = generate_colinfo();
+		auto table = generate_columns(naxis2);
 
 		logger.info() << "Creating Fits file: " << filename;
 		
@@ -125,11 +153,11 @@ public:
 		logger.info() << "\tElapsed: " << duration_ms << " ms";
 
 		logger.info() << "Generating " << table_count << " bintable extension(s)"
-				<< " of size " << naxis1 << " x " << naxis2;
+				<< " of size " << 3 << " x " << naxis2;
 
 		begin = std::chrono::steady_clock::now();
-		for(int i=0; i<image_count; ++i)
-			create_table_ext(fptr, "T_" + std::to_string(i), naxes, raster.data());
+		for(int i=0; i<table_count; ++i)
+			create_table_ext(fptr, "T_" + std::to_string(i), colinfo, table);
 		end = std::chrono::steady_clock::now();
 		duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
