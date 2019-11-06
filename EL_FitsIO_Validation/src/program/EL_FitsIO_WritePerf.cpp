@@ -98,11 +98,10 @@ public:
 		const auto naxis2 = args["naxis2"].as<int>();
 		const auto filename = args["output"].as<std::string>();
 
-		/* const */ auto raster = generate_raster(naxis1, naxis2);
+		const auto raster = generate_raster(naxis1, naxis2);
 		const auto table = generate_columns(naxis2);
 
 		MefFile f(filename, FitsFile::Permission::OVERWRITE);
-		
 		
 		logger.info() << "Generating " << image_count << " image extension(s)"
 				<< " of size " << naxis1 << " x " << naxis2;
@@ -133,6 +132,3 @@ public:
 };
 
 MAIN_FOR(EL_FitsIO_WritePerf)
-
-
-
