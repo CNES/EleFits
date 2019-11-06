@@ -39,12 +39,34 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 }
 
 FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
-	auto ptr_col = ColumnDispatcher<char*>::read(fptr, name);
-	const auto rows = ptr_col.data.size();
-	FitsIO::Column<std::string> column { ptr_col.name, ptr_col.repeat, ptr_col.unit, std::vector<std::string>(rows) };
+	size_t index = column_index(fptr, name);
+	long rows;
+	int status = 0;
+	fits_get_num_rows(fptr, &rows, &status);
+	may_throw_cfitsio_error(status);
+	long repeat;
+	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
+	may_throw_cfitsio_error(status);
+	char *data[rows];
+	for(int i=0; i<rows; ++i)
+		data[i] = (char*) malloc(repeat); //TODO correct size?
+	FitsIO::Column<std::string> column { name, repeat, "", std::vector<std::string>(rows) };
+	fits_read_col(
+		fptr,
+		TypeCode<std::string>::for_bintable(), // datatype
+		index, // colnum
+		1, // firstrow (1-based)
+		1, // firstelemn (1-based)
+		rows, // nelements
+		nullptr, // nulval
+		data,
+		nullptr, // anynul
+		&status
+	);
+	may_throw_cfitsio_error(status);
 	for(std::size_t i=0; i<rows; ++i) {
-		char* ptr_i = ptr_col.data[i];
-		column.data[i] = std::string(ptr_i);
+		column.data[i] = std::string(data[i]);
+		free(data[i]);
 	}
 	return column;
 }

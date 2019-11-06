@@ -1,8 +1,6 @@
-@startuml
+@startuml End-user API
 
-Raster <.. ImageHdu
-Column <.. BintableHdu
-Record <.. RecordHdu
+package EL_FitsFile {
 
 RecordHdu <|- ImageHdu
 BintableHdu -|> RecordHdu
@@ -14,6 +12,16 @@ ImageHdu *-- MefFile
 MefFile --|> FitsFile
 SifFile --|> FitsFile
 ImageHdu <|-- SifFile
+
+}
+
+package EL_FitsData {
+
+Raster <.. ImageHdu
+Column <.. BintableHdu
+Record <.. RecordHdu
+
+}
 
 class FitsFile {
 + FitsFile (filename, permission)
@@ -35,20 +43,20 @@ class SifFile {
 }
 
 class RecordHdu {
-+ parse_record (keyword)
-+ parse_records (keywords...)
-+ write_record (record)
-+ write_records (records...)
++ parse_record<T> (keyword)
++ parse_records<T...> (keywords...)
++ write_record<T> (record)
++ write_records<T...> (records...)
 }
 
 class ImageHdu {
-+ read_raster ()
-+ write_raster (raster)
++ read_raster<T, n> ()
++ write_raster<T, n> (raster)
 }
 
 class BintableHdu {
-+ read_column (name)
-+ write_column (column)
++ read_column<T> (name)
++ write_column<T> (column)
 }
 
 class Record<T> {

@@ -150,12 +150,20 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
-	FitsIO::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+		FitsIO::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+}
+
+template<>
+RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
+		FitsIO::Column<std::string> { "SCALAR", 1, "m", generate_random_vector<std::string>(size) } {
+	for(const auto& v : data)
+		if(v.length() + 1 > repeat)
+			repeat = v.length() + 1;
 }
 
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
-	FitsIO::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
+		FitsIO::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
 }
 
 template<typename T>
