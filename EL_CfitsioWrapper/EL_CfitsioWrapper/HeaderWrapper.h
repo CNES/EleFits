@@ -130,7 +130,9 @@ template<typename T>
 FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword) {
     FitsIO::Record<T> record(keyword);
     int status = 0;
+    record.comment.resize(FLEN_COMMENT);
     fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &record.value, &record.comment[0], &status);
+    record.unit.resize(FLEN_COMMENT);
     fits_read_key_unit(fptr, keyword.c_str(), &record.unit[0], &status);
     std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
     may_throw_cfitsio_error(status, context);

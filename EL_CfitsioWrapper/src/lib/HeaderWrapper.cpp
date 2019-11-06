@@ -31,7 +31,10 @@ template<>
 FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::string keyword) {
     FitsIO::Record<std::string> record(keyword);
     int status = 0;
+    record.value.resize(FLEN_VALUE);
+    record.comment.resize(FLEN_COMMENT);
     fits_read_key(fptr, TypeCode<std::string>::for_record(), keyword.c_str(), &record.value[0], &record.comment[0], &status);
+    record.unit.resize(FLEN_COMMENT);
     fits_read_key_unit(fptr, keyword.c_str(), &record.unit[0], &status);
     may_throw_cfitsio_error(status);
     return record;
