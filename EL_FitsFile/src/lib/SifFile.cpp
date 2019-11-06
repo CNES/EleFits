@@ -22,11 +22,3 @@
  */
 
 #include "EL_FitsFile/SifFile.h"
-
-namespace EL_FitsFile {
-
-
-}  // namespace EL_FitsFile
-
-
-

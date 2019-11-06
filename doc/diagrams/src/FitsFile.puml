@@ -1,0 +1,75 @@
+@startuml
+
+Raster <.. ImageHdu
+Column <.. BintableHdu
+Record <.. RecordHdu
+
+RecordHdu <|- ImageHdu
+BintableHdu -|> RecordHdu
+
+BintableHdu *-- MefFile
+RecordHdu *-- MefFile
+ImageHdu *-- MefFile
+
+MefFile --|> FitsFile
+SifFile --|> FitsFile
+ImageHdu <|-- SifFile
+
+class FitsFile {
++ FitsFile (filename, permission)
+}
+
+class MefFile {
++ MefFile (filename, permission)
++ access (index)
++ access_first (name)
++ access_primary ()
++ init_image_ext (name, shape)
++ assign_image_ext (name, raster)
++ init_bintable_ext (name, header...)
++ assign_bintable_ext (name, columns...)
+}
+
+class SifFile {
++ SifFile (filename, permission)
+}
+
+class RecordHdu {
++ parse_record (keyword)
++ parse_records (keywords...)
++ write_record (record)
++ write_records (records...)
+}
+
+class ImageHdu {
++ read_raster ()
++ write_raster (raster)
+}
+
+class BintableHdu {
++ read_column (name)
++ write_column (column)
+}
+
+class Record<T> {
++ keyword
++ value
++ unit
++ comment
++ operator T ()
+}
+
+class Raster<T, n> {
++ shape
++ data
++ operator [] (position)
+}
+
+class Column<T> {
++ name
++ repeat
++ unit
++ data
+}
+
+@enduml
