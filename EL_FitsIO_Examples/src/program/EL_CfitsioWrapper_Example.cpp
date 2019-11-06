@@ -1,5 +1,5 @@
 /**
- * @file src/program/EL_FitsIO_Example.cpp
+ * @file src/program/EL_CfitsioWrapper_Example.cpp
  * @date 07/24/19
  * @author user
  *
@@ -39,9 +39,9 @@ using namespace Euclid;
 using namespace Cfitsio;
 
 
-static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Example");
+static Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
 
-class EL_FitsIO_Example : public Elements::Program {
+class EL_CfitsioWrapper_Example : public Elements::Program {
 
 public:
 
@@ -55,7 +55,7 @@ public:
 
 	Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-		Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Example");
+		Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
 
 		const std::string filename = args["output"].as<std::string>();
 
@@ -133,4 +133,4 @@ public:
 
 };
 
-MAIN_FOR(EL_FitsIO_Example)
+MAIN_FOR(EL_CfitsioWrapper_Example)

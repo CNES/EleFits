@@ -39,7 +39,7 @@ elements_depends_on_subdirs(EL_FitsFile)
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
-elements_add_executable(EL_FitsIO_Example src/program/EL_FitsIO_Example.cpp
+elements_add_executable(EL_CfitsioWrapper_Example src/program/EL_CfitsioWrapper_Example.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_FitsFile_Example src/program/EL_FitsFile_Example.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
