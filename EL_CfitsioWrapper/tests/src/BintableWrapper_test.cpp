@@ -61,19 +61,18 @@ void check_scalar() {
 #define TEST_SCALAR_UNSIGNED(type) \
 	TEST_SCALAR_ALIAS(unsigned type, u##type)
 
-// TEST_SCALAR(bool) //TODO won't compile
+//TEST_SCALAR(bool) //TODO won't compile because a vector of bools has no .data()
 TEST_SCALAR(char)
 TEST_SCALAR(short)
 TEST_SCALAR(int)
 TEST_SCALAR(long)
-TEST_SCALAR(LONGLONG)
 TEST_SCALAR(float)
 TEST_SCALAR(double)
 TEST_SCALAR_ALIAS(std::string, string)
 TEST_SCALAR_UNSIGNED(char)
 TEST_SCALAR_UNSIGNED(short)
 TEST_SCALAR_UNSIGNED(int)
-TEST_SCALAR_UNSIGNED(long)
+//TEST_SCALAR_UNSIGNED(long)
 
 template<typename T>
 void check_vector() {
@@ -93,18 +92,17 @@ void check_vector() {
 #define TEST_VECTOR_UNSIGNED(type) \
 	BOOST_AUTO_TEST_CASE( vector_u##type##_test ) { check_vector<unsigned type>(); }
 
-// TEST_VECTOR(bool) //TODO won't compile
+//TEST_VECTOR(bool) //TODO won't compile
 TEST_VECTOR(char)
 TEST_VECTOR(short)
 TEST_VECTOR(int)
 TEST_VECTOR(long)
-TEST_VECTOR(LONGLONG)
 TEST_VECTOR(float)
 TEST_VECTOR(double)
 TEST_VECTOR_UNSIGNED(char)
 TEST_VECTOR_UNSIGNED(short)
 TEST_VECTOR_UNSIGNED(int)
-TEST_VECTOR_UNSIGNED(long)
+//TEST_VECTOR_UNSIGNED(long)
 
 BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
 
