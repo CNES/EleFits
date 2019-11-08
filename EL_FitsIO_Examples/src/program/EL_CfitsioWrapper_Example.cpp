@@ -72,7 +72,7 @@ public:
 		logger.info();
 
 		logger.info() << "Creating bintable extension: SMALLTBL";
-		Hdu::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
+		Hdu::create_bintable_extension(fptr, "SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
 		FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
 
 		logger.info();
@@ -101,8 +101,8 @@ public:
 		logger.info() << "Reading bintable.";
 		Hdu::goto_name(fptr, "SMALLTBL");
 		logger.info() << "HDU index: " << Hdu::current_index(fptr);
-		const auto ids = Bintable::read_column<int>(fptr, "ID").data;
-		logger.info() << "First id: " << ids[0];
+		const auto nums = Bintable::read_column<int>(fptr, "ID").data;
+		logger.info() << "First id: " << nums[0];
 		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
 		logger.info() << "Last name: " << names[names.size()-1];
 

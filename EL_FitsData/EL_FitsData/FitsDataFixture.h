@@ -68,7 +68,7 @@ class SmallTable {
 
 public:
 
-	using id_t = int;
+	using num_t = int;
 	using radec_t = std::complex<float>; // Could be std::pair<float> with width=2
 	using name_t = std::string;
 	using dist_mag_t = std::vector<double>;
@@ -77,12 +77,12 @@ public:
 	
 	std::string extname;
 	
-	std::vector<id_t> ids;
+	std::vector<num_t> nums;
 	std::vector<radec_t> radecs;
 	std::vector<name_t> names;
 	std::vector<dist_mag_t> dists_mags;
 	
-	FitsIO::Column<id_t> id_col;
+	FitsIO::Column<num_t> num_col;
 	FitsIO::Column<radec_t> radec_col;
 	FitsIO::Column<name_t> name_col;
 	FitsIO::Column<dist_mag_t> dist_mag_col;
