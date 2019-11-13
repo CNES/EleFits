@@ -30,6 +30,10 @@
 namespace Euclid {
 namespace FitsIO {
 
+
+/**
+ * @brief Image HDU reader-writer.
+ */
 class ImageHdu : public RecordHdu {
 
 public:
@@ -38,9 +42,15 @@ public:
 
 	virtual ~ImageHdu() = default;
 
+	/**
+	 * @brief Read the Raster.
+	 */
 	template<typename T, std::size_t n=2>
 	Raster<T, n> read_raster() const;
 
+	/**
+	 * @brief Write the Raster.
+	 */
 	template<typename T, std::size_t n=2>
 	void write_raster(const Raster<T, n>& raster) const;
 

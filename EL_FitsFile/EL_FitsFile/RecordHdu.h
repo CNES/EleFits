@@ -29,6 +29,9 @@
 namespace Euclid {
 namespace FitsIO {
 
+/**
+ * @brief Header reader-writer.
+ */
 class RecordHdu {
 
 public:
@@ -37,36 +40,72 @@ public:
 
 	virtual ~RecordHdu() = default;
 
+	/**
+	 * @brief 1-based index of the HDU.
+	 */
 	std::size_t index() const;
 
+	/**
+	 * @brief Read the extension name.
+	 */
 	std::string name() const;
 
+	/**
+	 * @brief Write the extension name.
+	 */
 	void rename(std::string) const;
 
+	/**
+	 * @brief Parse a record.
+	 */
 	template<typename T>
 	Record<T> parse_record(std::string keyword) const;
 
+	/**
+	 * @brief Parse records.
+	 */
 	template<typename... Ts>
 	std::tuple<Record<Ts>...> parse_records(const std::vector<std::string>& keywords) const;
-
+	
+	/**
+	 * @brief Write a record.
+	 */
 	template<typename T>
 	void write_record(const Record<T>& record) const;
 
+	/**
+	 * @brief Write records.
+	 */
 	template<typename T>
 	void write_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
 
+	/**
+	 * @brief Write records.
+	 */
 	template<typename... Ts>
 	void write_records(const Record<Ts>&... records) const;
 
+	/**
+	 * @brief Update a record if it exists; write a new record otherwise.
+	 */
 	template<typename T>
 	void update_record(const Record<T>& record) const;
 
+	/**
+	 * @brief Update a record if it exists; write a new record otherwise.
+	 */
 	template<typename T>
 	void update_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
 
+	/**
+	 * @brief Update records if they exists; write new records otherwise.
+	 */
 	template<typename... Ts>
 	void update_records(const Record<Ts>&... records) const;
 
+	/**
+	 * @brief Delete a record.
+	 */
 	void delete_record(std::string keyword) const;
 
 protected:

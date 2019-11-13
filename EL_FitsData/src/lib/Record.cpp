@@ -22,11 +22,3 @@
  */
 
 #include "EL_FitsData/Record.h"
-
-namespace EL_FitsData {
-
-
-}  // namespace EL_FitsData
-
-
-

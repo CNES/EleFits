@@ -38,7 +38,7 @@ namespace Cfitsio {
  * 
  * Used to work around non-const correctness of CFitsIO.
  */
-std::unique_ptr<char> to_char_ptr(std::string str);
+std::unique_ptr<char[]> to_char_ptr(std::string str);
 
 /**
  * @brief A helper structure to safely convert vector<string> to char**.
@@ -48,7 +48,7 @@ struct c_str_array {
 	c_str_array(const T begin, const T end);
 	c_str_array(const std::vector<std::string>& data);
 	c_str_array(const std::initializer_list<std::string>& data);
-	std::vector<std::unique_ptr<char>> smart_ptr_vector;
+	std::vector<std::unique_ptr<char[]>> smart_ptr_vector;
 	std::vector<char*> c_str_vector;
 	char** data();
 };
@@ -65,7 +65,7 @@ c_str_array::c_str_array(const T begin, const T end) :
         c_str_vector(end - begin) {
 	for(std::size_t i = 0; i < end - begin; ++i) { //TODO iterators?
 		auto& smart_ptr_i = smart_ptr_vector[i];
-		smart_ptr_i = std::unique_ptr<char>(new char[(begin + i)->length() + 1]);
+		smart_ptr_i = std::unique_ptr<char[]>(new char[(begin + i)->length() + 1]);
 		std::strcpy(smart_ptr_i.get(), (begin + i)->c_str());
 		c_str_vector[i] = smart_ptr_i.get();
 	}

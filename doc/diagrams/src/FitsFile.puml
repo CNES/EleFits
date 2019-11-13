@@ -1,0 +1,83 @@
+@startuml End-user API
+
+package EL_FitsFile {
+
+RecordHdu <|- ImageHdu
+BintableHdu -|> RecordHdu
+
+BintableHdu *-- MefFile
+RecordHdu *-- MefFile
+ImageHdu *-- MefFile
+
+MefFile --|> FitsFile
+SifFile --|> FitsFile
+ImageHdu <|-- SifFile
+
+}
+
+package EL_FitsData {
+
+Raster <.. ImageHdu
+Column <.. BintableHdu
+Record <.. RecordHdu
+
+}
+
+class FitsFile {
++ FitsFile (filename, permission)
+}
+
+class MefFile {
++ MefFile (filename, permission)
++ access (index)
++ access_first (name)
++ access_primary ()
++ init_image_ext (name, shape)
++ assign_image_ext (name, raster)
++ init_bintable_ext (name, header...)
++ assign_bintable_ext (name, columns...)
+}
+
+class SifFile {
++ SifFile (filename, permission)
+}
+
+class RecordHdu {
++ parse_record<T> (keyword)
++ parse_records<T...> (keywords...)
++ write_record<T> (record)
++ write_records<T...> (records...)
+}
+
+class ImageHdu {
++ read_raster<T, n> ()
++ write_raster<T, n> (raster)
+}
+
+class BintableHdu {
++ read_column<T> (name)
++ write_column<T> (column)
+}
+
+class Record<T> {
++ keyword
++ value
++ unit
++ comment
++ operator T ()
+}
+
+class Raster<T, n> {
++ shape
++ data
++ operator [] (position)
+}
+
+class Column<T> {
++ name
++ repeat
++ unit
++ data
+}
+
+@enduml

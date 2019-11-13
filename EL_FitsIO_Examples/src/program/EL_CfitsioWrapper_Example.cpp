@@ -1,5 +1,5 @@
 /**
- * @file src/program/EL_FitsIO_Example.cpp
+ * @file src/program/EL_CfitsioWrapper_Example.cpp
  * @date 07/24/19
  * @author user
  *
@@ -39,9 +39,9 @@ using namespace Euclid;
 using namespace Cfitsio;
 
 
-static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Example");
+static Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
 
-class EL_FitsIO_Example : public Elements::Program {
+class EL_CfitsioWrapper_Example : public Elements::Program {
 
 public:
 
@@ -55,7 +55,7 @@ public:
 
 	Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-		Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Example");
+		Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
 
 		const std::string filename = args["output"].as<std::string>();
 
@@ -72,7 +72,7 @@ public:
 		logger.info();
 
 		logger.info() << "Creating bintable extension: SMALLTBL";
-		Hdu::create_bintable_extension(fptr, "SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
+		Hdu::create_bintable_extension(fptr, "SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
 		FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
 
 		logger.info();
@@ -101,8 +101,8 @@ public:
 		logger.info() << "Reading bintable.";
 		Hdu::goto_name(fptr, "SMALLTBL");
 		logger.info() << "HDU index: " << Hdu::current_index(fptr);
-		const auto ids = Bintable::read_column<int>(fptr, "ID").data;
-		logger.info() << "First id: " << ids[0];
+		const auto nums = Bintable::read_column<int>(fptr, "ID").data;
+		logger.info() << "First id: " << nums[0];
 		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
 		logger.info() << "Last name: " << names[names.size()-1];
 
@@ -133,4 +133,4 @@ public:
 
 };
 
-MAIN_FOR(EL_FitsIO_Example)
+MAIN_FOR(EL_CfitsioWrapper_Example)

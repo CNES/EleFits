@@ -68,7 +68,7 @@ class SmallTable {
 
 public:
 
-	using id_t = int;
+	using num_t = int;
 	using radec_t = std::complex<float>; // Could be std::pair<float> with width=2
 	using name_t = std::string;
 	using dist_mag_t = std::vector<double>;
@@ -77,12 +77,12 @@ public:
 	
 	std::string extname;
 	
-	std::vector<id_t> ids;
+	std::vector<num_t> nums;
 	std::vector<radec_t> radecs;
 	std::vector<name_t> names;
 	std::vector<dist_mag_t> dists_mags;
 	
-	FitsIO::Column<id_t> id_col;
+	FitsIO::Column<num_t> num_col;
 	FitsIO::Column<radec_t> radec_col;
 	FitsIO::Column<name_t> name_col;
 	FitsIO::Column<dist_mag_t> dist_mag_col;
@@ -150,12 +150,20 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
-	FitsIO::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+		FitsIO::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+}
+
+template<>
+RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
+		FitsIO::Column<std::string> { "SCALAR", 1, "m", generate_random_vector<std::string>(size) } {
+	for(const auto& v : data)
+		if(v.length() + 1 > repeat)
+			repeat = v.length() + 1;
 }
 
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
-	FitsIO::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
+		FitsIO::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
 }
 
 template<typename T>

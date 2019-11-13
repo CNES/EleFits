@@ -30,6 +30,10 @@
 namespace Euclid {
 namespace FitsIO {
 
+
+/**
+ * @brief Bintable HDU reader-writer.
+ */
 class BintableHdu : public RecordHdu {
 
 public:

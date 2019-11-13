@@ -73,7 +73,7 @@ public:
 		logger.info();
 
 		logger.info() << "Creating bintable extension: SMALLTBL";
-		f.assign_bintable_ext("SMALLTBL", table.id_col, table.radec_col, table.name_col, table.dist_mag_col);
+		f.assign_bintable_ext("SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
 		Test::SmallRaster raster; // Predefined image raster for testing purpose
 
 		logger.info();
@@ -102,8 +102,8 @@ public:
 		logger.info() << "Reading bintable.";
 		auto bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
 		logger.info() << "HDU index: " << bintable_ext.index();
-		const auto ids = bintable_ext.read_column<int>("ID").data;
-		logger.info() << "First id: " << ids[0];
+		const auto nums = bintable_ext.read_column<int>("ID").data;
+		logger.info() << "First id: " << nums[0];
 		const auto names = bintable_ext.read_column<std::string>("NAME").data;
 		logger.info() << "Last name: " << names[names.size()-1];
 
