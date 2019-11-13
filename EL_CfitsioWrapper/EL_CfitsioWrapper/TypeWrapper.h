@@ -143,9 +143,11 @@ struct TypeCode<std::vector<T>> {
 #define DEF_RECORD_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_record() { return code; }
 
-#define DEF_TABLE_TYPE_CODE(type, code, column) \
-    template<> inline int TypeCode<type>::for_bintable() { return code; } \
-    template<> inline std::string TypeCode<type>::bintable_format(int width) { return std::to_string(width) + column; }
+#define DEF_TABLE_TYPE_CODE(type, code) \
+    template<> inline int TypeCode<type>::for_bintable() { return code; }
+
+#define DEF_TABLE_TFORM(type, code) \
+    template<> inline std::string TypeCode<type>::bintable_format(int width) { return std::to_string(width) + code; }
 
 #define DEF_IMAGE_TYPE_CODE(type, code) \
     template<> inline int TypeCode<type>::for_image() { return code; }
@@ -188,22 +190,38 @@ DEF_RECORD_TYPE_CODE(unsigned long, TULONG) // not std::uint32_t
  * Additionnal types for binary tables:
  * TLOGICAL (internally mapped to the `char' data type), TCOMPLEX, TDBLCOMPLEX
  */
-DEF_TABLE_TYPE_CODE(bool, TBIT, 'X')
-DEF_TABLE_TYPE_CODE(char, TSBYTE, 'A')
-DEF_TABLE_TYPE_CODE(short, TSHORT, 'I')
-DEF_TABLE_TYPE_CODE(int, TINT, 'J')
-DEF_TABLE_TYPE_CODE(long, TLONG, 'K')
-DEF_TABLE_TYPE_CODE(float, TFLOAT, 'E')
-DEF_TABLE_TYPE_CODE(double, TDOUBLE, 'D')
-DEF_TABLE_TYPE_CODE(std::complex<float>, TCOMPLEX, 'C')
-DEF_TABLE_TYPE_CODE(std::complex<double>, TDBLCOMPLEX, 'M')
-DEF_TABLE_TYPE_CODE(std::string, TSTRING, 'A')
-DEF_TABLE_TYPE_CODE(char*, TSTRING, 'A')
-DEF_TABLE_TYPE_CODE(unsigned char, TBYTE, 'B')
-DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT, 'I')
-DEF_TABLE_TYPE_CODE(unsigned int, TUINT, 'J')
-DEF_TABLE_TYPE_CODE(unsigned long, TULONG, 'K')
-//DEF_TABLE_TYPE_CODE(std::uint64_t, TULONGLONG, 'K') // Not defined in our version
+DEF_TABLE_TYPE_CODE(bool, TBIT)
+DEF_TABLE_TYPE_CODE(char, TSBYTE)
+DEF_TABLE_TYPE_CODE(short, TSHORT)
+DEF_TABLE_TYPE_CODE(int, TINT)
+DEF_TABLE_TYPE_CODE(long, TLONG)
+DEF_TABLE_TYPE_CODE(float, TFLOAT)
+DEF_TABLE_TYPE_CODE(double, TDOUBLE)
+DEF_TABLE_TYPE_CODE(std::complex<float>, TCOMPLEX)
+DEF_TABLE_TYPE_CODE(std::complex<double>, TDBLCOMPLEX)
+DEF_TABLE_TYPE_CODE(std::string, TSTRING)
+DEF_TABLE_TYPE_CODE(char*, TSTRING)
+DEF_TABLE_TYPE_CODE(unsigned char, TBYTE)
+DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT)
+DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
+DEF_TABLE_TYPE_CODE(unsigned long, TULONG)
+//DEF_TABLE_TYPE_CODE(std::uint64_t, TULONGLONG) // Not defined in our version
+
+DEF_TABLE_TFORM(bool, 'X')
+DEF_TABLE_TFORM(char, 'A')
+DEF_TABLE_TFORM(std::int16_t, 'I')
+DEF_TABLE_TFORM(std::int32_t, 'J')
+DEF_TABLE_TFORM(std::int64_t, 'K')
+DEF_TABLE_TFORM(float, 'E')
+DEF_TABLE_TFORM(double, 'D')
+DEF_TABLE_TFORM(std::complex<float>, 'C')
+DEF_TABLE_TFORM(std::complex<double>, 'M')
+DEF_TABLE_TFORM(std::string, 'A')
+DEF_TABLE_TFORM(char*, 'A')
+DEF_TABLE_TFORM(unsigned char, 'B')
+DEF_TABLE_TFORM(std::uint16_t, 'I')
+DEF_TABLE_TFORM(std::uint32_t, 'J')
+DEF_TABLE_TFORM(std::uint64_t, 'K')
 
 /*
  * From CFitsIO documentation "Primary Array or IMAGE Extension I/O Routines"

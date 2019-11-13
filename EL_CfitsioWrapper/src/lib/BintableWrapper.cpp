@@ -48,7 +48,7 @@ FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfi
 	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
 	may_throw_cfitsio_error(status);
 	std::vector<char*> data(rows);
-	for(int i=0; i<rows; ++i)
+	for(long i=0; i<rows; ++i)
 		data[i] = (char*) malloc(repeat); //TODO correct size?
 	FitsIO::Column<std::string> column { name, repeat, "", std::vector<std::string>(rows) };
 	fits_read_col(
@@ -64,7 +64,7 @@ FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfi
 		&status
 	);
 	may_throw_cfitsio_error(status);
-	for(std::size_t i=0; i<rows; ++i) {
+	for(long i=0; i<rows; ++i) {
 		column.data[i] = std::string(data[i]);
 		free(data[i]);
 	}

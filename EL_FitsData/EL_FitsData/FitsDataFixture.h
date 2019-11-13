@@ -157,7 +157,7 @@ template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
 		FitsIO::Column<std::string> { "SCALAR", 1, "m", generate_random_vector<std::string>(size) } {
 	for(const auto& v : data)
-		if(v.length() + 1 > repeat)
+		if(v.length() + 1 > std::size_t(repeat))
 			repeat = v.length() + 1;
 }
 
