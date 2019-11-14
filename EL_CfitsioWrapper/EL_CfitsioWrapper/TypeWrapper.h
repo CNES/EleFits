@@ -138,20 +138,22 @@ struct TypeCode<std::vector<T>> {
  */
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
-DEF_RECORD_TYPE_CODE(short, TSHORT) // not std::int16_t for "some" reason...
+DEF_RECORD_TYPE_CODE(short, TSHORT)
 DEF_RECORD_TYPE_CODE(int, TINT)
-DEF_RECORD_TYPE_CODE(long, TLONG) // not std::int32_t
-DEF_RECORD_TYPE_CODE(long long, TLONGLONG) // not std::int64_t
+DEF_RECORD_TYPE_CODE(long, TLONG)
+DEF_RECORD_TYPE_CODE(long long, TLONGLONG)
 DEF_RECORD_TYPE_CODE(float, TFLOAT)
 DEF_RECORD_TYPE_CODE(double, TDOUBLE)
 DEF_RECORD_TYPE_CODE(std::complex<float>, TCOMPLEX)
 DEF_RECORD_TYPE_CODE(std::complex<double>, TDBLCOMPLEX)
 DEF_RECORD_TYPE_CODE(std::string, TSTRING)
 DEF_RECORD_TYPE_CODE(unsigned char, TBYTE)
-DEF_RECORD_TYPE_CODE(unsigned short, TUSHORT) // not std::uint16_t
+DEF_RECORD_TYPE_CODE(unsigned short, TUSHORT)
 DEF_RECORD_TYPE_CODE(unsigned int, TUINT)
-DEF_RECORD_TYPE_CODE(unsigned long, TULONG) // not std::uint32_t
-//DEF_RECORD_TYPE_CODE(std::uint64_t, TULONGLONG) // Not defined in EDEN 2.0 version
+DEF_RECORD_TYPE_CODE(unsigned long, TULONG)
+#ifdef TULONGLONG
+DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
+#endif
 
 /*
  * From CFitsIO documentation "Read and Write Column Data Routines"
@@ -172,12 +174,13 @@ DEF_TABLE_TYPE_CODE(double, TDOUBLE)
 DEF_TABLE_TYPE_CODE(std::complex<float>, TCOMPLEX)
 DEF_TABLE_TYPE_CODE(std::complex<double>, TDBLCOMPLEX)
 DEF_TABLE_TYPE_CODE(std::string, TSTRING)
-DEF_TABLE_TYPE_CODE(char*, TSTRING)
 DEF_TABLE_TYPE_CODE(unsigned char, TBYTE)
 DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
 DEF_TABLE_TYPE_CODE(unsigned long, TULONG)
-//DEF_TABLE_TYPE_CODE(std::uint64_t, TULONGLONG) // Not defined in our version
+#ifdef TULONGLONG
+DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
+#endif
 
 DEF_TABLE_TFORM(bool, 'X')
 DEF_TABLE_TFORM(char, 'A')
@@ -189,7 +192,6 @@ DEF_TABLE_TFORM(double, 'D')
 DEF_TABLE_TFORM(std::complex<float>, 'C')
 DEF_TABLE_TFORM(std::complex<double>, 'M')
 DEF_TABLE_TFORM(std::string, 'A')
-DEF_TABLE_TFORM(char*, 'A')
 DEF_TABLE_TFORM(unsigned char, 'B')
 DEF_TABLE_TFORM(std::uint16_t, 'I')
 DEF_TABLE_TFORM(std::uint32_t, 'J')
@@ -213,7 +215,9 @@ DEF_IMAGE_TYPE_CODE(unsigned char, TBYTE)
 DEF_IMAGE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_IMAGE_TYPE_CODE(unsigned int, TUINT)
 DEF_IMAGE_TYPE_CODE(unsigned long, TULONG)
-//DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG) // Not defined in our version
+#ifdef TULONGLONG
+DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
+#endif
 
 /*
  * From CFitsIO documentation?
@@ -232,7 +236,9 @@ DEF_IMAGE_BITPIX(double, DOUBLE_IMG)
 DEF_IMAGE_BITPIX(unsigned char, BYTE_IMG)
 DEF_IMAGE_BITPIX(std::uint16_t, USHORT_IMG)
 DEF_IMAGE_BITPIX(std::uint32_t, ULONG_IMG)
-//DEF_IMAGE_BITPIX(std::uint64_t, ULONGLONG_IMG) // Not defined in our version
+#ifdef ULONGLONG_IMG
+DEF_IMAGE_BITPIX(std::uint64_t, ULONGLONG_IMG)
+#endif
 
 /// @endcond
 

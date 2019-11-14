@@ -35,10 +35,21 @@ namespace Cfitsio {
  * @brief Runtime error printing CFitsIO messages.
  */
 class CfitsioError : public std::runtime_error {
+
 public:
-    CfitsioError(std::string message) :
-        std::runtime_error(message) {}
+
+    CfitsioError(int status);
+    
+    CfitsioError(int status, std::string context);
+    
+    int status;
+
 };
+
+/**
+ * @brief Get the error message of an error code.
+ */
+std::string cfitsio_error_message(int status);
 
 /**
  * @brief Check whether status is OK (=0) and throw an error if not.
