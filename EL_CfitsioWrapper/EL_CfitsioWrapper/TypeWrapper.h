@@ -49,42 +49,27 @@ struct TypeCode {
     /**
      * @brief Get the type code for a Record.
      */
-    inline static int for_record() {
-        may_throw_cfitsio_error(BAD_DATATYPE);
-        return 0;
-    }
+    inline static int for_record();
 
     /**
      * @brief Get the type code for a Bintable.
      */
-    inline static int for_bintable() {
-        may_throw_cfitsio_error(BAD_DATATYPE);
-        return 0;
-    }
+    inline static int for_bintable();
 
     /**
      * @brief Get the TFORM value to handle Bintable columns.
      */
-    inline static std::string bintable_format(int width) {
-        may_throw_cfitsio_error(BAD_DATATYPE);
-        return "";
-    }
+    inline static std::string bintable_format(int width);
 
     /**
      * @brief Get the type code for an Image.
      */
-    inline static int for_image() {
-        may_throw_cfitsio_error(BAD_DATATYPE);
-        return 0;
-    }
+    inline static int for_image();
 
     /**
      * @brief Get the BITPIX value to handle Image HDUs.
      */
-    inline static int bitpix() {
-        may_throw_cfitsio_error(BAD_DATATYPE);
-        return 0;
-    }
+    inline static int bitpix();
 
 };
 
@@ -94,24 +79,12 @@ struct TypeCode {
 template<typename T>
 struct TypeCode<T*> {
 
-	inline static int for_record() {
-		return TypeCode<T>::for_record();
-	}
-
 	inline static int for_bintable() {
 		return TypeCode<T>::for_bintable();
 	}
 
 	inline static std::string bintable_format(int width) {
 		return TypeCode<T>::bintable_format(width);
-	}
-
-	inline static int for_image() {
-		return TypeCode<T>::for_image();
-	}
-
-	inline static int bitpix() {
-		return TypeCode<T>::bitpix();
 	}
 
 };
@@ -166,13 +139,12 @@ DEF_RECORD_TYPE_CODE(char, TSBYTE)
 DEF_RECORD_TYPE_CODE(short, TSHORT) // not std::int16_t for "some" reason...
 DEF_RECORD_TYPE_CODE(int, TINT)
 DEF_RECORD_TYPE_CODE(long, TLONG) // not std::int32_t
-DEF_RECORD_TYPE_CODE(LONGLONG, TLONGLONG) // not std::int64_t
+DEF_RECORD_TYPE_CODE(long long, TLONGLONG) // not std::int64_t
 DEF_RECORD_TYPE_CODE(float, TFLOAT)
 DEF_RECORD_TYPE_CODE(double, TDOUBLE)
 DEF_RECORD_TYPE_CODE(std::complex<float>, TCOMPLEX)
 DEF_RECORD_TYPE_CODE(std::complex<double>, TDBLCOMPLEX)
 DEF_RECORD_TYPE_CODE(std::string, TSTRING)
-DEF_RECORD_TYPE_CODE(char*, TSTRING)
 DEF_RECORD_TYPE_CODE(unsigned char, TBYTE)
 DEF_RECORD_TYPE_CODE(unsigned short, TUSHORT) // not std::uint16_t
 DEF_RECORD_TYPE_CODE(unsigned int, TUINT)
@@ -198,7 +170,6 @@ DEF_TABLE_TYPE_CODE(double, TDOUBLE, 'D')
 DEF_TABLE_TYPE_CODE(std::complex<float>, TCOMPLEX, 'C')
 DEF_TABLE_TYPE_CODE(std::complex<double>, TDBLCOMPLEX, 'M')
 DEF_TABLE_TYPE_CODE(std::string, TSTRING, 'A')
-DEF_TABLE_TYPE_CODE(char*, TSTRING, 'A')
 DEF_TABLE_TYPE_CODE(unsigned char, TBYTE, 'B')
 DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT, 'I')
 DEF_TABLE_TYPE_CODE(unsigned int, TUINT, 'J')
@@ -213,15 +184,17 @@ DEF_TABLE_TYPE_CODE(unsigned long, TULONG, 'K')
  * TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TULONGLONG, TFLOAT, TDOUBLE
  */
 DEF_IMAGE_TYPE_CODE(char, TSBYTE)
-DEF_IMAGE_TYPE_CODE(std::int16_t, TSHORT)
-DEF_IMAGE_TYPE_CODE(std::int32_t, TLONG)
-DEF_IMAGE_TYPE_CODE(std::int64_t, TLONGLONG)
+DEF_IMAGE_TYPE_CODE(short, TSHORT)
+DEF_IMAGE_TYPE_CODE(int, TINT)
+DEF_IMAGE_TYPE_CODE(long, TLONG)
+DEF_IMAGE_TYPE_CODE(long long, TLONGLONG)
 DEF_IMAGE_TYPE_CODE(float, TFLOAT)
 DEF_IMAGE_TYPE_CODE(double, TDOUBLE)
 DEF_IMAGE_TYPE_CODE(unsigned char, TBYTE)
-DEF_IMAGE_TYPE_CODE(std::uint16_t, TUSHORT)
-DEF_IMAGE_TYPE_CODE(std::uint32_t, TULONG)
-//DEF_IMAGE_TYPE_CODE(std::uint64_t, TULONGLONG) // Not defined in our version
+DEF_IMAGE_TYPE_CODE(unsigned short, TUSHORT)
+DEF_IMAGE_TYPE_CODE(unsigned int, TUINT)
+DEF_IMAGE_TYPE_CODE(unsigned long, TULONG)
+//DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG) // Not defined in our version
 
 /*
  * From CFitsIO documentation?

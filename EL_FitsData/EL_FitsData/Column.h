@@ -80,6 +80,8 @@ namespace internal {
 template<typename T>
 std::size_t column_nelements(const Column<T>& column);
 
+
+
 /**
  * In general, nelements is the number of values,
  * i.e. number of rows * repeat count.
@@ -90,11 +92,10 @@ inline std::size_t column_nelements(const Column<T>& column) {
 }
 
 /**
- * For strings, nelements is the number of strings,
- * not the number of characters.
+ * For strings, nelements is the number of rows.
  */
 template<>
-inline std::size_t column_nelements(const Column<char*>& column) {
+inline std::size_t column_nelements<std::string>(const Column<std::string>& column) {
 	return column.data.size();
 }
 

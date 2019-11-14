@@ -76,16 +76,16 @@ struct ColumnDispatcher {
 	static void write(fitsfile* fptr, const FitsIO::Column<T>& column);
 };
 
-template<typename T>
-struct ColumnDispatcher<T*> {
-	static FitsIO::Column<T*> read(fitsfile* fptr, std::string name);
-	static void write(fitsfile* fptr, const FitsIO::Column<T*>& column);
-};
-
 template<>
 struct ColumnDispatcher<std::string> {
 	static FitsIO::Column<std::string> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const FitsIO::Column<std::string>& column);
+};
+
+template<typename T>
+struct ColumnDispatcher<T*> {
+	static FitsIO::Column<T*> read(fitsfile* fptr, std::string name);
+	static void write(fitsfile* fptr, const FitsIO::Column<T*>& column);
 };
 
 template<typename T>
@@ -129,7 +129,7 @@ FitsIO::Column<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) 
 	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
 	FitsIO::Column<T*> column { name, repeat, "TODO", std::vector<T*>(rows) }; //TODO unit
 	for(std::size_t i=0; i<rows; ++i)
-		column.data[i] = new T[repeat];
+		column.data[i] = (T*) malloc(repeat);
 	fits_read_col(
 		fptr,
 		TypeCode<T*>::for_bintable(), // datatype
@@ -154,7 +154,6 @@ FitsIO::Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* 
 	for(std::size_t i=0; i<rows; ++i) {
 		T* ptr_i = ptr_col.data[i];
 		column.data[i].assign(ptr_i, ptr_i + ptr_col.repeat);
-		// delete[] ptr_i; //TODO keep?
 	}
 	return column;
 }
@@ -201,14 +200,14 @@ template<typename T>
 void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const FitsIO::Column<std::vector<T>>& column) {
 	const auto rows = column.data.size();
 	FitsIO::Column<T*> ptr_column { column.name, column.repeat, column.unit, std::vector<T*>(rows) };
-	for(std::size_t i=0; i<rows; ++i) {
+	for(std::size_t i=0; i < static_cast<std::size_t>(rows); ++i) {
 		const auto& data_i = column.data[i];
-		ptr_column.data[i] = new T[data_i.size()];
+		ptr_column.data[i] = (T*) malloc(column.repeat);
 		std::copy(data_i.data(), data_i.data() + data_i.size(), ptr_column.data[i]);
 	}
 	ColumnDispatcher<T*>::write(fptr, ptr_column);
 	// for(T* dptr : ptr_column.data)
-	// 	delete[] dptr; //TODO keep?
+	// 	free(dptr);
 }
 
 }

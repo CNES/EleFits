@@ -29,14 +29,14 @@ namespace FitsIO {
 namespace Test {
 
 SmallRaster::SmallRaster(long width, long height) :
-		FitsIO::Raster<float>({width, height}),
+		Raster<float>({width, height}),
 		width(width), height(height) {
 	for(int x=0; x<shape[0]; ++x)
 		for(int y=0; y<shape[1]; ++y)
 			operator[]({x, y}) = 0.1 * y + x;
 }
 
-bool SmallRaster::approx(const FitsIO::Raster<float>& other, float tol) const {
+bool SmallRaster::approx(const Raster<float>& other, float tol) const {
 	if(other.shape != this->shape)
 		return false;
 	for(std::size_t i=0; i<this->size(); ++i) {

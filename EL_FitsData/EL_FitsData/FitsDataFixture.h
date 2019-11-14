@@ -47,7 +47,7 @@ namespace Test {
 /**
  * @brief A small 2D image raster.
  */
-class SmallRaster : public FitsIO::Raster<float> {
+class SmallRaster : public Raster<float> {
 
 public:
 
@@ -55,7 +55,7 @@ public:
 	
 	virtual ~SmallRaster() = default;
 	
-	bool approx(const FitsIO::Raster<float>& other, float tol=0.1) const;
+	bool approx(const Raster<float>& other, float tol=0.1) const;
 	
 	long width, height;
 
@@ -82,18 +82,32 @@ public:
 	std::vector<name_t> names;
 	std::vector<dist_mag_t> dists_mags;
 	
-	FitsIO::Column<num_t> num_col;
-	FitsIO::Column<radec_t> radec_col;
-	FitsIO::Column<name_t> name_col;
-	FitsIO::Column<dist_mag_t> dist_mag_col;
+	Column<num_t> num_col;
+	Column<radec_t> radec_col;
+	Column<name_t> name_col;
+	Column<dist_mag_t> dist_mag_col;
 
 };
 
 /**
- * @brief A small scalar column of given type.
+ * @brief A random Raster of given type and shape.
+ */
+template<typename T, std::size_t n>
+class RandomRaster : public Raster<T, n> {
+
+public:
+
+	RandomRaster(pos_type<n> shape);
+	virtual ~RandomRaster() = default;
+
+};
+
+
+/**
+ * @brief A random scalar Column of given type.
  */
 template<typename T>
-class RandomScalarColumn : public FitsIO::Column<T> {
+class RandomScalarColumn : public Column<T> {
 
 public:
 
@@ -127,9 +141,15 @@ public:
 
 };
 
+/**
+ * @brief Generate a random value of given type.
+ */
 template<typename T>
 T generate_random_value();
 
+/**
+ * @brief Generate a random vector of given type and size.
+ */
 template<typename T>
 std::vector<T> generate_random_vector(std::size_t size);
 
@@ -148,22 +168,29 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 ///////////////////
 
 
+template<typename T, std::size_t n>
+RandomRaster<T, n>::RandomRaster(pos_type<n> shape) :
+		Raster<T, n>(shape) {
+	this->data = generate_random_vector<T>(this->size());
+}
+
+
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
-		FitsIO::Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+		Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
 }
 
 template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
-		FitsIO::Column<std::string> { "SCALAR", 1, "m", generate_random_vector<std::string>(size) } {
+		Column<std::string> { "SCALAR", 1, "m", generate_random_vector<std::string>(size) } {
 	for(const auto& v : data)
-		if(v.length() + 1 > repeat)
+		if(v.length() + 1 > static_cast<std::size_t>(repeat))
 			repeat = v.length() + 1;
 }
 
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
-		FitsIO::Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
+		Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
 }
 
 template<typename T>
@@ -176,8 +203,8 @@ template<typename T>
 std::vector<T> generate_random_vector(std::size_t size) {
 	const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
 	std::default_random_engine generator(seed);
-	const double min = std::numeric_limits<T>::min();
-	const double max = std::numeric_limits<T>::max();
+	const double min = std::numeric_limits<T>::min(); //TODO partially supported for char with BZERO trick
+	const double max = std::numeric_limits<T>::max(); //TODO partially supported for unsigned with BZERO trick
 	std::uniform_real_distribution<double> distribution(min, max);
 	std::vector<T> vec(size);
 	for(auto&& val : vec)

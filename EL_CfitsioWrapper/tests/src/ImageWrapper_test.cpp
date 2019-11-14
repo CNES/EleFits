@@ -23,18 +23,64 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_CfitsioWrapper//ImageWrapper.h"
+#include "EL_FitsData/FitsDataFixture.h"
 
-#include "EL_CfitsioWrapper//CfitsioFixture.h"
+#include "EL_CfitsioWrapper/HduWrapper.h"
+#include "EL_CfitsioWrapper/ImageWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
+
 
 using namespace Euclid;
 using namespace Cfitsio;
+
+template<typename T>
+void check_equal_vectors(const std::vector<T>& test, const std::vector<T>& expected) {
+	BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
+}
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE (ImageWrapper_test)
 
 //-----------------------------------------------------------------------------
+
+template<typename T>
+void check_random_3d() {
+	FitsIO::Test::RandomRaster<T, 3> input({2, 3, 4});
+	FitsIO::Test::MinimalFile file;
+	try {
+		Hdu::create_image_extension(file.fptr, "IMGEXT", input);
+		const auto output = Image::read_raster<T, 3>(file.fptr);
+		check_equal_vectors(output.data, input.data);
+	} catch(const CfitsioError& e) {
+		std::cerr << "Input:" << std::endl;
+		for(const auto& v : input.data)
+			std::cerr << v << ' ';
+		std::cerr << std::endl;
+		BOOST_FAIL(e.what());
+	}
+	
+}
+
+#define TEST_3D_ALIAS(type, name) \
+	BOOST_AUTO_TEST_CASE( name##_test ) { check_random_3d<type>(); }
+
+#define TEST_3D(type) \
+	TEST_3D_ALIAS(type, type)
+
+#define TEST_3D_UNSIGNED(type) \
+	TEST_3D_ALIAS(unsigned type, u##type)
+
+TEST_3D(char)
+TEST_3D(short)
+TEST_3D(int)
+TEST_3D(long)
+TEST_3D(float)
+TEST_3D(double)
+TEST_3D_UNSIGNED(char)
+TEST_3D_UNSIGNED(short)
+TEST_3D_UNSIGNED(int)
+// TEST_3D_UNSIGNED(long)
 
 //-----------------------------------------------------------------------------
 

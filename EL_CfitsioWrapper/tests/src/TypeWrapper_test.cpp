@@ -35,40 +35,69 @@ BOOST_AUTO_TEST_SUITE (TypeWrapper_test)
 //-----------------------------------------------------------------------------
 
 template<typename T>
-void check_cfitsio_types(int record, int table, int image) {
-    if(record)
-        BOOST_CHECK_EQUAL(TypeCode<T>::for_record(), record);
-    else
-        BOOST_CHECK_THROW(TypeCode<T>::for_record(), CfitsioError);
-    if(table)
-        BOOST_CHECK_EQUAL(TypeCode<T>::for_bintable(), table);
-    else
-        BOOST_CHECK_THROW(TypeCode<T>::for_bintable(), CfitsioError);
-    if(image)
-        BOOST_CHECK_EQUAL(TypeCode<T>::for_image(), image);
-    else
-        BOOST_CHECK_THROW(TypeCode<T>::for_image(), CfitsioError);
+void check_cfitsio_record_type(int code) {
+    BOOST_CHECK_EQUAL(TypeCode<T>::for_record(), code);
 }
 
-BOOST_AUTO_TEST_CASE( cfitsio_type_codes_test ) {
+template<typename T>
+void check_cfitsio_bintable_type(int code) {
+    BOOST_CHECK_EQUAL(TypeCode<T>::for_bintable(), code);
+}
 
-    check_cfitsio_types<bool>(TLOGICAL, TBIT, 0);
-    check_cfitsio_types<char>(TSBYTE, TSBYTE, TSBYTE);
-    check_cfitsio_types<short>(TSHORT, TSHORT, TSHORT);
-    check_cfitsio_types<int>(TINT, TINT, TINT);
-    check_cfitsio_types<long>(TLONG, TLONG, TLONG);
-    check_cfitsio_types<LONGLONG>(TLONGLONG, TLONGLONG, TLONGLONG);
-    check_cfitsio_types<float>(TFLOAT, TFLOAT, TFLOAT);
-    check_cfitsio_types<double>(TDOUBLE, TDOUBLE, TDOUBLE);
-    check_cfitsio_types<std::complex<float>>(TCOMPLEX, TCOMPLEX, 0);
-    check_cfitsio_types<std::complex<double>>(TDBLCOMPLEX, TDBLCOMPLEX, 0);
-    check_cfitsio_types<std::string>(TSTRING, TSTRING, 0);
-    check_cfitsio_types<char*>(TSTRING, TSTRING, 0);
-    check_cfitsio_types<unsigned char>(TBYTE, TBYTE, TBYTE);
-    check_cfitsio_types<unsigned short>(TUSHORT, TUSHORT, TUSHORT);
-    check_cfitsio_types<unsigned int>(TUINT, TUINT, TUINT);
-    check_cfitsio_types<unsigned long>(TULONG, TULONG, TULONG);
-    check_cfitsio_types<unsigned long long>(0, 0, 0);
+template<typename T>
+void check_cfitsio_image_type(int code) {
+    BOOST_CHECK_EQUAL(TypeCode<T>::for_image(), code);
+}
+
+BOOST_AUTO_TEST_CASE( cfitsio_record_codes_test ) {
+
+    check_cfitsio_record_type<bool>(TLOGICAL);
+    check_cfitsio_record_type<char>(TSBYTE);
+    check_cfitsio_record_type<short>(TSHORT);
+    check_cfitsio_record_type<int>(TINT);
+    check_cfitsio_record_type<long>(TLONG);
+    check_cfitsio_record_type<long long>(TLONGLONG);
+    check_cfitsio_record_type<float>(TFLOAT);
+    check_cfitsio_record_type<double>(TDOUBLE);
+    check_cfitsio_record_type<std::complex<float>>(TCOMPLEX);
+    check_cfitsio_record_type<std::complex<double>>(TDBLCOMPLEX);
+    check_cfitsio_record_type<std::string>(TSTRING);
+    check_cfitsio_record_type<unsigned char>(TBYTE);
+    check_cfitsio_record_type<unsigned short>(TUSHORT);
+    check_cfitsio_record_type<unsigned int>(TUINT);
+    check_cfitsio_record_type<unsigned long>(TULONG);
+
+}
+
+BOOST_AUTO_TEST_CASE( cfitsio_bintable_codes_test ) {
+
+    check_cfitsio_bintable_type<bool>(TBIT);
+    check_cfitsio_bintable_type<char>(TSBYTE);
+    check_cfitsio_bintable_type<short>(TSHORT);
+    check_cfitsio_bintable_type<int>(TINT);
+    check_cfitsio_bintable_type<long>(TLONG);
+    check_cfitsio_bintable_type<float>(TFLOAT);
+    check_cfitsio_bintable_type<double>(TDOUBLE);
+    check_cfitsio_bintable_type<std::complex<float>>(TCOMPLEX);
+    check_cfitsio_bintable_type<std::complex<double>>(TDBLCOMPLEX);
+    check_cfitsio_bintable_type<std::string>(TSTRING);
+    check_cfitsio_bintable_type<unsigned char>(TBYTE);
+    check_cfitsio_bintable_type<unsigned short>(TUSHORT);
+    check_cfitsio_bintable_type<unsigned int>(TUINT);
+    check_cfitsio_bintable_type<unsigned long>(TULONG);
+
+}
+
+BOOST_AUTO_TEST_CASE( cfitsio_image_codes_test ) {
+
+    check_cfitsio_image_type<char>(BYTE_IMG);
+    check_cfitsio_image_type<short>(SHORT_IMG);
+    check_cfitsio_image_type<long>(LONG_IMG);
+    check_cfitsio_image_type<float>(FLOAT_IMG);
+    check_cfitsio_image_type<double>(DOUBLE_IMG);
+    check_cfitsio_image_type<unsigned char>(BYTE_IMG);
+    check_cfitsio_image_type<unsigned short>(USHORT_IMG);
+    // check_cfitsio_image_type<unsigned long>(ULONG_IMG);
 
 }
 

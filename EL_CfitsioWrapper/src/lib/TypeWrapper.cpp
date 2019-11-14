@@ -21,8 +21,4 @@
  *
  */
 
-#include <complex>
-#include <limits>
-#include <string>
-
 #include "EL_CfitsioWrapper/TypeWrapper.h"
