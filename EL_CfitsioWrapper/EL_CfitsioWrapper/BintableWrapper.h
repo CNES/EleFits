@@ -154,6 +154,7 @@ FitsIO::Column<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* 
 	for(std::size_t i=0; i<rows; ++i) {
 		T* ptr_i = ptr_col.data[i];
 		column.data[i].assign(ptr_i, ptr_i + ptr_col.repeat);
+		free(ptr_i);
 	}
 	return column;
 }
@@ -200,14 +201,14 @@ template<typename T>
 void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const FitsIO::Column<std::vector<T>>& column) {
 	const auto rows = column.data.size();
 	FitsIO::Column<T*> ptr_column { column.name, column.repeat, column.unit, std::vector<T*>(rows) };
-	for(std::size_t i=0; i < static_cast<std::size_t>(rows); ++i) {
+	for(std::size_t i=0; i<rows; ++i) {
 		const auto& data_i = column.data[i];
 		ptr_column.data[i] = (T*) malloc(column.repeat);
 		std::copy(data_i.data(), data_i.data() + data_i.size(), ptr_column.data[i]);
 	}
 	ColumnDispatcher<T*>::write(fptr, ptr_column);
-	// for(T* dptr : ptr_column.data)
-	// 	free(dptr);
+	for(std::size_t i=0; i<rows; ++i)
+		free(ptr_column.data[i]);
 }
 
 }
