@@ -78,7 +78,7 @@ struct TypeCode {
  */
 template<typename T>
 struct TypeCode<T*> {
-
+    
 	inline static int for_bintable() {
 		return TypeCode<T>::for_bintable();
 	}

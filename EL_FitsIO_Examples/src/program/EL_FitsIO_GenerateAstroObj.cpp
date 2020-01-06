@@ -49,33 +49,39 @@ void writeMeta(MefFile& f, int obj_index) {
 	ext.write_record("DEC_OBJ", 3.F * obj_index);
 }
 
-void writeCombinedSignal(MefFile& f, int obj_index, int size) {
-	auto wmin_data = Test::generate_random_vector<float>(size);
-	auto signal_data = Test::generate_random_vector<float>(size);
-	auto quality_data = Test::generate_random_vector<short>(size);
-	auto var_data = Test::generate_random_vector<float>(size);
+void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
+	auto wmin_data = Test::generate_random_vector<float>(bins);
+	auto signal_data = Test::generate_random_vector<float>(bins);
+	auto quality_data = Test::generate_random_vector<short>(bins);
+	auto var_data = Test::generate_random_vector<float>(bins);
 	Column<float> wmin_col { "WMIN", 1, "nm", std::move(wmin_data) };
 	Column<float> signal_col { "SIGNAL", 1, "erg", std::move(signal_data) };
 	Column<short> quality_col { "QUALITY", 1, "", std::move(quality_data) };
 	Column<float> var_col { "VAR", 1, "erg^2", std::move(var_data) };
 	std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
-	f.assign_bintable_ext(extname, wmin_col, signal_col, quality_col, var_col);
+	const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col, quality_col, var_col);
+	ext.write_record("WMIN", 0.F);
+	ext.write_record("BINWIDTH", 1.F);
+	ext.write_record("BINCOUNT", bins);
+	ext.write_record("EXPTIME", 3600.F);
 }
 
-void writeCombinedCov(MefFile& f, int obj_index, int size) {
-	Test::RandomRaster<float, 2> cov_raster({size, size});
+void writeCombinedCov(MefFile& f, int obj_index, int bins) {
+	Test::RandomRaster<float, 2> cov_raster({bins, bins});
 	std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
-	f.assign_image_ext(extname, cov_raster);
+	const auto& ext = f.assign_image_ext(extname, cov_raster);
+	ext.write_record("COV_SIDE", bins);
+	ext.write_record<std::string>("CODEC", "IDENTITY");
 }
 
-void writeCombined(MefFile& f, int obj_index, int size) {
-	writeCombinedSignal(f, obj_index, size);
-	writeCombinedCov(f, obj_index, size);
+void writeCombined(MefFile& f, int obj_index, int bins) {
+	writeCombinedSignal(f, obj_index, bins);
+	writeCombinedCov(f, obj_index, bins);
 }
 
-void writeAstroObj(MefFile& f, int obj_index, int size) {
+void writeAstroObj(MefFile& f, int obj_index, int bins) {
 	writeMeta(f, obj_index);
-	writeCombined(f, obj_index, size);
+	writeCombined(f, obj_index, bins);
 }
 
 class EL_FitsIO_GenerateAstroObj : public Elements::Program {
