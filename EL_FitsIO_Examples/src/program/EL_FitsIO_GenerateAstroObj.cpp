@@ -28,7 +28,6 @@
 #include "ElementsKernel/ProgramHeaders.h"
 
 #include "EL_FitsData/FitsDataFixture.h"
-#include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_FitsFile/MefFile.h"
 
 using boost::program_options::options_description;
@@ -51,10 +50,10 @@ void writeMeta(MefFile& f, int obj_index) {
 }
 
 void writeCombinedSignal(MefFile& f, int obj_index, int size) {
-	std::vector<float> wmin_data(size);
-	std::vector<float> signal_data(size);
-	std::vector<short> quality_data(size);
-	std::vector<float> var_data(size);
+	auto wmin_data = Test::generate_random_vector<float>(size);
+	auto signal_data = Test::generate_random_vector<float>(size);
+	auto quality_data = Test::generate_random_vector<short>(size);
+	auto var_data = Test::generate_random_vector<float>(size);
 	Column<float> wmin_col { "WMIN", 1, "nm", std::move(wmin_data) };
 	Column<float> signal_col { "SIGNAL", 1, "erg", std::move(signal_data) };
 	Column<short> quality_col { "QUALITY", 1, "", std::move(quality_data) };
@@ -64,8 +63,7 @@ void writeCombinedSignal(MefFile& f, int obj_index, int size) {
 }
 
 void writeCombinedCov(MefFile& f, int obj_index, int size) {
-	std::vector<float> cov_data(size * size);
-	Raster<float> cov_raster( { size, size }, std::move(cov_data));
+	Test::RandomRaster<float, 2> cov_raster({size, size});
 	std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
 	f.assign_image_ext(extname, cov_raster);
 }
