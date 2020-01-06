@@ -68,16 +68,16 @@ public:
 		primary.write_record("VALUE", 1);
 		logger.info() << "Updating record: VALUE = 2";
 		primary.update_record("VALUE", 2);
-		Test::SmallTable table; // Predefined table for testing purpose
 
 		logger.info();
 
+		Test::SmallTable table; // Predefined table for testing purpose
 		logger.info() << "Creating bintable extension: SMALLTBL";
 		f.assign_bintable_ext("SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
-		Test::SmallRaster raster; // Predefined image raster for testing purpose
 
 		logger.info();
 
+		Test::SmallRaster raster; // Predefined image raster for testing purpose
 		logger.info() << "Creating image extension: SMALLIMG";
 		const auto& ext = f.assign_image_ext("SMALLIMG", raster);
 		logger.info() << "Writing record: STRING = string";

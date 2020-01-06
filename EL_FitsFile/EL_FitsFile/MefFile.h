@@ -87,7 +87,7 @@ auto raster = image_ext.read_raster<double>();
 	 * @brief Append a new ImageHdu with given shape.
 	 * @return A reference to the new ImageHdu.
 	 */
-	template<std::size_t n>
+	template<typename T, std::size_t n>
 	ImageHdu& init_image_ext(std::string name, const pos_type<n>& shape);
 
 	/**
@@ -158,9 +158,9 @@ T& MefFile::access_primary() {
 	return access<T>(1);
 }
 
-template<std::size_t n>
+template<typename T, std::size_t n>
 ImageHdu& MefFile::init_image_ext(std::string name, const pos_type<n>& shape) {
-    Cfitsio::Hdu::create_image_extension(m_fptr, name, shape);
+    Cfitsio::Hdu::create_image_extension<T, n>(m_fptr, name, shape);
 	const auto size = m_hdus.size();
 	m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
 	return dynamic_cast<ImageHdu&>(*m_hdus[size].get());

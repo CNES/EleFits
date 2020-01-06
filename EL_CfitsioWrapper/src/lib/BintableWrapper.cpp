@@ -45,11 +45,11 @@ FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfi
 	fits_get_num_rows(fptr, &rows, &status);
 	may_throw_cfitsio_error(status);
 	long repeat;
-	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
+	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
 	may_throw_cfitsio_error(status);
 	std::vector<char*> data(rows);
-	for(std::size_t i=0; i < static_cast<std::size_t>(rows); ++i)
-		data[i] = (char*) malloc(repeat); //TODO correct size?
+	for(long i=0; i < rows; ++i)
+		data[i] = (char*) malloc(repeat);
 	FitsIO::Column<std::string> column { name, repeat, "", std::vector<std::string>(rows) };
 	fits_read_col(
 		fptr,
