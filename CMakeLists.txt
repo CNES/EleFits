@@ -6,6 +6,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
 
 find_package(ElementsProject)
 
+set(USE_SPHINX OFF
+    CACHE STRING "Sphinx API documentation" 
+    FORCE)
+
 #===============================================================================
 # Declare project name and version
 # Example with dependency:
