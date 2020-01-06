@@ -52,11 +52,11 @@ void writeMeta(MefFile& f, int obj_index) {
 void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
 	auto wmin_data = Test::generate_random_vector<float>(bins);
 	auto signal_data = Test::generate_random_vector<float>(bins);
-	auto quality_data = Test::generate_random_vector<short>(bins);
+	auto quality_data = Test::generate_random_vector<char>(bins);
 	auto var_data = Test::generate_random_vector<float>(bins);
 	Column<float> wmin_col { "WMIN", 1, "nm", std::move(wmin_data) };
 	Column<float> signal_col { "SIGNAL", 1, "erg", std::move(signal_data) };
-	Column<short> quality_col { "QUALITY", 1, "", std::move(quality_data) };
+	Column<char> quality_col { "QUALITY", 1, "", std::move(quality_data) };
 	Column<float> var_col { "VAR", 1, "erg^2", std::move(var_data) };
 	std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
 	const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col, quality_col, var_col);
