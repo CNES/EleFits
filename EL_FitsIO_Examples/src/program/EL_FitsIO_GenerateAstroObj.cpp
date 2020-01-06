@@ -50,24 +50,34 @@ void writeMeta(MefFile& f, int obj_index) {
 	ext.write_record("DEC_OBJ", 3.F * obj_index);
 }
 
-void writeCombined(MefFile& f, int obj_index) {
-	const int size(12); //TODO
+void writeCombinedSignal(MefFile& f, int obj_index, int size) {
 	std::vector<float> wmin_data(size);
 	std::vector<float> signal_data(size);
 	std::vector<short> quality_data(size);
 	std::vector<float> var_data(size);
-	Column<float> wmin_col { "WMIN", 1, "nm", wmin_data };
-	Column<float> signal_col { "SIGNAL", 1, "erg", signal_data };
-	Column<short> quality_col { "QUALITY", 1, "", quality_data };
-	Column<float> var_col { "VAR", 1, "erg^2", var_data };
+	Column<float> wmin_col { "WMIN", 1, "nm", std::move(wmin_data) };
+	Column<float> signal_col { "SIGNAL", 1, "erg", std::move(signal_data) };
+	Column<short> quality_col { "QUALITY", 1, "", std::move(quality_data) };
+	Column<float> var_col { "VAR", 1, "erg^2", std::move(var_data) };
 	std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
 	f.assign_bintable_ext(extname, wmin_col, signal_col, quality_col, var_col);
-	//TODO cov
 }
 
-void writeAstroObj(MefFile& f, int obj_index) {
+void writeCombinedCov(MefFile& f, int obj_index, int size) {
+	std::vector<float> cov_data(size * size);
+	Raster<float> cov_raster( { size, size }, std::move(cov_data));
+	std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
+	f.assign_image_ext(extname, cov_raster);
+}
+
+void writeCombined(MefFile& f, int obj_index, int size) {
+	writeCombinedSignal(f, obj_index, size);
+	writeCombinedCov(f, obj_index, size);
+}
+
+void writeAstroObj(MefFile& f, int obj_index, int size) {
 	writeMeta(f, obj_index);
-	writeCombined(f, obj_index);
+	writeCombined(f, obj_index, size);
 }
 
 class EL_FitsIO_GenerateAstroObj : public Elements::Program {
@@ -79,7 +89,8 @@ public:
 		options_description options {};
 		options.add_options()
 				("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file")
-				("nobj", value<int>()->default_value(1), "AstroObj count");
+				("nobj", value<int>()->default_value(1), "AstroObj count")
+				("nbin", value<int>()->default_value(1000), "Wavelength bin count");
 		return options;
 	}
 
@@ -89,6 +100,7 @@ public:
 
 		std::string filename = args["output"].as<std::string>();
 		int nobj = args["nobj"].as<int>();
+		int nbin = args["nbin"].as<int>();
 
 		logger.info() << "Creating Fits file: " << filename;
 		MefFile f(filename, FitsFile::Permission::OVERWRITE);
@@ -98,7 +110,7 @@ public:
 
 		for(int i=0; i<nobj; ++i) {
 			logger.info() << "Writing AstroObj " << i;
-			writeAstroObj(f, i);
+			writeAstroObj(f, i, nbin);
 		}
 		return Elements::ExitCode::OK;
 	}

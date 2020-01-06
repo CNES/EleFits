@@ -62,6 +62,11 @@ struct Raster {
 	Raster(pos_type<n> shape);
 
 	/**
+	 * @brief Create a Raster with given shape and values.
+	 */
+	Raster(pos_type<n> shape, std::vector<T> data);
+
+	/**
 	 * @brief Create an empty Raster.
 	 */
 	Raster() = default;
@@ -149,6 +154,13 @@ template<typename T, std::size_t n>
 Raster<T, n>::Raster(pos_type<n> shape) :
 		shape(shape),
 		data(size()) {
+}
+
+template<typename T, std::size_t n>
+Raster<T, n>::Raster(pos_type<n> shape, std::vector<T> data) :
+		shape(shape),
+		data(data) {
+
 }
 
 template<typename T, std::size_t n>
