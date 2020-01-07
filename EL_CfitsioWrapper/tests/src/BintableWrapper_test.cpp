@@ -104,6 +104,7 @@ void check_vector() {
 #define TEST_VECTOR_UNSIGNED(type) \
 	BOOST_AUTO_TEST_CASE( vector_u##type##_test ) { check_vector<unsigned type>(); }
 
+/*
 // TEST_VECTOR(bool) //TODO won't compile because of vector specialization for bool
 TEST_VECTOR(char)
 TEST_VECTOR(short)
@@ -115,6 +116,7 @@ TEST_VECTOR_UNSIGNED(char)
 TEST_VECTOR_UNSIGNED(short)
 TEST_VECTOR_UNSIGNED(int)
 TEST_VECTOR_UNSIGNED(long)
+*/
 
 BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
 
