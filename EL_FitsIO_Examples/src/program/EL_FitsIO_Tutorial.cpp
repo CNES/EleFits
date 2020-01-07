@@ -69,7 +69,7 @@ public:
     primary.update_record("VALUE", 2);
     //! [Write and update a record]
     //! [Write a record with comment and unit]
-    Record<float> complete_record("COMPLETE", 3.0, "m", "Some comment")
+    Record<float> complete_record("COMPLETE", 3.0, "m", "Some comment");
     primary.write_record(complete_record);
     //! [Write a record with comment and unit]
 
