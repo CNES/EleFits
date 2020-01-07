@@ -47,6 +47,8 @@ elements_add_executable(EL_Cfitsio_Example src/program/EL_Cfitsio_Example.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_FitsIO_GenerateAstroObj src/program/EL_FitsIO_GenerateAstroObj.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_FitsIO_Tutorial src/program/EL_FitsIO_Tutorial.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
 #===============================================================================
 # Declare the Boost tests here

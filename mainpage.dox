@@ -30,6 +30,11 @@ and EL_FitsIO misses CFitsIO features that we found less important or too comple
 like ASCII table extensions, streaming or compression.
 
 
+\section cmake Configuring a project to depend on EL_FitsIO
+
+TODO
+
+
 \section api End-user API
 
 The end-user API is made of two kinds of classes:
@@ -37,25 +42,23 @@ The end-user API is made of two kinds of classes:
 - data classes store raw data;
 - service classes allow reading and writing the data.
 
-Here is the (simplified) class diagram of the end-user API:
-
-\image html doc/diagrams/out/FitsFile.png
-
-\subsection data-classes Data classes
-
 Records, image rasters and bintable columns are implemented as light structures to abstract from CFitsIO raw pointers:
 
 - Record is made of a name, value, unit and comment;
 - Raster represents a _n_-dimensional array with constant-time pixel access;
 - Column stores metadata (name, unit, width) and values.
 
-\subsection service-classes Read-write classes
-
 Service classes are organized according to the Fits format:
 
 - MefFile, the root object, provides file-level services (open, close, access HDUs);
 - RecordHdu only handles records;
 - ImageHdu and BintableHdu, respectively the image and bintable HDU reader-writers, additionally provide access to the raster and columns.
+
+Here is the (simplified) class diagram of the end-user API:
+
+\image html doc/diagrams/out/FitsFile.png
+
+Last but not least, we've implemented and documented a tutorial here: \subpage tuto.
 
 
 \section modules Modules
