@@ -6,7 +6,11 @@ namespace FitsIO {
 \mainpage Project Overview
 
 
+\tableofcontents
+
+
 \section purpose Purpose and Scope
+
 
 The purpose of the library is to provide a user-friendly and efficient API to read and write Fits files.
 
@@ -16,14 +20,14 @@ The actual reading and writing are delegated to CFitsIO,
 with as few indirections as possible to minimize overhead.
 As compared to CFitsIO API, the main benefits are:
 
-- No more raw pointers for a safe memory management;
-- No more type codes but template classes which handle architecture specifics for you;
-- No more error codes but proper exception handling;
-- Structures dedicated to data storage instead of zillions of unorganized and redundent variables;
-- A lightweight class hierarchy to represent the actual Fits organization (e.g. extensions, records, columns...)
-instead of the all-in-one and flat fitsfile structure;
-- A concise and clear API instead of the cluttered and verbose one of CFitsIO;
-- A comprehensive testing and validation code.
+- No more raw pointers for a **safe memory management**;
+- No more type codes but **template classes** which handle architecture specifics for you;
+- No more error codes but proper **exception handling**;
+- Structures dedicated to **data storage** instead of zillions of unorganized and redundent variables;
+- A **lightweight class hierarchy** to represent the actual Fits organization (e.g. extensions, records, columns...)
+instead of the all-in-one and flat `fitsfile` structure;
+- A **concise and clear API** instead of the cluttered and verbose one of CFitsIO;
+- A **comprehensive testing** and validation code.
 
 Simplicity comes at the cost of completeness,
 and EL_FitsIO misses CFitsIO features that we found less important or too complex,
@@ -32,15 +36,38 @@ like ASCII table extensions, streaming or compression.
 
 \section cmake Configuring a project to depend on EL_FitsIO
 
-TODO
+
+EL_FitsIO is a standard Elements project, so using the library means declaring the dependency to the EL_FitsIO project in the root CMakeLists:
+
+\verbatim
+elements_project(MyProject X.X
+    USE Elements 5.8 EL_FitsIO Y.Y)
+\endverbatim
+
+and to the EL_FitsFile module (for the end-user API) in the CMakeLists of each module which requires EL_FitsIO:
+
+\verbatim
+elements_depends_on_subdirs(EL_FitsFile)
+
+elements_add_executable(MyProgram src/program/MyProgram.cpp
+    LINK_LIBRARIES ElementsKernel EL_FitsFile)
+
+elements_add_library(MyLibrary src/Lib/*.cpp
+    LINK_LIBRARIES ElementsKernel EL_FitsFile
+    INCLUDE_DIRS ElementsKernel EL_FitsFile
+    PUBLIC_HEADERS MyLibrary)
+\endverbatim
+
+For advanced users, a description of the module contents is provided below.
 
 
-\section api End-user API
+\section api End-user API overview (and tutorial)
+
 
 The end-user API is made of two kinds of classes:
 
-- data classes store raw data;
-- service classes allow reading and writing the data.
+- **data classes** store raw data;
+- **service classes** allow reading and writing the data.
 
 Records, image rasters and bintable columns are implemented as light structures to abstract from CFitsIO raw pointers:
 
@@ -58,40 +85,28 @@ Here is the (simplified) class diagram of the end-user API:
 
 \image html doc/diagrams/out/FitsFile.png
 
-Last but not least, we've implemented and documented a tutorial here: \subpage tuto.
+Last but not least, we've implemented and documented a \ref tuto.
+
+To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validation modules (see below).
 
 
-\section modules Modules
+\section modules Modules description
 
-\subsection module-cfitsiowrapper EL_CfitsioWrapper is an internal CFitsIO wrapper
 
-A set of CFitsIO functions are wrapped in C++ functions to secure memory usage, ease type handling through templates, and throw exceptions instead of returning error codes.
-Yet, this API is not meant for end-users: it exposes the fitsfile* type and is still a bit verbose and cumbersome.
-
-\subsection module-fitsdata EL_FitsData contains basic data-storage structures
-
-Records, image rasters and bintable columns are implemented as light structures to abstract from CFitsIO raw pointers:
-
-- Record is made of a name, value, unit and comment;
-- Raster represents a _n_-dimensional array with constant-time pixel access;
-- Column stores metadata (name, unit, width) and values.
-
-\subsection module-fitsfile EL_FitsFile is the end-user API
-
-It provides set of read-write services in dedicated classes, namely:
-
-- MefFile, the root object, which provides file-level services (open, close, access HDUs);
-- RecordHdu, the basic HDU reader-writer, which only handles records;
-- ImageHdu and BintableHdu, respectively the image and bintable HDU reader-writers, which additionally provide access to the raster and columns.
-
-\subsection module-examples EL_FitsIO_Examples provides examples!
-
+- **EL_FitsData** contains basic **data-storage structures**:
+Records, image rasters and bintable columns are implemented as light structures to abstract from CFitsIO raw pointers..
+- **EL_CfitsioWrapper** is an internal CFitsIO wrapper:
+A set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
+ease type handling through templates, and throw exceptions instead of returning error codes;
+Yet, this API is **not meant for end-users**: it exposes the fitsfile* type and is still a bit verbose and cumbersome.
+- **EL_FitsFile** exposes the end-user API:
+It provides set of **read-write services** in dedicated classes.
+- **EL_FitsIO_Examples** provides **examples**!
 Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program,
-which demonstrates the reading and writing of records, images and bintables.
-
-\subsection module-validation EL_FitsIO_Validation contains validation executables
-
-Generators allow creating dummy Fits files from scratch.
+which demonstrates the reading and writing of records, images and bintables with the three APIs;
+Of course, this is also where the tutorial is implemented.
+- **EL_FitsIO_Validation** contains **validation executables**:
+Generator programs allow creating dummy Fits files from scratch;
 The performances of the library are compared to those of CFitsIO.
 
 */
