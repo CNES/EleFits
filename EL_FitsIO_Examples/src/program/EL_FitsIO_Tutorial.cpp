@@ -52,14 +52,20 @@ Raster<float, 3> create_raster() {
   return raster;
 }
 
-Column<int> create_column() {
+struct TutoTable {
+  Column<std::string> name_col;
+  Column<double> speed_col;
+};
+
+TutoTable create_columns() {
   //! [Create and fill a column]
-  int size = 12;
-  Column<int> column { "Distance", 1, "m", std::vector<int>(size) };
-  for(int r=0; r<size; ++r)
-    column.data[r] = r;
+  std::vector<std::string> name_data { "snail", "Antoine", "light", "Millennium Falcon" };
+  std::vector<double> speed_data { 1.3e-2, 1.4, 3.0e8, 4.5e8 };
+  TutoTable table;
+  table.name_col = { "NAME", 42, "", std::move(name_data) };
+  table.speed_col = { "SPEED", 1, "m/s", std::move(speed_data) };
   //! [Create and fill a column]
-  return column;
+  return table;
 }
 
 class EL_FitsIO_Tutorial : public Elements::Program {
@@ -67,7 +73,6 @@ class EL_FitsIO_Tutorial : public Elements::Program {
 public:
 
   options_description defineSpecificProgramOptions() override {
-  
     options_description options {};
     options.add_options()
         ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
@@ -91,38 +96,38 @@ public:
     primary.update_record("VALUE", 2);
     //! [Write and update a record]
     //! [Write a record with comment and unit]
-    Record<float> complete_record("COMPLETE", 3.0, "m", "Some comment");
+    Record<float> complete_record("SPEED", 2.5, "m/s", "Already fast!");
     primary.write_record(complete_record);
     //! [Write a record with comment and unit]
 
     //! [Assign a bintable extension]
-    Test::SmallTable table; // Predefined table for testing purpose
-    f.assign_bintable_ext("SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
+    const auto columns = create_columns();
+    f.assign_bintable_ext("TABLE", columns.name_col, columns.speed_col);
     //! [Assign a bintable extension]
 
     //! [Assign a raster extension]
-    auto raster = create_raster();
-    const auto& ext = f.assign_image_ext("SMALLIMG", raster);
+    const auto raster = create_raster();
+    const auto& ext = f.assign_image_ext("IMAGE", raster);
     //! [Assign a raster extension]
 
     //! [Write several records]
-    Record<std::string> str_record("STRING", "string");
-    Record<int> int_record("INTEGER", 8);
+    const Record<std::string> str_record("STRING", "string");
+    const Record<int> int_record("INTEGER", 8);
     ext.write_records(str_record, int_record);
     //! [Write several records]
 
     //! [Read a record]
-    auto record = f.access_primary<>().parse_record<int>("VALUE");
+    const auto record = f.access_primary<>().parse_record<int>("VALUE");
     //! [Read a record]
 
     //! [Access an HDU by name]
-    const auto& bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
+    const auto& bintable_ext = f.access_first<BintableHdu>("TABLE");
     //! [Access an HDU by name]
     //! [Read bintable values]
-    const auto nums = bintable_ext.read_column<int>("ID").data;
-    const auto first_id = nums[0];
     const auto names = bintable_ext.read_column<std::string>("NAME").data;
-    const auto last_name = names[names.size()-1];
+    const auto speeds = bintable_ext.read_column<double>("SPEED").data;
+    const auto slowest_guy = names[0];
+    const auto max_speed = speeds[speeds.size()-1];
     //! [Read bintable values]
 
     //! [Access an HDU by index]
@@ -133,15 +138,14 @@ public:
     const auto str_value = std::get<0>(records).value;
     const auto int_value = std::get<1>(records).value;
     //! [Read several records]
-    //! [Read image]
-    const auto image = image_ext.read_raster<float>();
-    //! [Read image]
-    //! [Access pixels]
-    const auto first_pixel = image[{0, 0}];
+    //! [Read image values]
+    const auto image = image_ext.read_raster<float, 3>();
+    const auto& first_pixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
-    const auto last_pixel = image[{width-1, height-1}];
-    //! [Access pixels]
+    const auto depth = image.length<2>();
+    const auto& last_pixel = image[{width-1, height-1, depth-1}];
+    //! [Read image values]
 
     return Elements::ExitCode::OK;
   }

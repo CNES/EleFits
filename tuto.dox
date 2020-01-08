@@ -147,13 +147,13 @@ or all together:
 \subsection tuto-read-bintable Read bintable values
 
 
-TODO
+\snippet EL_FitsIO_Tutorial.cpp Read bintable values
 
 
 \subsection tuto-read-image Read image values
 
 
-TODO
+\snippet EL_FitsIO_Tutorial.cpp Read image values
 
 */
 
