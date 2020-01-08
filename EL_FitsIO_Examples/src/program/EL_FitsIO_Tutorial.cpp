@@ -95,20 +95,20 @@ public:
     primary.write_record("VALUE", 1);
     primary.update_record("VALUE", 2);
     //! [Write and update a record]
-    //! [Write a record with comment and unit]
+    //! [Create a complete record]
     Record<float> complete_record("SPEED", 2.5, "m/s", "Already fast!");
+    //! [Create a complete record]
     primary.write_record(complete_record);
-    //! [Write a record with comment and unit]
 
     //! [Assign a bintable extension]
     const auto columns = create_columns();
     f.assign_bintable_ext("TABLE", columns.name_col, columns.speed_col);
     //! [Assign a bintable extension]
 
-    //! [Assign a raster extension]
+    //! [Assign an image extension]
     const auto raster = create_raster();
     const auto& ext = f.assign_image_ext("IMAGE", raster);
-    //! [Assign a raster extension]
+    //! [Assign an image extension]
 
     //! [Write several records]
     const Record<std::string> str_record("STRING", "string");

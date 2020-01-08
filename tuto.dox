@@ -17,10 +17,15 @@ At the end of the tutorial, you will be able to create a MEF file from scratch w
 and to read the data back!
 
 The tutorial is built together with an example program: EL_FitsIO_Tutorial.
+You can already run it and watch the resulting file:
 
-We'll first discover the data classes, then use them to create a MEF file from scratch, and finally read the file and values back.
+\verbatim
+ERun EL_FitsIO EL_FitsIO_Tutorial --output tuto.fits
+fv tuto.fits
+\endverbatim
 
-TODO: reorganize tuto!
+We'll first discover the data classes, then use them to create a MEF file, and finally read the file and values back.
+
 
 \tableofcontents
 
@@ -36,13 +41,13 @@ A convension is proposed to interpret part of the comment as the value unit.
 
 Record is a simple template class which only stores those fields.
 
-\snippet EL_FitsIO_Tutorial.cpp Create a record
+\snippet EL_FitsIO_Tutorial.cpp Create a complete record
 
 
 \subsection tuto-column Column
 
 
-TODO
+A Column is a mere structure which holds the column name, repeat number (=1 for scalar columns), unit and data as a vector.
 
 \snippet EL_FitsIO_Tutorial.cpp Create and fill a column
 
@@ -52,8 +57,6 @@ TODO
 
 Images in Fits are _n_-dimensional arrays.
 Raster is a class which represents this kind of data and provides pixel accessors.
-
-\snippet EL_FitsIO_Tutorial.cpp Access pixels
 
 Template arguments are the pixel type and number of axes.
 
@@ -81,19 +84,31 @@ The file is closed when the destructor of MefFile is called.
 
 Extensions can be either initialized with metadata only or assigned directly with data.
 
-Here's an example of initiating a BintableHdu and then writing columns:
+Here's an example of assigning a BintableHdu with columns:
 
-\snippet EL_FitsIO_Tutorial.cpp Initialize and write bintable HDU
+\snippet EL_FitsIO_Tutorial.cpp Assign a bintable extension
 
-And here's an example of assigning directly an ImageHdu:
+And here's an example of assigning an ImageHdu:
 
-\snippet EL_FitsIO_Tutorial.cpp Assign an image HDU
+\snippet EL_FitsIO_Tutorial.cpp Assign an image extension
+
+In both cases, it would've been possible to just initialize the extensions first,
+and assign data later.
+For more details, refer to the BintableHdu and ImageHdu documentations.
 
 
 \subsection tuto-write-record Write records
 
+Records can be written and updated one-by-one this way:
 
-TODO
+\snippet EL_FitsIO_Tutorial.cpp Write and update a record
+
+It is also possible to write several records at once.
+In this case, Record objects must be instanciated explicitely:
+
+\snippet EL_FitsIO_Tutorial.cpp Write several records
+
+Of course, this applies to any HDU: the base class -- where to find documentation -- is RecordHdu.
 
 
 \section tuto-read Read a MEF file
