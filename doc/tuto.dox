@@ -174,7 +174,7 @@ or all together:
 \section tuto-conclusion Wrap up
 
 
-A picture is worth a thousand words; here's the class diagram of what we've just learned:
+A picture is worth a thousand words; here's the class diagram of what we've just learned (i.e. the Euclid::FitsIO namespace contents):
 
 \image html doc/diagrams/out/FitsFile.png
 

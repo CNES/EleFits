@@ -81,7 +81,8 @@ Service classes are organized according to the Fits format:
 - RecordHdu only handles records;
 - ImageHdu and BintableHdu, respectively the image and bintable HDU reader-writers, additionally provide access to the raster and columns.
 
-Here is the (simplified) class diagram of the end-user API:
+To make it simple, the end-user API consists of the Euclid::FitsIO namespace.
+Here is the (simplified) class diagram of it:
 
 \image html doc/diagrams/out/FitsFile.png
 
