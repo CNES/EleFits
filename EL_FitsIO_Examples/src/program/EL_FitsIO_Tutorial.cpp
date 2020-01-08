@@ -40,6 +40,28 @@ using boost::program_options::value;
 
 static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
+Raster<float, 3> create_raster() {
+  //! [Create and fill a raster]
+  int width = 16, height = 9, depth = 3;
+  Raster<float, 3> raster({width, height, depth});
+  for(int z=0; z<depth; ++z)
+    for(int y=0; y<height; ++y)
+      for(int x=0; x<width; ++x)
+        raster[{x, y, z}] = x + y + z;
+  //! [Create and fill a raster]
+  return raster;
+}
+
+Column<int> create_column() {
+  //! [Create and fill a column]
+  int size = 12;
+  Column<int> column { "Distance", 1, "m", std::vector<int>(size) };
+  for(int r=0; r<size; ++r)
+    column.data[r] = r;
+  //! [Create and fill a column]
+  return column;
+}
+
 class EL_FitsIO_Tutorial : public Elements::Program {
 
 public:
@@ -79,7 +101,7 @@ public:
     //! [Assign a bintable extension]
 
     //! [Assign a raster extension]
-    Test::SmallRaster raster; // Predefined image raster for testing purpose
+    auto raster = create_raster();
     const auto& ext = f.assign_image_ext("SMALLIMG", raster);
     //! [Assign a raster extension]
 
@@ -111,13 +133,15 @@ public:
     const auto str_value = std::get<0>(records).value;
     const auto int_value = std::get<1>(records).value;
     //! [Read several records]
-    //! [Read image values]
+    //! [Read image]
     const auto image = image_ext.read_raster<float>();
+    //! [Read image]
+    //! [Access pixels]
     const auto first_pixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
     const auto last_pixel = image[{width-1, height-1}];
-    //! [Read image values]
+    //! [Access pixels]
 
     return Elements::ExitCode::OK;
   }

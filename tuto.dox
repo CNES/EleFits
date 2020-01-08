@@ -44,7 +44,7 @@ Record is a simple template class which only stores those fields.
 
 TODO
 
-\snippet EL_FitsIO_Tutorial.cpp Create a column
+\snippet EL_FitsIO_Tutorial.cpp Create and fill a column
 
 
 \subsection tuto-raster Raster
@@ -53,9 +53,11 @@ TODO
 Images in Fits are _n_-dimensional arrays.
 Raster is a class which represents this kind of data and provides pixel accessors.
 
+\snippet EL_FitsIO_Tutorial.cpp Access pixels
+
 Template arguments are the pixel type and number of axes.
 
-\snippet EL_FitsIO_Tutorial.cpp Create a raster
+\snippet EL_FitsIO_Tutorial.cpp Create and fill a raster
 
 
 \section tuto-file Open (and close) a MEF file
