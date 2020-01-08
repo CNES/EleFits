@@ -170,6 +170,14 @@ or all together:
 
 \snippet EL_FitsIO_Tutorial.cpp Read image values
 
+
+\section tuto-conclusion Wrap up
+
+
+A picture is worth a thousand words; here's the class diagram of what we've just learned:
+
+\image html doc/diagrams/out/FitsFile.png
+
 */
 
 }
