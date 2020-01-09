@@ -1,6 +1,6 @@
-# EL_FitsIO
+# Read me!
 
-A clean, object-oriented, template API on top of CFitsIO.
+EL_FitsIO: A clean, object-oriented, template API on top of CFitsIO.
 
 ## Purpose and scope
 
