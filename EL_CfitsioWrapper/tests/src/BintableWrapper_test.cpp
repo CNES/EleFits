@@ -123,17 +123,17 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
 	FitsIO::Test::SmallTable input;
 	Hdu::create_bintable_extension(this->fptr, "IMGEXT",
 			input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
-	// const auto output_nums = Bintable::read_column<FitsIO::Test::SmallTable::num_t>(this->fptr, input.num_col.info.name);
-	// check_equal_vectors(output_nums.data(), input.num_col.data());
-	// const auto output_radecs = Bintable::read_column<FitsIO::Test::SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
-	// check_equal_vectors(output_radecs.data(), input.radec_col.data());
-	// const auto output_names = Bintable::read_column<FitsIO::Test::SmallTable::name_t>(this->fptr, input.name_col.info.name);
-	// check_equal_vectors(output_names.data(), input.name_col.data());
+	const auto output_nums = Bintable::read_column<FitsIO::Test::SmallTable::num_t>(this->fptr, input.num_col.info.name);
+	check_equal_vectors(output_nums.data(), input.num_col.data());
+	const auto output_radecs = Bintable::read_column<FitsIO::Test::SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
+	check_equal_vectors(output_radecs.data(), input.radec_col.data());
+	const auto output_names = Bintable::read_column<FitsIO::Test::SmallTable::name_t>(this->fptr, input.name_col.info.name);
+	check_equal_vectors(output_names.data(), input.name_col.data());
 	// const auto output_dists_mags = Bintable::read_column<FitsIO::Test::SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
 	// BOOST_CHECK_EQUAL(output_dists_mags.data().size(), input.dist_mag_col.data().size());
 	// for(std::size_t i=0; i<output_dists_mags.data().size(); ++i)
 	// 	check_equal_vectors(output_dists_mags.data()[i], input.dist_mag_col.data()[i]);
-	//TODO memory bug "free(): invalid next size (fast)"
+	//TODO memory bug for vector columns "free(): invalid next size (fast)"
 
 }
 
