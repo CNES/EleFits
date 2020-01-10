@@ -29,9 +29,9 @@ class FitsFile {
 
 class MefFile {
 + MefFile (filename, permission)
-+ access (index)
-+ access_first (name)
-+ access_primary ()
++ access<HduT> (index)
++ access_first<HduT> (name)
++ access_primary<HduT> ()
 + init_image_ext (name, shape)
 + assign_image_ext (name, raster)
 + init_bintable_ext (name, header...)
@@ -74,10 +74,10 @@ class Raster<T, n> {
 }
 
 class Column<T> {
-+ name
-+ repeat
-+ unit
-+ data
++ info.name
++ info.unit
++ info.repeat
++ data()
 }
 
 @enduml

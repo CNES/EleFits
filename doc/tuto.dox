@@ -30,6 +30,19 @@ We'll first discover the data classes, then use them to create a MEF file, and f
 \tableofcontents
 
 
+\section tuto-setup Setup
+
+
+First things first, we have to declare the dependency to EL_FitsIO and to use the right headers and namespaces.
+For the first part, head to the \ref index.
+For the headers and namespace, here's the only thing you'll have to do:
+
+\snippet EL_FitsIO_Tutorial.cpp Include
+
+There are other headers and namespaces, but that probably covers 90% of the use cases.
+Refer to the API documentation for more details.
+
+
 \section tuto-data-classes Data classes
 
 
