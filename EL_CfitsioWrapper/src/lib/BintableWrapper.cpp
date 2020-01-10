@@ -38,7 +38,7 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 	return index;
 }
 
-FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
+FitsIO::DataColumn<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
@@ -50,7 +50,7 @@ FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfi
 	std::vector<char*> data(rows);
 	for(long i=0; i < rows; ++i)
 		data[i] = (char*) malloc(repeat);
-	FitsIO::Column<std::string> column { name, repeat, "", std::vector<std::string>(rows) };
+	FitsIO::DataColumn<std::string> column({name, "TODO", repeat}, std::vector<std::string>(rows)); //TODO unit
 	fits_read_col(
 		fptr,
 		TypeCode<std::string>::for_bintable(), // datatype
@@ -65,15 +65,15 @@ FitsIO::Column<std::string> internal::ColumnDispatcher<std::string>::read(fitsfi
 	);
 	may_throw_cfitsio_error(status);
 	for(std::size_t i=0; i < static_cast<std::size_t>(rows); ++i) {
-		column.data[i] = std::string(data[i]);
+		column.data()[i] = std::string(data[i]);
 		free(data[i]);
 	}
 	return column;
 }
 
 void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
-	c_str_array array(column.data); //TODO avoid copy?
-	std::size_t index = column_index(fptr, column.name);
+	c_str_array array(column.data()); //TODO avoid copy?
+	std::size_t index = column_index(fptr, column.info.name);
 	int status = 0;
 	fits_write_col(
 		fptr,

@@ -102,7 +102,7 @@ auto raster = image_ext.read_raster<double>();
 	 * @return A reference to the new BintableHdu.
 	 */
 	template<typename ...Ts>
-	BintableHdu& init_bintable_ext(std::string name, const column_info<Ts>&... header);
+	BintableHdu& init_bintable_ext(std::string name, const ColumnInfo<Ts>&... header);
 
 	/**
 	 * @brief Append a BintableHdu with given data.
@@ -175,7 +175,7 @@ ImageHdu& MefFile::assign_image_ext(std::string name, const Raster<T, n>& raster
 }
 
 template<typename ...Ts>
-BintableHdu& MefFile::init_bintable_ext(std::string name, const column_info<Ts>&... header) {
+BintableHdu& MefFile::init_bintable_ext(std::string name, const ColumnInfo<Ts>&... header) {
 	Cfitsio::Hdu::create_bintable_extension(m_fptr, name, header...);
 	const auto size = m_hdus.size();
 	m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));

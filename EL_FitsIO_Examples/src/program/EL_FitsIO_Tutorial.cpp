@@ -53,17 +53,18 @@ Raster<float, 3> create_raster() {
 }
 
 struct TutoTable {
-  Column<std::string> name_col;
-  Column<double> speed_col;
+  DataColumn<std::string> name_col;
+  DataColumn<double> speed_col;
 };
 
 TutoTable create_columns() {
   //! [Create and fill a column]
   std::vector<std::string> name_data { "snail", "Antoine", "light", "Millennium Falcon" };
   std::vector<double> speed_data { 1.3e-2, 1.4, 3.0e8, 4.5e8 };
-  TutoTable table;
-  table.name_col = { "NAME", 42, "", std::move(name_data) };
-  table.speed_col = { "SPEED", 1, "m/s", std::move(speed_data) };
+  TutoTable table {
+      DataColumn<std::string>({"NAME", "", 42}, std::move(name_data)),
+      DataColumn<double>({"SPEED", "m/s", 1}, std::move(speed_data))
+  };
   //! [Create and fill a column]
   return table;
 }
@@ -124,8 +125,8 @@ public:
     const auto& bintable_ext = f.access_first<BintableHdu>("TABLE");
     //! [Access an HDU by name]
     //! [Read bintable values]
-    const auto names = bintable_ext.read_column<std::string>("NAME").data;
-    const auto speeds = bintable_ext.read_column<double>("SPEED").data;
+    const auto names = bintable_ext.read_column<std::string>("NAME").data();
+    const auto speeds = bintable_ext.read_column<double>("SPEED").data();
     const auto slowest_guy = names[0];
     const auto max_speed = speeds[speeds.size()-1];
     //! [Read bintable values]

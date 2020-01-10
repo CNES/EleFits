@@ -133,7 +133,7 @@ void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Rast
  * @brief Create a new Bintable HDU with given name and column infos.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::column_info<Ts>&... header);
+void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::ColumnInfo<Ts>&... header);
 
 /**
  * @brief Write a Table in a new Bintable HDU.
@@ -165,11 +165,11 @@ void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Rast
 }
 
 template<typename... Ts>
-void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::column_info<Ts>&... header) {
+void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::ColumnInfo<Ts>&... header) {
 	constexpr std::size_t count = sizeof...(Ts);
-	c_str_array col_name { std::get<0>(header) ... };
-	c_str_array col_format { TypeCode<Ts>::bintable_format(std::get<1>(header)) ... };
-	c_str_array col_unit { std::get<2>(header) ... };
+	c_str_array col_name { header.name ... };
+	c_str_array col_format { TypeCode<Ts>::bintable_format(header.repeat) ... };
+	c_str_array col_unit { header.unit ... };
 	int status = 0;
 	fits_create_tbl(fptr, BINARY_TBL, 0, count,
 			col_name.data(), col_format.data(), col_unit.data(),
@@ -180,9 +180,9 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::c
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<Ts>&... table) {
 	constexpr std::size_t count = sizeof...(Ts);
-	c_str_array col_name { table.name ... };
-	c_str_array col_format { TypeCode<Ts>::bintable_format(table.repeat) ... };
-	c_str_array col_unit { table.unit ... };
+	c_str_array col_name { table.info.name ... };
+	c_str_array col_format { TypeCode<Ts>::bintable_format(table.info.repeat) ... };
+	c_str_array col_unit { table.info.unit ... };
 	int status = 0;
 	fits_create_tbl(fptr, BINARY_TBL, 0, count,
 			col_name.data(), col_format.data(), col_unit.data(),
@@ -196,11 +196,11 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
 template<typename T>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<T>& column) {
 	constexpr std::size_t count = 1;
-	std::string col_name = column.name;
+	std::string col_name = column.info.name;
 	char* c_name = &col_name[0];
-	std::string col_format = TypeCode<T>::bintable_format(column.repeat);
+	std::string col_format = TypeCode<T>::bintable_format(column.info.repeat);
 	char* c_format = &col_format[0];
-	std::string col_unit = column.unit;
+	std::string col_unit = column.info.unit;
 	char* c_unit = &col_unit[0];
 	int status = 0;
 	fits_create_tbl(fptr, BINARY_TBL, 0, count,

@@ -82,10 +82,10 @@ public:
 	std::vector<name_t> names;
 	std::vector<dist_mag_t> dists_mags;
 	
-	Column<num_t> num_col;
-	Column<radec_t> radec_col;
-	Column<name_t> name_col;
-	Column<dist_mag_t> dist_mag_col;
+	SharedColumn<num_t> num_col;
+	SharedColumn<radec_t> radec_col;
+	SharedColumn<name_t> name_col;
+	SharedColumn<dist_mag_t> dist_mag_col;
 
 };
 
@@ -107,7 +107,7 @@ public:
  * @brief A random scalar Column of given type.
  */
 template<typename T>
-class RandomScalarColumn : public Column<T> {
+class RandomScalarColumn : public DataColumn<T> {
 
 public:
 
@@ -119,7 +119,7 @@ public:
 /**
  * @brief A small string column.
  */
-class SmallStringColumn : public FitsIO::Column<std::string> {
+class SmallStringColumn : public DataColumn<std::string> {
 
 public:
 
@@ -132,7 +132,7 @@ public:
  * @brief A small vector column of given type.
  */
 template<typename T>
-class SmallVectorColumn : public FitsIO::Column<std::vector<T>> {
+class SmallVectorColumn : public DataColumn<std::vector<T>> {
 
 public:
 
@@ -177,20 +177,23 @@ RandomRaster<T, n>::RandomRaster(pos_type<n> shape) :
 
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
-		Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+		DataColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size)) {
 }
 
 template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
-		Column<std::string> { "SCALAR", 1, "m", generate_random_vector<std::string>(size) } {
-	for(const auto& v : data)
-		if(v.length() + 1 > static_cast<std::size_t>(repeat))
-			repeat = v.length() + 1;
+		DataColumn<std::string>({ "SCALAR", "m", 1}, generate_random_vector<std::string>(size)) {
+	for(const auto& v : data())
+		if(v.length() + 1 > static_cast<std::size_t>(info.repeat))
+			info.repeat = v.length() + 1;
 }
 
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
-		Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
+		DataColumn<std::vector<T>>(
+				{"VECTOR", "m2", 2},
+				{ { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } }
+		) {
 }
 
 template<typename T>

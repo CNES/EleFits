@@ -49,9 +49,9 @@ Raster<float> generate_raster(int naxis1, int naxis2) {
 }
 
 struct table_t {
-	Column<std::string> string_col;
-	Column<float> float_col;
-	Column<int> int_col;
+	DataColumn<std::string> string_col;
+	DataColumn<float> float_col;
+	DataColumn<int> int_col;
 };
 
 table_t generate_columns(int naxis2) {
@@ -63,10 +63,11 @@ table_t generate_columns(int naxis2) {
 		floats[i] = float(i) / naxis2;
 		ints[i] = i * naxis2;
 	}
-	table_t table;
-	table.string_col = Column<std::string> { "STRINGS", 8, "", std::move(strings) };
-	table.float_col = Column<float> { "FLOATS", 1, "", std::move(floats) };
-	table.int_col = Column<int> { "INTS", 1, "", std::move(ints) };
+	table_t table {
+			DataColumn<std::string>({"STRINGS", "", 8}, std::move(strings)),
+			DataColumn<float>({"FLOATS", "", 1}, std::move(floats)),
+			DataColumn<int>({ "INTS", "", 1}, std::move(ints))
+	};
 	return table;
 }
 

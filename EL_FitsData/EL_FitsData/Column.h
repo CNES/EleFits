@@ -47,13 +47,13 @@ struct ColumnInfo {
 	/**
 	 * @brief Column unit.
 	 */
-	std::string unit = "";
+	std::string unit;
 
 	/**
 	 * @brief Repeat count of the column, i.e. number of values per cell.
 	 * @warning CFitsIO uses long instead of size_t
 	 */
-	long repeat = 1;
+	long repeat;
 
 };
 
@@ -68,6 +68,9 @@ public:
 
 	Column(ColumnInfo<T> info);
 
+	/**
+	 * @brief Access the data.
+	 */
 	virtual const std::vector<T>& data() const = 0;
 
 	/**
@@ -76,6 +79,9 @@ public:
 	 */
 	std::size_t nelements() const; //TODO long?
 
+	/**
+	 * @brief Column metadata.
+	 */
 	ColumnInfo<T> info;
 
 };
@@ -185,7 +191,7 @@ std::size_t Column<T>::nelements() const {
 
 template<typename T>
 SharedColumn<T>::SharedColumn(ColumnInfo<T> info, const std::vector<T>& data) :
-		Column(info),
+		Column<T>(info),
 		m_data_ref(data) {
 }
 

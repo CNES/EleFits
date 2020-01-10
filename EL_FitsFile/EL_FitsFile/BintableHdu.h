@@ -46,7 +46,7 @@ public:
 	 * @brief Read a Column with given name.
 	 */
 	template<typename T>
-	Column<T> read_column(std::string name) const;
+	DataColumn<T> read_column(std::string name) const;
 
 	/**
 	 * @brief Write a Column.
@@ -63,7 +63,7 @@ public:
 
 
 template<typename T>
-Column<T> BintableHdu::read_column(std::string name) const {
+DataColumn<T> BintableHdu::read_column(std::string name) const {
 	return Cfitsio::Bintable::read_column<T>(m_fptr, name);
 }
 

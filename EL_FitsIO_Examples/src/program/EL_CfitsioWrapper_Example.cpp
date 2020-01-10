@@ -101,9 +101,9 @@ public:
 		logger.info() << "Reading bintable.";
 		Hdu::goto_name(fptr, "SMALLTBL");
 		logger.info() << "HDU index: " << Hdu::current_index(fptr);
-		const auto nums = Bintable::read_column<int>(fptr, "ID").data;
+		const auto nums = Bintable::read_column<int>(fptr, "ID").data();
 		logger.info() << "First id: " << nums[0];
-		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
+		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data();
 		logger.info() << "Last name: " << names[names.size()-1];
 
 		logger.info();
