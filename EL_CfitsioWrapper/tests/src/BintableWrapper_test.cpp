@@ -91,7 +91,7 @@ void check_vector() {
 	FitsIO::Test::SmallVectorColumn<T> input;
 	FitsIO::Test::MinimalFile file;
 	Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
-	const auto output = Bintable::read_column<std::vector<T>>(file.fptr, input.name);
+	const auto output = Bintable::read_column<std::vector<T>>(file.fptr, input.info.name);
 	const auto size = input.data().size();
 	BOOST_CHECK_EQUAL(output.data().size(), size);
 	for(std::size_t i=0; i<size; ++i)
