@@ -87,7 +87,7 @@ public:
     const std::string filename = args["output"].as<std::string>();
 
     //! [Open a MefFile]
-    MefFile f(filename, FitsFile::Permission::OVERWRITE);
+    MefFile f(filename, MefFile::Permission::OVERWRITE);
     //! [Open a MefFile]
     //! [Access primary HDU]
     const auto& primary = f.access_primary<>();

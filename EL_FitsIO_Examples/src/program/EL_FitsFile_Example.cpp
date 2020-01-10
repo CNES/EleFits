@@ -62,7 +62,7 @@ public:
 		logger.info();
 
 		logger.info() << "Creating Fits file: " << filename;
-		MefFile f(filename, FitsFile::Permission::OVERWRITE);
+		MefFile f(filename, MefFile::Permission::OVERWRITE);
 		const auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
 		logger.info() << "Writing new record: VALUE = 1";
 		primary.write_record("VALUE", 1);
@@ -94,7 +94,7 @@ public:
 		logger.info();
 
 		logger.info() << "Reopening file.";
-		f.open(filename, FitsFile::Permission::READ);
+		f.open(filename, MefFile::Permission::READ);
 		logger.info() << "Reading record: VALUE = " << f.access_primary<>().parse_record<int>("VALUE");
 
 		logger.info();

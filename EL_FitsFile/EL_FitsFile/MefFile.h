@@ -38,6 +38,8 @@ class MefFile : public FitsFile {
 
 public:
 
+	using FitsFile::Permission;
+
 	/**
 	 * @brief Create a new MefFile with given filename and permission.
 	 */
@@ -54,12 +56,6 @@ public:
 	 * In the latter case, if needs be, the returned Hdu can still be cast to an ImageHdu or BintableHdu,
 	 * or merely be used as a metadata reader-writer, e.g.:
 	 */
-/** @code
-auto ext = f.access<>(3);
-ext.write_value("KEYWORD", 2.0);
-auto image_ext = dynamic_cast<ImageHdu&>(ext);
-auto raster = image_ext.read_raster<double>();
-@endcode */
 	template<class T=RecordHdu>
 	T& access(std::size_t index);
 
@@ -83,6 +79,10 @@ auto raster = image_ext.read_raster<double>();
 	template<class T=RecordHdu>
 	T& append_ext(T extension);
 
+	/**
+	 * @brief Append a new RecordHdu (as empty ImageHdu) with given name.
+	 */
+	RecordHdu& init_record_ext(std::string name); //TODO
 	/**
 	 * @brief Append a new ImageHdu with given shape.
 	 * @return A reference to the new ImageHdu.

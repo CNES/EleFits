@@ -107,7 +107,7 @@ public:
 		int nbin = args["nbin"].as<int>();
 
 		logger.info() << "Creating Fits file: " << filename;
-		MefFile f(filename, FitsFile::Permission::OVERWRITE);
+		MefFile f(filename, MefFile::Permission::OVERWRITE);
 		logger.info() << "Writing metadata";
 		const auto& primary = f.access_primary<>();
 		primary.write_record("N_OBJ", nobj);
