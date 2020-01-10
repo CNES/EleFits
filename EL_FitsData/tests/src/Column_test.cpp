@@ -23,7 +23,9 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData//Column.h"
+#include "EL_FitsData/Column.h"
+
+using namespace Euclid;
 
 //-----------------------------------------------------------------------------
 
@@ -31,10 +33,22 @@ BOOST_AUTO_TEST_SUITE (Column_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+BOOST_AUTO_TEST_CASE( share_test ) {
+  std::vector<int> input { 1, 2, 3 };
+  FitsIO::SharedColumn<int> column({"SHARED", "", 1}, input);
+  BOOST_CHECK_EQUAL(column.data()[1], 2);
+  input[1] = 4;
+  BOOST_CHECK_EQUAL(column.data()[1], 4);
+}
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+BOOST_AUTO_TEST_CASE( move_test ) {
+  std::vector<int> input { 4, 5, 6 };
+  FitsIO::DataColumn<int> column({"DATA", "", 1}, std::move(input));
+  BOOST_CHECK_EQUAL(column.data()[1], 5);
+  BOOST_CHECK_EQUAL(input.size(), 0);
+  input = std::move(column.data());
+  BOOST_CHECK_EQUAL(input[1], 5);
+  BOOST_CHECK_EQUAL(column.data().size(), 0);
 }
 
 //-----------------------------------------------------------------------------
