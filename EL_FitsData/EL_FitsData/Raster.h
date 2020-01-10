@@ -54,17 +54,14 @@ using pos_type = std::array<coord_type, n>;
  * 2D by default.
  */
 template<typename T, std::size_t n=2>
-struct Raster {
+class Raster {
+
+public:
 
 	/**
 	 * @brief Create a Raster with given shape.
 	 */
 	Raster(pos_type<n> shape);
-
-	/**
-	 * @brief Create a Raster with given shape and values.
-	 */
-	Raster(pos_type<n> shape, std::vector<T> data);
 
 	/**
 	 * @brief Create an empty Raster.
@@ -77,14 +74,9 @@ struct Raster {
 	virtual ~Raster() = default;
 
 	/**
-	 * @brief Raster shape, i.e. length along each axis.
+	 * @brief Access the raw data.
 	 */
-	pos_type<n> shape;
-
-	/**
-	 * @brief Raw data.
-	 */
-	std::vector<T> data;
+	virtual const std::vector<T>& data() const = 0;
 
 	/**
 	 * @brief Length along given axis.
@@ -111,6 +103,59 @@ struct Raster {
 	 * @brief Pixel at given position.
 	 */
 	T& operator[](const pos_type<n>& pos);
+
+public:
+
+	/**
+	 * @brief Raster shape, i.e. length along each axis.
+	 */
+	pos_type<n> shape;
+
+};
+
+
+template<typename T, std::size_t n=2>
+class SharedRaster : public Raster<T, n> {
+
+public:
+
+	/**
+	 * @brief Create a Raster with given shape and values.
+	 */
+	SharedRaster(pos_type<n> shape, const std::vector<T>& data);
+
+	virtual const std::vector<T>& data() const;
+
+private:
+
+	const std::vector<T>& m_data_ref;
+
+};
+
+
+template<typename T, std::size_t n=2>
+class DataRaster : public Raster<T, n> {
+
+public:
+
+	/**
+	 * @brief Create a Raster with given shape and values.
+	 */
+	DataRaster(pos_type<n> shape, std::vector<T> data);
+
+	virtual const std::vector<T>& data() const;
+
+	/**
+	 * @brief Non-const reference to the data, useful to take ownership through move semantics.
+	 * @code
+	 * std::vector<T> v = std::move(raster.data());
+	 * @endcode
+	 */
+	std::vector<T>& data();
+
+private:
+
+	std::vector<T> m_data;
 
 };
 
