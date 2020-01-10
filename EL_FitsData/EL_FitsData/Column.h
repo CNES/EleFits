@@ -34,34 +34,96 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Type for a column info, i.e. { name, repeat, unit }
+ * @brief Column info, i.e. { name, repeat, unit }
  */
 template<typename T>
-using column_info = std::tuple<std::string, std::size_t, std::string>;
+struct ColumnInfo {
 
-/**
- * @brief Bintable column data and metadata.
- */
-template<typename T>
-struct Column {
-
+	/**
+	 * @brief Column name.
+	 */
 	std::string name;
+
+	/**
+	 * @brief Column unit.
+	 */
+	std::string unit = "";
 
 	/**
 	 * @brief Repeat count of the column, i.e. number of values per cell.
 	 * @warning CFitsIO uses long instead of size_t
 	 */
-	long repeat;
+	long repeat = 1;
 
-	std::string unit;
+};
 
-	std::vector<T> data;
+
+/**
+ * @brief Bintable column data and metadata.
+ */
+template<typename T>
+class Column {
+
+public:
+
+	Column(ColumnInfo<T> info);
+
+	virtual const std::vector<T>& data() const = 0;
 
 	/**
 	 * @brief Number of elements in the column, i.e. number of rows * repeat count.
 	 * @warning For strings, CFitsIO requires nelements to be just the number of rows.
 	 */
 	std::size_t nelements() const; //TODO long?
+
+	ColumnInfo<T> info;
+
+};
+
+
+/**
+ * @brief Column which references some external data.
+ * @details Use it if you want your data to be accessible after the write operation.
+ */
+template<typename T>
+class SharedColumn : public Column<T> {
+
+public:
+
+	SharedColumn(ColumnInfo<T> info, const std::vector<T>& data);
+
+	virtual const std::vector<T>& data() const;
+
+private:
+
+	const std::vector<T>& m_data_ref;
+
+};
+
+/**
+ * @brief Column which stores internally the data.
+ * @details Use it (via move semantics) if you don't need your data after the write operation.
+ */
+template<typename T>
+class DataColumn : public Column<T> {
+
+public:
+
+	DataColumn(ColumnInfo<T> info, std::vector<T> data);
+
+	virtual const std::vector<T>& data() const;
+
+	/**
+	 * @brief Non-const reference to the data, useful to take ownership through move semantics.
+	 * @code
+	 * std::vector<T> v = std::move(column.data());
+	 * @endcode
+	 */
+	std::vector<T>& data();
+
+private:
+
+	std::vector<T> m_data;
 
 };
 
@@ -88,7 +150,7 @@ std::size_t column_nelements(const Column<T>& column);
  */
 template<typename T>
 inline std::size_t column_nelements(const Column<T>& column) {
-	return column.repeat * column.data.size();
+	return column.info.repeat * column.data().size();
 }
 
 /**
@@ -96,7 +158,7 @@ inline std::size_t column_nelements(const Column<T>& column) {
  */
 template<>
 inline std::size_t column_nelements<std::string>(const Column<std::string>& column) {
-	return column.data.size();
+	return column.data().size();
 }
 
 }
@@ -110,8 +172,43 @@ inline std::size_t column_nelements<std::string>(const Column<std::string>& colu
 
 
 template<typename T>
+Column<T>::Column(ColumnInfo<T> info) :
+		info(info) {
+}
+
+
+template<typename T>
 std::size_t Column<T>::nelements() const {
 	return internal::column_nelements(*this);
+}
+
+
+template<typename T>
+SharedColumn<T>::SharedColumn(ColumnInfo<T> info, const std::vector<T>& data) :
+		Column(info),
+		m_data_ref(data) {
+}
+
+template<typename T>
+const std::vector<T>& SharedColumn<T>::data() const {
+	return m_data_ref;
+}
+
+
+template<typename T>
+DataColumn<T>::DataColumn(ColumnInfo<T> info, std::vector<T> data) :
+		Column<T>(info),
+		m_data(data) {
+}
+
+template<typename T>
+const std::vector<T>& DataColumn<T>::data() const {
+	return m_data;
+}
+
+template<typename T>
+std::vector<T>& DataColumn<T>::data() {
+	return m_data;
 }
 
 
