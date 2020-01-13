@@ -69,6 +69,11 @@ public:
 	Raster(pos_type<n> shape);
 
 	/**
+	 * @brief Create an DataRaster.
+	 */
+	Raster() = default;
+
+	/**
 	 * @brief Access the raw data.
 	 */
 	virtual const std::vector<T>& data() const = 0;
@@ -163,6 +168,11 @@ public:
 	 */
 	DataRaster(pos_type<n> shape);
 
+	/**
+	 * @brief Create an empty DataRaster.
+	 */
+	DataRaster();
+
 	virtual const std::vector<T>& data() const;
 
 	/**
@@ -217,8 +227,7 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 
 template<typename T, std::size_t n>
 Raster<T, n>::Raster(pos_type<n> shape) :
-		shape(shape),
-		data(size()) {
+		shape(shape) {
 }
 
 template<typename T, std::size_t n>
@@ -239,12 +248,53 @@ inline std::size_t Raster<T, n>::index(const pos_type<n>& pos) const {
 
 template<typename T, std::size_t n>
 inline const T& Raster<T, n>::operator[](const pos_type<n>& pos) const {
-	return data[index(pos)];
+	return data()[index(pos)];
 }
 
 template<typename T, std::size_t n>
 inline T& Raster<T, n>::operator[](const pos_type<n>& pos) {
 	return const_cast<T&>(const_cast<const Raster*>(this)->operator[](pos));
+}
+
+
+template<typename T, std::size_t n>
+SharedRaster<T, n>::SharedRaster(pos_type<n> shape, const std::vector<T>& data) :
+		Raster<T, n>(shape),
+		m_data_ref(data) {
+}
+
+template<typename T, std::size_t n>
+const std::vector<T>& SharedRaster<T, n>::data() const {
+	return m_data_ref;
+}
+
+
+template<typename T, std::size_t n>
+DataRaster<T, n>::DataRaster(pos_type<n> shape, std::vector<T> data) :
+		Raster<T, n>(shape),
+		m_data(data) {
+}
+
+template<typename T, std::size_t n>
+DataRaster<T, n>::DataRaster(pos_type<n> shape) :
+		Raster<T, n>(shape),
+		m_data(0) {
+}
+
+template<typename T, std::size_t n>
+DataRaster<T, n>::DataRaster() :
+		Raster<T, n>(),
+		m_data(0) {
+}
+
+template<typename T, std::size_t n>
+const std::vector<T>& DataRaster<T, n>::data() const {
+	return m_data;
+}
+
+template<typename T, std::size_t n>
+std::vector<T>& DataRaster<T, n>::data() {
+	return m_data;
 }
 
 }

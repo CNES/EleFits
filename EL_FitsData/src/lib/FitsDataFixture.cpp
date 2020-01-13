@@ -29,7 +29,7 @@ namespace FitsIO {
 namespace Test {
 
 SmallRaster::SmallRaster(long width, long height) :
-		Raster<float>({width, height}),
+		DataRaster<float>({width, height}),
 		width(width), height(height) {
 	for(int x=0; x<shape[0]; ++x)
 		for(int y=0; y<shape[1]; ++y)
@@ -40,8 +40,8 @@ bool SmallRaster::approx(const Raster<float>& other, float tol) const {
 	if(other.shape != this->shape)
 		return false;
 	for(std::size_t i=0; i<this->size(); ++i) {
-		const auto o = other.data[i];
-		const auto t = this->data[i];
+		const auto o = other.data()[i];
+		const auto t = this->data()[i];
 		const auto rel = (o - t) / t;
 		if(rel > 0 && rel > tol)
 			return false;

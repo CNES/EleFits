@@ -47,7 +47,7 @@ namespace Test {
 /**
  * @brief A small 2D image raster.
  */
-class SmallRaster : public Raster<float> {
+class SmallRaster : public DataRaster<float> {
 
 public:
 

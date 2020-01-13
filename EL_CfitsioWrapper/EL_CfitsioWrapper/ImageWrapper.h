@@ -46,7 +46,7 @@ namespace Image {
  * @brief Read a Raster in current Image HDU.
  */
 template<typename T, std::size_t n=2>
-FitsIO::Raster<T, n> read_raster(fitsfile* fptr);
+FitsIO::DataRaster<T, n> read_raster(fitsfile* fptr);
 
 /**
  * @brief Write a Raster in current Image HDU.
@@ -61,14 +61,14 @@ void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 
 
 template<typename T, std::size_t n>
-FitsIO::Raster<T, n> read_raster(fitsfile* fptr) {
-	FitsIO::Raster<T, n> raster;
+FitsIO::DataRaster<T, n> read_raster(fitsfile* fptr) {
+	FitsIO::DataRaster<T, n> raster;
 	int status = 0;
 	fits_get_img_size(fptr, n, &raster.shape[0], &status);
 	may_throw_cfitsio_error(status);
 	const auto size = raster.size();
-	raster.data.resize(size);
-	fits_read_img(fptr, TypeCode<T>::for_image(), 1, size, nullptr, &raster.data.data()[0], nullptr, &status);
+	raster.data().resize(size); //TODO instantiate here directly with right shape
+	fits_read_img(fptr, TypeCode<T>::for_image(), 1, size, nullptr, &raster.data().data()[0], nullptr, &status);
 	// Number 1 is a 1-base offset (so we read the whole raster here)
 	may_throw_cfitsio_error(status);
 	return raster;
@@ -78,7 +78,7 @@ template<typename T, std::size_t n>
 void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
 	may_throw_readonly_error(fptr);
 	int status = 0;
-	std::vector<T> nonconst_data = raster.data; //TODO const-correctness issue?
+	std::vector<T> nonconst_data = raster.data(); //TODO const-correctness issue?
 	fits_write_img(fptr, TypeCode<T>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
 	may_throw_cfitsio_error(status);
 }

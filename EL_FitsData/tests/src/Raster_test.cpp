@@ -23,8 +23,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData//FitsDataFixture.h"
-#include "EL_FitsData//Raster.h"
+#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/Raster.h"
 
 using namespace Euclid;
 
@@ -58,7 +58,7 @@ BOOST_FIXTURE_TEST_CASE( raster_2D_test, FitsIO::Test::SmallRaster ) {
 
 	std::size_t size(this->width * this->height);
 	BOOST_CHECK_EQUAL(this->size(), size);
-	BOOST_CHECK_EQUAL(this->data.size(), size);
+	BOOST_CHECK_EQUAL(this->data().size(), size);
 
 }
 

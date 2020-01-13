@@ -105,7 +105,7 @@ bool goto_primary(fitsfile* fptr) {
 bool init_primary(fitsfile* fptr) {
 	if(count(fptr) > 0)
 		return false;
-	create_image_extension(fptr, "", FitsIO::Raster<unsigned char, 1>());
+	create_image_extension(fptr, "", FitsIO::DataRaster<unsigned char, 1>());
 	return true;
 }
 
