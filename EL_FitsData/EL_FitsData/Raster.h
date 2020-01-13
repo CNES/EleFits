@@ -57,21 +57,16 @@ template<typename T, std::size_t n=2>
 class Raster {
 
 public:
-
-	/**
-	 * @brief Create a Raster with given shape.
-	 */
-	Raster(pos_type<n> shape);
-
-	/**
-	 * @brief Create an empty Raster.
-	 */
-	Raster() = default;
 	
 	/**
 	 * @brief Destructor.
 	 */
 	virtual ~Raster() = default;
+
+	/**
+	 * @brief Create a Raster with given shape.
+	 */
+	Raster(pos_type<n> shape);
 
 	/**
 	 * @brief Access the raw data.
@@ -114,10 +109,20 @@ public:
 };
 
 
+/**
+ * @brief Raster which references some external data.
+ * @details Use it if for temporary rasters.
+ */
 template<typename T, std::size_t n=2>
 class SharedRaster : public Raster<T, n> {
 
 public:
+
+	virtual ~SharedRaster() = default;
+	SharedRaster(const SharedRaster&) = default;
+	SharedRaster(SharedRaster&&) = default;
+	SharedRaster& operator=(const SharedRaster&) = default;
+	SharedRaster& operator=(SharedRaster&&) = default;
 
 	/**
 	 * @brief Create a Raster with given shape and values.
@@ -133,15 +138,30 @@ private:
 };
 
 
+/**
+ * @brief Raster which stores internally the data.
+ * @details Use it (via move semantics) if you don't need your data after the write operation.
+ */
 template<typename T, std::size_t n=2>
 class DataRaster : public Raster<T, n> {
 
 public:
 
+	virtual ~DataRaster() = default;
+	DataRaster(const DataRaster&) = default;
+	DataRaster(DataRaster&&) = default;
+	DataRaster& operator=(const DataRaster&) = default;
+	DataRaster& operator=(DataRaster&&) = default;
+
 	/**
-	 * @brief Create a Raster with given shape and values.
+	 * @brief Create a DataRaster with given shape and values.
 	 */
 	DataRaster(pos_type<n> shape, std::vector<T> data);
+
+	/**
+	 * @brief Create a DataRaster with given shape and empty data.
+	 */
+	DataRaster(pos_type<n> shape);
 
 	virtual const std::vector<T>& data() const;
 
@@ -199,13 +219,6 @@ template<typename T, std::size_t n>
 Raster<T, n>::Raster(pos_type<n> shape) :
 		shape(shape),
 		data(size()) {
-}
-
-template<typename T, std::size_t n>
-Raster<T, n>::Raster(pos_type<n> shape, std::vector<T> data) :
-		shape(shape),
-		data(data) {
-
 }
 
 template<typename T, std::size_t n>

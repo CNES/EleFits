@@ -66,6 +66,7 @@ class Column {
 
 public:
 
+	virtual ~Column() = default;
 	Column(ColumnInfo<T> info);
 
 	/**
@@ -89,12 +90,18 @@ public:
 
 /**
  * @brief Column which references some external data.
- * @details Use it if you want your data to be accessible after the write operation.
+ * @details Use it for temporary columns.
  */
 template<typename T>
 class SharedColumn : public Column<T> {
 
 public:
+
+	virtual ~SharedColumn() = default;
+	SharedColumn(const SharedColumn&) = default;
+	SharedColumn(SharedColumn&&) = default;
+	SharedColumn& operator=(const SharedColumn&) = default;
+	SharedColumn& operator=(SharedColumn&&) = default;
 
 	SharedColumn(ColumnInfo<T> info, const std::vector<T>& data);
 
@@ -106,6 +113,7 @@ private:
 
 };
 
+
 /**
  * @brief Column which stores internally the data.
  * @details Use it (via move semantics) if you don't need your data after the write operation.
@@ -114,6 +122,12 @@ template<typename T>
 class DataColumn : public Column<T> {
 
 public:
+
+	virtual ~DataColumn() = default;
+	DataColumn(const DataColumn&) = default;
+	DataColumn(DataColumn&&) = default;
+	DataColumn& operator=(const DataColumn&) = default;
+	DataColumn& operator=(DataColumn&&) = default;
 
 	DataColumn(ColumnInfo<T> info, std::vector<T> data);
 
