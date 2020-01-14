@@ -171,7 +171,7 @@ public:
 	/**
 	 * @brief Create an empty DataRaster.
 	 */
-	DataRaster();
+	DataRaster() = default;
 
 	virtual const std::vector<T>& data() const;
 
@@ -279,12 +279,6 @@ template<typename T, std::size_t n>
 DataRaster<T, n>::DataRaster(pos_type<n> shape) :
 		Raster<T, n>(shape),
 		m_data(this->size()) {
-}
-
-template<typename T, std::size_t n>
-DataRaster<T, n>::DataRaster() :
-		Raster<T, n>(),
-		m_data(0) {
 }
 
 template<typename T, std::size_t n>
