@@ -278,7 +278,7 @@ DataRaster<T, n>::DataRaster(pos_type<n> shape, std::vector<T> data) :
 template<typename T, std::size_t n>
 DataRaster<T, n>::DataRaster(pos_type<n> shape) :
 		Raster<T, n>(shape),
-		m_data(0) {
+		m_data(this->size()) {
 }
 
 template<typename T, std::size_t n>
