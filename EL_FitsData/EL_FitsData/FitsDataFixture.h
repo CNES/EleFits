@@ -93,7 +93,7 @@ public:
  * @brief A random Raster of given type and shape.
  */
 template<typename T, std::size_t n>
-class RandomRaster : public Raster<T, n> {
+class RandomRaster : public DataRaster<T, n> {
 
 public:
 
@@ -170,8 +170,8 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
 template<typename T, std::size_t n>
 RandomRaster<T, n>::RandomRaster(pos_type<n> shape) :
-		Raster<T, n>(shape) {
-	this->data = generate_random_vector<T>(this->size());
+		DataRaster<T, n>(shape) {
+	this->data() = generate_random_vector<T>(this->size());
 }
 
 

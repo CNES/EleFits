@@ -38,11 +38,11 @@ using boost::program_options::value;
 using namespace Euclid::FitsIO;
 
 
-Raster<float> generate_raster(int naxis1, int naxis2) {
+DataRaster<float> generate_raster(int naxis1, int naxis2) {
 	int order = 10;
 	while(order < naxis2)
 		order *= 10;
-	Raster<float, 2> raster({naxis1, naxis2});
+	DataRaster<float, 2> raster({naxis1, naxis2});
 	for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
 		raster[{i, j}] = float(i) + float(j)/order;
 	return raster;

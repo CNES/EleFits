@@ -46,7 +46,7 @@ public:
 	 * @brief Read the Raster.
 	 */
 	template<typename T, std::size_t n=2>
-	Raster<T, n> read_raster() const;
+	DataRaster<T, n> read_raster() const;
 
 	/**
 	 * @brief Write the Raster.
@@ -63,7 +63,7 @@ public:
 
 
 template<typename T, std::size_t n>
-Raster<T, n> ImageHdu::read_raster() const {
+DataRaster<T, n> ImageHdu::read_raster() const {
 	return Cfitsio::Image::read_raster<T, n>(m_fptr);
 }
 

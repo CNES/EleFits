@@ -51,10 +51,10 @@ void check_random_3d() {
 	try {
 		Hdu::create_image_extension(file.fptr, "IMGEXT", input);
 		const auto output = Image::read_raster<T, 3>(file.fptr);
-		check_equal_vectors(output.data, input.data);
+		check_equal_vectors(output.data(), input.data());
 	} catch(const CfitsioError& e) {
 		std::cerr << "Input:" << std::endl;
-		for(const auto& v : input.data)
+		for(const auto& v : input.data())
 			std::cerr << v << ' ';
 		std::cerr << std::endl;
 		BOOST_FAIL(e.what());

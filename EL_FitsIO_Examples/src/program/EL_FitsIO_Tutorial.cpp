@@ -40,10 +40,10 @@ using boost::program_options::value;
 
 static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
-Raster<float, 3> create_raster() {
+DataRaster<float, 3> create_raster() {
   //! [Create and fill a raster]
   int width = 16, height = 9, depth = 3;
-  Raster<float, 3> raster({width, height, depth});
+  DataRaster<float, 3> raster({width, height, depth});
   for(int z=0; z<depth; ++z)
     for(int y=0; y<height; ++y)
       for(int x=0; x<width; ++x)
@@ -154,6 +154,3 @@ public:
 };
 
 MAIN_FOR(EL_FitsIO_Tutorial)
-
-
-
