@@ -61,6 +61,16 @@ Record is a simple template class which only stores those fields.
 
 
 A Column is a mere structure which holds the column name, repeat number (=1 for scalar columns), unit and data as a vector.
+There are two kinds of columns:
+
+- DataColumn owns the data;
+- SharedColumn points to the data owned by another class
+(be careful not to destroy the data while the SharedColumn is alive).
+
+Both classes offer a method to get a const reference to the data.
+DataColumn also provides a reference to it, so that data can be moved without copying.
+
+Here's an example using move semantics with a DataColumn:
 
 \snippet EL_FitsIO_Tutorial.cpp Create and fill a column
 
@@ -69,9 +79,11 @@ A Column is a mere structure which holds the column name, repeat number (=1 for 
 
 
 Images in Fits are _n_-dimensional arrays.
-Raster is a class which represents this kind of data and provides pixel accessors.
-
+Raster is a class which represents this kind of data and provides constant time pixel accessors.
 Template arguments are the pixel type and number of axes.
+Analogously to columns, rasters have two flavors: DataRaster and SharedRaster.
+
+Again, let's show an example with a DataRaster (without moves here, but the class is compatible):
 
 \snippet EL_FitsIO_Tutorial.cpp Create and fill a raster
 
@@ -84,9 +96,9 @@ This is simply done with the constructor of MefFile:
 
 \snippet EL_FitsIO_Tutorial.cpp Open a MefFile
 
-To see the available permissions, check the FitsFile::Permission enumeration documentation.
+To see the available permissions, check the FitsFile::Permission enumeration documentation (a MefFile is a FitsFile).
 
-The file is closed when the destructor of MefFile is called.
+The file is closed when the destructor of MefFile is called (although a FitsFile::close() method is provided just in case).
 
 
 \section tuto-write Write a MEF file
@@ -101,12 +113,10 @@ Here's an example of assigning a BintableHdu with columns:
 
 \snippet EL_FitsIO_Tutorial.cpp Assign a bintable extension
 
-And here's an example of assigning an ImageHdu:
+And here's an example of initializing and then assigning an ImageHdu:
 
-\snippet EL_FitsIO_Tutorial.cpp Assign an image extension
+\snippet EL_FitsIO_Tutorial.cpp Initialize an image extension
 
-In both cases, it would've been possible to just initialize the extensions first,
-and assign data later.
 For more details, refer to the BintableHdu and ImageHdu documentations.
 
 
@@ -121,7 +131,8 @@ In this case, Record objects must be instanciated explicitely:
 
 \snippet EL_FitsIO_Tutorial.cpp Write several records
 
-Of course, this applies to any HDU: the base class -- where to find documentation -- is RecordHdu.
+Of course, this applies to any HDU type:
+the base class -- where to find documentation -- is RecordHdu.
 
 
 \section tuto-read Read a MEF file

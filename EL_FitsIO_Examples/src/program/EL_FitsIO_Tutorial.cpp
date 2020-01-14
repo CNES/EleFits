@@ -106,10 +106,12 @@ public:
     f.assign_bintable_ext("TABLE", columns.name_col, columns.speed_col);
     //! [Assign a bintable extension]
 
-    //! [Assign an image extension]
     const auto raster = create_raster();
-    const auto& ext = f.assign_image_ext("IMAGE", raster);
-    //! [Assign an image extension]
+    const auto shape = raster.shape;
+    //! [Initialize an image extension]
+    const auto& ext = f.init_image_ext<float, 3>("IMAGE", shape);
+    ext.write_raster(raster);
+    //! [Initialize an image extension]
 
     //! [Write several records]
     const Record<std::string> str_record("STRING", "string");

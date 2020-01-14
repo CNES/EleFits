@@ -67,13 +67,13 @@ class Record<T> {
 + operator T ()
 }
 
-class Raster<T, n> {
+abstract class Raster<T, n> {
 + shape
-+ data
++ data()
 + operator [] (position)
 }
 
-class Column<T> {
+abstract class Column<T> {
 + info.name
 + info.unit
 + info.repeat
