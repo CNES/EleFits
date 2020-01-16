@@ -1,0 +1,77 @@
+@startuml
+
+package EL_FitsData {
+
+Raster <|-- DataRaster
+Raster <|-- SharedRaster
+Raster *- pos_type
+
+Record -[hidden] Record
+
+Column <|-- DataColumn
+Column <|-- SharedColumn
+ColumnInfo -* Column
+
+class pos_type<n> {
+}
+
+abstract class Raster<T, n> {
++ shape
++ {abstract} data()
++ operator [] (position)
++ length<i>()
++ size()
++ index(position)
+}
+
+class DataRaster<T, n> {
+- m_data
++ DataRaster(shape, data)
++ DataRaster(shape)
++ DataRaster()
++ data()
+}
+
+class SharedRaster<T, n> {
+- m_data_ref
++ SharedRaster(shape, data)
++ data()
+}
+
+class Record<T> {
++ keyword
++ value
++ unit
++ comment
++ operator T ()
+}
+
+class ColumnInfo<T> {
++ name
++ unit
++ repeat
+}
+
+abstract class Column<T> {
++ info
++ {abstract} data()
++ nelements()
+}
+
+class DataColumn<T> {
+- m_data
++ DataColumn(info, data)
++ DataColumn(info)
++ DataColumn()
++ data()
+}
+
+class SharedColumn<T> {
+- m_data_ref
++ SharedColumn(info, data)
++ data()
+}
+
+}
+
+@enduml

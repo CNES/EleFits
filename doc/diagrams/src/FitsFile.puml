@@ -1,4 +1,4 @@
-@startuml End-user API
+@startuml
 
 package EL_FitsFile {
 
@@ -59,25 +59,8 @@ class BintableHdu {
 + write_column<T> (column)
 }
 
-class Record<T> {
-+ keyword
-+ value
-+ unit
-+ comment
-+ operator T ()
-}
+abstract class Raster {}
 
-abstract class Raster<T, n> {
-+ shape
-+ data()
-+ operator [] (position)
-}
-
-abstract class Column<T> {
-+ info.name
-+ info.unit
-+ info.repeat
-+ data()
-}
+abstract class Column {}
 
 @enduml

@@ -200,6 +200,8 @@ or all together:
 
 A picture is worth a thousand words; here's the class diagram of what we've just learned (i.e. the Euclid::FitsIO namespace contents):
 
+\image html doc/diagrams/out/FitsData.png
+
 \image html doc/diagrams/out/FitsFile.png
 
 */
