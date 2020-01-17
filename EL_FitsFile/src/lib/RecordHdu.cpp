@@ -55,5 +55,31 @@ void RecordHdu::goto_this_hdu() const {
 	Cfitsio::Hdu::goto_index(m_fptr, m_index);
 }
 
+#define COMPILE_PARSE_RECORD(T) \
+	template Record<T> RecordHdu::parse_record(std::string) const;
+COMPILE_PARSE_RECORD(char)
+COMPILE_PARSE_RECORD(short)
+COMPILE_PARSE_RECORD(int)
+COMPILE_PARSE_RECORD(long)
+COMPILE_PARSE_RECORD(float)
+COMPILE_PARSE_RECORD(double)
+COMPILE_PARSE_RECORD(unsigned char)
+COMPILE_PARSE_RECORD(unsigned short)
+COMPILE_PARSE_RECORD(unsigned int)
+COMPILE_PARSE_RECORD(unsigned long)
+
+#define COMPILE_WRITE_RECORD(T) \
+	template void RecordHdu::write_record(const Record<T>&) const;
+COMPILE_WRITE_RECORD(char)
+COMPILE_WRITE_RECORD(short)
+COMPILE_WRITE_RECORD(int)
+COMPILE_WRITE_RECORD(long)
+COMPILE_WRITE_RECORD(float)
+COMPILE_WRITE_RECORD(double)
+COMPILE_WRITE_RECORD(unsigned char)
+COMPILE_WRITE_RECORD(unsigned short)
+COMPILE_WRITE_RECORD(unsigned int)
+COMPILE_WRITE_RECORD(unsigned long)
+
 }
 }

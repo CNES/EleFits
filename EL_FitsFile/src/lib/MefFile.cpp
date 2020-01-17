@@ -32,5 +32,16 @@ MefFile::MefFile(std::string filename, Permission permission) :
         FitsFile(filename, permission),
         m_hdus(1) {}
 
+#define COMPILE_ASSIGN_IMAGE_EXT(T, n) \
+        template ImageHdu& MefFile::assign_image_ext<T, n>(std::string, const Raster<T, n>&);
+COMPILE_ASSIGN_IMAGE_EXT(char, 2)
+COMPILE_ASSIGN_IMAGE_EXT(int, 2)
+COMPILE_ASSIGN_IMAGE_EXT(float, 2)
+COMPILE_ASSIGN_IMAGE_EXT(double, 2)
+COMPILE_ASSIGN_IMAGE_EXT(char, 3)
+COMPILE_ASSIGN_IMAGE_EXT(int, 3)
+COMPILE_ASSIGN_IMAGE_EXT(float, 3)
+COMPILE_ASSIGN_IMAGE_EXT(double, 3)
+
 }
 }
