@@ -15,8 +15,10 @@ Toward initial release (1.0)
 ## Missing features
 
 * Copy-less writing of columns
-* Single image Fits (SIF) file
+* MEF file Primary is always empty (Primary initialization not handled correctly)
 
 ## Known bugs
 
-* Vector columns are not correctly handled except string columns
+* Vector columns are not working except string columns (memory management issue)
+* SIF files are not working (Primary initialization not handled correctly)
+* Units are not consistently handled in records
