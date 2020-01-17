@@ -28,7 +28,8 @@
 namespace Euclid {
 namespace FitsIO {
 
-FitsFile::FitsFile(std::string filename, Permission permission) {
+FitsFile::FitsFile(std::string filename, Permission permission) :
+		m_permission(permission) {
 	open(filename, permission);
 }
 
@@ -50,11 +51,18 @@ void FitsFile::open(std::string filename, Permission permission) {
 	case Permission::OVERWRITE:
 		m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
 		break;
+	case Permission::TEMPORARY:
+		m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
 	}
 }
 
 void FitsFile::close() {
+	switch (m_permission) {
+	case Permission::TEMPORARY:
+		Cfitsio::File::close_and_delete(m_fptr);
+	default:
 	Cfitsio::File::close(m_fptr);
+	}
 }
 
 void FitsFile::close_and_delete() {

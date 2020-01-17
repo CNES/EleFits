@@ -63,7 +63,8 @@ public:
 		READ, ///< Open as read-only
 		EDIT, ///< Open with write permission
 		CREATE, ///< Create a new file
-		OVERWRITE ///< Create a new file or overwrite existing file
+		OVERWRITE, ///< Create a new file or overwrite existing file
+		TEMPORARY ///< Create a temporary file (removed by destructor)
 	};
 
 	/**
@@ -94,6 +95,7 @@ public:
 protected:
 
 	fitsfile* m_fptr;
+	Permission m_permission;
 
 };
 

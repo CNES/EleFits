@@ -36,7 +36,6 @@ BOOST_AUTO_TEST_SUITE (FitsFile_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE( empty_file_test ) {
-
 	Elements::TempPath tmp("%%%%%%.fits");
 	std::string filename = tmp.path().string();
 	FitsFile new_file(filename, FitsFile::Permission::CREATE);
@@ -51,7 +50,11 @@ BOOST_AUTO_TEST_CASE( empty_file_test ) {
     FitsFile editable_file(filename, FitsFile::Permission::EDIT);
     editable_file.close_and_delete();
     BOOST_CHECK(not boost::filesystem::exists(filename));
-
+    {
+        FitsFile temp_file(filename, FitsFile::Permission::TEMPORARY);
+        BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+    }
+    BOOST_CHECK(not boost::filesystem::exists(filename));
 }
 
 //-----------------------------------------------------------------------------
