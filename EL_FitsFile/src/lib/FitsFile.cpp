@@ -60,8 +60,9 @@ void FitsFile::close() {
 	switch (m_permission) {
 	case Permission::TEMPORARY:
 		Cfitsio::File::close_and_delete(m_fptr);
+		break;
 	default:
-	Cfitsio::File::close(m_fptr);
+		Cfitsio::File::close(m_fptr);
 	}
 }
 

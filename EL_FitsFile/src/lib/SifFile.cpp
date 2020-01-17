@@ -22,3 +22,19 @@
  */
 
 #include "EL_FitsFile/SifFile.h"
+
+#include "EL_FitsFile/ImageHdu.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+SifFile::SifFile(std::string filename, SifFile::Permission permission) :
+        FitsFile(filename, permission),
+        m_hdu(m_fptr, 1) {}
+
+const ImageHdu& SifFile::hdu() const {
+    return m_hdu;
+}
+
+}
+}

@@ -33,7 +33,7 @@ namespace FitsIO {
 /**
  * @brief Single image Fits file handler.
  */
-class SifFile : public FitsFile, ImageHdu {
+class SifFile : public FitsFile {
 
 public:
 
@@ -42,6 +42,12 @@ public:
 	SifFile(std::string filename, Permission permission);
 
 	virtual ~SifFile() = default;
+
+	const ImageHdu& hdu() const;
+
+private:
+
+	ImageHdu m_hdu;
 
 };
 

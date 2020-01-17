@@ -25,7 +25,7 @@
 
 #include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsFile//FitsFile.h"
+#include "EL_FitsFile/FitsFile.h"
 
 using namespace Euclid::FitsIO;
 

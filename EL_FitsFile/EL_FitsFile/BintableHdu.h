@@ -64,11 +64,13 @@ public:
 
 template<typename T>
 DataColumn<T> BintableHdu::read_column(std::string name) const {
+	goto_this_hdu();
 	return Cfitsio::Bintable::read_column<T>(m_fptr, name);
 }
 
 template<typename T>
 void BintableHdu::write_column(const Column<T>& column) const {
+	goto_this_hdu();
 	Cfitsio::Bintable::write_column(m_fptr, column);
 }
 

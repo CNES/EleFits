@@ -64,11 +64,13 @@ public:
 
 template<typename T, std::size_t n>
 DataRaster<T, n> ImageHdu::read_raster() const {
+	goto_this_hdu();
 	return Cfitsio::Image::read_raster<T, n>(m_fptr);
 }
 
 template<typename T, std::size_t n>
 void ImageHdu::write_raster(const Raster<T, n>& raster) const {
+	goto_this_hdu();
 	Cfitsio::Image::write_raster(m_fptr, raster);
 }
 
