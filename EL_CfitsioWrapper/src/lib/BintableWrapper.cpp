@@ -65,14 +65,16 @@ FitsIO::VecColumn<std::string> internal::ColumnDispatcher<std::string>::read(fit
 	);
 	may_throw_cfitsio_error(status);
 	for(std::size_t i=0; i < static_cast<std::size_t>(rows); ++i) {
-		column.data()[i] = std::string(data[i]);
+		column.vector()[i] = std::string(data[i]);
 		free(data[i]);
 	}
 	return column;
 }
 
 void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
-	c_str_array array(column.data()); //TODO avoid copy?
+	const auto begin = column.data();
+	const auto end = begin + column.rows();
+	c_str_array array(begin, end); //TODO avoid copy?
 	std::size_t index = column_index(fptr, column.info.name);
 	int status = 0;
 	fits_write_col(

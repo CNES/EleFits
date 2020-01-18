@@ -70,9 +70,14 @@ public:
 	Column(ColumnInfo<T> info);
 
 	/**
+	 * @brief Number of rows.
+	 */
+	virtual std::size_t rows() const = 0;
+
+	/**
 	 * @brief Access the data.
 	 */
-	virtual const std::vector<T>& data() const = 0;
+	virtual const T* data() const = 0;
 
 	/**
 	 * @brief Number of elements in the column, i.e. number of rows * repeat count.
@@ -89,7 +94,36 @@ public:
 
 
 /**
- * @brief Column which references some external data.
+ * @brief Column which references some external pointer data.
+ * @details Use it for temporary columns.
+ */
+template<typename T>
+class PtrColumn : public Column<T> {
+
+public:
+
+	virtual ~PtrColumn() = default;
+	PtrColumn(const PtrColumn&) = default;
+	PtrColumn(PtrColumn&&) = default;
+	PtrColumn& operator=(const PtrColumn&) = default;
+	PtrColumn& operator=(PtrColumn&&) = default;
+
+	PtrColumn(ColumnInfo<T> info, std::size_t rows, const T* data);
+
+	virtual std::size_t rows() const;
+
+	virtual const T* data() const;
+
+private:
+
+	std::size_t m_rows;
+	const T* m_data;
+
+};
+
+
+/**
+ * @brief Column which references some external vector data.
  * @details Use it for temporary columns.
  */
 template<typename T>
@@ -103,13 +137,17 @@ public:
 	VecRefColumn& operator=(const VecRefColumn&) = default;
 	VecRefColumn& operator=(VecRefColumn&&) = default;
 
-	VecRefColumn(ColumnInfo<T> info, const std::vector<T>& data);
+	VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector);
 
-	virtual const std::vector<T>& data() const;
+	virtual std::size_t rows() const;
+
+	virtual const T* data() const;
+
+	const std::vector<T>& vector() const;
 
 private:
 
-	const std::vector<T>& m_data_ref;
+	const std::vector<T>& m_vec_ref;
 
 };
 
@@ -129,21 +167,27 @@ public:
 	VecColumn& operator=(const VecColumn&) = default;
 	VecColumn& operator=(VecColumn&&) = default;
 
-	VecColumn(ColumnInfo<T> info, std::vector<T> data);
+	VecColumn(ColumnInfo<T> info, std::vector<T> vector);
 
-	virtual const std::vector<T>& data() const;
+	virtual std::size_t rows() const;
+
+	virtual const T* data() const;
+
+	T* data();
+
+	const std::vector<T>& vector() const;
 
 	/**
 	 * @brief Non-const reference to the data, useful to take ownership through move semantics.
 	 * @code
-	 * std::vector<T> v = std::move(column.data());
+	 * std::vector<T> v = std::move(column.vector());
 	 * @endcode
 	 */
-	std::vector<T>& data();
+	std::vector<T>& vector();
 
 private:
 
-	std::vector<T> m_data;
+	std::vector<T> m_vec;
 
 };
 
@@ -170,7 +214,7 @@ std::size_t column_nelements(const Column<T>& column);
  */
 template<typename T>
 inline std::size_t column_nelements(const Column<T>& column) {
-	return column.info.repeat * column.data().size();
+	return column.info.repeat * column.rows();
 }
 
 /**
@@ -178,7 +222,7 @@ inline std::size_t column_nelements(const Column<T>& column) {
  */
 template<>
 inline std::size_t column_nelements<std::string>(const Column<std::string>& column) {
-	return column.data().size();
+	return column.rows();
 }
 
 }
@@ -204,31 +248,74 @@ std::size_t Column<T>::nelements() const {
 
 
 template<typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info, const std::vector<T>& data) :
+PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t rows, const T* data) :
 		Column<T>(info),
-		m_data_ref(data) {
-}
-
-template<typename T>
-const std::vector<T>& VecRefColumn<T>::data() const {
-	return m_data_ref;
-}
-
-
-template<typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> data) :
-		Column<T>(info),
+		m_rows(rows),
 		m_data(data) {
 }
 
 template<typename T>
-const std::vector<T>& VecColumn<T>::data() const {
-	return m_data;
+std::size_t PtrColumn<T>::rows() const {
+	return m_rows;
 }
 
 template<typename T>
-std::vector<T>& VecColumn<T>::data() {
+const T* PtrColumn<T>::data() const {
 	return m_data;
+}
+
+
+template<typename T>
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector) :
+		Column<T>(info),
+		m_vec_ref(vector) {
+}
+
+template<typename T>
+std::size_t VecRefColumn<T>::rows() const {
+	return m_vec_ref.size();
+}
+
+template<typename T>
+const T* VecRefColumn<T>::data() const {
+	return m_vec_ref.data();
+}
+
+template<typename T>
+const std::vector<T>& VecRefColumn<T>::vector() const {
+	return m_vec_ref;
+}
+
+
+template<typename T>
+VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> vector) :
+		Column<T>(info),
+		m_vec(vector) {
+}
+
+template<typename T>
+std::size_t VecColumn<T>::rows() const {
+	return m_vec.size();
+}
+
+template<typename T>
+const T* VecColumn<T>::data() const {
+	return m_vec.data();
+}
+
+template<typename T>
+T* VecColumn<T>::data() {
+	return m_vec.data();
+}
+
+template<typename T>
+const std::vector<T>& VecColumn<T>::vector() const {
+	return m_vec;
+}
+
+template<typename T>
+std::vector<T>& VecColumn<T>::vector() {
+	return m_vec;
 }
 
 

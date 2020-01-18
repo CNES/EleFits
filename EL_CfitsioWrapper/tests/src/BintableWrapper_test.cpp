@@ -50,10 +50,10 @@ void check_scalar() {
 	try {
 		Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
 		const auto output = Bintable::read_column<T>(file.fptr, input.info.name);
-		check_equal_vectors(output.data(), input.data());
+		check_equal_vectors(output.vector(), input.vector());
 	} catch(const CfitsioError& e) {
 		std::cerr << "Input:" << std::endl;
-		for(const auto& v : input.data())
+		for(const auto& v : input.vector())
 			std::cerr << v << ' ';
 		std::cerr << std::endl;
 		if(e.status == NUM_OVERFLOW)
@@ -92,10 +92,10 @@ void check_vector() {
 	FitsIO::Test::MinimalFile file;
 	Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
 	const auto output = Bintable::read_column<std::vector<T>>(file.fptr, input.info.name);
-	const auto size = input.data().size();
-	BOOST_CHECK_EQUAL(output.data().size(), size);
+	const auto size = input.rows();
+	BOOST_CHECK_EQUAL(output.rows(), size);
 	for(std::size_t i=0; i<size; ++i)
-		check_equal_vectors(output.data()[i], input.data()[i]);
+		check_equal_vectors(output.vector()[i], input.vector()[i]);
 }
 
 #define TEST_VECTOR(type) \
@@ -124,15 +124,15 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
 	Hdu::create_bintable_extension(this->fptr, "IMGEXT",
 			input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
 	const auto output_nums = Bintable::read_column<FitsIO::Test::SmallTable::num_t>(this->fptr, input.num_col.info.name);
-	check_equal_vectors(output_nums.data(), input.num_col.data());
+	check_equal_vectors(output_nums.vector(), input.num_col.vector());
 	const auto output_radecs = Bintable::read_column<FitsIO::Test::SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
-	check_equal_vectors(output_radecs.data(), input.radec_col.data());
+	check_equal_vectors(output_radecs.vector(), input.radec_col.vector());
 	const auto output_names = Bintable::read_column<FitsIO::Test::SmallTable::name_t>(this->fptr, input.name_col.info.name);
-	check_equal_vectors(output_names.data(), input.name_col.data());
+	check_equal_vectors(output_names.vector(), input.name_col.vector());
 	// const auto output_dists_mags = Bintable::read_column<FitsIO::Test::SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
-	// BOOST_CHECK_EQUAL(output_dists_mags.data().size(), input.dist_mag_col.data().size());
-	// for(std::size_t i=0; i<output_dists_mags.data().size(); ++i)
-	// 	check_equal_vectors(output_dists_mags.data()[i], input.dist_mag_col.data()[i]);
+	// BOOST_CHECK_EQUAL(output_dists_mags.vector().size(), input.dist_mag_col.vector().size());
+	// for(std::size_t i=0; i<output_dists_mags.vector().size(); ++i)
+	// 	check_equal_vectors(output_dists_mags.vector()[i], input.dist_mag_col.vector()[i]);
 	//TODO memory bug for vector columns "free(): invalid next size (fast)"
 
 }

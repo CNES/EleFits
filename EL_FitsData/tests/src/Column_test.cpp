@@ -44,11 +44,12 @@ BOOST_AUTO_TEST_CASE( share_test ) {
 BOOST_AUTO_TEST_CASE( move_test ) {
   std::vector<int> input { 4, 5, 6 };
   FitsIO::VecColumn<int> column({"DATA", "", 1}, std::move(input));
-  BOOST_CHECK_EQUAL(column.data()[1], 5);
+  BOOST_CHECK_EQUAL(column.vector()[1], 5);
   BOOST_CHECK_EQUAL(input.size(), 0);
-  input = std::move(column.data());
+  input = std::move(column.vector());
   BOOST_CHECK_EQUAL(input[1], 5);
-  BOOST_CHECK_EQUAL(column.data().size(), 0);
+  BOOST_CHECK_EQUAL(column.vector().size(), 0);
+  BOOST_CHECK_EQUAL(column.rows(), 0);
 }
 
 //-----------------------------------------------------------------------------

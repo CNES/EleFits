@@ -183,7 +183,7 @@ RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
 template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
 		VecColumn<std::string>({ "SCALAR", "m", 1}, generate_random_vector<std::string>(size)) {
-	for(const auto& v : data())
+	for(const auto& v : vector())
 		if(v.length() + 1 > static_cast<std::size_t>(info.repeat))
 			info.repeat = v.length() + 1;
 }

@@ -127,8 +127,8 @@ public:
     const auto& bintable_ext = f.access_first<BintableHdu>("TABLE");
     //! [Access an HDU by name]
     //! [Read bintable values]
-    const auto names = bintable_ext.read_column<std::string>("NAME").data();
-    const auto speeds = bintable_ext.read_column<double>("SPEED").data();
+    const auto names = bintable_ext.read_column<std::string>("NAME").vector();
+    const auto speeds = bintable_ext.read_column<double>("SPEED").vector();
     const auto slowest_guy = names[0];
     const auto max_speed = speeds[speeds.size()-1];
     //! [Read bintable values]

@@ -4,12 +4,14 @@ package EL_FitsData {
 
 Raster <|-- VecRaster
 Raster <|-- VecRefRaster
+Raster <|-- PtrRaster
 Raster *- pos_type
 
 Record -[hidden] Record
 
 Column <|-- VecColumn
 Column <|-- VecRefColumn
+Column <|-- PtrColumn
 ColumnInfo -* Column
 
 class pos_type<n> {
@@ -19,22 +21,30 @@ abstract class Raster<T, n> {
 + shape
 + {abstract} data()
 + operator [] (position)
-+ length<i>()
++ length<axis>()
 + size()
 + index(position)
 }
 
 class VecRaster<T, n> {
-- m_data
-+ VecRaster(shape, data)
+- m_vec
++ VecRaster(shape, vector)
 + VecRaster(shape)
 + VecRaster()
 + data()
++ vector()
 }
 
 class VecRefRaster<T, n> {
-- m_data_ref
-+ VecRefRaster(shape, data)
+- m_vec_ref
++ VecRefRaster(shape, vector)
++ data()
++ vector()
+}
+
+class PtrRaster<T, n> {
+- m_data
++ PtrRaster(shape, data)
 + data()
 }
 
@@ -59,16 +69,24 @@ abstract class Column<T> {
 }
 
 class VecColumn<T> {
-- m_data
-+ VecColumn(info, data)
+- m_vec
++ VecColumn(info, vector)
 + VecColumn(info)
 + VecColumn()
 + data()
++ vector()
 }
 
 class VecRefColumn<T> {
-- m_data_ref
-+ VecRefColumn(info, data)
+- m_vec_ref
++ VecRefColumn(info, vector)
++ data()
++ vector()
+}
+
+class PtrColumn<T> {
+- m_data
++ PtrColumn(info, vector)
 + data()
 }
 

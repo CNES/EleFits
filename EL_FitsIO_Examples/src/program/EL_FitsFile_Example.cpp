@@ -102,9 +102,9 @@ public:
 		logger.info() << "Reading bintable.";
 		auto bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
 		logger.info() << "HDU index: " << bintable_ext.index();
-		const auto nums = bintable_ext.read_column<int>("ID").data();
+		const auto nums = bintable_ext.read_column<int>("ID").vector();
 		logger.info() << "First id: " << nums[0];
-		const auto names = bintable_ext.read_column<std::string>("NAME").data();
+		const auto names = bintable_ext.read_column<std::string>("NAME").vector();
 		logger.info() << "Last name: " << names[names.size()-1];
 
 		logger.info();
