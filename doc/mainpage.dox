@@ -75,8 +75,7 @@ Records, image rasters and bintable columns are implemented as light structures 
 - Column stores metadata (name, unit, width) and values;
 - Raster represents a _n_-dimensional array with constant-time pixel access.
 
-Columns and rasters each have two variants, depending on who owns the data:
-VecRefColumn, VecColumn, VecRefRaster and VecRaster.
+Columns and rasters each have variants, depending on who owns the data and on the data container type.
 Below is the corresponding simplified class diagram.
 Check out the API documentation for more details.
 
@@ -93,7 +92,7 @@ Here is the (simplified) class diagram of it:
 
 \image html doc/diagrams/out/FitsFile.png
 
-Last but not least, we've implemented and documented a \ref tuto.
+**Last but not least, we've implemented and documented a \ref tuto.**
 
 To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validation modules (see below).
 
