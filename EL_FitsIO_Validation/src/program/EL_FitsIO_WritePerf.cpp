@@ -38,20 +38,20 @@ using boost::program_options::value;
 using namespace Euclid::FitsIO;
 
 
-DataRaster<float> generate_raster(int naxis1, int naxis2) {
+VecRaster<float> generate_raster(int naxis1, int naxis2) {
 	int order = 10;
 	while(order < naxis2)
 		order *= 10;
-	DataRaster<float, 2> raster({naxis1, naxis2});
+	VecRaster<float, 2> raster({naxis1, naxis2});
 	for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
 		raster[{i, j}] = float(i) + float(j)/order;
 	return raster;
 }
 
 struct table_t {
-	DataColumn<std::string> string_col;
-	DataColumn<float> float_col;
-	DataColumn<int> int_col;
+	VecColumn<std::string> string_col;
+	VecColumn<float> float_col;
+	VecColumn<int> int_col;
 };
 
 table_t generate_columns(int naxis2) {
@@ -64,9 +64,9 @@ table_t generate_columns(int naxis2) {
 		ints[i] = i * naxis2;
 	}
 	table_t table {
-			DataColumn<std::string>({"STRINGS", "", 8}, std::move(strings)),
-			DataColumn<float>({"FLOATS", "", 1}, std::move(floats)),
-			DataColumn<int>({ "INTS", "", 1}, std::move(ints))
+			VecColumn<std::string>({"STRINGS", "", 8}, std::move(strings)),
+			VecColumn<float>({"FLOATS", "", 1}, std::move(floats)),
+			VecColumn<int>({ "INTS", "", 1}, std::move(ints))
 	};
 	return table;
 }

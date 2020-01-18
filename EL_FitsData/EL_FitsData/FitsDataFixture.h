@@ -47,7 +47,7 @@ namespace Test {
 /**
  * @brief A small 2D image raster.
  */
-class SmallRaster : public DataRaster<float> {
+class SmallRaster : public VecRaster<float> {
 
 public:
 
@@ -82,10 +82,10 @@ public:
 	std::vector<name_t> names;
 	std::vector<dist_mag_t> dists_mags;
 	
-	SharedColumn<num_t> num_col;
-	SharedColumn<radec_t> radec_col;
-	SharedColumn<name_t> name_col;
-	SharedColumn<dist_mag_t> dist_mag_col;
+	VecRefColumn<num_t> num_col;
+	VecRefColumn<radec_t> radec_col;
+	VecRefColumn<name_t> name_col;
+	VecRefColumn<dist_mag_t> dist_mag_col;
 
 };
 
@@ -93,7 +93,7 @@ public:
  * @brief A random Raster of given type and shape.
  */
 template<typename T, std::size_t n>
-class RandomRaster : public DataRaster<T, n> {
+class RandomRaster : public VecRaster<T, n> {
 
 public:
 
@@ -107,7 +107,7 @@ public:
  * @brief A random scalar Column of given type.
  */
 template<typename T>
-class RandomScalarColumn : public DataColumn<T> {
+class RandomScalarColumn : public VecColumn<T> {
 
 public:
 
@@ -119,7 +119,7 @@ public:
 /**
  * @brief A small string column.
  */
-class SmallStringColumn : public DataColumn<std::string> {
+class SmallStringColumn : public VecColumn<std::string> {
 
 public:
 
@@ -132,7 +132,7 @@ public:
  * @brief A small vector column of given type.
  */
 template<typename T>
-class SmallVectorColumn : public DataColumn<std::vector<T>> {
+class SmallVectorColumn : public VecColumn<std::vector<T>> {
 
 public:
 
@@ -170,19 +170,19 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
 template<typename T, std::size_t n>
 RandomRaster<T, n>::RandomRaster(pos_type<n> shape) :
-		DataRaster<T, n>(shape) {
-	this->data() = generate_random_vector<T>(this->size());
+		VecRaster<T, n>(shape) {
+	this->vector() = generate_random_vector<T>(this->size());
 }
 
 
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
-		DataColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size)) {
+		VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size)) {
 }
 
 template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
-		DataColumn<std::string>({ "SCALAR", "m", 1}, generate_random_vector<std::string>(size)) {
+		VecColumn<std::string>({ "SCALAR", "m", 1}, generate_random_vector<std::string>(size)) {
 	for(const auto& v : data())
 		if(v.length() + 1 > static_cast<std::size_t>(info.repeat))
 			info.repeat = v.length() + 1;
@@ -190,7 +190,7 @@ RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
 
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
-		DataColumn<std::vector<T>>(
+		VecColumn<std::vector<T>>(
 				{"VECTOR", "m2", 2},
 				{ { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } }
 		) {

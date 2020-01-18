@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( approx_different_shapes_test ) {
 BOOST_AUTO_TEST_CASE( not_approx_test ) {
   SmallRaster a(1, 1);
   SmallRaster b(1, 1);
-  b.data()[0] = 2 * (a.data()[0] + 1);
+  b.vector()[0] = 2 * (a.vector()[0] + 1);
   BOOST_CHECK(not a.approx(b));
   BOOST_CHECK(not b.approx(a));
 }

@@ -49,7 +49,7 @@ std::size_t column_index(fitsfile* fptr, std::string name);
  * @brief Read a Bintable column with given name.
  */
 template<typename T>
-FitsIO::DataColumn<T> read_column(fitsfile* fptr, std::string name);
+FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name);
 
 /**
  * @brief Write a binary table column with given name.
@@ -72,36 +72,36 @@ namespace internal {
  */
 template<typename T>
 struct ColumnDispatcher {
-	static FitsIO::DataColumn<T> read(fitsfile* fptr, std::string name);
+	static FitsIO::VecColumn<T> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const FitsIO::Column<T>& column);
 };
 
 template<>
 struct ColumnDispatcher<std::string> {
-	static FitsIO::DataColumn<std::string> read(fitsfile* fptr, std::string name);
+	static FitsIO::VecColumn<std::string> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const FitsIO::Column<std::string>& column);
 };
 
 template<typename T>
 struct ColumnDispatcher<T*> {
-	static FitsIO::DataColumn<T*> read(fitsfile* fptr, std::string name);
+	static FitsIO::VecColumn<T*> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const FitsIO::Column<T*>& column);
 };
 
 template<typename T>
 struct ColumnDispatcher<std::vector<T>> {
-	static FitsIO::DataColumn<std::vector<T>> read(fitsfile* fptr, std::string name);
+	static FitsIO::VecColumn<std::vector<T>> read(fitsfile* fptr, std::string name);
 	static void write(fitsfile* fptr, const FitsIO::Column<std::vector<T>>& column);
 };
 
 template<typename T>
-FitsIO::DataColumn<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
 	fits_get_num_rows(fptr, &rows, &status);
 	may_throw_cfitsio_error(status);
-	FitsIO::DataColumn<T> column({name, "", 1}, std::vector<T>(rows));
+	FitsIO::VecColumn<T> column({name, "", 1}, std::vector<T>(rows));
 	fits_read_col(
 		fptr,
 		TypeCode<T>::for_bintable(), // datatype
@@ -119,7 +119,7 @@ FitsIO::DataColumn<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name
 }
 
 template<typename T>
-FitsIO::DataColumn<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
@@ -127,7 +127,7 @@ FitsIO::DataColumn<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string na
 	may_throw_cfitsio_error(status);
 	long repeat;
 	fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap
-	FitsIO::DataColumn<T*> column({name, "TODO", repeat}, std::vector<T*>(rows)); //TODO unit
+	FitsIO::VecColumn<T*> column({name, "TODO", repeat}, std::vector<T*>(rows)); //TODO unit
 	for(long i=0; i<rows; ++i)
 		column.data()[i] = (T*) malloc(repeat * sizeof(T));
 	fits_read_col(
@@ -147,10 +147,10 @@ FitsIO::DataColumn<T*> ColumnDispatcher<T*>::read(fitsfile* fptr, std::string na
 }
 
 template<typename T>
-FitsIO::DataColumn<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
 	const auto ptr_col = ColumnDispatcher<T*>::read(fptr, name);
 	const auto rows = ptr_col.data().size();
-	FitsIO::DataColumn<std::vector<T>> column({ptr_col.info.name, "TODO", ptr_col.info.repeat}, std::vector<std::vector<T>>(rows)); //TODO unit
+	FitsIO::VecColumn<std::vector<T>> column({ptr_col.info.name, "TODO", ptr_col.info.repeat}, std::vector<std::vector<T>>(rows)); //TODO unit
 	for(std::size_t i=0; i<rows; ++i) {
 		T* ptr_i = ptr_col.data()[i];
 		column.data()[i].assign(ptr_i, ptr_i + ptr_col.info.repeat);
@@ -200,7 +200,7 @@ void ColumnDispatcher<T*>::write(fitsfile* fptr, const FitsIO::Column<T*>& colum
 template<typename T>
 void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const FitsIO::Column<std::vector<T>>& column) {
 	const auto rows = column.data().size();
-	FitsIO::DataColumn<T*> ptr_column({column.info.name, column.info.unit, column.info.repeat}, std::vector<T*>(rows));
+	FitsIO::VecColumn<T*> ptr_column({column.info.name, column.info.unit, column.info.repeat}, std::vector<T*>(rows));
 	for(std::size_t i=0; i<rows; ++i) {
 		const auto& data_i = column.data()[i];
 		ptr_column.data()[i] = (T*) malloc(column.info.repeat * sizeof(T));
@@ -221,7 +221,7 @@ void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const FitsIO::Colum
 
 
 template<typename T>
-FitsIO::DataColumn<T> read_column(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name) {
 	return internal::ColumnDispatcher<T>::read(fptr, name);
 }
 

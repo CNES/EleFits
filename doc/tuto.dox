@@ -63,14 +63,14 @@ Record is a simple template class which only stores those fields.
 A Column is a mere structure which holds the column name, repeat number (=1 for scalar columns), unit and data as a vector.
 There are two kinds of columns:
 
-- DataColumn owns the data;
-- SharedColumn points to the data owned by another class
-(be careful not to destroy the data while the SharedColumn is alive).
+- VecColumn owns the data;
+- VecRefColumn points to the data owned by another class
+(be careful not to destroy the data while the VecRefColumn is alive).
 
 Both classes offer a method to get a const reference to the data.
-DataColumn also provides a reference to it, so that data can be moved without copying.
+VecColumn also provides a reference to it, so that data can be moved without copying.
 
-Here's an example using move semantics with a DataColumn:
+Here's an example using move semantics with a VecColumn:
 
 \snippet EL_FitsIO_Tutorial.cpp Create and fill a column
 
@@ -81,9 +81,9 @@ Here's an example using move semantics with a DataColumn:
 Images in Fits are _n_-dimensional arrays.
 Raster is a class which represents this kind of data and provides constant time pixel accessors.
 Template arguments are the pixel type and number of axes.
-Analogously to columns, rasters have two flavors: DataRaster and SharedRaster.
+Analogously to columns, rasters have two flavors: VecRaster and VecRefRaster.
 
-Again, let's show an example with a DataRaster (without moves here, but the class is compatible):
+Again, let's show an example with a VecRaster (without moves here, but the class is compatible):
 
 \snippet EL_FitsIO_Tutorial.cpp Create and fill a raster
 

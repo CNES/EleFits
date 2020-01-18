@@ -30,7 +30,7 @@ ImageHdu::ImageHdu(fitsfile* fptr, std::size_t index) :
         RecordHdu(fptr, index) {}
 
 #define COMPILE_READ_RASTER(T, n) \
-        template DataRaster<T, n> ImageHdu::read_raster() const;
+        template VecRaster<T, n> ImageHdu::read_raster() const;
 COMPILE_READ_RASTER(char, 2)
 COMPILE_READ_RASTER(int, 2)
 COMPILE_READ_RASTER(float, 2)

@@ -76,7 +76,7 @@ Records, image rasters and bintable columns are implemented as light structures 
 - Raster represents a _n_-dimensional array with constant-time pixel access.
 
 Columns and rasters each have two variants, depending on who owns the data:
-SharedColumn, DataColumn, SharedRaster and DataRaster.
+VecRefColumn, VecColumn, VecRefRaster and VecRaster.
 Below is the corresponding simplified class diagram.
 Check out the API documentation for more details.
 

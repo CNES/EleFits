@@ -93,17 +93,17 @@ public:
  * @details Use it for temporary columns.
  */
 template<typename T>
-class SharedColumn : public Column<T> {
+class VecRefColumn : public Column<T> {
 
 public:
 
-	virtual ~SharedColumn() = default;
-	SharedColumn(const SharedColumn&) = default;
-	SharedColumn(SharedColumn&&) = default;
-	SharedColumn& operator=(const SharedColumn&) = default;
-	SharedColumn& operator=(SharedColumn&&) = default;
+	virtual ~VecRefColumn() = default;
+	VecRefColumn(const VecRefColumn&) = default;
+	VecRefColumn(VecRefColumn&&) = default;
+	VecRefColumn& operator=(const VecRefColumn&) = default;
+	VecRefColumn& operator=(VecRefColumn&&) = default;
 
-	SharedColumn(ColumnInfo<T> info, const std::vector<T>& data);
+	VecRefColumn(ColumnInfo<T> info, const std::vector<T>& data);
 
 	virtual const std::vector<T>& data() const;
 
@@ -119,17 +119,17 @@ private:
  * @details Use it (via move semantics) if you don't need your data after the write operation.
  */
 template<typename T>
-class DataColumn : public Column<T> {
+class VecColumn : public Column<T> {
 
 public:
 
-	virtual ~DataColumn() = default;
-	DataColumn(const DataColumn&) = default;
-	DataColumn(DataColumn&&) = default;
-	DataColumn& operator=(const DataColumn&) = default;
-	DataColumn& operator=(DataColumn&&) = default;
+	virtual ~VecColumn() = default;
+	VecColumn(const VecColumn&) = default;
+	VecColumn(VecColumn&&) = default;
+	VecColumn& operator=(const VecColumn&) = default;
+	VecColumn& operator=(VecColumn&&) = default;
 
-	DataColumn(ColumnInfo<T> info, std::vector<T> data);
+	VecColumn(ColumnInfo<T> info, std::vector<T> data);
 
 	virtual const std::vector<T>& data() const;
 
@@ -204,30 +204,30 @@ std::size_t Column<T>::nelements() const {
 
 
 template<typename T>
-SharedColumn<T>::SharedColumn(ColumnInfo<T> info, const std::vector<T>& data) :
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info, const std::vector<T>& data) :
 		Column<T>(info),
 		m_data_ref(data) {
 }
 
 template<typename T>
-const std::vector<T>& SharedColumn<T>::data() const {
+const std::vector<T>& VecRefColumn<T>::data() const {
 	return m_data_ref;
 }
 
 
 template<typename T>
-DataColumn<T>::DataColumn(ColumnInfo<T> info, std::vector<T> data) :
+VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> data) :
 		Column<T>(info),
 		m_data(data) {
 }
 
 template<typename T>
-const std::vector<T>& DataColumn<T>::data() const {
+const std::vector<T>& VecColumn<T>::data() const {
 	return m_data;
 }
 
 template<typename T>
-std::vector<T>& DataColumn<T>::data() {
+std::vector<T>& VecColumn<T>::data() {
 	return m_data;
 }
 

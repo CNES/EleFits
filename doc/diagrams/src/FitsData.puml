@@ -2,14 +2,14 @@
 
 package EL_FitsData {
 
-Raster <|-- DataRaster
-Raster <|-- SharedRaster
+Raster <|-- VecRaster
+Raster <|-- VecRefRaster
 Raster *- pos_type
 
 Record -[hidden] Record
 
-Column <|-- DataColumn
-Column <|-- SharedColumn
+Column <|-- VecColumn
+Column <|-- VecRefColumn
 ColumnInfo -* Column
 
 class pos_type<n> {
@@ -24,17 +24,17 @@ abstract class Raster<T, n> {
 + index(position)
 }
 
-class DataRaster<T, n> {
+class VecRaster<T, n> {
 - m_data
-+ DataRaster(shape, data)
-+ DataRaster(shape)
-+ DataRaster()
++ VecRaster(shape, data)
++ VecRaster(shape)
++ VecRaster()
 + data()
 }
 
-class SharedRaster<T, n> {
+class VecRefRaster<T, n> {
 - m_data_ref
-+ SharedRaster(shape, data)
++ VecRefRaster(shape, data)
 + data()
 }
 
@@ -58,17 +58,17 @@ abstract class Column<T> {
 + nelements()
 }
 
-class DataColumn<T> {
+class VecColumn<T> {
 - m_data
-+ DataColumn(info, data)
-+ DataColumn(info)
-+ DataColumn()
++ VecColumn(info, data)
++ VecColumn(info)
++ VecColumn()
 + data()
 }
 
-class SharedColumn<T> {
+class VecRefColumn<T> {
 - m_data_ref
-+ SharedColumn(info, data)
++ VecRefColumn(info, data)
 + data()
 }
 

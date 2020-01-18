@@ -69,14 +69,14 @@ public:
 	Raster(pos_type<n> shape);
 
 	/**
-	 * @brief Create an DataRaster.
+	 * @brief Create an VecRaster.
 	 */
 	Raster() = default;
 
 	/**
 	 * @brief Access the raw data.
 	 */
-	virtual const std::vector<T>& data() const = 0;
+	virtual const T* data() const = 0;
 
 	/**
 	 * @brief Length along given axis.
@@ -115,77 +115,119 @@ public:
 
 
 /**
- * @brief Raster which references some external data.
- * @details Use it if for temporary rasters.
+ * @brief Raster which references some external pointer data.
  */
 template<typename T, std::size_t n=2>
-class SharedRaster : public Raster<T, n> {
+class PtrRaster : public Raster<T, n> {
 
 public:
 
-	virtual ~SharedRaster() = default;
-	SharedRaster(const SharedRaster&) = default;
-	SharedRaster(SharedRaster&&) = default;
-	SharedRaster& operator=(const SharedRaster&) = default;
-	SharedRaster& operator=(SharedRaster&&) = default;
+	virtual ~PtrRaster() = default;
+	PtrRaster(const PtrRaster&) = default;
+	PtrRaster(PtrRaster&&) = default;
+	PtrRaster& operator=(const PtrRaster&) = default;
+	PtrRaster& operator=(PtrRaster&&) = default;
 
 	/**
 	 * @brief Create a Raster with given shape and values.
 	 */
-	SharedRaster(pos_type<n> shape, const std::vector<T>& data);
+	PtrRaster(pos_type<n> shape, const T* data);
 
-	virtual const std::vector<T>& data() const;
+	virtual const T* data() const;
 
 private:
 
-	const std::vector<T>& m_data_ref;
+	const T* m_data;
 
 };
 
 
 /**
- * @brief Raster which stores internally the data.
- * @details Use it (via move semantics) if you don't need your data after the write operation.
+ * @brief Raster which references some external vector data.
+ * @details Use it if for temporary rasters.
  */
 template<typename T, std::size_t n=2>
-class DataRaster : public Raster<T, n> {
+class VecRefRaster : public Raster<T, n> {
 
 public:
 
-	virtual ~DataRaster() = default;
-	DataRaster(const DataRaster&) = default;
-	DataRaster(DataRaster&&) = default;
-	DataRaster& operator=(const DataRaster&) = default;
-	DataRaster& operator=(DataRaster&&) = default;
+	virtual ~VecRefRaster() = default;
+	VecRefRaster(const VecRefRaster&) = default;
+	VecRefRaster(VecRefRaster&&) = default;
+	VecRefRaster& operator=(const VecRefRaster&) = default;
+	VecRefRaster& operator=(VecRefRaster&&) = default;
 
 	/**
-	 * @brief Create a DataRaster with given shape and values.
+	 * @brief Create a Raster with given shape and values.
 	 */
-	DataRaster(pos_type<n> shape, std::vector<T> data);
+	VecRefRaster(pos_type<n> shape, const std::vector<T>& data);
+
+	virtual const T* data() const;
 
 	/**
-	 * @brief Create a DataRaster with given shape and empty data.
+	 * @brief Const reference to the vector.
 	 */
-	DataRaster(pos_type<n> shape);
-
-	/**
-	 * @brief Create an empty DataRaster.
-	 */
-	DataRaster() = default;
-
-	virtual const std::vector<T>& data() const;
-
-	/**
-	 * @brief Non-const reference to the data, useful to take ownership through move semantics.
-	 * @code
-	 * std::vector<T> v = std::move(raster.data());
-	 * @endcode
-	 */
-	std::vector<T>& data();
+	const std::vector<T>& vector() const;
 
 private:
 
-	std::vector<T> m_data;
+	const std::vector<T>& m_vec_ref;
+
+};
+
+
+/**
+ * @brief Raster which stores internally the data as a vector.
+ */
+template<typename T, std::size_t n=2>
+class VecRaster : public Raster<T, n> {
+
+public:
+
+	virtual ~VecRaster() = default;
+	VecRaster(const VecRaster&) = default;
+	VecRaster(VecRaster&&) = default;
+	VecRaster& operator=(const VecRaster&) = default;
+	VecRaster& operator=(VecRaster&&) = default;
+
+	/**
+	 * @brief Create a VecRaster with given shape and values.
+	 */
+	VecRaster(pos_type<n> shape, std::vector<T> data);
+
+	/**
+	 * @brief Create a VecRaster with given shape and empty data.
+	 */
+	VecRaster(pos_type<n> shape);
+
+	/**
+	 * @brief Create an empty VecRaster.
+	 */
+	VecRaster() = default;
+
+	virtual const T* data() const;
+
+	/**
+	 * @brief Access the raw data.
+	 */
+	T* data();
+
+	/**
+	 * @brief Const reference to the vector.
+	 */
+	const std::vector<T>& vector() const;
+
+	/**
+	 * @brief Non-const reference to the vector, useful to take ownership through move semantics.
+	 * @code
+	 * std::vector<T> v = std::move(raster.vector());
+	 * @endcode
+	 */
+	std::vector<T>& vector();
+
+private:
+
+	std::vector<T> m_vec;
 
 };
 
@@ -258,37 +300,64 @@ inline T& Raster<T, n>::operator[](const pos_type<n>& pos) {
 
 
 template<typename T, std::size_t n>
-SharedRaster<T, n>::SharedRaster(pos_type<n> shape, const std::vector<T>& data) :
-		Raster<T, n>(shape),
-		m_data_ref(data) {
-}
-
-template<typename T, std::size_t n>
-const std::vector<T>& SharedRaster<T, n>::data() const {
-	return m_data_ref;
-}
-
-
-template<typename T, std::size_t n>
-DataRaster<T, n>::DataRaster(pos_type<n> shape, std::vector<T> data) :
+PtrRaster<T, n>::PtrRaster(pos_type<n> shape, const T* data) :
 		Raster<T, n>(shape),
 		m_data(data) {
 }
 
 template<typename T, std::size_t n>
-DataRaster<T, n>::DataRaster(pos_type<n> shape) :
+const T* PtrRaster<T, n>::data() const {
+	return m_data;
+}
+
+
+template<typename T, std::size_t n>
+VecRefRaster<T, n>::VecRefRaster(pos_type<n> shape, const std::vector<T>& data) :
 		Raster<T, n>(shape),
-		m_data(this->size()) {
+		m_vec_ref(data) {
 }
 
 template<typename T, std::size_t n>
-const std::vector<T>& DataRaster<T, n>::data() const {
-	return m_data;
+const T* VecRefRaster<T, n>::data() const {
+	return m_vec_ref.data();
 }
 
 template<typename T, std::size_t n>
-std::vector<T>& DataRaster<T, n>::data() {
-	return m_data;
+const std::vector<T>& VecRefRaster<T, n>::vector() const {
+	return m_vec_ref;
+}
+
+
+template<typename T, std::size_t n>
+VecRaster<T, n>::VecRaster(pos_type<n> shape, std::vector<T> data) :
+		Raster<T, n>(shape),
+		m_vec(data) {
+}
+
+template<typename T, std::size_t n>
+VecRaster<T, n>::VecRaster(pos_type<n> shape) :
+		Raster<T, n>(shape),
+		m_vec(this->size()) {
+}
+
+template<typename T, std::size_t n>
+const T* VecRaster<T, n>::data() const {
+	return m_vec.data();
+}
+
+template<typename T, std::size_t n>
+T* VecRaster<T, n>::data() {
+	return const_cast<T*>(const_cast<const VecRaster*>(this)->data());
+}
+
+template<typename T, std::size_t n>
+const std::vector<T>& VecRaster<T, n>::vector() const {
+	return m_vec;
+}
+
+template<typename T, std::size_t n>
+std::vector<T>& VecRaster<T, n>::vector() {
+	return m_vec;
 }
 
 }

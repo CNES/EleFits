@@ -40,10 +40,10 @@ using boost::program_options::value;
 
 static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
-DataRaster<float, 3> create_raster() {
+VecRaster<float, 3> create_raster() {
   //! [Create and fill a raster]
   int width = 16, height = 9, depth = 3;
-  DataRaster<float, 3> raster({width, height, depth});
+  VecRaster<float, 3> raster({width, height, depth});
   for(int z=0; z<depth; ++z)
     for(int y=0; y<height; ++y)
       for(int x=0; x<width; ++x)
@@ -53,8 +53,8 @@ DataRaster<float, 3> create_raster() {
 }
 
 struct TutoTable {
-  DataColumn<std::string> name_col;
-  DataColumn<double> speed_col;
+  VecColumn<std::string> name_col;
+  VecColumn<double> speed_col;
 };
 
 TutoTable create_columns() {
@@ -62,8 +62,8 @@ TutoTable create_columns() {
   std::vector<std::string> name_data { "snail", "Antoine", "light", "Millennium Falcon" };
   std::vector<double> speed_data { 1.3e-2, 1.4, 3.0e8, 4.5e8 };
   TutoTable table {
-      DataColumn<std::string>({"NAME", "", 42}, std::move(name_data)),
-      DataColumn<double>({"SPEED", "m/s", 1}, std::move(speed_data))
+      VecColumn<std::string>({"NAME", "", 42}, std::move(name_data)),
+      VecColumn<double>({"SPEED", "m/s", 1}, std::move(speed_data))
   };
   //! [Create and fill a column]
   return table;

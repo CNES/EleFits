@@ -29,7 +29,7 @@ namespace FitsIO {
 namespace Test {
 
 SmallRaster::SmallRaster(long width, long height) :
-		DataRaster<float>({width, height}),
+		VecRaster<float>({width, height}),
 		width(width), height(height) {
 	for(int x=0; x<shape[0]; ++x)
 		for(int y=0; y<shape[1]; ++y)

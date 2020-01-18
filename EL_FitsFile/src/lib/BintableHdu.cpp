@@ -30,7 +30,7 @@ BintableHdu::BintableHdu(fitsfile* fptr, std::size_t index) :
         RecordHdu(fptr, index) {}
 
 #define COMPILE_READ_COLUMN(T) \
-        template DataColumn<T> BintableHdu::read_column(std::string) const;
+        template VecColumn<T> BintableHdu::read_column(std::string) const;
 COMPILE_READ_COLUMN(char)
 COMPILE_READ_COLUMN(short)
 COMPILE_READ_COLUMN(int)

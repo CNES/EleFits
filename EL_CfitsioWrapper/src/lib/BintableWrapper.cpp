@@ -38,7 +38,7 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
 	return index;
 }
 
-FitsIO::DataColumn<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
 	size_t index = column_index(fptr, name);
 	long rows;
 	int status = 0;
@@ -50,7 +50,7 @@ FitsIO::DataColumn<std::string> internal::ColumnDispatcher<std::string>::read(fi
 	std::vector<char*> data(rows);
 	for(long i=0; i < rows; ++i)
 		data[i] = (char*) malloc(repeat);
-	FitsIO::DataColumn<std::string> column({name, "TODO", repeat}, std::vector<std::string>(rows)); //TODO unit
+	FitsIO::VecColumn<std::string> column({name, "TODO", repeat}, std::vector<std::string>(rows)); //TODO unit
 	fits_read_col(
 		fptr,
 		TypeCode<std::string>::for_bintable(), // datatype

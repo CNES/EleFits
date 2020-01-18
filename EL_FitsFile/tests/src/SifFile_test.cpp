@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( simple_image_test ) {
   f.close();
   f.open(filename, SifFile::Permission::READ);
   const auto output = f.hdu().read_raster<float>();
-  BOOST_CHECK_EQUAL_COLLECTIONS(input.data().begin(), input.data().end(), output.data().begin(), output.data().end());
+  BOOST_CHECK_EQUAL_COLLECTIONS(input.vector().begin(), input.vector().end(), output.vector().begin(), output.vector().end());
   BOOST_CHECK(input.approx(output));
 }
 
