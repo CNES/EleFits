@@ -150,7 +150,9 @@ template<typename T>
 FitsIO::VecColumn<std::vector<T>> ColumnDispatcher<std::vector<T>>::read(fitsfile* fptr, std::string name) {
   const auto ptr_col = ColumnDispatcher<T*>::read(fptr, name);
   const auto rows = ptr_col.rows();
-  FitsIO::VecColumn<std::vector<T>> column({ptr_col.info.name, "TODO", ptr_col.info.repeat}, std::vector<std::vector<T>>(rows)); //TODO unit
+  FitsIO::VecColumn<std::vector<T>> column(
+      {ptr_col.info.name, ptr_col.info.unit, ptr_col.info.repeat},
+      std::vector<std::vector<T>>(rows));
   for(std::size_t i=0; i<rows; ++i) {
     T* ptr_i = ptr_col.vector()[i];
     column.vector()[i].assign(ptr_i, ptr_i + ptr_col.info.repeat);
