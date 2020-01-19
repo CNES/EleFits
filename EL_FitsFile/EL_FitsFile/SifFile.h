@@ -37,17 +37,17 @@ class SifFile : public FitsFile {
 
 public:
 
-	using FitsFile::Permission;
+  using FitsFile::Permission;
 
-	SifFile(std::string filename, Permission permission);
+  SifFile(std::string filename, Permission permission);
 
-	virtual ~SifFile() = default;
+  virtual ~SifFile() = default;
 
-	const ImageHdu& hdu() const;
+  const ImageHdu& hdu() const;
 
 private:
 
-	ImageHdu m_hdu;
+  ImageHdu m_hdu;
 
 };
 

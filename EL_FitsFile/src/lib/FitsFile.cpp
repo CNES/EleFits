@@ -29,45 +29,45 @@ namespace Euclid {
 namespace FitsIO {
 
 FitsFile::FitsFile(std::string filename, Permission permission) :
-		m_permission(permission) {
-	open(filename, permission);
+    m_permission(permission) {
+  open(filename, permission);
 }
 
 FitsFile::~FitsFile() {
-	close();
+  close();
 }
 
 void FitsFile::open(std::string filename, Permission permission) {
-	switch (permission) {
-	case Permission::READ:
-		m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_ONLY);
-		break;
-	case Permission::EDIT:
-		m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_WRITE);
-		break;
-	case Permission::CREATE:
-		m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
-		break;
-	case Permission::OVERWRITE:
-		m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
-		break;
-	case Permission::TEMPORARY:
-		m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
-	}
+  switch (permission) {
+  case Permission::READ:
+    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_ONLY);
+    break;
+  case Permission::EDIT:
+    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_WRITE);
+    break;
+  case Permission::CREATE:
+    m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
+    break;
+  case Permission::OVERWRITE:
+    m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
+    break;
+  case Permission::TEMPORARY:
+    m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
+  }
 }
 
 void FitsFile::close() {
-	switch (m_permission) {
-	case Permission::TEMPORARY:
-		Cfitsio::File::close_and_delete(m_fptr);
-		break;
-	default:
-		Cfitsio::File::close(m_fptr);
-	}
+  switch (m_permission) {
+  case Permission::TEMPORARY:
+    Cfitsio::File::close_and_delete(m_fptr);
+    break;
+  default:
+    Cfitsio::File::close(m_fptr);
+  }
 }
 
 void FitsFile::close_and_delete() {
-	Cfitsio::File::close_and_delete(m_fptr);
+  Cfitsio::File::close_and_delete(m_fptr);
 }
 
 }

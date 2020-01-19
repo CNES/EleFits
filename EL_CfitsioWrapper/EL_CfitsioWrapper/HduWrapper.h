@@ -37,12 +37,13 @@ namespace Cfitsio {
 
 /**
  * @brief HDU-related functions.
- * 
+ *
+ * @details
  * An HDU can be of three Types (ASCII tables are not supported):
  * * METADATA (image HDU with empty data, e.g. Primary of MultiExtFile)
  * * IMAGE
  * * TABLE
- * 
+ *
  * Getter functions generally apply to the current HDU.
  * Functions to go to an HDU return false if target HDU is already current HDU.
  * Functions to create an HDU append it at the end of the file.
@@ -53,8 +54,8 @@ namespace Hdu {
  * @brief HDU type (ASCII tables not supported).
  */
 enum class Type {
-	IMAGE, ///< Image HDU
-	BINTABLE ///< Binary table HDU
+  IMAGE, ///< Image HDU
+  BINTABLE ///< Binary table HDU
 };
 
 /**
@@ -149,65 +150,65 @@ void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::C
 
 template<typename T, std::size_t n>
 void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape) {
-	may_throw_readonly_error(fptr);
-	int status = 0;
-	auto nonconst_shape = shape; //TODO const-correctness issue?
-	fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
-	may_throw_cfitsio_error(status);
-	update_name(fptr, name);
+  may_throw_readonly_error(fptr);
+  int status = 0;
+  auto nonconst_shape = shape; //TODO const-correctness issue?
+  fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
+  may_throw_cfitsio_error(status);
+  update_name(fptr, name);
 }
 
 template<typename T, std::size_t n>
 void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Raster<T, n>& raster) {
-	may_throw_readonly_error(fptr);
-	create_image_extension<T, n>(fptr, name, raster.shape);
-	Image::write_raster<T, n>(fptr, raster);
+  may_throw_readonly_error(fptr);
+  create_image_extension<T, n>(fptr, name, raster.shape);
+  Image::write_raster<T, n>(fptr, raster);
 }
 
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::ColumnInfo<Ts>&... header) {
-	constexpr std::size_t count = sizeof...(Ts);
-	c_str_array col_name { header.name ... };
-	c_str_array col_format { TypeCode<Ts>::bintable_format(header.repeat) ... };
-	c_str_array col_unit { header.unit ... };
-	int status = 0;
-	fits_create_tbl(fptr, BINARY_TBL, 0, count,
-			col_name.data(), col_format.data(), col_unit.data(),
-			name.c_str(), &status);
-	may_throw_cfitsio_error(status);
+  constexpr std::size_t count = sizeof...(Ts);
+  c_str_array col_name { header.name ... };
+  c_str_array col_format { TypeCode<Ts>::bintable_format(header.repeat) ... };
+  c_str_array col_unit { header.unit ... };
+  int status = 0;
+  fits_create_tbl(fptr, BINARY_TBL, 0, count,
+      col_name.data(), col_format.data(), col_unit.data(),
+      name.c_str(), &status);
+  may_throw_cfitsio_error(status);
 }
 
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<Ts>&... table) {
-	constexpr std::size_t count = sizeof...(Ts);
-	c_str_array col_name { table.info.name ... };
-	c_str_array col_format { TypeCode<Ts>::bintable_format(table.info.repeat) ... };
-	c_str_array col_unit { table.info.unit ... };
-	int status = 0;
-	fits_create_tbl(fptr, BINARY_TBL, 0, count,
-			col_name.data(), col_format.data(), col_unit.data(),
-			name.c_str(), &status);
-	may_throw_cfitsio_error(status);
-	using mock_unpack = int[];
+  constexpr std::size_t count = sizeof...(Ts);
+  c_str_array col_name { table.info.name ... };
+  c_str_array col_format { TypeCode<Ts>::bintable_format(table.info.repeat) ... };
+  c_str_array col_unit { table.info.unit ... };
+  int status = 0;
+  fits_create_tbl(fptr, BINARY_TBL, 0, count,
+      col_name.data(), col_format.data(), col_unit.data(),
+      name.c_str(), &status);
+  may_throw_cfitsio_error(status);
+  using mock_unpack = int[];
     (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
 }
 
 /// @cond INTERNAL
 template<typename T>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<T>& column) {
-	constexpr std::size_t count = 1;
-	std::string col_name = column.info.name;
-	char* c_name = &col_name[0];
-	std::string col_format = TypeCode<T>::bintable_format(column.info.repeat);
-	char* c_format = &col_format[0];
-	std::string col_unit = column.info.unit;
-	char* c_unit = &col_unit[0];
-	int status = 0;
-	fits_create_tbl(fptr, BINARY_TBL, 0, count,
-			&c_name, &c_format, &c_unit,
-			name.c_str(), &status);
-	may_throw_cfitsio_error(status);
-	Bintable::write_column(fptr, column);
+  constexpr std::size_t count = 1;
+  std::string col_name = column.info.name;
+  char* c_name = &col_name[0];
+  std::string col_format = TypeCode<T>::bintable_format(column.info.repeat);
+  char* c_format = &col_format[0];
+  std::string col_unit = column.info.unit;
+  char* c_unit = &col_unit[0];
+  int status = 0;
+  fits_create_tbl(fptr, BINARY_TBL, 0, count,
+      &c_name, &c_format, &c_unit,
+      name.c_str(), &status);
+  may_throw_cfitsio_error(status);
+  Bintable::write_column(fptr, column);
 }
 /// @endcond
 

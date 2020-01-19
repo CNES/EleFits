@@ -38,21 +38,21 @@ class BintableHdu : public RecordHdu {
 
 public:
 
-	BintableHdu(fitsfile* fptr, std::size_t index);
+  BintableHdu(fitsfile* fptr, std::size_t index);
 
-	virtual ~BintableHdu() = default;
+  virtual ~BintableHdu() = default;
 
-	/**
-	 * @brief Read a Column with given name.
-	 */
-	template<typename T>
-	VecColumn<T> read_column(std::string name) const;
+  /**
+   * @brief Read a Column with given name.
+   */
+  template<typename T>
+  VecColumn<T> read_column(std::string name) const;
 
-	/**
-	 * @brief Write a Column.
-	 */
-	template<typename T>
-	void write_column(const Column<T>& column) const;
+  /**
+   * @brief Write a Column.
+   */
+  template<typename T>
+  void write_column(const Column<T>& column) const;
 
 };
 
@@ -64,14 +64,14 @@ public:
 
 template<typename T>
 VecColumn<T> BintableHdu::read_column(std::string name) const {
-	goto_this_hdu();
-	return Cfitsio::Bintable::read_column<T>(m_fptr, name);
+  goto_this_hdu();
+  return Cfitsio::Bintable::read_column<T>(m_fptr, name);
 }
 
 template<typename T>
 void BintableHdu::write_column(const Column<T>& column) const {
-	goto_this_hdu();
-	Cfitsio::Bintable::write_column(m_fptr, column);
+  goto_this_hdu();
+  Cfitsio::Bintable::write_column(m_fptr, column);
 }
 
 }

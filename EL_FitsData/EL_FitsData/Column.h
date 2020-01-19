@@ -39,21 +39,21 @@ namespace FitsIO {
 template<typename T>
 struct ColumnInfo {
 
-	/**
-	 * @brief Column name.
-	 */
-	std::string name;
+  /**
+   * @brief Column name.
+   */
+  std::string name;
 
-	/**
-	 * @brief Column unit.
-	 */
-	std::string unit;
+  /**
+   * @brief Column unit.
+   */
+  std::string unit;
 
-	/**
-	 * @brief Repeat count of the column, i.e. number of values per cell.
-	 * @warning CFitsIO uses long instead of size_t
-	 */
-	long repeat;
+  /**
+   * @brief Repeat count of the column, i.e. number of values per cell.
+   * @warning CFitsIO uses long instead of size_t
+   */
+  long repeat;
 
 };
 
@@ -66,29 +66,29 @@ class Column {
 
 public:
 
-	virtual ~Column() = default;
-	Column(ColumnInfo<T> info);
+  virtual ~Column() = default;
+  Column(ColumnInfo<T> info);
 
-	/**
-	 * @brief Number of rows.
-	 */
-	virtual std::size_t rows() const = 0;
+  /**
+   * @brief Number of rows.
+   */
+  virtual std::size_t rows() const = 0;
 
-	/**
-	 * @brief Access the data.
-	 */
-	virtual const T* data() const = 0;
+  /**
+   * @brief Access the data.
+   */
+  virtual const T* data() const = 0;
 
-	/**
-	 * @brief Number of elements in the column, i.e. number of rows * repeat count.
-	 * @warning For strings, CFitsIO requires nelements to be just the number of rows.
-	 */
-	std::size_t nelements() const; //TODO long?
+  /**
+   * @brief Number of elements in the column, i.e. number of rows * repeat count.
+   * @warning For strings, CFitsIO requires nelements to be just the number of rows.
+   */
+  std::size_t nelements() const; //TODO long?
 
-	/**
-	 * @brief Column metadata.
-	 */
-	ColumnInfo<T> info;
+  /**
+   * @brief Column metadata.
+   */
+  ColumnInfo<T> info;
 
 };
 
@@ -102,22 +102,22 @@ class PtrColumn : public Column<T> {
 
 public:
 
-	virtual ~PtrColumn() = default;
-	PtrColumn(const PtrColumn&) = default;
-	PtrColumn(PtrColumn&&) = default;
-	PtrColumn& operator=(const PtrColumn&) = default;
-	PtrColumn& operator=(PtrColumn&&) = default;
+  virtual ~PtrColumn() = default;
+  PtrColumn(const PtrColumn&) = default;
+  PtrColumn(PtrColumn&&) = default;
+  PtrColumn& operator=(const PtrColumn&) = default;
+  PtrColumn& operator=(PtrColumn&&) = default;
 
-	PtrColumn(ColumnInfo<T> info, std::size_t rows, const T* data);
+  PtrColumn(ColumnInfo<T> info, std::size_t rows, const T* data);
 
-	virtual std::size_t rows() const;
+  virtual std::size_t rows() const;
 
-	virtual const T* data() const;
+  virtual const T* data() const;
 
 private:
 
-	std::size_t m_rows;
-	const T* m_data;
+  std::size_t m_rows;
+  const T* m_data;
 
 };
 
@@ -131,23 +131,23 @@ class VecRefColumn : public Column<T> {
 
 public:
 
-	virtual ~VecRefColumn() = default;
-	VecRefColumn(const VecRefColumn&) = default;
-	VecRefColumn(VecRefColumn&&) = default;
-	VecRefColumn& operator=(const VecRefColumn&) = default;
-	VecRefColumn& operator=(VecRefColumn&&) = default;
+  virtual ~VecRefColumn() = default;
+  VecRefColumn(const VecRefColumn&) = default;
+  VecRefColumn(VecRefColumn&&) = default;
+  VecRefColumn& operator=(const VecRefColumn&) = default;
+  VecRefColumn& operator=(VecRefColumn&&) = default;
 
-	VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector);
+  VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector);
 
-	virtual std::size_t rows() const;
+  virtual std::size_t rows() const;
 
-	virtual const T* data() const;
+  virtual const T* data() const;
 
-	const std::vector<T>& vector() const;
+  const std::vector<T>& vector() const;
 
 private:
 
-	const std::vector<T>& m_vec_ref;
+  const std::vector<T>& m_vec_ref;
 
 };
 
@@ -161,33 +161,33 @@ class VecColumn : public Column<T> {
 
 public:
 
-	virtual ~VecColumn() = default;
-	VecColumn(const VecColumn&) = default;
-	VecColumn(VecColumn&&) = default;
-	VecColumn& operator=(const VecColumn&) = default;
-	VecColumn& operator=(VecColumn&&) = default;
+  virtual ~VecColumn() = default;
+  VecColumn(const VecColumn&) = default;
+  VecColumn(VecColumn&&) = default;
+  VecColumn& operator=(const VecColumn&) = default;
+  VecColumn& operator=(VecColumn&&) = default;
 
-	VecColumn(ColumnInfo<T> info, std::vector<T> vector);
+  VecColumn(ColumnInfo<T> info, std::vector<T> vector);
 
-	virtual std::size_t rows() const;
+  virtual std::size_t rows() const;
 
-	virtual const T* data() const;
+  virtual const T* data() const;
 
-	T* data();
+  T* data();
 
-	const std::vector<T>& vector() const;
+  const std::vector<T>& vector() const;
 
-	/**
-	 * @brief Non-const reference to the data, useful to take ownership through move semantics.
-	 * @code
-	 * std::vector<T> v = std::move(column.vector());
-	 * @endcode
-	 */
-	std::vector<T>& vector();
+  /**
+   * @brief Non-const reference to the data, useful to take ownership through move semantics.
+   * @code
+   * std::vector<T> v = std::move(column.vector());
+   * @endcode
+   */
+  std::vector<T>& vector();
 
 private:
 
-	std::vector<T> m_vec;
+  std::vector<T> m_vec;
 
 };
 
@@ -207,14 +207,13 @@ template<typename T>
 std::size_t column_nelements(const Column<T>& column);
 
 
-
 /**
  * In general, nelements is the number of values,
  * i.e. number of rows * repeat count.
  */
 template<typename T>
 inline std::size_t column_nelements(const Column<T>& column) {
-	return column.info.repeat * column.rows();
+  return column.info.repeat * column.rows();
 }
 
 /**
@@ -222,7 +221,7 @@ inline std::size_t column_nelements(const Column<T>& column) {
  */
 template<>
 inline std::size_t column_nelements<std::string>(const Column<std::string>& column) {
-	return column.rows();
+  return column.rows();
 }
 
 }
@@ -237,85 +236,85 @@ inline std::size_t column_nelements<std::string>(const Column<std::string>& colu
 
 template<typename T>
 Column<T>::Column(ColumnInfo<T> info) :
-		info(info) {
+    info(info) {
 }
 
 
 template<typename T>
 std::size_t Column<T>::nelements() const {
-	return internal::column_nelements(*this);
+  return internal::column_nelements(*this);
 }
 
 
 template<typename T>
 PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t rows, const T* data) :
-		Column<T>(info),
-		m_rows(rows),
-		m_data(data) {
+    Column<T>(info),
+    m_rows(rows),
+    m_data(data) {
 }
 
 template<typename T>
 std::size_t PtrColumn<T>::rows() const {
-	return m_rows;
+  return m_rows;
 }
 
 template<typename T>
 const T* PtrColumn<T>::data() const {
-	return m_data;
+  return m_data;
 }
 
 
 template<typename T>
 VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector) :
-		Column<T>(info),
-		m_vec_ref(vector) {
+    Column<T>(info),
+    m_vec_ref(vector) {
 }
 
 template<typename T>
 std::size_t VecRefColumn<T>::rows() const {
-	return m_vec_ref.size();
+  return m_vec_ref.size();
 }
 
 template<typename T>
 const T* VecRefColumn<T>::data() const {
-	return m_vec_ref.data();
+  return m_vec_ref.data();
 }
 
 template<typename T>
 const std::vector<T>& VecRefColumn<T>::vector() const {
-	return m_vec_ref;
+  return m_vec_ref;
 }
 
 
 template<typename T>
 VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> vector) :
-		Column<T>(info),
-		m_vec(vector) {
+    Column<T>(info),
+    m_vec(vector) {
 }
 
 template<typename T>
 std::size_t VecColumn<T>::rows() const {
-	return m_vec.size();
+  return m_vec.size();
 }
 
 template<typename T>
 const T* VecColumn<T>::data() const {
-	return m_vec.data();
+  return m_vec.data();
 }
 
 template<typename T>
 T* VecColumn<T>::data() {
-	return m_vec.data();
+  return m_vec.data();
 }
 
 template<typename T>
 const std::vector<T>& VecColumn<T>::vector() const {
-	return m_vec;
+  return m_vec;
 }
 
 template<typename T>
 std::vector<T>& VecColumn<T>::vector() {
-	return m_vec;
+  return m_vec;
 }
 
 

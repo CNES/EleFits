@@ -29,13 +29,13 @@ namespace FitsIO {
 namespace Test {
 
 MinimalFile::MinimalFile() :
-		tmp(),
-		filename(tmp.path().string()) {
-	fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
+    tmp(),
+    filename(tmp.path().string()) {
+  fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
 }
 
 MinimalFile::~MinimalFile() {
-	Cfitsio::File::close(fptr);
+  Cfitsio::File::close(fptr);
 }
 
 }

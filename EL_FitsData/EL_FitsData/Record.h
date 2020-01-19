@@ -36,20 +36,20 @@ namespace FitsIO {
 template<typename T>
 struct Record {
 
-	/**
-	 * @brief Assign a record.
-	 */
-	Record(std::string k="", T v=T(), std::string u="", std::string c="");
+  /**
+   * @brief Assign a record.
+   */
+  Record(std::string k="", T v=T(), std::string u="", std::string c="");
 
-	/**
-	 * @brief Slice the record as its value.
-	 */
-	operator T () const;
+  /**
+   * @brief Slice the record as its value.
+   */
+  operator T () const;
 
-	std::string keyword;
-	T value;
-	std::string unit; //TODO remove?
-	std::string comment;
+  std::string keyword;
+  T value;
+  std::string unit; //TODO remove?
+  std::string comment;
 
 };
 
@@ -61,14 +61,14 @@ struct Record {
 
 template<typename T>
 Record<T>::Record(std::string k, T v, std::string u, std::string c) :
-	keyword(k),
-	value(v),
-	unit(u),
-	comment(c) {}
+  keyword(k),
+  value(v),
+  unit(u),
+  comment(c) {}
 
 template<typename T>
 Record<T>::operator T() const {
-	return value;
+  return value;
 }
 
 }

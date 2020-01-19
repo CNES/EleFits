@@ -41,83 +41,83 @@ using namespace FitsIO;
 static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_GenerateAstroObj");
 
 void writeMeta(MefFile& f, int obj_index) {
-	std::string extname = std::to_string(obj_index) + "_META";
-	const auto& ext = f.init_image_ext<unsigned char, 1>(extname, {0});
-	ext.write_record("DITH_NUM", 0); //TODO
-	ext.write_record("SOURC_ID", obj_index);
-	ext.write_record("RA_OBJ", 2.F * obj_index);
-	ext.write_record("DEC_OBJ", 3.F * obj_index);
+  std::string extname = std::to_string(obj_index) + "_META";
+  const auto& ext = f.init_image_ext<unsigned char, 1>(extname, {0});
+  ext.write_record("DITH_NUM", 0); //TODO
+  ext.write_record("SOURC_ID", obj_index);
+  ext.write_record("RA_OBJ", 2.F * obj_index);
+  ext.write_record("DEC_OBJ", 3.F * obj_index);
 }
 
 void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
-	auto wmin_data = Test::generate_random_vector<float>(bins);
-	auto signal_data = Test::generate_random_vector<float>(bins);
-	auto quality_data = Test::generate_random_vector<char>(bins);
-	auto var_data = Test::generate_random_vector<float>(bins);
-	VecRefColumn<float> wmin_col({"WMIN", "nm", 1}, wmin_data);
-	VecRefColumn<float> signal_col({"SIGNAL", "erg", 1}, signal_data);
-	VecRefColumn<char> quality_col({"QUALITY", "", 1}, quality_data);
-	VecRefColumn<float> var_col({"VAR", "erg^2", 1}, var_data);
-	std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
-	const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col, quality_col, var_col);
-	ext.write_record("WMIN", 0.F);
-	ext.write_record("BINWIDTH", 1.F);
-	ext.write_record("BINCOUNT", bins);
-	ext.write_record("EXPTIME", 3600.F);
+  auto wmin_data = Test::generate_random_vector<float>(bins);
+  auto signal_data = Test::generate_random_vector<float>(bins);
+  auto quality_data = Test::generate_random_vector<char>(bins);
+  auto var_data = Test::generate_random_vector<float>(bins);
+  VecRefColumn<float> wmin_col({"WMIN", "nm", 1}, wmin_data);
+  VecRefColumn<float> signal_col({"SIGNAL", "erg", 1}, signal_data);
+  VecRefColumn<char> quality_col({"QUALITY", "", 1}, quality_data);
+  VecRefColumn<float> var_col({"VAR", "erg^2", 1}, var_data);
+  std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
+  const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col, quality_col, var_col);
+  ext.write_record("WMIN", 0.F);
+  ext.write_record("BINWIDTH", 1.F);
+  ext.write_record("BINCOUNT", bins);
+  ext.write_record("EXPTIME", 3600.F);
 }
 
 void writeCombinedCov(MefFile& f, int obj_index, int bins) {
-	Test::RandomRaster<float, 2> cov_raster({bins, bins});
-	std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
-	const auto& ext = f.assign_image_ext(extname, cov_raster);
-	ext.write_record("COV_SIDE", bins);
-	ext.write_record<std::string>("CODEC", "IDENTITY");
+  Test::RandomRaster<float, 2> cov_raster({bins, bins});
+  std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
+  const auto& ext = f.assign_image_ext(extname, cov_raster);
+  ext.write_record("COV_SIDE", bins);
+  ext.write_record<std::string>("CODEC", "IDENTITY");
 }
 
 void writeCombined(MefFile& f, int obj_index, int bins) {
-	writeCombinedSignal(f, obj_index, bins);
-	writeCombinedCov(f, obj_index, bins);
+  writeCombinedSignal(f, obj_index, bins);
+  writeCombinedCov(f, obj_index, bins);
 }
 
 void writeAstroObj(MefFile& f, int obj_index, int bins) {
-	writeMeta(f, obj_index);
-	writeCombined(f, obj_index, bins);
+  writeMeta(f, obj_index);
+  writeCombined(f, obj_index, bins);
 }
 
 class EL_FitsIO_GenerateAstroObj : public Elements::Program {
 
 public:
 
-	options_description defineSpecificProgramOptions() override {
+  options_description defineSpecificProgramOptions() override {
   
-		options_description options {};
-		options.add_options()
-				("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file")
-				("nobj", value<int>()->default_value(1), "AstroObj count")
-				("nbin", value<int>()->default_value(1000), "Wavelength bin count");
-		return options;
-	}
+    options_description options {};
+    options.add_options()
+        ("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file")
+        ("nobj", value<int>()->default_value(1), "AstroObj count")
+        ("nbin", value<int>()->default_value(1000), "Wavelength bin count");
+    return options;
+  }
 
-	Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-		Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_GenerateAstroObj");
+    Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_GenerateAstroObj");
 
-		std::string filename = args["output"].as<std::string>();
-		int nobj = args["nobj"].as<int>();
-		int nbin = args["nbin"].as<int>();
+    std::string filename = args["output"].as<std::string>();
+    int nobj = args["nobj"].as<int>();
+    int nbin = args["nbin"].as<int>();
 
-		logger.info() << "Creating Fits file: " << filename;
-		MefFile f(filename, MefFile::Permission::OVERWRITE);
-		logger.info() << "Writing metadata";
-		const auto& primary = f.access_primary<>();
-		primary.write_record("N_OBJ", nobj);
+    logger.info() << "Creating Fits file: " << filename;
+    MefFile f(filename, MefFile::Permission::OVERWRITE);
+    logger.info() << "Writing metadata";
+    const auto& primary = f.access_primary<>();
+    primary.write_record("N_OBJ", nobj);
 
-		for(int i=0; i<nobj; ++i) {
-			logger.info() << "Writing AstroObj " << i;
-			writeAstroObj(f, i, nbin);
-		}
-		return Elements::ExitCode::OK;
-	}
+    for(int i=0; i<nobj; ++i) {
+      logger.info() << "Writing AstroObj " << i;
+      writeAstroObj(f, i, nbin);
+    }
+    return Elements::ExitCode::OK;
+  }
 
 };
 

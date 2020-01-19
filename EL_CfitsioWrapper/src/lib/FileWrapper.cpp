@@ -30,46 +30,46 @@ namespace Cfitsio {
 namespace File {
 
 fitsfile* create_and_open(std::string filename, CreatePolicy policy) {
-	std::string cfitsio_name = filename;
-	if(policy == CreatePolicy::OVER_WRITE)
-		cfitsio_name.insert (0, 1, '!'); // CFitsIO convention
-	fitsfile *fptr;
-	int status = 0;
-	fits_create_file(&fptr, cfitsio_name.c_str(), &status);
-	may_throw_cfitsio_error(status);
-	Hdu::init_primary(fptr);
-	return fptr;
+  std::string cfitsio_name = filename;
+  if(policy == CreatePolicy::OVER_WRITE)
+    cfitsio_name.insert (0, 1, '!'); // CFitsIO convention
+  fitsfile *fptr;
+  int status = 0;
+  fits_create_file(&fptr, cfitsio_name.c_str(), &status);
+  may_throw_cfitsio_error(status);
+  Hdu::init_primary(fptr);
+  return fptr;
 }
 
 fitsfile* open(std::string filename, OpenPolicy policy) {
-	fitsfile *fptr;
-	int status = 0;
-	int permission = READONLY;
-	if(policy == OpenPolicy::READ_WRITE)
-		permission = READWRITE;
-	fits_open_file(&fptr, filename.c_str(), permission, &status);
-	may_throw_cfitsio_error(status);
-	Hdu::init_primary(fptr);
-	return fptr;
+  fitsfile *fptr;
+  int status = 0;
+  int permission = READONLY;
+  if(policy == OpenPolicy::READ_WRITE)
+    permission = READWRITE;
+  fits_open_file(&fptr, filename.c_str(), permission, &status);
+  may_throw_cfitsio_error(status);
+  Hdu::init_primary(fptr);
+  return fptr;
 }
 
 void close(fitsfile* fptr) {
-	int status = 0;
-	fits_close_file(fptr, &status);
-	if(status != BAD_FILEPTR)
-		may_throw_cfitsio_error(status);
+  int status = 0;
+  fits_close_file(fptr, &status);
+  if(status != BAD_FILEPTR)
+    may_throw_cfitsio_error(status);
 }
 
 void close_and_delete(fitsfile* fptr) {
-	may_throw_readonly_error(fptr);
-	int status = 0;
-	fits_delete_file(fptr, &status);
-	if(status != BAD_FILEPTR)
-		may_throw_cfitsio_error(status);
+  may_throw_readonly_error(fptr);
+  int status = 0;
+  fits_delete_file(fptr, &status);
+  if(status != BAD_FILEPTR)
+    may_throw_cfitsio_error(status);
 }
 
 bool is_writable(fitsfile* fptr) {
-	return fptr->Fptr->writemode == READWRITE; //TODO use dedicated CFitsIO function
+  return fptr->Fptr->writemode == READWRITE; //TODO use dedicated CFitsIO function
 }
 
 }

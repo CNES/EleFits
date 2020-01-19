@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE (RecordHdu_test)
 
 BOOST_AUTO_TEST_CASE( example_test ) {
 
-	
+  
 }
 
 //-----------------------------------------------------------------------------
