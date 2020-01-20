@@ -23,7 +23,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_CfitsioWrapper//CfitsioWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioWrapper.h"
 
 //-----------------------------------------------------------------------------
 
@@ -31,14 +31,19 @@ BOOST_AUTO_TEST_SUITE (CfitsioWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+/**
+ * This is just a smoke test to ckeck that we can import the whole Cfitsio namespace
+ * and get the necessary classes with a single import.
+ */
+BOOST_AUTO_TEST_CASE( smoke_test ) {
+  using namespace Euclid;
+  using namespace Cfitsio;
+  fitsfile* fptr;
+  using FitsIO::Record;
+  using FitsIO::Column;
+  using FitsIO::Raster;
 }
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-
