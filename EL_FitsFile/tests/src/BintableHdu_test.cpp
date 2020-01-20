@@ -23,7 +23,19 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsFile//BintableHdu.h"
+#include "ElementsKernel/Temporary.h"
+
+#include "EL_FitsFile/MefFile.h"
+#include "EL_FitsData/FitsDataFixture.h"
+
+#include "EL_FitsFile/BintableHdu.h"
+
+using namespace Euclid::FitsIO;
+
+template<typename T>
+void check_equal_vectors(const std::vector<T>& test, const std::vector<T>& expected) {
+  BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
+}
 
 //-----------------------------------------------------------------------------
 
@@ -31,10 +43,22 @@ BOOST_AUTO_TEST_SUITE (BintableHdu_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+template<typename T>
+void check_scalar() {
+  Test::RandomScalarColumn<T> input;
+  const std::string filename = Elements::TempFile().path().string();
+  MefFile file(filename, MefFile::Permission::TEMPORARY);
+  file.assign_bintable_ext("BINEXT", input);
+  const auto output = file.access_first<BintableHdu>("BINEXT").read_column<T>(input.info.name);
+  check_equal_vectors(output.vector(), input.vector());
+}
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+/**
+ * We test only one type here to check the flow from the top-level API to CFitsIO.
+ * Support for other types is tested in EL_CfitsioWrapper.
+ */
+BOOST_AUTO_TEST_CASE( float_test ) {
+  check_scalar<float>();
 }
 
 //-----------------------------------------------------------------------------

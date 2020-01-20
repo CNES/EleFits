@@ -61,7 +61,6 @@ void check_scalar() {
     else
       BOOST_FAIL(e.what());
   }
-  
 }
 
 #define TEST_SCALAR_ALIAS(type, name) \

@@ -59,7 +59,6 @@ void check_random_3d() {
     std::cerr << std::endl;
     BOOST_FAIL(e.what());
   }
-  
 }
 
 #define TEST_3D_ALIAS(type, name) \

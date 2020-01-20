@@ -14,8 +14,8 @@ Toward initial release (1.0)
 
 ## Missing features
 
-* Copy-less writing of columns
-* MEF file Primary is always empty (Primary initialization not handled correctly)
+* MEF file Primary is always empty
+* Boolean columns are not supported
 
 ## Known bugs
 
