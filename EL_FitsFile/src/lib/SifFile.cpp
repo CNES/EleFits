@@ -29,11 +29,13 @@ namespace Euclid {
 namespace FitsIO {
 
 SifFile::SifFile(std::string filename, SifFile::Permission permission) :
-        FitsFile(filename, permission),
-        m_hdu(m_fptr, 1) {}
+    FitsFile(filename, permission),
+    m_hdu(m_fptr, 1) {}
 
-const ImageHdu& SifFile::hdu() const {
-    return m_hdu;
+const RecordHdu& SifFile::header() const {
+  if(Cfitsio::Hdu::count(m_fptr) > 0)
+    throw std::runtime_error("Primary already initialized.");
+  return dynamic_cast<const RecordHdu&>(m_hdu);
 }
 
 }

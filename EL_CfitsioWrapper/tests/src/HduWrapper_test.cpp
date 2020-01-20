@@ -25,8 +25,8 @@
 
 #include "EL_FitsData/FitsDataFixture.h"
 
-#include "EL_CfitsioWrapper//HduWrapper.h"
-#include "EL_CfitsioWrapper//CfitsioFixture.h"
+#include "EL_CfitsioWrapper/HduWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -38,18 +38,14 @@ BOOST_AUTO_TEST_SUITE (HduWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE( minimal_file_test, FitsIO::Test::MinimalFile ) {
-
   BOOST_CHECK_EQUAL(Hdu::count(this->fptr), 1);
-  
 }
 
 BOOST_FIXTURE_TEST_CASE( write_read_image_test, FitsIO::Test::MinimalFile ) {
-
   FitsIO::Test::SmallRaster input;
   Hdu::create_image_extension(this->fptr, "IMGEXT", input);
   const auto output = Image::read_raster<float, 2>(fptr);
   BOOST_CHECK(input.approx(output));
-  
 }
 
 //-----------------------------------------------------------------------------

@@ -43,11 +43,13 @@ BOOST_AUTO_TEST_CASE( simple_image_test ) {
   SifFile f(filename, SifFile::Permission::OVERWRITE);//, SifFile::Permission::TEMPORARY);
   BOOST_CHECK(boost::filesystem::is_regular_file(filename));
   Test::SmallRaster input;
-  f.hdu().write_record("KEYWORD", 8);
-  f.hdu().write_raster(input);
+  f.write_raster<float>(input);
+  const int value = 8;
+  f.header().write_record("KEYWORD", value);
+  BOOST_CHECK_EQUAL(f.header().parse_record<int>("KEYWORD"), value);
   f.close();
   f.open(filename, SifFile::Permission::READ);
-  const auto output = f.hdu().read_raster<float>();
+  const auto output = f.read_raster<float>();
   BOOST_CHECK_EQUAL_COLLECTIONS(input.vector().begin(), input.vector().end(), output.vector().begin(), output.vector().end());
   BOOST_CHECK(input.approx(output));
 }

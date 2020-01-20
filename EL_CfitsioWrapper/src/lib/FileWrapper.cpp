@@ -49,7 +49,6 @@ fitsfile* open(std::string filename, OpenPolicy policy) {
     permission = READWRITE;
   fits_open_file(&fptr, filename.c_str(), permission, &status);
   may_throw_cfitsio_error(status);
-  Hdu::init_primary(fptr);
   return fptr;
 }
 
@@ -69,7 +68,10 @@ void close_and_delete(fitsfile* fptr) {
 }
 
 bool is_writable(fitsfile* fptr) {
-  return fptr->Fptr->writemode == READWRITE; //TODO use dedicated CFitsIO function
+  int status = 0;
+  int filemode;
+  fits_file_mode(fptr, &filemode, &status);
+  return filemode == READWRITE;
 }
 
 }

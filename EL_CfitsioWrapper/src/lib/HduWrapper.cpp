@@ -105,7 +105,7 @@ bool goto_primary(fitsfile* fptr) {
 bool init_primary(fitsfile* fptr) {
   if(count(fptr) > 0)
     return false;
-  create_image_extension(fptr, "", FitsIO::VecRaster<unsigned char, 1>());
+  create_metadata_extension(fptr, "");
   return true;
 }
 
@@ -117,13 +117,7 @@ bool update_name(fitsfile* fptr, std::string name) {
 }
 
 void create_metadata_extension(fitsfile* fptr, std::string name) {
-  may_throw_readonly_error(fptr);
-  const int default_type = BYTE_IMG;
-  long naxes = 0;
-  int status = 0;
-  fits_create_img(fptr, default_type, naxes, nullptr, &status);
-  may_throw_cfitsio_error(status);
-  update_name(fptr, name);
+  create_image_extension<unsigned char, 0>(fptr, name, FitsIO::pos_type<0>());
 }
 
 }
