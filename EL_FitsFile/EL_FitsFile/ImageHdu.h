@@ -38,7 +38,7 @@ class ImageHdu : public RecordHdu {
 
 public:
 
-  ImageHdu(fitsfile* fptr, std::size_t index);
+  ImageHdu(fitsfile*& fptr, std::size_t index);
 
   virtual ~ImageHdu() = default;
 

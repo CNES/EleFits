@@ -26,7 +26,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-ImageHdu::ImageHdu(fitsfile* fptr, std::size_t index) :
+ImageHdu::ImageHdu(fitsfile*& fptr, std::size_t index) :
         RecordHdu(fptr, index) {}
 
 #define COMPILE_READ_RASTER(T, n) \

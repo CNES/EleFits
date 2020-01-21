@@ -39,18 +39,18 @@ BOOST_AUTO_TEST_SUITE (SifFile_test)
 BOOST_AUTO_TEST_CASE( simple_image_test ) {
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
-  filename = "/tmp/test.fits";
+  // filename = "/tmp/test.fits";
   Test::SmallRaster input;
   SifFile f(filename, SifFile::Permission::OVERWRITE);
   BOOST_CHECK(boost::filesystem::is_regular_file(filename));
   const std::string keyword = "KEYWORD";
   const int value = 8;
   f.header().write_record(keyword, value);
-  const auto record = f.header().parse_record<int>(keyword);
-  BOOST_CHECK_EQUAL(record, value);
   f.write_raster(input);
   f.close();
   f.open(filename, SifFile::Permission::READ);
+  const auto record = f.header().parse_record<int>(keyword);
+  BOOST_CHECK_EQUAL(record, value);
   const auto output = f.read_raster<float>();
   BOOST_CHECK_EQUAL_COLLECTIONS(input.vector().begin(), input.vector().end(), output.vector().begin(), output.vector().end());
   BOOST_CHECK(input.approx(output));

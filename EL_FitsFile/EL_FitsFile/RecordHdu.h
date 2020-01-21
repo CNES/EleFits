@@ -36,7 +36,7 @@ class RecordHdu {
 
 public:
 
-  RecordHdu(fitsfile* file, std::size_t index);
+  RecordHdu(fitsfile*& file, std::size_t index);
 
   virtual ~RecordHdu() = default;
 
@@ -112,7 +112,11 @@ protected:
 
   void goto_this_hdu() const;
 
-  fitsfile* m_fptr;
+  /**
+   * This is a reference to a pointer because we want the pointer to be valid
+   * even if file is closed and reopened.
+   */
+  fitsfile*& m_fptr;
 
   std::size_t m_index;
 

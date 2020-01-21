@@ -38,7 +38,7 @@ class BintableHdu : public RecordHdu {
 
 public:
 
-  BintableHdu(fitsfile* fptr, std::size_t index);
+  BintableHdu(fitsfile*& fptr, std::size_t index);
 
   virtual ~BintableHdu() = default;
 
