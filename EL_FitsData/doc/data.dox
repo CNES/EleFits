@@ -1,0 +1,87 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\page data-classes Data classes
+
+
+\section data-record Records
+
+
+Record is a very basic template structure which holds a keyword, value, unit and comment.
+Naturally, the template parameter is the type of the value.
+
+Here's a record of type \c double with keyword \c "LIGHT", value \c 3.0e8, unit \c "m/s" and comment \c "speed of light":
+\code
+Record<double> light_sp { "LIGHT", 3.0e8, "m/s", "speed of light" };
+\endcode
+
+It can be cast to \c double (records of type \c T can be cast to \c T):
+\code
+double falcon_sp = 1.5 * light_sp;
+\endcode
+
+
+\section data-column Columns
+
+
+Columns are made of two components:
+
+- metadata as a ColumnInfo instance,
+- data as a whatever-you-want!
+
+ColumnInfo is even simpler than Record:
+there is still a template parameter, for the value type, a name and a unit.
+A repeat member stores the width of the column:
+it is 1 for scalar columns and >1 for vector columns.
+
+In order to accomodate whatever-you-want kind of data,
+Column is an abstract class whose only assumption is that elements are contiguous in memory,
+so that you are able to provide a raw pointer to the first element of the column.
+
+The library comes with several ready-to-use implementations:
+
+- PtrColumn is the lightest structure: it just knows a pointer to the first element of the column;
+- VecRefColumn works with a std::vector and is similar to PtrColumn in that it does not own the data: just a reference to it;
+- Finally, VecColumn owns the data as a std::vector.
+
+To write a column, any Column implementation works: you can even provide your own, e.g. EigenColumn.
+Columns are always read as VecColumn instances.
+If you want to give or steal the data to or from a VecColumn, you can eploit move semantics, as shown in the \ref tuto "":
+
+\snippet EL_FitsIO_Tutorial.cpp Create and fill a column
+
+
+\section data-raster Rasters
+
+
+Rasters are the in-memory representation of the _n_-D images of Fits.
+A raster has a shape (of type pos_type, which is just an alias of std::array), a type as its template parameter, and some data.
+
+The design approach behind Raster is exactly the same a for Column, with several implementations proposed:
+PtrRaster, VecRefRaster and VecRaster.
+
+In any case, Raster ensures constant-time access to an element, whatever the dimension of the data, through subscipt operators.
+Again, refer to the \ref tuto for a concrete example usage:
+
+\snippet EL_FitsIO_Tutorial.cpp Create and fill a raster
+
+
+\section data-wrapup Wrap-up
+
+We have just learnt the basics of the library data classes.
+They are as-light-as-possible classes which store or reference data.
+They are the inputs and outputs of the library read/write services described in \ref handlers.
+
+To see the library in action, follow the \ref tuto.
+
+To better understand the class design and relationships, you might want to see a UML diagram.
+Here it is:
+
+\image html doc/diagrams/out/FitsData.png
+
+*/
+
+}
+}

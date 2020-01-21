@@ -76,10 +76,7 @@ Records, image rasters and bintable columns are implemented as light structures 
 - Raster represents a _n_-dimensional array with constant-time pixel access.
 
 Columns and rasters each have variants, depending on who owns the data and on the data container type.
-Below is the corresponding simplified class diagram.
-Check out the API documentation for more details.
-
-\image html doc/diagrams/out/FitsData.png
+Check out the \ref data-classes documentation for more details, or the API documentation for even more details.
 
 Service classes are organized according to the Fits format:
 
@@ -88,11 +85,8 @@ Service classes are organized according to the Fits format:
 - BintableHdu and ImageHdy, respectively the bintable and image HDU reader-writers, additionally provide access to the raster and columns.
 
 To make it simple, the end-user API consists of the Euclid::FitsIO namespace.
-Here is the (simplified) class diagram of it:
 
-\image html doc/diagrams/out/FitsFile.png
-
-To get a gentle introduction to the library, head to this page: \ref handlers.
+For a gentle introduction to the library, head to this page: \ref handlers.
 
 Last but not least, we've implemented and documented a \ref tuto.
 

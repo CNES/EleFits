@@ -9,7 +9,8 @@ namespace FitsIO {
 
 File handlers (XxxFile classes) only store index and type of HDUs which have already been accessed.
 HDU handlers (XxxHdu classes) only provide read/write services.
-Records, images and tables are never stored by those classes.
+Records, images and tables are never stored by those classes
+(to know where they are, read the \ref data-classes page).
 When you access an HDU, you just access a set of services to read and write items in this HDU.
 
 FitsFile is mostly en empty shell for opening and closing operations.
@@ -45,7 +46,7 @@ Shortcuts are provided to read and write the image data, and to access the heade
 Of course, it is possible to effectively handle a SIF file with a MefFile object,
 but this is more verbose, and does not enforce or guarantee that the file is a SIF.
 
-\section handlers-wrapup Wrap up
+\section handlers-wrapup Wrap-up
 
 The organization of the library classes matches that of a Fits file:
 
