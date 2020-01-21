@@ -43,6 +43,12 @@ public:
   virtual ~ImageHdu() = default;
 
   /**
+   * @brief Redefine the image size.
+   */
+  template<typename T, std::size_t n=2>
+  void resize(const pos_type<n>& shape) const;
+
+  /**
    * @brief Read the Raster.
    */
   template<typename T, std::size_t n=2>
@@ -61,6 +67,11 @@ public:
 // IMPLEMENTATION //
 ///////////////////
 
+
+template<typename T, std::size_t n>
+void ImageHdu::resize(const pos_type<n>& shape) const {
+  goto_this_hdu();
+}
 
 template<typename T, std::size_t n>
 VecRaster<T, n> ImageHdu::read_raster() const {

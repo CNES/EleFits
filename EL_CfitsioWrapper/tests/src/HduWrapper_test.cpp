@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_SUITE (HduWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE( minimal_file_test, FitsIO::Test::MinimalFile ) {
-  BOOST_CHECK_EQUAL(Hdu::count(this->fptr), 1);
+  Hdu::goto_primary(this->fptr);
 }
 
 BOOST_FIXTURE_TEST_CASE( write_read_image_test, FitsIO::Test::MinimalFile ) {

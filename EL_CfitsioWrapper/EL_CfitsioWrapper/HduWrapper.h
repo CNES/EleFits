@@ -142,6 +142,11 @@ void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::C
 template<typename... Ts>
 void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::Column<Ts>&... table);
 
+/**
+ * @brief Delete the HDU at given index.
+ */
+void delete_hdu(fitsfile *fptr, std::size_t index);
+
 
 /////////////////////
 // IMPLEMENTATION //
@@ -154,7 +159,7 @@ void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_
   int status = 0;
   auto nonconst_shape = shape; //TODO const-correctness issue?
   fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot create image extension");
   update_name(fptr, name);
 }
 
@@ -175,7 +180,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
   fits_create_tbl(fptr, BINARY_TBL, 0, count,
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
 }
 
 template<typename... Ts>
@@ -188,9 +193,9 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
   fits_create_tbl(fptr, BINARY_TBL, 0, count,
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
   using mock_unpack = int[];
-    (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
+  (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
 }
 
 /// @cond INTERNAL
@@ -207,7 +212,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
   fits_create_tbl(fptr, BINARY_TBL, 0, count,
       &c_name, &c_format, &c_unit,
       name.c_str(), &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
   Bintable::write_column(fptr, column);
 }
 /// @endcond

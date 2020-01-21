@@ -33,7 +33,13 @@ std::size_t count(fitsfile* fptr) {
   int count;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
+  const auto index = current_index(fptr);
   may_throw_cfitsio_error(status);
+  // try { //TODO the empty HDUs are not counted, e.g. metadata HDUs
+  //   goto_index(fptr, count + 1);
+  //   goto_index(fptr, index);
+  //   return count + 1;
+  // } catch(const std::exception&) {}
   return count;
 }
 
@@ -71,7 +77,7 @@ bool goto_index(fitsfile* fptr, std::size_t index) {
   int type = 0;
   int status = 0;
   fits_movabs_hdu(fptr, index, &type, &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot access HDU " + std::to_string(index));
   return true;
 }
 
@@ -118,6 +124,13 @@ bool update_name(fitsfile* fptr, std::string name) {
 
 void create_metadata_extension(fitsfile* fptr, std::string name) {
   create_image_extension<unsigned char, 0>(fptr, name, FitsIO::pos_type<0>());
+}
+
+void delete_hdu(fitsfile *fptr, std::size_t index) {
+  goto_index(fptr, index);
+  int status = 0;
+  fits_delete_hdu(fptr, nullptr, &status);
+  may_throw_cfitsio_error(status, "Cannot delete HDU " + std::to_string(index));
 }
 
 }

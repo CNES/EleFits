@@ -32,12 +32,6 @@ MefFile::MefFile(std::string filename, Permission permission) :
     FitsFile(filename, permission),
     m_hdus(1) {}
 
-RecordHdu& MefFile::init_record_primary() {
-  if(Cfitsio::Hdu::count(m_fptr) > 0)
-    throw std::runtime_error("Primary HDU already initialized.");
-  return init_record_ext("");
-}
-
 RecordHdu& MefFile::init_record_ext(std::string name) {
   Cfitsio::Hdu::create_metadata_extension(m_fptr, name);
   const auto size = m_hdus.size();

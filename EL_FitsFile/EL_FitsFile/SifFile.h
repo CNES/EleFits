@@ -43,9 +43,6 @@ public:
 
   SifFile(std::string filename, Permission permission);
 
-  template<typename T, std::size_t n>
-  SifFile(std::string filename, Permission permission, const Raster<T, n>& raster);
-
 	/**
 	 * @brief Access the header.
 	 */
@@ -76,22 +73,14 @@ private:
 
 
 template<typename T, std::size_t n>
-SifFile::SifFile(std::string filename, Permission permission, const Raster<T, n>& raster) :
-    FitsFile(filename, permission),
-    m_hdu("", 1) {
-  write_raster(raster);
-}
-
-template<typename T, std::size_t n>
 VecRaster<T, n> SifFile::read_raster() const {
 	return Cfitsio::Image::read_raster<T, n>(m_fptr);
 }
 
 template<typename T, std::size_t n>
 void SifFile::write_raster(const Raster<T, n>& raster) const {
-  if(Cfitsio::Hdu::count(m_fptr) == 0)
-    throw std::runtime_error("Primary not initialized.");
   Cfitsio::Hdu::goto_primary(m_fptr); //TODO useful?
+  Cfitsio::Image::resize<T, n>(m_fptr, raster.shape);
   Cfitsio::Image::write_raster(m_fptr, raster);
 }
 

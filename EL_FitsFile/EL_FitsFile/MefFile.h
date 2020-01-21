@@ -80,24 +80,6 @@ public:
   T& append_ext(T extension);
 
   /**
-   * @brief Initialize the Primary HDU as a RecordHdu.
-   */
-  RecordHdu& init_record_primary();
-
-  /**
-   * @brief Initialize the Primary HDU as an ImageHdu.
-   */
-  template<typename T, std::size_t n>
-  ImageHdu& init_image_primary(const pos_type<n>& shape);
-
-  /**
-   * @brief Assign the Primary HDU with data.
-   * @see init_image_ext
-   */
-  template<typename T, std::size_t n>
-  ImageHdu& assign_image_primary(const Raster<T, n>& raster);
-
-  /**
    * @brief Append a new RecordHdu (as empty ImageHdu) with given name.
    */
   RecordHdu& init_record_ext(std::string name);
@@ -177,25 +159,11 @@ T& MefFile::access_primary() {
 }
 
 template<typename T, std::size_t n>
-ImageHdu& MefFile::init_image_primary(const pos_type<n>& shape) {
-  if(Cfitsio::Hdu::count(m_fptr) > 0)
-    throw std::runtime_error("Primary HDU already initialized.");
-  return init_image_ext("", shape);
-}
-
-template<typename T, std::size_t n>
 ImageHdu& MefFile::init_image_ext(std::string name, const pos_type<n>& shape) {
   Cfitsio::Hdu::create_image_extension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
   return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
-}
-
-template<typename T, std::size_t n>
-ImageHdu& MefFile::assign_image_primary(const Raster<T, n>& raster) {
-  if(Cfitsio::Hdu::count(m_fptr) > 0)
-    throw std::runtime_error("Primary HDU already initialized.");
-  return assign_image_ext("", raster);
 }
 
 template<typename T, std::size_t n>

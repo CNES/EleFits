@@ -42,6 +42,9 @@ namespace Cfitsio {
  */
 namespace Image {
 
+template<typename T, std::size_t n=2>
+void resize(const FitsIO::pos_type<n>& shape);
+
 /**
  * @brief Read a Raster in current Image HDU.
  */
@@ -61,6 +64,13 @@ void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 
 
 template<typename T, std::size_t n>
+void resize(fitsfile* fptr, const FitsIO::pos_type<n>& shape) {
+  int status = 0;
+  auto nonconst_shape = shape;
+  fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconst_shape.data(), &status);
+}
+
+template<typename T, std::size_t n>
 FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr) {
   FitsIO::VecRaster<T, n> raster;
   int status = 0;
@@ -70,7 +80,7 @@ FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr) {
   raster.vector().resize(size); //TODO instantiate here directly with right shape
   fits_read_img(fptr, TypeCode<T>::for_image(), 1, size, nullptr, raster.data(), nullptr, &status);
   // Number 1 is a 1-base offset (so we read the whole raster here)
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot read raster");
   return raster;
 }
 
@@ -82,7 +92,7 @@ void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   const auto end = begin + raster.size();
   std::vector<T> nonconst_data(begin, end); //TODO const-correctness issue?
   fits_write_img(fptr, TypeCode<T>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot write raster");
 }
 
 }

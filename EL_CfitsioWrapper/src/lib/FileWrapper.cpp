@@ -36,7 +36,7 @@ fitsfile* create_and_open(std::string filename, CreatePolicy policy) {
   fitsfile *fptr;
   int status = 0;
   fits_create_file(&fptr, cfitsio_name.c_str(), &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot create file " + filename);
   Hdu::init_primary(fptr);
   return fptr;
 }
@@ -48,7 +48,7 @@ fitsfile* open(std::string filename, OpenPolicy policy) {
   if(policy == OpenPolicy::READ_WRITE)
     permission = READWRITE;
   fits_open_file(&fptr, filename.c_str(), permission, &status);
-  may_throw_cfitsio_error(status);
+  may_throw_cfitsio_error(status, "Cannot open file " + filename);
   return fptr;
 }
 
@@ -56,7 +56,7 @@ void close(fitsfile* fptr) {
   int status = 0;
   fits_close_file(fptr, &status);
   if(status != BAD_FILEPTR)
-    may_throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status, "Cannot close file");
 }
 
 void close_and_delete(fitsfile* fptr) {
@@ -64,7 +64,7 @@ void close_and_delete(fitsfile* fptr) {
   int status = 0;
   fits_delete_file(fptr, &status);
   if(status != BAD_FILEPTR)
-    may_throw_cfitsio_error(status);
+    may_throw_cfitsio_error(status, "Cannot close and delete file");
 }
 
 bool is_writable(fitsfile* fptr) {
