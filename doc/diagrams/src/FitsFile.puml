@@ -5,13 +5,13 @@ package EL_FitsFile {
 RecordHdu <|- ImageHdu
 BintableHdu -|> RecordHdu
 
-BintableHdu *-- MefFile
-RecordHdu *-- MefFile
-ImageHdu *-- MefFile
+BintableHdu --* MefFile
+RecordHdu --* MefFile
+ImageHdu --* MefFile
 
 MefFile --|> FitsFile
 SifFile --|> FitsFile
-ImageHdu <|-- SifFile
+ImageHdu --* SifFile
 
 }
 
@@ -25,13 +25,15 @@ Record <.. RecordHdu
 
 class FitsFile {
 + FitsFile (filename, permission)
++ open (filename, permission)
++ close ()
 }
 
 class MefFile {
 + MefFile (filename, permission)
-+ access<HduT> (index)
-+ access_first<HduT> (name)
-+ access_primary<HduT> ()
++ access<THdu> (index)
++ access_first<THdu> (name)
++ access_primary<THdu> ()
 + init_image_ext (name, shape)
 + assign_image_ext (name, raster)
 + init_bintable_ext (name, header...)
@@ -40,16 +42,26 @@ class MefFile {
 
 class SifFile {
 + SifFile (filename, permission)
++ header ()
++ read_raster<T, n> ()
++ write_raster<T, n> (raster)
 }
 
 class RecordHdu {
++ index ()
++ name ()
++ rename (name)
 + parse_record<T> (keyword)
 + parse_records<T...> (keywords...)
 + write_record<T> (record)
 + write_records<T...> (records...)
++ update_record<T> (record)
++ update_records<T...> (records...)
++ delete_record (keyword)
 }
 
 class ImageHdu {
++ resize<T, n> (shape)
 + read_raster<T, n> ()
 + write_raster<T, n> (raster)
 }

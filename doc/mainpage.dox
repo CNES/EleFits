@@ -92,7 +92,9 @@ Here is the (simplified) class diagram of it:
 
 \image html doc/diagrams/out/FitsFile.png
 
-**Last but not least, we've implemented and documented a \ref tuto.**
+To get a gentle introduction to the library, head to this page: \ref handlers.
+
+Last but not least, we've implemented and documented a \ref tuto.
 
 To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validation modules (see below).
 
