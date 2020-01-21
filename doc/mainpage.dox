@@ -66,8 +66,8 @@ For advanced users, a description of the module contents is provided below.
 
 The end-user API is made of two kinds of classes:
 
-- **data classes** store raw data;
-- **service classes** allow reading and writing the data.
+- \ref data-classes "data classes" store raw data;
+- \ref handlers "service classes" allow reading and writing the data.
 
 Records, image rasters and bintable columns are implemented as light structures to abstract from CFitsIO raw pointers:
 

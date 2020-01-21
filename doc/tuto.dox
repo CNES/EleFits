@@ -198,7 +198,11 @@ or all together:
 \section tuto-conclusion Wrap up
 
 
-A picture is worth a thousand words; here's the class diagram of what we've just learned (i.e. the Euclid::FitsIO namespace contents):
+A picture is worth a thousand words; below is the class diagram of what we've just learned (i.e. the Euclid::FitsIO namespace contents).
+
+To go further or out of curiosity, head to the other [documentation pages](pages.html).
+To practice or test your own code, you can also browse the Test namespace,
+which provides ready-to-use functions and classes, such as random columns and rasters.
 
 \image html doc/diagrams/out/FitsData.png
 
