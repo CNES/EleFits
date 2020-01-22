@@ -136,6 +136,7 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword) {
     fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
     FitsIO::Record<T> record(keyword, value, std::string(unit), std::string(comment));
     free(comment);
+    free(unit);
     std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
     may_throw_cfitsio_error(status, context);
     return record;
