@@ -1,0 +1,87 @@
+/**
+
+\page cfitsio-cov CFitsIO routines covered by the library
+
+\section cfitsio-basic Basic CFITSIO Interface Routines 
+
+- **CFITSIO Error Status Routines**
+- FITS File Access Routines
+  - **Open file**
+  - Open table/image
+  - **Create file**
+  - **Close file**
+  - **Delete file**
+  - **File name**
+  - **File I/O mode**
+  - URL type
+- HDU Access Routines
+  - **Move to the HDU with given index**
+  - **Move to the next HDU**
+  - **Move to the first HDU with given name**
+  - HDU count (flawed in CFitsIO)
+  - **HDU index**
+  - HDU type
+  - Copy HDU(s)
+  - Copy header
+  - Delete HDU
+- Keyword Reading Routines
+  - Record count
+  - **Read/parse keyword**
+  - Read CONTINUE'd string record
+  - **Read unit**
+  - Read header
+- Keyword Writing Routines
+  - **Write/update keyword**
+  - Write COMMENT/HISTORY record
+  - Write/update DATE record
+  - Update comment
+  - Write unit
+  - Rename record
+  - **Delete record**
+- Primary Array or IMAGE Extension I/O Routines
+  - Read image type
+  - Read image size
+  - **Create image extension**
+  - Copy image data to image or bintable extension
+  - Write image region
+  - **Write image**
+  - Read image region
+  - **Read image**
+  - Copy image region
+- Image Compression
+  - Compress image
+  - Decompress image
+- Binary Table Routines (ASCII tables not supported)
+  - **Create table extension**
+  - Read row/column count
+  - *Find column which matches name template*
+  - Read column type
+  - Read column dimension (vector columns)
+  - Insert/delete rows
+  - Insert/delete columns
+  - Copy rows
+  - Copy columns
+  - **Write column elements**
+  - **Read column elements**
+  - Find/select rows
+  - Evaluate an expression on rows
+  - Calculate histogram parameters
+  - Bin table values and write histogram
+
+\section cfitsio-iterator The CFITSIO Iterator Function
+
+Not supported.
+
+\section cfitsio-wcs World Coordinate System Routines
+
+Not supported, but deprecated in CFitsIO.
+
+\section cfitsio-grouping Hierarchical Grouping Routines
+
+Not supported.
+
+\section cfitsio-special Specialized CFITSIO Interface Routines
+
+TODO
+
+*/
