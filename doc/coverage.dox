@@ -33,11 +33,12 @@ Legend:
 - Keyword Reading Routines
   - Record count (useful?)
   - **Read/parse keyword**
-  - Read CONTINUE'd string record (priority, almost there)
+  - **Read CONTINUE'd string record**
   - **Read unit**
   - Read header (useful?)
 - Keyword Writing Routines
   - **Write/update keyword**
+  - **Write CONTINUE'd string record**
   - Write COMMENT/HISTORY record
   - Write/update DATE record
   - Update comment (useful?)

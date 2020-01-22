@@ -23,7 +23,10 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsFile//RecordHdu.h"
+#include "ElementsKernel/Temporary.h"
+
+#include "EL_FitsFile/SifFile.h"
+#include "EL_FitsFile/RecordHdu.h"
 
 using namespace Euclid::FitsIO;
 
@@ -33,9 +36,23 @@ BOOST_AUTO_TEST_SUITE (RecordHdu_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  
+BOOST_AUTO_TEST_CASE( continued_str_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  filename = "/tmp/test.fits"; //TODO
+  SifFile f(filename, SifFile::Permission::OVERWRITE);
+  const auto& h = f.header();
+  const std::string short_str = "S";
+  const std::string long_str =
+      "This is probably one of the longest strings "
+      "that I have ever written in a serious code.";
+  BOOST_CHECK_GT(long_str.length(), FLEN_VALUE);
+  h.write_record<std::string>("SHORT", short_str);
+  BOOST_CHECK_THROW(h.parse_record<std::string>("LONGSTRN"), std::exception);
+  h.write_record<std::string>("LONG", long_str);
+  const auto output = h.parse_record<std::string>("LONG");
+  h.parse_record<std::string>("LONGSTRN");
+  BOOST_CHECK_EQUAL(output.value, long_str);
 }
 
 //-----------------------------------------------------------------------------

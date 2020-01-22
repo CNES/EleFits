@@ -39,22 +39,22 @@ BOOST_AUTO_TEST_CASE( empty_file_test ) {
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
   FitsFile new_file(filename, FitsFile::Permission::CREATE);
-    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-    BOOST_CHECK_THROW(FitsFile(filename, FitsFile::Permission::CREATE), std::exception);
+  BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+  BOOST_CHECK_THROW(FitsFile(filename, FitsFile::Permission::CREATE), std::exception);
   new_file.close();
   FitsFile overwritten_file(filename, FitsFile::Permission::OVERWRITE);
   overwritten_file.close();
-    FitsFile read_only_file(filename, FitsFile::Permission::READ);
-    BOOST_CHECK_THROW(read_only_file.close_and_delete(), std::exception);
-    read_only_file.close();
-    FitsFile editable_file(filename, FitsFile::Permission::EDIT);
-    editable_file.close_and_delete();
-    BOOST_CHECK(not boost::filesystem::exists(filename));
-    {
-        FitsFile temp_file(filename, FitsFile::Permission::TEMPORARY);
-        BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-    }
-    BOOST_CHECK(not boost::filesystem::exists(filename));
+  FitsFile read_only_file(filename, FitsFile::Permission::READ);
+  BOOST_CHECK_THROW(read_only_file.close_and_delete(), std::exception);
+  read_only_file.close();
+  FitsFile editable_file(filename, FitsFile::Permission::EDIT);
+  editable_file.close_and_delete();
+  BOOST_CHECK(not boost::filesystem::exists(filename));
+  {
+    FitsFile temp_file(filename, FitsFile::Permission::TEMPORARY);
+    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+  }
+  BOOST_CHECK(not boost::filesystem::exists(filename));
 }
 
 //-----------------------------------------------------------------------------

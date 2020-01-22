@@ -34,10 +34,13 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
   char* value = (char*) malloc(length);
   char* comment = (char*) malloc(FLEN_COMMENT);
-  fits_read_key(fptr, TypeCode<std::string>::for_record(), keyword.c_str(), value, comment, &status);
-  const FitsIO::Record<std::string> record(keyword, std::string(value), "", std::string(comment)); //TODO unit
+  char* unit = (char*) malloc(FLEN_COMMENT);
+  fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
+  fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
+  const FitsIO::Record<std::string> record(keyword, std::string(value), std::string(unit), std::string(comment));
   free(value);
   free(comment);
+  free(unit);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
   may_throw_cfitsio_error(status, context);
   return record;
@@ -46,8 +49,9 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
 template<>
 void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
   int status = 0;
-  fits_write_key(fptr,
-      TypeCode<std::string>::for_record(),
+  if(record.value.length() > 68)
+    fits_write_key_longwarn(fptr, &status);
+  fits_write_key_longstr(fptr,
       record.keyword.c_str(),
       &std::string(record.value)[0],
       &record.comment[0],
