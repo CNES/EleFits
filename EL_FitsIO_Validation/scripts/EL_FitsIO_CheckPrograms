@@ -22,7 +22,7 @@
 #
 
 status=0
-log_file=EL_FitsIO_CheckPrograms.log
+log_file="/tmp/EL_FitsIO_CheckPrograms.log"
 
 test_function_with_options()
 {
