@@ -59,6 +59,7 @@ elements_add_executable(EL_Cfitsio_WritePerf src/program/EL_Cfitsio_WritePerf.cp
 #  elements_install_python_modules()
 #  elements_install_scripts()
 #===============================================================================
+elements_install_scripts()
 
 #===============================================================================
 # Declare the Python programs here
