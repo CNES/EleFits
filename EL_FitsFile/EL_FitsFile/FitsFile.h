@@ -92,18 +92,6 @@ public:
    */
   void close_and_delete();
 
-  /**
-   * @brief Reshape the Primary HDU.
-   */
-  template<typename T, std::size_t n=2>
-  void init_primary(const pos_type<n>& shape) const;
-
-  /**
-   * @brief Reshape and assign the Prmary HDU.
-   */
-  template<typename T, std::size_t n=2>
-  void assign_primary(const Raster<T, n>& raster) const;
-
 protected:
 
   fitsfile* m_fptr;

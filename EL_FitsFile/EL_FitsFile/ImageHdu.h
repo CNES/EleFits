@@ -71,6 +71,7 @@ public:
 template<typename T, std::size_t n>
 void ImageHdu::resize(const pos_type<n>& shape) const {
   goto_this_hdu();
+  Cfitsio::Image::resize<T, n>(m_fptr, shape);
 }
 
 template<typename T, std::size_t n>

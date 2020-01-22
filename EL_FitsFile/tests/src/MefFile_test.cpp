@@ -23,7 +23,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsFile//MefFile.h"
+#include "ElementsKernel/Temporary.h"
+
+#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsFile/MefFile.h"
+
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
@@ -31,10 +36,17 @@ BOOST_AUTO_TEST_SUITE (MefFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+BOOST_AUTO_TEST_CASE( primary_resize_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  MefFile f(filename, MefFile::Permission::OVERWRITE);
+  Test::SmallRaster input;
+  const auto& primary = f.access_primary<ImageHdu>();
+  primary.resize<float, 2>(input.shape);
+  primary.write_raster(input);
+  f.close();
+  f.open(filename, MefFile::Permission::READ);
+  const auto output = f.access_primary<ImageHdu>().read_raster<float, 2>();
 }
 
 //-----------------------------------------------------------------------------

@@ -70,8 +70,6 @@ The organization of the library classes matches that of a Fits file:
 - A MEF file contains HDUs, which themeselves contain records in a header and data in the form of an image or bintable.
 - As a specific case, a SIF file is made of a header and image.
 
-This matches the following class diagram!
-
 \image html doc/diagrams/out/FitsFile.png
 
 */
