@@ -212,8 +212,8 @@ void ColumnDispatcher<std::vector<T>>::write(fitsfile* fptr, const FitsIO::Colum
     std::copy(data_i.data(), data_i.data() + data_i.size(), ptr_column.vector()[i]);
   }
   ColumnDispatcher<T*>::write(fptr, ptr_column);
-  // for(std::size_t i=0; i<rows; ++i)
-  //   free(ptr_column.vector[i]); //TODO freezes
+  for(std::size_t i=0; i<rows; ++i)
+    free(ptr_column.vector()[i]); //TODO check
 }
 
 }

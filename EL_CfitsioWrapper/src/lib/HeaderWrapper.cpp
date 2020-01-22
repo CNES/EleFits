@@ -34,7 +34,7 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
   if(length == 0)
     throw std::runtime_error("Cannot find keyword " + keyword);
-  char* value = (char*) malloc(length);
+  char* value = nullptr; // That's the only function in which CFitsIO allocates itself!
   char* unit = (char*) malloc(FLEN_COMMENT);
   char* comment = (char*) malloc(FLEN_COMMENT);
   fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
