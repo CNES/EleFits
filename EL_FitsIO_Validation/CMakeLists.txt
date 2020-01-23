@@ -53,6 +53,8 @@ elements_add_executable(EL_Cfitsio_WritePerf src/program/EL_Cfitsio_WritePerf.cp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
+#elements_add_test(CheckProgram COMMAND EL_FitsIO_CheckPrograms)
+#TODO how to run that without installing?
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

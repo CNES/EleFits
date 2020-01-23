@@ -25,7 +25,9 @@
 
 #include "ElementsKernel/Temporary.h"
 
+#include "EL_FitsFile/MefFile.h"
 #include "EL_FitsFile/SifFile.h"
+
 #include "EL_FitsFile/RecordHdu.h"
 
 using namespace Euclid::FitsIO;
@@ -39,8 +41,7 @@ BOOST_AUTO_TEST_SUITE (RecordHdu_test)
 BOOST_AUTO_TEST_CASE( continued_str_test ) {
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
-  filename = "/tmp/test.fits"; //TODO
-  SifFile f(filename, SifFile::Permission::OVERWRITE);
+  SifFile f(filename, SifFile::Permission::TEMPORARY);
   const auto& h = f.header();
   const std::string short_str = "S";
   const std::string long_str =
@@ -53,6 +54,19 @@ BOOST_AUTO_TEST_CASE( continued_str_test ) {
   const auto output = h.parse_record<std::string>("LONG");
   h.parse_record<std::string>("LONGSTRN");
   BOOST_CHECK_EQUAL(output.value, long_str);
+}
+
+BOOST_AUTO_TEST_CASE( rename_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  MefFile f(filename, MefFile::Permission::TEMPORARY);
+  const auto& h = f.init_record_ext("A");
+  BOOST_CHECK_EQUAL(h.index(), 2);
+  BOOST_CHECK_EQUAL(h.name(), "A");
+  h.rename("B");
+  BOOST_CHECK_EQUAL(h.name(), "B");
+  h.delete_record("EXTNAME");
+  BOOST_CHECK_EQUAL(h.name(), "");
 }
 
 //-----------------------------------------------------------------------------
