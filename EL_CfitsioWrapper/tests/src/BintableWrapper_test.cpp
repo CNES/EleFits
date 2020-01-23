@@ -87,14 +87,26 @@ TEST_SCALAR_UNSIGNED(int)
 
 template<typename T>
 void check_vector() {
-  FitsIO::Test::SmallVectorColumn<T> input;
+  constexpr std::size_t rows = 3;
+  constexpr std::size_t repeat = 2;
+  FitsIO::Test::RandomScalarColumn<T> input(rows * repeat);
+  input.info.repeat = repeat;
   FitsIO::Test::MinimalFile file;
-  Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
-  const auto output = Bintable::read_column<std::vector<T>>(file.fptr, input.info.name);
-  const auto size = input.rows();
-  BOOST_CHECK_EQUAL(output.rows(), size);
-  for(std::size_t i=0; i<size; ++i)
-    check_equal_vectors(output.vector()[i], input.vector()[i]);
+  try {
+    Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
+    const auto output = Bintable::read_column<T>(file.fptr, input.info.name);
+    BOOST_CHECK_EQUAL(output.info.repeat, repeat);
+    check_equal_vectors(output.vector(), input.vector());
+  } catch(const CfitsioError& e) {
+    std::cerr << "Input:" << std::endl;
+    for(const auto& v : input.vector())
+      std::cerr << v << ' ';
+    std::cerr << std::endl;
+    if(e.status == NUM_OVERFLOW)
+      BOOST_WARN(e.what());
+    else
+      BOOST_FAIL(e.what());
+  }
 }
 
 #define TEST_VECTOR(type) \
@@ -103,9 +115,8 @@ void check_vector() {
 #define TEST_VECTOR_UNSIGNED(type) \
   BOOST_AUTO_TEST_CASE( vector_u##type##_test ) { check_vector<unsigned type>(); }
 
-/*
 // TEST_VECTOR(bool) //TODO won't compile because of vector specialization for bool
-TEST_VECTOR(char)
+// TEST_VECTOR(char) //TODO CFitsIO error 307: bad first row number (Cannot read column data)
 TEST_VECTOR(short)
 TEST_VECTOR(int)
 TEST_VECTOR(long)
@@ -115,25 +126,20 @@ TEST_VECTOR_UNSIGNED(char)
 TEST_VECTOR_UNSIGNED(short)
 TEST_VECTOR_UNSIGNED(int)
 TEST_VECTOR_UNSIGNED(long)
-*/
 
 BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
-
-  FitsIO::Test::SmallTable input;
+  using FitsIO::Test::SmallTable;
+  SmallTable input;
   Hdu::create_bintable_extension(this->fptr, "IMGEXT",
       input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
-  const auto output_nums = Bintable::read_column<FitsIO::Test::SmallTable::num_t>(this->fptr, input.num_col.info.name);
+  const auto output_nums = Bintable::read_column<SmallTable::num_t>(this->fptr, input.num_col.info.name);
   check_equal_vectors(output_nums.vector(), input.num_col.vector());
-  const auto output_radecs = Bintable::read_column<FitsIO::Test::SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
+  const auto output_radecs = Bintable::read_column<SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
   check_equal_vectors(output_radecs.vector(), input.radec_col.vector());
-  const auto output_names = Bintable::read_column<FitsIO::Test::SmallTable::name_t>(this->fptr, input.name_col.info.name);
+  const auto output_names = Bintable::read_column<SmallTable::name_t>(this->fptr, input.name_col.info.name);
   check_equal_vectors(output_names.vector(), input.name_col.vector());
-  // const auto output_dists_mags = Bintable::read_column<FitsIO::Test::SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
-  // BOOST_CHECK_EQUAL(output_dists_mags.vector().size(), input.dist_mag_col.vector().size());
-  // for(std::size_t i=0; i<output_dists_mags.vector().size(); ++i)
-  //   check_equal_vectors(output_dists_mags.vector()[i], input.dist_mag_col.vector()[i]);
-  //TODO memory bug for vector columns "free(): invalid next size (fast)"
-
+  const auto output_dists_mags = Bintable::read_column<SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
+  check_equal_vectors(output_dists_mags.vector(), input.dist_mag_col.vector());
 }
 
 //-----------------------------------------------------------------------------

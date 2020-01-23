@@ -70,20 +70,15 @@ public:
   Column(ColumnInfo<T> info);
 
   /**
-   * @brief Number of rows.
+   * @brief Number of elements in the column, i.e. number of rows * repeat count.
+   * @warning For strings, CFitsIO requires nelements to be just the number of rows.
    */
-  virtual std::size_t rows() const = 0;
+  virtual std::size_t nelements() const = 0; //TODO long?
 
   /**
    * @brief Access the data.
    */
   virtual const T* data() const = 0;
-
-  /**
-   * @brief Number of elements in the column, i.e. number of rows * repeat count.
-   * @warning For strings, CFitsIO requires nelements to be just the number of rows.
-   */
-  std::size_t nelements() const; //TODO long?
 
   /**
    * @brief Column metadata.
@@ -108,15 +103,15 @@ public:
   PtrColumn& operator=(const PtrColumn&) = default;
   PtrColumn& operator=(PtrColumn&&) = default;
 
-  PtrColumn(ColumnInfo<T> info, std::size_t rows, const T* data);
+  PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data);
 
-  virtual std::size_t rows() const;
+  virtual std::size_t nelements() const;
 
   virtual const T* data() const;
 
 private:
 
-  std::size_t m_rows;
+  std::size_t m_nelements;
   const T* m_data;
 
 };
@@ -139,7 +134,7 @@ public:
 
   VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector);
 
-  virtual std::size_t rows() const;
+  virtual std::size_t nelements() const;
 
   virtual const T* data() const;
 
@@ -169,7 +164,7 @@ public:
 
   VecColumn(ColumnInfo<T> info, std::vector<T> vector);
 
-  virtual std::size_t rows() const;
+  virtual std::size_t nelements() const;
 
   virtual const T* data() const;
 
@@ -192,43 +187,6 @@ private:
 };
 
 
-///////////////
-// INTERNAL //
-/////////////
-
-
-/// @cond INTERNAL
-namespace internal {
-
-/**
- * Helper function to specialize nelements for strings.
- */
-template<typename T>
-std::size_t column_nelements(const Column<T>& column);
-
-
-/**
- * In general, nelements is the number of values,
- * i.e. number of rows * repeat count.
- */
-template<typename T>
-inline std::size_t column_nelements(const Column<T>& column) {
-  return column.info.repeat * column.rows();
-}
-
-/**
- * For strings, nelements is the number of rows.
- */
-template<>
-inline std::size_t column_nelements<std::string>(const Column<std::string>& column) {
-  return column.rows();
-}
-
-}
-
-/// @endcond
-
-
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
@@ -241,21 +199,15 @@ Column<T>::Column(ColumnInfo<T> info) :
 
 
 template<typename T>
-std::size_t Column<T>::nelements() const {
-  return internal::column_nelements(*this);
-}
-
-
-template<typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t rows, const T* data) :
+PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data) :
     Column<T>(info),
-    m_rows(rows),
+    m_nelements(nelements),
     m_data(data) {
 }
 
 template<typename T>
-std::size_t PtrColumn<T>::rows() const {
-  return m_rows;
+std::size_t PtrColumn<T>::nelements() const {
+  return m_nelements;
 }
 
 template<typename T>
@@ -271,7 +223,7 @@ VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector) 
 }
 
 template<typename T>
-std::size_t VecRefColumn<T>::rows() const {
+std::size_t VecRefColumn<T>::nelements() const {
   return m_vec_ref.size();
 }
 
@@ -293,7 +245,7 @@ VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> vector) :
 }
 
 template<typename T>
-std::size_t VecColumn<T>::rows() const {
+std::size_t VecColumn<T>::nelements() const {
   return m_vec.size();
 }
 

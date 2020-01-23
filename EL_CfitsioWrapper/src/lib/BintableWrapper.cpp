@@ -73,7 +73,7 @@ FitsIO::VecColumn<std::string> internal::ColumnDispatcher<std::string>::read(fit
 
 void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
   const auto begin = column.data();
-  const auto end = begin + column.rows();
+  const auto end = begin + column.nelements();
   c_str_array array(begin, end); //TODO avoid copy?
   std::size_t index = column_index(fptr, column.info.name);
   int status = 0;

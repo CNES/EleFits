@@ -68,8 +68,10 @@ Legend:
   - Insert/delete columns
   - Copy rows
   - Copy columns
-  - **Write column elements**
-  - **Read column elements**
+  - **Write scalar column elements**
+  - **Write vector column elements**
+  - **Read scalar column elements**
+  - **Read vector column elements**
   - Find/select rows
   - Evaluate an expression on rows
   - Calculate histogram parameters

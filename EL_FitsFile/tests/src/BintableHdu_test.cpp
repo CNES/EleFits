@@ -53,12 +53,25 @@ void check_scalar() {
   check_equal_vectors(output.vector(), input.vector());
 }
 
+template<typename T>
+void check_vector() {
+  constexpr std::size_t rows = 10;
+  constexpr std::size_t repeat = 2;
+  Test::RandomScalarColumn<T> input(rows * repeat);
+  input.info.repeat = repeat;
+  const std::string filename = "/tmp/vec.fits"; //TODO Elements::TempFile().path().string();
+  MefFile file(filename, MefFile::Permission::OVERWRITE); //TODO TEMPORARY);
+  file.assign_bintable_ext("BINEXT", input);
+  const auto output = file.access_first<BintableHdu>("BINEXT").read_column<T>(input.info.name);
+}
+
 /**
  * We test only one type here to check the flow from the top-level API to CFitsIO.
  * Support for other types is tested in EL_CfitsioWrapper.
  */
 BOOST_AUTO_TEST_CASE( float_test ) {
   check_scalar<float>();
+  check_vector<float>();
 }
 
 //-----------------------------------------------------------------------------

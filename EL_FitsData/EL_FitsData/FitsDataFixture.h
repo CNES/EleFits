@@ -71,7 +71,7 @@ public:
   using num_t = int;
   using radec_t = std::complex<float>; // Could be std::pair<float> with width=2
   using name_t = std::string;
-  using dist_mag_t = std::vector<double>;
+  using dist_mag_t = double;
 
   SmallTable();
   

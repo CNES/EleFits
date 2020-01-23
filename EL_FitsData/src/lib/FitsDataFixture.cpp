@@ -56,7 +56,7 @@ SmallTable::SmallTable() :
     nums { 45, 7, 31 },
     radecs { {56.8500, 24.1167}, {268.4667, -34.7928}, {10.6833, 41.2692} },
     names { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" },
-    dists_mags { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900., 3.4 } },
+    dists_mags { 0.44, 1.6, 0.8, 3.3, 2900., 3.4 },
     num_col ({"ID", "", 1}, nums),
     radec_col ({"RADEC", "deg", 1}, radecs),
     name_col ({"NAME", "", 68}, names), //TODO 68?
