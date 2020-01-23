@@ -21,9 +21,14 @@
  *
  */
 
+#include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include "EL_CfitsioWrapper//CfitsioFixture.h"
+#include "EL_CfitsioWrapper/FileWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
+
+using namespace Euclid::Cfitsio;
+using namespace Euclid::FitsIO::Test;
 
 //-----------------------------------------------------------------------------
 
@@ -31,14 +36,16 @@ BOOST_AUTO_TEST_SUITE (CfitsioFixture_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+BOOST_AUTO_TEST_CASE( open_close_test ) {
+  std::string filename;
+  {
+    MinimalFile f;
+    filename = f.filename;
+    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+  }
+  BOOST_CHECK(not boost::filesystem::is_regular_file(filename));
 }
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-
