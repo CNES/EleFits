@@ -38,7 +38,8 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
   return index;
 }
 
-FitsIO::VecColumn<std::string> internal::ColumnDispatcher<std::string>::read(fitsfile* fptr, std::string name) {
+template<>
+FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name) {
   size_t index = column_index(fptr, name);
   long rows;
   int status = 0;
@@ -71,7 +72,8 @@ FitsIO::VecColumn<std::string> internal::ColumnDispatcher<std::string>::read(fit
   return column;
 }
 
-void internal::ColumnDispatcher<std::string>::write(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
+template<>
+void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
   const auto begin = column.data();
   const auto end = begin + column.nelements();
   c_str_array array(begin, end); //TODO avoid copy?

@@ -58,32 +58,19 @@ template<typename T>
 void write_column(fitsfile* fptr, const FitsIO::Column<T>& column);
 
 
-///////////////
-// INTERNAL //
-/////////////
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
 
-
-/// @cond INTERNAL
-namespace internal {
-
-/**
- * Helper structure to dispatch column IOs depending on the cell type
- * (scalar, string or vector + pointer for internal implementation).
- */
-template<typename T>
-struct ColumnDispatcher {
-  static FitsIO::VecColumn<T> read(fitsfile* fptr, std::string name);
-  static void write(fitsfile* fptr, const FitsIO::Column<T>& column);
-};
 
 template<>
-struct ColumnDispatcher<std::string> {
-  static FitsIO::VecColumn<std::string> read(fitsfile* fptr, std::string name);
-  static void write(fitsfile* fptr, const FitsIO::Column<std::string>& column);
-};
+FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name);
+
+template<>
+void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>& column);
 
 template<typename T>
-FitsIO::VecColumn<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name) {
   size_t index = column_index(fptr, name);
   int typecode = 0;
   long repeat = 0;
@@ -111,7 +98,7 @@ FitsIO::VecColumn<T> ColumnDispatcher<T>::read(fitsfile* fptr, std::string name)
 }
 
 template<typename T>
-void ColumnDispatcher<T>::write(fitsfile* fptr, const FitsIO::Column<T>& column) {
+void write_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
   size_t index = column_index(fptr, column.info.name);
   const auto begin = column.data();
   const auto end = begin + column.nelements();
@@ -130,26 +117,6 @@ void ColumnDispatcher<T>::write(fitsfile* fptr, const FitsIO::Column<T>& column)
     );
   may_throw_cfitsio_error(status, "Cannot write column data");
 }
-
-}
-/// @endcond
-
-
-/////////////////////
-// IMPLEMENTATION //
-///////////////////
-
-
-template<typename T>
-FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name) {
-  return internal::ColumnDispatcher<T>::read(fptr, name);
-}
-
-template<typename T>
-void write_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
-    internal::ColumnDispatcher<T>::write(fptr, column);
-}
-
 
 }
 }
