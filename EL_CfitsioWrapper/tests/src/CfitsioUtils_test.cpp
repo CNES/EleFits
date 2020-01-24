@@ -25,16 +25,20 @@
 
 #include "EL_CfitsioWrapper//CfitsioUtils.h"
 
+using namespace Euclid::Cfitsio;
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE (CfitsioUtils_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+BOOST_AUTO_TEST_CASE( c_str_array_test ) {
+  std::vector<std::string> vec { "Fievre", "Chat", "Bebe", "Passe-miroir" };
+  c_str_array arr(vec);
+  for(std::size_t row=0; row<vec.size(); ++row)
+    for(std::size_t letter=0; letter<vec[row].length(); ++letter)
+      BOOST_CHECK_EQUAL(vec[row].c_str()[letter], arr.data()[row][letter]);
 }
 
 //-----------------------------------------------------------------------------

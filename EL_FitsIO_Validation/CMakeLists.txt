@@ -15,6 +15,7 @@ elements_subdir(EL_FitsIO_Validation)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
 elements_depends_on_subdirs(EL_FitsFile)
+elements_depends_on_subdirs(EL_FitsIO_Examples)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -53,12 +54,14 @@ elements_add_executable(EL_Cfitsio_WritePerf src/program/EL_Cfitsio_WritePerf.cp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
+elements_add_test(CheckPrograms COMMAND EL_FitsIO_CheckPrograms)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:
 #  elements_install_python_modules()
 #  elements_install_scripts()
 #===============================================================================
+elements_install_scripts()
 
 #===============================================================================
 # Declare the Python programs here

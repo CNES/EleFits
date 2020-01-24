@@ -29,39 +29,55 @@ namespace Header {
 
 template<>
 FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::string keyword) {
-    int status = 0;
-    int length;
-    fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
-    char* value = (char*) malloc(length);
-    char* comment = (char*) malloc(FLEN_COMMENT);
-    fits_read_key(fptr, TypeCode<std::string>::for_record(), keyword.c_str(), value, comment, &status);
-    const FitsIO::Record<std::string> record(keyword, std::string(value), "", std::string(comment)); //TODO unit
-    free(value);
-    free(comment);
-    std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
-    may_throw_cfitsio_error(status, context);
-    return record;
+  int status = 0;
+  int length = 0;
+  fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
+  if(length == 0)
+    throw std::runtime_error("Cannot find keyword " + keyword);
+  char* value = nullptr; // That's the only function in which CFitsIO allocates itself!
+  char* unit = (char*) malloc(FLEN_COMMENT);
+  char* comment = (char*) malloc(FLEN_COMMENT);
+  fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
+  fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
+  const FitsIO::Record<std::string> record(keyword, std::string(value), std::string(unit), std::string(comment));
+  free(value);
+  free(comment);
+  free(unit);
+  std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  may_throw_cfitsio_error(status, context);
+  return record;
 }
 
 template<>
 void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
-    int status = 0;
-    fits_write_key(fptr, TypeCode<std::string>::for_record(), record.keyword.c_str(), &std::string(record.value)[0], &record.comment[0], &status);
-    fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-    may_throw_cfitsio_error(status);
+  int status = 0;
+  if(record.value.length() > 68)
+    fits_write_key_longwarn(fptr, &status);
+  fits_write_key_longstr(fptr,
+      record.keyword.c_str(),
+      &std::string(record.value)[0],
+      &record.comment[0],
+      &status);
+  fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
+  may_throw_cfitsio_error(status);
 }
 
 template<>
 void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
-    int status = 0;
-    fits_update_key(fptr, TypeCode<std::string>::for_record(), record.keyword.c_str(), &std::string(record.value)[0], &record.comment[0], &status);
-    may_throw_cfitsio_error(status);
+  int status = 0;
+  fits_update_key(fptr,
+      TypeCode<std::string>::for_record(),
+      record.keyword.c_str(),
+      &std::string(record.value)[0],
+      &record.comment[0],
+      &status);
+  may_throw_cfitsio_error(status);
 }
 
 void delete_record(fitsfile* fptr, std::string keyword) {
-    int status = 0;
-    fits_delete_key(fptr, keyword.c_str(), &status);
-    may_throw_cfitsio_error(status);
+  int status = 0;
+  fits_delete_key(fptr, keyword.c_str(), &status);
+  may_throw_cfitsio_error(status);
 }
 
 }

@@ -1,0 +1,78 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\page handlers Understanding the way Fits files are handled by the library
+
+
+\section handlers-intro General concepts
+
+
+File handlers (XxxFile classes) only store index and type of HDUs which have already been accessed.
+HDU handlers (XxxHdu classes) only provide read/write services.
+Records, images and tables are never stored by those classes
+(to know where they are, read the \ref data-classes page).
+When you access an HDU, you just access a set of services to read and write items in this HDU.
+
+FitsFile is mostly en empty shell for opening and closing operations.
+You could instantiate and destroy a FitsFile:
+this would just create a file with empty Primary, and not even give you access to it!
+
+Services of iterest lie in the MefFile and SifFile classes, which both extend FitsFile.
+This is why it is important to know the FitsFile behavior described above:
+When you instantiate a MefFile or SifFile, the Primary HDU is initialized with an empty image.
+This means:
+
+- That you don't create the Primary HDU yourself, and the header is immediately accessible;
+- That you have to resize the Primary array size in order to write data to it.
+
+
+\section handlers-mef Multi-extension Fits
+
+
+Multi-extension Fits (MEF) files are manipulated through the MefFile class.
+MefFile gives you access to the existing HDUs of a file, and provide creation methods of two kinds:
+
+- init_xxx methods just fill the header of a new HDU;
+- assign_xxx methods also write the data.
+
+
+\section handlers-hdus HDU handlers
+
+
+access_xxx, init_xxx and assign_xxx all return a reference to the desired type of HDU:
+RecordHdu, BintableHdu or ImageHdu.
+
+- A RecordHdu has methods to read and write records (sometimes referred to as keywords).
+It is obviously associated to the Record data class.
+- A BintableHdu additionally reads and writes bintable columns as Column objects.
+- Finally, an ImageHdu reads and writes images as Raster objects.
+
+
+\section handlers-sif Single image Fits
+
+
+Although they can be seen as simplistic instances of a MEF file,
+single image Fits (SIF) files have specificity which deserve a dedicated class: SifFile.
+Shortcuts are provided to read and write the image data, and to access the header, as a RecordHdu.
+
+Of course, it is possible to effectively handle a SIF file with a MefFile object,
+but this is more verbose, and does not enforce or guarantee that the file is a SIF.
+
+
+\section handlers-wrapup Wrap-up
+
+
+The organization of the library classes matches that of a Fits file:
+
+- A Fits file can be either of type SIF or MEF.
+- A MEF file contains HDUs, which themeselves contain records in a header and data in the form of an image or bintable.
+- As a specific case, a SIF file is made of a header and image.
+
+\image html doc/diagrams/out/FitsFile.png
+
+*/
+
+}
+}

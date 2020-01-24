@@ -22,3 +22,19 @@
  */
 
 #include "EL_FitsFile/SifFile.h"
+
+#include "EL_FitsFile/ImageHdu.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+SifFile::SifFile(std::string filename, SifFile::Permission permission) :
+    FitsFile(filename, permission),
+    m_hdu(m_fptr, 1) {}
+
+const RecordHdu& SifFile::header() const {
+  return dynamic_cast<const RecordHdu&>(m_hdu);
+}
+
+}
+}

@@ -47,17 +47,17 @@ namespace Test {
 /**
  * @brief A small 2D image raster.
  */
-class SmallRaster : public Raster<float> {
+class SmallRaster : public VecRaster<float> {
 
 public:
 
-	SmallRaster(long width=3, long height=2);
-	
-	virtual ~SmallRaster() = default;
-	
-	bool approx(const Raster<float>& other, float tol=0.1) const;
-	
-	long width, height;
+  SmallRaster(long width=3, long height=2);
+  
+  virtual ~SmallRaster() = default;
+  
+  bool approx(const Raster<float>& other, float tol=0.1) const;
+  
+  long width, height;
 
 };
 
@@ -68,24 +68,24 @@ class SmallTable {
 
 public:
 
-	using num_t = int;
-	using radec_t = std::complex<float>; // Could be std::pair<float> with width=2
-	using name_t = std::string;
-	using dist_mag_t = std::vector<double>;
+  using num_t = int;
+  using radec_t = std::complex<float>; // Could be std::pair<float> with width=2
+  using name_t = std::string;
+  using dist_mag_t = double;
 
-	SmallTable();
-	
-	std::string extname;
-	
-	std::vector<num_t> nums;
-	std::vector<radec_t> radecs;
-	std::vector<name_t> names;
-	std::vector<dist_mag_t> dists_mags;
-	
-	Column<num_t> num_col;
-	Column<radec_t> radec_col;
-	Column<name_t> name_col;
-	Column<dist_mag_t> dist_mag_col;
+  SmallTable();
+  
+  std::string extname;
+  
+  std::vector<num_t> nums;
+  std::vector<radec_t> radecs;
+  std::vector<name_t> names;
+  std::vector<dist_mag_t> dists_mags;
+  
+  VecRefColumn<num_t> num_col;
+  VecRefColumn<radec_t> radec_col;
+  VecRefColumn<name_t> name_col;
+  VecRefColumn<dist_mag_t> dist_mag_col;
 
 };
 
@@ -93,12 +93,12 @@ public:
  * @brief A random Raster of given type and shape.
  */
 template<typename T, std::size_t n>
-class RandomRaster : public Raster<T, n> {
+class RandomRaster : public VecRaster<T, n> {
 
 public:
 
-	RandomRaster(pos_type<n> shape);
-	virtual ~RandomRaster() = default;
+  RandomRaster(pos_type<n> shape);
+  virtual ~RandomRaster() = default;
 
 };
 
@@ -107,24 +107,24 @@ public:
  * @brief A random scalar Column of given type.
  */
 template<typename T>
-class RandomScalarColumn : public Column<T> {
+class RandomScalarColumn : public VecColumn<T> {
 
 public:
 
-	RandomScalarColumn(std::size_t size=3);
-	virtual ~RandomScalarColumn() = default;
+  RandomScalarColumn(std::size_t size=3);
+  virtual ~RandomScalarColumn() = default;
 
 };
 
 /**
  * @brief A small string column.
  */
-class SmallStringColumn : public FitsIO::Column<std::string> {
+class SmallStringColumn : public VecColumn<std::string> {
 
 public:
 
-	SmallStringColumn();
-	virtual ~SmallStringColumn() = default;
+  SmallStringColumn();
+  virtual ~SmallStringColumn() = default;
 
 };
 
@@ -132,12 +132,12 @@ public:
  * @brief A small vector column of given type.
  */
 template<typename T>
-class SmallVectorColumn : public FitsIO::Column<std::vector<T>> {
+class SmallVectorColumn : public VecColumn<std::vector<T>> {
 
 public:
 
-	SmallVectorColumn();
-	virtual ~SmallVectorColumn() = default;
+  SmallVectorColumn();
+  virtual ~SmallVectorColumn() = default;
 
 };
 
@@ -170,75 +170,78 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
 template<typename T, std::size_t n>
 RandomRaster<T, n>::RandomRaster(pos_type<n> shape) :
-		Raster<T, n>(shape) {
-	this->data = generate_random_vector<T>(this->size());
+    VecRaster<T, n>(shape) {
+  this->vector() = generate_random_vector<T>(this->size());
 }
 
 
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
-		Column<T> { "SCALAR", 1, "m", generate_random_vector<T>(size) } {
+    VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size)) {
 }
 
 template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
-		Column<std::string> { "SCALAR", 1, "m", generate_random_vector<std::string>(size) } {
-	for(const auto& v : data)
-		if(v.length() + 1 > static_cast<std::size_t>(repeat))
-			repeat = v.length() + 1;
+    VecColumn<std::string>({ "SCALAR", "m", 1}, generate_random_vector<std::string>(size)) {
+  for(const auto& v : vector())
+    if(v.length() + 1 > static_cast<std::size_t>(info.repeat))
+      info.repeat = v.length() + 1;
 }
 
 template<typename T>
 SmallVectorColumn<T>::SmallVectorColumn() :
-		Column<std::vector<T>> { "VECTOR", 2, "m2", { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } } } {
+    VecColumn<std::vector<T>>(
+        {"VECTOR", "m2", 2},
+        { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } }
+    ) {
 }
 
 template<typename T>
 T generate_random_value() {
-	auto vec = generate_random_vector<T>(1);
-	return vec[0];
+  auto vec = generate_random_vector<T>(1);
+  return vec[0];
 }
 
 template<typename T>
 std::vector<T> generate_random_vector(std::size_t size) {
-	const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
-	std::default_random_engine generator(seed);
-	const double min = std::numeric_limits<T>::min(); //TODO partially supported for char with BZERO trick
-	const double max = std::numeric_limits<T>::max(); //TODO partially supported for unsigned with BZERO trick
-	std::uniform_real_distribution<double> distribution(min, max);
-	std::vector<T> vec(size);
-	for(auto&& val : vec)
-		val = T(distribution(generator));
-	return vec;
+  const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::default_random_engine generator(seed);
+  const double min = std::numeric_limits<T>::min(); //TODO partially supported for char with BZERO trick
+  const double max = std::numeric_limits<T>::max(); //TODO partially supported for unsigned with BZERO trick
+  std::uniform_real_distribution<double> distribution(min, max);
+  std::vector<T> vec(size);
+  for(auto&& val : vec)
+    val = T(distribution(generator));
+  return vec;
 }
 
 template<>
 std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std::size_t size) {
-	const auto re_im_vec = generate_random_vector<float>(size * 2);
-	std::vector<std::complex<float>> vec(size);
-	const auto im_begin = re_im_vec.begin() + size;
-	std::transform(re_im_vec.begin(), im_begin, im_begin, vec.begin(),
-			[](float re, float im) { return std::complex<float> {re, im}; });
-	return vec;
+  const auto re_im_vec = generate_random_vector<float>(size * 2);
+  std::vector<std::complex<float>> vec(size);
+  const auto im_begin = re_im_vec.begin() + size;
+  std::transform(re_im_vec.begin(), im_begin, im_begin, vec.begin(),
+      [](float re, float im) { return std::complex<float> {re, im}; });
+  return vec;
 }
 
 template<>
 std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(std::size_t size) {
-	const auto re_vec = generate_random_vector<double>(size);
-	const auto im_vec = generate_random_vector<double>(size);
-	std::vector<std::complex<double>> vec(size);
-	std::transform(re_vec.begin(), re_vec.end(), im_vec.begin(), vec.begin(),
-			[](double re, double im) { return std::complex<double> {re, im}; });
-	return vec;
+  const auto re_vec = generate_random_vector<double>(size);
+  const auto im_vec = generate_random_vector<double>(size);
+  std::vector<std::complex<double>> vec(size);
+  std::transform(re_vec.begin(), re_vec.end(), im_vec.begin(), vec.begin(),
+      [](double re, double im) { return std::complex<double> {re, im}; });
+  return vec;
 }
 
 template<>
 std::vector<std::string> generate_random_vector<std::string>(std::size_t size) {
-	std::vector<int> int_vec = generate_random_vector<int>(size);
-	std::vector<std::string> vec(size);
-	std::transform(int_vec.begin(), int_vec.end(), vec.begin(),
-			[](int i) { return std::to_string(i); } );
-	return vec;
+  std::vector<int> int_vec = generate_random_vector<int>(size);
+  std::vector<std::string> vec(size);
+  std::transform(int_vec.begin(), int_vec.end(), vec.begin(),
+      [](int i) { return std::to_string(i); } );
+  return vec;
 }
 
 

@@ -45,17 +45,17 @@ class MinimalFile {
 
 protected:
 
-	Elements::TempFile tmp;
+  Elements::TempFile tmp;
 
 public:
 
-	MinimalFile();
-	
-	~MinimalFile();
-	
-	std::string filename;
-	
-	fitsfile* fptr;
+  MinimalFile();
+  
+  ~MinimalFile();
+  
+  std::string filename;
+  
+  fitsfile* fptr;
 
 };
 

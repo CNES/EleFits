@@ -1,6 +1,6 @@
-# EL_FitsIO
+# Read me!
 
-A clean, object-oriented, template API on top of CFitsIO.
+EL_FitsIO: A clean, object-oriented, template API on top of CFitsIO.
 
 ## Purpose and scope
 
@@ -21,6 +21,5 @@ As compared to CFitsIO API, the main benefits are:
 
 ## Where to go next?
 
-* [Project home page](https://euclid.roe.ac.uk/projects/fitsio/wiki)
-* [Example programs and comparison to CFitsIO](EL_FitsIO_Examples/cpp/programs)
-* [Full API documentation](TODO)
+To the [project home page](https://euclid.roe.ac.uk/projects/fitsio/wiki)!
+There you will find up-to-date links to the hi- and low-level documentation, examples, validation programs, and so much more...

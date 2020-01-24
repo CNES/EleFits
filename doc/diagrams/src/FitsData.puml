@@ -1,0 +1,99 @@
+@startuml
+
+package EL_FitsData {
+
+Raster <|-- VecRaster
+Raster <|-- VecRefRaster
+Raster <|-- PtrRaster
+Raster *- pos_type
+
+Record -[hidden] Record
+
+Column <|-- VecColumn
+Column <|-- VecRefColumn
+Column <|-- PtrColumn
+ColumnInfo -* Column
+
+class pos_type<n> {
+}
+
+abstract class Raster<T, n> {
++ shape
++ {abstract} data()
++ operator [] (position)
++ length<axis>()
++ size()
++ index(position)
+}
+
+class VecRaster<T, n> {
+- m_vec
++ VecRaster(shape, vector)
++ VecRaster(shape)
++ VecRaster()
++ data()
++ vector()
+}
+
+class VecRefRaster<T, n> {
+- m_vec_ref
++ VecRefRaster(shape, vector)
++ data()
++ vector()
+}
+
+class PtrRaster<T, n> {
+- m_data
++ PtrRaster(shape, data)
++ data()
+}
+
+class Record<T> {
++ keyword
++ value
++ unit
++ comment
++ operator T ()
+}
+
+class ColumnInfo<T> {
++ name
++ unit
++ repeat
+}
+
+abstract class Column<T> {
++ info
++ {abstract} size()
++ {abstract} data()
++ nelements()
+}
+
+class VecColumn<T> {
+- m_vec
++ VecColumn(info, vector)
++ VecColumn(info)
++ VecColumn()
++ size()
++ data()
++ vector()
+}
+
+class VecRefColumn<T> {
+- m_vec_ref
++ VecRefColumn(info, vector)
++ size()
++ data()
++ vector()
+}
+
+class PtrColumn<T> {
+- m_data
++ PtrColumn(info, rows, vector)
++ size()
++ data()
+}
+
+}
+
+@enduml

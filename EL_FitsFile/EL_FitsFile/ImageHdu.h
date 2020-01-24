@@ -38,21 +38,27 @@ class ImageHdu : public RecordHdu {
 
 public:
 
-	ImageHdu(fitsfile* fptr, std::size_t index);
+  ImageHdu(fitsfile*& fptr, std::size_t index);
 
-	virtual ~ImageHdu() = default;
+  virtual ~ImageHdu() = default;
 
-	/**
-	 * @brief Read the Raster.
-	 */
-	template<typename T, std::size_t n=2>
-	Raster<T, n> read_raster() const;
+  /**
+   * @brief Redefine the image size.
+   */
+  template<typename T, std::size_t n=2>
+  void resize(const pos_type<n>& shape) const;
 
-	/**
-	 * @brief Write the Raster.
-	 */
-	template<typename T, std::size_t n=2>
-	void write_raster(const Raster<T, n>& raster) const;
+  /**
+   * @brief Read the Raster.
+   */
+  template<typename T, std::size_t n=2>
+  VecRaster<T, n> read_raster() const;
+
+  /**
+   * @brief Write the Raster.
+   */
+  template<typename T, std::size_t n=2>
+  void write_raster(const Raster<T, n>& raster) const;
 
 };
 
@@ -63,13 +69,21 @@ public:
 
 
 template<typename T, std::size_t n>
-Raster<T, n> ImageHdu::read_raster() const {
-	return Cfitsio::Image::read_raster<T, n>(m_fptr);
+void ImageHdu::resize(const pos_type<n>& shape) const {
+  goto_this_hdu();
+  Cfitsio::Image::resize<T, n>(m_fptr, shape);
+}
+
+template<typename T, std::size_t n>
+VecRaster<T, n> ImageHdu::read_raster() const {
+  goto_this_hdu();
+  return Cfitsio::Image::read_raster<T, n>(m_fptr);
 }
 
 template<typename T, std::size_t n>
 void ImageHdu::write_raster(const Raster<T, n>& raster) const {
-	Cfitsio::Image::write_raster(m_fptr, raster);
+  goto_this_hdu();
+  Cfitsio::Image::write_raster(m_fptr, raster);
 }
 
 }

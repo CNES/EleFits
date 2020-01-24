@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# File: scripts/EL_FitsIO_CheckPrograms
+# Created on: 01/22/20
+# Author: user
+#
+# Copyright (C) 2012-2020 Euclid Science Ground Segment
+#
+# This library is free software; you can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation; either version 3.0 of the License, or (at your option)
+# any later version.
+#
+# This library is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+#
+
+status=0
+log_file="/tmp/EL_FitsIO_CheckPrograms.log"
+
+test_function_with_options()
+{
+  output="/tmp/$2"
+  cmd="$1 --output $output $3"
+  echo $cmd
+  echo "
+$cmd
+" >>$log_file
+  $cmd >>$log_file 2>&1
+  cmd_exit=$?
+  if [ $cmd_exit == 0 ];
+  then
+    echo -e "\e[1;32m    Passed \e[m"
+    rm $output
+  else
+    echo -e "\e[1;31m    Failed \e[m"
+    status=`expr $status + 1`
+  fi
+}
+
+test_function()
+{
+  test_function_with_options $1 $2 ""
+}
+
+rm $log_file
+
+test_function \
+  EL_Cfitsio_Example "cfitsio.fits"
+
+test_function \
+  EL_CfitsioWrapper_Example "wrapper.fits"
+
+test_function \
+  EL_FitsFile_Example "fitsfile.fits"
+
+test_function \
+  EL_FitsIO_Tutorial "tutorial.fits"
+
+test_function \
+  EL_FitsIO_GenerateAstroObj "astroobj.fits"
+
+test_function_with_options \
+  EL_Cfitsio_WritePerf "cfitsio_perf.fits" "--images 1 --tables 1"
+
+test_function_with_options \
+  EL_FitsIO_WritePerf "fitsio_perf.fits" "--images 1 --tables 1"
+
+exit $status

@@ -29,31 +29,57 @@
 namespace Euclid {
 namespace FitsIO {
 
-RecordHdu::RecordHdu(fitsfile* fptr, std::size_t index) :
-		m_fptr(fptr), m_index(index) {}
+RecordHdu::RecordHdu(fitsfile*& fptr, std::size_t index) :
+    m_fptr(fptr), m_index(index) {}
 
 std::size_t RecordHdu::index() const {
-	return m_index;
+  return m_index;
 }
 
 std::string RecordHdu::name() const {
-	goto_this_hdu();
-	return Cfitsio::Hdu::current_name(m_fptr);
+  goto_this_hdu();
+  return Cfitsio::Hdu::current_name(m_fptr);
 }
 
 void RecordHdu::rename(std::string name) const {
-	goto_this_hdu();
-	Cfitsio::Hdu::update_name(m_fptr, name);
+  goto_this_hdu();
+  Cfitsio::Hdu::update_name(m_fptr, name);
 }
 
 void RecordHdu::delete_record(std::string keyword) const {
-	goto_this_hdu();
-	Cfitsio::Header::delete_record(m_fptr, keyword);
+  goto_this_hdu();
+  Cfitsio::Header::delete_record(m_fptr, keyword);
 }
 
 void RecordHdu::goto_this_hdu() const {
-	Cfitsio::Hdu::goto_index(m_fptr, m_index);
+  Cfitsio::Hdu::goto_index(m_fptr, m_index);
 }
+
+#define COMPILE_PARSE_RECORD(T) \
+  template Record<T> RecordHdu::parse_record(std::string) const;
+COMPILE_PARSE_RECORD(char)
+COMPILE_PARSE_RECORD(short)
+COMPILE_PARSE_RECORD(int)
+COMPILE_PARSE_RECORD(long)
+COMPILE_PARSE_RECORD(float)
+COMPILE_PARSE_RECORD(double)
+COMPILE_PARSE_RECORD(unsigned char)
+COMPILE_PARSE_RECORD(unsigned short)
+COMPILE_PARSE_RECORD(unsigned int)
+COMPILE_PARSE_RECORD(unsigned long)
+
+#define COMPILE_WRITE_RECORD(T) \
+  template void RecordHdu::write_record(const Record<T>&) const;
+COMPILE_WRITE_RECORD(char)
+COMPILE_WRITE_RECORD(short)
+COMPILE_WRITE_RECORD(int)
+COMPILE_WRITE_RECORD(long)
+COMPILE_WRITE_RECORD(float)
+COMPILE_WRITE_RECORD(double)
+COMPILE_WRITE_RECORD(unsigned char)
+COMPILE_WRITE_RECORD(unsigned short)
+COMPILE_WRITE_RECORD(unsigned int)
+COMPILE_WRITE_RECORD(unsigned long)
 
 }
 }

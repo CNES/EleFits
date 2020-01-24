@@ -33,15 +33,56 @@ namespace FitsIO {
 /**
  * @brief Single image Fits file handler.
  */
-class SifFile : public FitsFile, ImageHdu {
+class SifFile : public FitsFile {
 
 public:
 
-	SifFile(std::string filename, Permission permission);
+  using FitsFile::Permission;
 
-	virtual ~SifFile() = default;
+  virtual ~SifFile() = default;
+
+  SifFile(std::string filename, Permission permission);
+
+	/**
+	 * @brief Access the header.
+	 */
+  const RecordHdu& header() const;
+
+  /**
+   * @brief Read the Raster.
+   */
+  template<typename T, std::size_t n=2>
+  VecRaster<T, n> read_raster() const;
+
+  /**
+   * @brief Write the Raster (initialize HDU if not done).
+   */
+  template<typename T, std::size_t n>
+  void write_raster(const Raster<T, n>& raster) const;
+
+private:
+
+  ImageHdu m_hdu;
 
 };
+
+
+/////////////////////
+// IMPLEMENTATION //
+///////////////////
+
+
+template<typename T, std::size_t n>
+VecRaster<T, n> SifFile::read_raster() const {
+	return Cfitsio::Image::read_raster<T, n>(m_fptr);
+}
+
+template<typename T, std::size_t n>
+void SifFile::write_raster(const Raster<T, n>& raster) const {
+  Cfitsio::Hdu::goto_primary(m_fptr); //TODO useful?
+  Cfitsio::Image::resize<T, n>(m_fptr, raster.shape);
+  Cfitsio::Image::write_raster(m_fptr, raster);
+}
 
 }
 }

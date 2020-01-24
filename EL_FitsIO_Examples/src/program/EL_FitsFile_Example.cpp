@@ -45,91 +45,91 @@ class EL_FitsFile_Example : public Elements::Program {
 
 public:
 
-	options_description defineSpecificProgramOptions() override {
+  options_description defineSpecificProgramOptions() override {
 
-		options_description options {};
-		options.add_options()
-				("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
-		return options;
-	}
+    options_description options {};
+    options.add_options()
+        ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    return options;
+  }
 
-	Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-		Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
+    Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
 
-		const std::string filename = args["output"].as<std::string>();
+    const std::string filename = args["output"].as<std::string>();
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Creating Fits file: " << filename;
-		MefFile f(filename, FitsFile::Permission::OVERWRITE);
-		const auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
-		logger.info() << "Writing new record: VALUE = 1";
-		primary.write_record("VALUE", 1);
-		logger.info() << "Updating record: VALUE = 2";
-		primary.update_record("VALUE", 2);
+    logger.info() << "Creating Fits file: " << filename;
+    MefFile f(filename, MefFile::Permission::OVERWRITE);
+    const auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
+    logger.info() << "Writing new record: VALUE = 1";
+    primary.write_record("VALUE", 1);
+    logger.info() << "Updating record: VALUE = 2";
+    primary.update_record("VALUE", 2);
 
-		logger.info();
+    logger.info();
 
-		Test::SmallTable table; // Predefined table for testing purpose
-		logger.info() << "Creating bintable extension: SMALLTBL";
-		f.assign_bintable_ext("SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
+    Test::SmallTable table; // Predefined table for testing purpose
+    logger.info() << "Creating bintable extension: SMALLTBL";
+    f.assign_bintable_ext("SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
 
-		logger.info();
+    logger.info();
 
-		Test::SmallRaster raster; // Predefined image raster for testing purpose
-		logger.info() << "Creating image extension: SMALLIMG";
-		const auto& ext = f.assign_image_ext("SMALLIMG", raster);
-		logger.info() << "Writing record: STRING = string";
-		Record<std::string> str_record("STRING", "string");
-		logger.info() << "Writing record: INTEGER = 8";
-		Record<int> int_record("INTEGER", 8);
-		ext.write_records(str_record, int_record);
+    Test::SmallRaster raster; // Predefined image raster for testing purpose
+    logger.info() << "Creating image extension: SMALLIMG";
+    const auto& ext = f.assign_image_ext("SMALLIMG", raster);
+    logger.info() << "Writing record: STRING = string";
+    Record<std::string> str_record("STRING", "string");
+    logger.info() << "Writing record: INTEGER = 8";
+    Record<int> int_record("INTEGER", 8);
+    ext.write_records(str_record, int_record);
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Closing file.";
-		f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
+    logger.info() << "Closing file.";
+    f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Reopening file.";
-		f.open(filename, FitsFile::Permission::READ);
-		logger.info() << "Reading record: VALUE = " << f.access_primary<>().parse_record<int>("VALUE");
+    logger.info() << "Reopening file.";
+    f.open(filename, MefFile::Permission::READ);
+    logger.info() << "Reading record: VALUE = " << f.access_primary<>().parse_record<int>("VALUE");
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Reading bintable.";
-		auto bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
-		logger.info() << "HDU index: " << bintable_ext.index();
-		const auto nums = bintable_ext.read_column<int>("ID").data;
-		logger.info() << "First id: " << nums[0];
-		const auto names = bintable_ext.read_column<std::string>("NAME").data;
-		logger.info() << "Last name: " << names[names.size()-1];
+    logger.info() << "Reading bintable.";
+    auto bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
+    logger.info() << "HDU index: " << bintable_ext.index();
+    const auto nums = bintable_ext.read_column<int>("ID").vector();
+    logger.info() << "First id: " << nums[0];
+    const auto names = bintable_ext.read_column<std::string>("NAME").vector();
+    logger.info() << "Last name: " << names[names.size()-1];
 
-		logger.info();
-		
-		logger.info() << "Reading image.";
-		auto ext_3 = f.access<>(3);
-		logger.info() << "Name of HDU #3: " << ext_3.name();
-		auto records = ext_3.parse_records<std::string, int>({"STRING", "INTEGER"});
-		logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
-		logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-		auto image_ext = f.access_first<ImageHdu>("SMALLIMG");
-		const auto image = image_ext.read_raster<float>();
-		logger.info() << "First pixel: " << image[{0, 0}];
-		const auto width = image.length<0>();
-		const auto height = image.length<1>();
-		logger.info() << "Last pixel: " << image[{width-1, height-1}];
+    logger.info();
+    
+    logger.info() << "Reading image.";
+    auto ext_3 = f.access<>(3);
+    logger.info() << "Name of HDU #3: " << ext_3.name();
+    auto records = ext_3.parse_records<std::string, int>({"STRING", "INTEGER"});
+    logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
+    logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
+    auto image_ext = f.access_first<ImageHdu>("SMALLIMG");
+    const auto image = image_ext.read_raster<float>();
+    logger.info() << "First pixel: " << image[{0, 0}];
+    const auto width = image.length<0>();
+    const auto height = image.length<1>();
+    logger.info() << "Last pixel: " << image[{width-1, height-1}];
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "File will be closed at execution end.";
+    logger.info() << "File will be closed at execution end.";
 
-		logger.info();
+    logger.info();
 
-		return Elements::ExitCode::OK;
-	} // File is closed by destructor
+    return Elements::ExitCode::OK;
+  } // File is closed by destructor
 
 };
 

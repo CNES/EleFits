@@ -23,7 +23,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsFile//SifFile.h"
+#include "ElementsKernel/Temporary.h"
+
+#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsFile/SifFile.h"
+
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
@@ -31,14 +36,25 @@ BOOST_AUTO_TEST_SUITE (SifFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+BOOST_AUTO_TEST_CASE( simple_image_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  Test::SmallRaster input;
+  SifFile f(filename, SifFile::Permission::OVERWRITE);
+  BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+  const std::string keyword = "KEYWORD";
+  const int value = 8;
+  f.header().write_record(keyword, value);
+  f.write_raster(input);
+  f.close();
+  f.open(filename, SifFile::Permission::READ);
+  const auto record = f.header().parse_record<int>(keyword);
+  BOOST_CHECK_EQUAL(record, value);
+  const auto output = f.read_raster<float>();
+  BOOST_CHECK_EQUAL_COLLECTIONS(input.vector().begin(), input.vector().end(), output.vector().begin(), output.vector().end());
+  BOOST_CHECK(input.approx(output));
 }
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-

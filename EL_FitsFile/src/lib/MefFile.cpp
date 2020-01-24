@@ -29,8 +29,26 @@ namespace Euclid {
 namespace FitsIO {
 
 MefFile::MefFile(std::string filename, Permission permission) :
-        FitsFile(filename, permission),
-        m_hdus(1) {}
+    FitsFile(filename, permission),
+    m_hdus(1) {}
+
+const RecordHdu& MefFile::init_record_ext(std::string name) {
+  Cfitsio::Hdu::create_metadata_extension(m_fptr, name);
+  const auto size = m_hdus.size();
+  m_hdus.push_back(std::unique_ptr<RecordHdu>(new RecordHdu(m_fptr, size+1)));
+  return *m_hdus[size].get();
+}
+
+#define COMPILE_ASSIGN_IMAGE_EXT(T, n) \
+        template const ImageHdu& MefFile::assign_image_ext<T, n>(std::string, const Raster<T, n>&);
+COMPILE_ASSIGN_IMAGE_EXT(char, 2)
+COMPILE_ASSIGN_IMAGE_EXT(int, 2)
+COMPILE_ASSIGN_IMAGE_EXT(float, 2)
+COMPILE_ASSIGN_IMAGE_EXT(double, 2)
+COMPILE_ASSIGN_IMAGE_EXT(char, 3)
+COMPILE_ASSIGN_IMAGE_EXT(int, 3)
+COMPILE_ASSIGN_IMAGE_EXT(float, 3)
+COMPILE_ASSIGN_IMAGE_EXT(double, 3)
 
 }
 }

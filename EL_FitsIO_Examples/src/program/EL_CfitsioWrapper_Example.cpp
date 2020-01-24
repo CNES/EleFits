@@ -45,91 +45,92 @@ class EL_CfitsioWrapper_Example : public Elements::Program {
 
 public:
 
-	options_description defineSpecificProgramOptions() override {
-	
-		options_description options {};
-		options.add_options()
-			("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
-		return options;
-	}
+  options_description defineSpecificProgramOptions() override {
+  
+    options_description options {};
+    options.add_options()
+      ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    return options;
+  }
 
-	Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-		Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
+    Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
 
-		const std::string filename = args["output"].as<std::string>();
+    const std::string filename = args["output"].as<std::string>();
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Creating Fits file: " << filename;
-		auto fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
-		logger.info() << "Writing new record: VALUE = 1";
-		Header::write_record<int>(fptr, { "VALUE", 1 } );
-		logger.info() << "Updating record: VALUE = 2";
-		Header::update_record<int>(fptr, { "VALUE", 2 } );
-		FitsIO::Test::SmallTable table; // Predefined table for testing purpose
+    logger.info() << "Creating Fits file: " << filename;
+    auto fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+    logger.info() << "Writing new record: VALUE = 1";
+    Header::write_record<int>(fptr, { "VALUE", 1 } );
+    logger.info() << "Updating record: VALUE = 2";
+    Header::update_record<int>(fptr, { "VALUE", 2 } );
+    FitsIO::Test::SmallTable table; // Predefined table for testing purpose
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Creating bintable extension: SMALLTBL";
-		Hdu::create_bintable_extension(fptr, "SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
-		FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
+    logger.info() << "Creating bintable extension: SMALLTBL";
+    Hdu::create_bintable_extension(fptr, "SMALLTBL",
+        table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
+    FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Creating image extension: SMALLIMG";
-		Hdu::create_image_extension(fptr, "SMALLIMG", raster);
-		logger.info() << "Writing record: STRING = string";
-		FitsIO::Record<std::string> str_record("STRING", "string");
-		logger.info() << "Writing record: INTEGER = 8";
-		FitsIO::Record<int> int_record("INTEGER", 8);
-		Header::write_records(fptr, str_record, int_record);
+    logger.info() << "Creating image extension: SMALLIMG";
+    Hdu::create_image_extension(fptr, "SMALLIMG", raster);
+    logger.info() << "Writing record: STRING = string";
+    FitsIO::Record<std::string> str_record("STRING", "string");
+    logger.info() << "Writing record: INTEGER = 8";
+    FitsIO::Record<int> int_record("INTEGER", 8);
+    Header::write_records(fptr, str_record, int_record);
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Closing file.";
-		File::close(fptr);
+    logger.info() << "Closing file.";
+    File::close(fptr);
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Reopening file.";
-		fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
-		logger.info() << "Reading record: VALUE = " << Header::parse_record<int>(fptr, "VALUE");
+    logger.info() << "Reopening file.";
+    fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
+    logger.info() << "Reading record: VALUE = " << Header::parse_record<int>(fptr, "VALUE");
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Reading bintable.";
-		Hdu::goto_name(fptr, "SMALLTBL");
-		logger.info() << "HDU index: " << Hdu::current_index(fptr);
-		const auto nums = Bintable::read_column<int>(fptr, "ID").data;
-		logger.info() << "First id: " << nums[0];
-		const auto names = Bintable::read_column<std::string>(fptr, "NAME").data;
-		logger.info() << "Last name: " << names[names.size()-1];
+    logger.info() << "Reading bintable.";
+    Hdu::goto_name(fptr, "SMALLTBL");
+    logger.info() << "HDU index: " << Hdu::current_index(fptr);
+    const auto nums = Bintable::read_column<int>(fptr, "ID").vector();
+    logger.info() << "First id: " << nums[0];
+    const auto names = Bintable::read_column<std::string>(fptr, "NAME").vector();
+    logger.info() << "Last name: " << names[names.size()-1];
 
-		logger.info();
-		
-		logger.info() << "Reading image.";
-		Hdu::goto_index(fptr, 3);
-		logger.info() << "Name of HDU #3: " << Hdu::current_name(fptr);
-		const auto records = Header::parse_records<std::string, int>(fptr, {"STRING", "INTEGER"});
-		logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
-		logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-		Hdu::goto_name(fptr, "SMALLIMG");
-		const auto image = Image::read_raster<float>(fptr);
-		logger.info() << "First pixel: " << image[{0, 0}];
-		const auto width = image.length<0>();
-		const auto height = image.length<1>();
-		logger.info() << "Last pixel: " << image[{width-1, height-1}];
+    logger.info();
+    
+    logger.info() << "Reading image.";
+    Hdu::goto_index(fptr, 3);
+    logger.info() << "Name of HDU #3: " << Hdu::current_name(fptr);
+    const auto records = Header::parse_records<std::string, int>(fptr, {"STRING", "INTEGER"});
+    logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
+    logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
+    Hdu::goto_name(fptr, "SMALLIMG");
+    const auto image = Image::read_raster<float>(fptr);
+    logger.info() << "First pixel: " << image[{0, 0}];
+    const auto width = image.length<0>();
+    const auto height = image.length<1>();
+    logger.info() << "Last pixel: " << image[{width-1, height-1}];
 
-		logger.info();
+    logger.info();
 
-		logger.info() << "Reclosing file.";
-		File::close(fptr);
+    logger.info() << "Reclosing file.";
+    File::close(fptr);
 
-		logger.info();
+    logger.info();
 
-		return Elements::ExitCode::OK;
-	}
+    return Elements::ExitCode::OK;
+  }
 
 };
 

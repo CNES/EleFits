@@ -38,36 +38,37 @@ using boost::program_options::value;
 using namespace Euclid::FitsIO;
 
 
-Raster<float> generate_raster(int naxis1, int naxis2) {
-	int order = 10;
-	while(order < naxis2)
-		order *= 10;
-	Raster<float, 2> raster({naxis1, naxis2});
-	for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
-		raster[{i, j}] = float(i) + float(j)/order;
-	return raster;
+VecRaster<float> generate_raster(int naxis1, int naxis2) {
+  int order = 10;
+  while(order < naxis2)
+    order *= 10;
+  VecRaster<float, 2> raster({naxis1, naxis2});
+  for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
+    raster[{i, j}] = float(i) + float(j)/order;
+  return raster;
 }
 
 struct table_t {
-	Column<std::string> string_col;
-	Column<float> float_col;
-	Column<int> int_col;
+  VecColumn<std::string> string_col;
+  VecColumn<float> float_col;
+  VecColumn<int> int_col;
 };
 
 table_t generate_columns(int naxis2) {
-	std::vector<std::string> strings(naxis2);
-	std::vector<float> floats(naxis2);
-	std::vector<int> ints(naxis2);
-	for(int i=0; i<naxis2; ++i) {
-		strings[i] = "Text";
-		floats[i] = float(i) / naxis2;
-		ints[i] = i * naxis2;
-	}
-	table_t table;
-	table.string_col = Column<std::string> { "STRINGS", 8, "", std::move(strings) };
-	table.float_col = Column<float> { "FLOATS", 1, "", std::move(floats) };
-	table.int_col = Column<int> { "INTS", 1, "", std::move(ints) };
-	return table;
+  std::vector<std::string> strings(naxis2);
+  std::vector<float> floats(naxis2);
+  std::vector<int> ints(naxis2);
+  for(int i=0; i<naxis2; ++i) {
+    strings[i] = "Text";
+    floats[i] = float(i) / naxis2;
+    ints[i] = i * naxis2;
+  }
+  table_t table {
+      VecColumn<std::string>({"STRINGS", "", 8}, std::move(strings)),
+      VecColumn<float>({"FLOATS", "", 1}, std::move(floats)),
+      VecColumn<int>({ "INTS", "", 1}, std::move(ints))
+  };
+  return table;
 }
 
 
@@ -77,57 +78,57 @@ class EL_FitsIO_WritePerf : public Elements::Program {
 
 public:
 
-	options_description defineSpecificProgramOptions() override {
-		options_description options {};
-		options.add_options()
-				("images", value<int>()->default_value(0), "Number of image extensions")
-				("tables", value<int>()->default_value(0), "Number of bintable extensions")
-				("naxis1", value<int>()->default_value(1), "First axis size")
-				("naxis2", value<int>()->default_value(1), "Second axis size")
-				("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
-		return options;
-	}
+  options_description defineSpecificProgramOptions() override {
+    options_description options {};
+    options.add_options()
+        ("images", value<int>()->default_value(0), "Number of image extensions")
+        ("tables", value<int>()->default_value(0), "Number of bintable extensions")
+        ("naxis1", value<int>()->default_value(1), "First axis size")
+        ("naxis2", value<int>()->default_value(1), "Second axis size")
+        ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    return options;
+  }
 
-	Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
-		
-		Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
-		
-		const auto image_count = args["images"].as<int>();
-		const auto table_count = args["tables"].as<int>();
-		const auto naxis1 = args["naxis1"].as<int>();
-		const auto naxis2 = args["naxis2"].as<int>();
-		const auto filename = args["output"].as<std::string>();
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-		const auto raster = generate_raster(naxis1, naxis2);
-		const auto table = generate_columns(naxis2);
+    Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
+    
+    const auto image_count = args["images"].as<int>();
+    const auto table_count = args["tables"].as<int>();
+    const auto naxis1 = args["naxis1"].as<int>();
+    const auto naxis2 = args["naxis2"].as<int>();
+    const auto filename = args["output"].as<std::string>();
 
-		MefFile f(filename, FitsFile::Permission::OVERWRITE);
-		
-		logger.info() << "Generating " << image_count << " image extension(s)"
-				<< " of size " << naxis1 << " x " << naxis2;
+    const auto raster = generate_raster(naxis1, naxis2);
+    const auto table = generate_columns(naxis2);
 
-		std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-		for(int i=0; i<image_count; ++i)
-			f.assign_image_ext("I_" + std::to_string(i), raster);
-		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-		auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    MefFile f(filename, FitsFile::Permission::OVERWRITE);
+    
+    logger.info() << "Generating " << image_count << " image extension(s)"
+        << " of size " << naxis1 << " x " << naxis2;
 
-		logger.info() << "\tElapsed: " << duration_ms << " ms";
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    for(int i=0; i<image_count; ++i)
+      f.assign_image_ext("I_" + std::to_string(i), raster);
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-		logger.info() << "Generating " << table_count << " bintable extension(s)"
-				<< " of size " << 3 << " x " << naxis2;
+    logger.info() << "\tElapsed: " << duration_ms << " ms";
 
-		begin = std::chrono::steady_clock::now();
-		for(int i=0; i<table_count; ++i)
-			f.assign_bintable_ext("T_" + std::to_string(i),
-					table.string_col, table.float_col, table.int_col);
-		end = std::chrono::steady_clock::now();
-		duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    logger.info() << "Generating " << table_count << " bintable extension(s)"
+        << " of size " << 3 << " x " << naxis2;
 
-		logger.info() << "\tElapsed: " << duration_ms << " ms";
+    begin = std::chrono::steady_clock::now();
+    for(int i=0; i<table_count; ++i)
+      f.assign_bintable_ext("T_" + std::to_string(i),
+          table.string_col, table.float_col, table.int_col);
+    end = std::chrono::steady_clock::now();
+    duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-		return Elements::ExitCode::OK;
-	}
+    logger.info() << "\tElapsed: " << duration_ms << " ms";
+
+    return Elements::ExitCode::OK;
+  }
 
 };
 

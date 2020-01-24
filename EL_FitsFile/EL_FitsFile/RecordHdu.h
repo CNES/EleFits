@@ -36,85 +36,89 @@ class RecordHdu {
 
 public:
 
-	RecordHdu(fitsfile* file, std::size_t index);
+  RecordHdu(fitsfile*& file, std::size_t index);
 
-	virtual ~RecordHdu() = default;
+  virtual ~RecordHdu() = default;
 
-	/**
-	 * @brief 1-based index of the HDU.
-	 */
-	std::size_t index() const;
+  /**
+   * @brief 1-based index of the HDU.
+   */
+  std::size_t index() const;
 
-	/**
-	 * @brief Read the extension name.
-	 */
-	std::string name() const;
+  /**
+   * @brief Read the extension name.
+   */
+  std::string name() const;
 
-	/**
-	 * @brief Write the extension name.
-	 */
-	void rename(std::string) const;
+  /**
+   * @brief Write the extension name.
+   */
+  void rename(std::string) const;
 
-	/**
-	 * @brief Parse a record.
-	 */
-	template<typename T>
-	Record<T> parse_record(std::string keyword) const;
+  /**
+   * @brief Parse a record.
+   */
+  template<typename T>
+  Record<T> parse_record(std::string keyword) const;
 
-	/**
-	 * @brief Parse records.
-	 */
-	template<typename... Ts>
-	std::tuple<Record<Ts>...> parse_records(const std::vector<std::string>& keywords) const;
-	
-	/**
-	 * @brief Write a record.
-	 */
-	template<typename T>
-	void write_record(const Record<T>& record) const;
+  /**
+   * @brief Parse records.
+   */
+  template<typename... Ts>
+  std::tuple<Record<Ts>...> parse_records(const std::vector<std::string>& keywords) const;
+  
+  /**
+   * @brief Write a record.
+   */
+  template<typename T>
+  void write_record(const Record<T>& record) const;
 
-	/**
-	 * @brief Write records.
-	 */
-	template<typename T>
-	void write_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
+  /**
+   * @brief Write records.
+   */
+  template<typename T>
+  void write_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
 
-	/**
-	 * @brief Write records.
-	 */
-	template<typename... Ts>
-	void write_records(const Record<Ts>&... records) const;
+  /**
+   * @brief Write records.
+   */
+  template<typename... Ts>
+  void write_records(const Record<Ts>&... records) const;
 
-	/**
-	 * @brief Update a record if it exists; write a new record otherwise.
-	 */
-	template<typename T>
-	void update_record(const Record<T>& record) const;
+  /**
+   * @brief Update a record if it exists; write a new record otherwise.
+   */
+  template<typename T>
+  void update_record(const Record<T>& record) const;
 
-	/**
-	 * @brief Update a record if it exists; write a new record otherwise.
-	 */
-	template<typename T>
-	void update_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
+  /**
+   * @brief Update a record if it exists; write a new record otherwise.
+   */
+  template<typename T>
+  void update_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
 
-	/**
-	 * @brief Update records if they exists; write new records otherwise.
-	 */
-	template<typename... Ts>
-	void update_records(const Record<Ts>&... records) const;
+  /**
+   * @brief Update records if they exists; write new records otherwise.
+   */
+  template<typename... Ts>
+  void update_records(const Record<Ts>&... records) const;
 
-	/**
-	 * @brief Delete a record.
-	 */
-	void delete_record(std::string keyword) const;
+  /**
+   * @brief Delete a record.
+   */
+  void delete_record(std::string keyword) const;
 
 protected:
 
-	void goto_this_hdu() const;
+  void goto_this_hdu() const;
 
-	fitsfile* m_fptr;
+  /**
+   * This is a reference to a pointer because we want the pointer to be valid
+   * even if file is closed and reopened.
+   */
+  fitsfile*& m_fptr;
 
-	std::size_t m_index;
+  std::size_t m_index;
 
 };
 
@@ -126,48 +130,48 @@ protected:
 
 template<typename T>
 Record<T> RecordHdu::parse_record(std::string keyword) const {
-	goto_this_hdu();
-	return Cfitsio::Header::parse_record<T>(m_fptr, keyword);
+  goto_this_hdu();
+  return Cfitsio::Header::parse_record<T>(m_fptr, keyword);
 }
 
 template<typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parse_records(const std::vector<std::string>& keywords) const {
-	goto_this_hdu();
-	return Cfitsio::Header::parse_records<Ts...>(m_fptr, keywords);
+  goto_this_hdu();
+  return Cfitsio::Header::parse_records<Ts...>(m_fptr, keywords);
 }
 
 template<typename T>
 void RecordHdu::write_record(const Record<T>& record) const {
-	goto_this_hdu();
-	Cfitsio::Header::write_record(m_fptr, record);
+  goto_this_hdu();
+  Cfitsio::Header::write_record(m_fptr, record);
 }
 
 template<typename T>
 void RecordHdu::write_record(std::string keyword, T value, std::string unit, std::string comment) const {
-	write_record(Record<T>(keyword, value, unit, comment));
+  write_record(Record<T>(keyword, value, unit, comment));
 }
 
 template<typename... Ts>
 void RecordHdu::write_records(const Record<Ts>&... records) const {
-	goto_this_hdu();
-	Cfitsio::Header::write_records(m_fptr, records...);
+  goto_this_hdu();
+  Cfitsio::Header::write_records(m_fptr, records...);
 }
 
 template<typename T>
 void RecordHdu::update_record(const Record<T>& record) const {
-	goto_this_hdu();
-	Cfitsio::Header::update_record(m_fptr, record);
+  goto_this_hdu();
+  Cfitsio::Header::update_record(m_fptr, record);
 }
 
 template<typename T>
 void RecordHdu::update_record(std::string keyword, T value, std::string unit, std::string comment) const {
-	update_record(Record<T>(keyword, value, unit, comment));
+  update_record(Record<T>(keyword, value, unit, comment));
 }
 
 template<typename... Ts>
 void RecordHdu::update_records(const Record<Ts>&... records) const {
-	goto_this_hdu();
-	Cfitsio::Header::update_records(m_fptr, records...);
+  goto_this_hdu();
+  Cfitsio::Header::update_records(m_fptr, records...);
 }
 
 }

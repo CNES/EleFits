@@ -37,7 +37,7 @@ namespace Cfitsio {
 
 /**
  * @brief Type traits to convert C++ types to CFitsIO type codes.
- * 
+ * @details
  * Used to read and write:
  * * Record's,
  * * Image's,
@@ -79,13 +79,13 @@ struct TypeCode {
 template<typename T>
 struct TypeCode<T*> {
     
-	inline static int for_bintable() {
-		return TypeCode<T>::for_bintable();
-	}
+  inline static int for_bintable() {
+    return TypeCode<T>::for_bintable();
+  }
 
-	inline static std::string bintable_format(int width) {
-		return TypeCode<T>::bintable_format(width);
-	}
+  inline static std::string bintable_format(int width) {
+    return TypeCode<T>::bintable_format(width);
+  }
 
 };
 
@@ -95,13 +95,13 @@ struct TypeCode<T*> {
 template<typename T>
 struct TypeCode<std::vector<T>> {
 
-	inline static int for_bintable() {
-		return TypeCode<T*>::for_bintable();
-	}
+  inline static int for_bintable() {
+    return TypeCode<T*>::for_bintable();
+  }
 
-	inline static std::string bintable_format(int width) {
-		return TypeCode<T*>::bintable_format(width);
-	}
+  inline static std::string bintable_format(int width) {
+    return TypeCode<T*>::bintable_format(width);
+  }
 
 };
 
@@ -132,9 +132,10 @@ struct TypeCode<std::vector<T>> {
 /*
  * From CFitsIO documentation "Keyword Reading Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node38.html
- * 
+ *
  * Allowed types for records:
- * TSTRING, TLOGICAL (== int), TBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TULONG, TLONGLONG, TFLOAT, TDOUBLE, TCOMPLEX, and TDBLCOMPLEX
+ * TSTRING, TLOGICAL (== int), TBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TULONG, TLONGLONG,
+ * TFLOAT, TDOUBLE, TCOMPLEX, and TDBLCOMPLEX
  */
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)

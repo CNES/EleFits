@@ -25,16 +25,31 @@
 
 #include "EL_FitsData//FitsDataFixture.h"
 
+using namespace Euclid::FitsIO::Test;
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE (FitsDataFixture_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+BOOST_AUTO_TEST_CASE( approx_self_test ) {
+  SmallRaster a(1, 2);
+  BOOST_CHECK(a.approx(a));
+}
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+BOOST_AUTO_TEST_CASE( approx_different_shapes_test ) {
+  SmallRaster a(1, 2);
+  SmallRaster b(2, 3);
+  BOOST_CHECK(not a.approx(b));
+}
 
+BOOST_AUTO_TEST_CASE( not_approx_test ) {
+  SmallRaster a(1, 1);
+  SmallRaster b(1, 1);
+  b.vector()[0] = 2 * (a.vector()[0] + 1);
+  BOOST_CHECK(not a.approx(b));
+  BOOST_CHECK(not b.approx(a));
 }
 
 //-----------------------------------------------------------------------------

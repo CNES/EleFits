@@ -34,74 +34,157 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Type for a column info, i.e. { name, repeat, unit }
+ * @brief Column info, i.e. { name, repeat, unit }
  */
 template<typename T>
-using column_info = std::tuple<std::string, std::size_t, std::string>;
+struct ColumnInfo {
+
+  /**
+   * @brief Column name.
+   */
+  std::string name;
+
+  /**
+   * @brief Column unit.
+   */
+  std::string unit;
+
+  /**
+   * @brief Repeat count of the column, i.e. number of values per cell.
+   * @warning CFitsIO uses long instead of size_t
+   */
+  long repeat;
+
+};
+
 
 /**
  * @brief Bintable column data and metadata.
  */
 template<typename T>
-struct Column {
+class Column {
 
-	std::string name;
+public:
 
-	/**
-	 * @brief Repeat count of the column, i.e. number of values per cell.
-	 * @warning CFitsIO uses long instead of size_t
-	 */
-	long repeat;
+  virtual ~Column() = default;
+  Column(ColumnInfo<T> info);
 
-	std::string unit;
+  /**
+   * @brief Number of elements in the column, i.e. number of rows * repeat count.
+   * @warning For strings, CFitsIO requires nelements to be just the number of rows.
+   */
+  virtual std::size_t nelements() const = 0; //TODO long?
 
-	std::vector<T> data;
+  /**
+   * @brief Access the data.
+   */
+  virtual const T* data() const = 0;
 
-	/**
-	 * @brief Number of elements in the column, i.e. number of rows * repeat count.
-	 * @warning For strings, CFitsIO requires nelements to be just the number of rows.
-	 */
-	std::size_t nelements() const; //TODO long?
+  /**
+   * @brief Column metadata.
+   */
+  ColumnInfo<T> info;
 
 };
 
 
-///////////////
-// INTERNAL //
-/////////////
-
-
-/// @cond INTERNAL
-namespace internal {
-
 /**
- * Helper function to specialize nelements for strings.
+ * @brief Column which references some external pointer data.
+ * @details Use it for temporary columns.
  */
 template<typename T>
-std::size_t column_nelements(const Column<T>& column);
+class PtrColumn : public Column<T> {
 
+public:
+
+  virtual ~PtrColumn() = default;
+  PtrColumn(const PtrColumn&) = default;
+  PtrColumn(PtrColumn&&) = default;
+  PtrColumn& operator=(const PtrColumn&) = default;
+  PtrColumn& operator=(PtrColumn&&) = default;
+
+  PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data);
+
+  virtual std::size_t nelements() const;
+
+  virtual const T* data() const;
+
+private:
+
+  std::size_t m_nelements;
+  const T* m_data;
+
+};
 
 
 /**
- * In general, nelements is the number of values,
- * i.e. number of rows * repeat count.
+ * @brief Column which references some external vector data.
+ * @details Use it for temporary columns.
  */
 template<typename T>
-inline std::size_t column_nelements(const Column<T>& column) {
-	return column.repeat * column.data.size();
-}
+class VecRefColumn : public Column<T> {
+
+public:
+
+  virtual ~VecRefColumn() = default;
+  VecRefColumn(const VecRefColumn&) = default;
+  VecRefColumn(VecRefColumn&&) = default;
+  VecRefColumn& operator=(const VecRefColumn&) = default;
+  VecRefColumn& operator=(VecRefColumn&&) = default;
+
+  VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector);
+
+  virtual std::size_t nelements() const;
+
+  virtual const T* data() const;
+
+  const std::vector<T>& vector() const;
+
+private:
+
+  const std::vector<T>& m_vec_ref;
+
+};
+
 
 /**
- * For strings, nelements is the number of rows.
+ * @brief Column which stores internally the data.
+ * @details Use it (via move semantics) if you don't need your data after the write operation.
  */
-template<>
-inline std::size_t column_nelements<std::string>(const Column<std::string>& column) {
-	return column.data.size();
-}
+template<typename T>
+class VecColumn : public Column<T> {
 
-}
+public:
 
-/// @endcond
+  virtual ~VecColumn() = default;
+  VecColumn(const VecColumn&) = default;
+  VecColumn(VecColumn&&) = default;
+  VecColumn& operator=(const VecColumn&) = default;
+  VecColumn& operator=(VecColumn&&) = default;
+
+  VecColumn(ColumnInfo<T> info, std::vector<T> vector);
+
+  virtual std::size_t nelements() const;
+
+  virtual const T* data() const;
+
+  T* data();
+
+  const std::vector<T>& vector() const;
+
+  /**
+   * @brief Non-const reference to the data, useful to take ownership through move semantics.
+   * @code
+   * std::vector<T> v = std::move(column.vector());
+   * @endcode
+   */
+  std::vector<T>& vector();
+
+private:
+
+  std::vector<T> m_vec;
+
+};
 
 
 /////////////////////
@@ -110,8 +193,80 @@ inline std::size_t column_nelements<std::string>(const Column<std::string>& colu
 
 
 template<typename T>
-std::size_t Column<T>::nelements() const {
-	return internal::column_nelements(*this);
+Column<T>::Column(ColumnInfo<T> info) :
+    info(info) {
+}
+
+
+template<typename T>
+PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data) :
+    Column<T>(info),
+    m_nelements(nelements),
+    m_data(data) {
+}
+
+template<typename T>
+std::size_t PtrColumn<T>::nelements() const {
+  return m_nelements;
+}
+
+template<typename T>
+const T* PtrColumn<T>::data() const {
+  return m_data;
+}
+
+
+template<typename T>
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector) :
+    Column<T>(info),
+    m_vec_ref(vector) {
+}
+
+template<typename T>
+std::size_t VecRefColumn<T>::nelements() const {
+  return m_vec_ref.size();
+}
+
+template<typename T>
+const T* VecRefColumn<T>::data() const {
+  return m_vec_ref.data();
+}
+
+template<typename T>
+const std::vector<T>& VecRefColumn<T>::vector() const {
+  return m_vec_ref;
+}
+
+
+template<typename T>
+VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> vector) :
+    Column<T>(info),
+    m_vec(vector) {
+}
+
+template<typename T>
+std::size_t VecColumn<T>::nelements() const {
+  return m_vec.size();
+}
+
+template<typename T>
+const T* VecColumn<T>::data() const {
+  return m_vec.data();
+}
+
+template<typename T>
+T* VecColumn<T>::data() {
+  return m_vec.data();
+}
+
+template<typename T>
+const std::vector<T>& VecColumn<T>::vector() const {
+  return m_vec;
+}
+
+template<typename T>
+std::vector<T>& VecColumn<T>::vector() {
+  return m_vec;
 }
 
 
