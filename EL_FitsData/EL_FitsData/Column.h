@@ -162,6 +162,8 @@ public:
   VecColumn& operator=(const VecColumn&) = default;
   VecColumn& operator=(VecColumn&&) = default;
 
+  VecColumn();
+
   VecColumn(ColumnInfo<T> info, std::vector<T> vector);
 
   virtual std::size_t nelements() const;
@@ -237,6 +239,12 @@ const std::vector<T>& VecRefColumn<T>::vector() const {
   return m_vec_ref;
 }
 
+
+template<typename T>
+VecColumn<T>::VecColumn() :
+    Column<T>({ "", "", 1 }),
+    m_vec() {
+}
 
 template<typename T>
 VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> vector) :
