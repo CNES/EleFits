@@ -101,7 +101,6 @@ void _read_column_chunk(
     std::size_t first_row, std::size_t row_count) {
   int status = 0;
   auto begin = column.vector().data() + first_row - 1;
-  printf("Reading column %d from row %d to row %d\n", index, first_row, first_row + row_count - 1); //TODO
   fits_read_col(fptr,
       TypeCode<T>::for_bintable(),
       index,

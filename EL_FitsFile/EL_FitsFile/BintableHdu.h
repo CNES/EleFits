@@ -48,6 +48,9 @@ public:
   template<typename T>
   VecColumn<T> read_column(std::string name) const;
 
+  template<typename... Ts>
+  std::tuple<VecColumn<Ts>...> read_columns(std::vector<std::string> names) const;
+
   /**
    * @brief Write a Column.
    */
@@ -66,6 +69,12 @@ template<typename T>
 VecColumn<T> BintableHdu::read_column(std::string name) const {
   goto_this_hdu();
   return Cfitsio::Bintable::read_column<T>(m_fptr, name);
+}
+
+template<typename... Ts>
+std::tuple<VecColumn<Ts>...> BintableHdu::read_columns(std::vector<std::string> names) const {
+  goto_this_hdu();
+  return Cfitsio::Bintable::read_columns<Ts...>(m_fptr, names);
 }
 
 template<typename T>

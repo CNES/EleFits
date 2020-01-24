@@ -41,10 +41,12 @@ find_package(Cfitsio REQUIRED)
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
-elements_add_executable(EL_FitsIO_WritePerf src/program/EL_FitsIO_WritePerf.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_Cfitsio_WritePerf src/program/EL_Cfitsio_WritePerf.cpp
                      LINK_LIBRARIES ElementsKernel Cfitsio)
+elements_add_executable(EL_FitsIO_WritePerf src/program/EL_FitsIO_WritePerf.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_FitsIO_BufferedReadPerf src/program/EL_FitsIO_BufferedReadPerf.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
 #===============================================================================
 # Declare the Boost tests here
