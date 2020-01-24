@@ -12,14 +12,21 @@ Toward initial release (1.0)
 * Reading and writing of binary table data
 * Reading and writing of image data
 
-## Missing features
+## Missing features which could be added
 
-* Boolean columns are not supported (requires discussions with CFitsIO devs)
 * Bintables cannot be modified (e.g. add or remove columns or rows)
 * Bintables cannot be preprocessed (sorted or filtered)
 * HDUs cannot be removed
+* Images cannot be (de)compressed
+* Tables cannot be read by rows
+* Images and tables cannot be copied
+
+## Missing features which will probably not be added
+
+* Iterators are not supported
+* Row selection is not supported
 
 ## Known bugs
 
-* Vector columns are not working except string columns (memory management issue)
+* Boolean columns are not working (requires discussions with CFitsIO devs)
 * Units are not consistently handled in records

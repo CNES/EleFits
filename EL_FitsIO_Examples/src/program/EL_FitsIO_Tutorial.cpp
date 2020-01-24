@@ -101,8 +101,8 @@ public:
     //! [Create a complete record]
     primary.write_record(complete_record);
 
-    //! [Assign a bintable extension]
     const auto columns = create_columns();
+    //! [Assign a bintable extension]
     f.assign_bintable_ext("TABLE", columns.name_col, columns.speed_col);
     //! [Assign a bintable extension]
 

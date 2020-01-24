@@ -61,7 +61,8 @@ void check_vector() {
   input.info.repeat = repeat;
   const std::string filename = "/tmp/vec.fits"; //TODO Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::OVERWRITE); //TODO TEMPORARY);
-  file.assign_bintable_ext("BINEXT", input);
+  file.init_bintable_ext("BINEXT", input.info);
+  file.access_first<BintableHdu>("BINEXT").write_column(input);
   const auto output = file.access_first<BintableHdu>("BINEXT").read_column<T>(input.info.name);
 }
 

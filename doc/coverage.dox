@@ -29,7 +29,7 @@ Legend:
   - HDU type
   - Copy HDUs
   - Copy header
-  - Delete HDU
+  - *Delete HDU*
 - Keyword Reading Routines
   - Record count (useful?)
   - **Read/parse keyword**
@@ -61,7 +61,7 @@ Legend:
 - Binary Table Routines (ASCII tables not supported)
   - **Create table extension**
   - *Read row/column count*
-  - **Find column which matches name template**
+  - **Find the first column which matches a name template**
   - Read column type
   - Read column dimension (vector columns)
   - Insert/delete rows

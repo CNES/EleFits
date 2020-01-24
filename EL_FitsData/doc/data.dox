@@ -44,7 +44,7 @@ The library comes with several ready-to-use implementations:
 
 - PtrColumn is the lightest structure: it just knows a pointer to the first element of the column;
 - VecRefColumn works with a std::vector and is similar to PtrColumn in that it does not own the data: just a reference to it;
-- Finally, VecColumn owns the data as a std::vector.
+- Finally, VecColumn owns the data as an std::vector and is compatible with the move semantics.
 
 To write a column, any Column implementation works: you can even provide your own, e.g. EigenColumn.
 Columns are always read as VecColumn instances.

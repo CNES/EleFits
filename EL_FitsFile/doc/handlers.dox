@@ -28,10 +28,10 @@ This means:
 - That you have to resize the Primary array size in order to write data to it.
 
 
-\section handlers-mef Multiple extension Fits
+\section handlers-mef Multi-extension Fits
 
 
-Multiple extension Fits (MEF) files are manipulated through the MefFile class.
+Multi-extension Fits (MEF) files are manipulated through the MefFile class.
 MefFile gives you access to the existing HDUs of a file, and provide creation methods of two kinds:
 
 - init_xxx methods just fill the header of a new HDU;

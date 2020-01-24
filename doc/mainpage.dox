@@ -30,9 +30,14 @@ instead of the all-in-one and flat `fitsfile` structure;
 - A **comprehensive testing** and validation code.
 
 Simplicity comes at the cost of completeness,
-and EL_FitsIO misses CFitsIO features that we found less important or too complex,
-like ASCII table extensions, streaming or compression.
+and EL_FitsIO misses:
+- CFitsIO features that we found less important or too complex,
+like ASCII table extensions, streaming or compression;
+- Features already well implemented in other Euclid libraries,
+like iterators covered by EL_CatalogLib;
+- Features that we didn't have time to implement yet.
 
+For a clear overview of what's there and what's missing, see \ref cfitsio-cov.
 
 \section cmake Configuring a project to depend on EL_FitsIO
 
@@ -66,8 +71,8 @@ For advanced users, a description of the module contents is provided below.
 
 The end-user API is made of two kinds of classes:
 
-- \ref data-classes "data classes" store raw data;
-- \ref handlers "service classes" allow reading and writing the data.
+- \ref data-classes "Data classes" store raw data;
+- \ref handlers "Service classes" allow reading and writing the data.
 
 Records, image rasters and bintable columns are implemented as light structures to abstract from CFitsIO raw pointers:
 
@@ -97,7 +102,7 @@ To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validatio
 
 
 - **EL_FitsData** contains basic **data-storage structures**:
-Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO raw pointers.
+Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers.
 - **EL_CfitsioWrapper** is an internal CFitsIO wrapper:
 A set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
 ease type handling through templates, and throw exceptions instead of returning error codes;
@@ -109,8 +114,9 @@ Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile imp
 which demonstrates the reading and writing of records, images and bintables with the three APIs;
 Of course, this is also where the tutorial is implemented.
 - **EL_FitsIO_Validation** contains **validation executables**:
-Generator programs allow creating dummy Fits files from scratch;
-The performances of the library are compared to those of CFitsIO.
+  - Generator programs allow creating dummy Fits files from scratch;
+  - The performances of the library are compared to those of CFitsIO;
+  - A validation script checks that all of the provided programs run smoothly.
 
 */
 
