@@ -79,11 +79,13 @@ public:
     logger.info() << "Writing " << count << " bintable extension(s)"
         << " of " << cols << " columns and " << rows << " rows";
 
-    const auto table = generate_table(cols, rows);
-    for(int i=0; i<count; ++i)
-      f.assign_bintable_ext("T_" + std::to_string(i),
-          table[0], table[1], table[2], table[3], table[4], table[5], table[6], table[7], table[8], table[9]);
-    
+    {
+      const auto table = generate_table(cols, rows);
+      for(int i=0; i<count; ++i)
+        f.assign_bintable_ext("T_" + std::to_string(i),
+            table[0], table[1], table[2], table[3], table[4], table[5], table[6], table[7], table[8], table[9]);
+    }
+        
     logger.info() << "Reading column-wise";
     auto begin = std::chrono::steady_clock::now();
     for(int i=0; i<count; ++i) {

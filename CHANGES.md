@@ -2,6 +2,10 @@
 
 # 1.1
 
+## New features
+
+* Row-wise bintable reading (huge performance improvement, not available in CFitsIO)
+
 # 1.0
 
 ## Initial features
