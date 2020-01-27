@@ -194,8 +194,9 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
   may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
-  using mock_unpack = int[];
-  (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
+  // using mock_unpack = int[];
+  // (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
+  Bintable::write_columns(fptr, table...);
 }
 
 /// @cond INTERNAL

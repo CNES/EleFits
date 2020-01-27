@@ -75,6 +75,8 @@ public:
    */
   virtual std::size_t nelements() const = 0; //TODO long?
 
+  std::size_t rows() const;
+
   /**
    * @brief Access the data.
    */
@@ -197,6 +199,11 @@ private:
 template<typename T>
 Column<T>::Column(ColumnInfo<T> info) :
     info(info) {
+}
+
+template<typename T>
+std::size_t Column<T>::rows() const {
+  return nelements() / info.repeat; //TODO
 }
 
 

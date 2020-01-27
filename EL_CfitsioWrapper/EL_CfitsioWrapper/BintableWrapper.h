@@ -58,10 +58,16 @@ template<typename ...Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, std::vector<std::string> names);
 
 /**
- * @brief Write a binary table column with given name.
+ * @brief Write a binary table column.
  */
 template<typename T>
 void write_column(fitsfile* fptr, const FitsIO::Column<T>& column);
+
+/**
+ * @brief Write several bintable columns.
+ */
+template<typename... Ts>
+void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
 
 ///////////////
@@ -129,6 +135,45 @@ struct _read_column_chunks<0, Ts...> {
         std::tuple<FitsIO::VecColumn<Ts>...>& columns,
         std::size_t first_row, std::size_t row_count) {
       _read_column_chunk(fptr, indices[0], std::get<0>(columns), first_row, row_count);
+    }
+};
+
+template<typename T>
+void _write_column_chunk(
+    fitsfile* fptr, std::size_t index,
+    const FitsIO::Column<T>& column,
+    std::size_t first_row, std::size_t row_count) {
+  int status = 0;
+  std::size_t size = row_count * column.info.repeat;
+  auto begin = column.data() + first_row - 1;
+  auto end = begin + size;
+  std::vector<T> vec(begin, end);
+  fits_write_col(fptr,
+      TypeCode<T>::for_bintable(),
+      index,
+      first_row, 1, size,
+      vec.data(),
+      &status);
+}
+
+template<int i, typename ...Ts>
+struct _write_column_chunks {
+    void operator() (
+        fitsfile* fptr,
+        std::tuple<const FitsIO::Column<Ts>&...> columns,
+        std::size_t first_row, std::size_t row_count) {
+      _write_column_chunk(fptr, i, std::get<i>(columns), first_row, row_count);
+      _write_column_chunks<i-1, Ts...>{}(fptr, columns, first_row, row_count);
+    }
+};
+
+template<typename ...Ts>
+struct _write_column_chunks<0, Ts...> {
+    void operator() (
+        fitsfile* fptr,
+        std::tuple<const FitsIO::Column<Ts>&...> columns,
+        std::size_t first_row, std::size_t row_count) {
+      _write_column_chunk(fptr, 0, std::get<0>(columns), first_row, row_count);
     }
 };
 
@@ -217,6 +262,23 @@ std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, std::vector<st
     internal::_read_column_chunks<sizeof...(Ts)-1, Ts...>{}(fptr, indices, columns, first, chunk_rows);
   }
   return columns;
+}
+
+template<typename... Ts>
+void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
+  int status = 0;
+  auto table = std::forward_as_tuple(columns...);
+  auto rows = std::get<0>(table).rows();
+  long chunk_rows = 0;
+  fits_get_rowsize(fptr, &chunk_rows, &status);
+  if(chunk_rows == 0)
+    throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
+  for(std::size_t first=1; first<=rows; first+=chunk_rows) {
+    std::size_t last = first + chunk_rows - 1;
+    if(last > rows)
+      chunk_rows = rows - first + 1;
+    internal::_write_column_chunks<sizeof...(Ts)-1, Ts...>{}(fptr, table, first, chunk_rows);
+  }
 }
 
 }
