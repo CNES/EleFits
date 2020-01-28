@@ -2,9 +2,13 @@
 
 # 1.1
 
+## Bug fixes
+
+* Record units are correctly handled
+
 ## New features
 
-* Row-wise bintable reading (huge performance improvement, not available in CFitsIO)
+* Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
 
 # 1.0
 

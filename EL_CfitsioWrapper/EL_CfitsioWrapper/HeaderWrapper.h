@@ -128,18 +128,26 @@ struct _parse_records<0, Ts...> {
 
 template<typename T>
 FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword) {
-    int status = 0;
-    T value;
-    char* comment = (char*) malloc(FLEN_COMMENT);
-    fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, comment, &status);
-    char* unit = (char*) malloc(FLEN_COMMENT);
-    fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-    FitsIO::Record<T> record(keyword, value, std::string(unit), std::string(comment));
-    free(comment);
-    free(unit);
-    std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
-    may_throw_cfitsio_error(status, context);
-    return record;
+  int status = 0;
+  T value;
+  char* comment = (char*) malloc(FLEN_COMMENT);
+  fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, comment, &status);
+  char* unit = (char*) malloc(FLEN_COMMENT);
+  fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
+  FitsIO::Record<T> record(keyword, value, std::string(unit), std::string(comment));
+  free(comment);
+  free(unit);
+  std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  may_throw_cfitsio_error(status, context);
+  if(record.comment == record.unit) {
+    record.comment == "";
+  } else if(record.unit != "") {
+    std::string match = "[" + record.unit + "] ";
+    auto pos = record.comment.find(match);
+    if(pos != std::string::npos)
+      record.comment.erase(pos, match.length());
+  }
+  return record;
 }
 
 template<>

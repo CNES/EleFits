@@ -39,12 +39,21 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
   char* comment = (char*) malloc(FLEN_COMMENT);
   fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-  const FitsIO::Record<std::string> record(keyword, std::string(value), std::string(unit), std::string(comment));
+  FitsIO::Record<std::string> record(keyword, std::string(value), std::string(unit), std::string(comment));
   free(value);
   free(comment);
   free(unit);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
   may_throw_cfitsio_error(status, context);
+  may_throw_cfitsio_error(status, context);
+  if(record.comment == record.unit) {
+    record.comment == "";
+  } else if(record.unit != "") {
+    std::string match = "[" + record.unit + "] ";
+    auto pos = record.comment.find(match);
+    if(pos != std::string::npos)
+      record.comment.erase(pos, match.length());
+  }
   return record;
 }
 
