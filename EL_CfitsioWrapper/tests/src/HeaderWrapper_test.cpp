@@ -68,12 +68,16 @@ void check_close(std::complex<double> value, std::complex<double> expected) {
 }
 
 template<typename T>
-void check_record(std::string tag) {
+void check_record(std::string label) {
   FitsIO::Test::MinimalFile file;
   T input = FitsIO::Test::generate_random_value<T>();
-  Header::write_record(file.fptr, FitsIO::Record<T>(tag, input));
-  const auto output = Header::parse_record<T>(file.fptr, tag);
+  std::string unit = "u_" + label;
+  std::string comment = "c_" + label;
+  Header::write_record(file.fptr, FitsIO::Record<T>(label, input, unit, comment));
+  const auto output = Header::parse_record<T>(file.fptr, label);
   check_close(output.value, input);
+  BOOST_CHECK_EQUAL(output.unit, unit);
+  BOOST_CHECK_EQUAL(output.comment, comment);
 }
 
 #define TEST_RECORD_ALIAS(type, name) \
