@@ -38,6 +38,61 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
   return index;
 }
 
+namespace internal {
+
+template<> //TODO clean
+void _init_column<std::string>(
+    fitsfile* fptr,
+    std::size_t index, std::string name,
+    FitsIO::VecColumn<std::string>& column, std::size_t rows) {
+  column.info.name = name;
+  column.info.unit = ""; //TODO
+  int typecode = 0;
+  long width = 0;
+  int status = 0;
+  fits_get_coltype(fptr, index, &typecode, &column.info.repeat, &width, &status);
+  column.vector() = std::vector<std::string>(rows);
+}
+
+template<> //TODO clean
+void _read_column_chunk<std::string>(
+    fitsfile* fptr, std::size_t index,
+    FitsIO::VecColumn<std::string>& column,
+    std::size_t first_row, std::size_t row_count) {
+  int status = 0;
+  auto begin = column.vector().data() + (first_row - 1);
+  fits_read_col(fptr,
+      TypeCode<std::string>::for_bintable(),
+      index,
+      first_row, 1, row_count,
+      nullptr,
+      begin,
+      nullptr,
+      &status);
+}
+
+template<>
+void _write_column_chunk<std::string>(
+    fitsfile* fptr, std::size_t index,
+    const FitsIO::Column<std::string>& column,
+    std::size_t first_row, std::size_t row_count) {
+  int status = 0;
+  auto begin = column.data() + (first_row - 1);
+  std::size_t size = row_count;
+  auto end = begin + size;
+  std::vector<std::string> vec(begin, end);
+  fits_write_col(fptr,
+      TypeCode<std::string>::for_bintable(),
+      index + 1, //TODO check
+      first_row, 1, size,
+      vec.data(),
+      &status);
+  may_throw_cfitsio_error(status, "Cannot write column chunk: "
+      + column.info.name + '[' + std::to_string(first_row) + '-' + std::to_string(first_row + row_count - 1) + ']');
+}
+
+}
+
 template<>
 FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name) {
   size_t index = column_index(fptr, name);
