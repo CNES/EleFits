@@ -191,6 +191,25 @@ private:
 };
 
 
+///////////////
+// INTERNAL //
+/////////////
+
+namespace internal {
+
+template<typename T>
+std::size_t _rows(std::size_t nelements, long repeat);
+
+template<>
+std::size_t _rows<std::string>(std::size_t nelements, long repeat);
+
+template<typename T>
+std::size_t _rows(std::size_t nelements, long repeat) {
+  return nelements / repeat; //TODO dangerous although nelements should be a multiple of repeat
+}
+
+}
+
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
@@ -203,9 +222,8 @@ Column<T>::Column(ColumnInfo<T> info) :
 
 template<typename T>
 std::size_t Column<T>::rows() const {
-  return nelements() / info.repeat; //TODO
+  return internal::_rows<T>(nelements(), info.repeat);
 }
-
 
 template<typename T>
 PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data) :

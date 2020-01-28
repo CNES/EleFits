@@ -119,6 +119,9 @@ public:
     ext.write_records(str_record, int_record);
     //! [Write several records]
 
+    f.close();
+    f.open(filename, MefFile::Permission::READ);
+
     //! [Read a record]
     const auto record = f.access_primary<>().parse_record<int>("VALUE");
     //! [Read a record]
