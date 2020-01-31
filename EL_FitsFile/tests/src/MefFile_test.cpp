@@ -49,6 +49,21 @@ BOOST_AUTO_TEST_CASE( primary_resize_test ) {
   const auto output = f.access_primary<ImageHdu>().read_raster<float, 2>();
 }
 
+BOOST_AUTO_TEST_CASE( count_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  MefFile f(filename, MefFile::Permission::TEMPORARY);
+  BOOST_CHECK_EQUAL(f.complete_hdu_count(), 0);
+  Test::SmallRaster raster;
+  const auto& primary = f.access_primary<ImageHdu>();
+  primary.resize<float, 2>(raster.shape);
+  BOOST_CHECK_EQUAL(f.complete_hdu_count(), 1);
+  const auto& ext = f.init_image_ext<float, 2>("IMG", raster.shape);
+  BOOST_CHECK_EQUAL(f.complete_hdu_count(), 1);
+  ext.write_raster(raster);
+  BOOST_CHECK_EQUAL(f.complete_hdu_count(), 2);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
