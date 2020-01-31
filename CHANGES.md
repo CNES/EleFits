@@ -10,6 +10,8 @@
 
 * Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
 * Get the number of HDUs completely defined in a MEF file
+* Store records directly in user-defined structure when parsing
+* Write brace-initialized records
 
 ## Known bugs
 

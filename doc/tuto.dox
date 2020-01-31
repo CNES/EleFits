@@ -17,7 +17,9 @@ At the end of the tutorial, you will be able to create a MEF file from scratch w
 and to read the data back!
 
 The tutorial is built together with an example program: EL_FitsIO_Tutorial.
-You can already run it and watch the resulting file:
+We've embedded the calls to the logger in the snippets below,
+so that you can easily map the execution log to the following explanations.
+You can already run the program and watch the resulting file:
 
 \verbatim
 ERun EL_FitsIO EL_FitsIO_Tutorial --output tuto.fits
@@ -151,7 +153,8 @@ They can be written and updated one-by-one this way:
 \snippet EL_FitsIO_Tutorial.cpp Write and update a record
 
 It is also possible to write several records at once.
-In this case, Record objects must be instanciated explicitely:
+In this case, Record objects must be instanciated,
+or template parameters must be provided explicitely:
 
 \snippet EL_FitsIO_Tutorial.cpp Write several records
 
@@ -190,7 +193,12 @@ Records are parsed using RecordHdu services:
 
 \snippet EL_FitsIO_Tutorial.cpp Read a record
 
-Like for writing, you can parse several records at once:
+Like for writing, you can parse several records at once.
+The standalone way of doing so is to output a tuple of records.
+Yet, this is not the most straightforward way, as you have to acces (std::get or std::tie)
+the individual records afterwards.
+There is a cleaner way, which is probably closer to what you want to do with the values:
+You can provide your own return type, as a brace-constructible object, like a mere struct.
 
 \snippet EL_FitsIO_Tutorial.cpp Read several records
 
