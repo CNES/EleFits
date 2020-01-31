@@ -57,6 +57,13 @@ template<typename... Ts>
 std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
+ * @brief Parse records and store them in a user-defined structure.
+ * @tparam Return A class which can be brace-initialized with a pack of records or values.
+ */
+template<class Return, typename... Ts>
+Return parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords);
+
+/**
  * @brief Write a new record.
  */
 template<typename T>
@@ -117,6 +124,11 @@ struct _parse_records<0, Ts...> {
     }
 };
 
+template<class Return, typename... Ts, std::size_t... Is>
+Return _parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords, std14::index_sequence<Is...>) {
+    return { parse_record<Ts>(fptr, keywords[Is]) ... };
+}
+
 }
 /// @endcond
 
@@ -158,6 +170,11 @@ std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vecto
     std::tuple<FitsIO::Record<Ts>...> records;
     internal::_parse_records<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, records);
     return records;
+}
+
+template<class Return, typename... Ts>
+Return parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords) {
+    return internal::_parse_records_as<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
 }
 
 template<typename T>

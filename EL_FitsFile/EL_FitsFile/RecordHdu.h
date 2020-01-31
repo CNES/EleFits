@@ -66,6 +66,12 @@ public:
    */
   template<typename... Ts>
   std::tuple<Record<Ts>...> parse_records(const std::vector<std::string>& keywords) const;
+
+  /**
+   * @brief Parse records as a user-defined structure.
+   */
+  template<class Return, typename... Ts>
+  Return parse_records_as(const std::vector<std::string>& keywords) const;
   
   /**
    * @brief Write a record.
@@ -138,6 +144,12 @@ template<typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parse_records(const std::vector<std::string>& keywords) const {
   goto_this_hdu();
   return Cfitsio::Header::parse_records<Ts...>(m_fptr, keywords);
+}
+
+template<class Return, typename... Ts>
+Return RecordHdu::parse_records_as(const std::vector<std::string>& keywords) const {
+  goto_this_hdu();
+  return Cfitsio::Header::parse_records_as<Return, Ts...>(m_fptr, keywords);
 }
 
 template<typename T>

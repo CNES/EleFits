@@ -105,28 +105,44 @@ TEST_RECORD_UNSIGNED(int)
 //TEST_RECORD_UNSIGNED(long)
 
 struct RecordList {
-  FitsIO::Record<bool> b { "BOOL" };
-  FitsIO::Record<int> i { "INT" };
-  FitsIO::Record<double> d { "DOUBLE" };
-  FitsIO::Record<std::string> s { "STRING" };
+  FitsIO::Record<bool> b;
+  FitsIO::Record<int> i;
+  FitsIO::Record<double> d;
+  FitsIO::Record<std::string> s;
+};
+
+struct ValueList {
+  bool b;
+  int i;
+  double d;
+  std::string s;
 };
 
 BOOST_AUTO_TEST_CASE( struct_io_test ) {
-  // FitsIO::Test::MinimalFile file;
-  // RecordList input {
-  //     { "BOOL", true },
-  //     { "INT", 2 },
-  //     { "DOUBLE", 3.},
-  //     { "STRING", "four"}
-  // };
-  // Header::write_records(file.fptr, input.b, input.i, input.d, input.s);
-  // auto t = Header::parse_records<bool, int, double, std::string>(file.fptr,
-  //     { "BOOL", "INT", "DOUBLE", "STRING" });
-  // RecordList output = tuple_to_struct<decltype(t), RecordList>(t);
-  // BOOST_CHECK_EQUAL(output.b, input.b);
-  // BOOST_CHECK_EQUAL(output.i, input.i);
-  // BOOST_CHECK_EQUAL(output.d, input.d);
-  // BOOST_CHECK_EQUAL(output.s, input.s);
+  FitsIO::Test::MinimalFile file;
+  RecordList input {
+      { "BOOL", true },
+      { "INT", 2 },
+      { "DOUBLE", 3.},
+      { "STRING", "four"}
+  };
+  Header::write_records<bool, int, double, std::string>(file.fptr,
+    { "BOOL", true },
+    { "INT", 2 },
+    { "DOUBLE", 3.},
+    { "STRING", "four"});
+  auto records = Header::parse_records_as<RecordList, bool, int, double, std::string>(file.fptr,
+      { "BOOL", "INT", "DOUBLE", "STRING" });
+  BOOST_CHECK_EQUAL(records.b.value, input.b.value);
+  BOOST_CHECK_EQUAL(records.i.value, input.i.value);
+  BOOST_CHECK_EQUAL(records.d.value, input.d.value);
+  BOOST_CHECK_EQUAL(records.s.value, input.s.value);
+  auto values = Header::parse_records_as<ValueList, bool, int, double, std::string>(file.fptr,
+      { "BOOL", "INT", "DOUBLE", "STRING" });
+  BOOST_CHECK_EQUAL(values.b, input.b.value);
+  BOOST_CHECK_EQUAL(values.i, input.i.value);
+  BOOST_CHECK_EQUAL(values.d, input.d.value);
+  BOOST_CHECK_EQUAL(values.s, input.s.value);
 }
 
 //-----------------------------------------------------------------------------
