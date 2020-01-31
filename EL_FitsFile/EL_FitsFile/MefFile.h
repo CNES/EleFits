@@ -48,6 +48,12 @@ public:
   virtual ~MefFile() = default;
 
   /**
+   * @brief Count the number of completely defined HDUs.
+   * @warning Partially defined HDUs (e.g., the one being edited) are not counted.
+   */
+  std::size_t complete_hdu_count() const;
+
+  /**
    * @brief Access the Hdu at given index.
    * @tparam The type of Hdu: ImageHdu, BintableHdu or Hdu to just handle metadata.
    * @return A reference to the Hdu reader-writer.

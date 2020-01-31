@@ -32,6 +32,10 @@ MefFile::MefFile(std::string filename, Permission permission) :
     FitsFile(filename, permission),
     m_hdus(1) {}
 
+std::size_t MefFile::complete_hdu_count() const {
+  return Cfitsio::Hdu::count(m_fptr);
+}
+
 const RecordHdu& MefFile::init_record_ext(std::string name) {
   Cfitsio::Hdu::create_metadata_extension(m_fptr, name);
   const auto size = m_hdus.size();

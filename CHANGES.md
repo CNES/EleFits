@@ -9,6 +9,11 @@
 ## New features
 
 * Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
+* Get the number of HDUs completely defined in a MEF file
+
+## Known bugs
+
+* Boolean columns are not working
 
 # 1.0
 
