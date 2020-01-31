@@ -1,6 +1,6 @@
 # Change log
 
-# 1.1
+# 1.1 (preparing 1.2)
 
 ## Bug fixes
 
@@ -12,6 +12,11 @@
 * Get the number of HDUs completely defined in a MEF file
 * Store records directly in user-defined structure when parsing
 * Write brace-initialized records
+
+## Expected features for 1.2
+
+* Changes made to the record IOs should be ported to analogous column functions
+* Functions which input parameter packs could have tuple counterparts in order to manipulate proper objects
 
 ## Known bugs
 
