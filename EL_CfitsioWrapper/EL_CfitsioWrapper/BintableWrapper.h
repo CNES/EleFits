@@ -29,6 +29,7 @@
 
 #include "EL_FitsData/Column.h"
 
+#include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
 
@@ -69,12 +70,42 @@ void write_column(fitsfile* fptr, const FitsIO::Column<T>& column);
 template<typename... Ts>
 void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
+/**
+ * @brief Write several bintable columns.
+ */
+template<typename... Ts>
+void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns);
+
+/**
+ * @brief Insert a bintable column at given index.
+ */
+template<typename T>
+void insert_column(fitsfile* fptr, std::size_t index, const FitsIO::Column<T>& column);
+
+/**
+ * @brief Insert several bintable columns at given index.
+ */
+template<typename... Ts>
+void insert_columns(fitsfile* fptr, std::size_t index, const FitsIO::Column<Ts>&... columns);
+
+/**
+ * @brief Append a bintable column.
+ */
+template<typename T>
+void append_column(fitsfile* fptr, const FitsIO::Column<T>& column);
+
+/**
+ * @brief Append several bintable columns.
+ */
+template<typename... Ts>
+void insert_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
+
 
 ///////////////
 // INTERNAL //
 /////////////
 
-
+/// @cond INTERNAL
 namespace internal {
 
 template<typename T>
@@ -227,7 +258,13 @@ struct _write_column_chunks<0, Ts...> {
     }
 };
 
+template<typename... Ts, std::size_t... Is>
+void _write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns, std14::index_sequence<Is...>) {
+    write_columns<Ts...>(fptr, std::get<Is>(columns) ...);
 }
+
+}
+/// @endcond
 
 
 /////////////////////
@@ -329,6 +366,45 @@ void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
       chunk_rows = rows - first + 1;
     internal::_write_column_chunks<sizeof...(Ts)-1, Ts...>{}(fptr, table, first, chunk_rows);
   }
+}
+
+template<typename... Ts>
+void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns) {
+  internal::_write_columns(fptr, columns, std14::make_index_sequence<sizeof...(Ts)>());
+}
+
+template<typename T>
+void insert_column(fitsfile* fptr, std::size_t index, const FitsIO::Column<T>& column) {
+  auto name = to_char_ptr(column.info.name);
+  auto tform = to_char_ptr(TypeCode<T>::bintable_format(column.info.repeat));
+  int status = 0;
+  fits_insert_col(fptr, index, name.get(), tform.get(), &status);
+  write_column(fptr, column);
+}
+
+template<typename... Ts>
+void insert_columns(fitsfile* fptr, std::size_t index, const FitsIO::Column<Ts>&... columns) {
+  auto names = c_str_array({ columns.info.name... });
+  auto tforms = c_str_array({ TypeCode<Ts>::bintable_format(columns.info.repeat)... });
+  int status = 0;
+  fits_insert_cols(fptr, index, sizeof...(Ts), names.data(), tforms.data(), &status);
+  write_columns(fptr, columns...);
+}
+
+template<typename T>
+void append_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
+  int ncols = 0;
+  int status = 0;
+  fits_get_num_cols(fptr, &ncols, &status);
+  insert_column(fptr, ncols + 1, column);
+}
+
+template<typename... Ts>
+void append_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
+  int ncols = 0;
+  int status = 0;
+  fits_get_num_cols(fptr, &ncols, &status);
+  insert_columns(fptr, ncols + 1, columns...);
 }
 
 }

@@ -157,6 +157,19 @@ BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
   check_equal_vectors(std::get<2>(table).vector(), d.vector());
 }
 
+BOOST_FIXTURE_TEST_CASE( append_test, FitsIO::Test::MinimalFile ) {
+  using FitsIO::Test::SmallTable;
+  SmallTable table;
+  Hdu::create_bintable_extension(this->fptr, "TABLE", table.name_col);
+  const auto names = Bintable::read_column<SmallTable::name_t>(fptr, table.name_col.info.name);
+  check_equal_vectors(names.vector(), table.names);
+  Bintable::append_columns(fptr, table.dist_mag_col, table.radec_col);
+  const auto dists_mags = Bintable::read_column<SmallTable::dist_mag_t>(fptr, table.dist_mag_col.info.name);
+  check_equal_vectors(dists_mags.vector(), table.dists_mags);
+  const auto radecs = Bintable::read_column<SmallTable::radec_t>(fptr, table.radec_col.info.name);
+  check_equal_vectors(radecs.vector(), table.radecs);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
