@@ -78,6 +78,9 @@ BOOST_AUTO_TEST_CASE( append_test ) {
   const auto& ext2 = f.assign_image_ext("IMG2", raster);
   BOOST_CHECK_EQUAL(ext2.index(), 3);
   BOOST_CHECK_EQUAL(f.hdu_count(), 3);
+  std::vector<std::string> input_names { "", "IMG1", "IMG2" };
+  const auto output_names = f.hdu_names();
+  BOOST_CHECK_EQUAL_COLLECTIONS(output_names.begin(), output_names.end(), input_names.begin(), input_names.end());
 }
 
 //-----------------------------------------------------------------------------

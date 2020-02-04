@@ -24,7 +24,7 @@ Legend:
   - **Move to the HDU with given index**
   - **Move to the next HDU**
   - **Move to the first HDU with given name**
-  - *HDU count (flawed in CFitsIO)*
+  - **HDU count** (flawed in CFitsIO, fixed in EL_FitsIO)
   - **HDU index**
   - HDU type
   - Copy HDUs

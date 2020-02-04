@@ -5,13 +5,15 @@
 ## Bug fixes
 
 * Record units are correctly handled
+* Appending extensions is pre-existing MEF works
 
 ## New features
 
 * Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
-* Get the number of HDUs completely defined in a MEF file
+* Get the number of HDUs in a MEF file (fixes flawed behavior of CFitsIO)
 * Store records directly in user-defined structure when parsing
 * Write brace-initialized records
+* List HDU names
 
 ## Expected features for 1.2
 

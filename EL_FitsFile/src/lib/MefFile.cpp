@@ -36,6 +36,14 @@ std::size_t MefFile::hdu_count() const {
   return m_hdus.size();
 }
 
+std::vector<std::string> MefFile::hdu_names() {
+  const std::size_t count = hdu_count();
+  std::vector<std::string> names(count);
+  for(std::size_t i=0; i<count; ++i)
+    names[i] = access<>(i+1).name();
+  return names;
+}
+
 const RecordHdu& MefFile::init_record_ext(std::string name) {
   Cfitsio::Hdu::create_metadata_extension(m_fptr, name);
   const auto size = m_hdus.size();

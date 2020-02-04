@@ -53,6 +53,12 @@ public:
   std::size_t hdu_count() const;
 
   /**
+   * @brief Read the name of each HDU.
+   * @warning hdu_names()[i] is the name of HDU i+1.
+   */
+  std::vector<std::string> hdu_names();
+
+  /**
    * @brief Access the Hdu at given index.
    * @tparam The type of Hdu: ImageHdu, BintableHdu or Hdu to just handle metadata.
    * @return A reference to the Hdu reader-writer.
