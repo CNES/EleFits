@@ -48,10 +48,9 @@ public:
   virtual ~MefFile() = default;
 
   /**
-   * @brief Count the number of completely defined HDUs.
-   * @warning Partially defined HDUs (e.g., the one being edited) are not counted.
+   * @brief Count the number of HDUs.
    */
-  std::size_t complete_hdu_count() const;
+  std::size_t hdu_count() const;
 
   /**
    * @brief Access the Hdu at given index.
@@ -135,22 +134,21 @@ protected:
 
 template<class T>
 const T& MefFile::access(std::size_t index) {
-    Cfitsio::Hdu::goto_index(m_fptr, index);
-    auto hdu_type = Cfitsio::Hdu::current_type(m_fptr);
-  m_hdus.reserve(index);
-    auto& ptr = m_hdus[index-1];
-    switch (hdu_type) {
-    case Cfitsio::Hdu::Type::IMAGE:
-        ptr.reset(new ImageHdu(m_fptr, index));
-        break;
-    case Cfitsio::Hdu::Type::BINTABLE:
-        ptr.reset(new BintableHdu(m_fptr, index));
-        break;
-    default:
-    ptr.reset(new RecordHdu(m_fptr, index));
-        break;
-    }
-    return dynamic_cast<T&>(*ptr.get());
+  Cfitsio::Hdu::goto_index(m_fptr, index);
+  auto hdu_type = Cfitsio::Hdu::current_type(m_fptr);
+  auto& ptr = m_hdus[index-1];
+  switch (hdu_type) {
+  case Cfitsio::Hdu::Type::IMAGE:
+      ptr.reset(new ImageHdu(m_fptr, index));
+      break;
+  case Cfitsio::Hdu::Type::BINTABLE:
+      ptr.reset(new BintableHdu(m_fptr, index));
+      break;
+  default:
+  ptr.reset(new RecordHdu(m_fptr, index));
+      break;
+  }
+  return dynamic_cast<T&>(*ptr.get());
 }
 
 template<class T>

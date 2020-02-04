@@ -30,10 +30,10 @@ namespace FitsIO {
 
 MefFile::MefFile(std::string filename, Permission permission) :
     FitsFile(filename, permission),
-    m_hdus(1) {}
+    m_hdus(std::max(std::size_t(1), Cfitsio::Hdu::count(m_fptr))) {} // 1 for create, count() for open
 
-std::size_t MefFile::complete_hdu_count() const {
-  return Cfitsio::Hdu::count(m_fptr);
+std::size_t MefFile::hdu_count() const {
+  return m_hdus.size();
 }
 
 const RecordHdu& MefFile::init_record_ext(std::string name) {
