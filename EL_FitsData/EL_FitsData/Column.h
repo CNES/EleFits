@@ -195,6 +195,8 @@ private:
 // INTERNAL //
 /////////////
 
+
+/// @cond internal
 namespace internal {
 
 template<typename T>
@@ -209,6 +211,8 @@ std::size_t _rows(std::size_t nelements, long repeat) {
 }
 
 }
+/// @endcond
+
 
 /////////////////////
 // IMPLEMENTATION //

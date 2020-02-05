@@ -51,7 +51,7 @@ public:
   std::string name() const;
 
   /**
-   * @brief Write the extension name.
+   * @brief Write or update the extension name.
    */
   void rename(std::string) const;
 
@@ -62,13 +62,24 @@ public:
   Record<T> parse_record(std::string keyword) const;
 
   /**
-   * @brief Parse records.
+   * @brief Parse several records.
    */
   template<typename... Ts>
   std::tuple<Record<Ts>...> parse_records(const std::vector<std::string>& keywords) const;
 
   /**
-   * @brief Parse records as a user-defined structure.
+   * @brief Parse several records as a user-defined structure.
+   * @tparam Return A structure which can be constructed as:
+   * \code Return { T1, T2, ... } \endcode
+   * or:
+   * \code Return { Record<T1>, Record<T2>, ... } \endcode
+   * like a simple structure:
+   * \code struct Return { T1 p1; T2 p2; ... }; \endcode
+   * or a class with such constructor:
+   * \code Return::Return(T1, T2, ...) \endcode
+   * @details This is generally more convenient than a tuple
+   * because you chose how to to access the records in your own class
+   * insted of accessing them by their indices -- with \c std::get<i>(tuple).
    */
   template<class Return, typename... Ts>
   Return parse_records_as(const std::vector<std::string>& keywords) const;
@@ -80,13 +91,13 @@ public:
   void write_record(const Record<T>& record) const;
 
   /**
-   * @brief Write records.
+   * @brief Write a record.
    */
   template<typename T>
   void write_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
 
   /**
-   * @brief Write records.
+   * @brief Write several records.
    */
   template<typename... Ts>
   void write_records(const Record<Ts>&... records) const;
@@ -104,7 +115,7 @@ public:
   void update_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
 
   /**
-   * @brief Update records if they exists; write new records otherwise.
+   * @brief Update several records if they exist; write new records otherwise.
    */
   template<typename... Ts>
   void update_records(const Record<Ts>&... records) const;

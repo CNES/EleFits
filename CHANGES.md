@@ -14,6 +14,7 @@
 * Store records directly in user-defined structure when parsing
 * Write brace-initialized records
 * List HDU names
+* Insert and append new columns in bintables
 
 ## Expected features for 1.2
 

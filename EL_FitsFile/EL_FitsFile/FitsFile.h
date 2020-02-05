@@ -36,21 +36,20 @@ namespace Euclid {
 /**
  * @brief Wrapper classes to read and write Fits file contents.
  * @details
- * The classes themeselves do not store any data;
- * They just provide IO services, e.g.:
- */
-/** @code
-FitsFile f("file.fits");
-auto raster = f.image_hdu("IMAGE").read_raster<float>();
-auto column = f.bintable_hdu("BINTABLE").read_column<std::string>("COL");
-@endcode */
-/**
- * instantiates an image raster and a bintable column which are neither owned nor referenced by f.
+ * There are two types of classes:
+ * -# Service classes offer read/write services:
+ *   - File handlers (XxxFile classes) only store index and type of HDUs which have already been accessed.
+ *   - HDU handlers (XxxHdu classes) only provide read/write services.
+ *     When you access an HDU, you just access a set of services to read and write items in this HDU.
+ * -# Data classes -- Record, Raster and Column -- store data to be read and written.
  */
 namespace FitsIO {
 
 /**
  * @brief Fits file reader-writer.
+ * @details
+ * Mostly en empty shell for file opening and closing operations;
+ * Useful services are in the SifFile and MefFile classes.
  */
 class FitsFile {
 

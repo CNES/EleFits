@@ -64,8 +64,10 @@ Legend:
   - **Find the first column which matches a name template**
   - Read column type
   - Read column dimension (vector columns)
-  - Insert/delete rows
-  - Insert/delete columns
+  - Insert rows
+  - Delete rows
+  - **Insert columns**
+  - Delete columns
   - Copy rows
   - Copy columns
   - **Write scalar column elements**
@@ -92,5 +94,12 @@ Not supported.
 \section cfitsio-special Specialized CFITSIO Interface Routines
 
 Partly supported: to be documented.
+
+\section cfitsio-missing EL_FitsIO features not implemented in CFitsIO
+
+* Const-correctness
+* Consistent type management (not mixing C types and Fits types)
+* Read/write several columns at once (with optimal usage of CFitsIO buffer: boosts IOs)
+* Count the total number of HDU (CFitsIO counting excludes empty or incomplete HDUs at write time)
 
 */
