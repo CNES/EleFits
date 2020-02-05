@@ -60,7 +60,9 @@ void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
   VecRefColumn<char> quality_col({"QUALITY", "", repeat}, quality_data);
   VecRefColumn<float> var_col({"VAR", "erg^2", repeat}, var_data);
   std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
-  const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col, quality_col, var_col);
+  const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col);
+  ext.append_column(quality_col);
+  ext.append_column(var_col);
   ext.write_record("WMIN", 0.F);
   ext.write_record("BINWIDTH", 1.F);
   ext.write_record("BINCOUNT", bins);

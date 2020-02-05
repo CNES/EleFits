@@ -43,19 +43,34 @@ public:
   virtual ~BintableHdu() = default;
 
   /**
-   * @brief Read a Column with given name.
+   * @brief Read a column with given name.
    */
   template<typename T>
   VecColumn<T> read_column(std::string name) const;
 
+  /**
+   * @brief Read several columns with given names.
+   */
   template<typename... Ts>
   std::tuple<VecColumn<Ts>...> read_columns(std::vector<std::string> names) const;
 
   /**
-   * @brief Write a Column.
+   * @brief Write a column.
    */
   template<typename T>
   void write_column(const Column<T>& column) const;
+
+  /**
+   * @brief Write several columns.
+   */
+  template<typename... Ts>
+  void write_columns(const Column<Ts>&... columns) const;
+
+  /**
+   * @brief Append a column.
+   */
+  template<typename T>
+  void append_column(const Column<T>& column) const;
 
 };
 
@@ -81,6 +96,18 @@ template<typename T>
 void BintableHdu::write_column(const Column<T>& column) const {
   goto_this_hdu();
   Cfitsio::Bintable::write_column(m_fptr, column);
+}
+
+template<typename... Ts>
+void BintableHdu::write_columns(const Column<Ts>&... columns) const {
+  goto_this_hdu();
+  Cfitsio::Bintable::write_columns(m_fptr, columns...);
+}
+
+template<typename T>
+void BintableHdu::append_column(const Column<T>& column) const {
+  goto_this_hdu();
+  Cfitsio::Bintable::append_column(m_fptr, column);
 }
 
 }

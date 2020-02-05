@@ -38,6 +38,7 @@ std::size_t column_index(fitsfile* fptr, std::string name) {
   return index;
 }
 
+/// @cond internal
 namespace internal {
 
 template<> //TODO clean
@@ -92,6 +93,7 @@ void _write_column_chunk<std::string>(
 }
 
 }
+/// @endcond
 
 template<>
 FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name) {

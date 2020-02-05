@@ -387,6 +387,8 @@ void insert_columns(fitsfile* fptr, std::size_t index, const FitsIO::Column<Ts>&
   auto names = c_str_array({ columns.info.name... });
   auto tforms = c_str_array({ TypeCode<Ts>::bintable_format(columns.info.repeat)... });
   int status = 0;
+  for(std::size_t i=0; i<sizeof...(Ts); ++i)
+    printf("%s [%s]\n", names.data()[i], tforms.data()[i]);
   fits_insert_cols(fptr, index, sizeof...(Ts), names.data(), tforms.data(), &status);
   write_columns(fptr, columns...);
 }
