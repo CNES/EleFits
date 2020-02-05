@@ -43,10 +43,12 @@ static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Genera
 void writeMeta(MefFile& f, int obj_index) {
   std::string extname = std::to_string(obj_index) + "_META";
   const auto& ext = f.init_image_ext<unsigned char, 1>(extname, {0});
-  ext.write_record("DITH_NUM", 0); //TODO
-  ext.write_record("SOURC_ID", obj_index);
-  ext.write_record("RA_OBJ", 2.F * obj_index);
-  ext.write_record("DEC_OBJ", 3.F * obj_index);
+  ext.write_records<int, int, float, float>(
+      { "DITH_NUM", 0 }, //TODO
+      { "SOURC_ID", obj_index },
+      { "RA_OBJ", 2.F * obj_index },
+      { "DEC_OBJ", 3.F * obj_index }
+  );
 }
 
 void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
@@ -55,26 +57,30 @@ void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
   auto quality_data = Test::generate_random_vector<char>(bins);
   auto var_data = Test::generate_random_vector<float>(bins);
   const int repeat = 1; //TODO bins?
-  VecRefColumn<float> wmin_col({"WMIN", "nm", repeat}, wmin_data);
-  VecRefColumn<float> signal_col({"SIGNAL", "erg", repeat}, signal_data);
-  VecRefColumn<char> quality_col({"QUALITY", "", repeat}, quality_data);
-  VecRefColumn<float> var_col({"VAR", "erg^2", repeat}, var_data);
+  VecRefColumn<float> wmin_col( { "WMIN", "nm", repeat }, wmin_data);
+  VecRefColumn<float> signal_col( { "SIGNAL", "erg", repeat }, signal_data);
+  VecRefColumn<char> quality_col( { "QUALITY", "", repeat }, quality_data);
+  VecRefColumn<float> var_col( { "VAR", "erg^2", repeat }, var_data);
   std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
   const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col);
   ext.append_column(quality_col);
   ext.append_column(var_col);
-  ext.write_record("WMIN", 0.F);
-  ext.write_record("BINWIDTH", 1.F);
-  ext.write_record("BINCOUNT", bins);
-  ext.write_record("EXPTIME", 3600.F);
+  ext.write_records<float, float, int, float>(
+      { "WMIN", 0.F },
+      { "BINWIDTH", 1.F },
+      { "BINCOUNT", bins },
+      { "EXPTIME", 3600.F }
+  );
 }
 
 void writeCombinedCov(MefFile& f, int obj_index, int bins) {
   Test::RandomRaster<float, 2> cov_raster({bins, bins});
   std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
   const auto& ext = f.assign_image_ext(extname, cov_raster);
-  ext.write_record("COV_SIDE", bins);
-  ext.write_record<std::string>("CODEC", "IDENTITY");
+  ext.write_records<int, std::string>(
+      { "COV_SIDE", bins },
+      { "CODEC", "IDENTITY" }
+  );
 }
 
 void writeCombined(MefFile& f, int obj_index, int bins) {
