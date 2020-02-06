@@ -132,6 +132,11 @@ public:
     ext.write_records<std::string, int>( { "STR", "string" }, { "INT", 8 } );
     //! [Write several records]
 
+    logger.info() << "Here's the list of keywords in the extension:";
+    const auto keywords = ext.keywords();
+    for(const auto& k : keywords)
+      logger.info() << "    " << k;
+
     logger.info() << "Closing and reopening file just for fun";
     f.close();
     f.open(filename, MefFile::Permission::READ);

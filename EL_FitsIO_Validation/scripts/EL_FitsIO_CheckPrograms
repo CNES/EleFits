@@ -72,4 +72,7 @@ test_function_with_options \
 test_function_with_options \
   EL_FitsIO_WritePerf "fitsio_perf.fits" "--images 1 --tables 1"
 
+test_function_with_options \
+  EL_FitsIO_BufferedReadPerf "buffer_perf.fits" "--tables 1 --rows 3"
+
 exit $status

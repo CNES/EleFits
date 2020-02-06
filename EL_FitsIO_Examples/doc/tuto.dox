@@ -12,6 +12,11 @@ namespace FitsIO {
 In this tutorial, we will show how to read and write multi-extension Fits (MEF) files.
 This means understanding the usage of MefFile, RecordHdu, BintableHdu and ImageHdu service classes,
 as well as Record, Column and Raster data classes.
+We strongly recommend reading first the
+<a href=https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node18.html>Fits primer</a>
+or
+<a href=https://heasarc.gsfc.nasa.gov/docs/heasarc/fits_overview.html>Fits overview</a>
+if you don't already know the format.
 
 At the end of the tutorial, you will be able to create a MEF file from scratch with unlimited number of various extensions,
 and to read the data back!
@@ -201,6 +206,8 @@ There is a cleaner way, which is probably closer to what you want to do with the
 You can provide your own return type, as a brace-constructible object, like a mere struct.
 
 \snippet EL_FitsIO_Tutorial.cpp Read several records
+
+To know more about this feature, check the RecordHdu::parse_records_as documentation.
 
 
 \subsection tuto-read-bintable Read bintable values
