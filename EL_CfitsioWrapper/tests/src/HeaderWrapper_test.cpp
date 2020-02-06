@@ -104,6 +104,19 @@ TEST_RECORD_UNSIGNED(short)
 TEST_RECORD_UNSIGNED(int)
 //TEST_RECORD_UNSIGNED(long)
 
+BOOST_AUTO_TEST_CASE( empty_value_test ) {
+  FitsIO::Test::MinimalFile file;
+  FitsIO::Record<std::string> empty("EMPTY", "", "", "");
+  Header::write_record(file.fptr, empty);
+  const auto output = Header::parse_record<std::string>(file.fptr, empty.keyword);
+  BOOST_CHECK_EQUAL(output.value, "");
+}
+
+BOOST_AUTO_TEST_CASE( missing_keyword_test ) {
+  FitsIO::Test::MinimalFile file;
+  BOOST_CHECK_THROW(Header::parse_record<std::string>(file.fptr, "MISSING"), std::runtime_error);
+}
+
 struct RecordList {
   FitsIO::Record<bool> b;
   FitsIO::Record<int> i;
