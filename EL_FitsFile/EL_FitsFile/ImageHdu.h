@@ -38,12 +38,21 @@ class ImageHdu : public RecordHdu {
 
 public:
 
+  /**
+   * @brief Constructor.
+   * @warning
+   * You should not instantiate RecordHdus yourself,
+   * but using the dedicated MefFile creation method.
+   */
   ImageHdu(fitsfile*& fptr, std::size_t index);
 
+  /**
+   * @brief Destructor.
+   */
   virtual ~ImageHdu() = default;
 
   /**
-   * @brief Redefine the image size.
+   * @brief Redefine the image shape and type.
    */
   template<typename T, std::size_t n=2>
   void resize(const pos_type<n>& shape) const;

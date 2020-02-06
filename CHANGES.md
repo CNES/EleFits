@@ -25,11 +25,13 @@ Records:
 Bintables:
 
 * Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
-* Insert and append new columns in bintables
+* Append a new column in a bintable
 
 ## Considered features for 1.2
 
-* Changes made to the record IOs should be ported to analogous column functions
+* Append several columns at once in a bintable
+* Insert columns in a bintable
+* Changes made to the record IOs should be ported to analogous column functions (TBC)
 * Functions which input parameter packs could have tuple counterparts in order to manipulate proper objects (TBC)
 
 ## Known bugs

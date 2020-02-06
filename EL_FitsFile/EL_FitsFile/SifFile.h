@@ -39,17 +39,17 @@ class SifFile : public FitsFile {
 public:
 
   /**
-   * @see FitsFile::Permission
+   * @copydoc FitsFile::Permission
    */
   using FitsFile::Permission;
 
   /**
-   * @see FitsFile::~FitsFile
+   * @copydoc FitsFile::~FitsFile
    */
   virtual ~SifFile() = default;
 
   /**
-   * @see FitsFile::FitsFile
+   * @copydoc FitsFile::FitsFile
    */
   SifFile(std::string filename, Permission permission);
 

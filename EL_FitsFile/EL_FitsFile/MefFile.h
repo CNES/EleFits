@@ -40,17 +40,17 @@ class MefFile : public FitsFile {
 public:
 
   /**
-   * @see FitsFile::Permission
+   * @copydoc FitsFile::Permission
    */
   using FitsFile::Permission;
 
   /**
-   * @see FitsFile::~FitsFile
+   * @copydoc FitsFile::~FitsFile
    */
   virtual ~MefFile() = default;
 
   /**
-   * @see FitsFile::FitsFile
+   * @copydoc FitsFile::FitsFile
    */
   MefFile(std::string filename, Permission permission);
 

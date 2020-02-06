@@ -56,7 +56,7 @@ class FitsFile {
 public:
 
   /**
-   * @brief Fits file permission.
+   * @brief Fits file read/write permissions.
    */
   enum class Permission {
     READ, ///< Open as read-only
@@ -67,12 +67,13 @@ public:
   };
 
   /**
-   * @brief Create a new FitsFile with given filename and permission.
+   * @brief Create a new Fits file handler with given filename and permission.
    */
   FitsFile(std::string filename, Permission permission);
 
   /**
    * @brief Destroy the FitsFile and close the file.
+   * @details Also remove the file if permission is Permission::TEMPORARY.
    */
   virtual ~FitsFile();
 

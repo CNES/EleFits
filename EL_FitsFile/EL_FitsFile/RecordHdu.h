@@ -36,8 +36,17 @@ class RecordHdu {
 
 public:
 
+  /**
+   * @brief Constructor.
+   * @warning
+   * You should not instantiate RecordHdus yourself,
+   * but using the dedicated MefFile creation method.
+   */
   RecordHdu(fitsfile*& file, std::size_t index);
 
+  /**
+   * @brief Destructor.
+   */
   virtual ~RecordHdu() = default;
 
   /**
