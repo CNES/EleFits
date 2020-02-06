@@ -29,12 +29,17 @@ namespace Euclid {
 namespace FitsIO {
 
 FitsFile::FitsFile(std::string filename, Permission permission) :
+    m_filename(filename),
     m_permission(permission) {
   open(filename, permission);
 }
 
 FitsFile::~FitsFile() {
   close();
+}
+
+std::string FitsFile::filename() const {
+  return m_filename;
 }
 
 void FitsFile::open(std::string filename, Permission permission) {

@@ -77,6 +77,11 @@ public:
   virtual ~FitsFile();
 
   /**
+   * @brief Get the file name.
+   */
+  std::string filename() const;
+
+  /**
    * @brief Open a Fits file with given filename and permission.
    */
   void open(std::string filename, Permission permission);
@@ -94,6 +99,7 @@ public:
 protected:
 
   fitsfile* m_fptr;
+  std::string m_filename;
   Permission m_permission;
 
 };
