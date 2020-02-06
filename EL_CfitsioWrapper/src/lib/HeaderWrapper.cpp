@@ -27,6 +27,20 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Header {
 
+std::vector<std::string> list_keywords(fitsfile* fptr) {
+  int count = 0;
+  int status = 0;
+  fits_get_hdrspace(fptr, &count, nullptr, &status);
+  std::vector<std::string> keywords(count);
+  char keyword[FLEN_KEYWORD];
+  char value[FLEN_KEYWORD];
+  for(std::size_t i=0; i<count; ++i) {
+    fits_read_keyn(fptr, i+1, keyword, value, nullptr, &status);
+    keywords[i].assign(keyword);
+  }
+  return keywords;
+}
+
 template<>
 FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::string keyword) {
   int status = 0;

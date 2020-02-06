@@ -131,6 +131,13 @@ struct ValueList {
   std::string s;
 };
 
+void check_contains(
+    const std::vector<std::string>& list,
+    const std::vector<std::string>& values) {
+  for(const auto& v : values)
+    BOOST_CHECK(std::find(list.begin(), list.end(), v) != list.end());
+}
+
 BOOST_AUTO_TEST_CASE( struct_io_test ) {
   FitsIO::Test::MinimalFile file;
   RecordList input {
@@ -144,14 +151,17 @@ BOOST_AUTO_TEST_CASE( struct_io_test ) {
     { "INT", 2 },
     { "DOUBLE", 3.},
     { "STRING", "four"});
-  auto records = Header::parse_records_as<RecordList, bool, int, double, std::string>(file.fptr,
-      { "BOOL", "INT", "DOUBLE", "STRING" });
+  std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
+  const auto found = Header::list_keywords(file.fptr);
+  check_contains(found, keywords);
+  auto records = Header::parse_records_as<RecordList, bool, int, double, std::string>
+      (file.fptr, keywords);
   BOOST_CHECK_EQUAL(records.b.value, input.b.value);
   BOOST_CHECK_EQUAL(records.i.value, input.i.value);
   BOOST_CHECK_EQUAL(records.d.value, input.d.value);
   BOOST_CHECK_EQUAL(records.s.value, input.s.value);
-  auto values = Header::parse_records_as<ValueList, bool, int, double, std::string>(file.fptr,
-      { "BOOL", "INT", "DOUBLE", "STRING" });
+  auto values = Header::parse_records_as<ValueList, bool, int, double, std::string>
+      (file.fptr, keywords);
   BOOST_CHECK_EQUAL(values.b, input.b.value);
   BOOST_CHECK_EQUAL(values.i, input.i.value);
   BOOST_CHECK_EQUAL(values.d, input.d.value);

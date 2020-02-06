@@ -45,6 +45,11 @@ namespace Cfitsio {
 namespace Header {
 
 /**
+ * @brief List all the keywords.
+ */
+std::vector<std::string> list_keywords(fitsfile* fptr);
+
+/**
  * @brief Parse a record.
  */
 template<typename T>

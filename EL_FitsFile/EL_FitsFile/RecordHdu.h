@@ -56,6 +56,11 @@ public:
   void rename(std::string) const;
 
   /**
+   * @brief List the record keywords.
+   */
+  std::vector<std::string> keywords() const;
+
+  /**
    * @brief Parse a record.
    */
   template<typename T>
