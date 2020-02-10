@@ -34,7 +34,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Column info, i.e. { name, repeat, unit }
+ * @brief Column metadata, i.e. { name, unit, repeat }
  */
 template<typename T>
 struct ColumnInfo {
@@ -50,8 +50,8 @@ struct ColumnInfo {
   std::string unit;
 
   /**
-   * @brief Repeat count of the column, i.e. number of values per cell.
-   * @warning CFitsIO uses long instead of size_t
+   * @brief Repeat count of the column, i.e., number of values per cell.
+   * @warning CFitsIO needs long instead of int or size_t
    */
   long repeat;
 
@@ -66,7 +66,14 @@ class Column {
 
 public:
 
+  /**
+   * @brief Destructor.
+   */
   virtual ~Column() = default;
+
+  /**
+   * @brief Create a column with given metadata.
+   */
   Column(ColumnInfo<T> info);
 
   /**
@@ -76,7 +83,12 @@ public:
   virtual std::size_t nelements() const = 0; //TODO long?
 
   /**
-   * @brief Access the data.
+   * @brief Number of rows in the column.
+   */
+  std::size_t rows() const;
+
+  /**
+   * @brief Const pointer to the first data element.
    */
   virtual const T* data() const = 0;
 
@@ -97,12 +109,23 @@ class PtrColumn : public Column<T> {
 
 public:
 
+  /** @brief Destructor. */
   virtual ~PtrColumn() = default;
+  /** @brief Copy constructor. */
   PtrColumn(const PtrColumn&) = default;
+  /** @brief Move constructor. */
   PtrColumn(PtrColumn&&) = default;
+  /** @brief Copy assignment. */
   PtrColumn& operator=(const PtrColumn&) = default;
+  /** @brief Move assignment. */
   PtrColumn& operator=(PtrColumn&&) = default;
 
+  /**
+   * @brief Create a new column with given metadata and data.
+   * @param nelements The number of elements in the column,
+   * which is the number of rows for scalar and string columns.
+   * @param data Pointer to the first element of the data.
+   */
   PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data);
 
   virtual std::size_t nelements() const;
@@ -126,10 +149,15 @@ class VecRefColumn : public Column<T> {
 
 public:
 
+  /** @brief Destructor. */
   virtual ~VecRefColumn() = default;
+  /** @brief Copy constructor. */
   VecRefColumn(const VecRefColumn&) = default;
+  /** @brief Move constructor. */
   VecRefColumn(VecRefColumn&&) = default;
+  /** @brief Copy assignment. */
   VecRefColumn& operator=(const VecRefColumn&) = default;
+  /** @brief Move assignment. */
   VecRefColumn& operator=(VecRefColumn&&) = default;
 
   VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector);
@@ -138,6 +166,9 @@ public:
 
   virtual const T* data() const;
 
+  /**
+   * @brief Const reference to the vector data.
+   */
   const std::vector<T>& vector() const;
 
 private:
@@ -156,27 +187,47 @@ class VecColumn : public Column<T> {
 
 public:
 
+  /** @brief Destructor. */
   virtual ~VecColumn() = default;
+  /** @brief Copy constructor. */
   VecColumn(const VecColumn&) = default;
+  /** @brief Move constructor. */
   VecColumn(VecColumn&&) = default;
+  /** @brief Copy assignment. */
   VecColumn& operator=(const VecColumn&) = default;
+  /** @brief Move assignment. */
   VecColumn& operator=(VecColumn&&) = default;
 
+  /**
+   * @brief Create an empty VecColumn.
+   */
+  VecColumn();
+
+  /**
+   * @brief Crate a VecColumn with given data and metadata.
+   * @details
+   * To transfer ownership of the data instead of copying it, use move semantics:
+   * @code VecColumn column(info, std::move(vector)); @endcode
+   */
   VecColumn(ColumnInfo<T> info, std::vector<T> vector);
 
   virtual std::size_t nelements() const;
 
   virtual const T* data() const;
 
+  /**
+   * @brief Non-const pointer to the first data element.
+   */
   T* data();
 
+  /**
+   * @brief Const reference to the vector data.
+   */
   const std::vector<T>& vector() const;
 
   /**
    * @brief Non-const reference to the data, useful to take ownership through move semantics.
-   * @code
-   * std::vector<T> v = std::move(column.vector());
-   * @endcode
+   * @code std::vector<T> v = std::move(column.vector()); @endcode
    */
   std::vector<T>& vector();
 
@@ -185,6 +236,29 @@ private:
   std::vector<T> m_vec;
 
 };
+
+
+///////////////
+// INTERNAL //
+/////////////
+
+
+/// @cond internal
+namespace internal {
+
+template<typename T>
+std::size_t _rows(std::size_t nelements, long repeat);
+
+template<>
+std::size_t _rows<std::string>(std::size_t nelements, long repeat);
+
+template<typename T>
+std::size_t _rows(std::size_t nelements, long repeat) {
+  return nelements / repeat; //TODO dangerous although nelements should be a multiple of repeat
+}
+
+}
+/// @endcond
 
 
 /////////////////////
@@ -197,6 +271,10 @@ Column<T>::Column(ColumnInfo<T> info) :
     info(info) {
 }
 
+template<typename T>
+std::size_t Column<T>::rows() const {
+  return internal::_rows<T>(nelements(), info.repeat);
+}
 
 template<typename T>
 PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data) :
@@ -237,6 +315,12 @@ const std::vector<T>& VecRefColumn<T>::vector() const {
   return m_vec_ref;
 }
 
+
+template<typename T>
+VecColumn<T>::VecColumn() :
+    Column<T>({ "", "", 1 }),
+    m_vec() {
+}
 
 template<typename T>
 VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> vector) :

@@ -1,5 +1,43 @@
 # Change log
 
+# 1.1 (preparing 1.2)
+
+## Bug fixes
+
+* Record units are correctly handled
+* signed char and unsigned int's are correctly handled
+* Empty string records can be read
+* Appending extensions in pre-existing MEF works
+
+## New features
+
+File handlers:
+
+* Get the number of HDUs in a MEF file (fixes flawed behavior of CFitsIO)
+* List HDU names
+* Get the file name
+
+Records:
+
+* List record keywords
+* Store records directly in user-defined structure when parsing
+* Write brace-initialized records
+
+Bintables:
+
+* Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
+* Append new columns in a bintable
+
+## Considered features for 1.2
+
+* Insert columns in a bintable
+* Changes made to the record IOs (return user-defined struct) could be ported to analogous column functions (TBC)
+* Functions which input parameter packs could have tuple counterparts in order to manipulate proper objects (TBC)
+
+## Known bugs
+
+* Boolean columns are not working
+
 # 1.0
 
 ## Initial features

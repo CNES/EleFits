@@ -33,80 +33,101 @@ namespace FitsIO {
 
 /**
  * @brief Multi-Extension Fits file reader-writer.
+ * @details Provide HDU access/create services.
  */
 class MefFile : public FitsFile {
 
 public:
 
+  /**
+   * @copydoc FitsFile::Permission
+   */
   using FitsFile::Permission;
 
   /**
-   * @brief Create a new MefFile with given filename and permission.
+   * @copydoc FitsFile::~FitsFile
    */
-  MefFile(std::string filename, Permission permission);
-
   virtual ~MefFile() = default;
 
   /**
+   * @copydoc FitsFile::FitsFile
+   */
+  MefFile(std::string filename, Permission permission);
+
+  /**
+   * @brief Count the number of HDUs.
+   */
+  std::size_t hdu_count() const;
+
+  /**
+   * @brief Read the name of each HDU.
+   * @warning hdu_names()[i] is the name of HDU i+1.
+   */
+  std::vector<std::string> hdu_names();
+
+  /**
    * @brief Access the Hdu at given index.
-   * @tparam The type of Hdu: ImageHdu, BintableHdu or Hdu to just handle metadata.
-   * @return A reference to the Hdu reader-writer.
+   * @tparam The type of Hdu: ImageHdu, BintableHdu or RecordHdu to just handle metadata.
+   * @return A reference to the HDU reader-writer.
    * @details
-   * The type can be ImageHdu, BintableHdu or unspecified (base class Hdu).
-   * In the latter case, if needs be, the returned Hdu can still be cast to an ImageHdu or BintableHdu,
-   * or merely be used as a metadata reader-writer, e.g.:
+   * The type can be ImageHdu, BintableHdu or unspecified (base class RecordHdu).
+   * In the latter case, if needs be, the returned Hdu can still be cast to an ImageHdu or BintableHdu
+   * (e.g., \c dynamic_cast<ImageHdu&>(hdu) )
+   * or merely be used as a metadata reader-writer.
    */
   template<class T=RecordHdu>
   const T& access(std::size_t index);
 
   /**
-   * @brief Access the first Hdu with given name.
+   * @brief Access the first HDU with given name.
    * @see access
    */
   template<class T=RecordHdu>
   const T& access_first(std::string name);
 
   /**
-   * @brief Access the Primary Hdu.
+   * @brief Access the Primary HDU.
    * @see access
    */
   template<class T=RecordHdu>
   const T& access_primary();
 
   /**
-   * @brief Append an extension with optional name.
+   * @brief Append an extension.
+   * @return A reference to the new HDU of type T.
    */
   template<class T=RecordHdu>
   const T& append_ext(T extension);
 
   /**
    * @brief Append a new RecordHdu (as empty ImageHdu) with given name.
+   * @return A reference to the new RecordHdu.
    */
   const RecordHdu& init_record_ext(std::string name);
   /**
-   * @brief Append a new ImageHdu with given shape.
-   * @return A reference to the new ImageHdu.
+   * @brief Append a new ImageHdu with given name and shape.
+   * @see assign_image_ext
    */
   template<typename T, std::size_t n>
   const ImageHdu& init_image_ext(std::string name, const pos_type<n>& shape);
 
   /**
-   * @brief Append an ImageHdu with given data.
-   * @see init_image_ext
+   * @brief Append an ImageHdu with given name and data.
+   * @return A reference to the new ImageHdu.
    */
   template<typename T, std::size_t n>
   const ImageHdu& assign_image_ext(std::string name, const Raster<T, n>& raster);
 
   /**
-   * @brief Append a BintableHdu with given column info.
-   * @return A reference to the new BintableHdu.
+   * @brief Append a BintableHdu with given name and columns info.
+   * @see assign_bintable_ext
    */
   template<typename ...Ts>
   const BintableHdu& init_bintable_ext(std::string name, const ColumnInfo<Ts>&... header);
 
   /**
-   * @brief Append a BintableHdu with given data.
-   * @see init_bintable_ext
+   * @brief Append a BintableHdu with given name and data.
+   * @return A reference to the new BintableHdu.
    */
   template<typename ...Ts>
   const BintableHdu& assign_bintable_ext(std::string name, const Column<Ts>&... header);
@@ -129,22 +150,21 @@ protected:
 
 template<class T>
 const T& MefFile::access(std::size_t index) {
-    Cfitsio::Hdu::goto_index(m_fptr, index);
-    auto hdu_type = Cfitsio::Hdu::current_type(m_fptr);
-  m_hdus.reserve(index);
-    auto& ptr = m_hdus[index-1];
-    switch (hdu_type) {
-    case Cfitsio::Hdu::Type::IMAGE:
-        ptr.reset(new ImageHdu(m_fptr, index));
-        break;
-    case Cfitsio::Hdu::Type::BINTABLE:
-        ptr.reset(new BintableHdu(m_fptr, index));
-        break;
-    default:
-    ptr.reset(new RecordHdu(m_fptr, index));
-        break;
-    }
-    return dynamic_cast<T&>(*ptr.get());
+  Cfitsio::Hdu::goto_index(m_fptr, index);
+  auto hdu_type = Cfitsio::Hdu::current_type(m_fptr);
+  auto& ptr = m_hdus[index-1];
+  switch (hdu_type) {
+  case Cfitsio::Hdu::Type::IMAGE:
+      ptr.reset(new ImageHdu(m_fptr, index));
+      break;
+  case Cfitsio::Hdu::Type::BINTABLE:
+      ptr.reset(new BintableHdu(m_fptr, index));
+      break;
+  default:
+  ptr.reset(new RecordHdu(m_fptr, index));
+      break;
+  }
+  return dynamic_cast<T&>(*ptr.get());
 }
 
 template<class T>

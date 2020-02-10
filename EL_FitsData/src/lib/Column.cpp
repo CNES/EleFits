@@ -22,3 +22,20 @@
  */
 
 #include "EL_FitsData/Column.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+/// @cond internal
+namespace internal {
+
+template<>
+std::size_t _rows<std::string>(std::size_t nelements, long repeat) {
+  return nelements;
+}
+
+}
+/// @endcond
+
+}
+}

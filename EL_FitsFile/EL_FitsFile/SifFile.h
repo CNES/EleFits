@@ -32,15 +32,25 @@ namespace FitsIO {
 
 /**
  * @brief Single image Fits file handler.
+ * @details Provide read/write access to the header and image raster.
  */
 class SifFile : public FitsFile {
 
 public:
 
+  /**
+   * @copydoc FitsFile::Permission
+   */
   using FitsFile::Permission;
 
+  /**
+   * @copydoc FitsFile::~FitsFile
+   */
   virtual ~SifFile() = default;
 
+  /**
+   * @copydoc FitsFile::FitsFile
+   */
   SifFile(std::string filename, Permission permission);
 
 	/**
@@ -55,7 +65,7 @@ public:
   VecRaster<T, n> read_raster() const;
 
   /**
-   * @brief Write the Raster (initialize HDU if not done).
+   * @brief Write the Raster (initialize primary HDU if not done).
    */
   template<typename T, std::size_t n>
   void write_raster(const Raster<T, n>& raster) const;

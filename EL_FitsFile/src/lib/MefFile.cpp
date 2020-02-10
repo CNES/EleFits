@@ -30,7 +30,19 @@ namespace FitsIO {
 
 MefFile::MefFile(std::string filename, Permission permission) :
     FitsFile(filename, permission),
-    m_hdus(1) {}
+    m_hdus(std::max(std::size_t(1), Cfitsio::Hdu::count(m_fptr))) {} // 1 for create, count() for open
+
+std::size_t MefFile::hdu_count() const {
+  return m_hdus.size();
+}
+
+std::vector<std::string> MefFile::hdu_names() {
+  const std::size_t count = hdu_count();
+  std::vector<std::string> names(count);
+  for(std::size_t i=0; i<count; ++i)
+    names[i] = access<>(i+1).name();
+  return names;
+}
 
 const RecordHdu& MefFile::init_record_ext(std::string name) {
   Cfitsio::Hdu::create_metadata_extension(m_fptr, name);

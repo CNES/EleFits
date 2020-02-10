@@ -56,10 +56,11 @@ class Raster {
 
 public:
 
-  /**
-   * @brief Destructor.
-   */
+  /** @brief Destructor. */
   virtual ~Raster() = default;
+
+  /** @brief Default constructor. */
+  Raster() = default;
 
   /**
    * @brief Create a Raster with given shape.
@@ -67,12 +68,7 @@ public:
   Raster(pos_type<n> shape);
 
   /**
-   * @brief Create an VecRaster.
-   */
-  Raster() = default;
-
-  /**
-   * @brief Access the raw data.
+   * @brief Const pointer to the first data element.
    */
   virtual const T* data() const = 0;
 
@@ -120,10 +116,15 @@ class PtrRaster : public Raster<T, n> {
 
 public:
 
+  /** @brief Destructor. */
   virtual ~PtrRaster() = default;
+  /** @brief Copy constructor. */
   PtrRaster(const PtrRaster&) = default;
+  /** @brief Move constructor. */
   PtrRaster(PtrRaster&&) = default;
+  /** @brief Copy assignment. */
   PtrRaster& operator=(const PtrRaster&) = default;
+  /** @brief Move assignment. */
   PtrRaster& operator=(PtrRaster&&) = default;
 
   /**
@@ -149,10 +150,15 @@ class VecRefRaster : public Raster<T, n> {
 
 public:
 
+  /** @brief Destructor. */
   virtual ~VecRefRaster() = default;
+  /** @brief Copy constructor. */
   VecRefRaster(const VecRefRaster&) = default;
+  /** @brief Move constructor. */
   VecRefRaster(VecRefRaster&&) = default;
+  /** @brief Copy assignment. */
   VecRefRaster& operator=(const VecRefRaster&) = default;
+  /** @brief Move assignment. */
   VecRefRaster& operator=(VecRefRaster&&) = default;
 
   /**
@@ -182,14 +188,22 @@ class VecRaster : public Raster<T, n> {
 
 public:
 
+  /** @brief Destructor. */
   virtual ~VecRaster() = default;
+  /** @brief Copy constructor. */
   VecRaster(const VecRaster&) = default;
+  /** @brief Move constructor. */
   VecRaster(VecRaster&&) = default;
+  /** @brief Copy assignment. */
   VecRaster& operator=(const VecRaster&) = default;
+  /** @brief Move assignment. */
   VecRaster& operator=(VecRaster&&) = default;
 
   /**
    * @brief Create a VecRaster with given shape and values.
+   * @details
+   * To transfer ownership of the data instead of copying it, use move semantics:
+   * @code VecRaster column(shape, std::move(data)); @endcode
    */
   VecRaster(pos_type<n> shape, std::vector<T> data);
 
@@ -206,7 +220,7 @@ public:
   virtual const T* data() const;
 
   /**
-   * @brief Access the raw data.
+   * @brief Non-const pointer to the first data element.
    */
   T* data();
 
@@ -217,9 +231,7 @@ public:
 
   /**
    * @brief Non-const reference to the vector, useful to take ownership through move semantics.
-   * @code
-   * std::vector<T> v = std::move(raster.vector());
-   * @endcode
+   * @code std::vector<T> v = std::move(raster.vector()); @endcode
    */
   std::vector<T>& vector();
 

@@ -46,6 +46,10 @@ void RecordHdu::rename(std::string name) const {
   Cfitsio::Hdu::update_name(m_fptr, name);
 }
 
+std::vector<std::string> RecordHdu::keywords() const {
+  return Cfitsio::Header::list_keywords(m_fptr);
+}
+
 void RecordHdu::delete_record(std::string keyword) const {
   goto_this_hdu();
   Cfitsio::Header::delete_record(m_fptr, keyword);

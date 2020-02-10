@@ -43,6 +43,50 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
 
 //-----------------------------------------------------------------------------
 
+/**
+ * Learning test which checks that there is indeed a bug in the way
+ * CFitsIO handles unsigned integers with BZERO.
+ */
+BOOST_AUTO_TEST_CASE( cfitsio_overflow_bug_test ) {
+  FitsIO::Test::MinimalFile file;
+  char* ttype[] = {"COL"};
+  auto bintable_format = TypeCode<unsigned>::bintable_format(1);
+  char* tform[1];
+  tform[0] = (char*)malloc(3);
+  strcpy(tform[0], bintable_format.c_str());
+  char* tunit[] = {""};
+  printf("TTYPE: %s\nTFORM: %s\nTUNIT: %s\n",
+      ttype[0], tform[0], tunit[0]);
+  int status = 0;
+  fits_create_tbl(file.fptr, BINARY_TBL, 0, 1,
+      ttype, tform, tunit,
+      "TBL", &status);
+  free(tform[0]);
+
+  constexpr unsigned small = 0;
+  constexpr unsigned medium = std::numeric_limits<int>::max();
+  constexpr unsigned large = medium + 1;
+  constexpr unsigned max = std::numeric_limits<unsigned>::max();
+  BOOST_CHECK_LE(large, std::numeric_limits<unsigned>::max());
+  unsigned values[] = { small, medium, large, max };
+
+  printf("Small value: %u\n", small);
+  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[0], &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  status = 0;
+  printf("Medium value: %u\n", medium);
+  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[1], &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  status = 0;
+  printf("Large value: %u\n", large);
+  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[2], &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  status = 0;
+  printf("Max value: %u\n", max);
+  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[3], &status);
+  BOOST_CHECK_EQUAL(status, 0);
+}
+
 template<typename T>
 void check_scalar() {
   FitsIO::Test::RandomScalarColumn<T> input;
@@ -116,7 +160,7 @@ void check_vector() {
   BOOST_AUTO_TEST_CASE( vector_u##type##_test ) { check_vector<unsigned type>(); }
 
 // TEST_VECTOR(bool) //TODO won't compile because of vector specialization for bool
-// TEST_VECTOR(char) //TODO CFitsIO error 307: bad first row number (Cannot read column data)
+TEST_VECTOR(char)
 TEST_VECTOR(short)
 TEST_VECTOR(int)
 TEST_VECTOR(long)
@@ -125,7 +169,7 @@ TEST_VECTOR(double)
 TEST_VECTOR_UNSIGNED(char)
 TEST_VECTOR_UNSIGNED(short)
 TEST_VECTOR_UNSIGNED(int)
-TEST_VECTOR_UNSIGNED(long)
+// TEST_VECTOR_UNSIGNED(long)
 
 BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;
@@ -140,6 +184,34 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   check_equal_vectors(output_names.vector(), input.name_col.vector());
   const auto output_dists_mags = Bintable::read_column<SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
   check_equal_vectors(output_dists_mags.vector(), input.dist_mag_col.vector());
+}
+
+BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
+  constexpr std::size_t rows(10000);
+  FitsIO::Test::RandomScalarColumn<int> i(rows);
+  i.info.name = "I";
+  FitsIO::Test::RandomScalarColumn<float> f(rows);
+  f.info.name = "F";
+  FitsIO::Test::RandomScalarColumn<double> d(rows);
+  d.info.name = "D";
+  Hdu::create_bintable_extension(this->fptr, "BINEXT", i, f, d);
+  const auto table = Bintable::read_columns<int, float, double>(this->fptr, { "I", "F", "D" });
+  check_equal_vectors(std::get<0>(table).vector(), i.vector());
+  check_equal_vectors(std::get<1>(table).vector(), f.vector());
+  check_equal_vectors(std::get<2>(table).vector(), d.vector());
+}
+
+BOOST_FIXTURE_TEST_CASE( append_test, FitsIO::Test::MinimalFile ) {
+  using FitsIO::Test::SmallTable;
+  SmallTable table;
+  Hdu::create_bintable_extension(this->fptr, "TABLE", table.name_col);
+  const auto names = Bintable::read_column<SmallTable::name_t>(fptr, table.name_col.info.name);
+  check_equal_vectors(names.vector(), table.names);
+  Bintable::append_columns(fptr, table.dist_mag_col, table.radec_col);
+  const auto dists_mags = Bintable::read_column<SmallTable::dist_mag_t>(fptr, table.dist_mag_col.info.name);
+  check_equal_vectors(dists_mags.vector(), table.dists_mags);
+  const auto radecs = Bintable::read_column<SmallTable::radec_t>(fptr, table.radec_col.info.name);
+  check_equal_vectors(radecs.vector(), table.radecs);
 }
 
 //-----------------------------------------------------------------------------

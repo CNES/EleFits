@@ -27,24 +27,53 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Header {
 
+std::vector<std::string> list_keywords(fitsfile* fptr) {
+  int count = 0;
+  int status = 0;
+  fits_get_hdrspace(fptr, &count, nullptr, &status);
+  std::vector<std::string> keywords(count);
+  char keyword[FLEN_KEYWORD];
+  char value[FLEN_KEYWORD];
+  for(int i=0; i<count; ++i) {
+    fits_read_keyn(fptr, i+1, keyword, value, nullptr, &status);
+    keywords[i].assign(keyword);
+  }
+  return keywords;
+}
+
 template<>
 FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::string keyword) {
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
+  may_throw_cfitsio_error(status, "Cannot find string keyword " + keyword);
   if(length == 0)
-    throw std::runtime_error("Cannot find keyword " + keyword);
+    return { keyword, "" };
   char* value = nullptr; // That's the only function in which CFitsIO allocates itself!
   char* unit = (char*) malloc(FLEN_COMMENT);
   char* comment = (char*) malloc(FLEN_COMMENT);
   fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-  const FitsIO::Record<std::string> record(keyword, std::string(value), std::string(unit), std::string(comment));
+  std::string str_value(value);
+  if(status == VALUE_UNDEFINED) {
+    str_value = "";
+    status = 0;
+  }
+  FitsIO::Record<std::string> record(keyword, str_value, std::string(unit), std::string(comment));
   free(value);
   free(comment);
   free(unit);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
   may_throw_cfitsio_error(status, context);
+  may_throw_cfitsio_error(status, context);
+  if(record.comment == record.unit) {
+    record.comment == "";
+  } else if(record.unit != "") {
+    std::string match = "[" + record.unit + "] ";
+    auto pos = record.comment.find(match);
+    if(pos != std::string::npos)
+      record.comment.erase(pos, match.length());
+  }
   return record;
 }
 

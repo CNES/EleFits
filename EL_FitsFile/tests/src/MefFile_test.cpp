@@ -49,6 +49,40 @@ BOOST_AUTO_TEST_CASE( primary_resize_test ) {
   const auto output = f.access_primary<ImageHdu>().read_raster<float, 2>();
 }
 
+BOOST_AUTO_TEST_CASE( count_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  MefFile f(filename, MefFile::Permission::TEMPORARY);
+  BOOST_CHECK_EQUAL(f.hdu_count(), 1); // 0 with CFitsIO
+  Test::SmallRaster raster;
+  const auto& primary = f.access_primary<ImageHdu>();
+  primary.resize<float, 2>(raster.shape);
+  BOOST_CHECK_EQUAL(f.hdu_count(), 1);
+  const auto& ext = f.init_image_ext<float, 2>("IMG", raster.shape);
+  BOOST_CHECK_EQUAL(f.hdu_count(), 2); // 1 with CFitsIO
+  ext.write_raster(raster);
+  BOOST_CHECK_EQUAL(f.hdu_count(), 2);
+}
+
+BOOST_AUTO_TEST_CASE( append_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  MefFile f(filename, MefFile::Permission::OVERWRITE);
+  Test::SmallRaster raster;
+  const auto& ext1 = f.assign_image_ext("IMG1", raster);
+  BOOST_CHECK_EQUAL(ext1.index(), 2);
+  BOOST_CHECK_EQUAL(f.hdu_count(), 2);
+  f.close();
+  f.open(filename, MefFile::Permission::EDIT);
+  BOOST_CHECK_EQUAL(f.hdu_count(), 2);
+  const auto& ext2 = f.assign_image_ext("IMG2", raster);
+  BOOST_CHECK_EQUAL(ext2.index(), 3);
+  BOOST_CHECK_EQUAL(f.hdu_count(), 3);
+  std::vector<std::string> input_names { "", "IMG1", "IMG2" };
+  const auto output_names = f.hdu_names();
+  BOOST_CHECK_EQUAL_COLLECTIONS(output_names.begin(), output_names.end(), input_names.begin(), input_names.end());
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()

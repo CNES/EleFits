@@ -68,12 +68,16 @@ void check_close(std::complex<double> value, std::complex<double> expected) {
 }
 
 template<typename T>
-void check_record(std::string tag) {
+void check_record(std::string label) {
   FitsIO::Test::MinimalFile file;
   T input = FitsIO::Test::generate_random_value<T>();
-  Header::write_record(file.fptr, FitsIO::Record<T>(tag, input));
-  const auto output = Header::parse_record<T>(file.fptr, tag);
+  std::string unit = "u_" + label;
+  std::string comment = "c_" + label;
+  Header::write_record(file.fptr, FitsIO::Record<T>(label, input, unit, comment));
+  const auto output = Header::parse_record<T>(file.fptr, label);
   check_close(output.value, input);
+  BOOST_CHECK_EQUAL(output.unit, unit);
+  BOOST_CHECK_EQUAL(output.comment, comment);
 }
 
 #define TEST_RECORD_ALIAS(type, name) \
@@ -92,37 +96,76 @@ TEST_RECORD(int)
 TEST_RECORD(long)
 TEST_RECORD(float)
 TEST_RECORD(double)
-TEST_RECORD_ALIAS(std::complex<float>, complex_float)
-TEST_RECORD_ALIAS(std::complex<double>, complex_double)
+TEST_RECORD_ALIAS(std::complex<float>, cfloat)
+TEST_RECORD_ALIAS(std::complex<double>, cdouble)
 TEST_RECORD_ALIAS(std::string, string)
 TEST_RECORD_UNSIGNED(char)
 TEST_RECORD_UNSIGNED(short)
 TEST_RECORD_UNSIGNED(int)
 //TEST_RECORD_UNSIGNED(long)
 
+BOOST_AUTO_TEST_CASE( empty_value_test ) {
+  FitsIO::Test::MinimalFile file;
+  FitsIO::Record<std::string> empty("EMPTY", "", "", "");
+  Header::write_record(file.fptr, empty);
+  const auto output = Header::parse_record<std::string>(file.fptr, empty.keyword);
+  BOOST_CHECK_EQUAL(output.value, "");
+}
+
+BOOST_AUTO_TEST_CASE( missing_keyword_test ) {
+  FitsIO::Test::MinimalFile file;
+  BOOST_CHECK_THROW(Header::parse_record<std::string>(file.fptr, "MISSING"), std::runtime_error);
+}
+
 struct RecordList {
-  FitsIO::Record<bool> b { "BOOL" };
-  FitsIO::Record<int> i { "INT" };
-  FitsIO::Record<double> d { "DOUBLE" };
-  FitsIO::Record<std::string> s { "STRING" };
+  FitsIO::Record<bool> b;
+  FitsIO::Record<int> i;
+  FitsIO::Record<double> d;
+  FitsIO::Record<std::string> s;
 };
 
+struct ValueList {
+  bool b;
+  int i;
+  double d;
+  std::string s;
+};
+
+void check_contains(
+    const std::vector<std::string>& list,
+    const std::vector<std::string>& values) {
+  for(const auto& v : values)
+    BOOST_CHECK(std::find(list.begin(), list.end(), v) != list.end());
+}
+
 BOOST_AUTO_TEST_CASE( struct_io_test ) {
-  // FitsIO::Test::MinimalFile file;
-  // RecordList input {
-  //     { "BOOL", true },
-  //     { "INT", 2 },
-  //     { "DOUBLE", 3.},
-  //     { "STRING", "four"}
-  // };
-  // Header::write_records(file.fptr, input.b, input.i, input.d, input.s);
-  // auto t = Header::parse_records<bool, int, double, std::string>(file.fptr,
-  //     { "BOOL", "INT", "DOUBLE", "STRING" });
-  // RecordList output = tuple_to_struct<decltype(t), RecordList>(t);
-  // BOOST_CHECK_EQUAL(output.b, input.b);
-  // BOOST_CHECK_EQUAL(output.i, input.i);
-  // BOOST_CHECK_EQUAL(output.d, input.d);
-  // BOOST_CHECK_EQUAL(output.s, input.s);
+  FitsIO::Test::MinimalFile file;
+  RecordList input {
+      { "BOOL", true },
+      { "INT", 2 },
+      { "DOUBLE", 3.},
+      { "STRING", "four"}
+  };
+  Header::write_records<bool, int, double, std::string>(file.fptr,
+    { "BOOL", true },
+    { "INT", 2 },
+    { "DOUBLE", 3.},
+    { "STRING", "four"});
+  std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
+  const auto found = Header::list_keywords(file.fptr);
+  check_contains(found, keywords);
+  auto records = Header::parse_records_as<RecordList, bool, int, double, std::string>
+      (file.fptr, keywords);
+  BOOST_CHECK_EQUAL(records.b.value, input.b.value);
+  BOOST_CHECK_EQUAL(records.i.value, input.i.value);
+  BOOST_CHECK_EQUAL(records.d.value, input.d.value);
+  BOOST_CHECK_EQUAL(records.s.value, input.s.value);
+  auto values = Header::parse_records_as<ValueList, bool, int, double, std::string>
+      (file.fptr, keywords);
+  BOOST_CHECK_EQUAL(values.b, input.b.value);
+  BOOST_CHECK_EQUAL(values.i, input.i.value);
+  BOOST_CHECK_EQUAL(values.d, input.d.value);
+  BOOST_CHECK_EQUAL(values.s, input.s.value);
 }
 
 //-----------------------------------------------------------------------------

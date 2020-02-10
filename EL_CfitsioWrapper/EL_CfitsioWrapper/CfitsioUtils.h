@@ -52,6 +52,30 @@ struct c_str_array {
   char** data();
 };
 
+/**
+ * @brief C++14 index_sequence.
+ * @details To be replaced with <utility> implementation.
+ * @see https://stackoverflow.com/questions/49669958
+ */
+namespace std14 {
+
+template <std::size_t ...>
+struct index_sequence
+ { };
+
+template <std::size_t N, std::size_t ... Next>
+struct _index_sequence : public _index_sequence<N-1U, N-1U, Next...>
+ { };
+
+template <std::size_t ... Next>
+struct _index_sequence<0U, Next ... >
+ { using type = index_sequence<Next ... >; };
+
+template <std::size_t N>
+using make_index_sequence = typename _index_sequence<N>::type;
+
+}
+
 
 /////////////////////
 // IMPLEMENTATION //
