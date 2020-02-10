@@ -1,6 +1,6 @@
 # Change log
 
-# 1.1 (preparing 1.2)
+# 1.2
 
 ## Bug fixes
 
@@ -28,7 +28,7 @@ Bintables:
 * Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
 * Append new columns in a bintable
 
-## Considered features for 1.2
+## Considered features for 1.4
 
 * Insert columns in a bintable
 * Changes made to the record IOs (return user-defined struct) could be ported to analogous column functions (TBC)
