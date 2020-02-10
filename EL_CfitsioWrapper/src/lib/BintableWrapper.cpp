@@ -31,7 +31,7 @@ namespace Cfitsio {
 namespace Bintable {
 
 std::size_t column_index(fitsfile* fptr, std::string name) {
-  int index;
+  int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, to_char_ptr(name).get(), &index, &status);
   may_throw_cfitsio_error(status);
@@ -84,12 +84,13 @@ void _write_column_chunk<std::string>(
   std::vector<std::string> vec(begin, end);
   fits_write_col(fptr,
       TypeCode<std::string>::for_bintable(),
-      index + 1, //TODO check
+      index,
       first_row, 1, size,
       vec.data(),
       &status);
   may_throw_cfitsio_error(status, "Cannot write column chunk: "
-      + column.info.name + '[' + std::to_string(first_row) + '-' + std::to_string(first_row + row_count - 1) + ']');
+      + column.info.name + " (" + std::to_string(index) + "); "
+      + "rows: [" + std::to_string(first_row) + "-" + std::to_string(first_row + row_count - 1) + "-");
 }
 
 }
@@ -98,11 +99,11 @@ void _write_column_chunk<std::string>(
 template<>
 FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name) {
   size_t index = column_index(fptr, name);
-  long rows;
+  long rows = 0;
   int status = 0;
   fits_get_num_rows(fptr, &rows, &status);
   may_throw_cfitsio_error(status);
-  long repeat;
+  long repeat = 0;
   fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
   may_throw_cfitsio_error(status);
   std::vector<char*> data(rows);

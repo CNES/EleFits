@@ -70,11 +70,11 @@ void write_column(fitsfile* fptr, const FitsIO::Column<T>& column);
 template<typename... Ts>
 void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
-/**
- * @brief Write several bintable columns.
- */
-template<typename... Ts>
-void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns);
+// /**
+//  * @brief Write several bintable columns.
+//  */
+// template<typename... Ts>
+// void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns);
 
 /**
  * @brief Insert a bintable column at given index.
@@ -229,32 +229,33 @@ void _write_column_chunk(
   std::vector<T> vec(begin, end);
   fits_write_col(fptr,
       TypeCode<T>::for_bintable(),
-      index + 1, //TODO check
+      index,
       first_row, 1, size,
       vec.data(),
       &status);
   may_throw_cfitsio_error(status, "Cannot write column chunk: "
-      + column.info.name + '[' + std::to_string(first_row) + '-' + std::to_string(first_row + row_count - 1) + ']');
+      + column.info.name + " (" + std::to_string(index) + "); "
+      + "rows: [" + std::to_string(first_row) + "-" + std::to_string(first_row + row_count - 1) + "-");
 }
 
 template<int i, typename ...Ts>
 struct _write_column_chunks {
     void operator() (
-        fitsfile* fptr,
+        fitsfile* fptr, const std::vector<std::size_t>& indices,
         std::tuple<const FitsIO::Column<Ts>&...> columns,
         std::size_t first_row, std::size_t row_count) {
-      _write_column_chunk(fptr, i, std::get<i>(columns), first_row, row_count);
-      _write_column_chunks<i-1, Ts...>{}(fptr, columns, first_row, row_count);
+      _write_column_chunk(fptr, indices[i], std::get<i>(columns), first_row, row_count);
+      _write_column_chunks<i-1, Ts...>{}(fptr, indices, columns, first_row, row_count);
     }
 };
 
 template<typename ...Ts>
 struct _write_column_chunks<0, Ts...> {
     void operator() (
-        fitsfile* fptr,
+        fitsfile* fptr, const std::vector<std::size_t>& indices,
         std::tuple<const FitsIO::Column<Ts>&...> columns,
         std::size_t first_row, std::size_t row_count) {
-      _write_column_chunk(fptr, 0, std::get<0>(columns), first_row, row_count);
+      _write_column_chunk(fptr, indices[0], std::get<0>(columns), first_row, row_count);
     }
 };
 
@@ -355,7 +356,8 @@ template<typename... Ts>
 void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
   int status = 0;
   auto table = std::forward_as_tuple(columns...);
-  auto rows = std::get<0>(table).rows(); //TODO assumes all columns have same height
+  auto rows = std::get<0>(table).rows(); //TODO assumes all columns have same height => move to write chunks
+  std::vector<std::size_t> indices { column_index(fptr, columns.info.name)... };
   long chunk_rows = 0;
   fits_get_rowsize(fptr, &chunk_rows, &status);
   if(chunk_rows == 0)
@@ -364,14 +366,14 @@ void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
     std::size_t last = first + chunk_rows - 1;
     if(last > rows)
       chunk_rows = rows - first + 1;
-    internal::_write_column_chunks<sizeof...(Ts)-1, Ts...>{}(fptr, table, first, chunk_rows);
+    internal::_write_column_chunks<sizeof...(Ts)-1, Ts...>{}(fptr, indices, table, first, chunk_rows);
   }
 }
 
-template<typename... Ts>
-void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns) {
-  internal::_write_columns(fptr, columns, std14::make_index_sequence<sizeof...(Ts)>());
-}
+// template<typename... Ts>
+// void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns) {
+//   internal::_write_columns(fptr, indices, columns, std14::make_index_sequence<sizeof...(Ts)>());
+// }
 
 template<typename T>
 void insert_column(fitsfile* fptr, std::size_t index, const FitsIO::Column<T>& column) {
@@ -387,9 +389,9 @@ void insert_columns(fitsfile* fptr, std::size_t index, const FitsIO::Column<Ts>&
   auto names = c_str_array({ columns.info.name... });
   auto tforms = c_str_array({ TypeCode<Ts>::bintable_format(columns.info.repeat)... });
   int status = 0;
-  for(std::size_t i=0; i<sizeof...(Ts); ++i)
-    printf("%s [%s]\n", names.data()[i], tforms.data()[i]);
   fits_insert_cols(fptr, index, sizeof...(Ts), names.data(), tforms.data(), &status);
+  for(std::size_t i=0; i<sizeof...(Ts); ++i)
+    printf("%d-th column: %s [%s]\n", column_index(fptr, names.data()[i]), names.data()[i], tforms.data()[i]);
   write_columns(fptr, columns...);
 }
 
