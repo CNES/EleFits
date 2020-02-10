@@ -25,7 +25,7 @@ Records:
 Bintables:
 
 * Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
-* Append a new column in a bintable
+* Append new columns in a bintable
 
 ## Considered features for 1.2
 

@@ -34,7 +34,7 @@ std::vector<std::string> list_keywords(fitsfile* fptr) {
   std::vector<std::string> keywords(count);
   char keyword[FLEN_KEYWORD];
   char value[FLEN_KEYWORD];
-  for(std::size_t i=0; i<count; ++i) {
+  for(int i=0; i<count; ++i) {
     fits_read_keyn(fptr, i+1, keyword, value, nullptr, &status);
     keywords[i].assign(keyword);
   }

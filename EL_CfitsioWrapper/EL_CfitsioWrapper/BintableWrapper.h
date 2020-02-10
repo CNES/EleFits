@@ -70,12 +70,6 @@ void write_column(fitsfile* fptr, const FitsIO::Column<T>& column);
 template<typename... Ts>
 void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
-// /**
-//  * @brief Write several bintable columns.
-//  */
-// template<typename... Ts>
-// void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns);
-
 /**
  * @brief Insert a bintable column at given index.
  */
@@ -98,7 +92,7 @@ void append_column(fitsfile* fptr, const FitsIO::Column<T>& column);
  * @brief Append several bintable columns.
  */
 template<typename... Ts>
-void insert_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
+void append_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
 
 ///////////////
@@ -370,11 +364,6 @@ void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
   }
 }
 
-// template<typename... Ts>
-// void write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns) {
-//   internal::_write_columns(fptr, indices, columns, std14::make_index_sequence<sizeof...(Ts)>());
-// }
-
 template<typename T>
 void insert_column(fitsfile* fptr, std::size_t index, const FitsIO::Column<T>& column) {
   auto name = to_char_ptr(column.info.name);
@@ -390,8 +379,6 @@ void insert_columns(fitsfile* fptr, std::size_t index, const FitsIO::Column<Ts>&
   auto tforms = c_str_array({ TypeCode<Ts>::bintable_format(columns.info.repeat)... });
   int status = 0;
   fits_insert_cols(fptr, index, sizeof...(Ts), names.data(), tforms.data(), &status);
-  for(std::size_t i=0; i<sizeof...(Ts); ++i)
-    printf("%d-th column: %s [%s]\n", column_index(fptr, names.data()[i]), names.data()[i], tforms.data()[i]);
   write_columns(fptr, columns...);
 }
 

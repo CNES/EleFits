@@ -81,6 +81,12 @@ public:
   template<typename T>
   void append_column(const Column<T>& column) const;
 
+  /**
+   * @brief Append several columns.
+   */
+  template<typename... Ts>
+  void append_columns(const Column<Ts>&... columns) const;
+
 };
 
 
@@ -117,6 +123,12 @@ template<typename T>
 void BintableHdu::append_column(const Column<T>& column) const {
   goto_this_hdu();
   Cfitsio::Bintable::append_column(m_fptr, column);
+}
+
+template<typename... Ts>
+void BintableHdu::append_columns(const Column<Ts>&... columns) const {
+  goto_this_hdu();
+  Cfitsio::Bintable::append_columns(m_fptr, columns...);
 }
 
 }
