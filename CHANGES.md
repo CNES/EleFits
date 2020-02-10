@@ -5,6 +5,7 @@
 ## Bug fixes
 
 * Record units are correctly handled
+* signed char and unsigned int's are correctly handled
 * Empty string records can be read
 * Appending extensions in pre-existing MEF works
 
@@ -29,9 +30,8 @@ Bintables:
 
 ## Considered features for 1.2
 
-* Append several columns at once in a bintable
 * Insert columns in a bintable
-* Changes made to the record IOs should be ported to analogous column functions (TBC)
+* Changes made to the record IOs (return user-defined struct) could be ported to analogous column functions (TBC)
 * Functions which input parameter packs could have tuple counterparts in order to manipulate proper objects (TBC)
 
 ## Known bugs
