@@ -31,22 +31,22 @@
 
 //! [Include]
 #include "EL_FitsFile/MefFile.h"
-using namespace Euclid::FitsIO;
+using Euclid::FitsIO::VecRaster;
+using Euclid::FitsIO::VecColumn;
 //! [Include]
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
-static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
 VecRaster<float, 3> create_raster() {
   //! [Create and fill a raster]
   int width = 16, height = 9, depth = 3;
   VecRaster<float, 3> raster({width, height, depth});
-  for(int z=0; z<depth; ++z)
-    for(int y=0; y<height; ++y)
-      for(int x=0; x<width; ++x)
+  for (int z=0; z < depth; ++z)
+    for (int y=0; y < height; ++y)
+      for (int x=0; x < width; ++x)
         raster[{x, y, z}] = x + y + z;
   //! [Create and fill a raster]
   return raster;
@@ -81,6 +81,11 @@ public:
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+
+    using Euclid::FitsIO::MefFile;
+    using Euclid::FitsIO::Record;
+    using Euclid::FitsIO::BintableHdu;
+    using Euclid::FitsIO::ImageHdu;
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
@@ -127,14 +132,14 @@ public:
     const Record<std::string> str_record("STRING", "string");
     const Record<int> int_record("INTEGER", 8);
     ext.write_records<std::string, int>(str_record, int_record);
-    
+
     // Option 2: With temporary Record instances
-    ext.write_records<std::string, int>( { "STR", "string" }, { "INT", 8 } );
+    ext.write_records<std::string, int>({ "STR", "string" }, { "INT", 8 });
     //! [Write several records]
 
     logger.info() << "Here's the list of keywords in the extension:";
     const auto keywords = ext.keywords();
-    for(const auto& k : keywords)
+    for (const auto& k : keywords)
       logger.info() << "    " << k;
 
     logger.info() << "Closing and reopening file just for fun";
@@ -152,7 +157,7 @@ public:
     const auto& bintable_ext = f.access_first<BintableHdu>("TABLE");
     logger.info() << "    Index: " << bintable_ext.index();
     //! [Access an HDU by name]
-    
+
     //! [Read bintable values]
     logger.info() << "Reading columns";
     const auto names = bintable_ext.read_column<std::string>("NAME").vector();
