@@ -81,12 +81,12 @@ void _write_column_chunk<std::string>(
   auto begin = column.data() + (first_row - 1);
   std::size_t size = row_count;
   auto end = begin + size;
-  std::vector<std::string> vec(begin, end);
+  c_str_array array(begin, end);
   fits_write_col(fptr,
       TypeCode<std::string>::for_bintable(),
       index,
       first_row, 1, size,
-      vec.data(),
+      array.data(),
       &status);
   may_throw_cfitsio_error(status, "Cannot write column chunk: "
       + column.info.name + " (" + std::to_string(index) + "); "
