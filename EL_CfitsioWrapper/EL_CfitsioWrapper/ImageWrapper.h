@@ -24,7 +24,7 @@
 #ifndef _EL_CFITSIOWRAPPER_IMAGEWRAPPER_H
 #define _EL_CFITSIOWRAPPER_IMAGEWRAPPER_H
 
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 #include <string>
 
 #include "EL_FitsData/Raster.h"

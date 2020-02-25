@@ -26,7 +26,7 @@
 
 #include <string>
 
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 
 #include "ElementsKernel/Temporary.h"
 

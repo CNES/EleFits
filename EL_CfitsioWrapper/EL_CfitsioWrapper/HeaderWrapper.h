@@ -24,7 +24,7 @@
 #ifndef _EL_CFITSIOWRAPPER_RECORDHANDLER_H
 #define _EL_CFITSIOWRAPPER_RECORDHANDLER_H
 
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 #include <string>
 #include <tuple>
 #include <vector>
