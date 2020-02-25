@@ -30,7 +30,8 @@ namespace FitsIO {
 
 FitsFile::FitsFile(std::string filename, Permission permission) :
     m_filename(filename),
-    m_permission(permission) {
+    m_permission(permission),
+    m_open(false) {
   open(filename, permission);
 }
 
@@ -59,20 +60,27 @@ void FitsFile::open(std::string filename, Permission permission) {
   case Permission::TEMPORARY:
     m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
   }
+  m_open = true;
 }
 
 void FitsFile::close() {
+  if(not m_open)
+    return;
   switch (m_permission) {
   case Permission::TEMPORARY:
-    Cfitsio::File::close_and_delete(m_fptr);
+    close_and_delete();
     break;
   default:
     Cfitsio::File::close(m_fptr);
   }
+  m_open = false;
 }
 
 void FitsFile::close_and_delete() {
+  if(not m_open)
+    return; //TODO should we delete if not open?
   Cfitsio::File::close_and_delete(m_fptr);
+  m_open = false;
 }
 
 }

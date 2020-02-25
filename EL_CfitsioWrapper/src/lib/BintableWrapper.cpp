@@ -61,15 +61,24 @@ void _read_column_chunk<std::string>(
     FitsIO::VecColumn<std::string>& column,
     std::size_t first_row, std::size_t row_count) {
   int status = 0;
-  auto begin = column.vector().data() + (first_row - 1);
+  long repeat = 0;
+  fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
+  may_throw_cfitsio_error(status);
+  std::vector<char*> data(row_count);
+  for(long i = 0; i < row_count; ++i)
+    data[i] = (char*) malloc(repeat);
   fits_read_col(fptr,
       TypeCode<std::string>::for_bintable(),
       index,
       first_row, 1, row_count,
       nullptr,
-      begin,
+      data.data(),
       nullptr,
       &status);
+  for(long i = 0; i < row_count; ++i) {
+    column.vector()[i + first_row] = std::string(data[i]);
+    free(data[i]);
+  }
 }
 
 template<>
@@ -81,12 +90,12 @@ void _write_column_chunk<std::string>(
   auto begin = column.data() + (first_row - 1);
   std::size_t size = row_count;
   auto end = begin + size;
-  std::vector<std::string> vec(begin, end);
+  c_str_array array(begin, end);
   fits_write_col(fptr,
       TypeCode<std::string>::for_bintable(),
       index,
       first_row, 1, size,
-      vec.data(),
+      array.data(),
       &status);
   may_throw_cfitsio_error(status, "Cannot write column chunk: "
       + column.info.name + " (" + std::to_string(index) + "); "
@@ -107,7 +116,7 @@ FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::str
   fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
   may_throw_cfitsio_error(status);
   std::vector<char*> data(rows);
-  for(long i=0; i < rows; ++i)
+  for(long i = 0; i < rows; ++i)
     data[i] = (char*) malloc(repeat);
   FitsIO::VecColumn<std::string> column({name, "TODO", repeat}, std::vector<std::string>(rows)); //TODO unit
   fits_read_col(
@@ -123,7 +132,7 @@ FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::str
     &status
   );
   may_throw_cfitsio_error(status);
-  for(std::size_t i=0; i < static_cast<std::size_t>(rows); ++i) {
+  for(long i = 0; i < rows; ++i) {
     column.vector()[i] = std::string(data[i]);
     free(data[i]);
   }

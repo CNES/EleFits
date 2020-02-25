@@ -1,5 +1,12 @@
 # Change log
 
+# 1.3
+
+## Bug fixes
+
+* Row-wise reading and writing of string columns works
+* Fix memory issue with multiple closing of a FitsFile
+
 # 1.2
 
 ## Bug fixes

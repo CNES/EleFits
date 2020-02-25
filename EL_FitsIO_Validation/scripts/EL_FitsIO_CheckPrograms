@@ -21,12 +21,23 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-status=0
-log_file="/tmp/EL_FitsIO_CheckPrograms.log"
+home_dir=${PWD}
 
-test_function_with_options()
-{
-  output="/tmp/$2"
+# Create unique directory
+tmploc=$(mktemp -dq -t temp.XXXXXX)
+
+# Clean and exit
+local_clean_exit() {
+  cd ${home_dir}
+  rm -rf ${tmploc}
+  exit ${1}
+}
+
+status=0
+log_file="${tmploc}/EL_FitsIO_CheckPrograms.log"
+
+test_function_with_options() {
+output="${tmploc}/$2"
   cmd="$1 --output $output $3"
   echo $cmd
   echo "
@@ -44,12 +55,14 @@ $cmd
   fi
 }
 
-test_function()
-{
+test_function() {
   test_function_with_options $1 $2 ""
 }
 
-rm $log_file
+if [ -f ${log_file} ]; then
+  rm ${log_file}
+fi
+
 
 test_function \
   EL_Cfitsio_Example "cfitsio.fits"
@@ -75,4 +88,5 @@ test_function_with_options \
 test_function_with_options \
   EL_FitsIO_BufferedReadPerf "buffer_perf.fits" "--tables 1 --rows 3"
 
-exit $status
+local_clean_exit ${status}
+

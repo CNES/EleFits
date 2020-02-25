@@ -3,7 +3,7 @@
 | Type | Record code | Table code | TFORM | Image code | BITPIX |
 | ---- | ----------- | ---------- | ----- | ---------- | ------ |
 | bool | TLOGICAL | TBIT | X | TLOGICAL | SBYTE_IMG |
-| char | TSBYTE | TSBYTE | A | TSBYTE |  |
+| char | TSBYTE | TSBYTE | S | TSBYTE |  |
 | short | TSHORT | TSHORT |  | TSHORT |  |
 | int | TINT | TINT |  | TINT |  |
 | long | TLONG | TLONG |  | TLONG |  |
@@ -15,9 +15,9 @@
 | unsigned short | TUSHORT | TUSHORT |  | TUSHORT |  |
 | unsigned int | TUINT | TUINT |  | TUINT |  |
 | unsigned long | TULONG | TULONG |  | TULONG |  |
-| unsigned int16_t |  |  | I |  | USHORT_IMG |
-| unsigned int32_t |  |  | J |  | ULONG_IMG |
-| unsigned int64_t |  |  | K |  |  |
+| unsigned std::int16_t |  |  | U |  | USHORT_IMG |
+| unsigned std::int32_t |  |  | V |  | ULONG_IMG |
+| unsigned std::int64_t |  |  | W |  |  |
 | float | TFLOAT | TFLOAT | E | TFLOAT | FLOAT_IMG |
 | double | TDOUBLE | TDOUBLE | D | TDOUBLE | DOUBLE_IMG |
 | std::complex<float> | TCOMPLEX | TCOMPLEX | C |  |  |

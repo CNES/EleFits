@@ -102,6 +102,7 @@ protected:
   fitsfile* m_fptr;
   std::string m_filename;
   Permission m_permission;
+  bool m_open;
 
 };
 
