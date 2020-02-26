@@ -1,10 +1,8 @@
 # Change log
 
-# 1.3
+# 1.2.1 (Patch)
 
-## Bug fixes
-
-* Row-wise reading and writing of string columns works
+* Fix row-wise reading and writing of string columns
 * Fix memory issue with multiple closing of a FitsFile
 
 # 1.2
