@@ -46,6 +46,9 @@ For the headers and namespace, here's the only thing you'll have to do:
 
 \snippet EL_FitsIO_Tutorial.cpp Include
 
+We display here the full list of classes which we're going to use,
+but feel free to directly use the whole Euclid::FitsIO namespace in your programs.
+
 There are other headers and namespaces, but that probably covers 90% of the use cases.
 Refer to the API documentation for more details.
 

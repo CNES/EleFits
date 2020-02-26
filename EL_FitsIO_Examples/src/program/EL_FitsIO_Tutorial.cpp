@@ -31,8 +31,13 @@
 
 //! [Include]
 #include "EL_FitsFile/MefFile.h"
-using Euclid::FitsIO::VecRaster;
+
+using Euclid::FitsIO::Record;
 using Euclid::FitsIO::VecColumn;
+using Euclid::FitsIO::VecRaster;
+using Euclid::FitsIO::MefFile;
+using Euclid::FitsIO::BintableHdu;
+using Euclid::FitsIO::ImageHdu;
 //! [Include]
 
 using boost::program_options::options_description;
@@ -81,11 +86,6 @@ public:
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
-
-    using Euclid::FitsIO::MefFile;
-    using Euclid::FitsIO::Record;
-    using Euclid::FitsIO::BintableHdu;
-    using Euclid::FitsIO::ImageHdu;
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
