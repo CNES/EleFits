@@ -24,7 +24,7 @@
 #ifndef _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
 #define _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
 
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 #include <complex>
 #include <string>
 #include <vector>
@@ -78,7 +78,7 @@ struct TypeCode {
  */
 template<typename T>
 struct TypeCode<T*> {
-    
+
   inline static int for_bintable() {
     return TypeCode<T>::for_bintable();
   }

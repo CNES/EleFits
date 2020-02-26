@@ -25,7 +25,7 @@
 #define _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
 
 #include <stdexcept>
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 #include <string>
 
 namespace Euclid {

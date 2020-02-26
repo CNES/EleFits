@@ -27,7 +27,7 @@
 #include <vector>
 
 #include <boost/program_options.hpp>
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 
 #include "ElementsKernel/ProgramHeaders.h"
 
@@ -39,10 +39,10 @@ using boost::program_options::value;
 
 std::vector<float> generate_raster(int naxis1, int naxis2) {
   int order = 10;
-  while(order < naxis2)
+  while (order < naxis2)
     order *= 10;
   std::vector<float> raster(naxis1 * naxis2);
-  for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
+  for (int j=0; j < naxis2; ++j) for (int i=0; i < naxis1; ++i)
     raster[i + j * naxis1] = float(i) + float(j)/order;
   return raster;
 }

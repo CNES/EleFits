@@ -26,7 +26,7 @@
 #include <string>
 
 #include <boost/program_options.hpp>
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 
 #include "ElementsKernel/ProgramHeaders.h"
 

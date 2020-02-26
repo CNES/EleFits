@@ -24,7 +24,7 @@
 #ifndef _EL_FITSFILE_FITSFILE_H
 #define _EL_FITSFILE_FITSFILE_H
 
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 #include <string>
 
 #include "EL_FitsFile/RecordHdu.h"

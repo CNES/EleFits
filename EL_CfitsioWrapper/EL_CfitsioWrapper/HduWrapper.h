@@ -24,7 +24,7 @@
 #ifndef _EL_CFITSIOWRAPPER_HDUWRAPPER_H
 #define _EL_CFITSIOWRAPPER_HDUWRAPPER_H
 
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 #include <string>
 
 #include "EL_CfitsioWrapper/BintableWrapper.h"

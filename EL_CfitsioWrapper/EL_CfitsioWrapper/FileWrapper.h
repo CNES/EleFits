@@ -24,7 +24,7 @@
 #ifndef _EL_CFITSIOWRAPPER_FILEWRAPPER_H
 #define _EL_CFITSIOWRAPPER_FILEWRAPPER_H
 
-#include <cfitsio/fitsio.h>
+#include <fitsio.h>
 #include <string>
 
 namespace Euclid {
