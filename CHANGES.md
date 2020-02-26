@@ -1,5 +1,11 @@
 # Change log
 
+# 1.3
+
+## Cleaning
+
+* Fix CFitsIO include
+
 # 1.2.1 (Patch)
 
 * Fix row-wise reading and writing of string columns
