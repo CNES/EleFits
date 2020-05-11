@@ -65,7 +65,7 @@ public:
   /**
    * @brief Create a Raster with given shape.
    */
-  Raster(pos_type<n> shape);
+  Raster(pos_type<n> shape_pos_type);
 
   /**
    * @brief Const pointer to the first data element.
@@ -278,8 +278,8 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 
 
 template<typename T, std::size_t n>
-Raster<T, n>::Raster(pos_type<n> shape) :
-    shape(shape) {
+Raster<T, n>::Raster(pos_type<n> shape_pos_type) :
+    shape(shape_pos_type) {
 }
 
 template<typename T, std::size_t n>

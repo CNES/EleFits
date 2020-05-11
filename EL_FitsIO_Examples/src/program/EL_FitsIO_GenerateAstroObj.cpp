@@ -37,9 +37,6 @@ using boost::program_options::value;
 using namespace Euclid;
 using namespace FitsIO;
 
-
-static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_GenerateAstroObj");
-
 void writeMeta(MefFile& f, int obj_index) {
   std::string extname = std::to_string(obj_index) + "_META";
   const auto& ext = f.init_image_ext<unsigned char, 1>(extname, {0});

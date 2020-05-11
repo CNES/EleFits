@@ -97,7 +97,7 @@ class RandomRaster : public VecRaster<T, n> {
 
 public:
 
-  RandomRaster(pos_type<n> shape);
+  RandomRaster(pos_type<n> shape_pos_type);
   virtual ~RandomRaster() = default;
 
 };
@@ -169,8 +169,8 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
 
 template<typename T, std::size_t n>
-RandomRaster<T, n>::RandomRaster(pos_type<n> shape) :
-    VecRaster<T, n>(shape) {
+RandomRaster<T, n>::RandomRaster(pos_type<n> shape_pos_type) :
+    VecRaster<T, n>(shape_pos_type) {
   this->vector() = generate_random_vector<T>(this->size());
 }
 

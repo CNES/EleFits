@@ -65,7 +65,7 @@ void _read_column_chunk<std::string>(
   fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
   may_throw_cfitsio_error(status);
   std::vector<char*> data(row_count);
-  for(long i = 0; i < row_count; ++i)
+  for(std::size_t i = 0; i < row_count; ++i)
     data[i] = (char*) malloc(repeat);
   fits_read_col(fptr,
       TypeCode<std::string>::for_bintable(),
@@ -75,7 +75,7 @@ void _read_column_chunk<std::string>(
       data.data(),
       nullptr,
       &status);
-  for(long i = 0; i < row_count; ++i) {
+  for(std::size_t i = 0; i < row_count; ++i) {
     column.vector()[i + first_row] = std::string(data[i]);
     free(data[i]);
   }

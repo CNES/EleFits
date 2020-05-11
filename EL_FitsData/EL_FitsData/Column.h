@@ -74,7 +74,7 @@ public:
   /**
    * @brief Create a column with given metadata.
    */
-  Column(ColumnInfo<T> info);
+  Column(ColumnInfo<T> info_column);
 
   /**
    * @brief Number of elements in the column, i.e. number of rows * repeat count.
@@ -160,7 +160,7 @@ public:
   /** @brief Move assignment. */
   VecRefColumn& operator=(VecRefColumn&&) = default;
 
-  VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector);
+  VecRefColumn(ColumnInfo<T> info_column, const std::vector<T>& vector_ref);
 
   virtual std::size_t nelements() const;
 
@@ -209,7 +209,7 @@ public:
    * To transfer ownership of the data instead of copying it, use move semantics:
    * @code VecColumn column(info, std::move(vector)); @endcode
    */
-  VecColumn(ColumnInfo<T> info, std::vector<T> vector);
+  VecColumn(ColumnInfo<T> info_column, std::vector<T> vector);
 
   virtual std::size_t nelements() const;
 
@@ -267,8 +267,8 @@ std::size_t _rows(std::size_t nelements, long repeat) {
 
 
 template<typename T>
-Column<T>::Column(ColumnInfo<T> info) :
-    info(info) {
+Column<T>::Column(ColumnInfo<T> info_column) :
+    info(info_column) {
 }
 
 template<typename T>
@@ -295,9 +295,9 @@ const T* PtrColumn<T>::data() const {
 
 
 template<typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vector) :
-    Column<T>(info),
-    m_vec_ref(vector) {
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info_column, const std::vector<T>& vector_ref) :
+    Column<T>(info_column),
+    m_vec_ref(vector_ref) {
 }
 
 template<typename T>
@@ -323,8 +323,8 @@ VecColumn<T>::VecColumn() :
 }
 
 template<typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> info, std::vector<T> vector) :
-    Column<T>(info),
+VecColumn<T>::VecColumn(ColumnInfo<T> info_column, std::vector<T> vector) :
+    Column<T>(info_column),
     m_vec(vector) {
 }
 
