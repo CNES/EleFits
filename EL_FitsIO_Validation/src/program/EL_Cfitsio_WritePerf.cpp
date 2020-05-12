@@ -30,20 +30,24 @@
 #include <fitsio.h>
 
 #include "ElementsKernel/ProgramHeaders.h"
-
+#include "EL_CfitsioWrapper/CfitsioUtils.h"
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
+using Euclid::Cfitsio::c_str_array;
 
 std::vector<float> generate_raster(int naxis1, int naxis2) {
   int order = 10;
   while (order < naxis2)
     order *= 10;
   std::vector<float> raster(naxis1 * naxis2);
-  for (int j=0; j < naxis2; ++j) for (int i=0; i < naxis1; ++i)
-    raster[i + j * naxis1] = float(i) + float(j)/order;
+  for (int j=0; j < naxis2; ++j) {
+    for (int i=0; i < naxis1; ++i) {
+      raster[i + j * naxis1] = float(i) + float(j)/order;
+    }
+  }
   return raster;
 }
 
@@ -54,9 +58,9 @@ struct colinfo_t {
 };
 
 colinfo_t generate_colinfo() {
-  std::vector<char*> names = { "STRINGS", "FLOATS", "INTS" };
-  std::vector<char*> formats = { "8A", "1E", "1J" };
-  std::vector<char*> units = { "", "", "" };
+  std::vector<char*> names = { const_cast<char *>("STRINGS"), const_cast<char *>("FLOATS"), const_cast<char *>("INTS") };
+  std::vector<char*> formats = { const_cast<char *>("8A"), const_cast<char *>("1E"), const_cast<char *>("1J") };
+  std::vector<char*> units = { const_cast<char *>(""), const_cast<char *>(""), const_cast<char *>("") };
   return colinfo_t { std::move(names), std::move(formats), std::move(units) };
 }
 
@@ -98,8 +102,6 @@ void create_table_ext(fitsfile* fptr, std::string extname, colinfo_t& colinfo, t
   fits_write_col(fptr, TFLOAT, 2, 1, 1, naxis2, table.floats.data(), &status);
   fits_write_col(fptr, TINT, 3, 1, 1, naxis2, table.ints.data(), &status);
 }
-
-static Elements::Logging logger = Elements::Logging::getLogger("EL_Cfitsio_WritePerf");
 
 class EL_Cfitsio_WritePerf : public Elements::Program {
 

@@ -28,6 +28,7 @@
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
+#include "EL_CfitsioWrapper/CfitsioUtils.h"
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -49,17 +50,17 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
  */
 BOOST_AUTO_TEST_CASE( cfitsio_overflow_bug_test ) {
   FitsIO::Test::MinimalFile file;
-  char* ttype[] = {"COL"};
+  c_str_array ttype({"COL"});
   auto bintable_format = TypeCode<unsigned>::bintable_format(1);
   char* tform[1];
   tform[0] = (char*)malloc(3);
   strcpy(tform[0], bintable_format.c_str());
-  char* tunit[] = {""};
+  c_str_array tunit({""});
   printf("TTYPE: %s\nTFORM: %s\nTUNIT: %s\n",
-      ttype[0], tform[0], tunit[0]);
+      ttype.data()[0], tform[0], tunit.data()[0]);
   int status = 0;
   fits_create_tbl(file.fptr, BINARY_TBL, 0, 1,
-      ttype, tform, tunit,
+      ttype.data(), tform, tunit.data(),
       "TBL", &status);
   free(tform[0]);
 
