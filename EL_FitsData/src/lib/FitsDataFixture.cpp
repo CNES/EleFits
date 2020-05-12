@@ -28,9 +28,9 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-SmallRaster::SmallRaster(long width, long height) :
-    VecRaster<float>({width, height}),
-    width(width), height(height) {
+SmallRaster::SmallRaster(long input_width, long input_height) :
+    VecRaster<float>({input_width, input_height}),
+    width(input_width), height(input_height) {
   for(int x=0; x<shape[0]; ++x)
     for(int y=0; y<shape[1]; ++y)
       operator[]({x, y}) = 0.1 * y + x;
