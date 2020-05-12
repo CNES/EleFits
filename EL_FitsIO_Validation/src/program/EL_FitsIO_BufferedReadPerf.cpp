@@ -36,15 +36,13 @@ using boost::program_options::value;
 
 using namespace Euclid::FitsIO;
 
-static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_BufferedReadPerf");
-
 using value_type = float;
 using column_type = VecColumn<value_type>;
 using table_type = std::vector<column_type>;
 
 table_type generate_table(int cols, int rows) {
   table_type table(cols);
-  for(int c=0; c<cols; ++c) {
+  for (int c=0; c<cols; ++c) {
     auto data = Test::generate_random_vector<value_type>(rows);
     table[c] = column_type { { std::to_string(c), "", 1 }, std::move(data) };
   }
@@ -67,10 +65,10 @@ public:
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_BufferedReadPerf");
-    
+
     const auto count = args["tables"].as<int>();
     const auto rows = args["rows"].as<int>();
-    const auto cols = 10; //TODO
+    const auto cols = 10;  // TODO
     const auto filename = args["output"].as<std::string>();
 
 
@@ -85,7 +83,7 @@ public:
         f.assign_bintable_ext("T_" + std::to_string(i),
             table[0], table[1], table[2], table[3], table[4], table[5], table[6], table[7], table[8], table[9]);
     }
-        
+
     logger.info() << "Reading column-wise";
     auto begin = std::chrono::steady_clock::now();
     for(int i=0; i<count; ++i) {
@@ -97,7 +95,7 @@ public:
     auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
     logger.info() << "\tElapsed: " << duration_ms << " ms";
-    
+
     logger.info() << "Reading row-wise";
     begin = std::chrono::steady_clock::now();
     for(int i=0; i<count; ++i) {

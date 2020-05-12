@@ -39,8 +39,6 @@ using namespace Euclid;
 using namespace FitsIO;
 
 
-static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
-
 class EL_FitsFile_Example : public Elements::Program {
 
 public:
