@@ -24,6 +24,8 @@
 #ifndef _EL_FITSFILE_BINTABLEHDU_H
 #define _EL_FITSFILE_BINTABLEHDU_H
 
+#include <string>
+
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_FitsFile/RecordHdu.h"
 
@@ -131,7 +133,34 @@ void BintableHdu::append_columns(const Column<Ts>&... columns) const {
   Cfitsio::Bintable::append_columns(m_fptr, columns...);
 }
 
+#define DECLARE_READ_COLUMN(T) \
+    extern template VecColumn<T> BintableHdu::read_column(std::string) const;
+DECLARE_READ_COLUMN(char)
+DECLARE_READ_COLUMN(short)
+DECLARE_READ_COLUMN(int)
+DECLARE_READ_COLUMN(long)
+DECLARE_READ_COLUMN(float)
+DECLARE_READ_COLUMN(double)
+DECLARE_READ_COLUMN(unsigned char)
+DECLARE_READ_COLUMN(unsigned short)
+DECLARE_READ_COLUMN(unsigned int)
+DECLARE_READ_COLUMN(unsigned long)
+
+#define DECLARE_WRITE_COLUMN(T) \
+    extern template void BintableHdu::write_column(const Column<T>&) const;
+DECLARE_WRITE_COLUMN(char)
+DECLARE_WRITE_COLUMN(short)
+DECLARE_WRITE_COLUMN(int)
+DECLARE_WRITE_COLUMN(long)
+DECLARE_WRITE_COLUMN(float)
+DECLARE_WRITE_COLUMN(double)
+DECLARE_WRITE_COLUMN(unsigned char)
+DECLARE_WRITE_COLUMN(unsigned short)
+DECLARE_WRITE_COLUMN(unsigned int)
+DECLARE_WRITE_COLUMN(unsigned long)
+
 }
 }
+
 
 #endif
