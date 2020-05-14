@@ -62,23 +62,18 @@ fitsfile* create_and_open(std::string filename, CreatePolicy policy);
 fitsfile* open(std::string filename, OpenPolicy policy);
 
 /**
- * @brief Check whether a Fits file is open with write permission.
- */
-bool is_writable(fitsfile* fptr);
-
-/**
  * @brief Close a Fits file.
  */
-void close(fitsfile *fptr);
+void close(fitsfile*& fptr);
 
 /**
  * @brief Close and delete a Fits file.
  * @warning Throw an exception if writing is not permitted.
  */
-void close_and_delete(fitsfile *fptr);
+void close_and_delete(fitsfile*& fptr);
 
 /**
- * @brief Check whether a file is writable.
+ * @brief Check whether a Fits file is open with write permission.
  */
 bool is_writable(fitsfile* fptr);
 
