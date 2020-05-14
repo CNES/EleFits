@@ -31,25 +31,26 @@
 #include "ElementsKernel/ProgramHeaders.h"
 
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioUtils.h"
+
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
-
-static Elements::Logging logger = Elements::Logging::getLogger("EL_Cfitsio_Example");
-
+using Euclid::Cfitsio::c_str_array;
 
 struct SmallTable {
   static constexpr long cols = 4;
   static constexpr long rows = 3;
-  char *col_name[cols] = { "ID", "RADEC", "NAME", "DIST_MAG" };
-  char *col_format[cols] = { "1J", "1C", "68A", "2D" };
-  char *col_unit[cols] = { nullptr, "deg", nullptr, "kal" };
+  c_str_array col_name{"ID", "RADEC", "NAME", "DIST_MAG"};
+  c_str_array col_format{"1J", "1C", "68A", "2D"};
+  c_str_array col_unit {"", "deg", "", "kal"};
   int ids[rows] = { 45, 7, 31 };
   std::complex<float> radecs[rows] = { { 56.8500, 24.1167 }, { 268.4667, -34.7928 }, { 10.6833, 41.2692 } };
-  char *names[rows] = { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" };
+  c_str_array names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
   std::vector<double> dist_mags[rows] = { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900., 3.4 } };
 };
+
 
 
 struct SmallImage {
@@ -101,12 +102,12 @@ public:
     logger.info() << "Creating bintable extension: SMALLTBL";
     SmallTable table;
     fits_create_tbl(fptr, BINARY_TBL, 0,
-        table.cols, table.col_name, table.col_format, table.col_unit,
+        table.cols, table.col_name.data(), table.col_format.data(), table.col_unit.data(),
         "SMALLTBL", &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while creating bintable extension");
     fits_write_col(fptr, TINT, 1, 1, 1, table.rows, table.ids, &status);
     fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.rows, table.radecs, &status);
-    fits_write_col(fptr, TSTRING, 3, 1, 1, table.rows, table.names, &status);
+    fits_write_col(fptr, TSTRING, 3, 1, 1, table.rows, table.names.data(), &status);
     fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.rows*2, table.dist_mags, &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing columns");
 
@@ -115,12 +116,12 @@ public:
     logger.info() << "Creating image extension: SMALLIMG";
     SmallImage image;
     fits_create_img(fptr, FLOAT_IMG, 2, image.naxes, &status);
-    char *extname = "SMALLIMG";
+    char *extname = const_cast<char *>("SMALLIMG");
     fits_write_key(fptr, TSTRING, "EXTNAME", extname, nullptr, &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while creating image extension");
     fits_write_img(fptr, TFLOAT, 1, 6, image.data, &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing raster");
-    char *record_string = "string";
+    char *record_string = const_cast<char *>("string");
     int record_integer = 8;
     logger.info() << "Writing record: STRING = string";
     fits_write_key(fptr, TSTRING, "STRING", record_string, nullptr, &status);
@@ -147,19 +148,19 @@ public:
     logger.info();
 
     logger.info() << "Reading bintable.";
-    fits_movnam_hdu(fptr, ANY_HDU, "SMALLTBL", 0, &status);
+    fits_movnam_hdu(fptr, ANY_HDU, const_cast<char *>("SMALLTBL"), 0, &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while moving to bintable extension");
     int index;
     fits_get_hdu_num(fptr, &index);
     logger.info() << "HDU index: " << index;
     int colnum;
-    fits_get_colnum(fptr, CASESEN, "ID", &colnum, &status);
+    fits_get_colnum(fptr, CASESEN, const_cast<char *>("ID"), &colnum, &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while finding column ID");
     int ids[table.rows];
     fits_read_col(fptr, TINT, colnum, 1, 1, table.rows, nullptr, ids, nullptr, &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading column ID");
     logger.info() << "First id: " << ids[0];
-    fits_get_colnum(fptr, CASESEN, "NAME", &colnum, &status);
+    fits_get_colnum(fptr, CASESEN, const_cast<char *>("NAME"), &colnum, &status);
     Euclid::Cfitsio::may_throw_cfitsio_error(status, "while finding column NAME");
     char *names[table.rows];
     for(int i=0; i<table.rows; ++i)

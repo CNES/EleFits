@@ -65,7 +65,7 @@ public:
   /**
    * @brief Create a Raster with given shape.
    */
-  Raster(pos_type<n> shape);
+  Raster(pos_type<n> input_shape);
 
   /**
    * @brief Const pointer to the first data element.
@@ -210,7 +210,7 @@ public:
   /**
    * @brief Create a VecRaster with given shape and empty data.
    */
-  VecRaster(pos_type<n> shape);
+  VecRaster(pos_type<n> input_shape);
 
   /**
    * @brief Create an empty VecRaster.
@@ -278,8 +278,8 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 
 
 template<typename T, std::size_t n>
-Raster<T, n>::Raster(pos_type<n> shape) :
-    shape(shape) {
+Raster<T, n>::Raster(pos_type<n> input_shape) :
+    shape(input_shape) {
 }
 
 template<typename T, std::size_t n>
@@ -345,8 +345,8 @@ VecRaster<T, n>::VecRaster(pos_type<n> shape, std::vector<T> data) :
 }
 
 template<typename T, std::size_t n>
-VecRaster<T, n>::VecRaster(pos_type<n> shape) :
-    Raster<T, n>(shape),
+VecRaster<T, n>::VecRaster(pos_type<n> input_shape) :
+    Raster<T, n>(input_shape),
     m_vec(this->size()) {
 }
 

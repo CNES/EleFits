@@ -86,7 +86,7 @@ template<typename T>
 c_str_array::c_str_array(const T begin, const T end) :
         smart_ptr_vector(end - begin),
         c_str_vector(end - begin) {
-  for(std::size_t i = 0; i < end - begin; ++i) { //TODO iterators?
+  for(std::size_t i = 0; i < static_cast<std::size_t>(end - begin); ++i) {  //TODO iterators?
     auto& smart_ptr_i = smart_ptr_vector[i];
     smart_ptr_i = std::unique_ptr<char[]>(new char[(begin + i)->length() + 1]);
     std::strcpy(smart_ptr_i.get(), (begin + i)->c_str());

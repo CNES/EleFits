@@ -16,6 +16,7 @@ elements_subdir(EL_FitsIO_Validation)
 elements_depends_on_subdirs(ElementsKernel)
 elements_depends_on_subdirs(EL_FitsFile)
 elements_depends_on_subdirs(EL_FitsIO_Examples)
+elements_depends_on_subdirs(EL_CfitsioWrapper)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -42,7 +43,7 @@ find_package(Cfitsio REQUIRED)
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
 elements_add_executable(EL_Cfitsio_WritePerf src/program/EL_Cfitsio_WritePerf.cpp
-                     LINK_LIBRARIES ElementsKernel Cfitsio)
+                     LINK_LIBRARIES ElementsKernel Cfitsio EL_CfitsioWrapper)
 elements_add_executable(EL_FitsIO_WritePerf src/program/EL_FitsIO_WritePerf.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_FitsIO_BufferedReadPerf src/program/EL_FitsIO_BufferedReadPerf.cpp

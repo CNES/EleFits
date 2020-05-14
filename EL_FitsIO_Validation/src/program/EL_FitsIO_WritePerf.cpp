@@ -72,8 +72,6 @@ table_t generate_columns(int naxis2) {
 }
 
 
-static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
-
 class EL_FitsIO_WritePerf : public Elements::Program {
 
 public:
@@ -92,7 +90,7 @@ public:
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
-    
+
     const auto image_count = args["images"].as<int>();
     const auto table_count = args["tables"].as<int>();
     const auto naxis1 = args["naxis1"].as<int>();
@@ -103,7 +101,7 @@ public:
     const auto table = generate_columns(naxis2);
 
     MefFile f(filename, FitsFile::Permission::OVERWRITE);
-    
+
     logger.info() << "Generating " << image_count << " image extension(s)"
         << " of size " << naxis1 << " x " << naxis2;
 

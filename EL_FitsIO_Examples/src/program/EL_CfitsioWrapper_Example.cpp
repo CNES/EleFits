@@ -39,14 +39,12 @@ using namespace Euclid;
 using namespace Cfitsio;
 
 
-static Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
-
 class EL_CfitsioWrapper_Example : public Elements::Program {
 
 public:
 
   options_description defineSpecificProgramOptions() override {
-  
+
     options_description options {};
     options.add_options()
       ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
@@ -108,7 +106,7 @@ public:
     logger.info() << "Last name: " << names[names.size()-1];
 
     logger.info();
-    
+
     logger.info() << "Reading image.";
     Hdu::goto_index(fptr, 3);
     logger.info() << "Name of HDU #3: " << Hdu::current_name(fptr);
