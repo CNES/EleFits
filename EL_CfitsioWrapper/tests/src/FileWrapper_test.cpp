@@ -38,12 +38,11 @@ BOOST_AUTO_TEST_SUITE (FileWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE( file_operations_test, FitsIO::Test::MinimalFile ) {
-    fitsfile* fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
     BOOST_CHECK_THROW(File::create_and_open(filename, File::CreatePolicy::CREATE_ONLY), CfitsioError);
     BOOST_CHECK(fptr);
     File::close(fptr);
     BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-//    BOOST_CHECK(not fptr); // CFitsIO doesn't set the pointer to null
+    BOOST_CHECK(not fptr);
     fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
     BOOST_CHECK(fptr);
     BOOST_CHECK_THROW(File::close_and_delete(fptr), CfitsioError);
@@ -51,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE( file_operations_test, FitsIO::Test::MinimalFile ) {
     fptr = File::open(filename, File::OpenPolicy::READ_WRITE);
     File::close_and_delete(fptr);
     BOOST_CHECK(not boost::filesystem::exists(filename));
-//    BOOST_CHECK(not fptr); // CFitsIO doesn't set the pointer to null
+    BOOST_CHECK(not fptr);
 }
 
 //-----------------------------------------------------------------------------

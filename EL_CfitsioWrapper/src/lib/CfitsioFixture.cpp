@@ -30,7 +30,8 @@ namespace Test {
 
 MinimalFile::MinimalFile() :
     tmp(),
-    filename(tmp.path().string()) {
+    filename(tmp.path().string()),
+    fptr(nullptr) {
   fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
 }
 

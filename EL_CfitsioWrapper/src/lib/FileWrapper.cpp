@@ -52,19 +52,23 @@ fitsfile* open(std::string filename, OpenPolicy policy) {
   return fptr;
 }
 
-void close(fitsfile* fptr) {
+void close(fitsfile*& fptr) {
+  if(fptr == nullptr)
+    return;
   int status = 0;
   fits_close_file(fptr, &status);
-  if(status != BAD_FILEPTR)
-    may_throw_cfitsio_error(status, "Cannot close file");
+  may_throw_cfitsio_error(status, "Cannot close file");
+  fptr = nullptr;
 }
 
-void close_and_delete(fitsfile* fptr) {
+void close_and_delete(fitsfile*& fptr) {
+  if(fptr == nullptr)
+    return;
   may_throw_readonly_error(fptr);
   int status = 0;
   fits_delete_file(fptr, &status);
-  if(status != BAD_FILEPTR)
-    may_throw_cfitsio_error(status, "Cannot close and delete file");
+  may_throw_cfitsio_error(status, "Cannot close and delete file");
+  fptr = nullptr;
 }
 
 bool is_writable(fitsfile* fptr) {
