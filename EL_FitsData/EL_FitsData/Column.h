@@ -74,7 +74,7 @@ public:
   /**
    * @brief Create a column with given metadata.
    */
-  Column(ColumnInfo<T> input_column);
+  Column(ColumnInfo<T> input_info);
 
   /**
    * @brief Number of elements in the column, i.e. number of rows * repeat count.
@@ -267,8 +267,8 @@ std::size_t _rows(std::size_t nelements, long repeat) {
 
 
 template<typename T>
-Column<T>::Column(ColumnInfo<T> input_column) :
-    info(input_column) {
+Column<T>::Column(ColumnInfo<T> input_info) :
+    info(input_info) {
 }
 
 template<typename T>

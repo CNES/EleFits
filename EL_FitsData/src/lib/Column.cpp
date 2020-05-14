@@ -21,6 +21,8 @@
  *
  */
 
+
+#include "ElementsKernel/Unused.h"
 #include "EL_FitsData/Column.h"
 
 namespace Euclid {
@@ -30,12 +32,12 @@ namespace FitsIO {
 namespace internal {
 
 template<>
-std::size_t _rows<std::string>(std::size_t nelements, long /* repeat */) {
+std::size_t _rows<std::string>(std::size_t nelements, ELEMENTS_UNUSED long repeat) {
   return nelements;
 }
 
 }
 /// @endcond
 
-}  // namespace FitsIO
-}  // namespace Euclid
+}
+}

@@ -335,15 +335,13 @@ std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, std::vector<st
   internal::_init_columns<sizeof...(Ts)-1, Ts...>{}(fptr, indices, names, columns, rows);
   long chunk_rows = 0;
   fits_get_rowsize(fptr, &chunk_rows, &status);
-  if (chunk_rows == 0) {
+  if (chunk_rows == 0)
     throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
-  }
   const std::size_t urows = static_cast<std::size_t>(rows);
   for(std::size_t first=1; first<=urows; first+=chunk_rows) {
     std::size_t last = first + chunk_rows - 1;
-    if (last > urows) {
+    if (last > urows)
       chunk_rows = urows - first + 1;
-    }
     internal::_read_column_chunks<sizeof...(Ts)-1, Ts...>{}(fptr, indices, columns, first, chunk_rows);
   }
   return columns;
