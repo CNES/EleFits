@@ -172,12 +172,12 @@ void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Rast
 
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::ColumnInfo<Ts>&... header) {
-  constexpr std::size_t count = sizeof...(Ts);
+  constexpr std::size_t ncols = sizeof...(Ts);
   c_str_array col_name { header.name ... };
   c_str_array col_format { TypeCode<Ts>::bintable_format(header.repeat) ... };
   c_str_array col_unit { header.unit ... };
   int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, count,
+  fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
   may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
@@ -185,12 +185,12 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
 
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<Ts>&... table) {
-  constexpr std::size_t count = sizeof...(Ts);
+  constexpr std::size_t ncols = sizeof...(Ts);
   c_str_array col_name { table.info.name ... };
   c_str_array col_format { TypeCode<Ts>::bintable_format(table.info.repeat) ... };
   c_str_array col_unit { table.info.unit ... };
   int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, count,
+  fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
   may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);

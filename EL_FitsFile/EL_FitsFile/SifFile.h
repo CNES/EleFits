@@ -53,9 +53,9 @@ public:
    */
   SifFile(std::string filename, Permission permission);
 
-	/**
-	 * @brief Access the header.
-	 */
+  /**
+   * @brief Access the header.
+   */
   const RecordHdu& header() const;
 
   /**
@@ -84,7 +84,7 @@ private:
 
 template<typename T, std::size_t n>
 VecRaster<T, n> SifFile::read_raster() const {
-	return Cfitsio::Image::read_raster<T, n>(m_fptr);
+  return Cfitsio::Image::read_raster<T, n>(m_fptr);
 }
 
 template<typename T, std::size_t n>
