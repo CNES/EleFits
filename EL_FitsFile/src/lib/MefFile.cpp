@@ -52,7 +52,7 @@ const RecordHdu& MefFile::init_record_ext(std::string name) {
 }
 
 #define COMPILE_ASSIGN_IMAGE_EXT(T, n) \
-        template const ImageHdu& MefFile::assign_image_ext<T, n>(std::string, const Raster<T, n>&);
+  template const ImageHdu& MefFile::assign_image_ext<T, n>(std::string, const Raster<T, n>&);
 COMPILE_ASSIGN_IMAGE_EXT(char, 2)
 COMPILE_ASSIGN_IMAGE_EXT(int, 2)
 COMPILE_ASSIGN_IMAGE_EXT(float, 2)

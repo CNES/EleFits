@@ -210,6 +210,17 @@ const BintableHdu& MefFile::assign_bintable_ext(std::string name, const Column<T
   return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
 }
 
+#define DECLARE_ASSIGN_IMAGE_EXT(T, n) \
+  extern template const ImageHdu& MefFile::assign_image_ext<T, n>(std::string, const Raster<T, n>&);
+DECLARE_ASSIGN_IMAGE_EXT(char, 2)
+DECLARE_ASSIGN_IMAGE_EXT(int, 2)
+DECLARE_ASSIGN_IMAGE_EXT(float, 2)
+DECLARE_ASSIGN_IMAGE_EXT(double, 2)
+DECLARE_ASSIGN_IMAGE_EXT(char, 3)
+DECLARE_ASSIGN_IMAGE_EXT(int, 3)
+DECLARE_ASSIGN_IMAGE_EXT(float, 3)
+DECLARE_ASSIGN_IMAGE_EXT(double, 3)
+
 }
 }
 
