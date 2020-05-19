@@ -310,8 +310,8 @@ inline T& Raster<T, n>::operator[](const pos_type<n>& pos) {
 
 
 template<typename T, std::size_t n>
-PtrRaster<T, n>::PtrRaster(pos_type<n> shape, const T* data) :
-    Raster<T, n>(shape),
+PtrRaster<T, n>::PtrRaster(pos_type<n> input_shape, const T* data) :
+    Raster<T, n>(input_shape),
     m_data(data) {
 }
 
