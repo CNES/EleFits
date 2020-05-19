@@ -36,10 +36,10 @@ CfitsioError::CfitsioError(int input_status, std::string context) :
     status(input_status) {}
 
 std::string cfitsio_error_message(int status) {
-  char* cfitsio_msg = (char*) malloc(FLEN_ERRMSG);
+  char cfitsio_msg[FLEN_ERRMSG];
+  cfitsio_msg[0] = '\0';
   fits_get_errstatus(status, cfitsio_msg);
   std::string error_msg = "CFitsIO error " + std::to_string(status) + ": " + cfitsio_msg;
-  free(cfitsio_msg);
   return error_msg;
 }
 

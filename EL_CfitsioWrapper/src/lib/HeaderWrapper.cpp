@@ -50,8 +50,10 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
   if(length == 0)
     return { keyword, "" };
   char* value = nullptr; // That's the only function in which CFitsIO allocates itself!
-  char* unit = (char*) malloc(FLEN_COMMENT);
-  char* comment = (char*) malloc(FLEN_COMMENT);
+  char unit[FLEN_COMMENT];
+  unit[0] = '\0';
+  char comment[FLEN_COMMENT];
+  comment[0] = '\0';
   fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
   std::string str_value(value);
@@ -61,8 +63,6 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
   }
   FitsIO::Record<std::string> record(keyword, str_value, std::string(unit), std::string(comment));
   free(value);
-  free(comment);
-  free(unit);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
   may_throw_cfitsio_error(status, context);
   may_throw_cfitsio_error(status, context);

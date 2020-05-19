@@ -155,14 +155,14 @@ const T& MefFile::access(std::size_t index) {
   auto& ptr = m_hdus[index-1];
   switch (hdu_type) {
   case Cfitsio::Hdu::Type::IMAGE:
-      ptr.reset(new ImageHdu(m_fptr, index));
-      break;
+    ptr.reset(new ImageHdu(m_fptr, index));
+    break;
   case Cfitsio::Hdu::Type::BINTABLE:
-      ptr.reset(new BintableHdu(m_fptr, index));
-      break;
+    ptr.reset(new BintableHdu(m_fptr, index));
+    break;
   default:
-  ptr.reset(new RecordHdu(m_fptr, index));
-      break;
+    ptr.reset(new RecordHdu(m_fptr, index));
+    break;
   }
   return dynamic_cast<T&>(*ptr.get());
 }

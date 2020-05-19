@@ -65,7 +65,7 @@ void _read_column_chunk<std::string>(
   fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
   may_throw_cfitsio_error(status);
   std::vector<char*> data(row_count);
-  for(std::size_t i = 0; i < row_count; ++i)
+  for(std::size_t i = 0; i < row_count; ++i) //TODO iterator
     data[i] = (char*) malloc(repeat);
   fits_read_col(fptr,
       TypeCode<std::string>::for_bintable(),
@@ -116,7 +116,7 @@ FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::str
   fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
   may_throw_cfitsio_error(status);
   std::vector<char*> data(rows);
-  for(long i = 0; i < rows; ++i)
+  for(long i = 0; i < rows; ++i) //TODO iterator
     data[i] = (char*) malloc(repeat);
   FitsIO::VecColumn<std::string> column({name, "TODO", repeat}, std::vector<std::string>(rows)); //TODO unit
   fits_read_col(

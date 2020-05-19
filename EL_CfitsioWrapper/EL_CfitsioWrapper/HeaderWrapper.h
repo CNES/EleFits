@@ -147,13 +147,13 @@ template<typename T>
 FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword) {
   int status = 0;
   T value;
-  char* comment = (char*) malloc(FLEN_COMMENT);
+  char comment[FLEN_COMMENT];
+  comment[0] = '\0';
   fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, comment, &status);
-  char* unit = (char*) malloc(FLEN_COMMENT);
+  char unit[FLEN_COMMENT];
+  unit[0] = '\0';
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
   FitsIO::Record<T> record(keyword, value, std::string(unit), std::string(comment));
-  free(comment);
-  free(unit);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
   may_throw_cfitsio_error(status, context);
   if(record.comment == record.unit) {
