@@ -128,9 +128,9 @@ public:
    */
   PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data);
 
-  virtual std::size_t nelements() const;
+  std::size_t nelements() const override;
 
-  virtual const T* data() const;
+  const T* data() const override;
 
 private:
 
@@ -162,9 +162,9 @@ public:
 
   VecRefColumn(ColumnInfo<T> input_info, const std::vector<T>& vector_ref);
 
-  virtual std::size_t nelements() const;
+  std::size_t nelements() const override;
 
-  virtual const T* data() const;
+  const T* data() const override;
 
   /**
    * @brief Const reference to the vector data.
@@ -211,9 +211,9 @@ public:
    */
   VecColumn(ColumnInfo<T> input_info, std::vector<T> vector);
 
-  virtual std::size_t nelements() const;
+  std::size_t nelements() const override;
 
-  virtual const T* data() const;
+  const T* data() const override;
 
   /**
    * @brief Non-const pointer to the first data element.

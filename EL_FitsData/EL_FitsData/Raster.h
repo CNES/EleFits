@@ -132,7 +132,7 @@ public:
    */
   PtrRaster(pos_type<n> input_shape, const T* data);
 
-  virtual const T* data() const;
+  const T* data() const override;
 
 private:
 
@@ -166,7 +166,7 @@ public:
    */
   VecRefRaster(pos_type<n> input_shape, const std::vector<T>& data);
 
-  virtual const T* data() const;
+  const T* data() const override;
 
   /**
    * @brief Const reference to the vector.
@@ -217,7 +217,7 @@ public:
    */
   VecRaster() = default;
 
-  virtual const T* data() const;
+  const T* data() const override;
 
   /**
    * @brief Non-const pointer to the first data element.
