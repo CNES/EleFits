@@ -74,7 +74,7 @@ public:
   /**
    * @brief Create a column with given metadata.
    */
-  Column(ColumnInfo<T> input_info);
+  explicit Column(ColumnInfo<T> input_info);
 
   /**
    * @brief Number of elements in the column, i.e. number of rows * repeat count.

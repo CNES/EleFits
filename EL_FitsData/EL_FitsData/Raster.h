@@ -65,7 +65,7 @@ public:
   /**
    * @brief Create a Raster with given shape.
    */
-  Raster(pos_type<n> input_shape);
+  explicit Raster(pos_type<n> input_shape);
 
   /**
    * @brief Const pointer to the first data element.
@@ -130,7 +130,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  PtrRaster(pos_type<n> shape, const T* data);
+  PtrRaster(pos_type<n> input_shape, const T* data);
 
   virtual const T* data() const;
 
@@ -164,7 +164,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  VecRefRaster(pos_type<n> shape, const std::vector<T>& data);
+  VecRefRaster(pos_type<n> input_shape, const std::vector<T>& data);
 
   virtual const T* data() const;
 
@@ -205,12 +205,12 @@ public:
    * To transfer ownership of the data instead of copying it, use move semantics:
    * @code VecRaster column(shape, std::move(data)); @endcode
    */
-  VecRaster(pos_type<n> shape, std::vector<T> data);
+  VecRaster(pos_type<n> input_shape, std::vector<T> data);
 
   /**
    * @brief Create a VecRaster with given shape and empty data.
    */
-  VecRaster(pos_type<n> input_shape);
+  explicit VecRaster(pos_type<n> input_shape);
 
   /**
    * @brief Create an empty VecRaster.

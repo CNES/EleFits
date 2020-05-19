@@ -38,7 +38,7 @@ class CfitsioError : public std::runtime_error {
 
 public:
 
-    CfitsioError(int status);
+    explicit CfitsioError(int status);
     
     CfitsioError(int status, std::string context);
     

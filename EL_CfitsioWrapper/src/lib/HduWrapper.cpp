@@ -30,7 +30,7 @@ namespace Cfitsio {
 namespace Hdu {
 
 std::size_t count(fitsfile* fptr) {
-  int count;
+  int count = 0;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
   may_throw_cfitsio_error(status);
@@ -44,7 +44,7 @@ std::size_t count(fitsfile* fptr) {
 }
 
 std::size_t current_index(fitsfile* fptr) {
-  int index;
+  int index = 0;
   fits_get_hdu_num(fptr, &index);
   return index;
 }

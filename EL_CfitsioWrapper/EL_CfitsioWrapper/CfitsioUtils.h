@@ -45,8 +45,8 @@ std::unique_ptr<char[]> to_char_ptr(std::string str);
 struct c_str_array {
   template<typename T>
   c_str_array(const T begin, const T end);
-  c_str_array(const std::vector<std::string>& data);
-  c_str_array(const std::initializer_list<std::string>& data);
+  explicit c_str_array(const std::vector<std::string>& data);
+  explicit c_str_array(const std::initializer_list<std::string>& data);
   std::vector<std::unique_ptr<char[]>> smart_ptr_vector;
   std::vector<char*> c_str_vector;
   char** data();
