@@ -277,8 +277,8 @@ std::size_t Column<T>::rows() const {
 }
 
 template<typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data) :
-    Column<T>(info),
+PtrColumn<T>::PtrColumn(ColumnInfo<T> input_info, std::size_t nelements, const T* data) :
+    Column<T>(input_info),
     m_nelements(nelements),
     m_data(data) {
 }
