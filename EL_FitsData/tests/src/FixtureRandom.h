@@ -1,8 +1,4 @@
 /**
- * @file EL_FitsData/FixtureRandom.h
- * @date 07/31/19
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -39,7 +35,7 @@ namespace FitsIO {
 /**
  * @brief Test-related classes and functions.
  */
-namespace Test {
+namespace Test { //TODO move to FitsDataFixture
 
 template<typename T>
 T generate_random_value();

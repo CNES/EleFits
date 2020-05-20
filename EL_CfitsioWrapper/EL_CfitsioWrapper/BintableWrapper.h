@@ -1,8 +1,4 @@
 /**
- * @file EL_CfitsioWrapper/BintableWrapper.h
- * @date 07/27/19
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under

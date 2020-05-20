@@ -1,8 +1,4 @@
 /**
- * @file EL_CfitsioWrapper/CfitsioWrapper.h
- * @date 08/06/19
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under

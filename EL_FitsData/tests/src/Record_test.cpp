@@ -1,8 +1,4 @@
 /**
- * @file tests/src/Record_test.cpp
- * @date 09/03/19
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -23,7 +19,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData//Record.h"
+#include "EL_FitsData/Record.h"
 
 #include "FixtureRandom.h"
 

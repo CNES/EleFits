@@ -1,8 +1,4 @@
 /**
- * @file src/program/EL_Cfitsio_Example.cpp
- * @date 10/22/19
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under

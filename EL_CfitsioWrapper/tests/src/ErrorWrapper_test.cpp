@@ -1,8 +1,4 @@
 /**
- * @file tests/src/ErrorWrapper_test.cpp
- * @date 07/23/19
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -23,7 +19,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_CfitsioWrapper//ErrorWrapper.h"
+#include "EL_CfitsioWrapper/ErrorWrapper.h"
 
 using namespace Euclid::Cfitsio;
 
