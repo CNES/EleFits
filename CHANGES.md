@@ -2,9 +2,21 @@
 
 # 1.3
 
+## Safety
+
+* Better manage memory
+* Nullify file pointer at closing
+* Remove useless template specialization
+
+## Performance
+
+* Precompilation of main template functions to make user code compile faster
+* Rely on stack where possible
+
 ## Cleaning
 
 * Fix CFitsIO include
+* Overall code quality review
 
 # 1.2.1 (Patch)
 
