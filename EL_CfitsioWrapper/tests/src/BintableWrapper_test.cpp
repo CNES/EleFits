@@ -124,7 +124,9 @@ TEST_SCALAR_ALIAS(std::string, string)
 TEST_SCALAR_UNSIGNED(char)
 TEST_SCALAR_UNSIGNED(short)
 TEST_SCALAR_UNSIGNED(int)
-// TEST_SCALAR_UNSIGNED(long)
+#ifdef TULONGLONG
+TEST_SCALAR_UNSIGNED(long)
+#endif
 
 template<typename T>
 void check_vector() {
@@ -166,7 +168,9 @@ TEST_VECTOR(double)
 TEST_VECTOR_UNSIGNED(char)
 TEST_VECTOR_UNSIGNED(short)
 TEST_VECTOR_UNSIGNED(int)
-// TEST_VECTOR_UNSIGNED(long)
+#ifdef TULONGLONG
+TEST_VECTOR_UNSIGNED(long)
+#endif
 
 BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;

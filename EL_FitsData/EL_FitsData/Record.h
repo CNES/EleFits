@@ -44,7 +44,7 @@ struct Record {
 
   std::string keyword;
   T value;
-  std::string unit; //TODO remove?
+  std::string unit;
   std::string comment;
 
 };

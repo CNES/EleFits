@@ -56,6 +56,7 @@ enum class Type {
 
 /**
  * @brief Read the number of HDUs in a Fits file.
+ * @warning Empty or incomplete HDUs are not counted.
  */
 std::size_t count(fitsfile *fptr);
 
@@ -153,7 +154,7 @@ template<typename T, std::size_t n>
 void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape) {
   may_throw_readonly_error(fptr);
   int status = 0;
-  auto nonconst_shape = shape; //TODO const-correctness issue?
+  auto nonconst_shape = shape; // const-correctness issue
   fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
   may_throw_cfitsio_error(status, "Cannot create image extension");
   update_name(fptr, name);
@@ -190,8 +191,6 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
   may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
-  // using mock_unpack = int[];
-  // (void)mock_unpack {(Bintable::write_column(fptr, table), 0)...};
   Bintable::write_columns(fptr, table...);
 }
 

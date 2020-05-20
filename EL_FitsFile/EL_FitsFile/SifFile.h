@@ -85,7 +85,7 @@ VecRaster<T, n> SifFile::read_raster() const {
 
 template<typename T, std::size_t n>
 void SifFile::write_raster(const Raster<T, n>& raster) const {
-  Cfitsio::Hdu::goto_primary(m_fptr); //TODO useful?
+  Cfitsio::Hdu::goto_primary(m_fptr);
   Cfitsio::Image::resize<T, n>(m_fptr, raster.shape);
   Cfitsio::Image::write_raster(m_fptr, raster);
 }

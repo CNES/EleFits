@@ -197,11 +197,10 @@ DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
 #endif
 
 /*
- * From CFitsIO documentation?
+ * From CFitsIO documentation? //TODO link
  *
  * Allowed types:
  * BYTE_IMG, SHORT_IMG, LONG_IMG, LONGLONG_IMG, FLOAT_IMG, DOUBLE_IMG
- * //TODO Check:
  * SBYTE_IMG, USHORT_IMG, ULONG_IMG, ULONGLONG_IMG
  */
 DEF_IMAGE_BITPIX(char, SBYTE_IMG)

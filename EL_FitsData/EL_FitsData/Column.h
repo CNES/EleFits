@@ -250,7 +250,7 @@ std::size_t _rows<std::string>(std::size_t nelements, long repeat);
 
 template<typename T>
 std::size_t _rows(std::size_t nelements, long repeat) {
-  return nelements / repeat; //TODO dangerous although nelements should be a multiple of repeat
+  return (nelements + repeat - 1) / repeat;
 }
 
 }

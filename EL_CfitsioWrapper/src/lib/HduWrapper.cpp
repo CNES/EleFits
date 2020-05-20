@@ -30,12 +30,6 @@ std::size_t count(fitsfile* fptr) {
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
   may_throw_cfitsio_error(status);
-  // const auto index = current_index(fptr);
-  // try { //TODO the empty HDUs are not counted, e.g. metadata HDUs
-  //   goto_index(fptr, count + 1);
-  //   goto_index(fptr, index);
-  //   return count + 1;
-  // } catch(const std::exception&) {}
   return count;
 }
 

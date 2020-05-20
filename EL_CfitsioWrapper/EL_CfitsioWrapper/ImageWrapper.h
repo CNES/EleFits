@@ -86,7 +86,7 @@ void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   int status = 0;
   const auto begin = raster.data();
   const auto end = begin + raster.size();
-  std::vector<T> nonconst_data(begin, end); //TODO const-correctness issue?
+  std::vector<T> nonconst_data(begin, end); // const-correctness issue
   fits_write_img(fptr, TypeCode<T>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
   may_throw_cfitsio_error(status, "Cannot write raster");
 }

@@ -114,7 +114,7 @@ FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::str
   std::vector<char*> data(rows);
   for(long i = 0; i < rows; ++i) //TODO iterator
     data[i] = (char*) malloc(repeat);
-  FitsIO::VecColumn<std::string> column({name, "TODO", repeat}, std::vector<std::string>(rows)); //TODO unit
+  FitsIO::VecColumn<std::string> column({name, "", repeat}, std::vector<std::string>(rows)); //TODO unit
   fits_read_col(
     fptr,
     TypeCode<std::string>::for_bintable(), // datatype
@@ -139,7 +139,7 @@ template<>
 void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
   const auto begin = column.data();
   const auto end = begin + column.nelements();
-  c_str_array array(begin, end); //TODO avoid copy?
+  c_str_array array(begin, end);
   std::size_t index = column_index(fptr, column.info.name);
   int status = 0;
   fits_write_col(
