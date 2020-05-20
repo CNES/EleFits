@@ -73,38 +73,6 @@ struct TypeCode {
 
 };
 
-/**
- * @brief Pointer specialization of TypeCode.
- */
-template<typename T>
-struct TypeCode<T*> {
-
-  inline static int for_bintable() {
-    return TypeCode<T>::for_bintable();
-  }
-
-  inline static std::string bintable_format(int width) {
-    return TypeCode<T>::bintable_format(width);
-  }
-
-};
-
-/**
- * @brief Vector specialization of TypeCode for Bintable vector columns.
- */
-template<typename T>
-struct TypeCode<std::vector<T>> {
-
-  inline static int for_bintable() {
-    return TypeCode<T*>::for_bintable();
-  }
-
-  inline static std::string bintable_format(int width) {
-    return TypeCode<T*>::bintable_format(width);
-  }
-
-};
-
 
 /////////////////////
 // IMPLEMENTATION //
