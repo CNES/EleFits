@@ -69,7 +69,7 @@ class SmallTable {
 public:
 
   using num_t = int;
-  using radec_t = std::complex<float>; // Could be std::pair<float> with width=2
+  using radec_t = std::complex<float>;
   using name_t = std::string;
   using dist_mag_t = double;
 
@@ -97,7 +97,7 @@ class RandomRaster : public VecRaster<T, n> {
 
 public:
 
-  RandomRaster(pos_type<n> input_shape);
+  explicit RandomRaster(pos_type<n> input_shape);
   virtual ~RandomRaster() = default;
 
 };
@@ -111,7 +111,7 @@ class RandomScalarColumn : public VecColumn<T> {
 
 public:
 
-  RandomScalarColumn(std::size_t size=3);
+  explicit RandomScalarColumn(std::size_t size=3);
   virtual ~RandomScalarColumn() = default;
 
 };
@@ -153,12 +153,21 @@ T generate_random_value();
 template<typename T>
 std::vector<T> generate_random_vector(std::size_t size);
 
+/**
+ * @brief Specialization of generate_random_vector for complex<float>.
+ */
 template<>
 std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std::size_t size);
 
+/**
+ * @brief Specialization of generate_random_vector for complex<double>.
+ */
 template<>
 std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(std::size_t size);
 
+/**
+ * @brief Specialization of generate_random_vector for string.
+ */
 template<>
 std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 
@@ -206,12 +215,12 @@ template<typename T>
 std::vector<T> generate_random_vector(std::size_t size) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
-  const double min = std::numeric_limits<T>::min(); //TODO partially supported for char with BZERO trick
-  const double max = std::numeric_limits<T>::max(); //TODO partially supported for unsigned with BZERO trick
+  const double min = std::numeric_limits<T>::min();
+  const double max = std::numeric_limits<T>::max();
   std::uniform_real_distribution<double> distribution(min, max);
   std::vector<T> vec(size);
-  for(auto&& val : vec)
-    val = T(distribution(generator));
+  std::generate(vec.begin(), vec.end(),
+      [&]() { return T(distribution(generator)); });
   return vec;
 }
 
