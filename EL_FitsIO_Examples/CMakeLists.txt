@@ -31,6 +31,10 @@ elements_depends_on_subdirs(EL_FitsFile)
 #                     INCLUDE_DIRS Boost ElementsKernel
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
+elements_add_library(EL_FitsIO_Examples src/lib/*.cpp
+                     INCLUDE_DIRS ElementsKernel EL_FitsFile
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile
+                     PUBLIC_HEADERS EL_FitsIO_Examples)
 
 #===============================================================================
 # Declare the executables here
@@ -49,6 +53,12 @@ elements_add_executable(EL_FitsIO_GenerateAstroObj src/program/EL_FitsIO_Generat
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_FitsIO_Tutorial src/program/EL_FitsIO_Tutorial.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_FitsIO_DataOrientedDesign src/program/EL_FitsIO_DataOrientedDesign.cpp
+                     INCLUDE_DIRS ElementsKernel EL_FitsIO_Examples
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile EL_FitsIO_Examples)
+elements_add_executable(EL_FitsIO_ObjectOrientedDesign src/program/EL_FitsIO_ObjectOrientedDesign.cpp
+                     INCLUDE_DIRS ElementsKernel EL_FitsIO_Examples
+                     LINK_LIBRARIES ElementsKernel EL_FitsIO_Examples)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -58,6 +68,18 @@ elements_add_executable(EL_FitsIO_Tutorial src/program/EL_FitsIO_Tutorial.cpp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
+elements_add_unit_test(OodUniverse tests/src/OodUniverse_test.cpp 
+                     EXECUTABLE EL_FitsIO_Examples_OodUniverse_test
+                     LINK_LIBRARIES EL_FitsIO_Examples
+                     TYPE Boost)
+elements_add_unit_test(DodUniverse tests/src/DodUniverse_test.cpp 
+                     EXECUTABLE EL_FitsIO_Examples_DodUniverse_test
+                     LINK_LIBRARIES EL_FitsIO_Examples
+                     TYPE Boost)
+elements_add_unit_test(Observation tests/src/Observation_test.cpp 
+                     EXECUTABLE EL_FitsIO_Examples_Observation_test
+                     LINK_LIBRARIES EL_FitsIO_Examples
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

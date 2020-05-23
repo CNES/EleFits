@@ -1,0 +1,46 @@
+@startuml
+
+object universe {
+    data : vector<Flux>
+    sources : vector<Source>
+}
+
+object "data : vector<Flux>" as data
+
+object "sources[0] : Source" as sources_0 {
+    ra_dec : Coordinates
+    thumbnail : PtrRaster<Flux>
+}
+
+object "sources[1]" as sources_1
+object "sources[n]" as sources_n
+
+object "thumbnail : PtrRaster<Flux>" as thumbnail_0 {
+    shape : Shape
+    data : Flux*
+}
+
+object "thumbnail" as thumbnail_1
+object "thumbnail" as thumbnail_n
+
+universe *- data
+
+universe *-- sources_0
+sources_0 *-- thumbnail_0
+thumbnail_0 o-- data
+
+universe *-- sources_1
+sources_1 *-- thumbnail_1
+thumbnail_1 o-- data
+
+universe *-- sources_n
+sources_n *-- thumbnail_n
+thumbnail_n o-- data
+
+object observation {
+    raster : VecRaster<Flux>
+}
+
+data <-- observation : use
+
+@enduml
