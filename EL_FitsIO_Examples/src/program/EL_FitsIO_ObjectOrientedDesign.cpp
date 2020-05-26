@@ -41,34 +41,36 @@ public:
   options_description defineSpecificProgramOptions() override {
     options_description options {};
     options.add_options()
-        ("catalog", value<std::string>()->default_value(""), "Input universe catalog")
+        ("catalog-in", value<std::string>()->default_value(""), "Input universe catalog")
+        ("catalog-out", value<std::string>()->default_value(""), "Output universe catalog")
         ("sources", value<long>()->default_value(100), "Number of sources")
-        ("width", value<long>()->default_value(100), "Observation width")
-        ("height", value<long>()->default_value(100), "Observation height")
         ("observation", value<std::string>()->default_value("/tmp/obs.fits"), "Output observation");
     return options;
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
-    const auto cat = args["catalog"].as<std::string>();
+    const auto input_cat = args["catalog-in"].as<std::string>();
+    const auto output_cat = args["catalog-out"].as<std::string>();
     const auto n = args["sources"].as<long>();
-    const auto w = args["width"].as<long>();
-    const auto h = args["height"].as<long>();
-    ObjectOriented::Universe universe;
-    if(cat.empty()) {
+    Example::ObjectOriented::Universe universe;
+    if(input_cat.empty()) {
       logger.info() << "Generating random universe...";
-      universe.random(n, w, h);
+      universe.random(n);
     } else {
       logger.info() << "Loading universe...";
-      universe.load(cat);
+      universe.load(input_cat);
     }
-    Observation obs({w, h});
+    Example::Observation obs;
     logger.info() << "Rendering sources...";
     for(const auto& s : universe.sources())
-      obs.draw(s.thumbnail, s.ra, s.dec);
+      obs.draw(s.thumbnail, s.ra_dec);
     logger.info() << "Saving observation...";
     obs.save(args["observation"].as<std::string>());
     logger.info() << "Done!";
+    if(not output_cat.empty()) {
+      logger.info() << "Saving catalog...";
+      universe.save(output_cat);
+    }
     return Elements::ExitCode::OK;
   }
 

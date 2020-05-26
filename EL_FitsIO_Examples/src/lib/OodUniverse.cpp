@@ -19,42 +19,58 @@
 
 #include "EL_FitsIO_Examples/OodUniverse.h"
 
+#include "EL_FitsIO_Examples/Observation.h"
+
 #include "EL_FitsFile/MefFile.h"
 
 namespace Euclid {
 namespace FitsIO {
+namespace Example {
 namespace ObjectOriented {
 
-void Universe::random(std::size_t count, long width, long height) {
-  pos_type<2> shape = {21, 21}; //TODO
-  const auto size = shape[0] * shape[1];
-  const std::vector<float> data(size, 1.F);
+Source::Source() :
+  ra_dec(0, 0), thumbnail({0, 0}) {}
+
+Source::Source(std::complex<double> input_ra_dec, VecRaster<float> input_thumbnail) :
+    ra_dec(input_ra_dec), thumbnail(input_thumbnail) {}
+
+const std::vector<Source>& Universe::sources() const {
+  return m_sources;
+}
+
+void Universe::random(std::size_t count) {
+  m_sources.reserve(count);
+  Galaxy g;
   for(std::size_t i=0; i<count; ++i) {
-    const int ra = i * width / count;
-    const int dec = i * height / count;
-    m_sources.push_back({ ra, dec, VecRaster<float>(shape, data) });
+    g.random(i);
+    m_sources.emplace_back(g.coordinates(), g.thumbnail());
   }
 }
 
 void Universe::load(std::string filename) {
   MefFile file(filename, MefFile::Permission::READ);
   const std::size_t count = file.hdu_count();
-  for(std::size_t i=1; i<=count; ++i) {
+  for(std::size_t i=2; i<=count; ++i) {
     const auto& ext = file.access<ImageHdu>(i);
-    const auto ra = ext.parse_record<int>("RA");
-    const auto dec = ext.parse_record<int>("DEC");
-    append({ra, dec, ext.read_raster<float>()});
+    const auto ra = ext.parse_record<float>("RA");
+    const auto dec = ext.parse_record<float>("DEC");
+    m_sources.push_back({{ra, dec}, ext.read_raster<float>()});
   }
 }
 
-void Universe::append(Source source) {
-  m_sources.push_back(std::move(source));
+void Universe::save(std::string filename) const {
+  MefFile f(filename, MefFile::Permission::CREATE);
+  for(const auto& s : m_sources) {
+    const auto ra = s.ra_dec.real();
+    const auto dec = s.ra_dec.imag();
+    const std::string id = std::to_string(ra) + ',' + std::to_string(dec);
+    const auto& ext = f.assign_image_ext<float>(id, s.thumbnail);
+    ext.write_record("RA", ra);
+    ext.write_record("DEC", dec);
+  }
 }
 
-const std::vector<Source>& Universe::sources() const {
-  return m_sources;
 }
-
 }
 }
 }

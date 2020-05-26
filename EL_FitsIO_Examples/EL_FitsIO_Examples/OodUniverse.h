@@ -20,6 +20,7 @@
 #ifndef _EL_FITSIO_EXAMPLES_OODUNIVERSE_H
 #define _EL_FITSIO_EXAMPLES_OODUNIVERSE_H
 
+#include <complex>
 #include <string>
 #include <vector>
 
@@ -27,11 +28,15 @@
 
 namespace Euclid {
 namespace FitsIO {
+namespace Example {
 namespace ObjectOriented {
 
 struct Source {
 
-  int ra, dec;
+  Source();
+  Source(std::complex<double> ra_dec, VecRaster<float> thumbnail);
+
+  std::complex<float> ra_dec;
   VecRaster<float> thumbnail;
 
 };
@@ -42,13 +47,13 @@ public:
 
   Universe() {}
 
-  void random(std::size_t count, long width, long height);
+  const std::vector<Source>& sources() const;
+
+  void random(std::size_t count);
 
   void load(std::string filename);
 
-  void append(Source source);
-
-  const std::vector<Source>& sources() const;
+  void save(std::string filename) const;
 
 private:
 
@@ -56,6 +61,7 @@ private:
 
 };
 
+}
 }
 }
 }

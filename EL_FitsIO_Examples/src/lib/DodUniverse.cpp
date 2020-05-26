@@ -19,40 +19,80 @@
 
 #include "EL_FitsIO_Examples/DodUniverse.h"
 
+#include "EL_FitsIO_Examples/Observation.h"
+
+#include "EL_FitsFile/MefFile.h"
+
+#include <algorithm>
+
 namespace Euclid {
 namespace FitsIO {
+namespace Example {
 namespace DataOriented {
 
-void Universe::random(std::size_t count, long width, long height) {
-  pos_type<2> shape = {21, 21}; //TODO
-  const auto size = shape[0] * shape[1];
-  m_data = std::vector<float>(size * count, 1.F);
-  for(std::size_t i=0; i<count; ++i) {
-    const auto begin = m_data.data() + i * size;
-    const int ra = i * width / count;
-    const int dec = i * height / count;
-    m_sources.push_back({ ra, dec, PtrRaster<float>(shape, begin) });
-  }
-}
+Source::Source() :
+  ra_dec(0, 0), thumbnail({0, 0}, (float*)nullptr) {}
 
-void Universe::load(std::string filename) {
-  //TODO avoid append, read rasters in place
-  // Requires a funtsion read_raster(const T* begin)
-  // and a function read_shape()
-  throw(std::runtime_error("Universe loading not yet implemented."));
-}
-
-void Universe::append(Source source) {
-  const auto begin = source.thumbnail.data();
-  const auto end = begin + source.thumbnail.size();
-  m_data.insert(m_data.end(), begin, end);
-  m_sources.push_back(std::move(source));
-}
+Source::Source(std::complex<double> input_ra_dec, PtrRaster<float> input_thumbnail) :
+    ra_dec(input_ra_dec), thumbnail(input_thumbnail) {}
 
 const std::vector<Source>& Universe::sources() const {
   return m_sources;
 }
 
+void Universe::random(std::size_t count) {
+  const std::size_t size = count * 21 * 21; //TODO variable?
+  m_data.resize(size);
+  m_sources.resize(count);
+  auto d = m_data.data();
+  Galaxy g;
+  for(std::size_t i=0; i<count; ++i) {
+    g.random(i);
+    const auto& shape = g.shape();
+    g.fill(d, shape);
+    m_sources[i] = Source(g.coordinates(), PtrRaster<float>(shape, d));
+    d += shape[0] * shape[1];
+  }
+}
+
+void Universe::load(std::string filename) {
+  MefFile file(filename, MefFile::Permission::READ);
+  const std::size_t count = file.hdu_count();
+  std::size_t size = 0;
+  for(std::size_t i=2; i<=count; ++i) {
+    const auto& ext = file.access<RecordHdu>(i);
+    const auto width = ext.parse_record<long>("NAXIS1");
+    const auto height = ext.parse_record<long>("NAXIS2");
+    size += width * height;
+  }
+  m_data.resize(size);
+  auto d = m_data.data();
+  for(std::size_t i=2; i<=count; ++i) {
+    const auto& ext = file.access<ImageHdu>(i);
+    const auto ra = ext.parse_record<float>("RA");
+    const auto dec = ext.parse_record<float>("DEC");
+    const auto raster = ext.read_raster<float>();
+    const auto& shape = raster.shape;
+    size = shape[0] * shape[1];
+    memcpy(d, raster.data(), size * sizeof(float));
+    m_sources.push_back({{ra, dec}, PtrRaster<float>(shape, d)});
+    d += size;
+  }
+}
+
+void Universe::save(std::string filename) const {
+  MefFile f(filename, MefFile::Permission::CREATE);
+  for(const auto& s : m_sources) {
+    const auto ra = s.ra_dec.real();
+    const auto dec = s.ra_dec.imag();
+    const std::string id = std::to_string(ra) + ',' + std::to_string(dec);
+    const auto& ext = f.assign_image_ext<float>(id, s.thumbnail);
+    ext.write_record("RA", ra);
+    ext.write_record("DEC", dec);
+  }
+}
+
+}
 }
 }
 }

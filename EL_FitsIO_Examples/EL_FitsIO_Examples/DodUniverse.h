@@ -20,18 +20,23 @@
 #ifndef _EL_FITSIO_EXAMPLES_DODUNIVERSE_H
 #define _EL_FITSIO_EXAMPLES_DODUNIVERSE_H
 
+#include <complex>
+#include <string>
 #include <vector>
 
 #include "EL_FitsData/Raster.h"
 
 namespace Euclid {
 namespace FitsIO {
+namespace Example {
 namespace DataOriented {
 
 struct Source {
 
-  int ra;
-  int dec;
+  Source();
+  Source(std::complex<double> ra_dec, PtrRaster<float> thumbnail);
+
+  std::complex<double> ra_dec;
   PtrRaster<float> thumbnail;
 
 };
@@ -42,13 +47,13 @@ public:
 
   Universe() {}
 
-  void random(std::size_t count, long width, long height);
+  const std::vector<Source>& sources() const;
+
+  void random(std::size_t count);
 
   void load(std::string filename);
 
-  void append(Source source);
-
-  const std::vector<Source>& sources() const;
+  void save(std::string filename) const;
 
 private:
 
@@ -57,6 +62,7 @@ private:
 
 };
 
+}
 }
 }
 }
