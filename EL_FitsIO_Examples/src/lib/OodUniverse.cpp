@@ -23,6 +23,8 @@
 
 #include "EL_FitsFile/MefFile.h"
 
+#include <algorithm>
+
 namespace Euclid {
 namespace FitsIO {
 namespace Example {
@@ -43,7 +45,8 @@ void Universe::random(std::size_t count) {
   Galaxy g;
   for(std::size_t i=0; i<count; ++i) {
     g.random(i);
-    m_sources.emplace_back(g.coordinates(), g.thumbnail());
+    const auto& t = transform(g.thumbnail());
+    m_sources.emplace_back(g.coordinates(), t);
   }
 }
 
@@ -54,8 +57,19 @@ void Universe::load(std::string filename) {
     const auto& ext = file.access<ImageHdu>(i);
     const auto ra = ext.parse_record<float>("RA");
     const auto dec = ext.parse_record<float>("DEC");
-    m_sources.push_back({{ra, dec}, ext.read_raster<float>()});
+    const auto raster = ext.read_raster<float>();
+    const auto& t = transform(raster);
+    m_sources.emplace_back(std::complex<double>(ra, dec), t);
   }
+}
+
+VecRaster<float> Universe::transform(const VecRaster<float>& input) const {
+  const auto& shape = input.shape;
+  VecRaster<float> output({shape[1], shape[0]});
+  for(long x=0; x<shape[1]; ++x)
+    for(long y=0; y<shape[0]; ++y)
+      output[{x, y}] = input[{y, x}];
+  return output;
 }
 
 void Universe::save(std::string filename) const {
@@ -71,21 +85,25 @@ void Universe::save(std::string filename) const {
 }
 
 VecRaster<unsigned char> Universe::memory_map() const {
-  const std::size_t begin = (std::size_t) m_sources[0].thumbnail.data();
-  const auto count = m_sources.size();
-  const auto& last = m_sources[count - 1].thumbnail;
-  const std::size_t end = (std::size_t) last.data() + last.size() * sizeof(float);
+  std::size_t begin = 0;
+  std::size_t end = 0;
+  for(const auto& s : m_sources) {
+    const std::size_t s_begin = (std::size_t) s.thumbnail.data();
+    const std::size_t s_end = s_begin + s.thumbnail.size() * sizeof(float);
+    if(begin == 0 || s_begin < begin)
+      begin = s_begin;
+    if(end == 0 || s_end > end)
+      end = s_end;
+  }
   const std::size_t size = end - begin;
   const long width = 1024;
   const long height = (size + width - 1) / width;
   VecRaster<unsigned char> map({width, height});
-  unsigned char value = 1;
   for(const auto& s : m_sources) {
     const std::size_t s_begin = (std::size_t) s.thumbnail.data();
     const std::size_t s_end = s_begin + s.thumbnail.size() * sizeof(float);
-    for(std::size_t i = s_begin; i < s_end; ++i)
-      map.vector()[i - begin] = value;
-    value += 2;
+    for(std::size_t i = s_begin + 1; i < s_end - 1; ++i)
+      map.vector()[i - begin] = 1;
   }
   return map;
 }

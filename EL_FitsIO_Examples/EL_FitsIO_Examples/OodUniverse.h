@@ -53,6 +53,8 @@ public:
 
   void load(std::string filename);
 
+  VecRaster<float> transform(const VecRaster<float>& input) const;
+
   void save(std::string filename) const;
 
   VecRaster<unsigned char> memory_map() const;

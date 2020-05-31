@@ -73,6 +73,7 @@ public:
       logger.info() << "Saving catalog...";
       universe.save(output_cat);
     }
+    logger.info() << "Saving memory map...";
     SifFile file(args["memory"].as<std::string>(), SifFile::Permission::CREATE);
     file.write_raster(universe.memory_map());
     return Elements::ExitCode::OK;

@@ -44,15 +44,13 @@ const std::vector<Source>& Universe::sources() const {
 void Universe::random(std::size_t count) {
   const std::size_t size = count * 21 * 21; //TODO variable?
   m_data.resize(size);
-  m_sources.resize(count);
   auto d = m_data.data();
   Galaxy g;
   for(std::size_t i=0; i<count; ++i) {
     g.random(i);
-    const auto& shape = g.shape();
-    g.fill(d, shape);
-    m_sources[i] = Source(g.coordinates(), PtrRaster<float>(shape, d));
-    d += shape[0] * shape[1];
+    const auto& t = transform(g.thumbnail(), d);
+    m_sources.emplace_back(g.coordinates(), t);
+    d += t.size();
   }
 }
 
@@ -73,12 +71,19 @@ void Universe::load(std::string filename) {
     const auto ra = ext.parse_record<float>("RA");
     const auto dec = ext.parse_record<float>("DEC");
     const auto raster = ext.read_raster<float>();
-    const auto& shape = raster.shape;
-    size = shape[0] * shape[1];
-    memcpy(d, raster.data(), size * sizeof(float));
-    m_sources.push_back({{ra, dec}, PtrRaster<float>(shape, d)});
-    d += size;
+    const auto& t = transform(raster, d);
+    m_sources.emplace_back(std::complex<double>(ra, dec), t);
+    d += t.size();
   }
+}
+
+PtrRaster<float> Universe::transform(const VecRaster<float>& input, float* data) const {
+  const auto& shape = input.shape;
+  PtrRaster<float> output({shape[1], shape[0]}, data);
+  for(long x=0; x<shape[1]; ++x)
+    for(long y=0; y<shape[0]; ++y)
+      output[{x, y}] = input[{y, x}];
+  return output;
 }
 
 void Universe::save(std::string filename) const {
@@ -99,13 +104,11 @@ VecRaster<unsigned char> Universe::memory_map() const {
   const long height = (size + width - 1) / width;
   const std::size_t begin = (std::size_t) m_data.data();
   VecRaster<unsigned char> map({width, height});
-  unsigned char value = 1;
   for(const auto& s : m_sources) {
     const std::size_t s_begin = (std::size_t) s.thumbnail.data();
     const std::size_t s_end = s_begin + s.thumbnail.size() * sizeof(float);
-    for(std::size_t i = s_begin; i < s_end; ++i)
-      map.vector()[i - begin] = value;
-    value += 2;
+    for(std::size_t i = s_begin + 1; i < s_end - 1; ++i)
+      map.vector()[i - begin] = 1;
   }
   return map;
 }

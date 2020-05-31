@@ -53,6 +53,8 @@ public:
 
   void load(std::string filename);
 
+  PtrRaster<float> transform(const VecRaster<float>& input, float* data) const;
+
   void save(std::string filename) const;
 
   VecRaster<unsigned char> memory_map() const;
