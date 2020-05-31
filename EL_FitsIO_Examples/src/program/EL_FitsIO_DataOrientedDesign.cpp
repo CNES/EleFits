@@ -23,6 +23,7 @@
 #include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
 
+#include "EL_FitsFile/SifFile.h"
 #include "EL_FitsIO_Examples/DodUniverse.h"
 #include "EL_FitsIO_Examples/Observation.h"
 
@@ -44,7 +45,8 @@ public:
         ("catalog-in", value<std::string>()->default_value(""), "Input universe catalog")
         ("catalog-out", value<std::string>()->default_value(""), "Output universe catalog")
         ("sources", value<long>()->default_value(100), "Number of sources")
-        ("observation", value<std::string>()->default_value("/tmp/obs.fits"), "Output observation");
+        ("observation", value<std::string>()->default_value("/tmp/obs.fits"), "Output observation")
+        ("memory", value<std::string>()->default_value("/tmp/mmap.fits"), "Output memory map");
     return options;
   }
 
@@ -71,6 +73,8 @@ public:
       logger.info() << "Saving catalog...";
       universe.save(output_cat);
     }
+    SifFile file(args["memory"].as<std::string>(), SifFile::Permission::CREATE);
+    file.write_raster(universe.memory_map());
     return Elements::ExitCode::OK;
   }
 

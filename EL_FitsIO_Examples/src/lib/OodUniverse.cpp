@@ -70,6 +70,26 @@ void Universe::save(std::string filename) const {
   }
 }
 
+VecRaster<unsigned char> Universe::memory_map() const {
+  const std::size_t begin = (std::size_t) m_sources[0].thumbnail.data();
+  const auto count = m_sources.size();
+  const auto& last = m_sources[count - 1].thumbnail;
+  const std::size_t end = (std::size_t) last.data() + last.size() * sizeof(float);
+  const std::size_t size = end - begin;
+  const long width = 1024;
+  const long height = (size + width - 1) / width;
+  VecRaster<unsigned char> map({width, height});
+  unsigned char value = 1;
+  for(const auto& s : m_sources) {
+    const std::size_t s_begin = (std::size_t) s.thumbnail.data();
+    const std::size_t s_end = s_begin + s.thumbnail.size() * sizeof(float);
+    for(std::size_t i = s_begin; i < s_end; ++i)
+      map.vector()[i - begin] = value;
+    value += 2;
+  }
+  return map;
+}
+
 }
 }
 }

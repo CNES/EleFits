@@ -55,6 +55,8 @@ public:
 
   void save(std::string filename) const;
 
+  VecRaster<unsigned char> memory_map() const;
+
 private:
 
   std::vector<Source> m_sources;
