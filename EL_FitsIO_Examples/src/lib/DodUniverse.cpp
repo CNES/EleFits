@@ -42,15 +42,16 @@ const std::vector<Source>& Universe::sources() const {
 }
 
 void Universe::random(std::size_t count) {
-  const std::size_t size = count * 21 * 21; //TODO variable?
+  const std::size_t size = count * 21 * 21; //TODO adaptive?
   m_data.resize(size);
   auto d = m_data.data();
+  m_sources.reserve(count);
   Galaxy g;
   for(std::size_t i=0; i<count; ++i) {
     g.random(i);
     const auto& t = transform(g.thumbnail(), d);
-    m_sources.emplace_back(g.coordinates(), t);
     d += t.size();
+    m_sources.emplace_back(g.coordinates(), t);
   }
 }
 
@@ -66,14 +67,15 @@ void Universe::load(std::string filename) {
   }
   m_data.resize(size);
   auto d = m_data.data();
+  m_sources.reserve(count);
   for(std::size_t i=2; i<=count; ++i) {
     const auto& ext = file.access<ImageHdu>(i);
     const auto ra = ext.parse_record<float>("RA");
     const auto dec = ext.parse_record<float>("DEC");
     const auto raster = ext.read_raster<float>();
     const auto& t = transform(raster, d);
-    m_sources.emplace_back(std::complex<double>(ra, dec), t);
     d += t.size();
+    m_sources.emplace_back(std::complex<double>(ra, dec), t);
   }
 }
 

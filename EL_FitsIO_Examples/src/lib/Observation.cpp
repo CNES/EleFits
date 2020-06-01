@@ -107,13 +107,12 @@ std::complex<double> Galaxy::coordinates() const {
 }
 
 pos_type<2> Galaxy::shape() const {
-  // const auto& p = m_model.parameters();
-  // const double sx = p.sigma_x * abs(sin(p.theta));
-  // const double sy = p.sigma_y * abs(cos(p.theta));
-  // const long width = 2 * ceil(5 * sx) + 1;
-  // const long height = 2 * ceil(5 * sy) + 1;
-  // return {width, height};
-  return {21, 21};
+  const auto& p = m_model.parameters();
+  const double sx = p.sigma_x * abs(sin(p.theta));
+  const double sy = p.sigma_y * abs(cos(p.theta));
+  const long width = 2 * ceil(5 * sx) + 1;
+  const long height = 2 * ceil(5 * sy) + 1;
+  return {width, height};
 }
 
 void Galaxy::fill(float* data, const pos_type<2>& shape) const {

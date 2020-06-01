@@ -45,8 +45,8 @@ public:
         ("catalog-in", value<std::string>()->default_value(""), "Input universe catalog")
         ("catalog-out", value<std::string>()->default_value(""), "Output universe catalog")
         ("sources", value<long>()->default_value(100), "Number of sources")
-        ("observation", value<std::string>()->default_value("/tmp/obs.fits"), "Output observation")
-        ("memory", value<std::string>()->default_value("/tmp/mmap.fits"), "Output memory map");
+        ("observation", value<std::string>()->default_value(""), "Output observation")
+        ("memory", value<std::string>()->default_value(""), "Output memory map");
     return options;
   }
 
@@ -54,6 +54,8 @@ public:
     const auto input_cat = args["catalog-in"].as<std::string>();
     const auto output_cat = args["catalog-out"].as<std::string>();
     const auto n = args["sources"].as<long>();
+    const auto output_obs = args["observation"].as<std::string>();
+    const auto output_mmap = args["memory"].as<std::string>();
     Example::DataOriented::Universe universe;
     if(input_cat.empty()) {
       logger.info() << "Generating random universe...";
@@ -66,16 +68,20 @@ public:
     logger.info() << "Rendering sources...";
     for(const auto& s : universe.sources())
       obs.draw(s.thumbnail, s.ra_dec);
-    logger.info() << "Saving observation...";
-    obs.save(args["observation"].as<std::string>());
-    logger.info() << "Done!";
+    if(not output_obs.empty()) {
+      logger.info() << "Saving observation...";
+      obs.save(args["observation"].as<std::string>());
+    }
     if(not output_cat.empty()) {
       logger.info() << "Saving catalog...";
       universe.save(output_cat);
     }
-    logger.info() << "Saving memory map...";
-    SifFile file(args["memory"].as<std::string>(), SifFile::Permission::CREATE);
-    file.write_raster(universe.memory_map());
+    if(not output_mmap.empty()) {
+      logger.info() << "Saving memory map...";
+      SifFile file(args["memory"].as<std::string>(), SifFile::Permission::CREATE);
+      file.write_raster(universe.memory_map());
+    }
+    logger.info() << "Done!";
     return Elements::ExitCode::OK;
   }
 
