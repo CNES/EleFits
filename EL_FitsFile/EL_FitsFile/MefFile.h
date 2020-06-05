@@ -30,6 +30,8 @@ namespace FitsIO {
 /**
  * @brief Multi-Extension Fits file reader-writer.
  * @details Provide HDU access/create services.
+ * @warning HDU access is provided through references.
+ * Reaccessing a given HDU makes any previous reference obsolete.
  */
 class MefFile : public FitsFile {
 
@@ -57,7 +59,7 @@ public:
 
   /**
    * @brief Read the name of each HDU.
-   * @warning hdu_names()[i] is the name of HDU i+1.
+   * @warning hdu_names()[i] is the name of HDU i+1 because Fits index is 1-based.
    */
   std::vector<std::string> hdu_names();
 
@@ -66,7 +68,7 @@ public:
    * @tparam The type of Hdu: ImageHdu, BintableHdu or RecordHdu to just handle metadata.
    * @return A reference to the HDU reader-writer.
    * @details
-   * The type can be ImageHdu, BintableHdu or unspecified (base class RecordHdu).
+   * The type can be ImageHdu, BintableHdu or unspecified (i.e. base class RecordHdu).
    * In the latter case, if needs be, the returned Hdu can still be cast to an ImageHdu or BintableHdu
    * (e.g., \c dynamic_cast<ImageHdu&>(hdu) )
    * or merely be used as a metadata reader-writer.
@@ -161,6 +163,7 @@ const T& MefFile::access(std::size_t index) {
     break;
   }
   return dynamic_cast<T&>(*ptr.get());
+  //TODO return pointer to allow nullptr when HDU handler is obsolete?
 }
 
 template<class T>
