@@ -130,7 +130,7 @@ MefFile provides service to create and access extensions.
 There are three types of extensions:
 - RecordHdu to read and write records;
 - BintableHdu to read and write bintables (extends RecordHdu);
-- ImageHdu to read and write images (extends ImageHdu).
+- ImageHdu to read and write images (extends RecordHdu).
 
 Bintable and image HDUs can be considered record HDUs for header work.
 Metadata (i.e., header-only) HDUs are image HDUs with empty data.
