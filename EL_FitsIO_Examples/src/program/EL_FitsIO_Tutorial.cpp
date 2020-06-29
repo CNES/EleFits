@@ -22,6 +22,7 @@
 
 #include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
+#include "ElementsKernel/Temporary.h"
 
 #include "EL_FitsData/FitsDataFixture.h"
 
@@ -76,8 +77,10 @@ public:
 
   options_description defineSpecificProgramOptions() override {
     options_description options {};
+
+    auto default_output_file = m_temp_dir.path() / "test.fits";
     options.add_options()
-        ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+        ("output", value<std::string>()->default_value(default_output_file.string()), "Output file");
     return options;
   }
 
@@ -202,6 +205,10 @@ public:
 
     return Elements::ExitCode::OK;
   }
+
+private:
+
+  Elements::TempDir m_temp_dir {};
 
 };
 
