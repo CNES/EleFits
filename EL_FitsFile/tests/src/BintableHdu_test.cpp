@@ -79,14 +79,17 @@ BOOST_AUTO_TEST_CASE( empty_column_test ) {
 }
 
 BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
+  VecColumn<float> input0({"COL0", "", 1}, std::vector<float>());
   Test::RandomScalarColumn<float> input1(1);
   Test::RandomScalarColumn<float> input2(2);
   input1.info.name = "COL1";
   input2.info.name = "COL2";
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::TEMPORARY);
-  file.assign_bintable_ext("1AND2", input1, input2);
-  file.assign_bintable_ext("2AND1", input2, input1);
+  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("0AND1", input0, input1));
+  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("1AND0", input1, input0)); // no mapping at fault address 0x0
+  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("1AND2", input1, input2));
+  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("2AND1", input2, input1));
 }
 
 //-----------------------------------------------------------------------------
