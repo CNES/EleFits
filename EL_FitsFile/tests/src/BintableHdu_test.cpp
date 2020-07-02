@@ -71,8 +71,21 @@ BOOST_AUTO_TEST_CASE( float_test ) {
   check_vector<float>();
 }
 
+BOOST_AUTO_TEST_CASE( empty_column_test ) {
+  const std::string filename = Elements::TempFile().path().string();
+  VecColumn<float> input({"NAME", "", 1}, std::vector<float>());
+  MefFile file(filename, MefFile::Permission::TEMPORARY);
+  file.assign_bintable_ext("BINEXT", input);
+}
+
+BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
+  const std::string filename = Elements::TempFile().path().string();
+  Test::RandomScalarColumn<float> input1(1);
+  Test::RandomScalarColumn<float> input2(2);
+  MefFile file(filename, MefFile::Permission::TEMPORARY);
+  BOOST_CHECK_THROW(file.assign_bintable_ext("BINEXT", input1, input2), std::runtime_error);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-
