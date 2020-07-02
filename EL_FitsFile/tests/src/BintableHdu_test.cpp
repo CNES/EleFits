@@ -56,7 +56,7 @@ void check_vector() {
   Test::RandomScalarColumn<T> input(rows * repeat);
   input.info.repeat = repeat;
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::OVERWRITE); //TODO TEMPORARY);
+  MefFile file(filename, MefFile::Permission::TEMPORARY);
   file.init_bintable_ext("BINEXT", input.info);
   file.access_first<BintableHdu>("BINEXT").write_column(input);
   const auto output = file.access_first<BintableHdu>("BINEXT").read_column<T>(input.info.name);
@@ -79,11 +79,14 @@ BOOST_AUTO_TEST_CASE( empty_column_test ) {
 }
 
 BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
-  const std::string filename = Elements::TempFile().path().string();
   Test::RandomScalarColumn<float> input1(1);
   Test::RandomScalarColumn<float> input2(2);
+  input1.info.name = "COL1";
+  input2.info.name = "COL2";
+  const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::TEMPORARY);
-  BOOST_CHECK_THROW(file.assign_bintable_ext("BINEXT", input1, input2), std::runtime_error);
+  file.assign_bintable_ext("1AND2", input1, input2);
+  file.assign_bintable_ext("2AND1", input2, input1);
 }
 
 //-----------------------------------------------------------------------------
