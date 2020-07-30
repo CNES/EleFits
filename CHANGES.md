@@ -7,6 +7,7 @@
 * Better manage memory
 * Nullify file pointer at closing
 * Remove useless template specialization
+* Better test type management
 
 ## Performance
 
@@ -17,6 +18,12 @@
 
 * Fix CFitsIO include
 * Overall code quality review
+
+## Known bugs/issues
+
+* Boolean columns are not supported
+* Columns are assumed to have consistent sizes
+* `const char*` is not supported; `string` should be used instead
 
 # 1.2.1 (Patch)
 
