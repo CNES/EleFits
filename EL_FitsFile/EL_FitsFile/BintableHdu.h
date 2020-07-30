@@ -129,6 +129,7 @@ void BintableHdu::append_columns(const Column<Ts>&... columns) const {
   Cfitsio::Bintable::append_columns(m_fptr, columns...);
 }
 
+#ifndef DECLARE_READ_COLUMN
 #define DECLARE_READ_COLUMN(T) \
     extern template VecColumn<T> BintableHdu::read_column(std::string) const;
 DECLARE_READ_COLUMN(char)
@@ -141,7 +142,10 @@ DECLARE_READ_COLUMN(unsigned char)
 DECLARE_READ_COLUMN(unsigned short)
 DECLARE_READ_COLUMN(unsigned int)
 DECLARE_READ_COLUMN(unsigned long)
+#undef DECLARE_READ_COLUMN
+#endif
 
+#ifndef DECLARE_WRITE_COLUMN
 #define DECLARE_WRITE_COLUMN(T) \
     extern template void BintableHdu::write_column(const Column<T>&) const;
 DECLARE_WRITE_COLUMN(char)
@@ -154,6 +158,8 @@ DECLARE_WRITE_COLUMN(unsigned char)
 DECLARE_WRITE_COLUMN(unsigned short)
 DECLARE_WRITE_COLUMN(unsigned int)
 DECLARE_WRITE_COLUMN(unsigned long)
+#undef DECLARE_WRITE_COLUMN
+#endif
 
 }
 }

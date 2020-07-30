@@ -25,6 +25,7 @@ namespace FitsIO {
 ImageHdu::ImageHdu(fitsfile*& fptr, std::size_t index) :
     RecordHdu(fptr, index) {}
 
+#ifndef COMPILE_READ_RASTER
 #define COMPILE_READ_RASTER(T, n) \
   template VecRaster<T, n> ImageHdu::read_raster() const;
 COMPILE_READ_RASTER(char, 2)
@@ -35,7 +36,10 @@ COMPILE_READ_RASTER(char, 3)
 COMPILE_READ_RASTER(int, 3)
 COMPILE_READ_RASTER(float, 3)
 COMPILE_READ_RASTER(double, 3)
+#undef COMPILE_READ_RASTER
+#endif
 
+#ifndef COMPILE_WRITE_RASTER
 #define COMPILE_WRITE_RASTER(T, n) \
   template void ImageHdu::write_raster(const Raster<T, n>&) const;
 COMPILE_WRITE_RASTER(char, 2)
@@ -46,6 +50,8 @@ COMPILE_WRITE_RASTER(char, 3)
 COMPILE_WRITE_RASTER(int, 3)
 COMPILE_WRITE_RASTER(float, 3)
 COMPILE_WRITE_RASTER(double, 3)
+#undef COMPILE_WRITE_RASTER
+#endif
 
 }
 }

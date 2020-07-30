@@ -207,6 +207,7 @@ void RecordHdu::update_records(const Record<Ts>&... records) const {
   Cfitsio::Header::update_records(m_fptr, records...);
 }
 
+#ifndef DECLARE_PARSE_RECORD
 #define DECLARE_PARSE_RECORD(T) \
   extern template Record<T> RecordHdu::parse_record(std::string) const;
 DECLARE_PARSE_RECORD(char)
@@ -219,7 +220,10 @@ DECLARE_PARSE_RECORD(unsigned char)
 DECLARE_PARSE_RECORD(unsigned short)
 DECLARE_PARSE_RECORD(unsigned int)
 DECLARE_PARSE_RECORD(unsigned long)
+#undef DECLARE_PARSE_RECORD
+#endif
 
+#ifndef DECLARE_WRITE_RECORD
 #define DECLARE_WRITE_RECORD(T) \
   extern template void RecordHdu::write_record(const Record<T>&) const;
 DECLARE_WRITE_RECORD(char)
@@ -232,6 +236,8 @@ DECLARE_WRITE_RECORD(unsigned char)
 DECLARE_WRITE_RECORD(unsigned short)
 DECLARE_WRITE_RECORD(unsigned int)
 DECLARE_WRITE_RECORD(unsigned long)
+#undef DECLARE_WRITE_RECORD
+#endif
 
 }
 }

@@ -25,6 +25,7 @@ namespace FitsIO {
 BintableHdu::BintableHdu(fitsfile*& fptr, std::size_t index) :
     RecordHdu(fptr, index) {}
 
+#ifndef COMPILE_READ_COLUMN
 #define COMPILE_READ_COLUMN(T) \
     template VecColumn<T> BintableHdu::read_column(std::string) const;
 COMPILE_READ_COLUMN(char)
@@ -37,7 +38,10 @@ COMPILE_READ_COLUMN(unsigned char)
 COMPILE_READ_COLUMN(unsigned short)
 COMPILE_READ_COLUMN(unsigned int)
 COMPILE_READ_COLUMN(unsigned long)
+#undef COMPILE_READ_COLUMN
+#endif
 
+#ifndef COMPILE_WRITE_COLUMN
 #define COMPILE_WRITE_COLUMN(T) \
     template void BintableHdu::write_column(const Column<T>&) const;
 COMPILE_WRITE_COLUMN(char)
@@ -50,6 +54,8 @@ COMPILE_WRITE_COLUMN(unsigned char)
 COMPILE_WRITE_COLUMN(unsigned short)
 COMPILE_WRITE_COLUMN(unsigned int)
 COMPILE_WRITE_COLUMN(unsigned long)
+#undef COMPILE_WRITE_COLUMN
+#endif
 
 }
 }

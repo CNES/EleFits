@@ -105,29 +105,29 @@ namespace internal {
 // Signature change (output argument) for further use with variadic templates.
 template<typename T>
 inline void _parse_record(fitsfile* fptr, std::string keyword, FitsIO::Record<T>& record) {
-    record = parse_record<T>(fptr, keyword);
+  record = parse_record<T>(fptr, keyword);
 }
 
 // Parse the records of the i+1 first keywords of a given list (recursive approach).
 template<int i, typename ...Ts>
 struct _parse_records {
-    void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
-        _parse_record(fptr, keywords[i], std::get<i>(records));
-        _parse_records<i-1, Ts...>{}(fptr, keywords, records);
-    }
+  void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
+    _parse_record(fptr, keywords[i], std::get<i>(records));
+    _parse_records<i-1, Ts...>{}(fptr, keywords, records);
+  }
 };
 
 // Parse the value of the first keyword of a given list (terminal case of the recursion).
 template<typename ...Ts>
 struct _parse_records<0, Ts...> {
-    void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
-        _parse_record(fptr, keywords[0], std::get<0>(records));
-    }
+  void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
+    _parse_record(fptr, keywords[0], std::get<0>(records));
+  }
 };
 
 template<class Return, typename... Ts, std::size_t... Is>
 Return _parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords, std14::index_sequence<Is...>) {
-    return { parse_record<Ts>(fptr, keywords[Is]) ... };
+  return { parse_record<Ts>(fptr, keywords[Is]) ... };
 }
 
 }
@@ -168,24 +168,25 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::strin
 
 template<typename ...Ts>
 std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords) {
-    std::tuple<FitsIO::Record<Ts>...> records;
-    internal::_parse_records<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, records);
-    return records;
+  std::tuple<FitsIO::Record<Ts>...> records;
+  internal::_parse_records<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, records);
+  return records;
 }
 
 template<class Return, typename... Ts>
 Return parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords) {
-    return internal::_parse_records_as<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
+  return internal::_parse_records_as<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
 }
 
 template<typename T>
 void write_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
-    int status = 0;
-    std::string comment = record.comment;
-    T value = record.value;
-    fits_write_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
-    fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-    may_throw_cfitsio_error(status);
+  int status = 0;
+  std::string comment = record.comment;
+  T value = record.value;
+  fits_write_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
+  fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
+  std::string context = "while writing '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  may_throw_cfitsio_error(status);
 }
 
 template<>
@@ -193,17 +194,18 @@ void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>
 
 template<typename... Ts>
 void write_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records) {
-    using mock_unpack = int[];
-    (void)mock_unpack {(write_record(fptr, records), 0)...};
+  using mock_unpack = int[];
+  (void)mock_unpack {(write_record(fptr, records), 0)...};
 }
 
 template<typename T>
 void update_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
-    int status = 0;
-    std::string comment = record.comment;
-    T value = record.value;
-    fits_update_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
-    may_throw_cfitsio_error(status);
+  int status = 0;
+  std::string comment = record.comment;
+  T value = record.value;
+  fits_update_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
+  std::string context = "while updating '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  may_throw_cfitsio_error(status);
 }
 
 template<>

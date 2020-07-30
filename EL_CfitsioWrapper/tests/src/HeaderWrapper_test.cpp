@@ -90,6 +90,7 @@ TEST_RECORD(char)
 TEST_RECORD(short)
 TEST_RECORD(int)
 TEST_RECORD(long)
+TEST_RECORD_ALIAS(long long, longlong)
 TEST_RECORD(float)
 TEST_RECORD(double)
 TEST_RECORD_ALIAS(std::complex<float>, cfloat)
@@ -98,7 +99,8 @@ TEST_RECORD_ALIAS(std::string, string)
 TEST_RECORD_UNSIGNED(char)
 TEST_RECORD_UNSIGNED(short)
 TEST_RECORD_UNSIGNED(int)
-//TEST_RECORD_UNSIGNED(long)
+TEST_RECORD_UNSIGNED(long)
+TEST_RECORD_ALIAS(unsigned long long, ulonglong)
 
 BOOST_AUTO_TEST_CASE( empty_value_test ) {
   FitsIO::Test::MinimalFile file;

@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::TEMPORARY);
   BOOST_CHECK_NO_THROW(file.assign_bintable_ext("0AND1", input0, input1));
-  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("1AND0", input1, input0)); // no mapping at fault address 0x0
+  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("1AND0", input1, input0));
   BOOST_CHECK_NO_THROW(file.assign_bintable_ext("1AND2", input1, input2));
   BOOST_CHECK_NO_THROW(file.assign_bintable_ext("2AND1", input2, input1));
 }

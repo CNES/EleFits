@@ -118,15 +118,19 @@ TEST_SCALAR(char)
 TEST_SCALAR(short)
 TEST_SCALAR(int)
 TEST_SCALAR(long)
+TEST_SCALAR_ALIAS(std::int16_t, int16)
+TEST_SCALAR_ALIAS(std::int32_t, int32)
+TEST_SCALAR_ALIAS(std::int64_t, int64)
 TEST_SCALAR(float)
 TEST_SCALAR(double)
 TEST_SCALAR_ALIAS(std::string, string)
 TEST_SCALAR_UNSIGNED(char)
 TEST_SCALAR_UNSIGNED(short)
 TEST_SCALAR_UNSIGNED(int)
-#ifdef TULONGLONG
 TEST_SCALAR_UNSIGNED(long)
-#endif
+TEST_SCALAR_ALIAS(std::uint16_t, uint16)
+TEST_SCALAR_ALIAS(std::uint32_t, uint32)
+TEST_SCALAR_ALIAS(std::uint64_t, uint64)
 
 template<typename T>
 void check_vector() {
@@ -152,25 +156,32 @@ void check_vector() {
   }
 }
 
+#define TEST_VECTOR_ALIAS(type, name) \
+  BOOST_AUTO_TEST_CASE( vector_##name##_test ) { check_vector<type>(); }
+
 #define TEST_VECTOR(type) \
-  BOOST_AUTO_TEST_CASE( vector_##type##_test ) { check_vector<type>(); }
+  TEST_VECTOR_ALIAS(type, type)
 
 #define TEST_VECTOR_UNSIGNED(type) \
-  BOOST_AUTO_TEST_CASE( vector_u##type##_test ) { check_vector<unsigned type>(); }
+  TEST_VECTOR_ALIAS(unsigned type, u##type)
 
 // TEST_VECTOR(bool) //TODO won't compile because of vector specialization for bool
 TEST_VECTOR(char)
 TEST_VECTOR(short)
 TEST_VECTOR(int)
 TEST_VECTOR(long)
+TEST_VECTOR_ALIAS(std::int16_t, int16)
+TEST_VECTOR_ALIAS(std::int32_t, int32)
+TEST_VECTOR_ALIAS(std::int64_t, int64)
 TEST_VECTOR(float)
 TEST_VECTOR(double)
 TEST_VECTOR_UNSIGNED(char)
 TEST_VECTOR_UNSIGNED(short)
 TEST_VECTOR_UNSIGNED(int)
-#ifdef TULONGLONG
 TEST_VECTOR_UNSIGNED(long)
-#endif
+TEST_VECTOR_ALIAS(std::uint16_t, uint16)
+TEST_VECTOR_ALIAS(std::uint32_t, uint32)
+TEST_VECTOR_ALIAS(std::uint64_t, uint64)
 
 BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;
