@@ -28,6 +28,8 @@ namespace FitsIO {
 
 /**
  * @brief Keyword-value pair with optional unit and comment.
+ * @details
+ * If unit is provided, the comment will be rendered as "comment [unit]".
  */
 template<typename T>
 struct Record {
@@ -42,9 +44,24 @@ struct Record {
    */
   operator T () const;
 
+  /**
+   * @brief The keyword.
+   */
   std::string keyword;
+
+  /**
+   * @brief The value.
+   */
   T value;
+
+  /**
+   * @brief The unit.
+   */
   std::string unit;
+
+  /**
+   * @brief The comment without the unit.
+   */
   std::string comment;
 
 };

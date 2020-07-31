@@ -41,19 +41,36 @@ namespace Test {
 
 
 /**
- * @brief A small 2D image raster.
+ * @brief A 2D image Raster of floats.
  */
 class SmallRaster : public VecRaster<float> {
 
 public:
 
+  /**
+   * @brief Generate a SmallRaster with given width and height.
+   */
   SmallRaster(long width=3, long height=2);
   
+  /** @brief Destructor */
   virtual ~SmallRaster() = default;
   
+  /**
+   * @brief Check whether the Raster is approximately equal to another Raster.
+   * @details
+   * Test each pixel as: (other - this) / this < tol
+   */
   bool approx(const Raster<float>& other, float tol=0.1) const;
   
-  long width, height;
+  /**
+   * @brief Raster width.
+   */
+  long width;
+
+  /**
+   * @brief Raster height.
+   */
+  long height;
 
 };
 
@@ -64,23 +81,74 @@ class SmallTable {
 
 public:
 
+  /**
+   * @brief Type of the NUM column.
+   */
   using num_t = int;
+
+  /**
+   * @brief Type of the RADEC column.
+   */
   using radec_t = std::complex<float>;
+
+  /**
+   * @brief Type of the NAME column.
+   */
   using name_t = std::string;
+
+  /**
+   * @brief Type of the DIST_MAG column.
+   */
   using dist_mag_t = double;
 
+  /**
+   * @brief Generate the columns.
+   */
   SmallTable();
   
+  /**
+   * @brief HDU name.
+   */
   std::string extname;
   
+  /**
+   * @brief Values of the NUM column.
+   */
   std::vector<num_t> nums;
+
+  /**
+   * @brief Values of the RADEC column.
+   */
   std::vector<radec_t> radecs;
+
+  /**
+   * @brief Values of the NAME column.
+   */
   std::vector<name_t> names;
+
+  /**
+   * @brief Values of the DIST_MAG column.
+   */
   std::vector<dist_mag_t> dists_mags;
   
+  /**
+   * @brief NUM column.
+   */
   VecRefColumn<num_t> num_col;
+
+  /**
+   * @brief RADEC column.
+   */
   VecRefColumn<radec_t> radec_col;
+
+  /**
+   * @brief NAME column.
+   */
   VecRefColumn<name_t> name_col;
+
+  /**
+   * @brief DIST_MAG column.
+   */
   VecRefColumn<dist_mag_t> dist_mag_col;
 
 };
@@ -93,7 +161,12 @@ class RandomRaster : public VecRaster<T, n> {
 
 public:
 
+  /**
+   * @brief Generate a Raster with given shape.
+   */
   explicit RandomRaster(pos_type<n> input_shape);
+
+  /** @brief Destructor */
   virtual ~RandomRaster() = default;
 
 };
@@ -107,7 +180,12 @@ class RandomScalarColumn : public VecColumn<T> {
 
 public:
 
+  /**
+   * @brief Generate a Column of given size.
+   */
   explicit RandomScalarColumn(std::size_t size=3);
+
+  /** @brief Destructor */
   virtual ~RandomScalarColumn() = default;
 
 };
@@ -119,7 +197,12 @@ class SmallStringColumn : public VecColumn<std::string> {
 
 public:
 
-  SmallStringColumn();
+  /**
+   * @brief Generate a Column of given size.
+   */
+  SmallStringColumn(std::size_t size=3);
+  
+  /** @brief Destructor */
   virtual ~SmallStringColumn() = default;
 
 };
@@ -132,7 +215,12 @@ class SmallVectorColumn : public VecColumn<std::vector<T>> {
 
 public:
 
+  /**
+   * @brief Generate a Column.
+   */
   SmallVectorColumn();
+
+  /** @brief Destructor */
   virtual ~SmallVectorColumn() = default;
 
 };

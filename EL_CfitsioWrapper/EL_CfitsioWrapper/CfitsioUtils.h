@@ -39,13 +39,40 @@ std::unique_ptr<char[]> to_char_ptr(std::string str);
  * @brief A helper structure to safely convert vector<string> to char**.
  */
 struct c_str_array {
+
+  /**
+   * @brief Create from begin and end iterators.
+   */
   template<typename T>
   c_str_array(const T begin, const T end);
+
+  /**
+   * @brief Create from a vector.
+   */
   explicit c_str_array(const std::vector<std::string>& data);
+
+  /**
+   * @brief Create from an initializer_list.
+   */
   explicit c_str_array(const std::initializer_list<std::string>& data);
+
+  /**
+   * @brief A vector of smart pointers to char[].
+   * @warning Modification makes c_str_array object invalid.
+   */
   std::vector<std::unique_ptr<char[]>> smart_ptr_vector;
+
+  /**
+   * @brief A vector of char*.
+   * @warning Modification makes c_str_array object invalid.
+   */
   std::vector<char*> c_str_vector;
+
+  /**
+   * @brief Get the data as a non-const char**.
+   */
   char** data();
+
 };
 
 /**

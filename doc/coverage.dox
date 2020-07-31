@@ -31,11 +31,11 @@ Legend:
   - Copy header
   - *Delete HDU*
 - Keyword Reading Routines
-  - Record count (useful?)
+  - **Record count** (through keyword list)
   - **Read/parse keyword**
   - **Read CONTINUE'd string record**
   - **Read unit**
-  - Read header (useful?)
+  - **Read header** (partially: keyword list)
 - Keyword Writing Routines
   - **Write/update keyword**
   - **Write CONTINUE'd string record**

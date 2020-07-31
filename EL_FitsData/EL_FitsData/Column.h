@@ -156,6 +156,9 @@ public:
   /** @brief Move assignment. */
   VecRefColumn& operator=(VecRefColumn&&) = default;
 
+  /**
+   * @brief Create a VecRefColumn with given metadata and reference to data.
+   */
   VecRefColumn(ColumnInfo<T> input_info, const std::vector<T>& vector_ref);
 
   std::size_t nelements() const override;

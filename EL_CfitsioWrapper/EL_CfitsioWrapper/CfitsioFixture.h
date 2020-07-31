@@ -41,16 +41,31 @@ class MinimalFile {
 
 protected:
 
+  /**
+   * @brief The handler which generates the name and removes the file at desctruction.
+   */
   Elements::TempFile tmp;
 
 public:
 
+  /**
+   * @brief Create a file with generated filename.
+   */
   MinimalFile();
   
+  /**
+   * @brief Remove the file.
+   */
   ~MinimalFile();
   
+  /**
+   * @brief Name of the file.
+   */
   std::string filename;
   
+  /**
+   * @brief Pointer to the fitsfile for use with CFitsIO routines.
+   */
   fitsfile* fptr;
 
 };
