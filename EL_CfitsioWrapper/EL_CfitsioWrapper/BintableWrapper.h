@@ -271,6 +271,7 @@ void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>
 
 template<typename T>
 FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name) {
+  /* Read metadata */
   std::size_t index = column_index(fptr, name);
   int typecode = 0;
   long repeat = 0;
@@ -281,6 +282,7 @@ FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name) {
   fits_get_num_rows(fptr, &rows, &status);
   may_throw_cfitsio_error(status, "Cannot read column dimensions");
   FitsIO::VecColumn<T> column({ name, "", repeat }, std::vector<T>(repeat * rows)); //TODO unit
+  /* Read data */
   fits_read_col(
     fptr,
     TypeCode<T>::for_bintable(), // datatype
@@ -320,18 +322,22 @@ void write_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
 
 template<typename... Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, std::vector<std::string> names) {
+  /* List column indices */
   std::vector<std::size_t> indices(names.size());
   for(std::size_t c=0; c<names.size(); ++c)
     indices[c] = column_index(fptr, names[c]);
-  std::tuple<FitsIO::VecColumn<Ts>...> columns;
+  /* Read row count */
   int status = 0;
   long rows = 0;
   fits_get_num_rows(fptr, &rows, &status);
+  /* Read column metadata */
+  std::tuple<FitsIO::VecColumn<Ts>...> columns;
   internal::_init_columns<sizeof...(Ts)-1, Ts...>{}(fptr, indices, names, columns, rows);
   long chunk_rows = 0;
   fits_get_rowsize(fptr, &chunk_rows, &status);
   if (chunk_rows == 0)
     throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
+  /* Read column data */
   const std::size_t urows = static_cast<std::size_t>(rows);
   for(std::size_t first=1; first<=urows; first+=chunk_rows) {
     std::size_t last = first + chunk_rows - 1;
@@ -345,13 +351,15 @@ std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, std::vector<st
 template<typename... Ts>
 void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
   int status = 0;
+  /* Get chunk size */
   auto table = std::forward_as_tuple(columns...);
   auto rows = std::get<0>(table).rows(); //TODO assumes all columns have same height => move to write chunks
-  std::vector<std::size_t> indices { column_index(fptr, columns.info.name)... };
   long chunk_rows = 0;
   fits_get_rowsize(fptr, &chunk_rows, &status);
   if(chunk_rows == 0)
     throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
+  /* Write column data */
+  std::vector<std::size_t> indices { column_index(fptr, columns.info.name)... };
   for(std::size_t first=1; first<=rows; first+=chunk_rows) {
     std::size_t last = first + chunk_rows - 1;
     if(last > rows)

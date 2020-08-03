@@ -137,14 +137,22 @@ public:
 
 protected:
 
+  /**
+   * @brief Set the current HDU to this one.
+   */
   void goto_this_hdu() const;
 
   /**
+   * @brief The parent file handler.
+   * @warning
    * This is a reference to a pointer because we want the pointer to be valid
    * even if file is closed and reopened.
    */
   fitsfile*& m_fptr;
 
+  /**
+   * @brief The HDU index.
+   */
   std::size_t m_index;
 
 };

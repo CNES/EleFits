@@ -95,9 +95,13 @@ public:
 
 protected:
 
+  /** @brief The CFitsIO file handler. */
   fitsfile* m_fptr;
+  /** @brief The file name. */
   std::string m_filename;
+  /** @brief The file permission. */
   Permission m_permission;
+  /** @brief An open flag to nullify m_fptr at close. */
   bool m_open;
 
 };
