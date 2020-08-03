@@ -17,7 +17,11 @@
  *
  */
 
+#include <limits>
+
 #include <boost/test/unit_test.hpp>
+
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
 
 #include "EL_CfitsioWrapper/CfitsioWrapper.h"
 
@@ -39,6 +43,23 @@ BOOST_AUTO_TEST_CASE( smoke_test ) {
   using FitsIO::Record;
   using FitsIO::Column;
   using FitsIO::Raster;
+}
+
+BOOST_FIXTURE_TEST_CASE( read_ulong_record_learning_test , Euclid::FitsIO::Test::MinimalFile ) {
+  int status = 0;
+  unsigned long signed_max = std::numeric_limits<long>::max();
+  unsigned long unsigned_max = std::numeric_limits<unsigned long>::max();
+  unsigned long output;
+  fits_write_key(fptr, TULONG, "SIGNED", &signed_max, nullptr, &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  fits_write_key(fptr, TULONG, "UNSIGNED", &unsigned_max, nullptr, &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  fits_read_key(fptr, TULONG, "SIGNED", &output, nullptr, &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  BOOST_CHECK_EQUAL(output, signed_max);
+  fits_read_key(fptr, TULONG, "UNSIGNED", &output, nullptr, &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  BOOST_CHECK_EQUAL(output, unsigned_max);
 }
 
 //-----------------------------------------------------------------------------
