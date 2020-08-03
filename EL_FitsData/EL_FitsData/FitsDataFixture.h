@@ -52,7 +52,7 @@ public:
    */
   SmallRaster(long width=3, long height=2);
   
-  /** @brief Destructor */
+  /** @brief Destructor. */
   virtual ~SmallRaster() = default;
   
   /**
@@ -166,7 +166,7 @@ public:
    */
   explicit RandomRaster(pos_type<n> input_shape);
 
-  /** @brief Destructor */
+  /** @brief Destructor. */
   virtual ~RandomRaster() = default;
 
 };
@@ -185,7 +185,7 @@ public:
    */
   explicit RandomScalarColumn(std::size_t size=3);
 
-  /** @brief Destructor */
+  /** @brief Destructor. */
   virtual ~RandomScalarColumn() = default;
 
 };
@@ -202,7 +202,7 @@ public:
    */
   SmallStringColumn(std::size_t size=3);
   
-  /** @brief Destructor */
+  /** @brief Destructor. */
   virtual ~SmallStringColumn() = default;
 
 };
@@ -220,7 +220,7 @@ public:
    */
   SmallVectorColumn();
 
-  /** @brief Destructor */
+  /** @brief Destructor. */
   virtual ~SmallVectorColumn() = default;
 
 };

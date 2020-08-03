@@ -2,6 +2,14 @@
 
 # 1.5
 
+## Safety
+
+* Test CFitsIO bug in reading `unsigned long` records
+
+## Cleaning
+
+* Doc review
+
 # 1.4.0
 
 ## Safety

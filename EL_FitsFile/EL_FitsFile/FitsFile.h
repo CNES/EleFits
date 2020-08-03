@@ -46,6 +46,7 @@ namespace FitsIO {
  * @details
  * Mostly en empty shell for file opening and closing operations;
  * Useful services are in the SifFile and MefFile classes.
+ * @see \ref handlers
  */
 class FitsFile {
 

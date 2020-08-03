@@ -32,8 +32,9 @@ namespace FitsIO {
 /**
  * @brief Type for a coordinate along one axis.
  * @details
- * Would be nice to use std::array<T, n>::std::size_t
+ * Would be nice to use std::array<T, n>::size_t
  * but not compliant with CFitsIO which uses long for subscripts
+ * @see \ref data-classes
  */
 using coord_type = long;
 
@@ -106,6 +107,7 @@ public:
 
 /**
  * @brief Raster which references some external pointer data.
+ * @see \ref data-classes
  */
 template<typename T, std::size_t n=2>
 class PtrRaster : public Raster<T, n> {
@@ -139,7 +141,8 @@ private:
 
 /**
  * @brief Raster which references some external vector data.
- * @details Use it if for temporary rasters.
+ * @details Use it for temporary rasters.
+ * @see \ref data-classes
  */
 template<typename T, std::size_t n=2>
 class VecRefRaster : public Raster<T, n> {
@@ -178,6 +181,7 @@ private:
 
 /**
  * @brief Raster which stores internally the data as a vector.
+ * @see \ref data-classes
  */
 template<typename T, std::size_t n=2>
 class VecRaster : public Raster<T, n> {

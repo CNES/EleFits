@@ -29,6 +29,7 @@ namespace FitsIO {
 /**
  * @brief Single image Fits file handler.
  * @details Provide read/write access to the header and image raster.
+ * @see \ref handlers
  */
 class SifFile : public FitsFile {
 

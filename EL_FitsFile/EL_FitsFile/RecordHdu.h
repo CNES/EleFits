@@ -27,6 +27,9 @@ namespace FitsIO {
 
 /**
  * @brief Header reader-writer.
+ * @warning
+ * There is a known bug in CFitsIO with the reading of Record<unsigned long>:
+ * if the value is greater than max(long), CFitsIO returns an overflow error.
  */
 class RecordHdu {
 

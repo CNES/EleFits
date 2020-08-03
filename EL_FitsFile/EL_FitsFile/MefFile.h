@@ -32,6 +32,7 @@ namespace FitsIO {
  * @details Provide HDU access/create services.
  * @warning HDU access is provided through references.
  * Reaccessing a given HDU makes any previous reference obsolete.
+ * @see \ref handlers
  */
 class MefFile : public FitsFile {
 

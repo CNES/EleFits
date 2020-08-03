@@ -29,7 +29,8 @@ namespace FitsIO {
 /**
  * @brief Keyword-value pair with optional unit and comment.
  * @details
- * If unit is provided, the comment will be rendered as "comment [unit]".
+ * If unit is provided, the comment will be rendered as "[unit] comment" in the Fits file.
+ * @see \ref data-classes
  */
 template<typename T>
 struct Record {

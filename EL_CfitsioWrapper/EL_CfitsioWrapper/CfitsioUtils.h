@@ -75,6 +75,8 @@ struct c_str_array {
 
 };
 
+/// @cond INTERNAL
+
 /**
  * @brief C++14 index_sequence.
  * @details To be replaced with <utility> implementation.
@@ -98,6 +100,8 @@ template <std::size_t N>
 using make_index_sequence = typename _index_sequence<N>::type;
 
 }
+
+/// @endcond
 
 
 /////////////////////

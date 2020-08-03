@@ -35,6 +35,7 @@ using boost::program_options::variable_value;
 using boost::program_options::value;
 using Euclid::Cfitsio::c_str_array;
 
+
 struct SmallTable {
   static constexpr long cols = 4;
   static constexpr long rows = 3;
@@ -46,7 +47,6 @@ struct SmallTable {
   c_str_array names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
   std::vector<double> dist_mags[rows] = { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900., 3.4 } };
 };
-
 
 
 struct SmallImage {

@@ -49,14 +49,16 @@ BOOST_AUTO_TEST_CASE( smoke_test ) {
  * Check that CFitsIO is not able to read unsigned long records if greater than max(long).
  */
 BOOST_FIXTURE_TEST_CASE( read_ulong_record_learning_test , Euclid::FitsIO::Test::MinimalFile ) {
+  /* Write */
   int status = 0;
   unsigned long signed_max = std::numeric_limits<long>::max();
   unsigned long unsigned_max = std::numeric_limits<unsigned long>::max();
-  unsigned long output;
   fits_write_key(fptr, TULONG, "SIGNED", &signed_max, nullptr, &status);
   BOOST_CHECK_EQUAL(status, 0);
   fits_write_key(fptr, TULONG, "UNSIGNED", &unsigned_max, nullptr, &status);
   BOOST_CHECK_EQUAL(status, 0);
+  /* Read */
+  unsigned long output = 0;
   fits_read_key(fptr, TULONG, "SIGNED", &output, nullptr, &status);
   BOOST_CHECK_EQUAL(status, 0);
   BOOST_CHECK_EQUAL(output, signed_max);

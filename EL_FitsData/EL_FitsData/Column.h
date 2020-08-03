@@ -31,6 +31,7 @@ namespace FitsIO {
 
 /**
  * @brief Column metadata, i.e. { name, unit, repeat }
+ * @see \ref data-classes
  */
 template<typename T>
 struct ColumnInfo {
@@ -56,6 +57,7 @@ struct ColumnInfo {
 
 /**
  * @brief Bintable column data and metadata.
+ * @see \ref data-classes
  */
 template<typename T>
 class Column {
@@ -99,6 +101,7 @@ public:
 /**
  * @brief Column which references some external pointer data.
  * @details Use it for temporary columns.
+ * @see \ref data-classes
  */
 template<typename T>
 class PtrColumn : public Column<T> {
@@ -118,6 +121,7 @@ public:
 
   /**
    * @brief Create a new column with given metadata and data.
+   * @param info The column metadata.
    * @param nelements The number of elements in the column,
    * which is the number of rows for scalar and string columns.
    * @param data Pointer to the first element of the data.
@@ -139,6 +143,7 @@ private:
 /**
  * @brief Column which references some external vector data.
  * @details Use it for temporary columns.
+ * @see \ref data-classes
  */
 template<typename T>
 class VecRefColumn : public Column<T> {
@@ -180,6 +185,7 @@ private:
 /**
  * @brief Column which stores internally the data.
  * @details Use it (via move semantics) if you don't need your data after the write operation.
+ * @see \ref data-classes
  */
 template<typename T>
 class VecColumn : public Column<T> {

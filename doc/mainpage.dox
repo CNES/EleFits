@@ -39,6 +39,7 @@ like iterators covered by EL_CatalogLib;
 
 For a clear overview of what's there and what's missing, see \ref cfitsio-cov.
 
+
 \section cmake Configuring a project to depend on EL_FitsIO
 
 
@@ -46,7 +47,7 @@ EL_FitsIO is a standard Elements project, so using the library means declaring t
 
 \verbatim
 elements_project(MyProject X.X
-    USE Elements 5.8 EL_FitsIO Y.Y)
+    USE EL_FitsIO Y.Y)
 \endverbatim
 
 and to the EL_FitsFile module (for the end-user API) in the CMakeLists of each module which requires EL_FitsIO:
@@ -102,13 +103,15 @@ To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validatio
 
 
 - **EL_FitsData** contains basic **data-storage structures**:
-Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers.
+Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
+See \ref data-classes for more details.
 - **EL_CfitsioWrapper** is an internal CFitsIO wrapper:
 A set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
 ease type handling through templates, and throw exceptions instead of returning error codes;
 Yet, this API is **not meant for end-users**: it exposes the fitsfile* type and is still a bit verbose and cumbersome.
 - **EL_FitsFile** exposes the end-user API:
-It provides set of **read-write services** in dedicated classes.
+It provides set of **read-write services** in dedicated classes;
+See \ref handlers for more details.
 - **EL_FitsIO_Examples** provides **examples**!
 Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program,
 which demonstrates the reading and writing of records, images and bintables with the three APIs;
