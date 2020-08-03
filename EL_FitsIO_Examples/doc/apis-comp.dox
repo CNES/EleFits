@@ -1,0 +1,129 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\page apis-comp APIs compared
+
+
+\section apis-intro Introduction
+
+This page compares the basic CFitsIO operations performed with the following APIs:
+
+- Native CFitsIO API;
+- Module EL_CfitsioWrapper API (Cfitsio namespace);
+- Module EL_FitsFile API (FitsIO namespace).
+
+The snippets below are taken respectively from the EL_Cfitsio_Example, EL_CfitsioWrapper_Example and EL_FitsFile_Example programs.
+Some statements from the EL_Cfitsio_Example are are skipped because they do not convey much information, like for memory management.
+
+
+\section apis-file File management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EL_CfitsioWrapper<th>EL_FitsFile
+<tr>
+<td>Create a Fits file
+<td>\snippet EL_Cfitsio_Example.cpp Create Fits
+The call to fits_create_img ensures that the file is valid;
+It is generally omitted.
+<td>\snippet EL_CfitsioWrapper_Example.cpp Create Fits
+<td>\snippet EL_FitsFile_Example.cpp Create Fits
+<tr>
+<td>Open a Fits file
+<td>\snippet EL_Cfitsio_Example.cpp Open Fits
+<td>\snippet EL_CfitsioWrapper_Example.cpp Open Fits
+<td>\snippet EL_FitsFile_Example.cpp Open Fits
+<tr>
+<td>Close a Fits file
+<td>\snippet EL_Cfitsio_Example.cpp Close Fits
+<td>\snippet EL_CfitsioWrapper_Example.cpp Close Fits
+<td>File is closed by destructor
+</table>
+
+
+\section apis-hdu HDU management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EL_CfitsioWrapper<th>EL_FitsFile
+<tr>
+<td>Access an HDU by index
+<td>\snippet EL_Cfitsio_Example.cpp Find HDU by index
+<td>\snippet EL_CfitsioWrapper_Example.cpp Find HDU by index
+<td>\snippet EL_FitsFile_Example.cpp Find HDU by index
+<tr>
+<td>Access an HDU by name
+<td>\snippet EL_Cfitsio_Example.cpp Find HDU by name
+<td>\snippet EL_CfitsioWrapper_Example.cpp Find HDU by name
+<td>\snippet EL_FitsFile_Example.cpp Find HDU by name
+<tr>
+<td>Get an HDU index
+<td>\snippet EL_Cfitsio_Example.cpp Get HDU index
+<td>\snippet EL_CfitsioWrapper_Example.cpp Get HDU index
+<td>\snippet EL_FitsFile_Example.cpp Get HDU index
+<tr>
+<td>Get an HDU name
+<td>\snippet EL_Cfitsio_Example.cpp Get HDU name
+<td>\snippet EL_CfitsioWrapper_Example.cpp Get HDU name
+<td>\snippet EL_FitsFile_Example.cpp Get HDU name
+</table>
+
+
+\section apis-record Record management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EL_CfitsioWrapper<th>EL_FitsFile
+<tr>
+<td>Write a record
+<td>\snippet EL_Cfitsio_Example.cpp Write record
+<td>\snippet EL_CfitsioWrapper_Example.cpp Write record
+<td>\snippet EL_FitsFile_Example.cpp Write record
+<tr>
+<td>Update a record value
+<td>\snippet EL_Cfitsio_Example.cpp Update record
+<td>\snippet EL_CfitsioWrapper_Example.cpp Update record
+<td>\snippet EL_FitsFile_Example.cpp Update record
+<tr>
+<td>Read a record value
+<td>\snippet EL_Cfitsio_Example.cpp Read record
+<td>\snippet EL_CfitsioWrapper_Example.cpp Read record
+<td>\snippet EL_FitsFile_Example.cpp Read record
+</table>
+
+\section apis-table Bintable management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EL_CfitsioWrapper<th>EL_FitsFile
+<tr>
+<td>Create a bintable HDU
+<td>\snippet EL_Cfitsio_Example.cpp Create bintable ext
+<td>\snippet EL_CfitsioWrapper_Example.cpp Create bintable ext
+<td>\snippet EL_FitsFile_Example.cpp Create bintable ext
+<tr>
+<td>Read a column data
+<td>\snippet EL_Cfitsio_Example.cpp Read column
+<td>\snippet EL_CfitsioWrapper_Example.cpp Read column
+<td>\snippet EL_FitsFile_Example.cpp Read column
+</table>
+
+
+\section apis-image Image management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EL_CfitsioWrapper<th>EL_FitsFile
+<tr>
+<td>Create an image HDU
+<td>\snippet EL_Cfitsio_Example.cpp Create image ext
+<td>\snippet EL_CfitsioWrapper_Example.cpp Create image ext
+<td>\snippet EL_FitsFile_Example.cpp Create image ext
+<tr>
+<td>Read an image data
+<td>\snippet EL_Cfitsio_Example.cpp Read raster
+<td>\snippet EL_CfitsioWrapper_Example.cpp Read raster
+<td>\snippet EL_FitsFile_Example.cpp Read raster
+</table>
+
+*/
+
+}
+}

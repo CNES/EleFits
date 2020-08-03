@@ -56,24 +56,34 @@ public:
     logger.info();
 
     logger.info() << "Creating Fits file: " << filename;
+    //! [Create Fits]
     auto fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+    //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
+    //! [Write record]
     Header::write_record<int>(fptr, { "VALUE", 1 } );
+    //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
+    //! [Update record]
     Header::update_record<int>(fptr, { "VALUE", 2 } );
-    FitsIO::Test::SmallTable table; // Predefined table for testing purpose
+    //! [Update record]
 
     logger.info();
 
     logger.info() << "Creating bintable extension: SMALLTBL";
+    FitsIO::Test::SmallTable table; // Predefined table for testing purpose
+    //! [Create bintable ext]
     Hdu::create_bintable_extension(fptr, "SMALLTBL",
         table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
-    FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
+    //! [Create bintable ext]
 
     logger.info();
 
     logger.info() << "Creating image extension: SMALLIMG";
+    FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
+    //! [Create image ext]
     Hdu::create_image_extension(fptr, "SMALLIMG", raster);
+    //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     FitsIO::Record<std::string> str_record("STRING", "string");
     logger.info() << "Writing record: INTEGER = 8";
@@ -83,38 +93,62 @@ public:
     logger.info();
 
     logger.info() << "Closing file.";
+    //! [Close Fits]
     File::close(fptr);
+    //! [Close Fits]
 
     logger.info();
 
     logger.info() << "Reopening file.";
+    //! [Open Fits]
     fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
-    logger.info() << "Reading record: VALUE = " << Header::parse_record<int>(fptr, "VALUE");
+    //! [Open Fits]
+    //! [Read record]
+    const int record_value = Header::parse_record<int>(fptr, "VALUE");
+    //! [Read record]
+    logger.info() << "Reading record: VALUE = " << record_value;
 
     logger.info();
 
     logger.info() << "Reading bintable.";
+    //! [Find HDU by name]
     Hdu::goto_name(fptr, "SMALLTBL");
-    logger.info() << "HDU index: " << Hdu::current_index(fptr);
-    const auto nums = Bintable::read_column<int>(fptr, "ID").vector();
-    logger.info() << "First id: " << nums[0];
+    //! [Find HDU by name]
+    //! [Get HDU index]
+    const int index = Hdu::current_index(fptr);
+    //! [Get HDU index]
+    logger.info() << "HDU index: " << index;
+    //! [Read column]
+    const auto ids = Bintable::read_column<int>(fptr, "ID").vector();
+    const auto first_cell = ids[0];
+    //! [Read column]
+    logger.info() << "First id: " << first_cell;
     const auto names = Bintable::read_column<std::string>(fptr, "NAME").vector();
     logger.info() << "Last name: " << names[names.size()-1];
 
     logger.info();
 
     logger.info() << "Reading image.";
+    //! [Find HDU by index]
     Hdu::goto_index(fptr, 3);
-    logger.info() << "Name of HDU #3: " << Hdu::current_name(fptr);
+    //! [Find HDU by index]
+    //! [Get HDU name]
+    const auto extname = Hdu::current_name(fptr);
+    //! [Get HDU name]
+    logger.info() << "Name of HDU #3: " << extname;
     const auto records = Header::parse_records<std::string, int>(fptr, {"STRING", "INTEGER"});
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     Hdu::goto_name(fptr, "SMALLIMG");
+    //! [Read raster]
     const auto image = Image::read_raster<float>(fptr);
-    logger.info() << "First pixel: " << image[{0, 0}];
+    const auto first_pixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
-    logger.info() << "Last pixel: " << image[{width-1, height-1}];
+    const auto last_pixel = image[{width-1, height-1}];
+    //! [Read raster]
+    logger.info() << "First pixel: " << first_pixel;
+    logger.info() << "Last pixel: " << last_pixel;
 
     logger.info();
 

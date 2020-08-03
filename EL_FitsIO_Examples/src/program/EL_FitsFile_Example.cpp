@@ -56,24 +56,34 @@ public:
     logger.info();
 
     logger.info() << "Creating Fits file: " << filename;
+    //! [Create Fits]
     MefFile f(filename, MefFile::Permission::OVERWRITE);
+    //! [Create Fits]
     const auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
     logger.info() << "Writing new record: VALUE = 1";
+    //! [Write record]
     primary.write_record("VALUE", 1);
+    //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
+    //! [Update record]
     primary.update_record("VALUE", 2);
+    //! [Update record]
 
     logger.info();
 
     Test::SmallTable table; // Predefined table for testing purpose
     logger.info() << "Creating bintable extension: SMALLTBL";
+    //! [Create bintable ext]
     f.assign_bintable_ext("SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
+    //! [Create bintable ext]
 
     logger.info();
 
     Test::SmallRaster raster; // Predefined image raster for testing purpose
     logger.info() << "Creating image extension: SMALLIMG";
+    //! [Create image ext]
     const auto& ext = f.assign_image_ext("SMALLIMG", raster);
+    //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     Record<std::string> str_record("STRING", "string");
     logger.info() << "Writing record: INTEGER = 8";
@@ -83,38 +93,62 @@ public:
     logger.info();
 
     logger.info() << "Closing file.";
+    //! [Close Fits]
     f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
+    //! [Close Fits]
 
     logger.info();
 
     logger.info() << "Reopening file.";
+    //! [Open Fits]
     f.open(filename, MefFile::Permission::READ);
-    logger.info() << "Reading record: VALUE = " << f.access_primary<>().parse_record<int>("VALUE");
+    //! [Open Fits]
+    //! [Read record]
+    const auto record_value = f.access_primary<>().parse_record<int>("VALUE");
+    //! [Read record]
+    logger.info() << "Reading record: VALUE = " << record_value;
 
     logger.info();
 
     logger.info() << "Reading bintable.";
-    auto bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
-    logger.info() << "HDU index: " << bintable_ext.index();
-    const auto nums = bintable_ext.read_column<int>("ID").vector();
-    logger.info() << "First id: " << nums[0];
+    //! [Find HDU by name]
+    const auto& bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
+    //! [Find HDU by name]
+    //! [Get HDU index]
+    const auto index = bintable_ext.index();
+    //! [Get HDU index]
+    logger.info() << "HDU index: " << index;
+    //! [Read column]
+    const auto ids = bintable_ext.read_column<int>("ID").vector();
+    const auto first_cell = ids[0];
+    //! [Read column]
+    logger.info() << "First id: " << first_cell;
     const auto names = bintable_ext.read_column<std::string>("NAME").vector();
     logger.info() << "Last name: " << names[names.size()-1];
 
     logger.info();
     
     logger.info() << "Reading image.";
-    auto ext_3 = f.access<>(3);
-    logger.info() << "Name of HDU #3: " << ext_3.name();
-    auto records = ext_3.parse_records<std::string, int>({"STRING", "INTEGER"});
+    //! [Find HDU by index]
+    const auto& ext_3 = f.access<>(3);
+    //! [Find HDU by index]
+    //! [Get HDU name]
+    const auto extname = ext_3.name();
+    //! [Get HDU name]
+    logger.info() << "Name of HDU #3: " << extname;
+    const auto records = ext_3.parse_records<std::string, int>({"STRING", "INTEGER"});
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-    auto image_ext = f.access_first<ImageHdu>("SMALLIMG");
+    const auto& image_ext = f.access_first<ImageHdu>("SMALLIMG");
+    //! [Read raster]
     const auto image = image_ext.read_raster<float>();
-    logger.info() << "First pixel: " << image[{0, 0}];
+    const auto first_pixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
-    logger.info() << "Last pixel: " << image[{width-1, height-1}];
+    const auto last_pixel = image[{width-1, height-1}];
+    //! [Read raster]
+    logger.info() << "First pixel: " << first_pixel;
+    logger.info() << "Last pixel: " << last_pixel;
 
     logger.info();
 
