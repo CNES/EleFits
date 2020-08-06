@@ -113,7 +113,7 @@ Yet, this API is **not meant for end-users**: it exposes the fitsfile* type and 
 It provides set of **read-write services** in dedicated classes;
 See \ref handlers for more details.
 - **EL_FitsIO_Examples** provides **examples**!
-Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program,
+Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program (see \ref apis-comp),
 which demonstrates the reading and writing of records, images and bintables with the three APIs;
 Of course, this is also where the tutorial is implemented.
 - **EL_FitsIO_Validation** contains **validation executables**:

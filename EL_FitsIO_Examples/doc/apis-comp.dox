@@ -88,6 +88,8 @@ It is generally omitted.
 <td>\snippet EL_Cfitsio_Example.cpp Read record
 <td>\snippet EL_CfitsioWrapper_Example.cpp Read record
 <td>\snippet EL_FitsFile_Example.cpp Read record
+Several records can be read at once, as a tuple or custom structure.
+Refer to the \ref tuto for more details.
 </table>
 
 \section apis-table Bintable management

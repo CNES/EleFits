@@ -69,18 +69,21 @@ public:
 
   /**
    * @brief Write several columns.
+   * @warning All columns should have the same number of rows.
    */
   template<typename... Ts>
   void write_columns(const Column<Ts>&... columns) const;
 
   /**
    * @brief Append a column.
+   * @warning The column should have the same number of rows as the existing columns.
    */
   template<typename T>
   void append_column(const Column<T>& column) const;
 
   /**
    * @brief Append several columns.
+   * @warning All new columns should have the same number of rows as the existing columns.
    */
   template<typename... Ts>
   void append_columns(const Column<Ts>&... columns) const;

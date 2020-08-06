@@ -49,7 +49,7 @@ fitsfile* open(std::string filename, OpenPolicy policy) {
 }
 
 void close(fitsfile*& fptr) {
-  if(fptr == nullptr)
+  if(not fptr)
     return;
   int status = 0;
   fits_close_file(fptr, &status);
@@ -58,7 +58,7 @@ void close(fitsfile*& fptr) {
 }
 
 void close_and_delete(fitsfile*& fptr) {
-  if(fptr == nullptr)
+  if(not fptr)
     return;
   may_throw_readonly_error(fptr);
   int status = 0;

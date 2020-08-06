@@ -58,9 +58,9 @@ public:
   enum class Permission {
     READ, ///< Open as read-only
     EDIT, ///< Open with write permission
-    CREATE, ///< Create a new file
+    CREATE, ///< Create a new file (overwrite forbidden)
     OVERWRITE, ///< Create a new file or overwrite existing file
-    TEMPORARY ///< Create a temporary file (removed by destructor)
+    TEMPORARY ///< Create a temporary file (removed by destructor, overwrite forbidden)
   };
 
   /**

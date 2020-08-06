@@ -4,11 +4,18 @@
 
 ## Safety
 
-* Test CFitsIO bug in reading `unsigned long` records
+* Test CFitsIO bug in reading `unsigned long` records (see known bugs)
 
 ## Cleaning
 
 * Doc review
+
+## Known bugs/issues
+
+* `unsigned long` records larger than the greatest `long` cannot be read (CFitsIO bug), although they can be written
+* Boolean columns are not supported
+* Columns are assumed to have consistent sizes
+* `const char*` is not supported; `string` should be used instead
 
 # 1.4.0
 

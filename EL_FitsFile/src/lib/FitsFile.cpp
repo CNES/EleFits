@@ -25,6 +25,7 @@ namespace Euclid {
 namespace FitsIO {
 
 FitsFile::FitsFile(std::string filename, Permission permission) :
+    m_fptr(nullptr),
     m_filename(filename),
     m_permission(permission),
     m_open(false) {
@@ -56,7 +57,7 @@ void FitsFile::open(std::string filename, Permission permission) {
   case Permission::TEMPORARY:
     m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
   }
-  m_open = true;
+  m_open = true; // If this line is reached, no error was raised
 }
 
 void FitsFile::close() {

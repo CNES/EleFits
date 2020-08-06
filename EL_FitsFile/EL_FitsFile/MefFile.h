@@ -126,10 +126,11 @@ public:
 
   /**
    * @brief Append a BintableHdu with given name and data.
+   * @warning All columns should have the same number of rows.
    * @return A reference to the new BintableHdu.
    */
   template<typename ...Ts>
-  const BintableHdu& assign_bintable_ext(std::string name, const Column<Ts>&... header);
+  const BintableHdu& assign_bintable_ext(std::string name, const Column<Ts>&... columns);
 
 protected:
 
@@ -203,8 +204,8 @@ const BintableHdu& MefFile::init_bintable_ext(std::string name, const ColumnInfo
 }
 
 template<typename ...Ts>
-const BintableHdu& MefFile::assign_bintable_ext(std::string name, const Column<Ts>&... data) {
-  Cfitsio::Hdu::create_bintable_extension(m_fptr, name, data...);
+const BintableHdu& MefFile::assign_bintable_ext(std::string name, const Column<Ts>&... columns) {
+  Cfitsio::Hdu::create_bintable_extension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));
   return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
