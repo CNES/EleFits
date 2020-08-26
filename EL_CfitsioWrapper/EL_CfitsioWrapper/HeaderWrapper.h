@@ -125,7 +125,7 @@ struct _parse_records<0, Ts...> {
   }
 };
 
-template<class Return, typename... Ts, std::size_t... Is>
+template<class Return, typename... Ts, long... Is>
 Return _parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords, std14::index_sequence<Is...>) {
   return { parse_record<Ts>(fptr, keywords[Is]) ... };
 }

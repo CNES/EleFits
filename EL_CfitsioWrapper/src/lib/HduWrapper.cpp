@@ -25,7 +25,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Hdu {
 
-std::size_t count(fitsfile* fptr) {
+long count(fitsfile* fptr) {
   int count = 0;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
@@ -33,7 +33,7 @@ std::size_t count(fitsfile* fptr) {
   return count;
 }
 
-std::size_t current_index(fitsfile* fptr) {
+long current_index(fitsfile* fptr) {
   int index = 0;
   fits_get_hdu_num(fptr, &index);
   return index;
@@ -61,7 +61,7 @@ bool current_is_primary(fitsfile* fptr) {
   return current_index(fptr) == 1;
 }
 
-bool goto_index(fitsfile* fptr, std::size_t index) {
+bool goto_index(fitsfile* fptr, long index) {
   if(index == current_index(fptr))
     return false;
   int type = 0;
@@ -84,7 +84,7 @@ bool goto_name(fitsfile* fptr, std::string name) {
   return true;
 }
 
-bool goto_next(fitsfile* fptr, std::size_t step) {
+bool goto_next(fitsfile* fptr, long step) {
   if(step == 0)
     return false;
   int status = 0;
@@ -116,7 +116,7 @@ void create_metadata_extension(fitsfile* fptr, std::string name) {
   create_image_extension<unsigned char, 0>(fptr, name, FitsIO::pos_type<0>());
 }
 
-void delete_hdu(fitsfile *fptr, std::size_t index) {
+void delete_hdu(fitsfile *fptr, long index) {
   goto_index(fptr, index);
   int status = 0;
   fits_delete_hdu(fptr, nullptr, &status);

@@ -41,19 +41,19 @@ namespace Image {
 /**
  * @brief Resize the Raster of the current Image HDU.
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 void resize(fitsfile* fptr, const FitsIO::pos_type<n>& shape);
 
 /**
  * @brief Read a Raster in current Image HDU.
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr);
 
 /**
  * @brief Write a Raster in current Image HDU.
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 
 
@@ -62,14 +62,14 @@ void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 ///////////////////
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 void resize(fitsfile* fptr, const FitsIO::pos_type<n>& shape) {
   int status = 0;
   auto nonconst_shape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconst_shape.data(), &status);
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr) {
   FitsIO::VecRaster<T, n> raster;
   int status = 0;
@@ -83,7 +83,7 @@ FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr) {
   return raster;
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   may_throw_readonly_error(fptr);
   int status = 0;

@@ -84,19 +84,19 @@ struct c_str_array {
  */
 namespace std14 {
 
-template <std::size_t ...>
+template <long ...>
 struct index_sequence
  { };
 
-template <std::size_t N, std::size_t ... Next>
+template <long N, long ... Next>
 struct _index_sequence : public _index_sequence<N-1U, N-1U, Next...>
  { };
 
-template <std::size_t ... Next>
+template <long ... Next>
 struct _index_sequence<0U, Next ... >
  { using type = index_sequence<Next ... >; };
 
-template <std::size_t N>
+template <long N>
 using make_index_sequence = typename _index_sequence<N>::type;
 
 }
@@ -113,7 +113,7 @@ template<typename T>
 c_str_array::c_str_array(const T begin, const T end) :
         smart_ptr_vector(end - begin),
         c_str_vector(end - begin) {
-  for(std::size_t i = 0; i < static_cast<std::size_t>(end - begin); ++i) {  //TODO iterators?
+  for(long i = 0; i < static_cast<long>(end - begin); ++i) {  //TODO iterators?
     auto& smart_ptr_i = smart_ptr_vector[i];
     smart_ptr_i = std::unique_ptr<char[]>(new char[(begin + i)->length() + 1]);
     std::strcpy(smart_ptr_i.get(), (begin + i)->c_str());

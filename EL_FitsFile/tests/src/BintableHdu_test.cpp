@@ -51,8 +51,8 @@ void check_scalar() {
 
 template<typename T>
 void check_vector() {
-  constexpr std::size_t rows = 10;
-  constexpr std::size_t repeat = 2;
+  constexpr long rows = 10;
+  constexpr long repeat = 2;
   Test::RandomScalarColumn<T> input(rows * repeat);
   input.info.repeat = repeat;
   const std::string filename = Elements::TempFile().path().string();

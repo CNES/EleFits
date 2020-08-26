@@ -41,7 +41,7 @@ public:
    * You should not instantiate RecordHdus yourself,
    * but using the dedicated MefFile creation method.
    */
-  RecordHdu(fitsfile*& file, std::size_t index);
+  RecordHdu(fitsfile*& file, long index);
 
   /**
    * @brief Destructor.
@@ -51,7 +51,7 @@ public:
   /**
    * @brief 1-based index of the HDU.
    */
-  std::size_t index() const;
+  long index() const;
 
   /**
    * @brief Read the extension name.
@@ -156,7 +156,7 @@ protected:
   /**
    * @brief The HDU index.
    */
-  std::size_t m_index;
+  long m_index;
 
 };
 

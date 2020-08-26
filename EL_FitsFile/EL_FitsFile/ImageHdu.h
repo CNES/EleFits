@@ -40,7 +40,7 @@ public:
    * You should not instantiate RecordHdus yourself,
    * but using the dedicated MefFile creation method.
    */
-  ImageHdu(fitsfile*& fptr, std::size_t index);
+  ImageHdu(fitsfile*& fptr, long index);
 
   /**
    * @brief Destructor.
@@ -50,19 +50,19 @@ public:
   /**
    * @brief Redefine the image shape and type.
    */
-  template<typename T, std::size_t n=2>
+  template<typename T, long n=2>
   void resize(const pos_type<n>& shape) const;
 
   /**
    * @brief Read the Raster.
    */
-  template<typename T, std::size_t n=2>
+  template<typename T, long n=2>
   VecRaster<T, n> read_raster() const;
 
   /**
    * @brief Write the Raster.
    */
-  template<typename T, std::size_t n=2>
+  template<typename T, long n=2>
   void write_raster(const Raster<T, n>& raster) const;
 
 };
@@ -73,19 +73,19 @@ public:
 ///////////////////
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 void ImageHdu::resize(const pos_type<n>& shape) const {
   goto_this_hdu();
   Cfitsio::Image::resize<T, n>(m_fptr, shape);
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 VecRaster<T, n> ImageHdu::read_raster() const {
   goto_this_hdu();
   return Cfitsio::Image::read_raster<T, n>(m_fptr);
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 void ImageHdu::write_raster(const Raster<T, n>& raster) const {
   goto_this_hdu();
   Cfitsio::Image::write_raster(m_fptr, raster);

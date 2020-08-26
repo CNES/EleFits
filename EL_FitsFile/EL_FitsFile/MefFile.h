@@ -56,7 +56,7 @@ public:
   /**
    * @brief Count the number of HDUs.
    */
-  std::size_t hdu_count() const;
+  long hdu_count() const;
 
   /**
    * @brief Read the name of each HDU.
@@ -75,7 +75,7 @@ public:
    * or merely be used as a metadata reader-writer.
    */
   template<class T=RecordHdu>
-  const T& access(std::size_t index);
+  const T& access(long index);
 
   /**
    * @brief Access the first HDU with given name.
@@ -107,14 +107,14 @@ public:
    * @brief Append a new ImageHdu with given name and shape.
    * @see assign_image_ext
    */
-  template<typename T, std::size_t n>
+  template<typename T, long n>
   const ImageHdu& init_image_ext(std::string name, const pos_type<n>& shape);
 
   /**
    * @brief Append an ImageHdu with given name and data.
    * @return A reference to the new ImageHdu.
    */
-  template<typename T, std::size_t n>
+  template<typename T, long n>
   const ImageHdu& assign_image_ext(std::string name, const Raster<T, n>& raster);
 
   /**
@@ -149,7 +149,7 @@ protected:
 
 
 template<class T>
-const T& MefFile::access(std::size_t index) {
+const T& MefFile::access(long index) {
   Cfitsio::Hdu::goto_index(m_fptr, index);
   auto hdu_type = Cfitsio::Hdu::current_type(m_fptr);
   auto& ptr = m_hdus[index-1];
@@ -179,7 +179,7 @@ const T& MefFile::access_primary() {
   return access<T>(1);
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 const ImageHdu& MefFile::init_image_ext(std::string name, const pos_type<n>& shape) {
   Cfitsio::Hdu::create_image_extension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
@@ -187,7 +187,7 @@ const ImageHdu& MefFile::init_image_ext(std::string name, const pos_type<n>& sha
   return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 const ImageHdu& MefFile::assign_image_ext(std::string name, const Raster<T, n>& raster) {
   Cfitsio::Hdu::create_image_extension(m_fptr, name, raster);
   const auto size = m_hdus.size();

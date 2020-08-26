@@ -134,8 +134,8 @@ TEST_SCALAR_ALIAS(std::uint64_t, uint64)
 
 template<typename T>
 void check_vector() {
-  constexpr std::size_t rows = 3;
-  constexpr std::size_t repeat = 2;
+  constexpr long rows = 3;
+  constexpr long repeat = 2;
   FitsIO::Test::RandomScalarColumn<T> input(rows * repeat);
   input.info.repeat = repeat;
   FitsIO::Test::MinimalFile file;
@@ -199,7 +199,7 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
 }
 
 BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
-  constexpr std::size_t rows(10000);
+  constexpr long rows(10000);
   FitsIO::Test::RandomScalarColumn<int> i(rows);
   i.info.name = "I";
   FitsIO::Test::RandomScalarColumn<float> f(rows);

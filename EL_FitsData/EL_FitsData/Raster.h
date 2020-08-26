@@ -30,25 +30,17 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Type for a coordinate along one axis.
- * @details
- * Would be nice to use std::array<T, n>::size_t
- * but not compliant with CFitsIO which uses long for subscripts
- * @see \ref data-classes
- */
-using coord_type = long;
-
-/**
  * @brief Type for a position or shape, i.e. set of coordinates.
+ * @details
+ * CFitsIO indices are long, so we stick to the convention.
  */
-template<std::size_t n>
-using pos_type = std::array<coord_type, n>;
-
+template<long n=2>
+using pos_type = std::array<long, (std::size_t)n>;
 
 /**
  * @brief Raster of a n-dimensional image (2D by default).
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 class Raster {
 
 public:
@@ -72,18 +64,18 @@ public:
   /**
    * @brief Length along given axis.
    */
-  template<std::size_t i>
+  template<long i>
   long length() const;
 
   /**
    * @brief Number of pixels.
    */
-  std::size_t size() const;
+  long size() const;
 
   /**
    * @brief Raw index of a position.
    */
-  std::size_t index(const pos_type<n>& pos) const;
+  long index(const pos_type<n>& pos) const;
 
   /**
    * @brief Pixel at given position.
@@ -109,7 +101,7 @@ public:
  * @brief Raster which references some external pointer data.
  * @see \ref data-classes
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 class PtrRaster : public Raster<T, n> {
 
 public:
@@ -144,7 +136,7 @@ private:
  * @details Use it for temporary rasters.
  * @see \ref data-classes
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 class VecRefRaster : public Raster<T, n> {
 
 public:
@@ -183,7 +175,7 @@ private:
  * @brief Raster which stores internally the data as a vector.
  * @see \ref data-classes
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 class VecRaster : public Raster<T, n> {
 
 public:
@@ -250,21 +242,21 @@ private:
 /// @cond INTERNAL
 namespace internal {
 
-template<std::size_t i>
+template<long i>
 struct Index {
-  template<std::size_t n>
-  static std::size_t offset(const pos_type<n>& shape, const pos_type<n>& pos);
+  template<long n>
+  static long offset(const pos_type<n>& shape, const pos_type<n>& pos);
 };
 
-template<std::size_t i>
-template<std::size_t n>
-inline std::size_t Index<i>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
-  return std::get<n-1-i>(pos) + std::get<n-1-i>(shape) * Index<i-1>::offset(shape, pos);
+template<long i>
+template<long n>
+inline long Index<i>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
+  return std::get<n-1-i>(pos) + std::get<n-1-i>(shape) * Index<i-1>::template offset<n>(shape, pos);
 }
 
 template<>
-template<std::size_t n>
-inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
+template<long n>
+inline long Index<0>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
   return std::get<n-1>(pos);
 }
 
@@ -277,95 +269,95 @@ inline std::size_t Index<0>::offset(const pos_type<n>& shape, const pos_type<n>&
 ///////////////////
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 Raster<T, n>::Raster(pos_type<n> input_shape) :
     shape(input_shape) {
 }
 
-template<typename T, std::size_t n>
-template<std::size_t i>
+template<typename T, long n>
+template<long i>
 inline long Raster<T, n>::length() const {
   return std::get<i>(shape);
 }
 
-template<typename T, std::size_t n>
-inline std::size_t Raster<T, n>::size() const {
-  return std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<std::size_t>());
+template<typename T, long n>
+inline long Raster<T, n>::size() const {
+  return std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<long>());
 }
 
-template<typename T, std::size_t n>
-inline std::size_t Raster<T, n>::index(const pos_type<n>& pos) const {
-  return internal::Index<n-1>::offset(shape, pos);
+template<typename T, long n>
+inline long Raster<T, n>::index(const pos_type<n>& pos) const {
+  return internal::Index<n-1>::template offset<n>(shape, pos);
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 inline const T& Raster<T, n>::operator[](const pos_type<n>& pos) const {
   return data()[index(pos)];
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 inline T& Raster<T, n>::operator[](const pos_type<n>& pos) {
   return const_cast<T&>(const_cast<const Raster*>(this)->operator[](pos));
 }
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 PtrRaster<T, n>::PtrRaster(pos_type<n> input_shape, const T* data) :
     Raster<T, n>(input_shape),
     m_data(data) {
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 const T* PtrRaster<T, n>::data() const {
   return m_data;
 }
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 VecRefRaster<T, n>::VecRefRaster(pos_type<n> shape, const std::vector<T>& data) :
     Raster<T, n>(shape),
     m_vec_ref(data) {
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 const T* VecRefRaster<T, n>::data() const {
   return m_vec_ref.data();
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 const std::vector<T>& VecRefRaster<T, n>::vector() const {
   return m_vec_ref;
 }
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 VecRaster<T, n>::VecRaster(pos_type<n> shape, std::vector<T> data) :
     Raster<T, n>(shape),
     m_vec(data) {
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 VecRaster<T, n>::VecRaster(pos_type<n> input_shape) :
     Raster<T, n>(input_shape),
     m_vec(this->size()) {
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 const T* VecRaster<T, n>::data() const {
   return m_vec.data();
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 T* VecRaster<T, n>::data() {
   return const_cast<T*>(const_cast<const VecRaster*>(this)->data());
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 const std::vector<T>& VecRaster<T, n>::vector() const {
   return m_vec;
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 std::vector<T>& VecRaster<T, n>::vector() {
   return m_vec;
 }

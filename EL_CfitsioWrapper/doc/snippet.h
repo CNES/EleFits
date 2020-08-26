@@ -17,12 +17,12 @@ T parse_record(std::string keyword) {
     return val;
 }
 
-template<typename... Ts, std::size_t... Is>
+template<typename... Ts, long... Is>
 std::tuple<Ts...> _parse_records(const std::vector<std::string>& keywords, std::index_sequence<Is...>) {
     return std::tuple<Ts...> { parse_record<Ts>(keywords[Is]) ... };
 }
 
-template<class Return, typename... Ts, std::size_t... Is>
+template<class Return, typename... Ts, long... Is>
 Return _parse_records_as(const std::vector<std::string>& keywords, std::index_sequence<Is...>) {
     return { parse_record<Ts>(keywords[Is]) ... };
 }

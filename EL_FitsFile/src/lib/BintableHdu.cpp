@@ -22,7 +22,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-BintableHdu::BintableHdu(fitsfile*& fptr, std::size_t index) :
+BintableHdu::BintableHdu(fitsfile*& fptr, long index) :
     RecordHdu(fptr, index) {}
 
 #ifndef COMPILE_READ_COLUMN

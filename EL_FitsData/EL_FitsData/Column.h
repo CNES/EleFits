@@ -48,7 +48,8 @@ struct ColumnInfo {
 
   /**
    * @brief Repeat count of the column, i.e., number of values per cell.
-   * @warning CFitsIO needs long instead of int or size_t
+   * @details
+   * CFitsIO indices are long, so we stick to the convention
    */
   long repeat;
 
@@ -78,12 +79,12 @@ public:
    * @brief Number of elements in the column, i.e. number of rows * repeat count.
    * @warning For strings, CFitsIO requires nelements to be just the number of rows.
    */
-  virtual std::size_t nelements() const = 0; //TODO long?
+  virtual long nelements() const = 0; //TODO long?
 
   /**
    * @brief Number of rows in the column.
    */
-  std::size_t rows() const;
+  long rows() const;
 
   /**
    * @brief Const pointer to the first data element.
@@ -126,15 +127,15 @@ public:
    * which is the number of rows for scalar and string columns.
    * @param data Pointer to the first element of the data.
    */
-  PtrColumn(ColumnInfo<T> info, std::size_t nelements, const T* data);
+  PtrColumn(ColumnInfo<T> info, long nelements, const T* data);
 
-  std::size_t nelements() const override;
+  long nelements() const override;
 
   const T* data() const override;
 
 private:
 
-  std::size_t m_nelements;
+  long m_nelements;
   const T* m_data;
 
 };
@@ -166,7 +167,7 @@ public:
    */
   VecRefColumn(ColumnInfo<T> input_info, const std::vector<T>& vector_ref);
 
-  std::size_t nelements() const override;
+  long nelements() const override;
 
   const T* data() const override;
 
@@ -216,7 +217,7 @@ public:
    */
   VecColumn(ColumnInfo<T> input_info, std::vector<T> vector);
 
-  std::size_t nelements() const override;
+  long nelements() const override;
 
   const T* data() const override;
 
@@ -252,13 +253,13 @@ private:
 namespace internal {
 
 template<typename T>
-std::size_t _rows(std::size_t nelements, long repeat);
+long _rows(long nelements, long repeat);
 
 template<>
-std::size_t _rows<std::string>(std::size_t nelements, long repeat);
+long _rows<std::string>(long nelements, long repeat);
 
 template<typename T>
-std::size_t _rows(std::size_t nelements, long repeat) {
+long _rows(long nelements, long repeat) {
   return (nelements + repeat - 1) / repeat;
 }
 
@@ -277,19 +278,19 @@ Column<T>::Column(ColumnInfo<T> input_info) :
 }
 
 template<typename T>
-std::size_t Column<T>::rows() const {
+long Column<T>::rows() const {
   return internal::_rows<T>(nelements(), info.repeat);
 }
 
 template<typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> input_info, std::size_t nelements, const T* data) :
+PtrColumn<T>::PtrColumn(ColumnInfo<T> input_info, long nelements, const T* data) :
     Column<T>(input_info),
     m_nelements(nelements),
     m_data(data) {
 }
 
 template<typename T>
-std::size_t PtrColumn<T>::nelements() const {
+long PtrColumn<T>::nelements() const {
   return m_nelements;
 }
 
@@ -306,7 +307,7 @@ VecRefColumn<T>::VecRefColumn(ColumnInfo<T> input_info, const std::vector<T>& ve
 }
 
 template<typename T>
-std::size_t VecRefColumn<T>::nelements() const {
+long VecRefColumn<T>::nelements() const {
   return m_vec_ref.size();
 }
 
@@ -334,7 +335,7 @@ VecColumn<T>::VecColumn(ColumnInfo<T> input_info, std::vector<T> vector) :
 }
 
 template<typename T>
-std::size_t VecColumn<T>::nelements() const {
+long VecColumn<T>::nelements() const {
   return m_vec.size();
 }
 

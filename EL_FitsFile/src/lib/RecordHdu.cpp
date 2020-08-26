@@ -25,10 +25,10 @@
 namespace Euclid {
 namespace FitsIO {
 
-RecordHdu::RecordHdu(fitsfile*& fptr, std::size_t index) :
+RecordHdu::RecordHdu(fitsfile*& fptr, long index) :
     m_fptr(fptr), m_index(index) {}
 
-std::size_t RecordHdu::index() const {
+long RecordHdu::index() const {
   return m_index;
 }
 

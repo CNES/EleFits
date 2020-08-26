@@ -26,7 +26,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Bintable {
 
-std::size_t column_index(fitsfile* fptr, std::string name) {
+long column_index(fitsfile* fptr, std::string name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, to_char_ptr(name).get(), &index, &status);
@@ -40,8 +40,8 @@ namespace internal {
 template<> //TODO clean
 void _init_column<std::string>(
     fitsfile* fptr,
-    std::size_t index, std::string name,
-    FitsIO::VecColumn<std::string>& column, std::size_t rows) {
+    long index, std::string name,
+    FitsIO::VecColumn<std::string>& column, long rows) {
   column.info.name = name;
   column.info.unit = ""; //TODO
   int typecode = 0;
@@ -53,15 +53,15 @@ void _init_column<std::string>(
 
 template<> //TODO clean
 void _read_column_chunk<std::string>(
-    fitsfile* fptr, std::size_t index,
+    fitsfile* fptr, long index,
     FitsIO::VecColumn<std::string>& column,
-    std::size_t first_row, std::size_t row_count) {
+    long first_row, long row_count) {
   int status = 0;
   long repeat = 0;
   fits_get_coltype(fptr, index, nullptr, &repeat, nullptr, &status); //TODO wrap?
   may_throw_cfitsio_error(status);
   std::vector<char*> data(row_count);
-  for(std::size_t i = 0; i < row_count; ++i) //TODO iterator
+  for(long i = 0; i < row_count; ++i) //TODO iterator
     data[i] = (char*) malloc(repeat);
   fits_read_col(fptr,
       TypeCode<std::string>::for_bintable(),
@@ -71,7 +71,7 @@ void _read_column_chunk<std::string>(
       data.data(),
       nullptr,
       &status);
-  for(std::size_t i = 0; i < row_count; ++i) {
+  for(long i = 0; i < row_count; ++i) {
     column.vector()[i + first_row] = std::string(data[i]);
     free(data[i]);
   }
@@ -79,12 +79,12 @@ void _read_column_chunk<std::string>(
 
 template<>
 void _write_column_chunk<std::string>(
-    fitsfile* fptr, std::size_t index,
+    fitsfile* fptr, long index,
     const FitsIO::Column<std::string>& column,
-    std::size_t first_row, std::size_t row_count) {
+    long first_row, long row_count) {
   int status = 0;
   auto begin = column.data() + (first_row - 1);
-  std::size_t size = row_count;
+  long size = row_count;
   auto end = begin + size;
   c_str_array array(begin, end);
   fits_write_col(fptr,
@@ -103,7 +103,7 @@ void _write_column_chunk<std::string>(
 
 template<>
 FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name) {
-  size_t index = column_index(fptr, name);
+  long index = column_index(fptr, name);
   long rows = 0;
   int status = 0;
   fits_get_num_rows(fptr, &rows, &status);
@@ -140,7 +140,7 @@ void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>
   const auto begin = column.data();
   const auto end = begin + column.nelements();
   c_str_array array(begin, end);
-  std::size_t index = column_index(fptr, column.info.name);
+  long index = column_index(fptr, column.info.name);
   int status = 0;
   fits_write_col(
     fptr,

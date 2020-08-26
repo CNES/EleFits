@@ -58,12 +58,12 @@ enum class Type {
  * @brief Read the number of HDUs in a Fits file.
  * @warning Empty or incomplete HDUs are not counted.
  */
-std::size_t count(fitsfile *fptr);
+long count(fitsfile *fptr);
 
 /**
  * @brief Get the index of the current HDU.
  */
-std::size_t current_index(fitsfile *fptr);
+long current_index(fitsfile *fptr);
 
 /**
  * @brief Get the name of the current HDU.
@@ -83,7 +83,7 @@ bool current_is_primary(fitsfile *fptr);
 /**
  * @brief Go to an HDU specified by its index.
  */
-bool goto_index(fitsfile *fptr, std::size_t index);
+bool goto_index(fitsfile *fptr, long index);
 
 /**
  * @brief Go to an HDU specified by its name.
@@ -93,7 +93,7 @@ bool goto_name(fitsfile *fptr, std::string name);
 /**
  * @brief Go to an HDU specified by incrementing the index by a given amount.
  */
-bool goto_next(fitsfile *fptr, std::size_t step=1);
+bool goto_next(fitsfile *fptr, long step=1);
 
 /**
  * @brief Go to the Primary HDU.
@@ -118,13 +118,13 @@ void create_metadata_extension(fitsfile *fptr, std::string name);
 /**
  * @brief Create a new Image HDU with given name, pixel type and shape.
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape);
 
 /**
  * @brief Write a Raster in a new Image HDU.
  */
-template<typename T, std::size_t n=2>
+template<typename T, long n=2>
 void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Raster<T, n>& raster);
 
 /**
@@ -142,7 +142,7 @@ void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::C
 /**
  * @brief Delete the HDU at given index.
  */
-void delete_hdu(fitsfile *fptr, std::size_t index);
+void delete_hdu(fitsfile *fptr, long index);
 
 
 /////////////////////
@@ -150,7 +150,7 @@ void delete_hdu(fitsfile *fptr, std::size_t index);
 ///////////////////
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape) {
   may_throw_readonly_error(fptr);
   int status = 0;
@@ -160,7 +160,7 @@ void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_
   update_name(fptr, name);
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Raster<T, n>& raster) {
   may_throw_readonly_error(fptr);
   create_image_extension<T, n>(fptr, name, raster.shape);
@@ -169,7 +169,7 @@ void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Rast
 
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::ColumnInfo<Ts>&... header) {
-  constexpr std::size_t ncols = sizeof...(Ts);
+  constexpr long ncols = sizeof...(Ts);
   c_str_array col_name { header.name ... };
   c_str_array col_format { TypeCode<Ts>::bintable_format(header.repeat) ... };
   c_str_array col_unit { header.unit ... };
@@ -182,7 +182,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
 
 template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<Ts>&... table) {
-  constexpr std::size_t ncols = sizeof...(Ts);
+  constexpr long ncols = sizeof...(Ts);
   c_str_array col_name { table.info.name ... };
   c_str_array col_format { TypeCode<Ts>::bintable_format(table.info.repeat) ... };
   c_str_array col_unit { table.info.unit ... };
@@ -197,7 +197,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
 /// @cond INTERNAL
 template<typename T>
 void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<T>& column) {
-  constexpr std::size_t count = 1;
+  constexpr long count = 1;
   std::string col_name = column.info.name;
   char* c_name = &col_name[0];
   std::string col_format = TypeCode<T>::bintable_format(column.info.repeat);

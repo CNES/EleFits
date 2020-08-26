@@ -35,7 +35,7 @@ SmallRaster::SmallRaster(long input_width, long input_height) :
 bool SmallRaster::approx(const Raster<float>& other, float tol) const {
   if(other.shape != this->shape)
     return false;
-  for(std::size_t i=0; i<this->size(); ++i) {
+  for(long i=0; i<this->size(); ++i) {
     const auto o = other.data()[i];
     const auto t = this->data()[i];
     const auto rel = (o - t) / t;

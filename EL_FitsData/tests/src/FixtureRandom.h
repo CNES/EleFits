@@ -41,16 +41,16 @@ template<typename T>
 T generate_random_value();
 
 template<typename T>
-std::vector<T> generate_random_vector(std::size_t size);
+std::vector<T> generate_random_vector(long size);
 
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std::size_t size);
+std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size);
 
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(std::size_t size);
+std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size);
 
 template<>
-std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
+std::vector<std::string> generate_random_vector<std::string>(long size);
 
 
 /////////////////////
@@ -65,7 +65,7 @@ T generate_random_value() {
 }
 
 template<typename T>
-std::vector<T> generate_random_vector(std::size_t size) {
+std::vector<T> generate_random_vector(long size) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   const double min = std::numeric_limits<T>::min();
@@ -78,7 +78,7 @@ std::vector<T> generate_random_vector(std::size_t size) {
 }
 
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std::size_t size) {
+std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size) {
   const auto re_im_vec = generate_random_vector<float>(size * 2);
   std::vector<std::complex<float>> vec(size);
   const auto im_begin = re_im_vec.begin() + size;
@@ -88,7 +88,7 @@ std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std
 }
 
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(std::size_t size) {
+std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size) {
   const auto re_vec = generate_random_vector<double>(size);
   const auto im_vec = generate_random_vector<double>(size);
   std::vector<std::complex<double>> vec(size);
@@ -98,7 +98,7 @@ std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(s
 }
 
 template<>
-std::vector<std::string> generate_random_vector<std::string>(std::size_t size) {
+std::vector<std::string> generate_random_vector<std::string>(long size) {
   std::vector<int> int_vec = generate_random_vector<int>(size);
   std::vector<std::string> vec(size);
   std::transform(int_vec.begin(), int_vec.end(), vec.begin(),

@@ -42,7 +42,7 @@ public:
    * You should not instantiate RecordHdus yourself,
    * but using the dedicated MefFile creation method.
    */
-  BintableHdu(fitsfile*& fptr, std::size_t index);
+  BintableHdu(fitsfile*& fptr, long index);
 
   /**
    * @brief Destructor.

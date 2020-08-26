@@ -156,7 +156,7 @@ public:
 /**
  * @brief A random Raster of given type and shape.
  */
-template<typename T, std::size_t n>
+template<typename T, long n>
 class RandomRaster : public VecRaster<T, n> {
 
 public:
@@ -183,7 +183,7 @@ public:
   /**
    * @brief Generate a Column of given size.
    */
-  explicit RandomScalarColumn(std::size_t size=3);
+  explicit RandomScalarColumn(long size=3);
 
   /** @brief Destructor. */
   virtual ~RandomScalarColumn() = default;
@@ -200,7 +200,7 @@ public:
   /**
    * @brief Generate a Column of given size.
    */
-  SmallStringColumn(std::size_t size=3);
+  SmallStringColumn(long size=3);
   
   /** @brief Destructor. */
   virtual ~SmallStringColumn() = default;
@@ -235,25 +235,25 @@ T generate_random_value();
  * @brief Generate a random vector of given type and size.
  */
 template<typename T>
-std::vector<T> generate_random_vector(std::size_t size);
+std::vector<T> generate_random_vector(long size);
 
 /**
  * @brief Specialization of generate_random_vector for complex<float>.
  */
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std::size_t size);
+std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size);
 
 /**
  * @brief Specialization of generate_random_vector for complex<double>.
  */
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(std::size_t size);
+std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size);
 
 /**
  * @brief Specialization of generate_random_vector for string.
  */
 template<>
-std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
+std::vector<std::string> generate_random_vector<std::string>(long size);
 
 
 /////////////////////
@@ -261,7 +261,7 @@ std::vector<std::string> generate_random_vector<std::string>(std::size_t size);
 ///////////////////
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 RandomRaster<T, n>::RandomRaster(pos_type<n> input_shape) :
     VecRaster<T, n>(input_shape) {
   this->vector() = generate_random_vector<T>(this->size());
@@ -269,16 +269,18 @@ RandomRaster<T, n>::RandomRaster(pos_type<n> input_shape) :
 
 
 template<typename T>
-RandomScalarColumn<T>::RandomScalarColumn(std::size_t size) :
+RandomScalarColumn<T>::RandomScalarColumn(long size) :
     VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size)) {
 }
 
 template<>
-RandomScalarColumn<std::string>::RandomScalarColumn(std::size_t size) :
+RandomScalarColumn<std::string>::RandomScalarColumn(long size) :
     VecColumn<std::string>({ "SCALAR", "m", 1}, generate_random_vector<std::string>(size)) {
-  for(const auto& v : vector())
-    if(v.length() + 1 > static_cast<std::size_t>(info.repeat))
-      info.repeat = v.length() + 1;
+  for(const auto& v : vector()) {
+    long current_size = static_cast<long>(v.length() + 1); // +1 for '\0'
+    if(current_size > info.repeat)
+      info.repeat = current_size;
+  }
 }
 
 template<typename T>
@@ -296,7 +298,7 @@ T generate_random_value() {
 }
 
 template<typename T>
-std::vector<T> generate_random_vector(std::size_t size) {
+std::vector<T> generate_random_vector(long size) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   const double min = std::numeric_limits<T>::min();
@@ -309,7 +311,7 @@ std::vector<T> generate_random_vector(std::size_t size) {
 }
 
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std::size_t size) {
+std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size) {
   const auto re_im_vec = generate_random_vector<float>(size * 2);
   std::vector<std::complex<float>> vec(size);
   const auto im_begin = re_im_vec.begin() + size;
@@ -319,7 +321,7 @@ std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(std
 }
 
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(std::size_t size) {
+std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size) {
   const auto re_vec = generate_random_vector<double>(size);
   const auto im_vec = generate_random_vector<double>(size);
   std::vector<std::complex<double>> vec(size);
@@ -329,7 +331,7 @@ std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(s
 }
 
 template<>
-std::vector<std::string> generate_random_vector<std::string>(std::size_t size) {
+std::vector<std::string> generate_random_vector<std::string>(long size) {
   std::vector<int> int_vec = generate_random_vector<int>(size);
   std::vector<std::string> vec(size);
   std::transform(int_vec.begin(), int_vec.end(), vec.begin(),

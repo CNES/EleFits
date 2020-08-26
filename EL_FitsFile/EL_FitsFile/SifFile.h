@@ -58,13 +58,13 @@ public:
   /**
    * @brief Read the Raster.
    */
-  template<typename T, std::size_t n=2>
+  template<typename T, long n=2>
   VecRaster<T, n> read_raster() const;
 
   /**
    * @brief Write the Raster (initialize primary HDU if not done).
    */
-  template<typename T, std::size_t n>
+  template<typename T, long n>
   void write_raster(const Raster<T, n>& raster) const;
 
 private:
@@ -79,12 +79,12 @@ private:
 ///////////////////
 
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 VecRaster<T, n> SifFile::read_raster() const {
   return Cfitsio::Image::read_raster<T, n>(m_fptr);
 }
 
-template<typename T, std::size_t n>
+template<typename T, long n>
 void SifFile::write_raster(const Raster<T, n>& raster) const {
   Cfitsio::Hdu::goto_primary(m_fptr);
   Cfitsio::Image::resize<T, n>(m_fptr, raster.shape);

@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( index_test ) {
   FitsIO::pos_type<4> pos;
   for(auto& coord : pos)
     coord = std::rand();
-  auto index = FitsIO::internal::Index<3>::offset(shape, pos);
+  auto index = FitsIO::internal::Index<3>::template offset<4>(shape, pos);
   BOOST_CHECK_EQUAL(index,
     pos[0] + shape[0] * (
       pos[1] + shape[1] * (
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( index_test ) {
 
 BOOST_FIXTURE_TEST_CASE( raster_2D_test, FitsIO::Test::SmallRaster ) {
 
-  std::size_t size(this->width * this->height);
+  long size(this->width * this->height);
   BOOST_CHECK_EQUAL(this->size(), size);
   BOOST_CHECK_EQUAL(this->vector().size(), size);
 
