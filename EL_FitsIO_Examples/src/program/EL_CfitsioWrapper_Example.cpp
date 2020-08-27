@@ -51,7 +51,7 @@ public:
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
 
-    const std::string filename = args["output"].as<std::string>();
+    const auto filename = args["output"].as<std::string>();
 
     logger.info();
 
@@ -104,7 +104,7 @@ public:
     fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
     //! [Open Fits]
     //! [Read record]
-    const int record_value = Header::parse_record<int>(fptr, "VALUE");
+    const auto record_value = Header::parse_record<int>(fptr, "VALUE");
     //! [Read record]
     logger.info() << "Reading record: VALUE = " << record_value;
 
@@ -115,7 +115,7 @@ public:
     Hdu::goto_name(fptr, "SMALLTBL");
     //! [Find HDU by name]
     //! [Get HDU index]
-    const int index = Hdu::current_index(fptr);
+    const auto index = Hdu::current_index(fptr);
     //! [Get HDU index]
     logger.info() << "HDU index: " << index;
     //! [Read column]

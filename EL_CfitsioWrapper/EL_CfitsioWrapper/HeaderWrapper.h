@@ -109,7 +109,7 @@ inline void _parse_record(fitsfile* fptr, std::string keyword, FitsIO::Record<T>
 }
 
 // Parse the records of the i+1 first keywords of a given list (recursive approach).
-template<int i, typename ...Ts>
+template<std::size_t i, typename ...Ts>
 struct _parse_records {
   void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
     _parse_record(fptr, keywords[i], std::get<i>(records));
@@ -125,7 +125,7 @@ struct _parse_records<0, Ts...> {
   }
 };
 
-template<class Return, typename... Ts, long... Is>
+template<class Return, typename... Ts, std::size_t... Is>
 Return _parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords, std14::index_sequence<Is...>) {
   return { parse_record<Ts>(fptr, keywords[Is]) ... };
 }

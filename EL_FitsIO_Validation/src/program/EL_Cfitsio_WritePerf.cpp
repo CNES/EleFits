@@ -34,13 +34,13 @@ using boost::program_options::value;
 
 using Euclid::Cfitsio::c_str_array;
 
-std::vector<float> generate_raster(int naxis1, int naxis2) {
-  int order = 10;
+std::vector<float> generate_raster(long naxis1, long naxis2) {
+  long order = 10;
   while (order < naxis2)
     order *= 10;
   std::vector<float> raster(naxis1 * naxis2);
-  for (int j=0; j < naxis2; ++j) for (int i=0; i < naxis1; ++i)
-    raster[i + j * naxis1] = float(i) + float(j)/order;
+  for (long j=0; j < naxis2; ++j) for (long i=0; i < naxis1; ++i)
+    raster[i + j * naxis1] = float(i + j) / float(order);
   return raster;
 }
 
@@ -63,14 +63,14 @@ struct table_t {
   std::vector<int> ints;
 };
 
-table_t generate_columns(int naxis2) {
+table_t generate_columns(long naxis2) {
   std::vector<std::string> strings(naxis2);
   std::vector<float> floats(naxis2);
   std::vector<int> ints(naxis2);
-  for(int i=0; i<naxis2; ++i) {
+  for(long i=0; i<naxis2; ++i) {
     strings[i] = "Text";
-    floats[i] = float(i) / naxis2;
-    ints[i] = i * naxis2;
+    floats[i] = float(i) / float(naxis2);
+    ints[i] = int(i * naxis2);
   }
   table_t table;
   return table_t { std::move(strings), std::move(floats), std::move(ints) };
@@ -87,7 +87,7 @@ void create_image_ext(fitsfile* fptr, std::string extname, long* naxes, float* d
 
 void create_table_ext(fitsfile* fptr, std::string extname, colinfo_t& colinfo, table_t& table) {
   int status = 0;
-  int naxis2 = table.strings.size();
+  long naxis2 = static_cast<long>(table.strings.size());
   fits_create_tbl(fptr, BINARY_TBL, 0, 3,
       colinfo.names.data(), colinfo.formats.data(), colinfo.units.data(),
       extname.c_str(), &status);

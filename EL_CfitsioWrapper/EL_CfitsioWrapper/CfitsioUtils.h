@@ -84,19 +84,19 @@ struct c_str_array {
  */
 namespace std14 {
 
-template <long ...>
+template <std::size_t ...>
 struct index_sequence
  { };
 
-template <long N, long ... Next>
+template <std::size_t N, std::size_t ... Next>
 struct _index_sequence : public _index_sequence<N-1U, N-1U, Next...>
  { };
 
-template <long ... Next>
+template <std::size_t ... Next>
 struct _index_sequence<0U, Next ... >
  { using type = index_sequence<Next ... >; };
 
-template <long N>
+template <std::size_t N>
 using make_index_sequence = typename _index_sequence<N>::type;
 
 }

@@ -43,7 +43,7 @@ struct SmallTable {
   c_str_array col_format{"1J", "1C", "68A", "2D"};
   c_str_array col_unit {"", "deg", "", "kal"};
   int ids[rows] = { 45, 7, 31 };
-  std::complex<float> radecs[rows] = { { 56.8500, 24.1167 }, { 268.4667, -34.7928 }, { 10.6833, 41.2692 } };
+  std::complex<float> radecs[rows] = { { 56.8500F, 24.1167F }, { 268.4667F, -34.7928F }, { 10.6833F, 41.2692F } };
   c_str_array names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
   std::vector<double> dist_mags[rows] = { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900., 3.4 } };
 };
@@ -54,7 +54,7 @@ struct SmallImage {
   static constexpr long naxis2 = 2;
   static constexpr long size = naxis1*naxis2;
   long naxes[2] = { naxis1, naxis2 };
-  float data[size] = { 0.0, 0.1, 1.0, 1.1, 2.0, 2.1 };
+  float data[size] = { 0.0F, 0.1F, 1.0F, 1.1F, 2.0F, 2.1F };
 };
 
 

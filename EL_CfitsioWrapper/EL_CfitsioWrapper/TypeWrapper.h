@@ -55,7 +55,7 @@ struct TypeCode {
     /**
      * @brief Get the TFORM value to handle Bintable columns.
      */
-    inline static std::string bintable_format(int width);
+    inline static std::string bintable_format(long repeat);
 
     /**
      * @brief Get the type code for an Image.
@@ -149,7 +149,7 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
  */
 #ifndef DEF_TABLE_TFORM
 #define DEF_TABLE_TFORM(type, code) \
-    template<> inline std::string TypeCode<type>::bintable_format(int width) { return std::to_string(width) + code; }
+    template<> inline std::string TypeCode<type>::bintable_format(long repeat) { return std::to_string(repeat) + code; }
 DEF_TABLE_TFORM(bool, 'X')
 DEF_TABLE_TFORM(char, 'S')
 DEF_TABLE_TFORM(std::int16_t, 'I')

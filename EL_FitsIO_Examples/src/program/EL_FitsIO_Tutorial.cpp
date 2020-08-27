@@ -49,7 +49,7 @@ VecRaster<float, 3> create_raster() {
   for (int z=0; z < depth; ++z)
     for (int y=0; y < height; ++y)
       for (int x=0; x < width; ++x)
-        raster[{x, y, z}] = x + y + z;
+        raster[{x, y, z}] = float(x + y + z);
   //! [Create and fill a raster]
   return raster;
 }

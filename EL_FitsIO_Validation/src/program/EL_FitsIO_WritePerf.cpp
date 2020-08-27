@@ -34,13 +34,13 @@ using boost::program_options::value;
 using namespace Euclid::FitsIO;
 
 
-VecRaster<float> generate_raster(int naxis1, int naxis2) {
-  int order = 10;
+VecRaster<float> generate_raster(long naxis1, long naxis2) {
+  long order = 10;
   while(order < naxis2)
     order *= 10;
   VecRaster<float, 2> raster({naxis1, naxis2});
-  for(int j=0; j<naxis2; ++j) for(int i=0; i<naxis1; ++i)
-    raster[{i, j}] = float(i) + float(j)/order;
+  for(long j=0; j<naxis2; ++j) for(long i=0; i<naxis1; ++i)
+    raster[{i, j}] = float(i + j) / float(order);
   return raster;
 }
 
@@ -50,14 +50,14 @@ struct table_t {
   VecColumn<int> int_col;
 };
 
-table_t generate_columns(int naxis2) {
+table_t generate_columns(long naxis2) {
   std::vector<std::string> strings(naxis2);
   std::vector<float> floats(naxis2);
   std::vector<int> ints(naxis2);
-  for(int i=0; i<naxis2; ++i) {
+  for(long i=0; i<naxis2; ++i) {
     strings[i] = "Text";
-    floats[i] = float(i) / naxis2;
-    ints[i] = i * naxis2;
+    floats[i] = float(i) / float(naxis2);
+    ints[i] = int(i * naxis2);
   }
   table_t table {
       VecColumn<std::string>({"STRINGS", "", 8}, std::move(strings)),

@@ -39,8 +39,8 @@ void writeMeta(MefFile& f, int obj_index) {
   ext.write_records<int, int, float, float>(
       { "DITH_NUM", 0 }, //TODO
       { "SOURC_ID", obj_index },
-      { "RA_OBJ", 2.F * obj_index },
-      { "DEC_OBJ", 3.F * obj_index }
+      { "RA_OBJ", float(2 * obj_index) },
+      { "DEC_OBJ", float(3 * obj_index) }
   );
 }
 

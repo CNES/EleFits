@@ -60,7 +60,7 @@ public:
    * @details
    * Test each pixel as: (other - this) / this < tol
    */
-  bool approx(const Raster<float>& other, float tol=0.1) const;
+  bool approx(const Raster<float>& other, float tol=0.1F) const;
   
   /**
    * @brief Raster width.
@@ -301,9 +301,9 @@ template<typename T>
 std::vector<T> generate_random_vector(long size) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
-  const double min = std::numeric_limits<T>::min();
-  const double max = std::numeric_limits<T>::max();
-  std::uniform_real_distribution<double> distribution(min, max);
+  const T min = std::numeric_limits<T>::min();
+  const T max = std::numeric_limits<T>::max();
+  std::uniform_real_distribution<double> distribution(static_cast<double>(min), static_cast<double>(max));
   std::vector<T> vec(size);
   std::generate(vec.begin(), vec.end(),
       [&]() { return T(distribution(generator)); });

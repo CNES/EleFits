@@ -66,7 +66,7 @@ bool goto_index(fitsfile* fptr, long index) {
     return false;
   int type = 0;
   int status = 0;
-  fits_movabs_hdu(fptr, index, &type, &status);
+  fits_movabs_hdu(fptr, static_cast<int>(index), &type, &status); // HDU indices are int
   may_throw_cfitsio_error(status, "Cannot access HDU " + std::to_string(index));
   return true;
 }
@@ -89,7 +89,7 @@ bool goto_next(fitsfile* fptr, long step) {
     return false;
   int status = 0;
   int type = 0;
-  fits_movrel_hdu(fptr, step, &type, &status);
+  fits_movrel_hdu(fptr, static_cast<int>(step), &type, &status); // HDU indices are int
   may_throw_cfitsio_error(status);
   return true;
 }
