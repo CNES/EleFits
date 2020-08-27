@@ -44,11 +44,11 @@ using boost::program_options::value;
 
 VecRaster<float, 3> create_raster() {
   //! [Create and fill a raster]
-  int width = 16, height = 9, depth = 3;
+  long width = 16, height = 9, depth = 3;
   VecRaster<float, 3> raster({width, height, depth});
-  for (int z=0; z < depth; ++z)
-    for (int y=0; y < height; ++y)
-      for (int x=0; x < width; ++x)
+  for (long z=0; z < depth; ++z)
+    for (long y=0; y < height; ++y)
+      for (long x=0; x < width; ++x)
         raster[{x, y, z}] = float(x + y + z);
   //! [Create and fill a raster]
   return raster;

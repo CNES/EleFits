@@ -1,10 +1,15 @@
 # Change log
 
-# 1.5
+# 1.9
+
+## API changes
+
+* Indices and lengths as `long`s instead of `std::size_t`s
 
 ## Safety
 
 * Test CFitsIO bug in reading `unsigned long` records (see known bugs)
+* Explicitely cast every conversion
 
 ## Cleaning
 
@@ -16,6 +21,11 @@
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
 * `const char*` is not supported; `string` should be used instead
+
+## Considered changes for 2.0.0
+
+* pascalCase functions and methods
+* C++14
 
 # 1.4.0
 

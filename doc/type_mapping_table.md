@@ -1,4 +1,4 @@
-# CFitsIO type mapping
+# CFitsIO type mapping table {#type_map}
 
 | Type | Record code | Table code | TFORM | Image code | BITPIX |
 | ---- | ----------- | ---------- | ----- | ---------- | ------ |
