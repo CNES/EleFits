@@ -48,7 +48,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  SifFile(std::string filename, Permission permission);
+  SifFile(const std::string& filename, Permission permission);
 
   /**
    * @brief Access the header.

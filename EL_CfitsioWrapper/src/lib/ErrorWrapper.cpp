@@ -27,7 +27,7 @@ CfitsioError::CfitsioError(int cfitsio_status) :
     std::runtime_error(cfitsio_error_message(cfitsio_status)),
     status(cfitsio_status) {}
 
-CfitsioError::CfitsioError(int cfitsio_status, std::string context) :
+CfitsioError::CfitsioError(int cfitsio_status, const std::string& context) :
     std::runtime_error(cfitsio_error_message(cfitsio_status) + " (" + context + ")"),
     status(cfitsio_status) {}
 
@@ -39,7 +39,7 @@ std::string cfitsio_error_message(int status) {
   return error_msg;
 }
 
-void may_throw_cfitsio_error(int status, std::string context) {
+void may_throw_cfitsio_error(int status, const std::string& context) {
   if(status == 0)
     return;
   if(context.empty())

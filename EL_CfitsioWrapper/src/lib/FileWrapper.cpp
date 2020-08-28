@@ -25,7 +25,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace File {
 
-fitsfile* create_and_open(std::string filename, CreatePolicy policy) {
+fitsfile* create_and_open(const std::string& filename, CreatePolicy policy) {
   std::string cfitsio_name = filename;
   if(policy == CreatePolicy::OVER_WRITE)
     cfitsio_name.insert (0, 1, '!'); // CFitsIO convention
@@ -37,7 +37,7 @@ fitsfile* create_and_open(std::string filename, CreatePolicy policy) {
   return fptr;
 }
 
-fitsfile* open(std::string filename, OpenPolicy policy) {
+fitsfile* open(const std::string& filename, OpenPolicy policy) {
   fitsfile *fptr;
   int status = 0;
   int permission = READONLY;

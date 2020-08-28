@@ -49,7 +49,7 @@ std::vector<std::string> list_keywords(fitsfile* fptr);
  * @brief Parse a record.
  */
 template<typename T>
-FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword);
+FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @brief Parse records.
@@ -91,7 +91,7 @@ void update_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
 /**
  * @brief Delete an existing record.
  */
-void delete_record(fitsfile* fptr, std::string keyword);
+void delete_record(fitsfile* fptr, const std::string& keyword);
 
 
 ///////////////
@@ -104,14 +104,14 @@ namespace internal {
 
 // Signature change (output argument) for further use with variadic templates.
 template<typename T>
-inline void _parse_record(fitsfile* fptr, std::string keyword, FitsIO::Record<T>& record) {
+inline void _parse_record(fitsfile* fptr, const std::string& keyword, FitsIO::Record<T>& record) {
   record = parse_record<T>(fptr, keyword);
 }
 
 // Parse the records of the i+1 first keywords of a given list (recursive approach).
 template<std::size_t i, typename ...Ts>
 struct _parse_records {
-  void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
+  void operator() (fitsfile* fptr, const std::vector<std::string>& keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
     _parse_record(fptr, keywords[i], std::get<i>(records));
     _parse_records<i-1, Ts...>{}(fptr, keywords, records);
   }
@@ -120,7 +120,7 @@ struct _parse_records {
 // Parse the value of the first keyword of a given list (terminal case of the recursion).
 template<typename ...Ts>
 struct _parse_records<0, Ts...> {
-  void operator() (fitsfile* fptr, std::vector<std::string> keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
+  void operator() (fitsfile* fptr, const std::vector<std::string>& keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
     _parse_record(fptr, keywords[0], std::get<0>(records));
   }
 };
@@ -140,7 +140,7 @@ Return _parse_records_as(fitsfile* fptr, const std::vector<std::string>& keyword
 
 
 template<typename T>
-FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword) {
+FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   /* Read value and comment */
   T value;
@@ -168,7 +168,7 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, std::string keyword) {
 }
 
 template<>
-FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::string keyword);
+FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::string& keyword);
 
 template<typename ...Ts>
 std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords) {

@@ -40,19 +40,19 @@ namespace Bintable {
 /**
  * @brief Get the index of a Bintable column.
  */
-long column_index(fitsfile* fptr, std::string name);
+long column_index(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Read a Bintable column with given name.
  */
 template<typename T>
-FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name);
+FitsIO::VecColumn<T> read_column(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Read several Bintable columns with given names.
  */
 template<typename ...Ts>
-std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, std::vector<std::string> names);
+std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, const std::vector<std::string>& names);
 
 /**
  * @brief Write a binary table column.
@@ -101,19 +101,19 @@ namespace internal {
 template<typename T>
 void _init_column(
     fitsfile* fptr,
-    long index, std::string name,
+    long index, const std::string& name,
     FitsIO::VecColumn<T>& column, long rows);
 
 template<>
 void _init_column<std::string>(
     fitsfile* fptr,
-    long index, std::string name,
+    long index, const std::string& name,
     FitsIO::VecColumn<std::string>& column, long rows);
 
 template<typename T>
 void _init_column(
     fitsfile* fptr,
-    long index, std::string name,
+    long index, const std::string& name,
     FitsIO::VecColumn<T>& column, long rows) {
   column.info.name = name;
   column.info.unit = ""; //TODO
@@ -264,13 +264,13 @@ void _write_columns(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&..
 
 
 template<>
-FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name);
+FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, const std::string& name);
 
 template<>
 void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>& column);
 
 template<typename T>
-FitsIO::VecColumn<T> read_column(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<T> read_column(fitsfile* fptr, const std::string& name) {
   /* Read metadata */
   long index = column_index(fptr, name);
   int typecode = 0;
@@ -321,7 +321,7 @@ void write_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
 }
 
 template<typename... Ts>
-std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, std::vector<std::string> names) {
+std::tuple<FitsIO::VecColumn<Ts>...> read_columns(fitsfile* fptr, const std::vector<std::string>& names) {
   /* List column indices */
   std::vector<long> indices(names.size());
   for(std::size_t c=0; c<names.size(); ++c) //TODO iterator

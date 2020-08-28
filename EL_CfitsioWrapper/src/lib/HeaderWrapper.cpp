@@ -38,7 +38,7 @@ std::vector<std::string> list_keywords(fitsfile* fptr) {
 }
 
 template<>
-FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, std::string keyword) {
+FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
@@ -99,7 +99,7 @@ void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string
   may_throw_cfitsio_error(status);
 }
 
-void delete_record(fitsfile* fptr, std::string keyword) {
+void delete_record(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   fits_delete_key(fptr, keyword.c_str(), &status);
   may_throw_cfitsio_error(status);

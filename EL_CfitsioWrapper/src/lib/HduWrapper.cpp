@@ -71,7 +71,7 @@ bool goto_index(fitsfile* fptr, long index) {
   return true;
 }
 
-bool goto_name(fitsfile* fptr, std::string name) {
+bool goto_name(fitsfile* fptr, const std::string& name) {
   if(name == "")
     return false;
   if(name == "Primary")
@@ -105,14 +105,14 @@ bool init_primary(fitsfile* fptr) {
   return true;
 }
 
-bool update_name(fitsfile* fptr, std::string name) {
+bool update_name(fitsfile* fptr, const std::string& name) {
   if(name == "")
     return false;
   Header::update_record(fptr, FitsIO::Record<std::string>("EXTNAME", name));
   return true;
 }
 
-void create_metadata_extension(fitsfile* fptr, std::string name) {
+void create_metadata_extension(fitsfile* fptr, const std::string& name) {
   create_image_extension<unsigned char, 0>(fptr, name, FitsIO::pos_type<0>());
 }
 

@@ -88,7 +88,7 @@ bool goto_index(fitsfile *fptr, long index);
 /**
  * @brief Go to an HDU specified by its name.
  */
-bool goto_name(fitsfile *fptr, std::string name);
+bool goto_name(fitsfile *fptr, const std::string& name);
 
 /**
  * @brief Go to an HDU specified by incrementing the index by a given amount.
@@ -108,36 +108,36 @@ bool init_primary(fitsfile *fptr);
 /**
  * @brief Write or update HDU name.
  */
-bool update_name(fitsfile* fptr, std::string name);
+bool update_name(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Create a HDU of Type METADATA.
  */
-void create_metadata_extension(fitsfile *fptr, std::string name);
+void create_metadata_extension(fitsfile *fptr, const std::string& name);
 
 /**
  * @brief Create a new Image HDU with given name, pixel type and shape.
  */
 template<typename T, long n=2>
-void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape);
+void create_image_extension(fitsfile *fptr, const std::string& name, const FitsIO::pos_type<n>& shape);
 
 /**
  * @brief Write a Raster in a new Image HDU.
  */
 template<typename T, long n=2>
-void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Raster<T, n>& raster);
+void create_image_extension(fitsfile *fptr, const std::string& name, const FitsIO::Raster<T, n>& raster);
 
 /**
  * @brief Create a new Bintable HDU with given name and column infos.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::ColumnInfo<Ts>&... header);
+void create_bintable_extension(fitsfile *fptr, const std::string& name, const FitsIO::ColumnInfo<Ts>&... header);
 
 /**
  * @brief Write a Table in a new Bintable HDU.
  */
 template<typename... Ts>
-void create_bintable_extension(fitsfile *fptr, std::string name, const FitsIO::Column<Ts>&... table);
+void create_bintable_extension(fitsfile *fptr, const std::string& name, const FitsIO::Column<Ts>&... table);
 
 /**
  * @brief Delete the HDU at given index.
@@ -151,7 +151,7 @@ void delete_hdu(fitsfile *fptr, long index);
 
 
 template<typename T, long n>
-void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_type<n>& shape) {
+void create_image_extension(fitsfile *fptr, const std::string& name, const FitsIO::pos_type<n>& shape) {
   may_throw_readonly_error(fptr);
   int status = 0;
   auto nonconst_shape = shape; // const-correctness issue
@@ -161,14 +161,14 @@ void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::pos_
 }
 
 template<typename T, long n>
-void create_image_extension(fitsfile *fptr, std::string name, const FitsIO::Raster<T, n>& raster) {
+void create_image_extension(fitsfile *fptr, const std::string& name, const FitsIO::Raster<T, n>& raster) {
   may_throw_readonly_error(fptr);
   create_image_extension<T, n>(fptr, name, raster.shape);
   Image::write_raster<T, n>(fptr, raster);
 }
 
 template<typename... Ts>
-void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::ColumnInfo<Ts>&... header) {
+void create_bintable_extension(fitsfile* fptr, const std::string& name, const FitsIO::ColumnInfo<Ts>&... header) {
   constexpr long ncols = sizeof...(Ts);
   c_str_array col_name { header.name ... };
   c_str_array col_format { TypeCode<Ts>::bintable_format(header.repeat) ... };
@@ -181,7 +181,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
 }
 
 template<typename... Ts>
-void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<Ts>&... table) {
+void create_bintable_extension(fitsfile* fptr, const std::string& name, const FitsIO::Column<Ts>&... table) {
   constexpr long ncols = sizeof...(Ts);
   c_str_array col_name { table.info.name ... };
   c_str_array col_format { TypeCode<Ts>::bintable_format(table.info.repeat) ... };
@@ -196,7 +196,7 @@ void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::C
 
 /// @cond INTERNAL
 template<typename T>
-void create_bintable_extension(fitsfile* fptr, std::string name, const FitsIO::Column<T>& column) {
+void create_bintable_extension(fitsfile* fptr, const std::string& name, const FitsIO::Column<T>& column) {
   constexpr long count = 1;
   std::string col_name = column.info.name;
   char* c_name = &col_name[0];

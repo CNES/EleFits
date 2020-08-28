@@ -64,7 +64,7 @@ void check_close(std::complex<double> value, std::complex<double> expected) {
 }
 
 template<typename T>
-void check_record(std::string label) {
+void check_record(const std::string& label) {
   FitsIO::Test::MinimalFile file;
   T input = FitsIO::Test::generate_random_value<T>();
   std::string unit = "u_" + label;

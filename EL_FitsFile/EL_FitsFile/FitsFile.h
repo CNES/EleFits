@@ -66,7 +66,7 @@ public:
   /**
    * @brief Create a new Fits file handler with given filename and permission.
    */
-  FitsFile(std::string filename, Permission permission);
+  FitsFile(const std::string& filename, Permission permission);
 
   /**
    * @brief Destroy the FitsFile and close the file.
@@ -82,7 +82,7 @@ public:
   /**
    * @brief Open a Fits file with given filename and permission.
    */
-  void open(std::string filename, Permission permission);
+  void open(const std::string& filename, Permission permission);
 
   /**
    * @brief Close the file.

@@ -61,7 +61,7 @@ public:
   /**
    * @brief Write or update the extension name.
    */
-  void rename(std::string) const;
+  void rename(const std::string& name) const;
 
   /**
    * @brief List the record keywords.
@@ -72,7 +72,7 @@ public:
    * @brief Parse a record.
    */
   template<typename T>
-  Record<T> parse_record(std::string keyword) const;
+  Record<T> parse_record(const std::string& keyword) const;
 
   /**
    * @brief Parse several records.
@@ -107,7 +107,7 @@ public:
    * @brief Write a record.
    */
   template<typename T>
-  void write_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
+  void write_record(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
 
   /**
    * @brief Write several records.
@@ -125,7 +125,7 @@ public:
    * @brief Update a record if it exists; write a new record otherwise.
    */
   template<typename T>
-  void update_record(std::string keyword, T value, std::string unit="", std::string comment="") const;
+  void update_record(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
@@ -136,7 +136,7 @@ public:
   /**
    * @brief Delete a record.
    */
-  void delete_record(std::string keyword) const;
+  void delete_record(const std::string& keyword) const;
 
 protected:
 
@@ -167,7 +167,7 @@ protected:
 
 
 template<typename T>
-Record<T> RecordHdu::parse_record(std::string keyword) const {
+Record<T> RecordHdu::parse_record(const std::string& keyword) const {
   goto_this_hdu();
   return Cfitsio::Header::parse_record<T>(m_fptr, keyword);
 }
@@ -191,7 +191,7 @@ void RecordHdu::write_record(const Record<T>& record) const {
 }
 
 template<typename T>
-void RecordHdu::write_record(std::string keyword, T value, std::string unit, std::string comment) const {
+void RecordHdu::write_record(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
   write_record(Record<T>(keyword, value, unit, comment));
 }
 
@@ -208,7 +208,7 @@ void RecordHdu::update_record(const Record<T>& record) const {
 }
 
 template<typename T>
-void RecordHdu::update_record(std::string keyword, T value, std::string unit, std::string comment) const {
+void RecordHdu::update_record(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
   update_record(Record<T>(keyword, value, unit, comment));
 }
 
@@ -220,7 +220,7 @@ void RecordHdu::update_records(const Record<Ts>&... records) const {
 
 #ifndef DECLARE_PARSE_RECORD
 #define DECLARE_PARSE_RECORD(T) \
-  extern template Record<T> RecordHdu::parse_record(std::string) const;
+  extern template Record<T> RecordHdu::parse_record(const std::string&) const;
 DECLARE_PARSE_RECORD(char)
 DECLARE_PARSE_RECORD(short)
 DECLARE_PARSE_RECORD(int)

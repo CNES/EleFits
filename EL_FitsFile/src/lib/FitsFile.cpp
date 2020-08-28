@@ -24,7 +24,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-FitsFile::FitsFile(std::string filename, Permission permission) :
+FitsFile::FitsFile(const std::string& filename, Permission permission) :
     m_fptr(nullptr),
     m_filename(filename),
     m_permission(permission),
@@ -40,7 +40,7 @@ std::string FitsFile::filename() const {
   return m_filename;
 }
 
-void FitsFile::open(std::string filename, Permission permission) {
+void FitsFile::open(const std::string& filename, Permission permission) {
   switch (permission) {
   case Permission::READ:
     m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_ONLY);

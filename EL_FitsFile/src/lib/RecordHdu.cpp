@@ -37,7 +37,7 @@ std::string RecordHdu::name() const {
   return Cfitsio::Hdu::current_name(m_fptr);
 }
 
-void RecordHdu::rename(std::string name) const {
+void RecordHdu::rename(const std::string& name) const {
   goto_this_hdu();
   Cfitsio::Hdu::update_name(m_fptr, name);
 }
@@ -46,7 +46,7 @@ std::vector<std::string> RecordHdu::keywords() const {
   return Cfitsio::Header::list_keywords(m_fptr);
 }
 
-void RecordHdu::delete_record(std::string keyword) const {
+void RecordHdu::delete_record(const std::string& keyword) const {
   goto_this_hdu();
   Cfitsio::Header::delete_record(m_fptr, keyword);
 }
@@ -57,7 +57,7 @@ void RecordHdu::goto_this_hdu() const {
 
 #ifndef COMPILE_PARSE_RECORD
 #define COMPILE_PARSE_RECORD(T) \
-  template Record<T> RecordHdu::parse_record(std::string) const;
+  template Record<T> RecordHdu::parse_record(const std::string&) const;
 COMPILE_PARSE_RECORD(char)
 COMPILE_PARSE_RECORD(short)
 COMPILE_PARSE_RECORD(int)

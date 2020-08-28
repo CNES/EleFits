@@ -53,13 +53,13 @@ public:
    * @brief Read a column with given name.
    */
   template<typename T>
-  VecColumn<T> read_column(std::string name) const;
+  VecColumn<T> read_column(const std::string& name) const;
 
   /**
    * @brief Read several columns with given names.
    */
   template<typename... Ts>
-  std::tuple<VecColumn<Ts>...> read_columns(std::vector<std::string> names) const;
+  std::tuple<VecColumn<Ts>...> read_columns(const std::vector<std::string>& names) const;
 
   /**
    * @brief Write a column.
@@ -97,13 +97,13 @@ public:
 
 
 template<typename T>
-VecColumn<T> BintableHdu::read_column(std::string name) const {
+VecColumn<T> BintableHdu::read_column(const std::string& name) const {
   goto_this_hdu();
   return Cfitsio::Bintable::read_column<T>(m_fptr, name);
 }
 
 template<typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableHdu::read_columns(std::vector<std::string> names) const {
+std::tuple<VecColumn<Ts>...> BintableHdu::read_columns(const std::vector<std::string>& names) const {
   goto_this_hdu();
   return Cfitsio::Bintable::read_columns<Ts...>(m_fptr, names);
 }
@@ -134,7 +134,7 @@ void BintableHdu::append_columns(const Column<Ts>&... columns) const {
 
 #ifndef DECLARE_READ_COLUMN
 #define DECLARE_READ_COLUMN(T) \
-    extern template VecColumn<T> BintableHdu::read_column(std::string) const;
+    extern template VecColumn<T> BintableHdu::read_column(const std::string&) const;
 DECLARE_READ_COLUMN(char)
 DECLARE_READ_COLUMN(short)
 DECLARE_READ_COLUMN(int)

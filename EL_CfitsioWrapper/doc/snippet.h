@@ -11,7 +11,7 @@
 
 
 template<typename T>
-T parse_record(std::string keyword) {
+T parse_record(const std::string& keyword) {
     T val(1.5);
     std::cout << keyword << '\t' << val << std::endl;
     return val;

@@ -50,12 +50,12 @@ enum class OpenPolicy {
 /**
  * @brief Create or overwrite a Fits file and open it.
  */
-fitsfile* create_and_open(std::string filename, CreatePolicy policy);
+fitsfile* create_and_open(const std::string& filename, CreatePolicy policy);
 
 /**
  * @brief Open an existing Fits file with optional write permission.
  */
-fitsfile* open(std::string filename, OpenPolicy policy);
+fitsfile* open(const std::string& filename, OpenPolicy policy);
 
 /**
  * @brief Close a Fits file.

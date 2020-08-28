@@ -76,16 +76,17 @@ table_t generate_columns(long naxis2) {
   return table_t { std::move(strings), std::move(floats), std::move(ints) };
 }
 
-void create_image_ext(fitsfile* fptr, std::string extname, long* naxes, float* data) {
+void create_image_ext(fitsfile* fptr, const std::string& extname, long* naxes, float* data) {
   int status = 0;
   int nhdu = 0;
   fits_get_num_hdus(fptr, &nhdu, &status);
   fits_create_img(fptr, FLOAT_IMG, 2, naxes, &status);
-  fits_write_key(fptr, TSTRING, "EXTNAME", &extname[0], nullptr, &status);
+  std::string nonconst_extname = extname;
+  fits_write_key(fptr, TSTRING, "EXTNAME", &nonconst_extname[0], nullptr, &status);
   fits_write_img(fptr, TFLOAT, 1, naxes[0] * naxes[1], data, &status);
 }
 
-void create_table_ext(fitsfile* fptr, std::string extname, colinfo_t& colinfo, table_t& table) {
+void create_table_ext(fitsfile* fptr, const std::string& extname, colinfo_t& colinfo, table_t& table) {
   int status = 0;
   long naxis2 = static_cast<long>(table.strings.size());
   fits_create_tbl(fptr, BINARY_TBL, 0, 3,

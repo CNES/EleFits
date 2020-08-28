@@ -26,7 +26,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Bintable {
 
-long column_index(fitsfile* fptr, std::string name) {
+long column_index(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, to_char_ptr(name).get(), &index, &status);
@@ -40,7 +40,7 @@ namespace internal {
 template<> //TODO clean
 void _init_column<std::string>(
     fitsfile* fptr,
-    long index, std::string name,
+    long index, const std::string& name,
     FitsIO::VecColumn<std::string>& column, long rows) {
   column.info.name = name;
   column.info.unit = ""; //TODO
@@ -106,7 +106,7 @@ void _write_column_chunk<std::string>(
 /// @endcond
 
 template<>
-FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, std::string name) {
+FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, const std::string& name) {
   long index = column_index(fptr, name);
   long rows = 0;
   int status = 0;

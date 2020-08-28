@@ -22,7 +22,7 @@
 namespace Euclid {
 namespace Cfitsio {
 
-std::unique_ptr<char[]> to_char_ptr(std::string str) {
+std::unique_ptr<char[]> to_char_ptr(const std::string& str) {
   const long size = str.length();
   std::unique_ptr<char[]> c_str(new char[size + 1]);
   strcpy(c_str.get(), str.c_str());

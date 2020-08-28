@@ -24,7 +24,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-SifFile::SifFile(std::string filename, SifFile::Permission permission) :
+SifFile::SifFile(const std::string& filename, SifFile::Permission permission) :
     FitsFile(filename, permission),
     m_hdu(m_fptr, 1) {}
 

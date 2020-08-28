@@ -38,7 +38,7 @@ struct Record {
   /**
    * @brief Assign a record.
    */
-  Record(std::string k="", T v=T(), std::string u="", std::string c="");
+  Record(const std::string& k="", T v=T(), const std::string& u="", const std::string& c="");
 
   /**
    * @brief Slice the record as its value.
@@ -74,7 +74,7 @@ struct Record {
 
 
 template<typename T>
-Record<T>::Record(std::string k, T v, std::string u, std::string c) :
+Record<T>::Record(const std::string& k, T v, const std::string& u, const std::string& c) :
   keyword(k),
   value(v),
   unit(u),
