@@ -164,7 +164,7 @@ public:
   /**
    * @brief Generate a Raster with given shape.
    */
-  explicit RandomRaster(pos_type<n> input_shape);
+  explicit RandomRaster(pos_type<n> raster_shape);
 
   /** @brief Destructor. */
   virtual ~RandomRaster() = default;
@@ -262,8 +262,8 @@ std::vector<std::string> generate_random_vector<std::string>(long size);
 
 
 template<typename T, long n>
-RandomRaster<T, n>::RandomRaster(pos_type<n> input_shape) :
-    VecRaster<T, n>(input_shape) {
+RandomRaster<T, n>::RandomRaster(pos_type<n> raster_shape) :
+    VecRaster<T, n>(raster_shape) {
   this->vector() = generate_random_vector<T>(this->size());
 }
 

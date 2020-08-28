@@ -38,13 +38,13 @@ public:
      * @brief Create from CFitsIO error code.
      * @details This generate the associated CFitsIO message with no context.
      */
-    explicit CfitsioError(int status);
+    explicit CfitsioError(int cfitsio_status);
     
     /**
      * @brief Create from CFitsIO error code and user-given context.
      * @details This generates the associated CFitsIO message with context.
      */
-    CfitsioError(int status, std::string context);
+    CfitsioError(int cfitsio_status, std::string context);
     
     /**
      * @brief The CFitsIO error code.

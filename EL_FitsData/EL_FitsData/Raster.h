@@ -54,7 +54,7 @@ public:
   /**
    * @brief Create a Raster with given shape.
    */
-  explicit Raster(pos_type<n> input_shape);
+  explicit Raster(pos_type<n> raster_shape);
 
   /**
    * @brief Const pointer to the first data element.
@@ -120,7 +120,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  PtrRaster(pos_type<n> input_shape, const T* data);
+  PtrRaster(pos_type<n> raster_shape, const T* data);
 
   const T* data() const override;
 
@@ -155,7 +155,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  VecRefRaster(pos_type<n> input_shape, const std::vector<T>& data);
+  VecRefRaster(pos_type<n> raster_shape, const std::vector<T>& data);
 
   const T* data() const override;
 
@@ -197,12 +197,12 @@ public:
    * To transfer ownership of the data instead of copying it, use move semantics:
    * @code VecRaster column(shape, std::move(data)); @endcode
    */
-  VecRaster(pos_type<n> input_shape, std::vector<T> data);
+  VecRaster(pos_type<n> raster_shape, std::vector<T> data);
 
   /**
    * @brief Create a VecRaster with given shape and empty data.
    */
-  explicit VecRaster(pos_type<n> input_shape);
+  explicit VecRaster(pos_type<n> raster_shape);
 
   /**
    * @brief Create an empty VecRaster.
@@ -270,8 +270,8 @@ inline long Index<0>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
 
 
 template<typename T, long n>
-Raster<T, n>::Raster(pos_type<n> input_shape) :
-    shape(input_shape) {
+Raster<T, n>::Raster(pos_type<n> raster_shape) :
+    shape(raster_shape) {
 }
 
 template<typename T, long n>
@@ -302,8 +302,8 @@ inline T& Raster<T, n>::operator[](const pos_type<n>& pos) {
 
 
 template<typename T, long n>
-PtrRaster<T, n>::PtrRaster(pos_type<n> input_shape, const T* data) :
-    Raster<T, n>(input_shape),
+PtrRaster<T, n>::PtrRaster(pos_type<n> raster_shape, const T* data) :
+    Raster<T, n>(raster_shape),
     m_data(data) {
 }
 
@@ -337,8 +337,8 @@ VecRaster<T, n>::VecRaster(pos_type<n> shape, std::vector<T> data) :
 }
 
 template<typename T, long n>
-VecRaster<T, n>::VecRaster(pos_type<n> input_shape) :
-    Raster<T, n>(input_shape),
+VecRaster<T, n>::VecRaster(pos_type<n> raster_shape) :
+    Raster<T, n>(raster_shape),
     m_vec(this->size()) {
 }
 

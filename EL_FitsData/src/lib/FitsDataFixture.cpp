@@ -24,9 +24,9 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-SmallRaster::SmallRaster(long input_width, long input_height) :
-    VecRaster<float>({input_width, input_height}),
-    width(input_width), height(input_height) {
+SmallRaster::SmallRaster(long raster_width, long raster_height) :
+    VecRaster<float>({raster_width, raster_height}),
+    width(raster_width), height(raster_height) {
   for(long x=0; x<shape[0]; ++x)
     for(long y=0; y<shape[1]; ++y)
       operator[]({x, y}) = 0.1F * float(y) + float(x);

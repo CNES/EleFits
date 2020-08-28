@@ -23,13 +23,13 @@
 namespace Euclid {
 namespace Cfitsio {
 
-CfitsioError::CfitsioError(int input_status) :
-    std::runtime_error(cfitsio_error_message(input_status)),
-    status(input_status) {}
+CfitsioError::CfitsioError(int cfitsio_status) :
+    std::runtime_error(cfitsio_error_message(cfitsio_status)),
+    status(cfitsio_status) {}
 
-CfitsioError::CfitsioError(int input_status, std::string context) :
-    std::runtime_error(cfitsio_error_message(input_status) + " (" + context + ")"),
-    status(input_status) {}
+CfitsioError::CfitsioError(int cfitsio_status, std::string context) :
+    std::runtime_error(cfitsio_error_message(cfitsio_status) + " (" + context + ")"),
+    status(cfitsio_status) {}
 
 std::string cfitsio_error_message(int status) {
   char cfitsio_msg[FLEN_ERRMSG];

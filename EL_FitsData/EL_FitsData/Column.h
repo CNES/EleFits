@@ -73,7 +73,7 @@ public:
   /**
    * @brief Create a column with given metadata.
    */
-  explicit Column(ColumnInfo<T> input_info);
+  explicit Column(ColumnInfo<T> column_info);
 
   /**
    * @brief Number of elements in the column, i.e. number of rows * repeat count.
@@ -165,7 +165,7 @@ public:
   /**
    * @brief Create a VecRefColumn with given metadata and reference to data.
    */
-  VecRefColumn(ColumnInfo<T> input_info, const std::vector<T>& vector_ref);
+  VecRefColumn(ColumnInfo<T> column_info, const std::vector<T>& vector_ref);
 
   long nelements() const override;
 
@@ -215,7 +215,7 @@ public:
    * To transfer ownership of the data instead of copying it, use move semantics:
    * @code VecColumn column(info, std::move(vector)); @endcode
    */
-  VecColumn(ColumnInfo<T> input_info, std::vector<T> vector);
+  VecColumn(ColumnInfo<T> column_info, std::vector<T> vector);
 
   long nelements() const override;
 
@@ -273,8 +273,8 @@ long _rows(long nelements, long repeat) {
 
 
 template<typename T>
-Column<T>::Column(ColumnInfo<T> input_info) :
-    info(input_info) {
+Column<T>::Column(ColumnInfo<T> column_info) :
+    info(column_info) {
 }
 
 template<typename T>
@@ -283,8 +283,8 @@ long Column<T>::rows() const {
 }
 
 template<typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> input_info, long nelements, const T* data) :
-    Column<T>(input_info),
+PtrColumn<T>::PtrColumn(ColumnInfo<T> column_info, long nelements, const T* data) :
+    Column<T>(column_info),
     m_nelements(nelements),
     m_data(data) {
 }
@@ -301,8 +301,8 @@ const T* PtrColumn<T>::data() const {
 
 
 template<typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> input_info, const std::vector<T>& vector_ref) :
-    Column<T>(input_info),
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> column_info, const std::vector<T>& vector_ref) :
+    Column<T>(column_info),
     m_vec_ref(vector_ref) {
 }
 
@@ -329,8 +329,8 @@ VecColumn<T>::VecColumn() :
 }
 
 template<typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> input_info, std::vector<T> vector) :
-    Column<T>(input_info),
+VecColumn<T>::VecColumn(ColumnInfo<T> column_info, std::vector<T> vector) :
+    Column<T>(column_info),
     m_vec(vector) {
 }
 
