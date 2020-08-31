@@ -77,7 +77,7 @@ FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr) {
   may_throw_cfitsio_error(status);
   const auto size = raster.size();
   raster.vector().resize(size); //TODO instantiate here directly with right shape
-  fits_read_img(fptr, TypeCode<T>::for_image(), 1, size, nullptr, raster.data(), nullptr, &status);
+  fits_read_img(fptr, TypeCode<T>::forImage(), 1, size, nullptr, raster.data(), nullptr, &status);
   // Number 1 is a 1-base offset (so we read the whole raster here)
   may_throw_cfitsio_error(status, "Cannot read raster");
   return raster;
@@ -90,7 +90,7 @@ void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   const auto begin = raster.data();
   const auto end = begin + raster.size();
   std::vector<T> nonconst_data(begin, end); // const-correctness issue
-  fits_write_img(fptr, TypeCode<T>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
+  fits_write_img(fptr, TypeCode<T>::forImage(), 1, raster.size(), nonconst_data.data(), &status);
   may_throw_cfitsio_error(status, "Cannot write raster");
 }
 

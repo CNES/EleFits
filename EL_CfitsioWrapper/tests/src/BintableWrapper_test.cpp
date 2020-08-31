@@ -47,18 +47,18 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
 BOOST_AUTO_TEST_CASE( cfitsio_overflow_bug_test ) {
   FitsIO::Test::MinimalFile file;
   c_str_array ttype({"COL"});
-  auto bintable_format = TypeCode<unsigned>::bintable_format(1);
-  char* tform[1];
-  tform[0] = (char*)malloc(3);
-  strcpy(tform[0], bintable_format.c_str());
+  auto tform1 = TypeCode<unsigned>::tform(1);
+  char* tforms[1];
+  tforms[0] = (char*)malloc(3);
+  strcpy(tforms[0], tform1.c_str());
   c_str_array tunit({""});
   printf("TTYPE: %s\nTFORM: %s\nTUNIT: %s\n",
-      ttype.data()[0], tform[0], tunit.data()[0]);
+      ttype.data()[0], tforms[0], tunit.data()[0]);
   int status = 0;
   fits_create_tbl(file.fptr, BINARY_TBL, 0, 1,
-      ttype.data(), tform, tunit.data(),
+      ttype.data(), tforms, tunit.data(),
       "TBL", &status);
-  free(tform[0]);
+  free(tforms[0]);
 
   constexpr unsigned small = 0;
   constexpr unsigned medium = std::numeric_limits<int>::max();

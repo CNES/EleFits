@@ -105,7 +105,7 @@ template<>
 void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
   int status = 0;
   fits_update_key(fptr,
-      TypeCode<std::string>::for_record(),
+      TypeCode<std::string>::forRecord(),
       record.keyword.c_str(),
       &std::string(record.value)[0],
       &record.comment[0],
@@ -117,7 +117,7 @@ template<>
 void update_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
   int status = 0;
   fits_update_key(fptr,
-      TypeCode<std::string>::for_record(),
+      TypeCode<std::string>::forRecord(),
       record.keyword.c_str(),
       &std::string(record.value)[0],
       &record.comment[0],

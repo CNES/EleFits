@@ -165,7 +165,7 @@ void _read_column_chunk(
   int status = 0;
   auto begin = column.vector().data() + (first_row - 1) * column.info.repeat;
   fits_read_col(fptr,
-      TypeCode<T>::for_bintable(),
+      TypeCode<T>::forBintable(),
       static_cast<int>(index),
       first_row, 1, row_count * column.info.repeat,
       nullptr,
@@ -218,7 +218,7 @@ void _write_column_chunk(
   auto end = begin + size;
   std::vector<T> vec(begin, end);
   fits_write_col(fptr,
-      TypeCode<T>::for_bintable(),
+      TypeCode<T>::forBintable(),
       static_cast<int>(index),
       first_row, 1, size,
       vec.data(),
@@ -285,7 +285,7 @@ FitsIO::VecColumn<T> read_column(fitsfile* fptr, const std::string& name) {
   /* Read data */
   fits_read_col(
     fptr,
-    TypeCode<T>::for_bintable(), // datatype
+    TypeCode<T>::forBintable(), // datatype
     static_cast<int>(index), // colnum
     1, // firstrow (1-based)
     1, // firstelemn (1-based)
@@ -309,7 +309,7 @@ void write_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
   int status = 0;
   fits_write_col(
     fptr,
-    TypeCode<T>::for_bintable(), // datatype
+    TypeCode<T>::forBintable(), // datatype
     static_cast<int>(index), // colnum
     1, // firstrow (1-based)
     1, // firstelem (1-based)
@@ -370,7 +370,7 @@ void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
 template<typename T>
 void insert_column(fitsfile* fptr, long index, const FitsIO::Column<T>& column) {
   auto name = to_char_ptr(column.info.name);
-  auto tform = to_char_ptr(TypeCode<T>::bintable_format(column.info.repeat));
+  auto tform = to_char_ptr(TypeCode<T>::tform(column.info.repeat));
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
   write_column(fptr, column);
@@ -379,7 +379,7 @@ void insert_column(fitsfile* fptr, long index, const FitsIO::Column<T>& column) 
 template<typename... Ts>
 void insert_columns(fitsfile* fptr, long index, const FitsIO::Column<Ts>&... columns) {
   auto names = c_str_array({ columns.info.name... });
-  auto tforms = c_str_array({ TypeCode<Ts>::bintable_format(columns.info.repeat)... });
+  auto tforms = c_str_array({ TypeCode<Ts>::tform(columns.info.repeat)... });
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(Ts), names.data(), tforms.data(), &status);
   write_columns(fptr, columns...);

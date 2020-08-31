@@ -68,7 +68,7 @@ void _read_column_chunk<std::string>(
   for(long i = 0; i < row_count; ++i) //TODO iterator
     data[i] = (char*) malloc(repeat);
   fits_read_col(fptr,
-      TypeCode<std::string>::for_bintable(),
+      TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
       first_row, 1, row_count,
       nullptr,
@@ -92,7 +92,7 @@ void _write_column_chunk<std::string>(
   auto end = begin + size;
   c_str_array array(begin, end);
   fits_write_col(fptr,
-      TypeCode<std::string>::for_bintable(),
+      TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
       first_row, 1, size,
       array.data(),
@@ -123,7 +123,7 @@ FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, const st
   FitsIO::VecColumn<std::string> column({name, "", repeat}, std::vector<std::string>(rows)); //TODO unit
   fits_read_col(
     fptr,
-    TypeCode<std::string>::for_bintable(), // datatype
+    TypeCode<std::string>::forBintable(), // datatype
     static_cast<int>(index), // colnum // column indices are int
     1, // firstrow (1-based)
     1, // firstelemn (1-based)
@@ -150,7 +150,7 @@ void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>
   int status = 0;
   fits_write_col(
     fptr,
-    TypeCode<std::string>::for_bintable(), // datatype
+    TypeCode<std::string>::forBintable(), // datatype
     static_cast<int>(index), // colnum // column indices are int
     1, // firstrow (1-based)
     1, // firstelem (1-based)

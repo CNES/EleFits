@@ -31,70 +31,70 @@ BOOST_AUTO_TEST_SUITE (TypeWrapper_test)
 //-----------------------------------------------------------------------------
 
 template<typename T>
-void check_cfitsio_record_type_exists() {
-    BOOST_CHECK_NO_THROW(TypeCode<T>::for_record());
+void checkCfitsioRecordTypeExists() {
+    BOOST_CHECK_NO_THROW(TypeCode<T>::forRecord());
 }
 
 template<typename T>
-void check_cfitsio_bintable_type_exists() {
-    BOOST_CHECK_NO_THROW(TypeCode<T>::for_bintable());
+void checkCfitsioBintableTypeExists() {
+    BOOST_CHECK_NO_THROW(TypeCode<T>::forBintable());
 }
 
 template<typename T>
-void check_cfitsio_image_type_exists() {
-    BOOST_CHECK_NO_THROW(TypeCode<T>::for_image());
+void checkCfitsioImageTypeExists() {
+    BOOST_CHECK_NO_THROW(TypeCode<T>::forImage());
 }
 
 BOOST_AUTO_TEST_CASE( cfitsio_record_codes_test ) {
 
-    check_cfitsio_record_type_exists<bool>();
-    check_cfitsio_record_type_exists<char>();
-    check_cfitsio_record_type_exists<short>();
-    check_cfitsio_record_type_exists<int>();
-    check_cfitsio_record_type_exists<long>();
-    check_cfitsio_record_type_exists<float>();
-    check_cfitsio_record_type_exists<double>();
-    check_cfitsio_record_type_exists<std::complex<float>>();
-    check_cfitsio_record_type_exists<std::complex<double>>();
-    check_cfitsio_record_type_exists<std::string>();
-    check_cfitsio_record_type_exists<unsigned char>();
-    check_cfitsio_record_type_exists<unsigned short>();
-    check_cfitsio_record_type_exists<unsigned int>();
-    check_cfitsio_record_type_exists<unsigned long>();
+    checkCfitsioRecordTypeExists<bool>();
+    checkCfitsioRecordTypeExists<char>();
+    checkCfitsioRecordTypeExists<short>();
+    checkCfitsioRecordTypeExists<int>();
+    checkCfitsioRecordTypeExists<long>();
+    checkCfitsioRecordTypeExists<float>();
+    checkCfitsioRecordTypeExists<double>();
+    checkCfitsioRecordTypeExists<std::complex<float>>();
+    checkCfitsioRecordTypeExists<std::complex<double>>();
+    checkCfitsioRecordTypeExists<std::string>();
+    checkCfitsioRecordTypeExists<unsigned char>();
+    checkCfitsioRecordTypeExists<unsigned short>();
+    checkCfitsioRecordTypeExists<unsigned int>();
+    checkCfitsioRecordTypeExists<unsigned long>();
 
 }
 
 BOOST_AUTO_TEST_CASE( cfitsio_bintable_codes_test ) {
 
-    check_cfitsio_bintable_type_exists<bool>();
-    check_cfitsio_bintable_type_exists<char>();
-    check_cfitsio_bintable_type_exists<short>();
-    check_cfitsio_bintable_type_exists<int>();
-    check_cfitsio_bintable_type_exists<long>();
-    check_cfitsio_bintable_type_exists<float>();
-    check_cfitsio_bintable_type_exists<double>();
-    check_cfitsio_bintable_type_exists<std::complex<float>>();
-    check_cfitsio_bintable_type_exists<std::complex<double>>();
-    check_cfitsio_bintable_type_exists<std::string>();
-    check_cfitsio_bintable_type_exists<unsigned char>();
-    check_cfitsio_bintable_type_exists<unsigned short>();
-    check_cfitsio_bintable_type_exists<unsigned int>();
-    check_cfitsio_bintable_type_exists<unsigned long>();
+    checkCfitsioBintableTypeExists<bool>();
+    checkCfitsioBintableTypeExists<char>();
+    checkCfitsioBintableTypeExists<short>();
+    checkCfitsioBintableTypeExists<int>();
+    checkCfitsioBintableTypeExists<long>();
+    checkCfitsioBintableTypeExists<float>();
+    checkCfitsioBintableTypeExists<double>();
+    checkCfitsioBintableTypeExists<std::complex<float>>();
+    checkCfitsioBintableTypeExists<std::complex<double>>();
+    checkCfitsioBintableTypeExists<std::string>();
+    checkCfitsioBintableTypeExists<unsigned char>();
+    checkCfitsioBintableTypeExists<unsigned short>();
+    checkCfitsioBintableTypeExists<unsigned int>();
+    checkCfitsioBintableTypeExists<unsigned long>();
 
 }
 
 BOOST_AUTO_TEST_CASE( cfitsio_image_codes_test ) {
 
-    check_cfitsio_image_type_exists<char>();
-    check_cfitsio_image_type_exists<short>();
-    check_cfitsio_image_type_exists<int>();
-    check_cfitsio_image_type_exists<long>();
-    check_cfitsio_image_type_exists<float>();
-    check_cfitsio_image_type_exists<double>();
-    check_cfitsio_image_type_exists<unsigned char>();
-    check_cfitsio_image_type_exists<unsigned short>();
-    check_cfitsio_image_type_exists<unsigned int>();
-    check_cfitsio_image_type_exists<unsigned long>();
+    checkCfitsioImageTypeExists<char>();
+    checkCfitsioImageTypeExists<short>();
+    checkCfitsioImageTypeExists<int>();
+    checkCfitsioImageTypeExists<long>();
+    checkCfitsioImageTypeExists<float>();
+    checkCfitsioImageTypeExists<double>();
+    checkCfitsioImageTypeExists<unsigned char>();
+    checkCfitsioImageTypeExists<unsigned short>();
+    checkCfitsioImageTypeExists<unsigned int>();
+    checkCfitsioImageTypeExists<unsigned long>();
 
 }
 

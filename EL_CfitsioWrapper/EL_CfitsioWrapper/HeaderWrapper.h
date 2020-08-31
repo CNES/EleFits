@@ -146,7 +146,7 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
   T value;
   char comment[FLEN_COMMENT];
   comment[0] = '\0';
-  fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, comment, &status);
+  fits_read_key(fptr, TypeCode<T>::forRecord(), keyword.c_str(), &value, comment, &status);
   /* Read unit */
   char unit[FLEN_COMMENT];
   unit[0] = '\0';
@@ -187,7 +187,7 @@ void write_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
   int status = 0;
   std::string comment = record.comment;
   T value = record.value;
-  fits_write_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
+  fits_write_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
   std::string context = "while writing '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
   may_throw_cfitsio_error(status, context);
@@ -210,7 +210,7 @@ void update_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
   int status = 0;
   std::string comment = record.comment;
   T value = record.value;
-  fits_update_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
+  fits_update_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
   std::string context = "while updating '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
   may_throw_cfitsio_error(status, context);
 }

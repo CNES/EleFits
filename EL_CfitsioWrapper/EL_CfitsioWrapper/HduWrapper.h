@@ -171,7 +171,7 @@ template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, const std::string& name, const FitsIO::ColumnInfo<Ts>&... header) {
   constexpr long ncols = sizeof...(Ts);
   c_str_array col_name { header.name ... };
-  c_str_array col_format { TypeCode<Ts>::bintable_format(header.repeat) ... };
+  c_str_array col_format { TypeCode<Ts>::tform(header.repeat) ... };
   c_str_array col_unit { header.unit ... };
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
@@ -184,7 +184,7 @@ template<typename... Ts>
 void create_bintable_extension(fitsfile* fptr, const std::string& name, const FitsIO::Column<Ts>&... table) {
   constexpr long ncols = sizeof...(Ts);
   c_str_array col_name { table.info.name ... };
-  c_str_array col_format { TypeCode<Ts>::bintable_format(table.info.repeat) ... };
+  c_str_array col_format { TypeCode<Ts>::tform(table.info.repeat) ... };
   c_str_array col_unit { table.info.unit ... };
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
@@ -200,7 +200,7 @@ void create_bintable_extension(fitsfile* fptr, const std::string& name, const Fi
   constexpr long count = 1;
   std::string col_name = column.info.name;
   char* c_name = &col_name[0];
-  std::string col_format = TypeCode<T>::bintable_format(column.info.repeat);
+  std::string col_format = TypeCode<T>::tform(column.info.repeat);
   char* c_format = &col_format[0];
   std::string col_unit = column.info.unit;
   char* c_unit = &col_unit[0];

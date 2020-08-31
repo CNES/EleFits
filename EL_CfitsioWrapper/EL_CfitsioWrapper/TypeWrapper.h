@@ -45,22 +45,22 @@ struct TypeCode {
     /**
      * @brief Get the type code for a Record.
      */
-    inline static int for_record();
+    inline static int forRecord();
 
     /**
      * @brief Get the type code for a Bintable.
      */
-    inline static int for_bintable();
+    inline static int forBintable();
 
     /**
      * @brief Get the TFORM value to handle Bintable columns.
      */
-    inline static std::string bintable_format(long repeat);
+    inline static std::string tform(long repeat);
 
     /**
      * @brief Get the type code for an Image.
      */
-    inline static int for_image();
+    inline static int forImage();
 
     /**
      * @brief Get the BITPIX value to handle Image HDUs.
@@ -87,7 +87,7 @@ struct TypeCode {
  */
 #ifndef DEF_RECORD_TYPE_CODE
 #define DEF_RECORD_TYPE_CODE(type, code) \
-    template<> inline int TypeCode<type>::for_record() { return code; }
+    template<> inline int TypeCode<type>::forRecord() { return code; }
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
 DEF_RECORD_TYPE_CODE(short, TSHORT)
@@ -118,7 +118,7 @@ DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
  */
 #ifndef DEF_TABLE_TYPE_CODE
 #define DEF_TABLE_TYPE_CODE(type, code) \
-    template<> inline int TypeCode<type>::for_bintable() { return code; }
+    template<> inline int TypeCode<type>::forBintable() { return code; }
 DEF_TABLE_TYPE_CODE(bool, TBIT)
 DEF_TABLE_TYPE_CODE(char, TSBYTE)
 DEF_TABLE_TYPE_CODE(short, TSHORT)
@@ -149,7 +149,7 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
  */
 #ifndef DEF_TABLE_TFORM
 #define DEF_TABLE_TFORM(type, code) \
-    template<> inline std::string TypeCode<type>::bintable_format(long repeat) { return std::to_string(repeat) + code; }
+    template<> inline std::string TypeCode<type>::tform(long repeat) { return std::to_string(repeat) + code; }
 DEF_TABLE_TFORM(bool, 'X')
 DEF_TABLE_TFORM(char, 'S')
 DEF_TABLE_TFORM(std::int16_t, 'I')
@@ -176,7 +176,7 @@ DEF_TABLE_TFORM(std::uint64_t, 'W')
  */
 #ifndef DEF_IMAGE_TYPE_CODE
 #define DEF_IMAGE_TYPE_CODE(type, code) \
-    template<> inline int TypeCode<type>::for_image() { return code; }
+    template<> inline int TypeCode<type>::forImage() { return code; }
 DEF_IMAGE_TYPE_CODE(char, TSBYTE)
 DEF_IMAGE_TYPE_CODE(short, TSHORT)
 DEF_IMAGE_TYPE_CODE(int, TINT)
