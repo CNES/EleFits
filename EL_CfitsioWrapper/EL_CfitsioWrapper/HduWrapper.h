@@ -152,17 +152,17 @@ void delete_hdu(fitsfile *fptr, long index);
 
 template<typename T, long n>
 void create_image_extension(fitsfile *fptr, const std::string& name, const FitsIO::pos_type<n>& shape) {
-  may_throw_readonly_error(fptr);
+  mayThrowReadonlyError(fptr);
   int status = 0;
   auto nonconst_shape = shape; // const-correctness issue
   fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconst_shape[0], &status);
-  may_throw_cfitsio_error(status, "Cannot create image extension");
+  mayThrowCfitsioError(status, "Cannot create image extension");
   update_name(fptr, name);
 }
 
 template<typename T, long n>
 void create_image_extension(fitsfile *fptr, const std::string& name, const FitsIO::Raster<T, n>& raster) {
-  may_throw_readonly_error(fptr);
+  mayThrowReadonlyError(fptr);
   create_image_extension<T, n>(fptr, name, raster.shape);
   Image::write_raster<T, n>(fptr, raster);
 }
@@ -177,7 +177,7 @@ void create_bintable_extension(fitsfile* fptr, const std::string& name, const Fi
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
-  may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
+  mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
 }
 
 template<typename... Ts>
@@ -190,7 +190,7 @@ void create_bintable_extension(fitsfile* fptr, const std::string& name, const Fi
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
       col_name.data(), col_format.data(), col_unit.data(),
       name.c_str(), &status);
-  may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
+  mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
   Bintable::write_columns(fptr, table...);
 }
 
@@ -208,7 +208,7 @@ void create_bintable_extension(fitsfile* fptr, const std::string& name, const Fi
   fits_create_tbl(fptr, BINARY_TBL, 0, count,
       &c_name, &c_format, &c_unit,
       name.c_str(), &status);
-  may_throw_cfitsio_error(status, "Cannot create bintable extension " + name);
+  mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
   Bintable::write_column(fptr, column);
 }
 /// @endcond

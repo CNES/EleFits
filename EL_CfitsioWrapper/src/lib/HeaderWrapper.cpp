@@ -42,7 +42,7 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std:
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
-  may_throw_cfitsio_error(status, "Cannot find string keyword " + keyword);
+  mayThrowCfitsioError(status, "Cannot find string keyword " + keyword);
   if(length == 0)
     return { keyword, "" };
   char* value = nullptr; // That's the only function in which CFitsIO allocates itself!
@@ -60,8 +60,8 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std:
   FitsIO::Record<std::string> record(keyword, str_value, std::string(unit), std::string(comment));
   free(value);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
-  may_throw_cfitsio_error(status, context);
-  may_throw_cfitsio_error(status, context);
+  mayThrowCfitsioError(status, context);
+  mayThrowCfitsioError(status, context);
   if(record.comment == record.unit) {
     record.comment == "";
   } else if(record.unit != "") {
@@ -84,7 +84,7 @@ void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>
       &record.comment[0],
       &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
 }
 
 template<>
@@ -98,7 +98,7 @@ void write_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>
       &record.comment[0],
       &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
 }
 
 template<>
@@ -110,7 +110,7 @@ void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string
       &std::string(record.value)[0],
       &record.comment[0],
       &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
 }
 
 template<>
@@ -122,13 +122,13 @@ void update_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*
       &std::string(record.value)[0],
       &record.comment[0],
       &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
 }
 
 void delete_record(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   fits_delete_key(fptr, keyword.c_str(), &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
 }
 
 }

@@ -38,13 +38,13 @@ public:
      * @brief Create from CFitsIO error code.
      * @details This generate the associated CFitsIO message with no context.
      */
-    explicit CfitsioError(int cfitsio_status);
+    explicit CfitsioError(int cfitsioStatus);
     
     /**
      * @brief Create from CFitsIO error code and user-given context.
      * @details This generates the associated CFitsIO message with context.
      */
-    CfitsioError(int cfitsio_status, const std::string& context);
+    CfitsioError(int cfitsioStatus, const std::string& context);
     
     /**
      * @brief The CFitsIO error code.
@@ -56,22 +56,22 @@ public:
 /**
  * @brief Get the error message of an error code.
  */
-std::string cfitsio_error_message(int status);
+std::string cfitsioErrorMessage(int status);
 
 /**
  * @brief Check whether status is OK (=0) and throw an error if not.
  */
-void may_throw_cfitsio_error(int status, const std::string& context="");
+void mayThrowCfitsioError(int status, const std::string& context="");
 
 /**
  * @brief Check whether the file is valid and throw an error if not.
  */
-void may_throw_invalid_file_error(fitsfile* fptr);
+void mayThrowInvalidFileError(fitsfile* fptr);
 
 /**
  * @brief Check whether the file is writable and throw an error if not.
  */
-void may_throw_readonly_error(fitsfile* fptr);
+void mayThrowReadonlyError(fitsfile* fptr);
 
 }
 }

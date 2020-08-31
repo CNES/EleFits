@@ -84,19 +84,19 @@ public:
     fits_create_file(&fptr, (std::string("!") + filename).c_str(), &status);
     long naxis0 = 0;
     fits_create_img(fptr, BYTE_IMG, 1, &naxis0, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while creating file");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while creating file");
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
     int record_value = 1;
     fits_write_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing VALUE");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing VALUE");
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
     record_value = 2;
     fits_update_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while updating VALUE");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while updating VALUE");
     //! [Update record]
 
     logger.info();
@@ -107,12 +107,12 @@ public:
     fits_create_tbl(fptr, BINARY_TBL, 0,
         table.cols, table.col_name.data(), table.col_format.data(), table.col_unit.data(),
         "SMALLTBL", &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while creating bintable extension");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while creating bintable extension");
     fits_write_col(fptr, TINT, 1, 1, 1, table.rows, table.ids, &status);
     fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.rows, table.radecs, &status);
     fits_write_col(fptr, TSTRING, 3, 1, 1, table.rows, table.names.data(), &status);
     fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.rows*2, table.dist_mags, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing columns");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing columns");
     //! [Create bintable ext]
 
     logger.info();
@@ -123,25 +123,25 @@ public:
     fits_create_img(fptr, FLOAT_IMG, 2, image.naxes, &status);
     char *extname = const_cast<char *>("SMALLIMG");
     fits_write_key(fptr, TSTRING, "EXTNAME", extname, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while creating image extension");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while creating image extension");
     fits_write_img(fptr, TFLOAT, 1, 6, image.data, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing raster");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing raster");
     //! [Create image ext]
     char *record_string = const_cast<char *>("string");
     int record_integer = 8;
     logger.info() << "Writing record: STRING = string";
     fits_write_key(fptr, TSTRING, "STRING", record_string, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing STRING");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing STRING");
     logger.info() << "Writing record: INTEGER = 8";
     fits_write_key(fptr, TINT, "INTEGER", &record_integer, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while writing INTEGER");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing INTEGER");
 
     logger.info();
 
     logger.info() << "Closing file.";
     //! [Close Fits]
     fits_close_file(fptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while closing file");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while closing file");
     //! [Close Fits]
 
     logger.info();
@@ -150,10 +150,10 @@ public:
     //! [Open Fits]
     fits_open_file(&fptr, filename.c_str(), READONLY, &status);
     //! [Open Fits]
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while opening file");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while opening file");
     //! [Read record]
     fits_read_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading VALUE");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading VALUE");
     //! [Read record]
     logger.info() << "Reading record: VALUE = " << record_value;
 
@@ -162,7 +162,7 @@ public:
     logger.info() << "Reading bintable.";
     //! [Find HDU by name]
     fits_movnam_hdu(fptr, ANY_HDU, const_cast<char *>("SMALLTBL"), 0, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while moving to bintable extension");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while moving to bintable extension");
     //! [Find HDU by name]
     //! [Get HDU index]
     int index;
@@ -172,20 +172,20 @@ public:
     //! [Read column]
     int colnum;
     fits_get_colnum(fptr, CASESEN, const_cast<char *>("ID"), &colnum, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while finding column ID");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while finding column ID");
     int ids[table.rows];
     fits_read_col(fptr, TINT, colnum, 1, 1, table.rows, nullptr, ids, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading column ID");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading column ID");
     const auto first_cell = ids[0];
     //! [Read column]
     logger.info() << "First id: " << first_cell;
     fits_get_colnum(fptr, CASESEN, const_cast<char *>("NAME"), &colnum, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while finding column NAME");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while finding column NAME");
     char *names[table.rows];
     for(int i=0; i<table.rows; ++i)
       names[i] = (char*) malloc(68);
     fits_read_col(fptr, TSTRING, colnum, 1, 1, table.rows, nullptr, names, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading column NAME");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading column NAME");
     logger.info() << "Last name: " << names[table.rows-1];
     for(int i=0; i<table.rows; ++i)
       free(names[i]);
@@ -195,28 +195,28 @@ public:
     logger.info() << "Reading image.";
     //! [Find HDU by index]
     fits_movabs_hdu(fptr, 3, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while moving to image extension");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while moving to image extension");
     //! [Find HDU by index]
     //! [Get HDU name]
     char* extname_read = (char*) malloc(69);
     fits_read_key(fptr, TSTRING, "EXTNAME", extname_read, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading extension name");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading extension name");
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname_read;
     free(extname_read);
     char* string_read = (char*) malloc(69);
     fits_read_key(fptr, TSTRING, "STRING", string_read, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading STRING record");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading STRING record");
     logger.info() << "Reading record: STRING = " << string_read;
     free(string_read);
     int integer_read;
     fits_read_key(fptr, TINT, "INTEGER", &integer_read, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading INTEGER record");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading INTEGER record");
     logger.info() << "Reading record: INTEGER = " << integer_read;
     //! [Read raster]
     float data[image.size];
     fits_read_img(fptr, TFLOAT, 1, image.size, nullptr, data, nullptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while reading image raster");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading image raster");
     const auto first_pixel = data[0];
     const auto last_pixel = data[image.size-1];
     //! [Read raster]
@@ -227,7 +227,7 @@ public:
 
     logger.info() << "Reclosing file.";
     fits_close_file(fptr, &status);
-    Euclid::Cfitsio::may_throw_cfitsio_error(status, "while closing file");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while closing file");
 
     logger.info();
 

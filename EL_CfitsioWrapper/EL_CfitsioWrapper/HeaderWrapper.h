@@ -152,7 +152,7 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
   unit[0] = '\0';
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
-  may_throw_cfitsio_error(status, context);
+  mayThrowCfitsioError(status, context);
   /* Build Record */
   FitsIO::Record<T> record(keyword, value, std::string(unit), std::string(comment));
   /* Separate comment and unit */
@@ -190,7 +190,7 @@ void write_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
   fits_write_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
   std::string context = "while writing '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
-  may_throw_cfitsio_error(status, context);
+  mayThrowCfitsioError(status, context);
 }
 
 template<>
@@ -212,7 +212,7 @@ void update_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
   T value = record.value;
   fits_update_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
   std::string context = "while updating '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
-  may_throw_cfitsio_error(status, context);
+  mayThrowCfitsioError(status, context);
 }
 
 template<>

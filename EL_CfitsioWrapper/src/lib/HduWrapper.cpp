@@ -29,7 +29,7 @@ long count(fitsfile* fptr) {
   int count = 0;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   return count;
 }
 
@@ -67,7 +67,7 @@ bool goto_index(fitsfile* fptr, long index) {
   int type = 0;
   int status = 0;
   fits_movabs_hdu(fptr, static_cast<int>(index), &type, &status); // HDU indices are int
-  may_throw_cfitsio_error(status, "Cannot access HDU " + std::to_string(index));
+  mayThrowCfitsioError(status, "Cannot access HDU " + std::to_string(index));
   return true;
 }
 
@@ -80,7 +80,7 @@ bool goto_name(fitsfile* fptr, const std::string& name) {
     return false;
   int status = 0;
   fits_movnam_hdu(fptr, ANY_HDU, toCharPtr(name).get(), 0, &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   return true;
 }
 
@@ -90,7 +90,7 @@ bool goto_next(fitsfile* fptr, long step) {
   int status = 0;
   int type = 0;
   fits_movrel_hdu(fptr, static_cast<int>(step), &type, &status); // HDU indices are int
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   return true;
 }
 
@@ -120,7 +120,7 @@ void delete_hdu(fitsfile *fptr, long index) {
   goto_index(fptr, index);
   int status = 0;
   fits_delete_hdu(fptr, nullptr, &status);
-  may_throw_cfitsio_error(status, "Cannot delete HDU " + std::to_string(index));
+  mayThrowCfitsioError(status, "Cannot delete HDU " + std::to_string(index));
 }
 
 }

@@ -223,7 +223,7 @@ void _write_column_chunk(
       first_row, 1, size,
       vec.data(),
       &status);
-  may_throw_cfitsio_error(status, "Cannot write column chunk: "
+  mayThrowCfitsioError(status, "Cannot write column chunk: "
       + column.info.name + " (" + std::to_string(index) + "); "
       + "rows: [" + std::to_string(first_row) + "-" + std::to_string(first_row + row_count - 1) + "-");
 }
@@ -280,7 +280,7 @@ FitsIO::VecColumn<T> read_column(fitsfile* fptr, const std::string& name) {
   int status = 0;
   fits_get_coltype(fptr, static_cast<int>(index), &typecode, &repeat, &width, &status);
   fits_get_num_rows(fptr, &rows, &status);
-  may_throw_cfitsio_error(status, "Cannot read column dimensions");
+  mayThrowCfitsioError(status, "Cannot read column dimensions");
   FitsIO::VecColumn<T> column({ name, "", repeat }, std::vector<T>(repeat * rows)); //TODO unit
   /* Read data */
   fits_read_col(
@@ -295,7 +295,7 @@ FitsIO::VecColumn<T> read_column(fitsfile* fptr, const std::string& name) {
     nullptr, // anynul
     &status
   );
-  may_throw_cfitsio_error(status, "Cannot read column data");
+  mayThrowCfitsioError(status, "Cannot read column data");
   return column;
 }
 
@@ -317,7 +317,7 @@ void write_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
     nonconst_data.data(),
     &status
     );
-  may_throw_cfitsio_error(status, "Cannot write column data");
+  mayThrowCfitsioError(status, "Cannot write column data");
 }
 
 template<typename... Ts>

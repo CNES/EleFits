@@ -30,7 +30,7 @@ long column_index(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   return index;
 }
 
@@ -63,7 +63,7 @@ void _read_column_chunk<std::string>(
   fits_get_coltype(
       fptr, static_cast<int>(index), // column indices are int
       nullptr, &repeat, nullptr, &status); //TODO wrap?
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   std::vector<char*> data(row_count);
   for(long i = 0; i < row_count; ++i) //TODO iterator
     data[i] = (char*) malloc(repeat);
@@ -97,7 +97,7 @@ void _write_column_chunk<std::string>(
       first_row, 1, size,
       array.data(),
       &status);
-  may_throw_cfitsio_error(status, "Cannot write column chunk: "
+  mayThrowCfitsioError(status, "Cannot write column chunk: "
       + column.info.name + " (" + std::to_string(index) + "); "
       + "rows: [" + std::to_string(first_row) + "-" + std::to_string(first_row + row_count - 1) + "-");
 }
@@ -111,12 +111,12 @@ FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, const st
   long rows = 0;
   int status = 0;
   fits_get_num_rows(fptr, &rows, &status);
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   long repeat = 0;
   fits_get_coltype(
     fptr, static_cast<int>(index), // column indices are int
     nullptr, &repeat, nullptr, &status); //TODO wrap?
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   std::vector<char*> data(rows);
   for(long i = 0; i < rows; ++i) //TODO iterator
     data[i] = (char*) malloc(repeat);
@@ -133,7 +133,7 @@ FitsIO::VecColumn<std::string> read_column<std::string>(fitsfile* fptr, const st
     nullptr, // anynul
     &status
   );
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
   for(long i = 0; i < rows; ++i) {
     column.vector()[i] = std::string(data[i]);
     free(data[i]);
@@ -158,7 +158,7 @@ void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>
     array.data(),
     &status
     );
-  may_throw_cfitsio_error(status);
+  mayThrowCfitsioError(status);
 }
 
 }
