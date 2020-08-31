@@ -76,7 +76,7 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std:
 template<>
 void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
   int status = 0;
-  if(record.value.length() > 68)
+  if(record.value.length() > 68) // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
   fits_write_key_longstr(fptr,
       record.keyword.c_str(),
@@ -88,7 +88,33 @@ void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>
 }
 
 template<>
+void write_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
+  int status = 0;
+  if(strlen(record.value) > 68) // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
+    fits_write_key_longwarn(fptr, &status);
+  fits_write_key_longstr(fptr,
+      record.keyword.c_str(),
+      record.value,
+      &record.comment[0],
+      &status);
+  fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
+  may_throw_cfitsio_error(status);
+}
+
+template<>
 void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
+  int status = 0;
+  fits_update_key(fptr,
+      TypeCode<std::string>::for_record(),
+      record.keyword.c_str(),
+      &std::string(record.value)[0],
+      &record.comment[0],
+      &status);
+  may_throw_cfitsio_error(status);
+}
+
+template<>
+void update_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
   int status = 0;
   fits_update_key(fptr,
       TypeCode<std::string>::for_record(),

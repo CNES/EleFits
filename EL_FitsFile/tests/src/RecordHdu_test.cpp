@@ -65,6 +65,20 @@ BOOST_AUTO_TEST_CASE( rename_test ) {
   BOOST_CHECK_EQUAL(h.name(), "");
 }
 
+BOOST_AUTO_TEST_CASE( c_str_record_test ) {
+  Elements::TempPath tmp("%%%%%%.fits");
+  std::string filename = tmp.path().string();
+  SifFile f(filename, SifFile::Permission::TEMPORARY);
+  const auto& h = f.header();
+  h.write_record("C_STR", "1");
+  const auto output1 = h.parse_record<std::string>("C_STR");
+  BOOST_CHECK_EQUAL(output1.value, "1");
+  h.update_record("C_STR", "2");
+  const auto output2 = h.parse_record<std::string>("C_STR");
+  BOOST_CHECK_EQUAL(output2.value, "2");
+}
+
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()

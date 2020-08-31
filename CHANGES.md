@@ -20,7 +20,6 @@
 * `unsigned long` records larger than the greatest `long` cannot be read (CFitsIO bug), although they can be written
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
-* `const char*` is not supported; `string` should be used instead
 
 ## Considered changes for 2.0.0
 

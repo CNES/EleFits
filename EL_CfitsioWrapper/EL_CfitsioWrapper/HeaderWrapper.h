@@ -196,6 +196,9 @@ void write_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
 template<>
 void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
 
+template<>
+void write_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
+
 template<typename... Ts>
 void write_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records) {
   using mock_unpack = int[];
@@ -214,6 +217,9 @@ void update_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
 
 template<>
 void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
+
+template<>
+void update_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
 
 }
 }
