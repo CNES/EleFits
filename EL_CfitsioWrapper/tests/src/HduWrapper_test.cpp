@@ -40,7 +40,7 @@ BOOST_FIXTURE_TEST_CASE( minimal_file_test, FitsIO::Test::MinimalFile ) {
 BOOST_FIXTURE_TEST_CASE( write_read_image_test, FitsIO::Test::MinimalFile ) {
   FitsIO::Test::SmallRaster input;
   Hdu::createImageExtension(this->fptr, "IMGEXT", input);
-  const auto output = Image::read_raster<float, 2>(fptr);
+  const auto output = Image::readRaster<float, 2>(fptr);
   BOOST_CHECK(input.approx(output));
 }
 

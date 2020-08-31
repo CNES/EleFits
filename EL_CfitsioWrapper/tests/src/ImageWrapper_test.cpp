@@ -46,7 +46,7 @@ void check_random_3d() {
   FitsIO::Test::MinimalFile file;
   try {
     Hdu::createImageExtension(file.fptr, "IMGEXT", input);
-    const auto output = Image::read_raster<T, 3>(file.fptr);
+    const auto output = Image::readRaster<T, 3>(file.fptr);
     checkEqualVectors(output.vector(), input.vector());
   } catch(const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;

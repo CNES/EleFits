@@ -82,13 +82,13 @@ void ImageHdu::resize(const pos_type<n>& shape) const {
 template<typename T, long n>
 VecRaster<T, n> ImageHdu::read_raster() const {
   goto_this_hdu();
-  return Cfitsio::Image::read_raster<T, n>(m_fptr);
+  return Cfitsio::Image::readRaster<T, n>(m_fptr);
 }
 
 template<typename T, long n>
 void ImageHdu::write_raster(const Raster<T, n>& raster) const {
   goto_this_hdu();
-  Cfitsio::Image::write_raster(m_fptr, raster);
+  Cfitsio::Image::writeRaster(m_fptr, raster);
 }
 
 #ifndef DECLARE_READ_RASTER

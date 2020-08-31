@@ -81,14 +81,14 @@ private:
 
 template<typename T, long n>
 VecRaster<T, n> SifFile::read_raster() const {
-  return Cfitsio::Image::read_raster<T, n>(m_fptr);
+  return Cfitsio::Image::readRaster<T, n>(m_fptr);
 }
 
 template<typename T, long n>
 void SifFile::write_raster(const Raster<T, n>& raster) const {
   Cfitsio::Hdu::gotoPrimary(m_fptr);
   Cfitsio::Image::resize<T, n>(m_fptr, raster.shape);
-  Cfitsio::Image::write_raster(m_fptr, raster);
+  Cfitsio::Image::writeRaster(m_fptr, raster);
 }
 
 }

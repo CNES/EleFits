@@ -48,13 +48,13 @@ void resize(fitsfile* fptr, const FitsIO::pos_type<n>& shape);
  * @brief Read a Raster in current Image HDU.
  */
 template<typename T, long n=2>
-FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr);
+FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr);
 
 /**
  * @brief Write a Raster in current Image HDU.
  */
 template<typename T, long n=2>
-void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
+void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 
 
 /////////////////////
@@ -65,12 +65,12 @@ void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 template<typename T, long n>
 void resize(fitsfile* fptr, const FitsIO::pos_type<n>& shape) {
   int status = 0;
-  auto nonconst_shape = shape;
-  fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconst_shape.data(), &status);
+  auto nonconstShape = shape;
+  fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconstShape.data(), &status);
 }
 
 template<typename T, long n>
-FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr) {
+FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) {
   FitsIO::VecRaster<T, n> raster;
   int status = 0;
   fits_get_img_size(fptr, n, &raster.shape[0], &status);
@@ -84,13 +84,13 @@ FitsIO::VecRaster<T, n> read_raster(fitsfile* fptr) {
 }
 
 template<typename T, long n>
-void write_raster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
+void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   const auto begin = raster.data();
   const auto end = begin + raster.size();
-  std::vector<T> nonconst_data(begin, end); // const-correctness issue
-  fits_write_img(fptr, TypeCode<T>::forImage(), 1, raster.size(), nonconst_data.data(), &status);
+  std::vector<T> nonconstData(begin, end); // const-correctness issue
+  fits_write_img(fptr, TypeCode<T>::forImage(), 1, raster.size(), nonconstData.data(), &status);
   mayThrowCfitsioError(status, "Cannot write raster");
 }
 

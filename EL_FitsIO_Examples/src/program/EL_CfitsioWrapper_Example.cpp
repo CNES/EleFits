@@ -141,7 +141,7 @@ public:
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     Hdu::gotoName(fptr, "SMALLIMG");
     //! [Read raster]
-    const auto image = Image::read_raster<float>(fptr);
+    const auto image = Image::readRaster<float>(fptr);
     const auto first_pixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
