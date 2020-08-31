@@ -33,18 +33,18 @@
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
-using Euclid::Cfitsio::c_str_array;
+using Euclid::Cfitsio::CStrArray;
 
 
 struct SmallTable {
   static constexpr long cols = 4;
   static constexpr long rows = 3;
-  c_str_array col_name{"ID", "RADEC", "NAME", "DIST_MAG"};
-  c_str_array col_format{"1J", "1C", "68A", "2D"};
-  c_str_array col_unit {"", "deg", "", "kal"};
+  CStrArray col_name{"ID", "RADEC", "NAME", "DIST_MAG"};
+  CStrArray col_format{"1J", "1C", "68A", "2D"};
+  CStrArray col_unit {"", "deg", "", "kal"};
   int ids[rows] = { 45, 7, 31 };
   std::complex<float> radecs[rows] = { { 56.8500F, 24.1167F }, { 268.4667F, -34.7928F }, { 10.6833F, 41.2692F } };
-  c_str_array names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
+  CStrArray names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
   std::vector<double> dist_mags[rows] = { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900., 3.4 } };
 };
 

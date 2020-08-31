@@ -33,40 +33,40 @@ namespace Cfitsio {
  * @brief Convert a string to a unique_ptr<char>.
  * @details Used to work around non-const correctness of CFitsIO.
  */
-std::unique_ptr<char[]> to_char_ptr(const std::string& str);
+std::unique_ptr<char[]> toCharPtr(const std::string& str);
 
 /**
  * @brief A helper structure to safely convert vector<string> to char**.
  */
-struct c_str_array {
+struct CStrArray {
 
   /**
    * @brief Create from begin and end iterators.
    */
   template<typename T>
-  c_str_array(const T begin, const T end);
+  CStrArray(const T begin, const T end);
 
   /**
    * @brief Create from a vector.
    */
-  explicit c_str_array(const std::vector<std::string>& data);
+  explicit CStrArray(const std::vector<std::string>& data);
 
   /**
    * @brief Create from an initializer_list.
    */
-  explicit c_str_array(const std::initializer_list<std::string>& data);
+  explicit CStrArray(const std::initializer_list<std::string>& data);
 
   /**
    * @brief A vector of smart pointers to char[].
-   * @warning Modification makes c_str_array object invalid.
+   * @warning Modification makes CStrArray object invalid.
    */
-  std::vector<std::unique_ptr<char[]>> smart_ptr_vector;
+  std::vector<std::unique_ptr<char[]>> smartPtrVector;
 
   /**
    * @brief A vector of char*.
-   * @warning Modification makes c_str_array object invalid.
+   * @warning Modification makes CStrArray object invalid.
    */
-  std::vector<char*> c_str_vector;
+  std::vector<char*> cStrVector;
 
   /**
    * @brief Get the data as a non-const char**.
@@ -110,14 +110,14 @@ using make_index_sequence = typename _index_sequence<N>::type;
 
 
 template<typename T>
-c_str_array::c_str_array(const T begin, const T end) :
-        smart_ptr_vector(end - begin),
-        c_str_vector(end - begin) {
+CStrArray::CStrArray(const T begin, const T end) :
+        smartPtrVector(end - begin),
+        cStrVector(end - begin) {
   for(long i = 0; i < static_cast<long>(end - begin); ++i) {  //TODO iterators?
-    auto& smart_ptr_i = smart_ptr_vector[i];
+    auto& smart_ptr_i = smartPtrVector[i];
     smart_ptr_i = std::unique_ptr<char[]>(new char[(begin + i)->length() + 1]);
     std::strcpy(smart_ptr_i.get(), (begin + i)->c_str());
-    c_str_vector[i] = smart_ptr_i.get();
+    cStrVector[i] = smart_ptr_i.get();
   }
 }
 

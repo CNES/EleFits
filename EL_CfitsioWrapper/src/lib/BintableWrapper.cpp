@@ -29,7 +29,7 @@ namespace Bintable {
 long column_index(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
-  fits_get_colnum(fptr, CASESEN, to_char_ptr(name).get(), &index, &status);
+  fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
   may_throw_cfitsio_error(status);
   return index;
 }
@@ -90,7 +90,7 @@ void _write_column_chunk<std::string>(
   auto begin = column.data() + (first_row - 1);
   long size = row_count;
   auto end = begin + size;
-  c_str_array array(begin, end);
+  CStrArray array(begin, end);
   fits_write_col(fptr,
       TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
@@ -145,7 +145,7 @@ template<>
 void write_column<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
   const auto begin = column.data();
   const auto end = begin + column.nelements();
-  c_str_array array(begin, end);
+  CStrArray array(begin, end);
   long index = column_index(fptr, column.info.name);
   int status = 0;
   fits_write_col(

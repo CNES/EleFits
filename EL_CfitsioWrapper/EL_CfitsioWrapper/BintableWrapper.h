@@ -369,8 +369,8 @@ void write_columns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
 
 template<typename T>
 void insert_column(fitsfile* fptr, long index, const FitsIO::Column<T>& column) {
-  auto name = to_char_ptr(column.info.name);
-  auto tform = to_char_ptr(TypeCode<T>::tform(column.info.repeat));
+  auto name = toCharPtr(column.info.name);
+  auto tform = toCharPtr(TypeCode<T>::tform(column.info.repeat));
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
   write_column(fptr, column);
@@ -378,8 +378,8 @@ void insert_column(fitsfile* fptr, long index, const FitsIO::Column<T>& column) 
 
 template<typename... Ts>
 void insert_columns(fitsfile* fptr, long index, const FitsIO::Column<Ts>&... columns) {
-  auto names = c_str_array({ columns.info.name... });
-  auto tforms = c_str_array({ TypeCode<Ts>::tform(columns.info.repeat)... });
+  auto names = CStrArray({ columns.info.name... });
+  auto tforms = CStrArray({ TypeCode<Ts>::tform(columns.info.repeat)... });
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(Ts), names.data(), tforms.data(), &status);
   write_columns(fptr, columns...);

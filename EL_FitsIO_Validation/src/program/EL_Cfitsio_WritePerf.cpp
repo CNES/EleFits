@@ -32,7 +32,7 @@ using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
-using Euclid::Cfitsio::c_str_array;
+using Euclid::Cfitsio::CStrArray;
 
 std::vector<float> generate_raster(long naxis1, long naxis2) {
   long order = 10;

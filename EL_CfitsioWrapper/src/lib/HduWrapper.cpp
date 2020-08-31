@@ -79,7 +79,7 @@ bool goto_name(fitsfile* fptr, const std::string& name) {
   if(name == current_name(fptr))
     return false;
   int status = 0;
-  fits_movnam_hdu(fptr, ANY_HDU, to_char_ptr(name).get(), 0, &status);
+  fits_movnam_hdu(fptr, ANY_HDU, toCharPtr(name).get(), 0, &status);
   may_throw_cfitsio_error(status);
   return true;
 }

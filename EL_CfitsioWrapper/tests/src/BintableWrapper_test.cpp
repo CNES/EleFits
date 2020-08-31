@@ -46,12 +46,12 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
  */
 BOOST_AUTO_TEST_CASE( cfitsio_overflow_bug_test ) {
   FitsIO::Test::MinimalFile file;
-  c_str_array ttype({"COL"});
+  CStrArray ttype({"COL"});
   auto tform1 = TypeCode<unsigned>::tform(1);
   char* tforms[1];
   tforms[0] = (char*)malloc(3);
   strcpy(tforms[0], tform1.c_str());
-  c_str_array tunit({""});
+  CStrArray tunit({""});
   printf("TTYPE: %s\nTFORM: %s\nTUNIT: %s\n",
       ttype.data()[0], tforms[0], tunit.data()[0]);
   int status = 0;
