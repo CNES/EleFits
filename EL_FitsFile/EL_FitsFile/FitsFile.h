@@ -92,7 +92,7 @@ public:
   /**
    * @brief Close and delete the file.
    */
-  void closeAndDelete();
+  void close_and_delete();
 
 protected:
 

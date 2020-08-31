@@ -116,7 +116,7 @@ void createMetadataExtension(fitsfile* fptr, const std::string& name) {
   createImageExtension<unsigned char, 0>(fptr, name, FitsIO::pos_type<0>());
 }
 
-void delete_hdu(fitsfile *fptr, long index) {
+void deleteHdu(fitsfile *fptr, long index) {
   gotoIndex(fptr, index);
   int status = 0;
   fits_delete_hdu(fptr, nullptr, &status);

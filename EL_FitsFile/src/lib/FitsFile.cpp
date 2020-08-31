@@ -65,7 +65,7 @@ void FitsFile::close() {
     return;
   switch (m_permission) {
   case Permission::TEMPORARY:
-    closeAndDelete();
+    close_and_delete();
     break;
   default:
     Cfitsio::File::close(m_fptr);
@@ -73,7 +73,7 @@ void FitsFile::close() {
   m_open = false;
 }
 
-void FitsFile::closeAndDelete() {
+void FitsFile::close_and_delete() {
   if(not m_open)
     return; //TODO should we delete if not open?
   Cfitsio::File::closeAndDelete(m_fptr);

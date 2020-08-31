@@ -123,7 +123,7 @@ void BintableHdu::write_columns(const Column<Ts>&... columns) const {
 template<typename T>
 void BintableHdu::append_column(const Column<T>& column) const {
   goto_this_hdu();
-  Cfitsio::Bintable::append_column(m_fptr, column);
+  Cfitsio::Bintable::appendColumn(m_fptr, column);
 }
 
 template<typename... Ts>

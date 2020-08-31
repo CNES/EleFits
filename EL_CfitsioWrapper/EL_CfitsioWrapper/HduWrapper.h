@@ -141,7 +141,7 @@ void createBintableExtension(fitsfile *fptr, const std::string& name, const Fits
 /**
  * @brief Delete the HDU at given index.
  */
-void delete_hdu(fitsfile *fptr, long index);
+void deleteHdu(fitsfile *fptr, long index);
 
 
 /////////////////////

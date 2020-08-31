@@ -82,7 +82,7 @@ void insertColumns(fitsfile* fptr, long index, const FitsIO::Column<Ts>&... colu
  * @brief Append a bintable column.
  */
 template<typename T>
-void append_column(fitsfile* fptr, const FitsIO::Column<T>& column);
+void appendColumn(fitsfile* fptr, const FitsIO::Column<T>& column);
 
 /**
  * @brief Append several bintable columns.
@@ -386,7 +386,7 @@ void insertColumns(fitsfile* fptr, long index, const FitsIO::Column<Ts>&... colu
 }
 
 template<typename T>
-void append_column(fitsfile* fptr, const FitsIO::Column<T>& column) {
+void appendColumn(fitsfile* fptr, const FitsIO::Column<T>& column) {
   int ncols = 0;
   int status = 0;
   fits_get_num_cols(fptr, &ncols, &status);
