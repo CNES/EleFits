@@ -30,7 +30,7 @@ using namespace Euclid;
 using namespace Cfitsio;
 
 template<typename T>
-void check_equal_vectors(const std::vector<T>& test, const std::vector<T>& expected) {
+void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 
@@ -85,13 +85,13 @@ BOOST_AUTO_TEST_CASE( cfitsio_overflow_bug_test ) {
 }
 
 template<typename T>
-void check_scalar() {
+void checkScalar() {
   FitsIO::Test::RandomScalarColumn<T> input;
   FitsIO::Test::MinimalFile file;
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
-    const auto output = Bintable::read_column<T>(file.fptr, input.info.name);
-    check_equal_vectors(output.vector(), input.vector());
+    const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
+    checkEqualVectors(output.vector(), input.vector());
   } catch(const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
     for(const auto& v : input.vector())
@@ -105,7 +105,7 @@ void check_scalar() {
 }
 
 #define TEST_SCALAR_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( name##_test ) { check_scalar<type>(); }
+  BOOST_AUTO_TEST_CASE( name##_test ) { checkScalar<type>(); }
 
 #define TEST_SCALAR(type) \
   TEST_SCALAR_ALIAS(type, type)
@@ -133,7 +133,7 @@ TEST_SCALAR_ALIAS(std::uint32_t, uint32)
 TEST_SCALAR_ALIAS(std::uint64_t, uint64)
 
 template<typename T>
-void check_vector() {
+void checkVector() {
   constexpr long rows = 3;
   constexpr long repeat = 2;
   FitsIO::Test::RandomScalarColumn<T> input(rows * repeat);
@@ -141,9 +141,9 @@ void check_vector() {
   FitsIO::Test::MinimalFile file;
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
-    const auto output = Bintable::read_column<T>(file.fptr, input.info.name);
+    const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     BOOST_CHECK_EQUAL(output.info.repeat, repeat);
-    check_equal_vectors(output.vector(), input.vector());
+    checkEqualVectors(output.vector(), input.vector());
   } catch(const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
     for(const auto& v : input.vector())
@@ -157,7 +157,7 @@ void check_vector() {
 }
 
 #define TEST_VECTOR_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( vector_##name##_test ) { check_vector<type>(); }
+  BOOST_AUTO_TEST_CASE( vector_##name##_test ) { checkVector<type>(); }
 
 #define TEST_VECTOR(type) \
   TEST_VECTOR_ALIAS(type, type)
@@ -188,14 +188,14 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   SmallTable input;
   Hdu::createBintableExtension(this->fptr, "IMGEXT",
       input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
-  const auto output_nums = Bintable::read_column<SmallTable::num_t>(this->fptr, input.num_col.info.name);
-  check_equal_vectors(output_nums.vector(), input.num_col.vector());
-  const auto output_radecs = Bintable::read_column<SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
-  check_equal_vectors(output_radecs.vector(), input.radec_col.vector());
-  const auto output_names = Bintable::read_column<SmallTable::name_t>(this->fptr, input.name_col.info.name);
-  check_equal_vectors(output_names.vector(), input.name_col.vector());
-  const auto output_dists_mags = Bintable::read_column<SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
-  check_equal_vectors(output_dists_mags.vector(), input.dist_mag_col.vector());
+  const auto outputNums = Bintable::readColumn<SmallTable::num_t>(this->fptr, input.num_col.info.name);
+  checkEqualVectors(outputNums.vector(), input.num_col.vector());
+  const auto outputRadecs = Bintable::readColumn<SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
+  checkEqualVectors(outputRadecs.vector(), input.radec_col.vector());
+  const auto outputNames = Bintable::readColumn<SmallTable::name_t>(this->fptr, input.name_col.info.name);
+  checkEqualVectors(outputNames.vector(), input.name_col.vector());
+  const auto outputDistsMags = Bintable::readColumn<SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
+  checkEqualVectors(outputDistsMags.vector(), input.dist_mag_col.vector());
 }
 
 BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
@@ -207,23 +207,23 @@ BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
   FitsIO::Test::RandomScalarColumn<double> d(rows);
   d.info.name = "D";
   Hdu::createBintableExtension(this->fptr, "BINEXT", i, f, d);
-  const auto table = Bintable::read_columns<int, float, double>(this->fptr, { "I", "F", "D" });
-  check_equal_vectors(std::get<0>(table).vector(), i.vector());
-  check_equal_vectors(std::get<1>(table).vector(), f.vector());
-  check_equal_vectors(std::get<2>(table).vector(), d.vector());
+  const auto table = Bintable::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });
+  checkEqualVectors(std::get<0>(table).vector(), i.vector());
+  checkEqualVectors(std::get<1>(table).vector(), f.vector());
+  checkEqualVectors(std::get<2>(table).vector(), d.vector());
 }
 
 BOOST_FIXTURE_TEST_CASE( append_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;
   SmallTable table;
   Hdu::createBintableExtension(this->fptr, "TABLE", table.name_col);
-  const auto names = Bintable::read_column<SmallTable::name_t>(fptr, table.name_col.info.name);
-  check_equal_vectors(names.vector(), table.names);
-  Bintable::append_columns(fptr, table.dist_mag_col, table.radec_col);
-  const auto dists_mags = Bintable::read_column<SmallTable::dist_mag_t>(fptr, table.dist_mag_col.info.name);
-  check_equal_vectors(dists_mags.vector(), table.dists_mags);
-  const auto radecs = Bintable::read_column<SmallTable::radec_t>(fptr, table.radec_col.info.name);
-  check_equal_vectors(radecs.vector(), table.radecs);
+  const auto names = Bintable::readColumn<SmallTable::name_t>(fptr, table.name_col.info.name);
+  checkEqualVectors(names.vector(), table.names);
+  Bintable::appendColumns(fptr, table.dist_mag_col, table.radec_col);
+  const auto distsMags = Bintable::readColumn<SmallTable::dist_mag_t>(fptr, table.dist_mag_col.info.name);
+  checkEqualVectors(distsMags.vector(), table.dists_mags);
+  const auto radecs = Bintable::readColumn<SmallTable::radec_t>(fptr, table.radec_col.info.name);
+  checkEqualVectors(radecs.vector(), table.radecs);
 }
 
 //-----------------------------------------------------------------------------

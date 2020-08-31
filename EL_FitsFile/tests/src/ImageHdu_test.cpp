@@ -29,7 +29,7 @@
 using namespace Euclid::FitsIO;
 
 template<typename T>
-void check_equal_vectors(const std::vector<T>& test, const std::vector<T>& expected) {
+void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 
@@ -46,7 +46,7 @@ void check_2d() {
   MefFile file(filename, MefFile::Permission::TEMPORARY);
   file.assign_image_ext("IMGEXT", input);
   const auto output = file.access_first<ImageHdu>("IMGEXT").read_raster<T, 2>();
-  check_equal_vectors(output.vector(), input.vector());
+  checkEqualVectors(output.vector(), input.vector());
 }
 
 /**

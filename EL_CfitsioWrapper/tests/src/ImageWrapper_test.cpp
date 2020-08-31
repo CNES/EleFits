@@ -30,7 +30,7 @@ using namespace Euclid;
 using namespace Cfitsio;
 
 template<typename T>
-void check_equal_vectors(const std::vector<T>& test, const std::vector<T>& expected) {
+void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 
@@ -47,7 +47,7 @@ void check_random_3d() {
   try {
     Hdu::createImageExtension(file.fptr, "IMGEXT", input);
     const auto output = Image::read_raster<T, 3>(file.fptr);
-    check_equal_vectors(output.vector(), input.vector());
+    checkEqualVectors(output.vector(), input.vector());
   } catch(const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
     for(const auto& v : input.vector())

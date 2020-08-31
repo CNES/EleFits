@@ -99,25 +99,25 @@ public:
 template<typename T>
 VecColumn<T> BintableHdu::read_column(const std::string& name) const {
   goto_this_hdu();
-  return Cfitsio::Bintable::read_column<T>(m_fptr, name);
+  return Cfitsio::Bintable::readColumn<T>(m_fptr, name);
 }
 
 template<typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::read_columns(const std::vector<std::string>& names) const {
   goto_this_hdu();
-  return Cfitsio::Bintable::read_columns<Ts...>(m_fptr, names);
+  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, names);
 }
 
 template<typename T>
 void BintableHdu::write_column(const Column<T>& column) const {
   goto_this_hdu();
-  Cfitsio::Bintable::write_column(m_fptr, column);
+  Cfitsio::Bintable::writeColumn(m_fptr, column);
 }
 
 template<typename... Ts>
 void BintableHdu::write_columns(const Column<Ts>&... columns) const {
   goto_this_hdu();
-  Cfitsio::Bintable::write_columns(m_fptr, columns...);
+  Cfitsio::Bintable::writeColumns(m_fptr, columns...);
 }
 
 template<typename T>
@@ -129,7 +129,7 @@ void BintableHdu::append_column(const Column<T>& column) const {
 template<typename... Ts>
 void BintableHdu::append_columns(const Column<Ts>&... columns) const {
   goto_this_hdu();
-  Cfitsio::Bintable::append_columns(m_fptr, columns...);
+  Cfitsio::Bintable::appendColumns(m_fptr, columns...);
 }
 
 #ifndef DECLARE_READ_COLUMN

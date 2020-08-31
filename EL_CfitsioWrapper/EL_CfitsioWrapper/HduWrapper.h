@@ -190,7 +190,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
       colName.data(), colFormat.data(), colUnit.data(),
       name.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
-  Bintable::write_columns(fptr, table...);
+  Bintable::writeColumns(fptr, table...);
 }
 
 /// @cond INTERNAL
@@ -208,7 +208,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
       &cName, &cFormat, &cUnit,
       name.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
-  Bintable::write_column(fptr, column);
+  Bintable::writeColumn(fptr, column);
 }
 /// @endcond
 

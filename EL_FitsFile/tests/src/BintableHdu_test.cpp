@@ -29,7 +29,7 @@
 using namespace Euclid::FitsIO;
 
 template<typename T>
-void check_equal_vectors(const std::vector<T>& test, const std::vector<T>& expected) {
+void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 
@@ -40,17 +40,17 @@ BOOST_AUTO_TEST_SUITE (BintableHdu_test)
 //-----------------------------------------------------------------------------
 
 template<typename T>
-void check_scalar() {
+void checkScalar() {
   Test::RandomScalarColumn<T> input;
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::TEMPORARY);
   file.assign_bintable_ext("BINEXT", input);
   const auto output = file.access_first<BintableHdu>("BINEXT").read_column<T>(input.info.name);
-  check_equal_vectors(output.vector(), input.vector());
+  checkEqualVectors(output.vector(), input.vector());
 }
 
 template<typename T>
-void check_vector() {
+void checkVector() {
   constexpr long rows = 10;
   constexpr long repeat = 2;
   Test::RandomScalarColumn<T> input(rows * repeat);
@@ -67,8 +67,8 @@ void check_vector() {
  * Support for other types is tested in EL_CfitsioWrapper.
  */
 BOOST_AUTO_TEST_CASE( float_test ) {
-  check_scalar<float>();
-  check_vector<float>();
+  checkScalar<float>();
+  checkVector<float>();
 }
 
 BOOST_AUTO_TEST_CASE( empty_column_test ) {
