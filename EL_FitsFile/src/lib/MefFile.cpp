@@ -41,7 +41,7 @@ std::vector<std::string> MefFile::hdu_names() {
 }
 
 const RecordHdu& MefFile::init_record_ext(const std::string& name) {
-  Cfitsio::Hdu::create_metadata_extension(m_fptr, name);
+  Cfitsio::Hdu::createMetadataExtension(m_fptr, name);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new RecordHdu(m_fptr, size+1)));
   return *m_hdus[size].get();

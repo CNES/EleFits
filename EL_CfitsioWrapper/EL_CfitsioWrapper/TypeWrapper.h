@@ -168,7 +168,7 @@ DEF_TABLE_TFORM(std::uint64_t, 'W')
 #endif
 
 /*
- * From CFitsIO documentation "Primary Array or IMAGE Extension I/O Routines"
+ * From CFitsIO documentation "Primary Array or Image Extension I/O Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node40.html
  *
  * Allowed types:

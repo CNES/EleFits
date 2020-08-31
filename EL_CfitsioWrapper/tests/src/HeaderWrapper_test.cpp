@@ -69,8 +69,8 @@ void check_record(const std::string& label) {
   T input = FitsIO::Test::generate_random_value<T>();
   std::string unit = "u_" + label;
   std::string comment = "c_" + label;
-  Header::write_record(file.fptr, FitsIO::Record<T>(label, input, unit, comment));
-  const auto output = Header::parse_record<T>(file.fptr, label);
+  Header::writeRecord(file.fptr, FitsIO::Record<T>(label, input, unit, comment));
+  const auto output = Header::parseRecord<T>(file.fptr, label);
   check_close(output.value, input);
   BOOST_CHECK_EQUAL(output.unit, unit);
   BOOST_CHECK_EQUAL(output.comment, comment);
@@ -105,14 +105,14 @@ TEST_RECORD_ALIAS(unsigned long long, ulonglong)
 BOOST_AUTO_TEST_CASE( empty_value_test ) {
   FitsIO::Test::MinimalFile file;
   FitsIO::Record<std::string> empty("EMPTY", "", "", "");
-  Header::write_record(file.fptr, empty);
-  const auto output = Header::parse_record<std::string>(file.fptr, empty.keyword);
+  Header::writeRecord(file.fptr, empty);
+  const auto output = Header::parseRecord<std::string>(file.fptr, empty.keyword);
   BOOST_CHECK_EQUAL(output.value, "");
 }
 
 BOOST_AUTO_TEST_CASE( missing_keyword_test ) {
   FitsIO::Test::MinimalFile file;
-  BOOST_CHECK_THROW(Header::parse_record<std::string>(file.fptr, "MISSING"), std::runtime_error);
+  BOOST_CHECK_THROW(Header::parseRecord<std::string>(file.fptr, "MISSING"), std::runtime_error);
 }
 
 struct RecordList {
@@ -144,21 +144,21 @@ BOOST_AUTO_TEST_CASE( struct_io_test ) {
       { "DOUBLE", 3.},
       { "STRING", "four"}
   };
-  Header::write_records<bool, int, double, std::string>(file.fptr,
+  Header::writeRecords<bool, int, double, std::string>(file.fptr,
     { "BOOL", true },
     { "INT", 2 },
     { "DOUBLE", 3.},
     { "STRING", "four"});
   std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
-  const auto found = Header::list_keywords(file.fptr);
+  const auto found = Header::listKeywords(file.fptr);
   check_contains(found, keywords);
-  auto records = Header::parse_records_as<RecordList, bool, int, double, std::string>
+  auto records = Header::parseRecordsAs<RecordList, bool, int, double, std::string>
       (file.fptr, keywords);
   BOOST_CHECK_EQUAL(records.b.value, input.b.value);
   BOOST_CHECK_EQUAL(records.i.value, input.i.value);
   BOOST_CHECK_EQUAL(records.d.value, input.d.value);
   BOOST_CHECK_EQUAL(records.s.value, input.s.value);
-  auto values = Header::parse_records_as<ValueList, bool, int, double, std::string>
+  auto values = Header::parseRecordsAs<ValueList, bool, int, double, std::string>
       (file.fptr, keywords);
   BOOST_CHECK_EQUAL(values.b, input.b.value);
   BOOST_CHECK_EQUAL(values.i, input.i.value);

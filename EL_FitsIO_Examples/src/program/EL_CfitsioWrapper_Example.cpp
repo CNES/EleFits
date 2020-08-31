@@ -61,11 +61,11 @@ public:
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
-    Header::write_record<int>(fptr, { "VALUE", 1 } );
+    Header::writeRecord<int>(fptr, { "VALUE", 1 } );
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
-    Header::update_record<int>(fptr, { "VALUE", 2 } );
+    Header::updateRecord<int>(fptr, { "VALUE", 2 } );
     //! [Update record]
 
     logger.info();
@@ -73,7 +73,7 @@ public:
     logger.info() << "Creating bintable extension: SMALLTBL";
     FitsIO::Test::SmallTable table; // Predefined table for testing purpose
     //! [Create bintable ext]
-    Hdu::create_bintable_extension(fptr, "SMALLTBL",
+    Hdu::createBintableExtension(fptr, "SMALLTBL",
         table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
     //! [Create bintable ext]
 
@@ -82,13 +82,13 @@ public:
     logger.info() << "Creating image extension: SMALLIMG";
     FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
     //! [Create image ext]
-    Hdu::create_image_extension(fptr, "SMALLIMG", raster);
+    Hdu::createImageExtension(fptr, "SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     FitsIO::Record<std::string> str_record("STRING", "string");
     logger.info() << "Writing record: INTEGER = 8";
     FitsIO::Record<int> int_record("INTEGER", 8);
-    Header::write_records(fptr, str_record, int_record);
+    Header::writeRecords(fptr, str_record, int_record);
 
     logger.info();
 
@@ -104,7 +104,7 @@ public:
     fptr = File::open(filename, File::OpenPolicy::ReadOnly);
     //! [Open Fits]
     //! [Read record]
-    const auto record_value = Header::parse_record<int>(fptr, "VALUE");
+    const auto record_value = Header::parseRecord<int>(fptr, "VALUE");
     //! [Read record]
     logger.info() << "Reading record: VALUE = " << record_value;
 
@@ -112,10 +112,10 @@ public:
 
     logger.info() << "Reading bintable.";
     //! [Find HDU by name]
-    Hdu::goto_name(fptr, "SMALLTBL");
+    Hdu::gotoName(fptr, "SMALLTBL");
     //! [Find HDU by name]
     //! [Get HDU index]
-    const auto index = Hdu::current_index(fptr);
+    const auto index = Hdu::currentIndex(fptr);
     //! [Get HDU index]
     logger.info() << "HDU index: " << index;
     //! [Read column]
@@ -130,16 +130,16 @@ public:
 
     logger.info() << "Reading image.";
     //! [Find HDU by index]
-    Hdu::goto_index(fptr, 3);
+    Hdu::gotoIndex(fptr, 3);
     //! [Find HDU by index]
     //! [Get HDU name]
-    const auto extname = Hdu::current_name(fptr);
+    const auto extname = Hdu::currentName(fptr);
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
-    const auto records = Header::parse_records<std::string, int>(fptr, {"STRING", "INTEGER"});
+    const auto records = Header::parseRecords<std::string, int>(fptr, {"STRING", "INTEGER"});
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-    Hdu::goto_name(fptr, "SMALLIMG");
+    Hdu::gotoName(fptr, "SMALLIMG");
     //! [Read raster]
     const auto image = Image::read_raster<float>(fptr);
     const auto first_pixel = image[{0, 0}];

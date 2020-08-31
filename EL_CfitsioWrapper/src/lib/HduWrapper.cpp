@@ -33,36 +33,36 @@ long count(fitsfile* fptr) {
   return count;
 }
 
-long current_index(fitsfile* fptr) {
+long currentIndex(fitsfile* fptr) {
   int index = 0;
   fits_get_hdu_num(fptr, &index);
   return index;
 }
 
-std::string current_name(fitsfile* fptr) {
+std::string currentName(fitsfile* fptr) {
   try {
-    return Header::parse_record<std::string>(fptr, "EXTNAME");
+    return Header::parseRecord<std::string>(fptr, "EXTNAME");
   } catch(const std::exception& e) {
     // EXTNAME not provided
     return "";
   }
 }
 
-Type current_type(fitsfile* fptr) {
+Type currentType(fitsfile* fptr) {
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
   if(type == BINARY_TBL)
-    return Type::BINTABLE;
-  return Type::IMAGE;
+    return Type::Bintable;
+  return Type::Image;
 }
 
-bool current_is_primary(fitsfile* fptr) {
-  return current_index(fptr) == 1;
+bool currentIsPrimary(fitsfile* fptr) {
+  return currentIndex(fptr) == 1;
 }
 
-bool goto_index(fitsfile* fptr, long index) {
-  if(index == current_index(fptr))
+bool gotoIndex(fitsfile* fptr, long index) {
+  if(index == currentIndex(fptr))
     return false;
   int type = 0;
   int status = 0;
@@ -71,12 +71,12 @@ bool goto_index(fitsfile* fptr, long index) {
   return true;
 }
 
-bool goto_name(fitsfile* fptr, const std::string& name) {
+bool gotoName(fitsfile* fptr, const std::string& name) {
   if(name == "")
     return false;
   if(name == "Primary")
-    return goto_primary(fptr);
-  if(name == current_name(fptr))
+    return gotoPrimary(fptr);
+  if(name == currentName(fptr))
     return false;
   int status = 0;
   fits_movnam_hdu(fptr, ANY_HDU, toCharPtr(name).get(), 0, &status);
@@ -84,7 +84,7 @@ bool goto_name(fitsfile* fptr, const std::string& name) {
   return true;
 }
 
-bool goto_next(fitsfile* fptr, long step) {
+bool gotoNext(fitsfile* fptr, long step) {
   if(step == 0)
     return false;
   int status = 0;
@@ -94,30 +94,30 @@ bool goto_next(fitsfile* fptr, long step) {
   return true;
 }
 
-bool goto_primary(fitsfile* fptr) {
-  return goto_index(fptr, 1);
+bool gotoPrimary(fitsfile* fptr) {
+  return gotoIndex(fptr, 1);
 }
 
-bool init_primary(fitsfile* fptr) {
+bool initPrimary(fitsfile* fptr) {
   if(count(fptr) > 0)
     return false;
-  create_metadata_extension(fptr, "");
+  createMetadataExtension(fptr, "");
   return true;
 }
 
-bool update_name(fitsfile* fptr, const std::string& name) {
+bool updateName(fitsfile* fptr, const std::string& name) {
   if(name == "")
     return false;
-  Header::update_record(fptr, FitsIO::Record<std::string>("EXTNAME", name));
+  Header::updateRecord(fptr, FitsIO::Record<std::string>("EXTNAME", name));
   return true;
 }
 
-void create_metadata_extension(fitsfile* fptr, const std::string& name) {
-  create_image_extension<unsigned char, 0>(fptr, name, FitsIO::pos_type<0>());
+void createMetadataExtension(fitsfile* fptr, const std::string& name) {
+  createImageExtension<unsigned char, 0>(fptr, name, FitsIO::pos_type<0>());
 }
 
 void delete_hdu(fitsfile *fptr, long index) {
-  goto_index(fptr, index);
+  gotoIndex(fptr, index);
   int status = 0;
   fits_delete_hdu(fptr, nullptr, &status);
   mayThrowCfitsioError(status, "Cannot delete HDU " + std::to_string(index));

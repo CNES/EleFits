@@ -43,59 +43,59 @@ namespace Header {
 /**
  * @brief List all the keywords.
  */
-std::vector<std::string> list_keywords(fitsfile* fptr);
+std::vector<std::string> listKeywords(fitsfile* fptr);
 
 /**
  * @brief Parse a record.
  */
 template<typename T>
-FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword);
+FitsIO::Record<T> parseRecord(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @brief Parse records.
  */
 template<typename... Ts>
-std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords);
+std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
  * @brief Parse records and store them in a user-defined structure.
- * @tparam Return A class which can be brace-initialized with a pack of records or values.
+ * @tparam TReturn A class which can be brace-initialized with a pack of records or values.
  */
-template<class Return, typename... Ts>
-Return parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords);
+template<class TReturn, typename... Ts>
+TReturn parseRecordsAs(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
  * @brief Write a new record.
  */
 template<typename T>
-void write_record(fitsfile* fptr, const FitsIO::Record<T>& record);
+void writeRecord(fitsfile* fptr, const FitsIO::Record<T>& record);
 
 /**
  * @brief Write new records.
  */
 template<typename... Ts>
-void write_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
+void writeRecords(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
 
 /**
  * @brief Update an existing record or write a new one.
  */
 template<typename T>
-void update_record(fitsfile* fptr, const FitsIO::Record<T>& record);
+void updateRecord(fitsfile* fptr, const FitsIO::Record<T>& record);
 
 /**
  * @brief Update existing records or write new ones.
  */
 template<typename... Ts>
-void update_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
+void updateRecords(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
 
 /**
  * @brief Delete an existing record.
  */
-void delete_record(fitsfile* fptr, const std::string& keyword);
+void deleteRecord(fitsfile* fptr, const std::string& keyword);
 
 
 ///////////////
-// INTENRAL //
+// INTERNAL //
 /////////////
 
 
@@ -104,30 +104,30 @@ namespace internal {
 
 // Signature change (output argument) for further use with variadic templates.
 template<typename T>
-inline void _parse_record(fitsfile* fptr, const std::string& keyword, FitsIO::Record<T>& record) {
-  record = parse_record<T>(fptr, keyword);
+inline void parseRecordImpl(fitsfile* fptr, const std::string& keyword, FitsIO::Record<T>& record) {
+  record = parseRecord<T>(fptr, keyword);
 }
 
 // Parse the records of the i+1 first keywords of a given list (recursive approach).
 template<std::size_t i, typename ...Ts>
-struct _parse_records {
+struct ParseRecordsImpl {
   void operator() (fitsfile* fptr, const std::vector<std::string>& keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
-    _parse_record(fptr, keywords[i], std::get<i>(records));
-    _parse_records<i-1, Ts...>{}(fptr, keywords, records);
+    parseRecordImpl(fptr, keywords[i], std::get<i>(records));
+    ParseRecordsImpl<i-1, Ts...>{}(fptr, keywords, records);
   }
 };
 
 // Parse the value of the first keyword of a given list (terminal case of the recursion).
 template<typename ...Ts>
-struct _parse_records<0, Ts...> {
+struct ParseRecordsImpl<0, Ts...> {
   void operator() (fitsfile* fptr, const std::vector<std::string>& keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
-    _parse_record(fptr, keywords[0], std::get<0>(records));
+    parseRecordImpl(fptr, keywords[0], std::get<0>(records));
   }
 };
 
-template<class Return, typename... Ts, std::size_t... Is>
-Return _parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords, std14::index_sequence<Is...>) {
-  return { parse_record<Ts>(fptr, keywords[Is]) ... };
+template<class TReturn, typename... Ts, std::size_t... Is>
+TReturn parseRecordsAsImpl(fitsfile* fptr, const std::vector<std::string>& keywords, std14::index_sequence<Is...>) {
+  return { parseRecord<Ts>(fptr, keywords[Is]) ... };
 }
 
 }
@@ -140,7 +140,7 @@ Return _parse_records_as(fitsfile* fptr, const std::vector<std::string>& keyword
 
 
 template<typename T>
-FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
+FitsIO::Record<T> parseRecord(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   /* Read value and comment */
   T value;
@@ -151,7 +151,7 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
   char unit[FLEN_COMMENT];
   unit[0] = '\0';
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-  std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
   mayThrowCfitsioError(status, context);
   /* Build Record */
   FitsIO::Record<T> record(keyword, value, std::string(unit), std::string(comment));
@@ -168,58 +168,58 @@ FitsIO::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
 }
 
 template<>
-FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::string& keyword);
+FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::string& keyword);
 
 template<typename ...Ts>
-std::tuple<FitsIO::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords) {
+std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile* fptr, const std::vector<std::string>& keywords) {
   std::tuple<FitsIO::Record<Ts>...> records;
-  internal::_parse_records<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, records);
+  internal::ParseRecordsImpl<sizeof...(Ts)-1, Ts...>{}(fptr, keywords, records);
   return records;
 }
 
 template<class Return, typename... Ts>
-Return parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords) {
-  return internal::_parse_records_as<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
+Return parseRecordsAs(fitsfile* fptr, const std::vector<std::string>& keywords) {
+  return internal::parseRecordsAsImpl<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
 }
 
 template<typename T>
-void write_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
+void writeRecord(fitsfile* fptr, const FitsIO::Record<T>& record) {
   int status = 0;
   std::string comment = record.comment;
   T value = record.value;
   fits_write_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-  std::string context = "while writing '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  std::string context = "while writing '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
   mayThrowCfitsioError(status, context);
 }
 
 template<>
-void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
+void writeRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
 
 template<>
-void write_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
+void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
 
 template<typename... Ts>
-void write_records(fitsfile* fptr, const FitsIO::Record<Ts>&... records) {
-  using mock_unpack = int[];
-  (void)mock_unpack {(write_record(fptr, records), 0)...};
+void writeRecords(fitsfile* fptr, const FitsIO::Record<Ts>&... records) {
+  using mockUnpack = int[];
+  (void)mockUnpack {(writeRecord(fptr, records), 0)...};
 }
 
 template<typename T>
-void update_record(fitsfile* fptr, const FitsIO::Record<T>& record) {
+void updateRecord(fitsfile* fptr, const FitsIO::Record<T>& record) {
   int status = 0;
   std::string comment = record.comment;
   T value = record.value;
   fits_update_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
-  std::string context = "while updating '" + record.keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  std::string context = "while updating '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
   mayThrowCfitsioError(status, context);
 }
 
 template<>
-void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
+void updateRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
 
 template<>
-void update_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
+void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
 
 }
 }

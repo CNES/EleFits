@@ -23,7 +23,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Header {
 
-std::vector<std::string> list_keywords(fitsfile* fptr) {
+std::vector<std::string> listKeywords(fitsfile* fptr) {
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
@@ -38,7 +38,7 @@ std::vector<std::string> list_keywords(fitsfile* fptr) {
 }
 
 template<>
-FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::string& keyword) {
+FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
@@ -59,7 +59,7 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std:
   }
   FitsIO::Record<std::string> record(keyword, str_value, std::string(unit), std::string(comment));
   free(value);
-  std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::current_index(fptr));
+  std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
   mayThrowCfitsioError(status, context);
   mayThrowCfitsioError(status, context);
   if(record.comment == record.unit) {
@@ -74,7 +74,7 @@ FitsIO::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std:
 }
 
 template<>
-void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
+void writeRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
   int status = 0;
   if(record.value.length() > 68) // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
@@ -88,7 +88,7 @@ void write_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>
 }
 
 template<>
-void write_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
+void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
   int status = 0;
   if(strlen(record.value) > 68) // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
@@ -102,7 +102,7 @@ void write_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>
 }
 
 template<>
-void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
+void updateRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
   int status = 0;
   fits_update_key(fptr,
       TypeCode<std::string>::forRecord(),
@@ -114,7 +114,7 @@ void update_record<std::string>(fitsfile* fptr, const FitsIO::Record<std::string
 }
 
 template<>
-void update_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
+void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
   int status = 0;
   fits_update_key(fptr,
       TypeCode<std::string>::forRecord(),
@@ -125,7 +125,7 @@ void update_record<const char*>(fitsfile* fptr, const FitsIO::Record<const char*
   mayThrowCfitsioError(status);
 }
 
-void delete_record(fitsfile* fptr, const std::string& keyword) {
+void deleteRecord(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   fits_delete_key(fptr, keyword.c_str(), &status);
   mayThrowCfitsioError(status);

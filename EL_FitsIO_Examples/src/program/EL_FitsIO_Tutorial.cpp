@@ -120,7 +120,7 @@ public:
     const auto shape = raster.shape;
     //! [Initialize an image extension]
     logger.info() << "Assigning new Image HDU";
-    const auto& ext = f.init_image_ext<float, 3>("IMAGE", shape);
+    const auto& ext = f.init_image_ext<float, 3>("Image", shape);
     ext.write_raster(raster);
     //! [Initialize an image extension]
 

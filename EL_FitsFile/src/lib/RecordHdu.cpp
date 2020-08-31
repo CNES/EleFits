@@ -34,25 +34,25 @@ long RecordHdu::index() const {
 
 std::string RecordHdu::name() const {
   goto_this_hdu();
-  return Cfitsio::Hdu::current_name(m_fptr);
+  return Cfitsio::Hdu::currentName(m_fptr);
 }
 
 void RecordHdu::rename(const std::string& name) const {
   goto_this_hdu();
-  Cfitsio::Hdu::update_name(m_fptr, name);
+  Cfitsio::Hdu::updateName(m_fptr, name);
 }
 
 std::vector<std::string> RecordHdu::keywords() const {
-  return Cfitsio::Header::list_keywords(m_fptr);
+  return Cfitsio::Header::listKeywords(m_fptr);
 }
 
 void RecordHdu::delete_record(const std::string& keyword) const {
   goto_this_hdu();
-  Cfitsio::Header::delete_record(m_fptr, keyword);
+  Cfitsio::Header::deleteRecord(m_fptr, keyword);
 }
 
 void RecordHdu::goto_this_hdu() const {
-  Cfitsio::Hdu::goto_index(m_fptr, m_index);
+  Cfitsio::Hdu::gotoIndex(m_fptr, m_index);
 }
 
 #ifndef COMPILE_PARSE_RECORD

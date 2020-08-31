@@ -33,7 +33,7 @@ fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
   int status = 0;
   fits_create_file(&fptr, cfitsioName.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot create file " + filename);
-  Hdu::init_primary(fptr);
+  Hdu::initPrimary(fptr);
   return fptr;
 }
 

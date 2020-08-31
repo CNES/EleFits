@@ -89,7 +89,7 @@ void check_scalar() {
   FitsIO::Test::RandomScalarColumn<T> input;
   FitsIO::Test::MinimalFile file;
   try {
-    Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
+    Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::read_column<T>(file.fptr, input.info.name);
     check_equal_vectors(output.vector(), input.vector());
   } catch(const CfitsioError& e) {
@@ -140,7 +140,7 @@ void check_vector() {
   input.info.repeat = repeat;
   FitsIO::Test::MinimalFile file;
   try {
-    Hdu::create_bintable_extension(file.fptr, "BINEXT", input);
+    Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::read_column<T>(file.fptr, input.info.name);
     BOOST_CHECK_EQUAL(output.info.repeat, repeat);
     check_equal_vectors(output.vector(), input.vector());
@@ -186,7 +186,7 @@ TEST_VECTOR_ALIAS(std::uint64_t, uint64)
 BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;
   SmallTable input;
-  Hdu::create_bintable_extension(this->fptr, "IMGEXT",
+  Hdu::createBintableExtension(this->fptr, "IMGEXT",
       input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
   const auto output_nums = Bintable::read_column<SmallTable::num_t>(this->fptr, input.num_col.info.name);
   check_equal_vectors(output_nums.vector(), input.num_col.vector());
@@ -206,7 +206,7 @@ BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
   f.info.name = "F";
   FitsIO::Test::RandomScalarColumn<double> d(rows);
   d.info.name = "D";
-  Hdu::create_bintable_extension(this->fptr, "BINEXT", i, f, d);
+  Hdu::createBintableExtension(this->fptr, "BINEXT", i, f, d);
   const auto table = Bintable::read_columns<int, float, double>(this->fptr, { "I", "F", "D" });
   check_equal_vectors(std::get<0>(table).vector(), i.vector());
   check_equal_vectors(std::get<1>(table).vector(), f.vector());
@@ -216,7 +216,7 @@ BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
 BOOST_FIXTURE_TEST_CASE( append_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;
   SmallTable table;
-  Hdu::create_bintable_extension(this->fptr, "TABLE", table.name_col);
+  Hdu::createBintableExtension(this->fptr, "TABLE", table.name_col);
   const auto names = Bintable::read_column<SmallTable::name_t>(fptr, table.name_col.info.name);
   check_equal_vectors(names.vector(), table.names);
   Bintable::append_columns(fptr, table.dist_mag_col, table.radec_col);

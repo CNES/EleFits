@@ -169,25 +169,25 @@ protected:
 template<typename T>
 Record<T> RecordHdu::parse_record(const std::string& keyword) const {
   goto_this_hdu();
-  return Cfitsio::Header::parse_record<T>(m_fptr, keyword);
+  return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
 }
 
 template<typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parse_records(const std::vector<std::string>& keywords) const {
   goto_this_hdu();
-  return Cfitsio::Header::parse_records<Ts...>(m_fptr, keywords);
+  return Cfitsio::Header::parseRecords<Ts...>(m_fptr, keywords);
 }
 
 template<class Return, typename... Ts>
 Return RecordHdu::parse_records_as(const std::vector<std::string>& keywords) const {
   goto_this_hdu();
-  return Cfitsio::Header::parse_records_as<Return, Ts...>(m_fptr, keywords);
+  return Cfitsio::Header::parseRecordsAs<Return, Ts...>(m_fptr, keywords);
 }
 
 template<typename T>
 void RecordHdu::write_record(const Record<T>& record) const {
   goto_this_hdu();
-  Cfitsio::Header::write_record(m_fptr, record);
+  Cfitsio::Header::writeRecord(m_fptr, record);
 }
 
 template<typename T>
@@ -198,13 +198,13 @@ void RecordHdu::write_record(const std::string& keyword, T value, const std::str
 template<typename... Ts>
 void RecordHdu::write_records(const Record<Ts>&... records) const {
   goto_this_hdu();
-  Cfitsio::Header::write_records(m_fptr, records...);
+  Cfitsio::Header::writeRecords(m_fptr, records...);
 }
 
 template<typename T>
 void RecordHdu::update_record(const Record<T>& record) const {
   goto_this_hdu();
-  Cfitsio::Header::update_record(m_fptr, record);
+  Cfitsio::Header::updateRecord(m_fptr, record);
 }
 
 template<typename T>
@@ -215,7 +215,7 @@ void RecordHdu::update_record(const std::string& keyword, T value, const std::st
 template<typename... Ts>
 void RecordHdu::update_records(const Record<Ts>&... records) const {
   goto_this_hdu();
-  Cfitsio::Header::update_records(m_fptr, records...);
+  Cfitsio::Header::updateRecords(m_fptr, records...);
 }
 
 #ifndef DECLARE_PARSE_RECORD
