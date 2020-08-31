@@ -25,13 +25,13 @@ namespace Euclid {
 namespace Cfitsio {
 namespace File {
 
-fitsfile* create_and_open(const std::string& filename, CreatePolicy policy) {
-  std::string cfitsio_name = filename;
-  if(policy == CreatePolicy::OVER_WRITE)
-    cfitsio_name.insert (0, 1, '!'); // CFitsIO convention
+fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
+  std::string cfitsioName = filename;
+  if(policy == CreatePolicy::OverWrite)
+    cfitsioName.insert (0, 1, '!'); // CFitsIO convention
   fitsfile *fptr;
   int status = 0;
-  fits_create_file(&fptr, cfitsio_name.c_str(), &status);
+  fits_create_file(&fptr, cfitsioName.c_str(), &status);
   may_throw_cfitsio_error(status, "Cannot create file " + filename);
   Hdu::init_primary(fptr);
   return fptr;
@@ -41,7 +41,7 @@ fitsfile* open(const std::string& filename, OpenPolicy policy) {
   fitsfile *fptr;
   int status = 0;
   int permission = READONLY;
-  if(policy == OpenPolicy::READ_WRITE)
+  if(policy == OpenPolicy::ReadWrite)
     permission = READWRITE;
   fits_open_file(&fptr, filename.c_str(), permission, &status);
   may_throw_cfitsio_error(status, "Cannot open file " + filename);
@@ -57,7 +57,7 @@ void close(fitsfile*& fptr) {
   fptr = nullptr;
 }
 
-void close_and_delete(fitsfile*& fptr) {
+void closeAndDelete(fitsfile*& fptr) {
   if(not fptr)
     return;
   may_throw_readonly_error(fptr);
@@ -67,7 +67,7 @@ void close_and_delete(fitsfile*& fptr) {
   fptr = nullptr;
 }
 
-bool is_writable(fitsfile* fptr) {
+bool isWritable(fitsfile* fptr) {
   int status = 0;
   int filemode;
   fits_file_mode(fptr, &filemode, &status);

@@ -48,11 +48,11 @@ BOOST_AUTO_TEST_CASE( empty_file_test ) {
   overwritten_file.close();
   
   FitsFile read_only_file(filename, FitsFile::Permission::READ);
-  BOOST_CHECK_THROW(read_only_file.close_and_delete(), std::exception);
+  BOOST_CHECK_THROW(read_only_file.closeAndDelete(), std::exception);
   read_only_file.close();
   
   FitsFile editable_file(filename, FitsFile::Permission::EDIT);
-  editable_file.close_and_delete();
+  editable_file.closeAndDelete();
   BOOST_CHECK(not boost::filesystem::exists(filename));
   
   {

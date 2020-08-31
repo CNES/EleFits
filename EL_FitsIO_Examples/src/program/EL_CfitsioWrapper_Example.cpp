@@ -57,7 +57,7 @@ public:
 
     logger.info() << "Creating Fits file: " << filename;
     //! [Create Fits]
-    auto fptr = File::create_and_open(filename, File::CreatePolicy::OVER_WRITE);
+    auto fptr = File::createAndOpen(filename, File::CreatePolicy::OverWrite);
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
@@ -101,7 +101,7 @@ public:
 
     logger.info() << "Reopening file.";
     //! [Open Fits]
-    fptr = File::open(filename, File::OpenPolicy::READ_ONLY);
+    fptr = File::open(filename, File::OpenPolicy::ReadOnly);
     //! [Open Fits]
     //! [Read record]
     const auto record_value = Header::parse_record<int>(fptr, "VALUE");

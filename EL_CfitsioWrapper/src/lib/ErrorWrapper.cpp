@@ -49,7 +49,7 @@ void may_throw_cfitsio_error(int status, const std::string& context) {
 }
 
 void may_throw_readonly_error(fitsfile* fptr) {
-  if(not File::is_writable(fptr))
+  if(not File::isWritable(fptr))
     may_throw_cfitsio_error(READONLY_FILE);
 }
 

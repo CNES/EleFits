@@ -28,7 +28,7 @@ MinimalFile::MinimalFile() :
     tmp(),
     filename(tmp.path().string()),
     fptr(nullptr) {
-  fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
+  fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::OverWrite);
 }
 
 MinimalFile::~MinimalFile() {

@@ -35,22 +35,22 @@ namespace File {
  * @brief File creation policy.
  */
 enum class CreatePolicy {
-    CREATE_ONLY, ///< Create only (abort if file exists)
-    OVER_WRITE ///< Allow overwriting if file already exists.
+    CreateOnly, ///< Create only (abort if file exists).
+    OverWrite ///< Allow overwriting if file already exists.
 };
 
 /**
  * @brief File opening policy.
  */
 enum class OpenPolicy {
-    READ_ONLY, ///< Read persmission only
-    READ_WRITE ///< Read and write permissions
+    ReadOnly, ///< Read persmission only.
+    ReadWrite ///< Read and write permissions.
 };
 
 /**
  * @brief Create or overwrite a Fits file and open it.
  */
-fitsfile* create_and_open(const std::string& filename, CreatePolicy policy);
+fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy);
 
 /**
  * @brief Open an existing Fits file with optional write permission.
@@ -66,12 +66,12 @@ void close(fitsfile*& fptr);
  * @brief Close and delete a Fits file.
  * @warning Throw an exception if writing is not permitted.
  */
-void close_and_delete(fitsfile*& fptr);
+void closeAndDelete(fitsfile*& fptr);
 
 /**
  * @brief Check whether a Fits file is open with write permission.
  */
-bool is_writable(fitsfile* fptr);
+bool isWritable(fitsfile* fptr);
 
 }
 }

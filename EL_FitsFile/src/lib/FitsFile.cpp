@@ -43,19 +43,19 @@ std::string FitsFile::filename() const {
 void FitsFile::open(const std::string& filename, Permission permission) {
   switch (permission) {
   case Permission::READ:
-    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_ONLY);
+    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadOnly);
     break;
   case Permission::EDIT:
-    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::READ_WRITE);
+    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadWrite);
     break;
   case Permission::CREATE:
-    m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
+    m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
     break;
   case Permission::OVERWRITE:
-    m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::OVER_WRITE);
+    m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::OverWrite);
     break;
   case Permission::TEMPORARY:
-    m_fptr = Cfitsio::File::create_and_open(filename, Cfitsio::File::CreatePolicy::CREATE_ONLY);
+    m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
   }
   m_open = true; // If this line is reached, no error was raised
 }
@@ -65,7 +65,7 @@ void FitsFile::close() {
     return;
   switch (m_permission) {
   case Permission::TEMPORARY:
-    close_and_delete();
+    closeAndDelete();
     break;
   default:
     Cfitsio::File::close(m_fptr);
@@ -73,10 +73,10 @@ void FitsFile::close() {
   m_open = false;
 }
 
-void FitsFile::close_and_delete() {
+void FitsFile::closeAndDelete() {
   if(not m_open)
     return; //TODO should we delete if not open?
-  Cfitsio::File::close_and_delete(m_fptr);
+  Cfitsio::File::closeAndDelete(m_fptr);
   m_open = false;
 }
 
