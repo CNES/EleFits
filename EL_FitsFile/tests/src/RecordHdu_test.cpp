@@ -39,17 +39,17 @@ BOOST_AUTO_TEST_CASE( continued_str_test ) {
   std::string filename = tmp.path().string();
   SifFile f(filename, SifFile::Permission::TEMPORARY);
   const auto& h = f.header();
-  const std::string short_str = "S";
-  const std::string long_str =
+  const std::string shortStr = "S";
+  const std::string longStr =
       "This is probably one of the longest strings "
       "that I have ever written in a serious code.";
-  BOOST_CHECK_GT(long_str.length(), FLEN_VALUE);
-  h.write_record<std::string>("SHORT", short_str);
-  BOOST_CHECK_THROW(h.parse_record<std::string>("LONGSTRN"), std::exception);
-  h.write_record<std::string>("LONG", long_str);
-  const auto output = h.parse_record<std::string>("LONG");
-  h.parse_record<std::string>("LONGSTRN");
-  BOOST_CHECK_EQUAL(output.value, long_str);
+  BOOST_CHECK_GT(longStr.length(), FLEN_VALUE);
+  h.writeRecord<std::string>("SHORT", shortStr);
+  BOOST_CHECK_THROW(h.parseRecord<std::string>("LONGSTRN"), std::exception);
+  h.writeRecord<std::string>("LONG", longStr);
+  const auto output = h.parseRecord<std::string>("LONG");
+  h.parseRecord<std::string>("LONGSTRN");
+  BOOST_CHECK_EQUAL(output.value, longStr);
 }
 
 BOOST_AUTO_TEST_CASE( rename_test ) {
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( rename_test ) {
   BOOST_CHECK_EQUAL(h.name(), "A");
   h.rename("B");
   BOOST_CHECK_EQUAL(h.name(), "B");
-  h.delete_record("EXTNAME");
+  h.deleteRecord("EXTNAME");
   BOOST_CHECK_EQUAL(h.name(), "");
 }
 
@@ -70,11 +70,11 @@ BOOST_AUTO_TEST_CASE( c_str_record_test ) {
   std::string filename = tmp.path().string();
   SifFile f(filename, SifFile::Permission::TEMPORARY);
   const auto& h = f.header();
-  h.write_record("C_STR", "1");
-  const auto output1 = h.parse_record<std::string>("C_STR");
+  h.writeRecord("C_STR", "1");
+  const auto output1 = h.parseRecord<std::string>("C_STR");
   BOOST_CHECK_EQUAL(output1.value, "1");
-  h.update_record("C_STR", "2");
-  const auto output2 = h.parse_record<std::string>("C_STR");
+  h.updateRecord("C_STR", "2");
+  const auto output2 = h.parseRecord<std::string>("C_STR");
   BOOST_CHECK_EQUAL(output2.value, "2");
 }
 

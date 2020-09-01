@@ -72,13 +72,13 @@ public:
    * @brief Parse a record.
    */
   template<typename T>
-  Record<T> parse_record(const std::string& keyword) const;
+  Record<T> parseRecord(const std::string& keyword) const;
 
   /**
    * @brief Parse several records.
    */
   template<typename... Ts>
-  std::tuple<Record<Ts>...> parse_records(const std::vector<std::string>& keywords) const;
+  std::tuple<Record<Ts>...> parseRecords(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse several records as a user-defined structure.
@@ -95,55 +95,55 @@ public:
    * insted of accessing them by their indices -- with \c std::get<i>(tuple).
    */
   template<class Return, typename... Ts>
-  Return parse_records_as(const std::vector<std::string>& keywords) const;
+  Return parseRecordsAs(const std::vector<std::string>& keywords) const;
   
   /**
    * @brief Write a record.
    */
   template<typename T>
-  void write_record(const Record<T>& record) const;
+  void writeRecord(const Record<T>& record) const;
 
   /**
    * @brief Write a record.
    */
   template<typename T>
-  void write_record(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
+  void writeRecord(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
 
   /**
    * @brief Write several records.
    */
   template<typename... Ts>
-  void write_records(const Record<Ts>&... records) const;
+  void writeRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
    */
   template<typename T>
-  void update_record(const Record<T>& record) const;
+  void updateRecord(const Record<T>& record) const;
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
    */
   template<typename T>
-  void update_record(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
+  void updateRecord(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
    */
   template<typename... Ts>
-  void update_records(const Record<Ts>&... records) const;
+  void updateRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Delete a record.
    */
-  void delete_record(const std::string& keyword) const;
+  void deleteRecord(const std::string& keyword) const;
 
 protected:
 
   /**
    * @brief Set the current HDU to this one.
    */
-  void goto_this_hdu() const;
+  void gotoThisHdu() const;
 
   /**
    * @brief The parent file handler.
@@ -167,60 +167,60 @@ protected:
 
 
 template<typename T>
-Record<T> RecordHdu::parse_record(const std::string& keyword) const {
-  goto_this_hdu();
+Record<T> RecordHdu::parseRecord(const std::string& keyword) const {
+  gotoThisHdu();
   return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
 }
 
 template<typename... Ts>
-std::tuple<Record<Ts>...> RecordHdu::parse_records(const std::vector<std::string>& keywords) const {
-  goto_this_hdu();
+std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string>& keywords) const {
+  gotoThisHdu();
   return Cfitsio::Header::parseRecords<Ts...>(m_fptr, keywords);
 }
 
 template<class Return, typename... Ts>
-Return RecordHdu::parse_records_as(const std::vector<std::string>& keywords) const {
-  goto_this_hdu();
+Return RecordHdu::parseRecordsAs(const std::vector<std::string>& keywords) const {
+  gotoThisHdu();
   return Cfitsio::Header::parseRecordsAs<Return, Ts...>(m_fptr, keywords);
 }
 
 template<typename T>
-void RecordHdu::write_record(const Record<T>& record) const {
-  goto_this_hdu();
+void RecordHdu::writeRecord(const Record<T>& record) const {
+  gotoThisHdu();
   Cfitsio::Header::writeRecord(m_fptr, record);
 }
 
 template<typename T>
-void RecordHdu::write_record(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
-  write_record(Record<T>(keyword, value, unit, comment));
+void RecordHdu::writeRecord(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
+  writeRecord(Record<T>(keyword, value, unit, comment));
 }
 
 template<typename... Ts>
-void RecordHdu::write_records(const Record<Ts>&... records) const {
-  goto_this_hdu();
+void RecordHdu::writeRecords(const Record<Ts>&... records) const {
+  gotoThisHdu();
   Cfitsio::Header::writeRecords(m_fptr, records...);
 }
 
 template<typename T>
-void RecordHdu::update_record(const Record<T>& record) const {
-  goto_this_hdu();
+void RecordHdu::updateRecord(const Record<T>& record) const {
+  gotoThisHdu();
   Cfitsio::Header::updateRecord(m_fptr, record);
 }
 
 template<typename T>
-void RecordHdu::update_record(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
-  update_record(Record<T>(keyword, value, unit, comment));
+void RecordHdu::updateRecord(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
+  updateRecord(Record<T>(keyword, value, unit, comment));
 }
 
 template<typename... Ts>
-void RecordHdu::update_records(const Record<Ts>&... records) const {
-  goto_this_hdu();
+void RecordHdu::updateRecords(const Record<Ts>&... records) const {
+  gotoThisHdu();
   Cfitsio::Header::updateRecords(m_fptr, records...);
 }
 
 #ifndef DECLARE_PARSE_RECORD
 #define DECLARE_PARSE_RECORD(T) \
-  extern template Record<T> RecordHdu::parse_record(const std::string&) const;
+  extern template Record<T> RecordHdu::parseRecord(const std::string&) const;
 DECLARE_PARSE_RECORD(char)
 DECLARE_PARSE_RECORD(short)
 DECLARE_PARSE_RECORD(int)
@@ -236,7 +236,7 @@ DECLARE_PARSE_RECORD(unsigned long)
 
 #ifndef DECLARE_WRITE_RECORD
 #define DECLARE_WRITE_RECORD(T) \
-  extern template void RecordHdu::write_record(const Record<T>&) const;
+  extern template void RecordHdu::writeRecord(const Record<T>&) const;
 DECLARE_WRITE_RECORD(char)
 DECLARE_WRITE_RECORD(short)
 DECLARE_WRITE_RECORD(int)

@@ -85,7 +85,7 @@ public:
     for(int i=0; i<count; ++i) {
       const auto& ext = f.access_first<BintableHdu>("T_" + std::to_string(i));
       for(int j=0; j<cols; ++j)
-        ext.read_column<value_type>(std::to_string(j));
+        ext.readColumn<value_type>(std::to_string(j));
     }
     auto end = std::chrono::steady_clock::now();
     auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
@@ -99,7 +99,7 @@ public:
       std::vector<std::string> names(cols);
       for(int j=0; j<cols; ++j)
         names[j] = std::to_string(j);
-      ext.read_columns<
+      ext.readColumns<
         value_type, value_type, value_type, value_type, value_type,
         value_type, value_type, value_type, value_type, value_type>(names);
     }

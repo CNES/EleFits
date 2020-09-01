@@ -40,13 +40,13 @@ BOOST_AUTO_TEST_CASE( simple_image_test ) {
   BOOST_CHECK(boost::filesystem::is_regular_file(filename));
   const std::string keyword = "KEYWORD";
   const int value = 8;
-  f.header().write_record(keyword, value);
-  f.write_raster(input);
+  f.header().writeRecord(keyword, value);
+  f.writeRaster(input);
   f.close();
   f.open(filename, SifFile::Permission::READ);
-  const auto record = f.header().parse_record<int>(keyword);
+  const auto record = f.header().parseRecord<int>(keyword);
   BOOST_CHECK_EQUAL(record, value);
-  const auto output = f.read_raster<float>();
+  const auto output = f.readRaster<float>();
   BOOST_CHECK_EQUAL_COLLECTIONS(input.vector().begin(), input.vector().end(), output.vector().begin(), output.vector().end());
   BOOST_CHECK(input.approx(output));
 }

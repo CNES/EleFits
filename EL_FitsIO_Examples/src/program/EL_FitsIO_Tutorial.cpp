@@ -101,14 +101,14 @@ public:
 
     //! [Write and update a record]
     logger.info() << "Writing records to primary";
-    primary.write_record("VALUE", 1);
-    primary.update_record("VALUE", 2);
+    primary.writeRecord("VALUE", 1);
+    primary.updateRecord("VALUE", 2);
     //! [Write and update a record]
 
     //! [Create a complete record]
     Record<float> complete_record("SPEED", 2.5, "m/s", "Already fast!");
     //! [Create a complete record]
-    primary.write_record(complete_record);
+    primary.writeRecord(complete_record);
 
     const auto columns = create_columns();
     //! [Assign a bintable extension]
@@ -121,7 +121,7 @@ public:
     //! [Initialize an image extension]
     logger.info() << "Assigning new Image HDU";
     const auto& ext = f.init_image_ext<float, 3>("Image", shape);
-    ext.write_raster(raster);
+    ext.writeRaster(raster);
     //! [Initialize an image extension]
 
     //! [Write several records]
@@ -130,10 +130,10 @@ public:
     // Option 1: With concrete Record instances
     const Record<std::string> str_record("STRING", "string");
     const Record<int> int_record("INTEGER", 8);
-    ext.write_records<std::string, int>(str_record, int_record);
+    ext.writeRecords<std::string, int>(str_record, int_record);
 
     // Option 2: With temporary Record instances
-    ext.write_records<std::string, int>({ "STR", "string" }, { "INT", 8 });
+    ext.writeRecords<std::string, int>({ "STR", "string" }, { "INT", 8 });
     //! [Write several records]
 
     logger.info() << "Here's the list of keywords in the extension:";
@@ -147,7 +147,7 @@ public:
 
     //! [Read a record]
     logger.info() << "Reading record in primary";
-    const auto record = f.access_primary<>().parse_record<int>("VALUE");
+    const auto record = f.access_primary<>().parseRecord<int>("VALUE");
     logger.info() << "    VALUE = " << record.value;
     //! [Read a record]
 
@@ -159,8 +159,8 @@ public:
 
     //! [Read bintable values]
     logger.info() << "Reading columns";
-    const auto names = bintable_ext.read_column<std::string>("NAME").vector();
-    const auto speeds = bintable_ext.read_column<double>("SPEED").vector();
+    const auto names = bintable_ext.readColumn<std::string>("NAME").vector();
+    const auto speeds = bintable_ext.readColumn<double>("SPEED").vector();
     const auto slowest_guy = names[0];
     const auto max_speed = speeds[speeds.size()-1];
     logger.info() << "    Slowest guy: " << slowest_guy;
@@ -175,7 +175,7 @@ public:
 
     //! [Read several records]
     // Option 1. As a tuple
-    auto records = image_ext.parse_records<std::string, int>({"STRING", "INTEGER"});
+    auto records = image_ext.parseRecords<std::string, int>({"STRING", "INTEGER"});
     const auto str_value = std::get<0>(records).value;
     const auto int_value = std::get<1>(records).value;
     logger.info() << "    String value from tuple: " << str_value;
@@ -187,13 +187,13 @@ public:
       int int_value;
     };
 
-    auto header = image_ext.parse_records_as<Header, std::string, int>({"STRING", "INTEGER"});
+    auto header = image_ext.parseRecordsAs<Header, std::string, int>({"STRING", "INTEGER"});
     logger.info() << "    String value from struct: " << header.str_value;
     logger.info() << "    Integer value from struct: " << header.int_value;
     //! [Read several records]
 
     //! [Read image values]
-    const auto image = image_ext.read_raster<float, 3>();
+    const auto image = image_ext.readRaster<float, 3>();
     const auto& first_pixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();

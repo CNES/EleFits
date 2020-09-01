@@ -55,19 +55,19 @@ Don't:
 
 \code
 const auto& record_hdu = f.access_primary<>();
-record_hdu.write_record("KEY1", 1);
+record_hdu.writeRecord("KEY1", 1);
 const auto& image_hdu = f.access_primary<ImageHdu>();
-image_hdu.write_raster(raster);
-record_hdu.write_record("KEY2", 2); // Error: record_hdu is no more valid!
+image_hdu.writeRaster(raster);
+record_hdu.writeRecord("KEY2", 2); // Error: record_hdu is no more valid!
 \endcode
 
 Do instead:
 
 \code
 const auto& hdu = f.access_primary<ImageHdu>();
-hdu.write_record("KEY1", 1);
-hdu.write_raster(raster);
-hdu.write_record("KEY2", 2);
+hdu.writeRecord("KEY1", 1);
+hdu.writeRaster(raster);
+hdu.writeRecord("KEY2", 2);
 \endcode
 
 \section handlers-sif Single image Fits

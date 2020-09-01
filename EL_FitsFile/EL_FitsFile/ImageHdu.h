@@ -57,13 +57,13 @@ public:
    * @brief Read the Raster.
    */
   template<typename T, long n=2>
-  VecRaster<T, n> read_raster() const;
+  VecRaster<T, n> readRaster() const;
 
   /**
    * @brief Write the Raster.
    */
   template<typename T, long n=2>
-  void write_raster(const Raster<T, n>& raster) const;
+  void writeRaster(const Raster<T, n>& raster) const;
 
 };
 
@@ -75,25 +75,25 @@ public:
 
 template<typename T, long n>
 void ImageHdu::resize(const Position<n>& shape) const {
-  goto_this_hdu();
+  gotoThisHdu();
   Cfitsio::Image::resize<T, n>(m_fptr, shape);
 }
 
 template<typename T, long n>
-VecRaster<T, n> ImageHdu::read_raster() const {
-  goto_this_hdu();
+VecRaster<T, n> ImageHdu::readRaster() const {
+  gotoThisHdu();
   return Cfitsio::Image::readRaster<T, n>(m_fptr);
 }
 
 template<typename T, long n>
-void ImageHdu::write_raster(const Raster<T, n>& raster) const {
-  goto_this_hdu();
+void ImageHdu::writeRaster(const Raster<T, n>& raster) const {
+  gotoThisHdu();
   Cfitsio::Image::writeRaster(m_fptr, raster);
 }
 
 #ifndef DECLARE_READ_RASTER
 #define DECLARE_READ_RASTER(T, n) \
-  extern template VecRaster<T, n> ImageHdu::read_raster() const;
+  extern template VecRaster<T, n> ImageHdu::readRaster() const;
 DECLARE_READ_RASTER(char, 2)
 DECLARE_READ_RASTER(int, 2)
 DECLARE_READ_RASTER(float, 2)
@@ -107,7 +107,7 @@ DECLARE_READ_RASTER(double, 3)
 
 #ifndef DECLARE_WRITE_RASTER
 #define DECLARE_WRITE_RASTER(T, n) \
-  extern template void ImageHdu::write_raster(const Raster<T, n>&) const;
+  extern template void ImageHdu::writeRaster(const Raster<T, n>&) const;
 DECLARE_WRITE_RASTER(char, 2)
 DECLARE_WRITE_RASTER(int, 2)
 DECLARE_WRITE_RASTER(float, 2)

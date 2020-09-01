@@ -39,10 +39,10 @@ BOOST_AUTO_TEST_CASE( primary_resize_test ) {
   Test::SmallRaster input;
   const auto& primary = f.access_primary<ImageHdu>();
   primary.resize<float, 2>(input.shape);
-  primary.write_raster(input);
+  primary.writeRaster(input);
   f.close();
   f.open(filename, MefFile::Permission::READ);
-  const auto output = f.access_primary<ImageHdu>().read_raster<float, 2>();
+  const auto output = f.access_primary<ImageHdu>().readRaster<float, 2>();
 }
 
 BOOST_AUTO_TEST_CASE( count_test ) {
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( count_test ) {
   BOOST_CHECK_EQUAL(f.hdu_count(), 1);
   const auto& ext = f.init_image_ext<float, 2>("IMG", raster.shape);
   BOOST_CHECK_EQUAL(f.hdu_count(), 2); // 1 with CFitsIO
-  ext.write_raster(raster);
+  ext.writeRaster(raster);
   BOOST_CHECK_EQUAL(f.hdu_count(), 2);
 }
 

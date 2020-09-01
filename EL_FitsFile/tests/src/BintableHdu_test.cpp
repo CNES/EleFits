@@ -28,7 +28,7 @@
 
 using namespace Euclid::FitsIO;
 
-template<typename T>
+template<typename T> //TODO move to FitsDataFixture
 void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
@@ -45,7 +45,7 @@ void checkScalar() {
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::TEMPORARY);
   file.assign_bintable_ext("BINEXT", input);
-  const auto output = file.access_first<BintableHdu>("BINEXT").read_column<T>(input.info.name);
+  const auto output = file.access_first<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
   checkEqualVectors(output.vector(), input.vector());
 }
 
@@ -58,8 +58,8 @@ void checkVector() {
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::TEMPORARY);
   file.init_bintable_ext("BINEXT", input.info);
-  file.access_first<BintableHdu>("BINEXT").write_column(input);
-  const auto output = file.access_first<BintableHdu>("BINEXT").read_column<T>(input.info.name);
+  file.access_first<BintableHdu>("BINEXT").writeColumn(input);
+  const auto output = file.access_first<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
 }
 
 /**

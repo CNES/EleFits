@@ -33,12 +33,12 @@ long RecordHdu::index() const {
 }
 
 std::string RecordHdu::name() const {
-  goto_this_hdu();
+  gotoThisHdu();
   return Cfitsio::Hdu::currentName(m_fptr);
 }
 
 void RecordHdu::rename(const std::string& name) const {
-  goto_this_hdu();
+  gotoThisHdu();
   Cfitsio::Hdu::updateName(m_fptr, name);
 }
 
@@ -46,18 +46,18 @@ std::vector<std::string> RecordHdu::keywords() const {
   return Cfitsio::Header::listKeywords(m_fptr);
 }
 
-void RecordHdu::delete_record(const std::string& keyword) const {
-  goto_this_hdu();
+void RecordHdu::deleteRecord(const std::string& keyword) const {
+  gotoThisHdu();
   Cfitsio::Header::deleteRecord(m_fptr, keyword);
 }
 
-void RecordHdu::goto_this_hdu() const {
+void RecordHdu::gotoThisHdu() const {
   Cfitsio::Hdu::gotoIndex(m_fptr, m_index);
 }
 
 #ifndef COMPILE_PARSE_RECORD
 #define COMPILE_PARSE_RECORD(T) \
-  template Record<T> RecordHdu::parse_record(const std::string&) const;
+  template Record<T> RecordHdu::parseRecord(const std::string&) const;
 COMPILE_PARSE_RECORD(char)
 COMPILE_PARSE_RECORD(short)
 COMPILE_PARSE_RECORD(int)
@@ -73,7 +73,7 @@ COMPILE_PARSE_RECORD(unsigned long)
 
 #ifndef COMPILE_WRITE_RECORD
 #define COMPILE_WRITE_RECORD(T) \
-  template void RecordHdu::write_record(const Record<T>&) const;
+  template void RecordHdu::writeRecord(const Record<T>&) const;
 COMPILE_WRITE_RECORD(char)
 COMPILE_WRITE_RECORD(short)
 COMPILE_WRITE_RECORD(int)

@@ -210,7 +210,7 @@ You can provide your own return type, as a brace-constructible object, like a me
 
 \snippet EL_FitsIO_Tutorial.cpp Read several records
 
-To know more about this feature, check the RecordHdu::parse_records_as documentation.
+To know more about this feature, check the RecordHdu::parseRecordsAs documentation.
 
 
 \subsection tuto-read-bintable Read bintable values

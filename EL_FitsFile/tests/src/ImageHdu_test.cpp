@@ -45,7 +45,7 @@ void check_2d() {
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::TEMPORARY);
   file.assign_image_ext("IMGEXT", input);
-  const auto output = file.access_first<ImageHdu>("IMGEXT").read_raster<T, 2>();
+  const auto output = file.access_first<ImageHdu>("IMGEXT").readRaster<T, 2>();
   checkEqualVectors(output.vector(), input.vector());
 }
 
@@ -60,5 +60,3 @@ BOOST_AUTO_TEST_CASE( float_test ) {
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END ()
-
-

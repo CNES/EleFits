@@ -62,11 +62,11 @@ public:
     const auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
-    primary.write_record("VALUE", 1);
+    primary.writeRecord("VALUE", 1);
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
-    primary.update_record("VALUE", 2);
+    primary.updateRecord("VALUE", 2);
     //! [Update record]
 
     logger.info();
@@ -88,7 +88,7 @@ public:
     Record<std::string> str_record("STRING", "string");
     logger.info() << "Writing record: INTEGER = 8";
     Record<int> int_record("INTEGER", 8);
-    ext.write_records(str_record, int_record);
+    ext.writeRecords(str_record, int_record);
 
     logger.info();
 
@@ -104,7 +104,7 @@ public:
     f.open(filename, MefFile::Permission::READ);
     //! [Open Fits]
     //! [Read record]
-    const auto record_value = f.access_primary<>().parse_record<int>("VALUE");
+    const auto record_value = f.access_primary<>().parseRecord<int>("VALUE");
     //! [Read record]
     logger.info() << "Reading record: VALUE = " << record_value;
 
@@ -119,11 +119,11 @@ public:
     //! [Get HDU index]
     logger.info() << "HDU index: " << index;
     //! [Read column]
-    const auto ids = bintable_ext.read_column<int>("ID").vector();
+    const auto ids = bintable_ext.readColumn<int>("ID").vector();
     const auto first_cell = ids[0];
     //! [Read column]
     logger.info() << "First id: " << first_cell;
-    const auto names = bintable_ext.read_column<std::string>("NAME").vector();
+    const auto names = bintable_ext.readColumn<std::string>("NAME").vector();
     logger.info() << "Last name: " << names[names.size()-1];
 
     logger.info();
@@ -136,12 +136,12 @@ public:
     const auto extname = ext_3.name();
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
-    const auto records = ext_3.parse_records<std::string, int>({"STRING", "INTEGER"});
+    const auto records = ext_3.parseRecords<std::string, int>({"STRING", "INTEGER"});
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     const auto& image_ext = f.access_first<ImageHdu>("SMALLIMG");
     //! [Read raster]
-    const auto image = image_ext.read_raster<float>();
+    const auto image = image_ext.readRaster<float>();
     const auto first_pixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
