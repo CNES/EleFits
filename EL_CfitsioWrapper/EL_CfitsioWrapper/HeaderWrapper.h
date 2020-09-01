@@ -104,14 +104,20 @@ namespace internal {
 
 // Signature change (output argument) for further use with variadic templates.
 template<typename T>
-inline void parseRecordImpl(fitsfile* fptr, const std::string& keyword, FitsIO::Record<T>& record) {
+inline void parseRecordImpl(
+      fitsfile* fptr,
+      const std::string& keyword,
+      FitsIO::Record<T>& record) {
   record = parseRecord<T>(fptr, keyword);
 }
 
 // Parse the records of the i+1 first keywords of a given list (recursive approach).
 template<std::size_t i, typename ...Ts>
 struct ParseRecordsImpl {
-  void operator() (fitsfile* fptr, const std::vector<std::string>& keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
+  void operator() (
+        fitsfile* fptr,
+        const std::vector<std::string>& keywords,
+        std::tuple<FitsIO::Record<Ts>...>& records) {
     parseRecordImpl(fptr, keywords[i], std::get<i>(records));
     ParseRecordsImpl<i-1, Ts...>{}(fptr, keywords, records);
   }
@@ -120,13 +126,19 @@ struct ParseRecordsImpl {
 // Parse the value of the first keyword of a given list (terminal case of the recursion).
 template<typename ...Ts>
 struct ParseRecordsImpl<0, Ts...> {
-  void operator() (fitsfile* fptr, const std::vector<std::string>& keywords, std::tuple<FitsIO::Record<Ts>...>& records) {
+  void operator() (
+        fitsfile* fptr,
+        const std::vector<std::string>& keywords,
+        std::tuple<FitsIO::Record<Ts>...>& records) {
     parseRecordImpl(fptr, keywords[0], std::get<0>(records));
   }
 };
 
 template<class TReturn, typename... Ts, std::size_t... Is>
-TReturn parseRecordsAsImpl(fitsfile* fptr, const std::vector<std::string>& keywords, std14::index_sequence<Is...>) {
+TReturn parseRecordsAsImpl(
+      fitsfile* fptr,
+      const std::vector<std::string>& keywords,
+      std14::index_sequence<Is...>) {
   return { parseRecord<Ts>(fptr, keywords[Is]) ... };
 }
 

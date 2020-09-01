@@ -125,18 +125,18 @@ void initColumnImpl(
 }
 
 template<std::size_t i, typename ...Ts>
-struct initColumnsImpl {
+struct InitColumnsImpl {
   void operator() (
       fitsfile* fptr,
       const std::vector<long>& indices, const std::vector<std::string>& names,
       std::tuple<FitsIO::VecColumn<Ts>...>& columns, long rows) {
     initColumnImpl(fptr, indices[i], names[i], std::get<i>(columns), rows);
-    initColumnsImpl<i-1, Ts...>{}(fptr, indices, names, columns, rows);
+    InitColumnsImpl<i-1, Ts...>{}(fptr, indices, names, columns, rows);
   }
 };
 
 template<typename ...Ts>
-struct initColumnsImpl<0, Ts...> {
+struct InitColumnsImpl<0, Ts...> {
   void operator() (
       fitsfile* fptr,
       const std::vector<long>& indices, const std::vector<std::string>& names,
@@ -250,8 +250,11 @@ struct WriteColumnChunksImpl<0, Ts...> {
 };
 
 template<typename... Ts, std::size_t... Is>
-void writeColumnsImpl(fitsfile* fptr, const std::tuple<const FitsIO::Column<Ts>&...>& columns, std14::index_sequence<Is...>) {
-    writeColumns<Ts...>(fptr, std::get<Is>(columns) ...);
+void writeColumnsImpl(
+      fitsfile* fptr,
+      const std::tuple<const FitsIO::Column<Ts>&...>& columns,
+      std14::index_sequence<Is...>) {
+  writeColumns<Ts...>(fptr, std::get<Is>(columns) ...);
 } //TODO used?
 
 }
@@ -332,7 +335,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vect
   fits_get_num_rows(fptr, &rows, &status);
   /* Read column metadata */
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
-  internal::initColumnsImpl<sizeof...(Ts)-1, Ts...>{}(fptr, indices, names, columns, rows);
+  internal::InitColumnsImpl<sizeof...(Ts)-1, Ts...>{}(fptr, indices, names, columns, rows);
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0)

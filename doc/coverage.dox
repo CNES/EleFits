@@ -45,7 +45,7 @@ Legend:
   - **Write unit**
   - Rename record (useful?)
   - **Delete record**
-- Primary Array or IMAGE Extension I/O Routines
+- Primary Array or Image Extension I/O Routines
   - Read image type
   - *Read image size*
   - **Create image extension**
