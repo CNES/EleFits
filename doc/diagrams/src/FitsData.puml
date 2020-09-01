@@ -5,7 +5,7 @@ package EL_FitsData {
 Raster <|-- VecRaster
 Raster <|-- VecRefRaster
 Raster <|-- PtrRaster
-Raster *- pos_type
+Raster *- Position
 
 Record -[hidden] Record
 
@@ -14,38 +14,38 @@ Column <|-- VecRefColumn
 Column <|-- PtrColumn
 ColumnInfo -* Column
 
-class pos_type<n> {
+class Position<n> {
 }
 
 abstract class Raster<T, n> {
 + shape
-+ {abstract} data()
++ {abstract} data ()
 + operator [] (position)
-+ length<axis>()
-+ size()
-+ index(position)
++ length<axis> ()
++ size ()
++ index (position)
 }
 
 class VecRaster<T, n> {
 - m_vec
-+ VecRaster(shape, vector)
-+ VecRaster(shape)
-+ VecRaster()
-+ data()
-+ vector()
++ VecRaster (shape, vector)
++ VecRaster (shape)
++ VecRaster ()
++ data ()
++ vector ()
 }
 
 class VecRefRaster<T, n> {
-- m_vec_ref
-+ VecRefRaster(shape, vector)
-+ data()
-+ vector()
+- m_ref
++ VecRefRaster (shape, vector)
++ data ()
++ vector ()
 }
 
 class PtrRaster<T, n> {
 - m_data
-+ PtrRaster(shape, data)
-+ data()
++ PtrRaster (shape, data)
++ data ()
 }
 
 class Record<T> {
@@ -64,34 +64,31 @@ class ColumnInfo<T> {
 
 abstract class Column<T> {
 + info
-+ {abstract} size()
-+ {abstract} data()
-+ nelements()
++ {abstract} data ()
++ nelements ()
++ rows ()
 }
 
 class VecColumn<T> {
 - m_vec
-+ VecColumn(info, vector)
-+ VecColumn(info)
-+ VecColumn()
-+ size()
-+ data()
-+ vector()
++ VecColumn (info, vector)
++ VecColumn (info)
++ VecColumn ()
++ data ()
++ vector ()
 }
 
 class VecRefColumn<T> {
-- m_vec_ref
-+ VecRefColumn(info, vector)
-+ size()
-+ data()
-+ vector()
+- m_ref
++ VecRefColumn (info, vector)
++ data ()
++ vector ()
 }
 
 class PtrColumn<T> {
 - m_data
-+ PtrColumn(info, rows, vector)
-+ size()
-+ data()
++ PtrColumn (info, rows, vector)
++ data ()
 }
 
 }

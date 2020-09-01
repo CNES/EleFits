@@ -13,6 +13,8 @@ MefFile --|> FitsFile
 SifFile --|> FitsFile
 ImageHdu --* SifFile
 
+Permission - FitsFile
+
 }
 
 package EL_FitsData {
@@ -23,52 +25,71 @@ Record <.. RecordHdu
 
 }
 
+enum Permission {
+Read
+Edit
+Create
+Overwrite
+Temporary
+}
+
 class FitsFile {
 + FitsFile (filename, permission)
++ filename ()
 + open (filename, permission)
 + close ()
++ closeAndDelete ()
 }
 
 class MefFile {
 + MefFile (filename, permission)
++ hduCount ()
++ hduNames ()
 + access<THdu> (index)
-+ access_first<THdu> (name)
-+ access_primary<THdu> ()
-+ init_image_ext (name, shape)
-+ assign_image_ext (name, raster)
-+ init_bintable_ext (name, header...)
-+ assign_bintable_ext (name, columns...)
++ accessFirst<THdu> (name)
++ accessPrimary<THdu> ()
++ initRecordExt (name)
++ initImageExt (name, shape)
++ assignImageExt (name, raster)
++ initBintableExt (name, header...)
++ assignBintableExt (name, columns...)
 }
 
 class SifFile {
 + SifFile (filename, permission)
 + header ()
-+ read_raster<T, n> ()
-+ write_raster<T, n> (raster)
++ readRaster<T, n> ()
++ writeRaster<T, n> (raster)
 }
 
 class RecordHdu {
 + index ()
 + name ()
 + rename (name)
-+ parse_record<T> (keyword)
-+ parse_records<T...> (keywords...)
-+ write_record<T> (record)
-+ write_records<T...> (records...)
-+ update_record<T> (record)
-+ update_records<T...> (records...)
-+ delete_record (keyword)
++ keywords ()
++ parseRecord<T> (keyword)
++ parseRecords<T...> (keywords...)
++ parseRecordsAs<TReturn, T...> (keywords...)
++ writeRecord<T> (record)
++ writeRecords<T...> (records...)
++ updateRecord<T> (record)
++ updateRecords<T...> (records...)
++ deleteRecord (keyword)
 }
 
 class ImageHdu {
 + resize<T, n> (shape)
-+ read_raster<T, n> ()
-+ write_raster<T, n> (raster)
++ readRaster<T, n> ()
++ writeRaster<T, n> (raster)
 }
 
 class BintableHdu {
-+ read_column<T> (name)
-+ write_column<T> (column)
++ readColumn<T> (name)
++ readColumns<T...> (names)
++ writeColumn<T> (column)
++ writeColumn<T...> (columns...)
++ appendColumn<T> (column)
++ appendColumn<T...> (columns...)
 }
 
 abstract class Raster {}
