@@ -39,7 +39,7 @@ using table_type = std::vector<column_type>;
 table_type generate_table(long cols, long rows) {
   table_type table(cols);
   for (long c=0; c<cols; ++c) {
-    auto data = Test::generate_random_vector<value_type>(rows);
+    auto data = Test::generateRandomVector<value_type>(rows);
     table[c] = column_type { { std::to_string(c), "", 1 }, std::move(data) };
   }
   return table;

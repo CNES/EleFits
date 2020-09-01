@@ -118,7 +118,7 @@ void createMetadataExtension(fitsfile *fptr, const std::string& name);
  * @brief Create a new Image HDU with given name, pixel type and shape.
  */
 template<typename T, long n=2>
-void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::pos_type<n>& shape);
+void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::Position<n>& shape);
 
 /**
  * @brief Write a Raster in a new Image HDU.
@@ -150,7 +150,7 @@ void deleteHdu(fitsfile *fptr, long index);
 
 
 template<typename T, long n>
-void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::pos_type<n>& shape) {
+void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::Position<n>& shape) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   auto nonconstShape = shape; // const-correctness issue

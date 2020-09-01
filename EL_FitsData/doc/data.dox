@@ -57,7 +57,7 @@ If you want to give or steal the data to or from a VecColumn, you can eploit mov
 
 
 Rasters are the in-memory representation of the _n_-D images of Fits.
-A raster has a shape (of type pos_type, which is just an alias of std::array), a type as its template parameter, and some data.
+A raster has a shape (of type Position, which is just an alias of std::array), a type as its template parameter, and some data.
 
 The design approach behind Raster is exactly the same a for Column, with several implementations proposed:
 PtrRaster, VecRefRaster and VecRaster.

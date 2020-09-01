@@ -84,22 +84,22 @@ public:
   /**
    * @brief Type of the NUM column.
    */
-  using num_t = int;
+  using Num = int;
 
   /**
    * @brief Type of the RADEC column.
    */
-  using radec_t = std::complex<float>;
+  using Radec = std::complex<float>;
 
   /**
    * @brief Type of the NAME column.
    */
-  using name_t = std::string;
+  using Name = std::string;
 
   /**
    * @brief Type of the DIST_MAG column.
    */
-  using dist_mag_t = double;
+  using DistMag = double;
 
   /**
    * @brief Generate the columns.
@@ -114,42 +114,42 @@ public:
   /**
    * @brief Values of the NUM column.
    */
-  std::vector<num_t> nums;
+  std::vector<Num> nums;
 
   /**
    * @brief Values of the RADEC column.
    */
-  std::vector<radec_t> radecs;
+  std::vector<Radec> radecs;
 
   /**
    * @brief Values of the NAME column.
    */
-  std::vector<name_t> names;
+  std::vector<Name> names;
 
   /**
    * @brief Values of the DIST_MAG column.
    */
-  std::vector<dist_mag_t> dists_mags;
+  std::vector<DistMag> distsMags;
   
   /**
    * @brief NUM column.
    */
-  VecRefColumn<num_t> num_col;
+  VecRefColumn<Num> numCol;
 
   /**
    * @brief RADEC column.
    */
-  VecRefColumn<radec_t> radec_col;
+  VecRefColumn<Radec> radecCol;
 
   /**
    * @brief NAME column.
    */
-  VecRefColumn<name_t> name_col;
+  VecRefColumn<Name> nameCol;
 
   /**
    * @brief DIST_MAG column.
    */
-  VecRefColumn<dist_mag_t> dist_mag_col;
+  VecRefColumn<DistMag> distMagCol;
 
 };
 
@@ -164,7 +164,7 @@ public:
   /**
    * @brief Generate a Raster with given shape.
    */
-  explicit RandomRaster(pos_type<n> raster_shape);
+  explicit RandomRaster(Position<n> rasterShape);
 
   /** @brief Destructor. */
   virtual ~RandomRaster() = default;
@@ -229,31 +229,31 @@ public:
  * @brief Generate a random value of given type.
  */
 template<typename T>
-T generate_random_value();
+T generateRandomValue();
 
 /**
  * @brief Generate a random vector of given type and size.
  */
 template<typename T>
-std::vector<T> generate_random_vector(long size);
+std::vector<T> generateRandomVector(long size);
 
 /**
- * @brief Specialization of generate_random_vector for complex<float>.
+ * @brief Specialization of generateRandomVector for complex<float>.
  */
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size);
+std::vector<std::complex<float>> generateRandomVector<std::complex<float>>(long size);
 
 /**
- * @brief Specialization of generate_random_vector for complex<double>.
+ * @brief Specialization of generateRandomVector for complex<double>.
  */
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size);
+std::vector<std::complex<double>> generateRandomVector<std::complex<double>>(long size);
 
 /**
- * @brief Specialization of generate_random_vector for string.
+ * @brief Specialization of generateRandomVector for string.
  */
 template<>
-std::vector<std::string> generate_random_vector<std::string>(long size);
+std::vector<std::string> generateRandomVector<std::string>(long size);
 
 
 /////////////////////
@@ -262,24 +262,24 @@ std::vector<std::string> generate_random_vector<std::string>(long size);
 
 
 template<typename T, long n>
-RandomRaster<T, n>::RandomRaster(pos_type<n> raster_shape) :
-    VecRaster<T, n>(raster_shape) {
-  this->vector() = generate_random_vector<T>(this->size());
+RandomRaster<T, n>::RandomRaster(Position<n> rasterShape) :
+    VecRaster<T, n>(rasterShape) {
+  this->vector() = generateRandomVector<T>(this->size());
 }
 
 
 template<typename T>
 RandomScalarColumn<T>::RandomScalarColumn(long size) :
-    VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size)) {
+    VecColumn<T>({"SCALAR", "m", 1}, generateRandomVector<T>(size)) {
 }
 
 template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(long size) :
-    VecColumn<std::string>({ "SCALAR", "m", 1}, generate_random_vector<std::string>(size)) {
+    VecColumn<std::string>({ "SCALAR", "m", 1}, generateRandomVector<std::string>(size)) {
   for(const auto& v : vector()) {
-    long current_size = static_cast<long>(v.length() + 1); // +1 for '\0'
-    if(current_size > info.repeat)
-      info.repeat = current_size;
+    long currentSize = static_cast<long>(v.length() + 1); // +1 for '\0'
+    if(currentSize > info.repeat)
+      info.repeat = currentSize;
   }
 }
 
@@ -292,13 +292,13 @@ SmallVectorColumn<T>::SmallVectorColumn() :
 }
 
 template<typename T>
-T generate_random_value() {
-  auto vec = generate_random_vector<T>(1);
+T generateRandomValue() {
+  auto vec = generateRandomVector<T>(1);
   return vec[0];
 }
 
 template<typename T>
-std::vector<T> generate_random_vector(long size) {
+std::vector<T> generateRandomVector(long size) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   const T min = std::numeric_limits<T>::min();
@@ -311,30 +311,30 @@ std::vector<T> generate_random_vector(long size) {
 }
 
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size) {
-  const auto re_im_vec = generate_random_vector<float>(size * 2);
+std::vector<std::complex<float>> generateRandomVector<std::complex<float>>(long size) {
+  const auto reImVec = generateRandomVector<float>(size * 2);
   std::vector<std::complex<float>> vec(size);
-  const auto im_begin = re_im_vec.begin() + size;
-  std::transform(re_im_vec.begin(), im_begin, im_begin, vec.begin(),
+  const auto imBegin = reImVec.begin() + size;
+  std::transform(reImVec.begin(), imBegin, imBegin, vec.begin(),
       [](float re, float im) { return std::complex<float> {re, im}; });
   return vec;
 }
 
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size) {
-  const auto re_vec = generate_random_vector<double>(size);
-  const auto im_vec = generate_random_vector<double>(size);
+std::vector<std::complex<double>> generateRandomVector<std::complex<double>>(long size) {
+  const auto reVec = generateRandomVector<double>(size);
+  const auto imVec = generateRandomVector<double>(size);
   std::vector<std::complex<double>> vec(size);
-  std::transform(re_vec.begin(), re_vec.end(), im_vec.begin(), vec.begin(),
+  std::transform(reVec.begin(), reVec.end(), imVec.begin(), vec.begin(),
       [](double re, double im) { return std::complex<double> {re, im}; });
   return vec;
 }
 
 template<>
-std::vector<std::string> generate_random_vector<std::string>(long size) {
-  std::vector<int> int_vec = generate_random_vector<int>(size);
+std::vector<std::string> generateRandomVector<std::string>(long size) {
+  std::vector<int> intVec = generateRandomVector<int>(size);
   std::vector<std::string> vec(size);
-  std::transform(int_vec.begin(), int_vec.end(), vec.begin(),
+  std::transform(intVec.begin(), intVec.end(), vec.begin(),
       [](int i) { return std::to_string(i); } );
   return vec;
 }

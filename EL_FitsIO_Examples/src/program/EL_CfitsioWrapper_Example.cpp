@@ -74,7 +74,7 @@ public:
     FitsIO::Test::SmallTable table; // Predefined table for testing purpose
     //! [Create bintable ext]
     Hdu::createBintableExtension(fptr, "SMALLTBL",
-        table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
+        table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create bintable ext]
 
     logger.info();

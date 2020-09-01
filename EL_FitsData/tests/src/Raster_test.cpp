@@ -32,13 +32,13 @@ BOOST_AUTO_TEST_SUITE (Raster_test)
 
 BOOST_AUTO_TEST_CASE( index_test ) {
 
-  FitsIO::pos_type<4> shape;
+  FitsIO::Position<4> shape;
   for(auto& length : shape)
     length = std::rand();
-  FitsIO::pos_type<4> pos;
+  FitsIO::Position<4> pos;
   for(auto& coord : pos)
     coord = std::rand();
-  auto index = FitsIO::internal::Index<3>::template offset<4>(shape, pos);
+  auto index = FitsIO::internal::IndexImpl<3>::template offset<4>(shape, pos);
   BOOST_CHECK_EQUAL(index,
     pos[0] + shape[0] * (
       pos[1] + shape[1] * (

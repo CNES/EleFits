@@ -42,7 +42,7 @@ namespace Image {
  * @brief Resize the Raster of the current Image HDU.
  */
 template<typename T, long n=2>
-void resize(fitsfile* fptr, const FitsIO::pos_type<n>& shape);
+void resize(fitsfile* fptr, const FitsIO::Position<n>& shape);
 
 /**
  * @brief Read a Raster in current Image HDU.
@@ -63,7 +63,7 @@ void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 
 
 template<typename T, long n>
-void resize(fitsfile* fptr, const FitsIO::pos_type<n>& shape) {
+void resize(fitsfile* fptr, const FitsIO::Position<n>& shape) {
   int status = 0;
   auto nonconstShape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconstShape.data(), &status);

@@ -21,7 +21,7 @@
 
 #include "EL_FitsData/Record.h"
 
-#include "FixtureRandom.h"
+#include "FixtureRandom.h" //TODO replace with FitsDataFixture?
 
 using namespace Euclid::FitsIO;
 
@@ -71,7 +71,7 @@ void check_equal(T value, T expected) {
 
 template<typename T>
 void check_cast() {
-  T v = Test::generate_random_value<T>();
+  T v = Test::generateRandomValue<T>();
   Record<T> r("KEY", v);
   check_equal<T>(r, v);
 }

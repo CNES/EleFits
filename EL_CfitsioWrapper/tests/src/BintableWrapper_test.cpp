@@ -187,15 +187,15 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;
   SmallTable input;
   Hdu::createBintableExtension(this->fptr, "IMGEXT",
-      input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
-  const auto outputNums = Bintable::readColumn<SmallTable::num_t>(this->fptr, input.num_col.info.name);
-  checkEqualVectors(outputNums.vector(), input.num_col.vector());
-  const auto outputRadecs = Bintable::readColumn<SmallTable::radec_t>(this->fptr, input.radec_col.info.name);
-  checkEqualVectors(outputRadecs.vector(), input.radec_col.vector());
-  const auto outputNames = Bintable::readColumn<SmallTable::name_t>(this->fptr, input.name_col.info.name);
-  checkEqualVectors(outputNames.vector(), input.name_col.vector());
-  const auto outputDistsMags = Bintable::readColumn<SmallTable::dist_mag_t>(this->fptr, input.dist_mag_col.info.name);
-  checkEqualVectors(outputDistsMags.vector(), input.dist_mag_col.vector());
+      input.numCol, input.radecCol, input.nameCol, input.distMagCol);
+  const auto outputNums = Bintable::readColumn<SmallTable::Num>(this->fptr, input.numCol.info.name);
+  checkEqualVectors(outputNums.vector(), input.numCol.vector());
+  const auto outputRadecs = Bintable::readColumn<SmallTable::Radec>(this->fptr, input.radecCol.info.name);
+  checkEqualVectors(outputRadecs.vector(), input.radecCol.vector());
+  const auto outputNames = Bintable::readColumn<SmallTable::Name>(this->fptr, input.nameCol.info.name);
+  checkEqualVectors(outputNames.vector(), input.nameCol.vector());
+  const auto outputDistsMags = Bintable::readColumn<SmallTable::DistMag>(this->fptr, input.distMagCol.info.name);
+  checkEqualVectors(outputDistsMags.vector(), input.distMagCol.vector());
 }
 
 BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
@@ -216,13 +216,13 @@ BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
 BOOST_FIXTURE_TEST_CASE( append_test, FitsIO::Test::MinimalFile ) {
   using FitsIO::Test::SmallTable;
   SmallTable table;
-  Hdu::createBintableExtension(this->fptr, "TABLE", table.name_col);
-  const auto names = Bintable::readColumn<SmallTable::name_t>(fptr, table.name_col.info.name);
+  Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol);
+  const auto names = Bintable::readColumn<SmallTable::Name>(fptr, table.nameCol.info.name);
   checkEqualVectors(names.vector(), table.names);
-  Bintable::appendColumns(fptr, table.dist_mag_col, table.radec_col);
-  const auto distsMags = Bintable::readColumn<SmallTable::dist_mag_t>(fptr, table.dist_mag_col.info.name);
-  checkEqualVectors(distsMags.vector(), table.dists_mags);
-  const auto radecs = Bintable::readColumn<SmallTable::radec_t>(fptr, table.radec_col.info.name);
+  Bintable::appendColumns(fptr, table.distMagCol, table.radecCol);
+  const auto distsMags = Bintable::readColumn<SmallTable::DistMag>(fptr, table.distMagCol.info.name);
+  checkEqualVectors(distsMags.vector(), table.distsMags);
+  const auto radecs = Bintable::readColumn<SmallTable::Radec>(fptr, table.radecCol.info.name);
   checkEqualVectors(radecs.vector(), table.radecs);
 }
 

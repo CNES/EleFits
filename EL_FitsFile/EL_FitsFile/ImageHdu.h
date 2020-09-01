@@ -51,7 +51,7 @@ public:
    * @brief Redefine the image shape and type.
    */
   template<typename T, long n=2>
-  void resize(const pos_type<n>& shape) const;
+  void resize(const Position<n>& shape) const;
 
   /**
    * @brief Read the Raster.
@@ -74,7 +74,7 @@ public:
 
 
 template<typename T, long n>
-void ImageHdu::resize(const pos_type<n>& shape) const {
+void ImageHdu::resize(const Position<n>& shape) const {
   goto_this_hdu();
   Cfitsio::Image::resize<T, n>(m_fptr, shape);
 }

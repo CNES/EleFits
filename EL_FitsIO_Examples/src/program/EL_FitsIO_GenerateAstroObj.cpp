@@ -45,10 +45,10 @@ void writeMeta(MefFile& f, int obj_index) {
 }
 
 void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
-  auto wmin_data = Test::generate_random_vector<float>(bins);
-  auto signal_data = Test::generate_random_vector<float>(bins);
-  auto quality_data = Test::generate_random_vector<char>(bins);
-  auto var_data = Test::generate_random_vector<float>(bins);
+  auto wmin_data = Test::generateRandomVector<float>(bins);
+  auto signal_data = Test::generateRandomVector<float>(bins);
+  auto quality_data = Test::generateRandomVector<char>(bins);
+  auto var_data = Test::generateRandomVector<float>(bins);
   const long repeat = 1; //TODO bins?
   VecRefColumn<float> wmin_col( { "WMIN", "nm", repeat }, wmin_data);
   VecRefColumn<float> signal_col( { "SIGNAL", "erg", repeat }, signal_data);

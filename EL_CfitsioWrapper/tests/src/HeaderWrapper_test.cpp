@@ -66,7 +66,7 @@ void check_close(std::complex<double> value, std::complex<double> expected) {
 template<typename T>
 void check_record(const std::string& label) {
   FitsIO::Test::MinimalFile file;
-  T input = FitsIO::Test::generate_random_value<T>();
+  T input = FitsIO::Test::generateRandomValue<T>();
   std::string unit = "u_" + label;
   std::string comment = "c_" + label;
   Header::writeRecord(file.fptr, FitsIO::Record<T>(label, input, unit, comment));

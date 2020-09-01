@@ -28,7 +28,7 @@ namespace FitsIO {
 namespace internal {
 
 template<>
-long _rows<std::string>(long nelements, ELEMENTS_UNUSED long repeat) {
+long rowsImpl<std::string>(long nelements, ELEMENTS_UNUSED long repeat) {
   return nelements;
 }
 

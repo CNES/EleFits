@@ -30,12 +30,13 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Type for a position or shape, i.e. set of coordinates.
+ * @brief n-dimensional pixel position or image shape, i.e. set of integer coordinates.
  * @details
- * CFitsIO indices are long, so we stick to the convention.
+ * Alias for std::array<long, n>.
+ * Indices are long, so we stick to the convention.
  */
 template<long n=2>
-using pos_type = std::array<long, (std::size_t)n>;
+using Position = std::array<long, (std::size_t)n>;
 
 /**
  * @brief Raster of a n-dimensional image (2D by default).
@@ -54,7 +55,7 @@ public:
   /**
    * @brief Create a Raster with given shape.
    */
-  explicit Raster(pos_type<n> raster_shape);
+  explicit Raster(Position<n> rasterShape);
 
   /**
    * @brief Const pointer to the first data element.
@@ -75,24 +76,24 @@ public:
   /**
    * @brief Raw index of a position.
    */
-  long index(const pos_type<n>& pos) const;
+  long index(const Position<n>& pos) const;
 
   /**
    * @brief Pixel at given position.
    */
-  const T& operator[](const pos_type<n>& pos) const;
+  const T& operator[](const Position<n>& pos) const;
 
   /**
    * @brief Pixel at given position.
    */
-  T& operator[](const pos_type<n>& pos);
+  T& operator[](const Position<n>& pos);
 
 public:
 
   /**
    * @brief Raster shape, i.e. length along each axis.
    */
-  pos_type<n> shape;
+  Position<n> shape;
 
 };
 
@@ -120,7 +121,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  PtrRaster(pos_type<n> raster_shape, const T* data);
+  PtrRaster(Position<n> rasterShape, const T* data);
 
   const T* data() const override;
 
@@ -155,7 +156,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  VecRefRaster(pos_type<n> raster_shape, const std::vector<T>& data);
+  VecRefRaster(Position<n> rasterShape, const std::vector<T>& vectorRef);
 
   const T* data() const override;
 
@@ -166,7 +167,7 @@ public:
 
 private:
 
-  const std::vector<T>& m_vec_ref;
+  const std::vector<T>& m_ref;
 
 };
 
@@ -197,12 +198,12 @@ public:
    * To transfer ownership of the data instead of copying it, use move semantics:
    * @code VecRaster column(shape, std::move(data)); @endcode
    */
-  VecRaster(pos_type<n> raster_shape, std::vector<T> data);
+  VecRaster(Position<n> rasterShape, std::vector<T> vector);
 
   /**
    * @brief Create a VecRaster with given shape and empty data.
    */
-  explicit VecRaster(pos_type<n> raster_shape);
+  explicit VecRaster(Position<n> rasterShape);
 
   /**
    * @brief Create an empty VecRaster.
@@ -243,20 +244,20 @@ private:
 namespace internal {
 
 template<long i>
-struct Index {
+struct IndexImpl {
   template<long n>
-  static long offset(const pos_type<n>& shape, const pos_type<n>& pos);
+  static long offset(const Position<n>& shape, const Position<n>& pos);
 };
 
 template<long i>
 template<long n>
-inline long Index<i>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
-  return std::get<n-1-i>(pos) + std::get<n-1-i>(shape) * Index<i-1>::template offset<n>(shape, pos);
+inline long IndexImpl<i>::offset(const Position<n>& shape, const Position<n>& pos) {
+  return std::get<n-1-i>(pos) + std::get<n-1-i>(shape) * IndexImpl<i-1>::template offset<n>(shape, pos);
 }
 
 template<>
 template<long n>
-inline long Index<0>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
+inline long IndexImpl<0>::offset(const Position<n>& shape, const Position<n>& pos) {
   return std::get<n-1>(pos);
 }
 
@@ -270,8 +271,8 @@ inline long Index<0>::offset(const pos_type<n>& shape, const pos_type<n>& pos) {
 
 
 template<typename T, long n>
-Raster<T, n>::Raster(pos_type<n> raster_shape) :
-    shape(raster_shape) {
+Raster<T, n>::Raster(Position<n> rasterShape) :
+    shape(rasterShape) {
 }
 
 template<typename T, long n>
@@ -286,24 +287,24 @@ inline long Raster<T, n>::size() const {
 }
 
 template<typename T, long n>
-inline long Raster<T, n>::index(const pos_type<n>& pos) const {
-  return internal::Index<n-1>::template offset<n>(shape, pos);
+inline long Raster<T, n>::index(const Position<n>& pos) const {
+  return internal::IndexImpl<n-1>::template offset<n>(shape, pos);
 }
 
 template<typename T, long n>
-inline const T& Raster<T, n>::operator[](const pos_type<n>& pos) const {
+inline const T& Raster<T, n>::operator[](const Position<n>& pos) const {
   return data()[index(pos)];
 }
 
 template<typename T, long n>
-inline T& Raster<T, n>::operator[](const pos_type<n>& pos) {
+inline T& Raster<T, n>::operator[](const Position<n>& pos) {
   return const_cast<T&>(const_cast<const Raster*>(this)->operator[](pos));
 }
 
 
 template<typename T, long n>
-PtrRaster<T, n>::PtrRaster(pos_type<n> raster_shape, const T* data) :
-    Raster<T, n>(raster_shape),
+PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, const T* data) :
+    Raster<T, n>(rasterShape),
     m_data(data) {
 }
 
@@ -314,31 +315,31 @@ const T* PtrRaster<T, n>::data() const {
 
 
 template<typename T, long n>
-VecRefRaster<T, n>::VecRefRaster(pos_type<n> shape, const std::vector<T>& data) :
+VecRefRaster<T, n>::VecRefRaster(Position<n> shape, const std::vector<T>& data) :
     Raster<T, n>(shape),
-    m_vec_ref(data) {
+    m_ref(data) {
 }
 
 template<typename T, long n>
 const T* VecRefRaster<T, n>::data() const {
-  return m_vec_ref.data();
+  return m_ref.data();
 }
 
 template<typename T, long n>
 const std::vector<T>& VecRefRaster<T, n>::vector() const {
-  return m_vec_ref;
+  return m_ref;
 }
 
 
 template<typename T, long n>
-VecRaster<T, n>::VecRaster(pos_type<n> shape, std::vector<T> data) :
+VecRaster<T, n>::VecRaster(Position<n> shape, std::vector<T> data) :
     Raster<T, n>(shape),
     m_vec(data) {
 }
 
 template<typename T, long n>
-VecRaster<T, n>::VecRaster(pos_type<n> raster_shape) :
-    Raster<T, n>(raster_shape),
+VecRaster<T, n>::VecRaster(Position<n> rasterShape) :
+    Raster<T, n>(rasterShape),
     m_vec(this->size()) {
 }
 

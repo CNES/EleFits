@@ -108,7 +108,7 @@ public:
    * @see assign_image_ext
    */
   template<typename T, long n>
-  const ImageHdu& init_image_ext(const std::string& name, const pos_type<n>& shape);
+  const ImageHdu& init_image_ext(const std::string& name, const Position<n>& shape);
 
   /**
    * @brief Append an ImageHdu with given name and data.
@@ -180,7 +180,7 @@ const T& MefFile::access_primary() {
 }
 
 template<typename T, long n>
-const ImageHdu& MefFile::init_image_ext(const std::string& name, const pos_type<n>& shape) {
+const ImageHdu& MefFile::init_image_ext(const std::string& name, const Position<n>& shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));

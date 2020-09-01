@@ -24,9 +24,9 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-SmallRaster::SmallRaster(long raster_width, long raster_height) :
-    VecRaster<float>({raster_width, raster_height}),
-    width(raster_width), height(raster_height) {
+SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
+    VecRaster<float>({rasterWidth, rasterHeight}),
+    width(rasterWidth), height(rasterHeight) {
   for(long x=0; x<shape[0]; ++x)
     for(long y=0; y<shape[1]; ++y)
       operator[]({x, y}) = 0.1F * float(y) + float(x);
@@ -52,11 +52,11 @@ SmallTable::SmallTable() :
     nums { 45, 7, 31 },
     radecs { {56.8500F, 24.1167F}, {268.4667F, -34.7928F}, {10.6833F, 41.2692F} },
     names { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" },
-    dists_mags { 0.44, 1.6, 0.8, 3.3, 2900.0, 3.4 },
-    num_col ({"ID", "", 1}, nums),
-    radec_col ({"RADEC", "deg", 1}, radecs),
-    name_col ({"NAME", "", 68}, names), //TODO 68?
-    dist_mag_col ({"DIST_MAG", "kal", 2}, dists_mags) {
+    distsMags { 0.44, 1.6, 0.8, 3.3, 2900.0, 3.4 },
+    numCol ({"ID", "", 1}, nums),
+    radecCol ({"RADEC", "deg", 1}, radecs),
+    nameCol ({"NAME", "", 68}, names), //TODO 68?
+    distMagCol ({"DIST_MAG", "kal", 2}, distsMags) {
 }
 
 }

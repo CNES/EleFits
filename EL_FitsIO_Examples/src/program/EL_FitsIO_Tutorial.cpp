@@ -55,7 +55,7 @@ VecRaster<float, 3> create_raster() {
 }
 
 struct TutoTable {
-  VecColumn<std::string> name_col;
+  VecColumn<std::string> nameCol;
   VecColumn<double> speed_col;
 };
 
@@ -113,7 +113,7 @@ public:
     const auto columns = create_columns();
     //! [Assign a bintable extension]
     logger.info() << "Assigning new Bintable HDU";
-    f.assign_bintable_ext("TABLE", columns.name_col, columns.speed_col);
+    f.assign_bintable_ext("TABLE", columns.nameCol, columns.speed_col);
     //! [Assign a bintable extension]
 
     const auto raster = create_raster();

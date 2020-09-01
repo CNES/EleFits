@@ -38,19 +38,19 @@ namespace FitsIO {
 namespace Test { //TODO move to FitsDataFixture
 
 template<typename T>
-T generate_random_value();
+T generateRandomValue();
 
 template<typename T>
-std::vector<T> generate_random_vector(long size);
+std::vector<T> generateRandomVector(long size);
 
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size);
+std::vector<std::complex<float>> generateRandomVector<std::complex<float>>(long size);
 
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size);
+std::vector<std::complex<double>> generateRandomVector<std::complex<double>>(long size);
 
 template<>
-std::vector<std::string> generate_random_vector<std::string>(long size);
+std::vector<std::string> generateRandomVector<std::string>(long size);
 
 
 /////////////////////
@@ -59,13 +59,13 @@ std::vector<std::string> generate_random_vector<std::string>(long size);
 
 
 template<typename T>
-T generate_random_value() {
-  auto vec = generate_random_vector<T>(1);
+T generateRandomValue() {
+  auto vec = generateRandomVector<T>(1);
   return vec[0];
 }
 
 template<typename T>
-std::vector<T> generate_random_vector(long size) {
+std::vector<T> generateRandomVector(long size) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   const double min = std::numeric_limits<T>::min();
@@ -78,8 +78,8 @@ std::vector<T> generate_random_vector(long size) {
 }
 
 template<>
-std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(long size) {
-  const auto re_im_vec = generate_random_vector<float>(size * 2);
+std::vector<std::complex<float>> generateRandomVector<std::complex<float>>(long size) {
+  const auto re_im_vec = generateRandomVector<float>(size * 2);
   std::vector<std::complex<float>> vec(size);
   const auto im_begin = re_im_vec.begin() + size;
   std::transform(re_im_vec.begin(), im_begin, im_begin, vec.begin(),
@@ -88,9 +88,9 @@ std::vector<std::complex<float>> generate_random_vector<std::complex<float>>(lon
 }
 
 template<>
-std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(long size) {
-  const auto re_vec = generate_random_vector<double>(size);
-  const auto im_vec = generate_random_vector<double>(size);
+std::vector<std::complex<double>> generateRandomVector<std::complex<double>>(long size) {
+  const auto re_vec = generateRandomVector<double>(size);
+  const auto im_vec = generateRandomVector<double>(size);
   std::vector<std::complex<double>> vec(size);
   std::transform(re_vec.begin(), re_vec.end(), im_vec.begin(), vec.begin(),
       [](double re, double im) { return std::complex<double> {re, im}; });
@@ -98,8 +98,8 @@ std::vector<std::complex<double>> generate_random_vector<std::complex<double>>(l
 }
 
 template<>
-std::vector<std::string> generate_random_vector<std::string>(long size) {
-  std::vector<int> int_vec = generate_random_vector<int>(size);
+std::vector<std::string> generateRandomVector<std::string>(long size) {
+  std::vector<int> int_vec = generateRandomVector<int>(size);
   std::vector<std::string> vec(size);
   std::transform(int_vec.begin(), int_vec.end(), vec.begin(),
       [](int i) { return std::to_string(i); } );

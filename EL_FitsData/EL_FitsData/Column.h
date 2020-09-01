@@ -73,7 +73,7 @@ public:
   /**
    * @brief Create a column with given metadata.
    */
-  explicit Column(ColumnInfo<T> column_info);
+  explicit Column(ColumnInfo<T> columnInfo);
 
   /**
    * @brief Number of elements in the column, i.e. number of rows * repeat count.
@@ -165,7 +165,7 @@ public:
   /**
    * @brief Create a VecRefColumn with given metadata and reference to data.
    */
-  VecRefColumn(ColumnInfo<T> column_info, const std::vector<T>& vector_ref);
+  VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vectorRef);
 
   long nelements() const override;
 
@@ -178,7 +178,7 @@ public:
 
 private:
 
-  const std::vector<T>& m_vec_ref;
+  const std::vector<T>& m_ref;
 
 };
 
@@ -215,7 +215,7 @@ public:
    * To transfer ownership of the data instead of copying it, use move semantics:
    * @code VecColumn column(info, std::move(vector)); @endcode
    */
-  VecColumn(ColumnInfo<T> column_info, std::vector<T> vector);
+  VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector);
 
   long nelements() const override;
 
@@ -253,13 +253,13 @@ private:
 namespace internal {
 
 template<typename T>
-long _rows(long nelements, long repeat);
+long rowsImpl(long nelements, long repeat);
 
 template<>
-long _rows<std::string>(long nelements, long repeat);
+long rowsImpl<std::string>(long nelements, long repeat);
 
 template<typename T>
-long _rows(long nelements, long repeat) {
+long rowsImpl(long nelements, long repeat) {
   return (nelements + repeat - 1) / repeat;
 }
 
@@ -273,18 +273,18 @@ long _rows(long nelements, long repeat) {
 
 
 template<typename T>
-Column<T>::Column(ColumnInfo<T> column_info) :
-    info(column_info) {
+Column<T>::Column(ColumnInfo<T> columnInfo) :
+    info(columnInfo) {
 }
 
 template<typename T>
 long Column<T>::rows() const {
-  return internal::_rows<T>(nelements(), info.repeat);
+  return internal::rowsImpl<T>(nelements(), info.repeat);
 }
 
 template<typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> column_info, long nelements, const T* data) :
-    Column<T>(column_info),
+PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long nelements, const T* data) :
+    Column<T>(columnInfo),
     m_nelements(nelements),
     m_data(data) {
 }
@@ -301,24 +301,24 @@ const T* PtrColumn<T>::data() const {
 
 
 template<typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> column_info, const std::vector<T>& vector_ref) :
-    Column<T>(column_info),
-    m_vec_ref(vector_ref) {
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vectorRef) :
+    Column<T>(columnInfo),
+    m_ref(vectorRef) {
 }
 
 template<typename T>
 long VecRefColumn<T>::nelements() const {
-  return m_vec_ref.size();
+  return m_ref.size();
 }
 
 template<typename T>
 const T* VecRefColumn<T>::data() const {
-  return m_vec_ref.data();
+  return m_ref.data();
 }
 
 template<typename T>
 const std::vector<T>& VecRefColumn<T>::vector() const {
-  return m_vec_ref;
+  return m_ref;
 }
 
 
@@ -329,8 +329,8 @@ VecColumn<T>::VecColumn() :
 }
 
 template<typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> column_info, std::vector<T> vector) :
-    Column<T>(column_info),
+VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector) :
+    Column<T>(columnInfo),
     m_vec(vector) {
 }
 

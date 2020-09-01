@@ -74,7 +74,7 @@ public:
     Test::SmallTable table; // Predefined table for testing purpose
     logger.info() << "Creating bintable extension: SMALLTBL";
     //! [Create bintable ext]
-    f.assign_bintable_ext("SMALLTBL", table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
+    f.assign_bintable_ext("SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create bintable ext]
 
     logger.info();
