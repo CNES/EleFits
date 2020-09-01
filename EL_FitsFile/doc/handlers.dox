@@ -54,9 +54,9 @@ It is obviously associated to the Record data class.
 Don't:
 
 \code
-const auto& record_hdu = f.access_primary<>();
+const auto& record_hdu = f.accessPrimary<>();
 record_hdu.writeRecord("KEY1", 1);
-const auto& image_hdu = f.access_primary<ImageHdu>();
+const auto& image_hdu = f.accessPrimary<ImageHdu>();
 image_hdu.writeRaster(raster);
 record_hdu.writeRecord("KEY2", 2); // Error: record_hdu is no more valid!
 \endcode
@@ -64,7 +64,7 @@ record_hdu.writeRecord("KEY2", 2); // Error: record_hdu is no more valid!
 Do instead:
 
 \code
-const auto& hdu = f.access_primary<ImageHdu>();
+const auto& hdu = f.accessPrimary<ImageHdu>();
 hdu.writeRecord("KEY1", 1);
 hdu.writeRaster(raster);
 hdu.writeRecord("KEY2", 2);

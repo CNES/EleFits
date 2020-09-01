@@ -56,11 +56,11 @@ public:
    * @brief Fits file read/write permissions.
    */
   enum class Permission {
-    READ, ///< Open as read-only
-    EDIT, ///< Open with write permission
-    CREATE, ///< Create a new file (overwrite forbidden)
-    OVERWRITE, ///< Create a new file or overwrite existing file
-    TEMPORARY ///< Create a temporary file (removed by destructor, overwrite forbidden)
+    Read, ///< Open as read-only
+    Edit, ///< Open with write permission
+    Create, ///< Create a new file (overwrite forbidden)
+    Overwrite, ///< Create a new file or overwrite existing file
+    Temporary ///< Create a temporary file (removed by destructor, overwrite forbidden)
   };
 
   /**
@@ -70,7 +70,7 @@ public:
 
   /**
    * @brief Destroy the FitsFile and close the file.
-   * @details Also remove the file if permission is Permission::TEMPORARY.
+   * @details Also remove the file if permission is Permission::Temporary.
    */
   virtual ~FitsFile();
 
@@ -92,7 +92,7 @@ public:
   /**
    * @brief Close and delete the file.
    */
-  void close_and_delete();
+  void closeAndDelete();
 
 protected:
 

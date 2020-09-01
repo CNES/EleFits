@@ -42,19 +42,19 @@ std::string FitsFile::filename() const {
 
 void FitsFile::open(const std::string& filename, Permission permission) {
   switch (permission) {
-  case Permission::READ:
+  case Permission::Read:
     m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadOnly);
     break;
-  case Permission::EDIT:
+  case Permission::Edit:
     m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadWrite);
     break;
-  case Permission::CREATE:
+  case Permission::Create:
     m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
     break;
-  case Permission::OVERWRITE:
+  case Permission::Overwrite:
     m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::OverWrite);
     break;
-  case Permission::TEMPORARY:
+  case Permission::Temporary:
     m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
   }
   m_open = true; // If this line is reached, no error was raised
@@ -64,8 +64,8 @@ void FitsFile::close() {
   if(not m_open)
     return;
   switch (m_permission) {
-  case Permission::TEMPORARY:
-    close_and_delete();
+  case Permission::Temporary:
+    closeAndDelete();
     break;
   default:
     Cfitsio::File::close(m_fptr);
@@ -73,7 +73,7 @@ void FitsFile::close() {
   m_open = false;
 }
 
-void FitsFile::close_and_delete() {
+void FitsFile::closeAndDelete() {
   if(not m_open)
     return; //TODO should we delete if not open?
   Cfitsio::File::closeAndDelete(m_fptr);

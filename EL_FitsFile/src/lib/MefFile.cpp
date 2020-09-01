@@ -28,19 +28,19 @@ MefFile::MefFile(const std::string& filename, Permission permission) :
     FitsFile(filename, permission),
     m_hdus(std::max(1L, Cfitsio::Hdu::count(m_fptr))) {} // 1 for create, count() for open
 
-long MefFile::hdu_count() const {
+long MefFile::hduCount() const {
   return m_hdus.size();
 }
 
-std::vector<std::string> MefFile::hdu_names() {
-  const long count = hdu_count();
+std::vector<std::string> MefFile::hduNames() {
+  const long count = hduCount();
   std::vector<std::string> names(count);
   for(long i=0; i<count; ++i)
     names[i] = access<>(i+1).name();
   return names;
 }
 
-const RecordHdu& MefFile::init_record_ext(const std::string& name) {
+const RecordHdu& MefFile::initRecordExt(const std::string& name) {
   Cfitsio::Hdu::createMetadataExtension(m_fptr, name);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new RecordHdu(m_fptr, size+1)));
@@ -49,7 +49,7 @@ const RecordHdu& MefFile::init_record_ext(const std::string& name) {
 
 #ifndef COMPILE_ASSIGN_IMAGE_EXT
 #define COMPILE_ASSIGN_IMAGE_EXT(T, n) \
-  template const ImageHdu& MefFile::assign_image_ext<T, n>(const std::string&, const Raster<T, n>&);
+  template const ImageHdu& MefFile::assignImageExt<T, n>(const std::string&, const Raster<T, n>&);
 COMPILE_ASSIGN_IMAGE_EXT(char, 2)
 COMPILE_ASSIGN_IMAGE_EXT(int, 2)
 COMPILE_ASSIGN_IMAGE_EXT(float, 2)

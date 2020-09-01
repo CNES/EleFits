@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_SUITE (RecordHdu_test)
 BOOST_AUTO_TEST_CASE( continued_str_test ) {
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
-  SifFile f(filename, SifFile::Permission::TEMPORARY);
+  SifFile f(filename, SifFile::Permission::Temporary);
   const auto& h = f.header();
   const std::string shortStr = "S";
   const std::string longStr =
@@ -55,8 +55,8 @@ BOOST_AUTO_TEST_CASE( continued_str_test ) {
 BOOST_AUTO_TEST_CASE( rename_test ) {
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
-  MefFile f(filename, MefFile::Permission::TEMPORARY);
-  const auto& h = f.init_record_ext("A");
+  MefFile f(filename, MefFile::Permission::Temporary);
+  const auto& h = f.initRecordExt("A");
   BOOST_CHECK_EQUAL(h.index(), 2);
   BOOST_CHECK_EQUAL(h.name(), "A");
   h.rename("B");
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( rename_test ) {
 BOOST_AUTO_TEST_CASE( c_str_record_test ) {
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
-  SifFile f(filename, SifFile::Permission::TEMPORARY);
+  SifFile f(filename, SifFile::Permission::Temporary);
   const auto& h = f.header();
   h.writeRecord("C_STR", "1");
   const auto output1 = h.parseRecord<std::string>("C_STR");

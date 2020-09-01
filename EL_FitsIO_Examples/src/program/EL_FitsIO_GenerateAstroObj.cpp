@@ -35,7 +35,7 @@ using namespace FitsIO;
 
 void writeMeta(MefFile& f, int obj_index) {
   std::string extname = std::to_string(obj_index) + "_META";
-  const auto& ext = f.init_image_ext<unsigned char, 1>(extname, {0});
+  const auto& ext = f.initImageExt<unsigned char, 1>(extname, {0});
   ext.writeRecords<int, int, float, float>(
       { "DITH_NUM", 0 }, //TODO
       { "SOURC_ID", obj_index },
@@ -55,7 +55,7 @@ void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
   VecRefColumn<char> quality_col( { "QUALITY", "", repeat }, quality_data);
   VecRefColumn<float> var_col( { "VAR", "erg^2", repeat }, var_data);
   std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
-  const auto& ext = f.assign_bintable_ext(extname, wmin_col, signal_col);
+  const auto& ext = f.assignBintableExt(extname, wmin_col, signal_col);
   ext.appendColumn(quality_col);
   ext.appendColumn(var_col);
   ext.writeRecords<float, float, int, float>(
@@ -69,7 +69,7 @@ void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
 void writeCombinedCov(MefFile& f, int obj_index, int bins) {
   Test::RandomRaster<float, 2> cov_raster({bins, bins});
   std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
-  const auto& ext = f.assign_image_ext(extname, cov_raster);
+  const auto& ext = f.assignImageExt(extname, cov_raster);
   ext.writeRecords<int, std::string>(
       { "COV_SIDE", bins },
       { "CODEC", "IDENTITY" }
@@ -109,9 +109,9 @@ public:
     int nbin = args["nbin"].as<int>();
 
     logger.info() << "Creating Fits file: " << filename;
-    MefFile f(filename, MefFile::Permission::OVERWRITE);
+    MefFile f(filename, MefFile::Permission::Overwrite);
     logger.info() << "Writing metadata";
-    const auto& primary = f.access_primary<>();
+    const auto& primary = f.accessPrimary<>();
     primary.writeRecord("N_OBJ", nobj);
 
     for(int i=0; i<nobj; ++i) {

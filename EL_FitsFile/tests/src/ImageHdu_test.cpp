@@ -43,9 +43,9 @@ template<typename T>
 void check_2d() {
   Test::RandomRaster<T, 2> input({16, 9});
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::TEMPORARY);
-  file.assign_image_ext("IMGEXT", input);
-  const auto output = file.access_first<ImageHdu>("IMGEXT").readRaster<T, 2>();
+  MefFile file(filename, MefFile::Permission::Temporary);
+  file.assignImageExt("IMGEXT", input);
+  const auto output = file.accessFirst<ImageHdu>("IMGEXT").readRaster<T, 2>();
   checkEqualVectors(output.vector(), input.vector());
 }
 

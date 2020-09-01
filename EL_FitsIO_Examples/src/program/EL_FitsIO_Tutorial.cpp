@@ -92,11 +92,11 @@ public:
 
     //! [Open a MefFile]
     logger.info() << "Opening file: " << filename;
-    MefFile f(filename, MefFile::Permission::OVERWRITE);
+    MefFile f(filename, MefFile::Permission::Overwrite);
     //! [Open a MefFile]
 
     //! [Access primary HDU]
-    const auto& primary = f.access_primary<>();
+    const auto& primary = f.accessPrimary<>();
     //! [Access primary HDU]
 
     //! [Write and update a record]
@@ -113,14 +113,14 @@ public:
     const auto columns = create_columns();
     //! [Assign a bintable extension]
     logger.info() << "Assigning new Bintable HDU";
-    f.assign_bintable_ext("TABLE", columns.nameCol, columns.speed_col);
+    f.assignBintableExt("TABLE", columns.nameCol, columns.speed_col);
     //! [Assign a bintable extension]
 
     const auto raster = create_raster();
     const auto shape = raster.shape;
     //! [Initialize an image extension]
     logger.info() << "Assigning new Image HDU";
-    const auto& ext = f.init_image_ext<float, 3>("Image", shape);
+    const auto& ext = f.initImageExt<float, 3>("Image", shape);
     ext.writeRaster(raster);
     //! [Initialize an image extension]
 
@@ -143,17 +143,17 @@ public:
 
     logger.info() << "Closing and reopening file just for fun";
     f.close();
-    f.open(filename, MefFile::Permission::READ);
+    f.open(filename, MefFile::Permission::Read);
 
     //! [Read a record]
     logger.info() << "Reading record in primary";
-    const auto record = f.access_primary<>().parseRecord<int>("VALUE");
+    const auto record = f.accessPrimary<>().parseRecord<int>("VALUE");
     logger.info() << "    VALUE = " << record.value;
     //! [Read a record]
 
     //! [Access an HDU by name]
     logger.info() << "Accessing bintable HDU by name";
-    const auto& bintable_ext = f.access_first<BintableHdu>("TABLE");
+    const auto& bintable_ext = f.accessFirst<BintableHdu>("TABLE");
     logger.info() << "    Index: " << bintable_ext.index();
     //! [Access an HDU by name]
 

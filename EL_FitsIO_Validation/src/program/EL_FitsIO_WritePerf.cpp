@@ -96,14 +96,14 @@ public:
     const auto raster = generate_raster(naxis1, naxis2);
     const auto table = generate_columns(naxis2);
 
-    MefFile f(filename, FitsFile::Permission::OVERWRITE);
+    MefFile f(filename, FitsFile::Permission::Overwrite);
 
     logger.info() << "Generating " << image_count << " image extension(s)"
         << " of size " << naxis1 << " x " << naxis2;
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     for(int i=0; i<image_count; ++i)
-      f.assign_image_ext("I_" + std::to_string(i), raster);
+      f.assignImageExt("I_" + std::to_string(i), raster);
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
@@ -114,7 +114,7 @@ public:
 
     begin = std::chrono::steady_clock::now();
     for(int i=0; i<table_count; ++i)
-      f.assign_bintable_ext("T_" + std::to_string(i),
+      f.assignBintableExt("T_" + std::to_string(i),
           table.string_col, table.float_col, table.int_col);
     end = std::chrono::steady_clock::now();
     duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();

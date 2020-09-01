@@ -57,9 +57,9 @@ public:
 
     logger.info() << "Creating Fits file: " << filename;
     //! [Create Fits]
-    MefFile f(filename, MefFile::Permission::OVERWRITE);
+    MefFile f(filename, MefFile::Permission::Overwrite);
     //! [Create Fits]
-    const auto& primary = f.access_primary<>(); // We don't need to specify the HDU type for metadata work
+    const auto& primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
     primary.writeRecord("VALUE", 1);
@@ -74,7 +74,7 @@ public:
     Test::SmallTable table; // Predefined table for testing purpose
     logger.info() << "Creating bintable extension: SMALLTBL";
     //! [Create bintable ext]
-    f.assign_bintable_ext("SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
+    f.assignBintableExt("SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create bintable ext]
 
     logger.info();
@@ -82,7 +82,7 @@ public:
     Test::SmallRaster raster; // Predefined image raster for testing purpose
     logger.info() << "Creating image extension: SMALLIMG";
     //! [Create image ext]
-    const auto& ext = f.assign_image_ext("SMALLIMG", raster);
+    const auto& ext = f.assignImageExt("SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     Record<std::string> str_record("STRING", "string");
@@ -101,10 +101,10 @@ public:
 
     logger.info() << "Reopening file.";
     //! [Open Fits]
-    f.open(filename, MefFile::Permission::READ);
+    f.open(filename, MefFile::Permission::Read);
     //! [Open Fits]
     //! [Read record]
-    const auto record_value = f.access_primary<>().parseRecord<int>("VALUE");
+    const auto record_value = f.accessPrimary<>().parseRecord<int>("VALUE");
     //! [Read record]
     logger.info() << "Reading record: VALUE = " << record_value;
 
@@ -112,7 +112,7 @@ public:
 
     logger.info() << "Reading bintable.";
     //! [Find HDU by name]
-    const auto& bintable_ext = f.access_first<BintableHdu>("SMALLTBL");
+    const auto& bintable_ext = f.accessFirst<BintableHdu>("SMALLTBL");
     //! [Find HDU by name]
     //! [Get HDU index]
     const auto index = bintable_ext.index();
@@ -139,7 +139,7 @@ public:
     const auto records = ext_3.parseRecords<std::string, int>({"STRING", "INTEGER"});
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-    const auto& image_ext = f.access_first<ImageHdu>("SMALLIMG");
+    const auto& image_ext = f.accessFirst<ImageHdu>("SMALLIMG");
     //! [Read raster]
     const auto image = image_ext.readRaster<float>();
     const auto first_pixel = image[{0, 0}];

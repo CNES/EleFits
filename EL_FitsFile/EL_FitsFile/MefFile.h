@@ -56,13 +56,13 @@ public:
   /**
    * @brief Count the number of HDUs.
    */
-  long hdu_count() const;
+  long hduCount() const;
 
   /**
    * @brief Read the name of each HDU.
-   * @warning hdu_names()[i] is the name of HDU i+1 because Fits index is 1-based.
+   * @warning hduNames()[i] is the name of HDU i+1 because Fits index is 1-based.
    */
-  std::vector<std::string> hdu_names();
+  std::vector<std::string> hduNames();
 
   /**
    * @brief Access the Hdu at given index.
@@ -82,47 +82,47 @@ public:
    * @see access
    */
   template<class T=RecordHdu>
-  const T& access_first(const std::string& name);
+  const T& accessFirst(const std::string& name);
 
   /**
    * @brief Access the Primary HDU.
    * @see access
    */
   template<class T=RecordHdu>
-  const T& access_primary();
+  const T& accessPrimary();
 
   /**
    * @brief Append an extension.
    * @return A reference to the new HDU of type T.
    */
   template<class T=RecordHdu>
-  const T& append_ext(T extension);
+  const T& appendExt(T extension);
 
   /**
    * @brief Append a new RecordHdu (as empty ImageHdu) with given name.
    * @return A reference to the new RecordHdu.
    */
-  const RecordHdu& init_record_ext(const std::string& name);
+  const RecordHdu& initRecordExt(const std::string& name);
   /**
    * @brief Append a new ImageHdu with given name and shape.
-   * @see assign_image_ext
+   * @see assignImageExt
    */
   template<typename T, long n>
-  const ImageHdu& init_image_ext(const std::string& name, const Position<n>& shape);
+  const ImageHdu& initImageExt(const std::string& name, const Position<n>& shape);
 
   /**
    * @brief Append an ImageHdu with given name and data.
    * @return A reference to the new ImageHdu.
    */
   template<typename T, long n>
-  const ImageHdu& assign_image_ext(const std::string& name, const Raster<T, n>& raster);
+  const ImageHdu& assignImageExt(const std::string& name, const Raster<T, n>& raster);
 
   /**
    * @brief Append a BintableHdu with given name and columns info.
-   * @see assign_bintable_ext
+   * @see assignBintableExt
    */
   template<typename ...Ts>
-  const BintableHdu& init_bintable_ext(const std::string& name, const ColumnInfo<Ts>&... header);
+  const BintableHdu& initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header);
 
   /**
    * @brief Append a BintableHdu with given name and data.
@@ -130,7 +130,7 @@ public:
    * @return A reference to the new BintableHdu.
    */
   template<typename ...Ts>
-  const BintableHdu& assign_bintable_ext(const std::string& name, const Column<Ts>&... columns);
+  const BintableHdu& assignBintableExt(const std::string& name, const Column<Ts>&... columns);
 
 protected:
 
@@ -151,9 +151,9 @@ protected:
 template<class T>
 const T& MefFile::access(long index) {
   Cfitsio::Hdu::gotoIndex(m_fptr, index);
-  auto hdu_type = Cfitsio::Hdu::currentType(m_fptr);
+  auto hduType = Cfitsio::Hdu::currentType(m_fptr);
   auto& ptr = m_hdus[index-1];
-  switch (hdu_type) {
+  switch (hduType) {
   case Cfitsio::Hdu::Type::Image:
     ptr.reset(new ImageHdu(m_fptr, index));
     break;
@@ -169,18 +169,18 @@ const T& MefFile::access(long index) {
 }
 
 template<class T>
-const T& MefFile::access_first(const std::string& name) {
+const T& MefFile::accessFirst(const std::string& name) {
     Cfitsio::Hdu::gotoName(m_fptr, name);
     return access<T>(Cfitsio::Hdu::currentIndex(m_fptr));
 }
 
 template<class T>
-const T& MefFile::access_primary() {
+const T& MefFile::accessPrimary() {
   return access<T>(1);
 }
 
 template<typename T, long n>
-const ImageHdu& MefFile::init_image_ext(const std::string& name, const Position<n>& shape) {
+const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
@@ -188,7 +188,7 @@ const ImageHdu& MefFile::init_image_ext(const std::string& name, const Position<
 }
 
 template<typename T, long n>
-const ImageHdu& MefFile::assign_image_ext(const std::string& name, const Raster<T, n>& raster) {
+const ImageHdu& MefFile::assignImageExt(const std::string& name, const Raster<T, n>& raster) {
   Cfitsio::Hdu::createImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
@@ -196,7 +196,7 @@ const ImageHdu& MefFile::assign_image_ext(const std::string& name, const Raster<
 }
 
 template<typename ...Ts>
-const BintableHdu& MefFile::init_bintable_ext(const std::string& name, const ColumnInfo<Ts>&... header) {
+const BintableHdu& MefFile::initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, header...);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));
@@ -204,7 +204,7 @@ const BintableHdu& MefFile::init_bintable_ext(const std::string& name, const Col
 }
 
 template<typename ...Ts>
-const BintableHdu& MefFile::assign_bintable_ext(const std::string& name, const Column<Ts>&... columns) {
+const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Column<Ts>&... columns) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));
@@ -213,7 +213,7 @@ const BintableHdu& MefFile::assign_bintable_ext(const std::string& name, const C
 
 #ifndef DECLARE_ASSIGN_IMAGE_EXT
 #define DECLARE_ASSIGN_IMAGE_EXT(T, n) \
-  extern template const ImageHdu& MefFile::assign_image_ext<T, n>(const std::string&, const Raster<T, n>&);
+  extern template const ImageHdu& MefFile::assignImageExt<T, n>(const std::string&, const Raster<T, n>&);
 DECLARE_ASSIGN_IMAGE_EXT(char, 2)
 DECLARE_ASSIGN_IMAGE_EXT(int, 2)
 DECLARE_ASSIGN_IMAGE_EXT(float, 2)

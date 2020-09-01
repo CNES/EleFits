@@ -43,9 +43,9 @@ template<typename T>
 void checkScalar() {
   Test::RandomScalarColumn<T> input;
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::TEMPORARY);
-  file.assign_bintable_ext("BINEXT", input);
-  const auto output = file.access_first<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
+  MefFile file(filename, MefFile::Permission::Temporary);
+  file.assignBintableExt("BINEXT", input);
+  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
   checkEqualVectors(output.vector(), input.vector());
 }
 
@@ -56,10 +56,10 @@ void checkVector() {
   Test::RandomScalarColumn<T> input(rows * repeat);
   input.info.repeat = repeat;
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::TEMPORARY);
-  file.init_bintable_ext("BINEXT", input.info);
-  file.access_first<BintableHdu>("BINEXT").writeColumn(input);
-  const auto output = file.access_first<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
+  MefFile file(filename, MefFile::Permission::Temporary);
+  file.initBintableExt("BINEXT", input.info);
+  file.accessFirst<BintableHdu>("BINEXT").writeColumn(input);
+  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
 }
 
 /**
@@ -74,8 +74,8 @@ BOOST_AUTO_TEST_CASE( float_test ) {
 BOOST_AUTO_TEST_CASE( empty_column_test ) {
   const std::string filename = Elements::TempFile().path().string();
   VecColumn<float> input({"NAME", "", 1}, std::vector<float>());
-  MefFile file(filename, MefFile::Permission::TEMPORARY);
-  file.assign_bintable_ext("BINEXT", input);
+  MefFile file(filename, MefFile::Permission::Temporary);
+  file.assignBintableExt("BINEXT", input);
 }
 
 BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
@@ -85,12 +85,12 @@ BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
   input1.info.name = "COL1";
   input2.info.name = "COL2";
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::TEMPORARY);
-  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("0AND1", input0, input1));
-  // BOOST_CHECK_NO_THROW(file.assign_bintable_ext("1AND0", input1, input0));
+  MefFile file(filename, MefFile::Permission::Temporary);
+  BOOST_CHECK_NO_THROW(file.assignBintableExt("0AND1", input0, input1));
+  // BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND0", input1, input0));
   // no mapping at fault address 0x0, see https://euclid.roe.ac.uk/issues/13572
-  BOOST_CHECK_NO_THROW(file.assign_bintable_ext("1AND2", input1, input2));
-  // BOOST_CHECK_NO_THROW(file.assign_bintable_ext("2AND1", input2, input1));
+  BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND2", input1, input2));
+  // BOOST_CHECK_NO_THROW(file.assignBintableExt("2AND1", input2, input1));
   // Syscall param write(buf) points to uninitialised byte(s)
 }
 

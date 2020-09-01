@@ -68,7 +68,7 @@ public:
     const auto filename = args["output"].as<std::string>();
 
 
-    MefFile f(filename, FitsFile::Permission::OVERWRITE);
+    MefFile f(filename, FitsFile::Permission::Overwrite);
 
     logger.info() << "Writing " << count << " bintable extension(s)"
         << " of " << cols << " columns and " << rows << " rows";
@@ -76,14 +76,14 @@ public:
     {
       const auto table = generate_table(cols, rows);
       for(int i=0; i<count; ++i)
-        f.assign_bintable_ext("T_" + std::to_string(i),
+        f.assignBintableExt("T_" + std::to_string(i),
             table[0], table[1], table[2], table[3], table[4], table[5], table[6], table[7], table[8], table[9]);
     }
 
     logger.info() << "Reading column-wise";
     auto begin = std::chrono::steady_clock::now();
     for(int i=0; i<count; ++i) {
-      const auto& ext = f.access_first<BintableHdu>("T_" + std::to_string(i));
+      const auto& ext = f.accessFirst<BintableHdu>("T_" + std::to_string(i));
       for(int j=0; j<cols; ++j)
         ext.readColumn<value_type>(std::to_string(j));
     }
@@ -95,7 +95,7 @@ public:
     logger.info() << "Reading row-wise";
     begin = std::chrono::steady_clock::now();
     for(int i=0; i<count; ++i) {
-      const auto& ext = f.access_first<BintableHdu>("T_" + std::to_string(i));
+      const auto& ext = f.accessFirst<BintableHdu>("T_" + std::to_string(i));
       std::vector<std::string> names(cols);
       for(int j=0; j<cols; ++j)
         names[j] = std::to_string(j);
