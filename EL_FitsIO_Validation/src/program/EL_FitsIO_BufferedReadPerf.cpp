@@ -32,15 +32,15 @@ using boost::program_options::value;
 
 using namespace Euclid::FitsIO;
 
-using value_type = float;
-using column_type = VecColumn<value_type>;
-using table_type = std::vector<column_type>;
+using ValueType = float;
+using ColumnType = VecColumn<ValueType>;
+using TableType = std::vector<ColumnType>;
 
-table_type generate_table(long cols, long rows) {
-  table_type table(cols);
+TableType generateTable(long cols, long rows) {
+  TableType table(cols);
   for (long c=0; c<cols; ++c) {
-    auto data = Test::generateRandomVector<value_type>(rows);
-    table[c] = column_type { { std::to_string(c), "", 1 }, std::move(data) };
+    auto data = Test::generateRandomVector<ValueType>(rows);
+    table[c] = ColumnType { { std::to_string(c), "", 1 }, std::move(data) };
   }
   return table;
 }
@@ -74,10 +74,12 @@ public:
         << " of " << cols << " columns and " << rows << " rows";
 
     {
-      const auto table = generate_table(cols, rows);
+      const auto table = generateTable(cols, rows);
       for(int i=0; i<count; ++i)
-        f.assignBintableExt("T_" + std::to_string(i),
-            table[0], table[1], table[2], table[3], table[4], table[5], table[6], table[7], table[8], table[9]);
+        f.assignBintableExt(
+            "T_" + std::to_string(i),
+            table[0], table[1], table[2], table[3], table[4],
+            table[5], table[6], table[7], table[8], table[9]);
     }
 
     logger.info() << "Reading column-wise";
@@ -85,12 +87,12 @@ public:
     for(int i=0; i<count; ++i) {
       const auto& ext = f.accessFirst<BintableHdu>("T_" + std::to_string(i));
       for(int j=0; j<cols; ++j)
-        ext.readColumn<value_type>(std::to_string(j));
+        ext.readColumn<ValueType>(std::to_string(j));
     }
     auto end = std::chrono::steady_clock::now();
-    auto duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    auto durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-    logger.info() << "\tElapsed: " << duration_ms << " ms";
+    logger.info() << "\tElapsed: " << durationMilli << " ms";
 
     logger.info() << "Reading row-wise";
     begin = std::chrono::steady_clock::now();
@@ -100,13 +102,13 @@ public:
       for(int j=0; j<cols; ++j)
         names[j] = std::to_string(j);
       ext.readColumns<
-        value_type, value_type, value_type, value_type, value_type,
-        value_type, value_type, value_type, value_type, value_type>(names);
+        ValueType, ValueType, ValueType, ValueType, ValueType,
+        ValueType, ValueType, ValueType, ValueType, ValueType>(names);
     }
     end = std::chrono::steady_clock::now();
-    duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+    durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-    logger.info() << "\tElapsed: " << duration_ms << " ms";
+    logger.info() << "\tElapsed: " << durationMilli << " ms";
 
     return Elements::ExitCode::OK;
   }
