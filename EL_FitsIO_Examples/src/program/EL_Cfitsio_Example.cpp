@@ -39,9 +39,9 @@ using Euclid::Cfitsio::CStrArray;
 struct SmallTable {
   static constexpr long cols = 4;
   static constexpr long rows = 3;
-  CStrArray col_name{"ID", "RADEC", "NAME", "DIST_MAG"};
-  CStrArray col_format{"1J", "1C", "68A", "2D"};
-  CStrArray col_unit {"", "deg", "", "kal"};
+  CStrArray colName {"ID", "RADEC", "NAME", "DIST_MAG"};
+  CStrArray colFormat {"1J", "1C", "68A", "2D"};
+  CStrArray colUnit {"", "deg", "", "kal"};
   int ids[rows] = { 45, 7, 31 };
   std::complex<float> radecs[rows] = { { 56.8500F, 24.1167F }, { 268.4667F, -34.7928F }, { 10.6833F, 41.2692F } };
   CStrArray names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
@@ -88,14 +88,14 @@ public:
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
-    int record_value = 1;
-    fits_write_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
+    int recordValue = 1;
+    fits_write_key(fptr, TINT, "VALUE", &recordValue, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing VALUE");
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
-    record_value = 2;
-    fits_update_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
+    recordValue = 2;
+    fits_update_key(fptr, TINT, "VALUE", &recordValue, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while updating VALUE");
     //! [Update record]
 
@@ -105,7 +105,7 @@ public:
     SmallTable table;
     //! [Create bintable ext]
     fits_create_tbl(fptr, BINARY_TBL, 0,
-        table.cols, table.col_name.data(), table.col_format.data(), table.col_unit.data(),
+        table.cols, table.colName.data(), table.colFormat.data(), table.colUnit.data(),
         "SMALLTBL", &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while creating bintable extension");
     fits_write_col(fptr, TINT, 1, 1, 1, table.rows, table.ids, &status);
@@ -127,13 +127,13 @@ public:
     fits_write_img(fptr, TFLOAT, 1, 6, image.data, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing raster");
     //! [Create image ext]
-    char *record_string = const_cast<char *>("string");
-    int record_integer = 8;
+    char *recordString = const_cast<char *>("string");
+    int recordInteger = 8;
     logger.info() << "Writing record: STRING = string";
-    fits_write_key(fptr, TSTRING, "STRING", record_string, nullptr, &status);
+    fits_write_key(fptr, TSTRING, "STRING", recordString, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing STRING");
     logger.info() << "Writing record: INTEGER = 8";
-    fits_write_key(fptr, TINT, "INTEGER", &record_integer, nullptr, &status);
+    fits_write_key(fptr, TINT, "INTEGER", &recordInteger, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing INTEGER");
 
     logger.info();
@@ -152,10 +152,10 @@ public:
     //! [Open Fits]
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while opening file");
     //! [Read record]
-    fits_read_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
+    fits_read_key(fptr, TINT, "VALUE", &recordValue, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading VALUE");
     //! [Read record]
-    logger.info() << "Reading record: VALUE = " << record_value;
+    logger.info() << "Reading record: VALUE = " << recordValue;
 
     logger.info();
 
@@ -176,9 +176,9 @@ public:
     int ids[table.rows];
     fits_read_col(fptr, TINT, colnum, 1, 1, table.rows, nullptr, ids, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading column ID");
-    const auto first_cell = ids[0];
+    const auto firstCell = ids[0];
     //! [Read column]
-    logger.info() << "First id: " << first_cell;
+    logger.info() << "First id: " << firstCell;
     fits_get_colnum(fptr, CASESEN, const_cast<char *>("NAME"), &colnum, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while finding column NAME");
     char *names[table.rows];
@@ -198,30 +198,30 @@ public:
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while moving to image extension");
     //! [Find HDU by index]
     //! [Get HDU name]
-    char* extname_read = (char*) malloc(69);
-    fits_read_key(fptr, TSTRING, "EXTNAME", extname_read, nullptr, &status);
+    char* extnameRead = (char*) malloc(69);
+    fits_read_key(fptr, TSTRING, "EXTNAME", extnameRead, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading extension name");
     //! [Get HDU name]
-    logger.info() << "Name of HDU #3: " << extname_read;
-    free(extname_read);
-    char* string_read = (char*) malloc(69);
-    fits_read_key(fptr, TSTRING, "STRING", string_read, nullptr, &status);
+    logger.info() << "Name of HDU #3: " << extnameRead;
+    free(extnameRead);
+    char* stringRead = (char*) malloc(69);
+    fits_read_key(fptr, TSTRING, "STRING", stringRead, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading STRING record");
-    logger.info() << "Reading record: STRING = " << string_read;
-    free(string_read);
-    int integer_read;
-    fits_read_key(fptr, TINT, "INTEGER", &integer_read, nullptr, &status);
+    logger.info() << "Reading record: STRING = " << stringRead;
+    free(stringRead);
+    int integerRead;
+    fits_read_key(fptr, TINT, "INTEGER", &integerRead, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading INTEGER record");
-    logger.info() << "Reading record: INTEGER = " << integer_read;
+    logger.info() << "Reading record: INTEGER = " << integerRead;
     //! [Read raster]
     float data[image.size];
     fits_read_img(fptr, TFLOAT, 1, image.size, nullptr, data, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading image raster");
-    const auto first_pixel = data[0];
-    const auto last_pixel = data[image.size-1];
+    const auto firstPixel = data[0];
+    const auto lastPixel = data[image.size-1];
     //! [Read raster]
-    logger.info() << "First pixel: " << first_pixel;
-    logger.info() << "Last pixel: " << last_pixel;
+    logger.info() << "First pixel: " << firstPixel;
+    logger.info() << "Last pixel: " << lastPixel;
 
     logger.info();
 

@@ -85,10 +85,10 @@ public:
     Hdu::createImageExtension(fptr, "SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
-    FitsIO::Record<std::string> str_record("STRING", "string");
+    FitsIO::Record<std::string> strRecord("STRING", "string");
     logger.info() << "Writing record: INTEGER = 8";
-    FitsIO::Record<int> int_record("INTEGER", 8);
-    Header::writeRecords(fptr, str_record, int_record);
+    FitsIO::Record<int> intRecord("INTEGER", 8);
+    Header::writeRecords(fptr, strRecord, intRecord);
 
     logger.info();
 
@@ -104,9 +104,9 @@ public:
     fptr = File::open(filename, File::OpenPolicy::ReadOnly);
     //! [Open Fits]
     //! [Read record]
-    const auto record_value = Header::parseRecord<int>(fptr, "VALUE");
+    const auto recordValue = Header::parseRecord<int>(fptr, "VALUE");
     //! [Read record]
-    logger.info() << "Reading record: VALUE = " << record_value;
+    logger.info() << "Reading record: VALUE = " << recordValue;
 
     logger.info();
 
@@ -120,9 +120,9 @@ public:
     logger.info() << "HDU index: " << index;
     //! [Read column]
     const auto ids = Bintable::readColumn<int>(fptr, "ID").vector();
-    const auto first_cell = ids[0];
+    const auto firstCell = ids[0];
     //! [Read column]
-    logger.info() << "First id: " << first_cell;
+    logger.info() << "First id: " << firstCell;
     const auto names = Bintable::readColumn<std::string>(fptr, "NAME").vector();
     logger.info() << "Last name: " << names[names.size()-1];
 
@@ -142,13 +142,13 @@ public:
     Hdu::gotoName(fptr, "SMALLIMG");
     //! [Read raster]
     const auto image = Image::readRaster<float>(fptr);
-    const auto first_pixel = image[{0, 0}];
+    const auto firstPixel = image[{0, 0}];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
-    const auto last_pixel = image[{width-1, height-1}];
+    const auto lastPixel = image[{width-1, height-1}];
     //! [Read raster]
-    logger.info() << "First pixel: " << first_pixel;
-    logger.info() << "Last pixel: " << last_pixel;
+    logger.info() << "First pixel: " << firstPixel;
+    logger.info() << "Last pixel: " << lastPixel;
 
     logger.info();
 

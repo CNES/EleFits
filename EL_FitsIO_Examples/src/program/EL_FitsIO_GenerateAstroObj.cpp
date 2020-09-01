@@ -33,31 +33,31 @@ using boost::program_options::value;
 using namespace Euclid;
 using namespace FitsIO;
 
-void writeMeta(MefFile& f, int obj_index) {
-  std::string extname = std::to_string(obj_index) + "_META";
+void writeMeta(MefFile& f, int objIndex) {
+  std::string extname = std::to_string(objIndex) + "_META";
   const auto& ext = f.initImageExt<unsigned char, 1>(extname, {0});
   ext.writeRecords<int, int, float, float>(
       { "DITH_NUM", 0 }, //TODO
-      { "SOURC_ID", obj_index },
-      { "RA_OBJ", float(2 * obj_index) },
-      { "DEC_OBJ", float(3 * obj_index) }
+      { "SOURC_ID", objIndex },
+      { "RA_OBJ", float(2 * objIndex) },
+      { "DEC_OBJ", float(3 * objIndex) }
   );
 }
 
-void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
-  auto wmin_data = Test::generateRandomVector<float>(bins);
-  auto signal_data = Test::generateRandomVector<float>(bins);
-  auto quality_data = Test::generateRandomVector<char>(bins);
-  auto var_data = Test::generateRandomVector<float>(bins);
+void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
+  auto wminData = Test::generateRandomVector<float>(bins);
+  auto signalData = Test::generateRandomVector<float>(bins);
+  auto qualityData = Test::generateRandomVector<char>(bins);
+  auto varData = Test::generateRandomVector<float>(bins);
   const long repeat = 1; //TODO bins?
-  VecRefColumn<float> wmin_col( { "WMIN", "nm", repeat }, wmin_data);
-  VecRefColumn<float> signal_col( { "SIGNAL", "erg", repeat }, signal_data);
-  VecRefColumn<char> quality_col( { "QUALITY", "", repeat }, quality_data);
-  VecRefColumn<float> var_col( { "VAR", "erg^2", repeat }, var_data);
-  std::string extname = std::to_string(obj_index) + "_COMBINED1D_SIGNAL";
-  const auto& ext = f.assignBintableExt(extname, wmin_col, signal_col);
-  ext.appendColumn(quality_col);
-  ext.appendColumn(var_col);
+  VecRefColumn<float> wminCol( { "WMIN", "nm", repeat }, wminData);
+  VecRefColumn<float> signalCol( { "SIGNAL", "erg", repeat }, signalData);
+  VecRefColumn<char> qualityCol( { "QUALITY", "", repeat }, qualityData);
+  VecRefColumn<float> varCol( { "VAR", "erg^2", repeat }, varData);
+  std::string extname = std::to_string(objIndex) + "_COMBINED1D_SIGNAL";
+  const auto& ext = f.assignBintableExt(extname, wminCol, signalCol);
+  ext.appendColumn(qualityCol);
+  ext.appendColumn(varCol);
   ext.writeRecords<float, float, int, float>(
       { "WMIN", 0.F },
       { "BINWIDTH", 1.F },
@@ -66,9 +66,9 @@ void writeCombinedSignal(MefFile& f, int obj_index, int bins) {
   );
 }
 
-void writeCombinedCov(MefFile& f, int obj_index, int bins) {
+void writeCombinedCov(MefFile& f, int objIndex, int bins) {
   Test::RandomRaster<float, 2> cov_raster({bins, bins});
-  std::string extname = std::to_string(obj_index) + "_COMBINED1D_COV";
+  std::string extname = std::to_string(objIndex) + "_COMBINED1D_COV";
   const auto& ext = f.assignImageExt(extname, cov_raster);
   ext.writeRecords<int, std::string>(
       { "COV_SIDE", bins },
@@ -76,14 +76,14 @@ void writeCombinedCov(MefFile& f, int obj_index, int bins) {
   );
 }
 
-void writeCombined(MefFile& f, int obj_index, int bins) {
-  writeCombinedSignal(f, obj_index, bins);
-  writeCombinedCov(f, obj_index, bins);
+void writeCombined(MefFile& f, int objIndex, int bins) {
+  writeCombinedSignal(f, objIndex, bins);
+  writeCombinedCov(f, objIndex, bins);
 }
 
-void writeAstroObj(MefFile& f, int obj_index, int bins) {
-  writeMeta(f, obj_index);
-  writeCombined(f, obj_index, bins);
+void writeAstroObj(MefFile& f, int objIndex, int bins) {
+  writeMeta(f, objIndex);
+  writeCombined(f, objIndex, bins);
 }
 
 class EL_FitsIO_GenerateAstroObj : public Elements::Program {
