@@ -24,10 +24,7 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-MinimalFile::MinimalFile() :
-    tmp(),
-    filename(tmp.path().string()),
-    fptr(nullptr) {
+MinimalFile::MinimalFile() : tmp(), filename(tmp.path().string()), fptr(nullptr) {
   fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::OverWrite);
 }
 
@@ -35,6 +32,6 @@ MinimalFile::~MinimalFile() {
   Cfitsio::File::close(fptr);
 }
 
-}
-}
-}
+} // namespace Test
+} // namespace FitsIO
+} // namespace Euclid

@@ -35,46 +35,46 @@ namespace File {
  * @brief File creation policy.
  */
 enum class CreatePolicy {
-  CreateOnly,    ///< Create only (abort if file exists).
-  OverWrite    ///< Allow overwriting if file already exists.
+  CreateOnly, ///< Create only (abort if file exists).
+  OverWrite ///< Allow overwriting if file already exists.
 };
 
 /**
  * @brief File opening policy.
  */
 enum class OpenPolicy {
-  ReadOnly,    ///< Read persmission only.
-  ReadWrite    ///< Read and write permissions.
+  ReadOnly, ///< Read persmission only.
+  ReadWrite ///< Read and write permissions.
 };
 
 /**
  * @brief Create or overwrite a Fits file and open it.
  */
-fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy);
+fitsfile *createAndOpen(const std::string &filename, CreatePolicy policy);
 
 /**
  * @brief Open an existing Fits file with optional write permission.
  */
-fitsfile* open(const std::string& filename, OpenPolicy policy);
+fitsfile *open(const std::string &filename, OpenPolicy policy);
 
 /**
  * @brief Close a Fits file.
  */
-void close(fitsfile*& fptr);
+void close(fitsfile *&fptr);
 
 /**
  * @brief Close and delete a Fits file.
  * @warning Throw an exception if writing is not permitted.
  */
-void closeAndDelete(fitsfile*& fptr);
+void closeAndDelete(fitsfile *&fptr);
 
 /**
  * @brief Check whether a Fits file is open with write permission.
  */
-bool isWritable(fitsfile* fptr);
+bool isWritable(fitsfile *fptr);
 
-}
-}
-}
+} // namespace File
+} // namespace Cfitsio
+} // namespace Euclid
 
 #endif

@@ -1,43 +1,39 @@
 BasedOnStyle: LLVM
 Language: Cpp
+Standard: Cpp11
 AccessModifierOffset: 0
 AlignAfterOpenBracket: DontAlign
-#AlignConsecutiveBitFiels: false
-AlignEscapedNewlines: Right
+AlignEscapedNewlines: DontAlign
 AlignOperands: false
 AlignTrailingComments: false
-AllowAllArgumentsOnNextLine: false
-AllowAllConstructorInitializersOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
-#AllowShortEnumsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: None
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
-BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterControlStatement: true
-  BeforeCatch: true
-  BeforeElse: true
+  AfterControlStatement: false
+  BeforeCatch: false
+  BeforeElse: false
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
 BreakBeforeBraces: Custom
 BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon
+ColumnLimit: 120
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: false
-#DeriveLineEnding: true
-DerivePointerAlignment: true
-FixNamespaceComments: false
-IncludeBlocks: Preserve
-#IndentCaseBlocks: true
+Cpp11BracedListStyle: false #TODO why?
+DerivePointerAlignment: false
+FixNamespaceComments: true
+IncludeBlocks: Regroup
 IndentCaseLabels: true
-#IndentExternBlocks: AfterExternBlock
-#IndentGotoLabels: true
-#InsertTrailingCommas: None
 PenaltyBreakAssignment: 10
 PenaltyBreakBeforeFirstCallParameter: 1
 PenaltyBreakComment: 5
@@ -46,15 +42,12 @@ PenaltyBreakString: 100
 PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 1000
 PenaltyReturnTypeOnItsOwnLine: 1000
-#RawStringFormats:
+PointerAlignment: Right
 ReflowComments: true
 SortIncludes: false
 SortUsingDeclarations: false
 SpaceBeforeCpp11BracedList: true
-SpaceBeforeCtorInitializerColon: false
-SpaceBeforeInheritanceColon: false
-#SpaceInEmptyBlocks: false
-SpacesBeforeTrailingComments: 4
-#SpacesInConditionalStatement: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpacesBeforeTrailingComments: 1
 TabWidth: 4
-#UseCRLF: false

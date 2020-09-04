@@ -83,10 +83,10 @@ struct TypeCode {
  * TULONG, TLONGLONG, TFLOAT, TDOUBLE, TCOMPLEX, and TDBLCOMPLEX
  */
 #ifndef DEF_RECORD_TYPE_CODE
-#define DEF_RECORD_TYPE_CODE(type, code)                                       \
-  template <>                                                                  \
-  inline int TypeCode<type>::forRecord() {                                     \
-    return code;                                                               \
+#define DEF_RECORD_TYPE_CODE(type, code) \
+  template <> \
+  inline int TypeCode<type>::forRecord() { \
+    return code; \
   }
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
@@ -117,10 +117,10 @@ DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
  * TLOGICAL (internally mapped to the `char' data type), TCOMPLEX, TDBLCOMPLEX
  */
 #ifndef DEF_TABLE_TYPE_CODE
-#define DEF_TABLE_TYPE_CODE(type, code)                                        \
-  template <>                                                                  \
-  inline int TypeCode<type>::forBintable() {                                   \
-    return code;                                                               \
+#define DEF_TABLE_TYPE_CODE(type, code) \
+  template <> \
+  inline int TypeCode<type>::forBintable() { \
+    return code; \
   }
 DEF_TABLE_TYPE_CODE(bool, TBIT)
 DEF_TABLE_TYPE_CODE(char, TSBYTE)
@@ -153,10 +153,10 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
  * - 'S' for a signed byte column.
  */
 #ifndef DEF_TABLE_TFORM
-#define DEF_TABLE_TFORM(type, code)                                            \
-  template <>                                                                  \
-  inline std::string TypeCode<type>::tform(long repeat) {                      \
-    return std::to_string(repeat) + code;                                      \
+#define DEF_TABLE_TFORM(type, code) \
+  template <> \
+  inline std::string TypeCode<type>::tform(long repeat) { \
+    return std::to_string(repeat) + code; \
   }
 DEF_TABLE_TFORM(bool, 'X')
 DEF_TABLE_TFORM(char, 'S')
@@ -184,10 +184,10 @@ DEF_TABLE_TFORM(std::uint64_t, 'W')
  * TULONGLONG, TFLOAT, TDOUBLE
  */
 #ifndef DEF_IMAGE_TYPE_CODE
-#define DEF_IMAGE_TYPE_CODE(type, code)                                        \
-  template <>                                                                  \
-  inline int TypeCode<type>::forImage() {                                      \
-    return code;                                                               \
+#define DEF_IMAGE_TYPE_CODE(type, code) \
+  template <> \
+  inline int TypeCode<type>::forImage() { \
+    return code; \
   }
 DEF_IMAGE_TYPE_CODE(char, TSBYTE)
 DEF_IMAGE_TYPE_CODE(short, TSHORT)
@@ -212,10 +212,10 @@ DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
  * SBYTE_IMG, USHORT_IMG, ULONG_IMG, ULONGLONG_IMG
  */
 #ifndef DEF_IMAGE_BITPIX
-#define DEF_IMAGE_BITPIX(type, code)                                           \
-  template <>                                                                  \
-  inline int TypeCode<type>::bitpix() {                                        \
-    return code;                                                               \
+#define DEF_IMAGE_BITPIX(type, code) \
+  template <> \
+  inline int TypeCode<type>::bitpix() { \
+    return code; \
   }
 DEF_IMAGE_BITPIX(char, SBYTE_IMG)
 DEF_IMAGE_BITPIX(std::int16_t, SHORT_IMG)
@@ -232,7 +232,7 @@ DEF_IMAGE_BITPIX(std::uint64_t, ULONGLONG_IMG)
 
 /// @endcond
 
-}
-}
+} // namespace Cfitsio
+} // namespace Euclid
 
 #endif

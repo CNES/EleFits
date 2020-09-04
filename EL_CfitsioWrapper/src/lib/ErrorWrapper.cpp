@@ -24,12 +24,12 @@ namespace Euclid {
 namespace Cfitsio {
 
 CfitsioError::CfitsioError(int cfitsioStatus) :
-    std::runtime_error(cfitsioErrorMessage(cfitsioStatus)),
-    status(cfitsioStatus) {}
+    std::runtime_error(cfitsioErrorMessage(cfitsioStatus)), status(cfitsioStatus) {
+}
 
-CfitsioError::CfitsioError(int cfitsioStatus, const std::string& context) :
-    std::runtime_error(cfitsioErrorMessage(cfitsioStatus) + " (" + context + ")"),
-    status(cfitsioStatus) {}
+CfitsioError::CfitsioError(int cfitsioStatus, const std::string &context) :
+    std::runtime_error(cfitsioErrorMessage(cfitsioStatus) + " (" + context + ")"), status(cfitsioStatus) {
+}
 
 std::string cfitsioErrorMessage(int status) {
   char cfitsio_msg[FLEN_ERRMSG];
@@ -39,24 +39,26 @@ std::string cfitsioErrorMessage(int status) {
   return error_msg;
 }
 
-void mayThrowCfitsioError(int status, const std::string& context) {
-  if(status == 0)
+void mayThrowCfitsioError(int status, const std::string &context) {
+  if (status == 0) {
     return;
-  if(context.empty())
+  }
+  if (context.empty()) {
     throw CfitsioError(status);
-  else
+  } else {
     throw CfitsioError(status, context);
+  }
 }
 
-void mayThrowReadonlyError(fitsfile* fptr) {
-  if(not File::isWritable(fptr))
+void mayThrowReadonlyError(fitsfile *fptr) {
+  if (not File::isWritable(fptr))
     mayThrowCfitsioError(READONLY_FILE);
 }
 
-void mayThrowInvalidFileError(fitsfile* fptr) {
-  if(not fptr)
+void mayThrowInvalidFileError(fitsfile *fptr) {
+  if (not fptr)
     mayThrowCfitsioError(BAD_FILEPTR);
 }
 
-}
-}
+} // namespace Cfitsio
+} // namespace Euclid

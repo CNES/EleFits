@@ -29,7 +29,6 @@
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
-
 namespace Euclid {
 namespace Cfitsio {
 
@@ -41,50 +40,48 @@ namespace Image {
 /**
  * @brief Resize the Raster of the current Image HDU.
  */
-template<typename T, long n=2>
-void resize(fitsfile* fptr, const FitsIO::Position<n>& shape);
+template <typename T, long n = 2>
+void resize(fitsfile *fptr, const FitsIO::Position<n> &shape);
 
 /**
  * @brief Read a Raster in current Image HDU.
  */
-template<typename T, long n=2>
-FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr);
+template <typename T, long n = 2>
+FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr);
 
 /**
  * @brief Write a Raster in current Image HDU.
  */
-template<typename T, long n=2>
-void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
-
+template <typename T, long n = 2>
+void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster);
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<typename T, long n>
-void resize(fitsfile* fptr, const FitsIO::Position<n>& shape) {
+template <typename T, long n>
+void resize(fitsfile *fptr, const FitsIO::Position<n> &shape) {
   int status = 0;
   auto nonconstShape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconstShape.data(), &status);
 }
 
-template<typename T, long n>
-FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) {
+template <typename T, long n>
+FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr) {
   FitsIO::VecRaster<T, n> raster;
   int status = 0;
   fits_get_img_size(fptr, n, &raster.shape[0], &status);
   mayThrowCfitsioError(status);
   const auto size = raster.size();
-  raster.vector().resize(size); //TODO instantiate here directly with right shape
+  raster.vector().resize(size); // TODO instantiate here directly with right shape
   fits_read_img(fptr, TypeCode<T>::forImage(), 1, size, nullptr, raster.data(), nullptr, &status);
   // Number 1 is a 1-base offset (so we read the whole raster here)
   mayThrowCfitsioError(status, "Cannot read raster");
   return raster;
 }
 
-template<typename T, long n>
-void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
+template <typename T, long n>
+void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   const auto begin = raster.data();
@@ -94,8 +91,8 @@ void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   mayThrowCfitsioError(status, "Cannot write raster");
 }
 
-}
-}
-}
+} // namespace Image
+} // namespace Cfitsio
+} // namespace Euclid
 
 #endif

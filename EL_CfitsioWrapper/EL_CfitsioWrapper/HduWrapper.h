@@ -87,12 +87,12 @@ bool gotoIndex(fitsfile *fptr, long index);
 /**
  * @brief Go to an HDU specified by its name.
  */
-bool gotoName(fitsfile *fptr, const std::string& name);
+bool gotoName(fitsfile *fptr, const std::string &name);
 
 /**
  * @brief Go to an HDU specified by incrementing the index by a given amount.
  */
-bool gotoNext(fitsfile *fptr, long step=1);
+bool gotoNext(fitsfile *fptr, long step = 1);
 
 /**
  * @brief Go to the Primary HDU.
@@ -107,50 +107,48 @@ bool initPrimary(fitsfile *fptr);
 /**
  * @brief Write or update HDU name.
  */
-bool updateName(fitsfile* fptr, const std::string& name);
+bool updateName(fitsfile *fptr, const std::string &name);
 
 /**
  * @brief Create a HDU of Type METADATA.
  */
-void createMetadataExtension(fitsfile *fptr, const std::string& name);
+void createMetadataExtension(fitsfile *fptr, const std::string &name);
 
 /**
  * @brief Create a new Image HDU with given name, pixel type and shape.
  */
-template<typename T, long n=2>
-void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::Position<n>& shape);
+template <typename T, long n = 2>
+void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Position<n> &shape);
 
 /**
  * @brief Write a Raster in a new Image HDU.
  */
-template<typename T, long n=2>
-void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::Raster<T, n>& raster);
+template <typename T, long n = 2>
+void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Raster<T, n> &raster);
 
 /**
  * @brief Create a new Bintable HDU with given name and column infos.
  */
-template<typename... Ts>
-void createBintableExtension(fitsfile *fptr, const std::string& name, const FitsIO::ColumnInfo<Ts>&... header);
+template <typename... Ts>
+void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::ColumnInfo<Ts> &... header);
 
 /**
  * @brief Write a Table in a new Bintable HDU.
  */
-template<typename... Ts>
-void createBintableExtension(fitsfile *fptr, const std::string& name, const FitsIO::Column<Ts>&... table);
+template <typename... Ts>
+void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<Ts> &... table);
 
 /**
  * @brief Delete the HDU at given index.
  */
 void deleteHdu(fitsfile *fptr, long index);
 
-
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<typename T, long n>
-void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::Position<n>& shape) {
+template <typename T, long n>
+void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Position<n> &shape) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   auto nonconstShape = shape; // const-correctness issue
@@ -159,61 +157,55 @@ void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO:
   updateName(fptr, name);
 }
 
-template<typename T, long n>
-void createImageExtension(fitsfile *fptr, const std::string& name, const FitsIO::Raster<T, n>& raster) {
+template <typename T, long n>
+void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Raster<T, n> &raster) {
   mayThrowReadonlyError(fptr);
   createImageExtension<T, n>(fptr, name, raster.shape);
   Image::writeRaster<T, n>(fptr, raster);
 }
 
-template<typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::ColumnInfo<Ts>&... header) {
+template <typename... Ts>
+void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::ColumnInfo<Ts> &... header) {
   constexpr long ncols = sizeof...(Ts);
-  CStrArray colName { header.name ... };
-  CStrArray colFormat { TypeCode<Ts>::tform(header.repeat) ... };
-  CStrArray colUnit { header.unit ... };
+  CStrArray colName { header.name... };
+  CStrArray colFormat { TypeCode<Ts>::tform(header.repeat)... };
+  CStrArray colUnit { header.unit... };
   int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
-      colName.data(), colFormat.data(), colUnit.data(),
-      name.c_str(), &status);
+  fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
 }
 
-template<typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::Column<Ts>&... table) {
+template <typename... Ts>
+void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<Ts> &... table) {
   constexpr long ncols = sizeof...(Ts);
-  CStrArray colName { table.info.name ... };
-  CStrArray colFormat { TypeCode<Ts>::tform(table.info.repeat) ... };
-  CStrArray colUnit { table.info.unit ... };
+  CStrArray colName { table.info.name... };
+  CStrArray colFormat { TypeCode<Ts>::tform(table.info.repeat)... };
+  CStrArray colUnit { table.info.unit... };
   int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, ncols,
-      colName.data(), colFormat.data(), colUnit.data(),
-      name.c_str(), &status);
+  fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
   Bintable::writeColumns(fptr, table...);
 }
 
 /// @cond INTERNAL
-template<typename T>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::Column<T>& column) {
+template <typename T>
+void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<T> &column) {
   constexpr long count = 1;
   std::string colName = column.info.name;
-  char* cName = &colName[0];
+  char *cName = &colName[0];
   std::string colFormat = TypeCode<T>::tform(column.info.repeat);
-  char* cFormat = &colFormat[0];
+  char *cFormat = &colFormat[0];
   std::string colUnit = column.info.unit;
-  char* cUnit = &colUnit[0];
+  char *cUnit = &colUnit[0];
   int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, count,
-      &cName, &cFormat, &cUnit,
-      name.c_str(), &status);
+  fits_create_tbl(fptr, BINARY_TBL, 0, count, &cName, &cFormat, &cUnit, name.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
   Bintable::writeColumn(fptr, column);
 }
 /// @endcond
 
-}
-}
-}
+} // namespace Hdu
+} // namespace Cfitsio
+} // namespace Euclid
 
 #endif

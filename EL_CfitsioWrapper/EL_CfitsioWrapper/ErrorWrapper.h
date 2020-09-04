@@ -32,25 +32,23 @@ namespace Cfitsio {
  */
 class CfitsioError : public std::runtime_error {
 
-public:
+  public:
+  /**
+   * @brief Create from CFitsIO error code.
+   * @details This generate the associated CFitsIO message with no context.
+   */
+  explicit CfitsioError(int cfitsioStatus);
 
-    /**
-     * @brief Create from CFitsIO error code.
-     * @details This generate the associated CFitsIO message with no context.
-     */
-    explicit CfitsioError(int cfitsioStatus);
-    
-    /**
-     * @brief Create from CFitsIO error code and user-given context.
-     * @details This generates the associated CFitsIO message with context.
-     */
-    CfitsioError(int cfitsioStatus, const std::string& context);
-    
-    /**
-     * @brief The CFitsIO error code.
-     */
-    int status;
+  /**
+   * @brief Create from CFitsIO error code and user-given context.
+   * @details This generates the associated CFitsIO message with context.
+   */
+  CfitsioError(int cfitsioStatus, const std::string &context);
 
+  /**
+   * @brief The CFitsIO error code.
+   */
+  int status;
 };
 
 /**
@@ -61,19 +59,19 @@ std::string cfitsioErrorMessage(int status);
 /**
  * @brief Check whether status is OK (=0) and throw an error if not.
  */
-void mayThrowCfitsioError(int status, const std::string& context="");
+void mayThrowCfitsioError(int status, const std::string &context = "");
 
 /**
  * @brief Check whether the file is valid and throw an error if not.
  */
-void mayThrowInvalidFileError(fitsfile* fptr);
+void mayThrowInvalidFileError(fitsfile *fptr);
 
 /**
  * @brief Check whether the file is writable and throw an error if not.
  */
-void mayThrowReadonlyError(fitsfile* fptr);
+void mayThrowReadonlyError(fitsfile *fptr);
 
-}
-}
+} // namespace Cfitsio
+} // namespace Euclid
 
 #endif

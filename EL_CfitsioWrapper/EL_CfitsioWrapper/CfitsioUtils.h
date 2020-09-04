@@ -33,7 +33,7 @@ namespace Cfitsio {
  * @brief Convert a string to a unique_ptr<char>.
  * @details Used to work around non-const correctness of CFitsIO.
  */
-std::unique_ptr<char[]> toCharPtr(const std::string& str);
+std::unique_ptr<char[]> toCharPtr(const std::string &str);
 
 /**
  * @brief A helper structure to safely convert vector<string> to char**.
@@ -43,18 +43,18 @@ struct CStrArray {
   /**
    * @brief Create from begin and end iterators.
    */
-  template<typename T>
+  template <typename T>
   CStrArray(const T begin, const T end);
 
   /**
    * @brief Create from a vector.
    */
-  explicit CStrArray(const std::vector<std::string>& data);
+  explicit CStrArray(const std::vector<std::string> &data);
 
   /**
    * @brief Create from an initializer_list.
    */
-  explicit CStrArray(const std::initializer_list<std::string>& data);
+  explicit CStrArray(const std::initializer_list<std::string> &data);
 
   /**
    * @brief A vector of smart pointers to char[].
@@ -66,13 +66,12 @@ struct CStrArray {
    * @brief A vector of char*.
    * @warning Modification makes CStrArray object invalid.
    */
-  std::vector<char*> cStrVector;
+  std::vector<char *> cStrVector;
 
   /**
    * @brief Get the data as a non-const char**.
    */
-  char** data();
-
+  char **data();
 };
 
 /// @cond INTERNAL
@@ -84,44 +83,39 @@ struct CStrArray {
  */
 namespace std14 {
 
-template <std::size_t ...>
-struct index_sequence
- { };
+template <std::size_t...>
+struct index_sequence {};
 
-template <std::size_t N, std::size_t ... Next>
-struct _index_sequence : public _index_sequence<N-1U, N-1U, Next...>
- { };
+template <std::size_t N, std::size_t... Next>
+struct _index_sequence : public _index_sequence<N - 1U, N - 1U, Next...> {};
 
-template <std::size_t ... Next>
-struct _index_sequence<0U, Next ... >
- { using type = index_sequence<Next ... >; };
+template <std::size_t... Next>
+struct _index_sequence<0U, Next...> {
+  using type = index_sequence<Next...>;
+};
 
 template <std::size_t N>
 using make_index_sequence = typename _index_sequence<N>::type;
 
-}
+} // namespace std14
 
 /// @endcond
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<typename T>
-CStrArray::CStrArray(const T begin, const T end) :
-        smartPtrVector(end - begin),
-        cStrVector(end - begin) {
-  for(long i = 0; i < static_cast<long>(end - begin); ++i) {  //TODO iterators?
-    auto& smart_ptr_i = smartPtrVector[i];
+template <typename T>
+CStrArray::CStrArray(const T begin, const T end) : smartPtrVector(end - begin), cStrVector(end - begin) {
+  for (long i = 0; i < static_cast<long>(end - begin); ++i) { // TODO iterators?
+    auto &smart_ptr_i = smartPtrVector[i];
     smart_ptr_i = std::unique_ptr<char[]>(new char[(begin + i)->length() + 1]);
     std::strcpy(smart_ptr_i.get(), (begin + i)->c_str());
     cStrVector[i] = smart_ptr_i.get();
   }
 }
 
-}
-}
+} // namespace Cfitsio
+} // namespace Euclid
 
 #endif
