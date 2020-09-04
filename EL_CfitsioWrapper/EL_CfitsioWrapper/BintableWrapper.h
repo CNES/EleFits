@@ -101,7 +101,11 @@ void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO:
 
 template <>
 void initColumnImpl<std::string>(
-    fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<std::string> &column, long rows);
+    fitsfile *fptr,
+    long index,
+    const std::string &name,
+    FitsIO::VecColumn<std::string> &column,
+    long rows);
 
 template <typename T>
 void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rows) {
@@ -116,7 +120,8 @@ void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO:
 
 template <std::size_t i, typename... Ts>
 struct InitColumnsImpl {
-  void operator()(fitsfile *fptr,
+  void operator()(
+      fitsfile *fptr,
       const std::vector<long> &indices,
       const std::vector<std::string> &names,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
@@ -128,7 +133,8 @@ struct InitColumnsImpl {
 
 template <typename... Ts>
 struct InitColumnsImpl<0, Ts...> {
-  void operator()(fitsfile *fptr,
+  void operator()(
+      fitsfile *fptr,
       const std::vector<long> &indices,
       const std::vector<std::string> &names,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
@@ -142,13 +148,18 @@ void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &colum
 
 template <>
 void readColumnChunkImpl<std::string>(
-    fitsfile *fptr, long index, FitsIO::VecColumn<std::string> &column, long firstRow, long rowCount);
+    fitsfile *fptr,
+    long index,
+    FitsIO::VecColumn<std::string> &column,
+    long firstRow,
+    long rowCount);
 
 template <typename T>
 void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long firstRow, long rowCount) {
   int status = 0;
   auto begin = column.vector().data() + (firstRow - 1) * column.info.repeat;
-  fits_read_col(fptr,
+  fits_read_col(
+      fptr,
       TypeCode<T>::forBintable(),
       static_cast<int>(index),
       firstRow,
@@ -162,7 +173,8 @@ void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &colum
 
 template <std::size_t i, typename... Ts>
 struct ReadColumnChunksImpl {
-  void operator()(fitsfile *fptr,
+  void operator()(
+      fitsfile *fptr,
       const std::vector<long> &indices,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
       long firstRow,
@@ -174,7 +186,8 @@ struct ReadColumnChunksImpl {
 
 template <typename... Ts>
 struct ReadColumnChunksImpl<0, Ts...> {
-  void operator()(fitsfile *fptr,
+  void operator()(
+      fitsfile *fptr,
       const std::vector<long> &indices,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
       long firstRow,
@@ -188,7 +201,11 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
 
 template <>
 void writeColumnChunkImpl<std::string>(
-    fitsfile *fptr, long index, const FitsIO::Column<std::string> &column, long firstRow, long rowCount);
+    fitsfile *fptr,
+    long index,
+    const FitsIO::Column<std::string> &column,
+    long firstRow,
+    long rowCount);
 
 template <typename T>
 void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount) {
@@ -198,14 +215,16 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
   auto end = begin + size;
   std::vector<T> vec(begin, end);
   fits_write_col(fptr, TypeCode<T>::forBintable(), static_cast<int>(index), firstRow, 1, size, vec.data(), &status);
-  mayThrowCfitsioError(status,
+  mayThrowCfitsioError(
+      status,
       "Cannot write column chunk: " + column.info.name + " (" + std::to_string(index) + "); " + "rows: [" +
           std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "-");
 }
 
 template <std::size_t i, typename... Ts>
 struct WriteColumnChunksImpl {
-  void operator()(fitsfile *fptr,
+  void operator()(
+      fitsfile *fptr,
       const std::vector<long> &indices,
       std::tuple<const FitsIO::Column<Ts> &...> columns,
       long firstRow,
@@ -217,7 +236,8 @@ struct WriteColumnChunksImpl {
 
 template <typename... Ts>
 struct WriteColumnChunksImpl<0, Ts...> {
-  void operator()(fitsfile *fptr,
+  void operator()(
+      fitsfile *fptr,
       const std::vector<long> &indices,
       std::tuple<const FitsIO::Column<Ts> &...> columns,
       long firstRow,
@@ -228,7 +248,9 @@ struct WriteColumnChunksImpl<0, Ts...> {
 
 template <typename... Ts, std::size_t... Is>
 void writeColumnsImpl(
-    fitsfile *fptr, const std::tuple<const FitsIO::Column<Ts> &...> &columns, std14::index_sequence<Is...>) {
+    fitsfile *fptr,
+    const std::tuple<const FitsIO::Column<Ts> &...> &columns,
+    std14::index_sequence<Is...>) {
   writeColumns<Ts...>(fptr, std::get<Is>(columns)...);
 } // TODO used?
 
@@ -258,9 +280,10 @@ FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
   fits_get_num_rows(fptr, &rows, &status);
   mayThrowCfitsioError(status, "Cannot read column dimensions");
   FitsIO::VecColumn<T> column({ name, "", repeat },
-      std::vector<T>(repeat * rows)); // TODO unit
+                              std::vector<T>(repeat * rows)); // TODO unit
   /* Read data */
-  fits_read_col(fptr,
+  fits_read_col(
+      fptr,
       TypeCode<T>::forBintable(), // datatype
       static_cast<int>(index), // colnum
       1, // firstrow (1-based)
@@ -282,7 +305,8 @@ void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
   std::vector<T> nonconstData(begin, end); // We need a non-const data for
                                            // CFitsIO
   int status = 0;
-  fits_write_col(fptr,
+  fits_write_col(
+      fptr,
       TypeCode<T>::forBintable(), // datatype
       static_cast<int>(index), // colnum
       1, // firstrow (1-based)

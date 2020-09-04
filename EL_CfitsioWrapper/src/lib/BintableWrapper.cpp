@@ -38,13 +38,18 @@ namespace internal {
 
 template <> // TODO clean
 void initColumnImpl<std::string>(
-    fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<std::string> &column, long rows) {
+    fitsfile *fptr,
+    long index,
+    const std::string &name,
+    FitsIO::VecColumn<std::string> &column,
+    long rows) {
   column.info.name = name;
   column.info.unit = ""; // TODO
   int typecode = 0;
   long width = 0;
   int status = 0;
-  fits_get_coltype(fptr,
+  fits_get_coltype(
+      fptr,
       static_cast<int>(index), // column indices are int
       &typecode,
       &column.info.repeat,
@@ -55,10 +60,15 @@ void initColumnImpl<std::string>(
 
 template <> // TODO clean
 void readColumnChunkImpl<std::string>(
-    fitsfile *fptr, long index, FitsIO::VecColumn<std::string> &column, long firstRow, long rowCount) {
+    fitsfile *fptr,
+    long index,
+    FitsIO::VecColumn<std::string> &column,
+    long firstRow,
+    long rowCount) {
   int status = 0;
   long repeat = 0;
-  fits_get_coltype(fptr,
+  fits_get_coltype(
+      fptr,
       static_cast<int>(index), // column indices are int
       nullptr,
       &repeat,
@@ -69,7 +79,8 @@ void readColumnChunkImpl<std::string>(
   for (long i = 0; i < rowCount; ++i) { // TODO iterator
     data[i] = (char *)malloc(repeat);
   }
-  fits_read_col(fptr,
+  fits_read_col(
+      fptr,
       TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
       firstRow,
@@ -87,13 +98,18 @@ void readColumnChunkImpl<std::string>(
 
 template <>
 void writeColumnChunkImpl<std::string>(
-    fitsfile *fptr, long index, const FitsIO::Column<std::string> &column, long firstRow, long rowCount) {
+    fitsfile *fptr,
+    long index,
+    const FitsIO::Column<std::string> &column,
+    long firstRow,
+    long rowCount) {
   int status = 0;
   auto begin = column.data() + (firstRow - 1);
   long size = rowCount;
   auto end = begin + size;
   CStrArray array(begin, end);
-  fits_write_col(fptr,
+  fits_write_col(
+      fptr,
       TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
       firstRow,
@@ -101,7 +117,8 @@ void writeColumnChunkImpl<std::string>(
       size,
       array.data(),
       &status);
-  mayThrowCfitsioError(status,
+  mayThrowCfitsioError(
+      status,
       "Cannot write column chunk: " + column.info.name + " (" + std::to_string(index) + "); " + "rows: [" +
           std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "-");
 }
@@ -116,7 +133,8 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
   fits_get_num_rows(fptr, &rows, &status);
   mayThrowCfitsioError(status);
   long repeat = 0;
-  fits_get_coltype(fptr,
+  fits_get_coltype(
+      fptr,
       static_cast<int>(index), // column indices are int
       nullptr,
       &repeat,
@@ -128,8 +146,9 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
     data[i] = (char *)malloc(repeat);
   }
   FitsIO::VecColumn<std::string> column({ name, "", repeat },
-      std::vector<std::string>(rows)); // TODO unit
-  fits_read_col(fptr,
+                                        std::vector<std::string>(rows)); // TODO unit
+  fits_read_col(
+      fptr,
       TypeCode<std::string>::forBintable(), // datatype
       static_cast<int>(index), // colnum // column indices are int
       1, // firstrow (1-based)
@@ -154,7 +173,8 @@ void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> 
   CStrArray array(begin, end);
   long index = columnIndex(fptr, column.info.name);
   int status = 0;
-  fits_write_col(fptr,
+  fits_write_col(
+      fptr,
       TypeCode<std::string>::forBintable(), // datatype
       static_cast<int>(index), // colnum // column indices are int
       1, // firstrow (1-based)
