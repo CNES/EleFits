@@ -110,7 +110,9 @@ inline void parseRecordImpl(fitsfile *fptr, const std::string &keyword, FitsIO::
 template <std::size_t i, typename... Ts>
 struct ParseRecordsImpl {
   void operator()(
-      fitsfile *fptr, const std::vector<std::string> &keywords, std::tuple<FitsIO::Record<Ts>...> &records) {
+      fitsfile *fptr,
+      const std::vector<std::string> &keywords,
+      std::tuple<FitsIO::Record<Ts>...> &records) {
     parseRecordImpl(fptr, keywords[i], std::get<i>(records));
     ParseRecordsImpl<i - 1, Ts...> {}(fptr, keywords, records);
   }
@@ -120,7 +122,9 @@ struct ParseRecordsImpl {
 template <typename... Ts>
 struct ParseRecordsImpl<0, Ts...> {
   void operator()(
-      fitsfile *fptr, const std::vector<std::string> &keywords, std::tuple<FitsIO::Record<Ts>...> &records) {
+      fitsfile *fptr,
+      const std::vector<std::string> &keywords,
+      std::tuple<FitsIO::Record<Ts>...> &records) {
     parseRecordImpl(fptr, keywords[0], std::get<0>(records));
   }
 };

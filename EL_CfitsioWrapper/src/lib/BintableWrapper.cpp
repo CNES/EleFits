@@ -145,8 +145,7 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
   for (long i = 0; i < rows; ++i) { // TODO iterator
     data[i] = (char *)malloc(repeat);
   }
-  FitsIO::VecColumn<std::string> column({ name, "", repeat },
-                                        std::vector<std::string>(rows)); // TODO unit
+  FitsIO::VecColumn<std::string> column({ name, "", repeat }, std::vector<std::string>(rows)); // TODO unit
   fits_read_col(
       fptr,
       TypeCode<std::string>::forBintable(), // datatype

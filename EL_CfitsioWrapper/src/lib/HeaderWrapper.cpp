@@ -100,7 +100,8 @@ void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *
 template <>
 void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record) {
   int status = 0;
-  fits_update_key(fptr,
+  fits_update_key(
+      fptr,
       TypeCode<std::string>::forRecord(),
       record.keyword.c_str(),
       &std::string(record.value)[0],
@@ -112,7 +113,8 @@ void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string>
 template <>
 void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record) {
   int status = 0;
-  fits_update_key(fptr,
+  fits_update_key(
+      fptr,
       TypeCode<std::string>::forRecord(),
       record.keyword.c_str(),
       &std::string(record.value)[0],
