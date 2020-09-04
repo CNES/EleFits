@@ -1,0 +1,59 @@
+BasedOnStyle: LLVM
+Language: Cpp
+AccessModifierOffset: 0
+AlignAfterOpenBracket: DontAlign
+#AlignConsecutiveBitFiels: false
+AlignEscapedNewlines: Right
+AlignOperands: false
+AlignTrailingComments: false
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+#AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakAfterReturnType: All
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterControlStatement: true
+  BeforeCatch: true
+  BeforeElse: true
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+BreakBeforeBraces: Custom
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: false
+#DeriveLineEnding: true
+DerivePointerAlignment: true
+FixNamespaceComments: false
+IncludeBlocks: Preserve
+#IndentCaseBlocks: true
+IndentCaseLabels: true
+#IndentExternBlocks: AfterExternBlock
+#IndentGotoLabels: true
+#InsertTrailingCommas: None
+PenaltyBreakAssignment: 10
+PenaltyBreakBeforeFirstCallParameter: 1
+PenaltyBreakComment: 5
+PenaltyBreakFirstLessLess: 10
+PenaltyBreakString: 100
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 1000
+PenaltyReturnTypeOnItsOwnLine: 1000
+#RawStringFormats:
+ReflowComments: true
+SortIncludes: false
+SortUsingDeclarations: false
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: false
+SpaceBeforeInheritanceColon: false
+#SpaceInEmptyBlocks: false
+SpacesBeforeTrailingComments: 4
+#SpacesInConditionalStatement: false
+TabWidth: 4
+#UseCRLF: false
