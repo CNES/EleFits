@@ -12,6 +12,7 @@ AllowAllParametersOfDeclarationOnNextLine: false
 #AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Custom
