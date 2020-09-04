@@ -43,8 +43,9 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
   mayThrowCfitsioError(status, "Cannot find string keyword " + keyword);
-  if (length == 0)
+  if (length == 0) {
     return { keyword, "" };
+  }
   char *value = nullptr; // That's the only function in which CFitsIO allocates itself!
   char unit[FLEN_COMMENT];
   unit[0] = '\0';
@@ -67,8 +68,9 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
   } else if (record.unit != "") {
     std::string match = "[" + record.unit + "] ";
     auto pos = record.comment.find(match);
-    if (pos != std::string::npos)
+    if (pos != std::string::npos) {
       record.comment.erase(pos, match.length());
+    }
   }
   return record;
 }
@@ -76,8 +78,9 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
 template <>
 void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record) {
   int status = 0;
-  if (record.value.length() > 68) // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
+  if (record.value.length() > 68) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
+  }
   fits_write_key_longstr(fptr, record.keyword.c_str(), &std::string(record.value)[0], &record.comment[0], &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
   mayThrowCfitsioError(status);
@@ -86,8 +89,9 @@ void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> 
 template <>
 void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record) {
   int status = 0;
-  if (strlen(record.value) > 68) // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
+  if (strlen(record.value) > 68) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
+  }
   fits_write_key_longstr(fptr, record.keyword.c_str(), record.value, &record.comment[0], &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
   mayThrowCfitsioError(status);

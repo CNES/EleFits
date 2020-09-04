@@ -132,8 +132,9 @@ struct ValueList {
 void check_contains(
     const std::vector<std::string>& list,
     const std::vector<std::string>& values) {
-  for(const auto& v : values)
+  for (const auto& v : values) {
     BOOST_CHECK(std::find(list.begin(), list.end(), v) != list.end());
+  }
 }
 
 BOOST_AUTO_TEST_CASE( struct_io_test ) {

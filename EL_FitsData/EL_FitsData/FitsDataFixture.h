@@ -276,10 +276,11 @@ RandomScalarColumn<T>::RandomScalarColumn(long size) :
 template<>
 RandomScalarColumn<std::string>::RandomScalarColumn(long size) :
     VecColumn<std::string>({ "SCALAR", "m", 1}, generateRandomVector<std::string>(size)) {
-  for(const auto& v : vector()) {
+  for (const auto& v : vector()) {
     long currentSize = static_cast<long>(v.length() + 1); // +1 for '\0'
-    if(currentSize > info.repeat)
+    if (currentSize > info.repeat) {
       info.repeat = currentSize;
+    }
   }
 }
 

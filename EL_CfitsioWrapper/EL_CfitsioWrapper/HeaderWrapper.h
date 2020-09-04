@@ -159,8 +159,9 @@ FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword) {
   } else if (record.unit != "") {
     std::string match = "[" + record.unit + "] ";
     auto pos = record.comment.find(match);
-    if (pos != std::string::npos)
+    if (pos != std::string::npos) {
       record.comment.erase(pos, match.length());
+    }
   }
   return record;
 }

@@ -51,13 +51,15 @@ void mayThrowCfitsioError(int status, const std::string &context) {
 }
 
 void mayThrowReadonlyError(fitsfile *fptr) {
-  if (not File::isWritable(fptr))
+  if (not File::isWritable(fptr)) {
     mayThrowCfitsioError(READONLY_FILE);
+  }
 }
 
 void mayThrowInvalidFileError(fitsfile *fptr) {
-  if (not fptr)
+  if (not fptr) {
     mayThrowCfitsioError(BAD_FILEPTR);
+  }
 }
 
 } // namespace Cfitsio

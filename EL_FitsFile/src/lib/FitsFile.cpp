@@ -61,8 +61,9 @@ void FitsFile::open(const std::string& filename, Permission permission) {
 }
 
 void FitsFile::close() {
-  if(not m_open)
+  if (not m_open) {
     return;
+  }
   switch (m_permission) {
   case Permission::Temporary:
     closeAndDelete();
@@ -74,8 +75,9 @@ void FitsFile::close() {
 }
 
 void FitsFile::closeAndDelete() {
-  if(not m_open)
+  if (not m_open) {
     return; //TODO should we delete if not open?
+  }
   Cfitsio::File::closeAndDelete(m_fptr);
   m_open = false;
 }

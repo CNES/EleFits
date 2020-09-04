@@ -75,19 +75,21 @@ public:
 
     {
       const auto table = generateTable(cols, rows);
-      for(int i=0; i<count; ++i)
+      for (int i=0; i<count; ++i) {
         f.assignBintableExt(
             "T_" + std::to_string(i),
             table[0], table[1], table[2], table[3], table[4],
             table[5], table[6], table[7], table[8], table[9]);
+      }
     }
 
     logger.info() << "Reading column-wise";
     auto begin = std::chrono::steady_clock::now();
-    for(int i=0; i<count; ++i) {
+    for (int i=0; i<count; ++i) {
       const auto& ext = f.accessFirst<BintableHdu>("T_" + std::to_string(i));
-      for(int j=0; j<cols; ++j)
+      for (int j=0; j<cols; ++j) {
         ext.readColumn<ValueType>(std::to_string(j));
+      }
     }
     auto end = std::chrono::steady_clock::now();
     auto durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
@@ -96,11 +98,12 @@ public:
 
     logger.info() << "Reading row-wise";
     begin = std::chrono::steady_clock::now();
-    for(int i=0; i<count; ++i) {
+    for (int i=0; i<count; ++i) {
       const auto& ext = f.accessFirst<BintableHdu>("T_" + std::to_string(i));
       std::vector<std::string> names(cols);
-      for(int j=0; j<cols; ++j)
+      for (int j=0; j<cols; ++j) {
         names[j] = std::to_string(j);
+      }
       ext.readColumns<
         ValueType, ValueType, ValueType, ValueType, ValueType,
         ValueType, ValueType, ValueType, ValueType, ValueType>(names);

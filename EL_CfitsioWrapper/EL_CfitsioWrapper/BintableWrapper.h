@@ -297,8 +297,9 @@ template <typename... Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names) {
   /* List column indices */
   std::vector<long> indices(names.size());
-  for (std::size_t c = 0; c < names.size(); ++c) // TODO iterator
+  for (std::size_t c = 0; c < names.size(); ++c) { // TODO iterator
     indices[c] = columnIndex(fptr, names[c]);
+  }
   /* Read row count */
   int status = 0;
   long rows = 0;
@@ -308,13 +309,15 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
   internal::InitColumnsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, names, columns, rows);
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
-  if (chunkRows == 0)
+  if (chunkRows == 0) {
     throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
+  }
   /* Read column data */
   for (long first = 1; first <= rows; first += chunkRows) {
     long last = first + chunkRows - 1;
-    if (last > rows)
+    if (last > rows) {
       chunkRows = rows - first + 1;
+    }
     internal::ReadColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, columns, first, chunkRows);
   }
   return columns;
@@ -330,14 +333,16 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
                                          // chunks
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
-  if (chunkRows == 0)
+  if (chunkRows == 0) {
     throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
+  }
   /* Write column data */
   std::vector<long> indices { columnIndex(fptr, columns.info.name)... };
   for (long first = 1; first <= rows; first += chunkRows) {
     long last = first + chunkRows - 1;
-    if (last > rows)
+    if (last > rows) {
       chunkRows = rows - first + 1;
+    }
     internal::WriteColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, table, first, chunkRows);
   }
 }

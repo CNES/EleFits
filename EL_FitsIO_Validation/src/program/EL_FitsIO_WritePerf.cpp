@@ -36,11 +36,15 @@ using namespace Euclid::FitsIO;
 
 VecRaster<float> generateRaster(long naxis1, long naxis2) {
   long order = 10;
-  while(order < naxis2)
+  while (order < naxis2) {
     order *= 10;
+  }
   VecRaster<float, 2> raster({naxis1, naxis2});
-  for(long j=0; j<naxis2; ++j) for(long i=0; i<naxis1; ++i)
-    raster[{i, j}] = float(i + j) / float(order);
+  for (long j=0; j<naxis2; ++j) {
+    for (long i=0; i<naxis1; ++i) {
+      raster[{i, j}] = float(i + j) / float(order);
+    }
+  }
   return raster;
 }
 
@@ -54,7 +58,7 @@ Table generateColumns(long naxis2) {
   std::vector<std::string> strings(naxis2);
   std::vector<float> floats(naxis2);
   std::vector<int> ints(naxis2);
-  for(long i=0; i<naxis2; ++i) {
+  for (long i=0; i<naxis2; ++i) {
     strings[i] = "Text";
     floats[i] = float(i) / float(naxis2);
     ints[i] = int(i * naxis2);
@@ -102,8 +106,9 @@ public:
         << " of size " << naxis1 << " x " << naxis2;
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    for(int i=0; i<imageCount; ++i)
+    for (int i=0; i<imageCount; ++i) {
       f.assignImageExt("I_" + std::to_string(i), raster);
+    }
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     auto durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
@@ -113,9 +118,10 @@ public:
         << " of size " << 3 << " x " << naxis2;
 
     begin = std::chrono::steady_clock::now();
-    for(int i=0; i<tableCount; ++i)
+    for (int i=0; i<tableCount; ++i) {
       f.assignBintableExt("T_" + std::to_string(i),
           table.stringCol, table.floatCol, table.intCol);
+    }
     end = std::chrono::steady_clock::now();
     durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 

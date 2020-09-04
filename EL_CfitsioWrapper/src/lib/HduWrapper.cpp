@@ -52,8 +52,9 @@ Type currentType(fitsfile *fptr) {
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
-  if (type == BINARY_TBL)
+  if (type == BINARY_TBL) {
     return Type::Bintable;
+  }
   return Type::Image;
 }
 
@@ -62,8 +63,9 @@ bool currentIsPrimary(fitsfile *fptr) {
 }
 
 bool gotoIndex(fitsfile *fptr, long index) {
-  if (index == currentIndex(fptr))
+  if (index == currentIndex(fptr)) {
     return false;
+  }
   int type = 0;
   int status = 0;
   fits_movabs_hdu(fptr, static_cast<int>(index), &type, &status); // HDU indices are int
@@ -72,12 +74,15 @@ bool gotoIndex(fitsfile *fptr, long index) {
 }
 
 bool gotoName(fitsfile *fptr, const std::string &name) {
-  if (name == "")
+  if (name == "") {
     return false;
-  if (name == "Primary")
+  }
+  if (name == "Primary") {
     return gotoPrimary(fptr);
-  if (name == currentName(fptr))
+  }
+  if (name == currentName(fptr)) {
     return false;
+  }
   int status = 0;
   fits_movnam_hdu(fptr, ANY_HDU, toCharPtr(name).get(), 0, &status);
   mayThrowCfitsioError(status);
@@ -85,8 +90,9 @@ bool gotoName(fitsfile *fptr, const std::string &name) {
 }
 
 bool gotoNext(fitsfile *fptr, long step) {
-  if (step == 0)
+  if (step == 0) {
     return false;
+  }
   int status = 0;
   int type = 0;
   fits_movrel_hdu(fptr, static_cast<int>(step), &type, &status); // HDU indices are int
@@ -99,15 +105,17 @@ bool gotoPrimary(fitsfile *fptr) {
 }
 
 bool initPrimary(fitsfile *fptr) {
-  if (count(fptr) > 0)
+  if (count(fptr) > 0) {
     return false;
+  }
   createMetadataExtension(fptr, "");
   return true;
 }
 
 bool updateName(fitsfile *fptr, const std::string &name) {
-  if (name == "")
+  if (name == "") {
     return false;
+  }
   Header::updateRecord(fptr, FitsIO::Record<std::string>("EXTNAME", name));
   return true;
 }

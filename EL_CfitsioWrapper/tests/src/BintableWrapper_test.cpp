@@ -94,13 +94,15 @@ void checkScalar() {
     checkEqualVectors(output.vector(), input.vector());
   } catch(const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
-    for(const auto& v : input.vector())
+    for (const auto& v : input.vector()) {
       std::cerr << v << ' ';
+    }
     std::cerr << std::endl;
-    if(e.status == NUM_OVERFLOW)
+    if (e.status == NUM_OVERFLOW) {
       BOOST_WARN(e.what());
-    else
+    } else {
       BOOST_FAIL(e.what());
+    }
   }
 }
 
@@ -146,13 +148,15 @@ void checkVector() {
     checkEqualVectors(output.vector(), input.vector());
   } catch(const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
-    for(const auto& v : input.vector())
+    for (const auto& v : input.vector()) {
       std::cerr << v << ' ';
+    }
     std::cerr << std::endl;
-    if(e.status == NUM_OVERFLOW)
+    if (e.status == NUM_OVERFLOW) {
       BOOST_WARN(e.what());
-    else
+     } else {
       BOOST_FAIL(e.what());
+     }
   }
 }
 

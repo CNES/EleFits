@@ -182,13 +182,15 @@ public:
     fits_get_colnum(fptr, CASESEN, const_cast<char *>("NAME"), &colnum, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while finding column NAME");
     char *names[table.rows];
-    for(int i=0; i<table.rows; ++i)
+    for (int i=0; i<table.rows; ++i) {
       names[i] = (char*) malloc(68);
+    }
     fits_read_col(fptr, TSTRING, colnum, 1, 1, table.rows, nullptr, names, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading column NAME");
     logger.info() << "Last name: " << names[table.rows-1];
-    for(int i=0; i<table.rows; ++i)
+    for (int i=0; i<table.rows; ++i) {
       free(names[i]);
+    }
 
     logger.info();
     

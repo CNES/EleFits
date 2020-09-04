@@ -72,8 +72,9 @@ std::vector<T> generateRandomVector(long size) {
   const double max = std::numeric_limits<T>::max();
   std::uniform_real_distribution<double> distribution(min, max);
   std::vector<T> vec(size);
-  for(auto&& val : vec)
+  for (auto&& val : vec) {
     val = T(distribution(generator));
+  }
   return vec;
 }
 

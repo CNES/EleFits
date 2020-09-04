@@ -114,7 +114,7 @@ public:
     const auto& primary = f.accessPrimary<>();
     primary.writeRecord("N_OBJ", nobj);
 
-    for(int i=0; i<nobj; ++i) {
+    for (int i=0; i<nobj; ++i) {
       logger.info() << "Writing AstroObj " << i;
       writeAstroObj(f, i, nbin);
     }

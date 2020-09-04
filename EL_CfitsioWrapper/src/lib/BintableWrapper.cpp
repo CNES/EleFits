@@ -66,8 +66,9 @@ void readColumnChunkImpl<std::string>(
       &status); // TODO wrap?
   mayThrowCfitsioError(status);
   std::vector<char *> data(rowCount);
-  for (long i = 0; i < rowCount; ++i) // TODO iterator
+  for (long i = 0; i < rowCount; ++i) { // TODO iterator
     data[i] = (char *)malloc(repeat);
+  }
   fits_read_col(fptr,
       TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
@@ -123,8 +124,9 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
       &status); // TODO wrap?
   mayThrowCfitsioError(status);
   std::vector<char *> data(rows);
-  for (long i = 0; i < rows; ++i) // TODO iterator
+  for (long i = 0; i < rows; ++i) { // TODO iterator
     data[i] = (char *)malloc(repeat);
+  }
   FitsIO::VecColumn<std::string> column({ name, "", repeat },
       std::vector<std::string>(rows)); // TODO unit
   fits_read_col(fptr,

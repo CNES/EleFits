@@ -46,10 +46,13 @@ VecRaster<float, 3> createRaster() {
   //! [Create and fill a raster]
   long width = 16, height = 9, depth = 3;
   VecRaster<float, 3> raster({width, height, depth});
-  for (long z=0; z < depth; ++z)
-    for (long y=0; y < height; ++y)
-      for (long x=0; x < width; ++x)
+  for (long z=0; z < depth; ++z) {
+    for (long y=0; y < height; ++y) {
+      for (long x=0; x < width; ++x) {
         raster[{x, y, z}] = float(x + y + z);
+      }
+    }
+  }
   //! [Create and fill a raster]
   return raster;
 }
@@ -138,8 +141,9 @@ public:
 
     logger.info() << "Here's the list of keywords in the extension:";
     const auto keywords = ext.keywords();
-    for (const auto& k : keywords)
+    for (const auto& k : keywords) {
       logger.info() << "    " << k;
+    }
 
     logger.info() << "Closing and reopening file just for fun";
     f.close();
