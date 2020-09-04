@@ -35,7 +35,7 @@ namespace FitsIO {
 namespace Test {
 
 /**
- * @brief A minimal and temporary FITS file removed by destructor.
+ * @brief A minimal and temporary Fits file removed by destructor.
  */
 class MinimalFile {
 

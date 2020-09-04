@@ -40,6 +40,12 @@ using Position = std::array<long, (std::size_t)n>;
 
 /**
  * @brief Raster of a n-dimensional image (2D by default).
+ * @details
+ * This is an interface to be implemented with a concrete data container (e.g. std::vector).
+ * Some implementations are provided with the library,
+ * but others could be useful to interface with client code
+ * (e.g. with other external libraries with custom containers).
+ * @see \ref data-classes
  */
 template<typename T, long n=2>
 class Raster {
@@ -123,6 +129,7 @@ public:
    */
   PtrRaster(Position<n> rasterShape, const T* data);
 
+  /** @see Raster::data */
   const T* data() const override;
 
 private:
@@ -158,6 +165,7 @@ public:
    */
   VecRefRaster(Position<n> rasterShape, const std::vector<T>& vectorRef);
 
+  /** @see Raster::data */
   const T* data() const override;
 
   /**
@@ -210,6 +218,7 @@ public:
    */
   VecRaster() = default;
 
+  /** @see Raster::data */
   const T* data() const override;
 
   /**
@@ -243,18 +252,35 @@ private:
 /// @cond INTERNAL
 namespace internal {
 
+/**
+ * @brief nD-index recursive implementation.
+ * @tparam i The dimension of the current recursion step.
+ * @details
+ * We need a class for partial specialization.
+ */
 template<long i>
 struct IndexImpl {
+
+  /**
+   * @brief Index of given position in given shape for Raster::index.
+   */
   template<long n>
   static long offset(const Position<n>& shape, const Position<n>& pos);
+
 };
 
+/**
+ * @brief Recurse: dimension i.
+ */
 template<long i>
 template<long n>
 inline long IndexImpl<i>::offset(const Position<n>& shape, const Position<n>& pos) {
   return std::get<n-1-i>(pos) + std::get<n-1-i>(shape) * IndexImpl<i-1>::template offset<n>(shape, pos);
 }
 
+/**
+ * @brief Base case: dimension 0.
+ */
 template<>
 template<long n>
 inline long IndexImpl<0>::offset(const Position<n>& shape, const Position<n>& pos) {

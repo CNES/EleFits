@@ -339,7 +339,6 @@ std::vector<std::string> generateRandomVector<std::string>(long size) {
   return vec;
 }
 
-
 }
 }
 }

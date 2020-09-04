@@ -24,7 +24,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-/// @cond internal
+/// @cond INTERNAL
 namespace internal {
 
 template<>

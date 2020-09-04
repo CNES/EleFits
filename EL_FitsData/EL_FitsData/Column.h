@@ -49,7 +49,11 @@ struct ColumnInfo {
   /**
    * @brief Repeat count of the column, i.e., number of values per cell.
    * @details
-   * CFitsIO indices are long, so we stick to the convention
+   * Scalar columns have a repeat count of 1.
+   * @warning
+   * String columns are considered vector columns.
+   * Their repeat count must be greater or equal to the longest string of the column
+   * including the \c '\0' character.
    */
   long repeat;
 
@@ -58,6 +62,11 @@ struct ColumnInfo {
 
 /**
  * @brief Bintable column data and metadata.
+ * @details
+ * This is an interface to be implemented with a concrete data container (e.g. std::vector).
+ * Some implementations are provided with the library,
+ * but others could be useful to interface with client code
+ * (e.g. with other external libraries with custom containers).
  * @see \ref data-classes
  */
 template<typename T>
@@ -77,9 +86,10 @@ public:
 
   /**
    * @brief Number of elements in the column, i.e. number of rows * repeat count.
-   * @warning For strings, CFitsIO requires nelements to be just the number of rows.
+   * @warning
+   * For strings, CFitsIO requires nelements to be just the number of rows.
    */
-  virtual long nelements() const = 0; //TODO long?
+  virtual long nelements() const = 0;
 
   /**
    * @brief Number of rows in the column.
@@ -101,7 +111,8 @@ public:
 
 /**
  * @brief Column which references some external pointer data.
- * @details Use it for temporary columns.
+ * @details
+ * Use it for temporary columns.
  * @see \ref data-classes
  */
 template<typename T>
@@ -129,8 +140,10 @@ public:
    */
   PtrColumn(ColumnInfo<T> info, long nelements, const T* data);
 
+  /** @see Column::nelements */
   long nelements() const override;
 
+  /** @see Column::data */
   const T* data() const override;
 
 private:
@@ -167,8 +180,10 @@ public:
    */
   VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vectorRef);
 
+  /** @see Column::nelements */
   long nelements() const override;
 
+  /** @see Column::data */
   const T* data() const override;
 
   /**
@@ -217,8 +232,10 @@ public:
    */
   VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector);
 
+  /** @see Column::nelements */
   long nelements() const override;
 
+  /** @see Column::data */
   const T* data() const override;
 
   /**
@@ -249,15 +266,24 @@ private:
 /////////////
 
 
-/// @cond internal
+/// @cond INTERNAL
 namespace internal {
 
+/**
+ * @brief Implementation for Column::rows to dispatch std::string and other types.
+ */
 template<typename T>
 long rowsImpl(long nelements, long repeat);
 
+/**
+ * std::string dispatch.
+ */
 template<>
 long rowsImpl<std::string>(long nelements, long repeat);
 
+/**
+ * Other types dispatch.
+ */
 template<typename T>
 long rowsImpl(long nelements, long repeat) {
   return (nelements + repeat - 1) / repeat;
@@ -298,7 +324,6 @@ template<typename T>
 const T* PtrColumn<T>::data() const {
   return m_data;
 }
-
 
 template<typename T>
 VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vectorRef) :
@@ -358,7 +383,6 @@ template<typename T>
 std::vector<T>& VecColumn<T>::vector() {
   return m_vec;
 }
-
 
 }
 }

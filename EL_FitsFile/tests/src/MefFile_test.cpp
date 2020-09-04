@@ -18,10 +18,12 @@
  */
 
 #include <boost/test/unit_test.hpp>
+#include <cstdio>
 
 #include "ElementsKernel/Temporary.h"
 
 #include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsFile/MefFile.h"
 
 using namespace Euclid::FitsIO;
@@ -32,51 +34,46 @@ BOOST_AUTO_TEST_SUITE (MefFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( primary_resize_test ) {
-  Elements::TempPath tmp("%%%%%%.fits");
-  std::string filename = tmp.path().string();
-  MefFile f(filename, MefFile::Permission::Overwrite);
-  Test::SmallRaster input;
-  const auto& primary = f.accessPrimary<ImageHdu>();
+BOOST_FIXTURE_TEST_CASE( primary_resize_test, NewMefFile ) {
+  Test::SmallRaster input; //TODO RandomRaster
+  const auto& primary = this->accessPrimary<ImageHdu>();
   primary.resize<float, 2>(input.shape);
   primary.writeRaster(input);
-  f.close();
-  f.open(filename, MefFile::Permission::Read);
-  const auto output = f.accessPrimary<ImageHdu>().readRaster<float, 2>();
+  this->close();
+  // Reopen as read-only
+  this->open(this->filename(), MefFile::Permission::Read);
+  const auto output = this->accessPrimary<ImageHdu>().readRaster<float, 2>();
+  remove(this->filename().c_str());
 }
 
-BOOST_AUTO_TEST_CASE( count_test ) {
-  Elements::TempPath tmp("%%%%%%.fits");
-  std::string filename = tmp.path().string();
-  MefFile f(filename, MefFile::Permission::Temporary);
-  BOOST_CHECK_EQUAL(f.hduCount(), 1); // 0 with CFitsIO
+BOOST_FIXTURE_TEST_CASE( count_test, TemporaryMefFile ) {
+  BOOST_CHECK_EQUAL(this->hduCount(), 1); // 0 with CFitsIO
   Test::SmallRaster raster;
-  const auto& primary = f.accessPrimary<ImageHdu>();
+  const auto& primary = this->accessPrimary<ImageHdu>();
   primary.resize<float, 2>(raster.shape);
-  BOOST_CHECK_EQUAL(f.hduCount(), 1);
-  const auto& ext = f.initImageExt<float, 2>("IMG", raster.shape);
-  BOOST_CHECK_EQUAL(f.hduCount(), 2); // 1 with CFitsIO
+  BOOST_CHECK_EQUAL(this->hduCount(), 1);
+  const auto& ext = this->initImageExt<float, 2>("IMG", raster.shape);
+  BOOST_CHECK_EQUAL(this->hduCount(), 2); // 1 with CFitsIO
   ext.writeRaster(raster);
-  BOOST_CHECK_EQUAL(f.hduCount(), 2);
+  BOOST_CHECK_EQUAL(this->hduCount(), 2);
 }
 
-BOOST_AUTO_TEST_CASE( append_test ) {
-  Elements::TempPath tmp("%%%%%%.fits");
-  std::string filename = tmp.path().string();
-  MefFile f(filename, MefFile::Permission::Overwrite);
-  Test::SmallRaster raster;
-  const auto& ext1 = f.assignImageExt("IMG1", raster);
+BOOST_FIXTURE_TEST_CASE( append_test, NewMefFile ) {
+  Test::SmallRaster raster; //TODO RandomRaster
+  const auto& ext1 = this->assignImageExt("IMG1", raster);
   BOOST_CHECK_EQUAL(ext1.index(), 2);
-  BOOST_CHECK_EQUAL(f.hduCount(), 2);
-  f.close();
-  f.open(filename, MefFile::Permission::Edit);
-  BOOST_CHECK_EQUAL(f.hduCount(), 2);
-  const auto& ext2 = f.assignImageExt("IMG2", raster);
+  BOOST_CHECK_EQUAL(this->hduCount(), 2);
+  this->close();
+  // Reopen as read-only
+  this->open(this->filename(), MefFile::Permission::Edit);
+  BOOST_CHECK_EQUAL(this->hduCount(), 2);
+  const auto& ext2 = this->assignImageExt("IMG2", raster);
   BOOST_CHECK_EQUAL(ext2.index(), 3);
-  BOOST_CHECK_EQUAL(f.hduCount(), 3);
+  BOOST_CHECK_EQUAL(this->hduCount(), 3);
   std::vector<std::string> inputNames { "", "IMG1", "IMG2" };
-  const auto outputNames = f.hduNames();
+  const auto outputNames = this->hduNames();
   BOOST_CHECK_EQUAL_COLLECTIONS(outputNames.begin(), outputNames.end(), inputNames.begin(), inputNames.end());
+  remove(this->filename().c_str());
 }
 
 //-----------------------------------------------------------------------------

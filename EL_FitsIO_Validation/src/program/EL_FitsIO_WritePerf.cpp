@@ -44,13 +44,13 @@ VecRaster<float> generateRaster(long naxis1, long naxis2) {
   return raster;
 }
 
-struct table_t {
+struct Table {
   VecColumn<std::string> stringCol;
   VecColumn<float> floatCol;
   VecColumn<int> intCol;
 };
 
-table_t generateColumns(long naxis2) {
+Table generateColumns(long naxis2) {
   std::vector<std::string> strings(naxis2);
   std::vector<float> floats(naxis2);
   std::vector<int> ints(naxis2);
@@ -59,7 +59,7 @@ table_t generateColumns(long naxis2) {
     floats[i] = float(i) / float(naxis2);
     ints[i] = int(i * naxis2);
   }
-  table_t table {
+  Table table {
       VecColumn<std::string>({"STRINGS", "", 8}, std::move(strings)),
       VecColumn<float>({"FLOATS", "", 1}, std::move(floats)),
       VecColumn<int>({ "INTS", "", 1}, std::move(ints))

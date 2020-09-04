@@ -8,10 +8,10 @@ Legend:
 - Items in *italic* are available in the internal API only (Euclid::Cfitsio namespace);
 - Other items are not available, they might be implemented on user requests.
 
-\section cfitsio-basic Basic CFITSIO Interface Routines 
+\section cfitsio-basic Basic CFitsIO Interface Routines 
 
-- **CFITSIO Error Status Routines**
-- FITS File Access Routines
+- **CFitsIO Error Status Routines**
+- Fits File Access Routines
   - **Open file**
   - Open table/image (useful?)
   - **Create file**
@@ -79,7 +79,7 @@ Legend:
   - Calculate histogram parameters
   - Bin table values and write histogram
 
-\section cfitsio-iterator The CFITSIO Iterator Function
+\section cfitsio-iterator The CFitsIO Iterator Function
 
 Not supported.
 
@@ -91,7 +91,7 @@ Not supported, but deprecated in CFitsIO.
 
 Not supported.
 
-\section cfitsio-special Specialized CFITSIO Interface Routines
+\section cfitsio-special Specialized CFitsIO Interface Routines
 
 Partly supported: to be documented.
 

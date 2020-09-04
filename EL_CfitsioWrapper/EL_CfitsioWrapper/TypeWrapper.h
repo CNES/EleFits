@@ -138,10 +138,10 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
 #endif
 
 /*
- * From FITS standart and CFitsIO documentation "Read and Write Column Data Routines"
+ * From Fits standart and CFitsIO documentation "Read and Write Column Data Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
  *
- * CFITSIO recognizes 4 additional data type codes besides those already defined in the FITS standard:
+ * CFitsIO recognizes 4 additional data type codes besides those already defined in the Fits standard:
  * - `U' meaning a 16-bit unsigned integer column,
  * - `V' for a 32-bit unsigned integer column,
  * - `W' for a 64-bit unsigned integer column, and

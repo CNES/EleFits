@@ -65,19 +65,19 @@ BOOST_AUTO_TEST_CASE( mini_init_test ) {
 }
 
 template<typename T>
-void check_equal(T value, T expected) {
+void checkEqual(T value, T expected) {
   BOOST_CHECK_EQUAL(value, expected);
 }
 
 template<typename T>
-void check_cast() {
+void checkCast() {
   T v = Test::generateRandomValue<T>();
   Record<T> r("KEY", v);
-  check_equal<T>(r, v);
+  checkEqual<T>(r, v);
 }
 
 #define TEST_CAST_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( name##_test ) { check_cast<type>(); }
+  BOOST_AUTO_TEST_CASE( name##_test ) { checkCast<type>(); }
 
 #define TEST_CAST(type) \
   TEST_CAST_ALIAS(type, type)

@@ -105,9 +105,13 @@ public:
 
   /**
    * @brief Write a record.
+   * @param k The keyword
+   * @param v The value
+   * @param u The unit
+   * @param c The comment
    */
   template<typename T>
-  void writeRecord(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
+  void writeRecord(const std::string& k, T v, const std::string& u="", const std::string& c="") const;
 
   /**
    * @brief Write several records.
@@ -123,9 +127,13 @@ public:
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
+   * @param k The keyword
+   * @param v The value
+   * @param u The unit
+   * @param c The comment
    */
   template<typename T>
-  void updateRecord(const std::string& keyword, T value, const std::string& unit="", const std::string& comment="") const;
+  void updateRecord(const std::string& k, T v, const std::string& u="", const std::string& c="") const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
@@ -191,8 +199,8 @@ void RecordHdu::writeRecord(const Record<T>& record) const {
 }
 
 template<typename T>
-void RecordHdu::writeRecord(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
-  writeRecord(Record<T>(keyword, value, unit, comment));
+void RecordHdu::writeRecord(const std::string& k, T v, const std::string& u, const std::string& c) const {
+  writeRecord(Record<T>(k, v, u, c));
 }
 
 template<typename... Ts>
@@ -208,8 +216,8 @@ void RecordHdu::updateRecord(const Record<T>& record) const {
 }
 
 template<typename T>
-void RecordHdu::updateRecord(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
-  updateRecord(Record<T>(keyword, value, unit, comment));
+void RecordHdu::updateRecord(const std::string& k, T v, const std::string& u, const std::string& c) const {
+  updateRecord(Record<T>(k, v, u, c));
 }
 
 template<typename... Ts>
