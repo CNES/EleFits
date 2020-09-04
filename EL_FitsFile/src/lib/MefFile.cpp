@@ -24,9 +24,10 @@
 namespace Euclid {
 namespace FitsIO {
 
-MefFile::MefFile(const std::string& filename, Permission permission) :
+MefFile::MefFile(const std::string &filename, Permission permission) :
     FitsFile(filename, permission),
-    m_hdus(std::max(1L, Cfitsio::Hdu::count(m_fptr))) {} // 1 for create, count() for open
+    m_hdus(std::max(1L, Cfitsio::Hdu::count(m_fptr))) {
+} // 1 for create, count() for open
 
 long MefFile::hduCount() const {
   return m_hdus.size();
@@ -35,22 +36,22 @@ long MefFile::hduCount() const {
 std::vector<std::string> MefFile::hduNames() {
   const long count = hduCount();
   std::vector<std::string> names(count);
-  for (long i=0; i<count; ++i) {
-    names[i] = access<>(i+1).name();
+  for (long i = 0; i < count; ++i) {
+    names[i] = access<>(i + 1).name();
   }
   return names;
 }
 
-const RecordHdu& MefFile::initRecordExt(const std::string& name) {
+const RecordHdu &MefFile::initRecordExt(const std::string &name) {
   Cfitsio::Hdu::createMetadataExtension(m_fptr, name);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new RecordHdu(m_fptr, size+1)));
+  m_hdus.push_back(std::unique_ptr<RecordHdu>(new RecordHdu(m_fptr, size + 1)));
   return *m_hdus[size].get();
 }
 
 #ifndef COMPILE_ASSIGN_IMAGE_EXT
 #define COMPILE_ASSIGN_IMAGE_EXT(T, n) \
-  template const ImageHdu& MefFile::assignImageExt<T, n>(const std::string&, const Raster<T, n>&);
+  template const ImageHdu &MefFile::assignImageExt<T, n>(const std::string &, const Raster<T, n> &);
 COMPILE_ASSIGN_IMAGE_EXT(char, 2)
 COMPILE_ASSIGN_IMAGE_EXT(int, 2)
 COMPILE_ASSIGN_IMAGE_EXT(float, 2)
@@ -62,5 +63,5 @@ COMPILE_ASSIGN_IMAGE_EXT(double, 3)
 #undef COMPILE_ASSIGN_IMAGE_EXT
 #endif
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid

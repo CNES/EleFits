@@ -24,7 +24,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-FitsFile::FitsFile(const std::string& filename, Permission permission) :
+FitsFile::FitsFile(const std::string &filename, Permission permission) :
     m_fptr(nullptr),
     m_filename(filename),
     m_permission(permission),
@@ -40,22 +40,22 @@ std::string FitsFile::filename() const {
   return m_filename;
 }
 
-void FitsFile::open(const std::string& filename, Permission permission) {
+void FitsFile::open(const std::string &filename, Permission permission) {
   switch (permission) {
-  case Permission::Read:
-    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadOnly);
-    break;
-  case Permission::Edit:
-    m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadWrite);
-    break;
-  case Permission::Create:
-    m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
-    break;
-  case Permission::Overwrite:
-    m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::OverWrite);
-    break;
-  case Permission::Temporary:
-    m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
+    case Permission::Read:
+      m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadOnly);
+      break;
+    case Permission::Edit:
+      m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadWrite);
+      break;
+    case Permission::Create:
+      m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
+      break;
+    case Permission::Overwrite:
+      m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::OverWrite);
+      break;
+    case Permission::Temporary:
+      m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
   }
   m_open = true; // If this line is reached, no error was raised
 }
@@ -65,22 +65,22 @@ void FitsFile::close() {
     return;
   }
   switch (m_permission) {
-  case Permission::Temporary:
-    closeAndDelete();
-    break;
-  default:
-    Cfitsio::File::close(m_fptr);
+    case Permission::Temporary:
+      closeAndDelete();
+      break;
+    default:
+      Cfitsio::File::close(m_fptr);
   }
   m_open = false;
 }
 
 void FitsFile::closeAndDelete() {
   if (not m_open) {
-    return; //TODO should we delete if not open?
+    return; // TODO should we delete if not open?
   }
   Cfitsio::File::closeAndDelete(m_fptr);
   m_open = false;
 }
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid

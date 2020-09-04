@@ -24,13 +24,14 @@
 namespace Euclid {
 namespace FitsIO {
 
-SifFile::SifFile(const std::string& filename, SifFile::Permission permission) :
+SifFile::SifFile(const std::string &filename, SifFile::Permission permission) :
     FitsFile(filename, permission),
-    m_hdu(m_fptr, 1) {}
-
-const RecordHdu& SifFile::header() const {
-  return dynamic_cast<const RecordHdu&>(m_hdu);
+    m_hdu(m_fptr, 1) {
 }
 
+const RecordHdu &SifFile::header() const {
+  return dynamic_cast<const RecordHdu &>(m_hdu);
 }
-}
+
+} // namespace FitsIO
+} // namespace Euclid
