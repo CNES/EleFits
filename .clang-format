@@ -11,7 +11,7 @@ AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
 #AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
-AlwaysBreakAfterReturnType: All
+AlwaysBreakAfterReturnType: None
 BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Custom
