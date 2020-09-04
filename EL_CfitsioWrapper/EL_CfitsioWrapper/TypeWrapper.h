@@ -39,41 +39,37 @@ namespace Cfitsio {
  * * Image's,
  * * Bintable's (ASCII table not supported).
  */
-template<typename T>
-struct TypeCode {
+template <typename T> struct TypeCode {
 
-    /**
-     * @brief Get the type code for a Record.
-     */
-    inline static int forRecord();
+  /**
+   * @brief Get the type code for a Record.
+   */
+  inline static int forRecord();
 
-    /**
-     * @brief Get the type code for a Bintable.
-     */
-    inline static int forBintable();
+  /**
+   * @brief Get the type code for a Bintable.
+   */
+  inline static int forBintable();
 
-    /**
-     * @brief Get the TFORM value to handle Bintable columns.
-     */
-    inline static std::string tform(long repeat);
+  /**
+   * @brief Get the TFORM value to handle Bintable columns.
+   */
+  inline static std::string tform(long repeat);
 
-    /**
-     * @brief Get the type code for an Image.
-     */
-    inline static int forImage();
+  /**
+   * @brief Get the type code for an Image.
+   */
+  inline static int forImage();
 
-    /**
-     * @brief Get the BITPIX value to handle Image HDUs.
-     */
-    inline static int bitpix();
-
+  /**
+   * @brief Get the BITPIX value to handle Image HDUs.
+   */
+  inline static int bitpix();
 };
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
-
 
 /// @cond IMPLEMENTATION
 
@@ -82,12 +78,14 @@ struct TypeCode {
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node38.html
  *
  * Allowed types for records:
- * TSTRING, TLOGICAL (== int), TBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TULONG, TLONGLONG,
- * TFLOAT, TDOUBLE, TCOMPLEX, and TDBLCOMPLEX
+ * TSTRING, TLOGICAL (== int), TBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG,
+ * TULONG, TLONGLONG, TFLOAT, TDOUBLE, TCOMPLEX, and TDBLCOMPLEX
  */
 #ifndef DEF_RECORD_TYPE_CODE
-#define DEF_RECORD_TYPE_CODE(type, code) \
-    template<> inline int TypeCode<type>::forRecord() { return code; }
+#define DEF_RECORD_TYPE_CODE(type, code)                                       \
+  template <> inline int TypeCode<type>::forRecord() {                         \
+    return code;                                                               \
+  }
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
 DEF_RECORD_TYPE_CODE(short, TSHORT)
@@ -112,13 +110,15 @@ DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node46.html
  *
  * Allowed types for ASCII tables:
- * TSTRING, TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TULONGLONG, TFLOAT, TDOUBLE
- * Additionnal types for binary tables:
+ * TSTRING, TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG,
+ * TULONG, TULONGLONG, TFLOAT, TDOUBLE Additionnal types for binary tables:
  * TLOGICAL (internally mapped to the `char' data type), TCOMPLEX, TDBLCOMPLEX
  */
 #ifndef DEF_TABLE_TYPE_CODE
-#define DEF_TABLE_TYPE_CODE(type, code) \
-    template<> inline int TypeCode<type>::forBintable() { return code; }
+#define DEF_TABLE_TYPE_CODE(type, code)                                        \
+  template <> inline int TypeCode<type>::forBintable() {                       \
+    return code;                                                               \
+  }
 DEF_TABLE_TYPE_CODE(bool, TBIT)
 DEF_TABLE_TYPE_CODE(char, TSBYTE)
 DEF_TABLE_TYPE_CODE(short, TSHORT)
@@ -138,18 +138,22 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
 #endif
 
 /*
- * From Fits standart and CFitsIO documentation "Read and Write Column Data Routines"
+ * From Fits standart and CFitsIO documentation "Read and Write Column Data
+ * Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
  *
- * CFitsIO recognizes 4 additional data type codes besides those already defined in the Fits standard:
+ * CFitsIO recognizes 4 additional data type codes besides those already defined
+ * in the Fits standard:
  * - `U' meaning a 16-bit unsigned integer column,
  * - `V' for a 32-bit unsigned integer column,
  * - `W' for a 64-bit unsigned integer column, and
  * - 'S' for a signed byte column.
  */
 #ifndef DEF_TABLE_TFORM
-#define DEF_TABLE_TFORM(type, code) \
-    template<> inline std::string TypeCode<type>::tform(long repeat) { return std::to_string(repeat) + code; }
+#define DEF_TABLE_TFORM(type, code)                                            \
+  template <> inline std::string TypeCode<type>::tform(long repeat) {          \
+    return std::to_string(repeat) + code;                                      \
+  }
 DEF_TABLE_TFORM(bool, 'X')
 DEF_TABLE_TFORM(char, 'S')
 DEF_TABLE_TFORM(std::int16_t, 'I')
@@ -172,11 +176,14 @@ DEF_TABLE_TFORM(std::uint64_t, 'W')
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node40.html
  *
  * Allowed types:
- * TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TULONGLONG, TFLOAT, TDOUBLE
+ * TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG,
+ * TULONGLONG, TFLOAT, TDOUBLE
  */
 #ifndef DEF_IMAGE_TYPE_CODE
-#define DEF_IMAGE_TYPE_CODE(type, code) \
-    template<> inline int TypeCode<type>::forImage() { return code; }
+#define DEF_IMAGE_TYPE_CODE(type, code)                                        \
+  template <> inline int TypeCode<type>::forImage() {                          \
+    return code;                                                               \
+  }
 DEF_IMAGE_TYPE_CODE(char, TSBYTE)
 DEF_IMAGE_TYPE_CODE(short, TSHORT)
 DEF_IMAGE_TYPE_CODE(int, TINT)
@@ -200,8 +207,10 @@ DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
  * SBYTE_IMG, USHORT_IMG, ULONG_IMG, ULONGLONG_IMG
  */
 #ifndef DEF_IMAGE_BITPIX
-#define DEF_IMAGE_BITPIX(type, code) \
-    template<> inline int TypeCode<type>::bitpix() { return code; }
+#define DEF_IMAGE_BITPIX(type, code)                                           \
+  template <> inline int TypeCode<type>::bitpix() {                            \
+    return code;                                                               \
+  }
 DEF_IMAGE_BITPIX(char, SBYTE_IMG)
 DEF_IMAGE_BITPIX(std::int16_t, SHORT_IMG)
 DEF_IMAGE_BITPIX(std::int32_t, LONG_IMG)
