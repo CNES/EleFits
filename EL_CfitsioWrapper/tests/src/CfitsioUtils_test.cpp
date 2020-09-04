@@ -25,15 +25,15 @@ using namespace Euclid::Cfitsio;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (CfitsioUtils_test)
+BOOST_AUTO_TEST_SUITE(CfitsioUtils_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( c_str_array_test ) {
+BOOST_AUTO_TEST_CASE(c_str_array_test) {
   std::vector<std::string> vec { "Fievre", "Chat", "Bebe", "Passe-miroir" };
   CStrArray arr(vec);
-  for (std::size_t row=0; row<vec.size(); ++row) {
-    for (std::size_t letter=0; letter<vec[row].length(); ++letter) {
+  for (std::size_t row = 0; row < vec.size(); ++row) {
+    for (std::size_t letter = 0; letter < vec[row].length(); ++letter) {
       BOOST_CHECK_EQUAL(vec[row].c_str()[letter], arr.data()[row][letter]);
     }
   }
@@ -41,6 +41,4 @@ BOOST_AUTO_TEST_CASE( c_str_array_test ) {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
-
-
+BOOST_AUTO_TEST_SUITE_END()

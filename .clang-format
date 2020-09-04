@@ -1,7 +1,7 @@
 BasedOnStyle: LLVM
 Language: Cpp
 Standard: Cpp11
-AccessModifierOffset: 0
+AccessModifierOffset: -2
 AlignAfterOpenBracket: AlwaysBreak
 AlignEscapedNewlines: DontAlign
 AlignOperands: false

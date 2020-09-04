@@ -29,28 +29,26 @@ using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (FileWrapper_test)
+BOOST_AUTO_TEST_SUITE(FileWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE( file_operations_test, FitsIO::Test::MinimalFile ) {
-    BOOST_CHECK_THROW(File::createAndOpen(filename, File::CreatePolicy::CreateOnly), CfitsioError);
-    BOOST_CHECK(fptr);
-    File::close(fptr);
-    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-    BOOST_CHECK(not fptr);
-    fptr = File::open(filename, File::OpenPolicy::ReadOnly);
-    BOOST_CHECK(fptr);
-    BOOST_CHECK_THROW(File::closeAndDelete(fptr), CfitsioError);
-    File::close(fptr);
-    fptr = File::open(filename, File::OpenPolicy::ReadWrite);
-    File::closeAndDelete(fptr);
-    BOOST_CHECK(not boost::filesystem::exists(filename));
-    BOOST_CHECK(not fptr);
+BOOST_FIXTURE_TEST_CASE(file_operations_test, FitsIO::Test::MinimalFile) {
+  BOOST_CHECK_THROW(File::createAndOpen(filename, File::CreatePolicy::CreateOnly), CfitsioError);
+  BOOST_CHECK(fptr);
+  File::close(fptr);
+  BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+  BOOST_CHECK(not fptr);
+  fptr = File::open(filename, File::OpenPolicy::ReadOnly);
+  BOOST_CHECK(fptr);
+  BOOST_CHECK_THROW(File::closeAndDelete(fptr), CfitsioError);
+  File::close(fptr);
+  fptr = File::open(filename, File::OpenPolicy::ReadWrite);
+  File::closeAndDelete(fptr);
+  BOOST_CHECK(not boost::filesystem::exists(filename));
+  BOOST_CHECK(not fptr);
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
-
-
+BOOST_AUTO_TEST_SUITE_END()

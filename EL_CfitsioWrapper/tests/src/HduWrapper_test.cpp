@@ -29,15 +29,15 @@ using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (HduWrapper_test)
+BOOST_AUTO_TEST_SUITE(HduWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE( minimal_file_test, FitsIO::Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE(minimal_file_test, FitsIO::Test::MinimalFile) {
   Hdu::gotoPrimary(this->fptr);
 }
 
-BOOST_FIXTURE_TEST_CASE( write_read_image_test, FitsIO::Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE(write_read_image_test, FitsIO::Test::MinimalFile) {
   FitsIO::Test::SmallRaster input;
   Hdu::createImageExtension(this->fptr, "IMGEXT", input);
   const auto output = Image::readRaster<float, 2>(fptr);
@@ -46,6 +46,4 @@ BOOST_FIXTURE_TEST_CASE( write_read_image_test, FitsIO::Test::MinimalFile ) {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
-
-
+BOOST_AUTO_TEST_SUITE_END()

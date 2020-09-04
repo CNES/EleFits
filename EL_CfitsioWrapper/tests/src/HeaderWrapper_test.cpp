@@ -30,41 +30,41 @@ using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (HeaderWrapper_test)
+BOOST_AUTO_TEST_SUITE(HeaderWrapper_test)
 
 //-----------------------------------------------------------------------------
 
 const double atol = 1e-4;
 
-template<typename T>
+template <typename T>
 void check_close(T value, T expected) {
   BOOST_CHECK_EQUAL(value, expected);
 }
 
-template<>
+template <>
 void check_close(float value, float expected) {
   BOOST_CHECK_CLOSE(value, expected, atol);
 }
 
-template<>
+template <>
 void check_close(double value, double expected) {
   BOOST_CHECK_CLOSE(value, expected, atol);
 }
 
-template<>
+template <>
 void check_close(std::complex<float> value, std::complex<float> expected) {
   BOOST_CHECK_CLOSE(value.real(), expected.real(), atol);
   BOOST_CHECK_CLOSE(value.imag(), expected.imag(), atol);
 }
 
-template<>
+template <>
 void check_close(std::complex<double> value, std::complex<double> expected) {
   BOOST_CHECK_CLOSE(value.real(), expected.real(), atol);
   BOOST_CHECK_CLOSE(value.imag(), expected.imag(), atol);
 }
 
-template<typename T>
-void check_record(const std::string& label) {
+template <typename T>
+void check_record(const std::string &label) {
   FitsIO::Test::MinimalFile file;
   T input = FitsIO::Test::generateRandomValue<T>();
   std::string unit = "u_" + label;
@@ -77,13 +77,13 @@ void check_record(const std::string& label) {
 }
 
 #define TEST_RECORD_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( name##_test ) { check_record<type>(#name); }
+  BOOST_AUTO_TEST_CASE(name##_test) { \
+    check_record<type>(#name); \
+  }
 
-#define TEST_RECORD(type) \
-  TEST_RECORD_ALIAS(type, type)
+#define TEST_RECORD(type) TEST_RECORD_ALIAS(type, type)
 
-#define TEST_RECORD_UNSIGNED(type) \
-  TEST_RECORD_ALIAS(unsigned type, u##type)
+#define TEST_RECORD_UNSIGNED(type) TEST_RECORD_ALIAS(unsigned type, u##type)
 
 TEST_RECORD(bool)
 TEST_RECORD(char)
@@ -102,7 +102,7 @@ TEST_RECORD_UNSIGNED(int)
 // TEST_RECORD_UNSIGNED(long) //TODO random error: wait for CFitsIO feedback
 TEST_RECORD_ALIAS(unsigned long long, ulonglong)
 
-BOOST_AUTO_TEST_CASE( empty_value_test ) {
+BOOST_AUTO_TEST_CASE(empty_value_test) {
   FitsIO::Test::MinimalFile file;
   FitsIO::Record<std::string> empty("EMPTY", "", "", "");
   Header::writeRecord(file.fptr, empty);
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE( empty_value_test ) {
   BOOST_CHECK_EQUAL(output.value, "");
 }
 
-BOOST_AUTO_TEST_CASE( missing_keyword_test ) {
+BOOST_AUTO_TEST_CASE(missing_keyword_test) {
   FitsIO::Test::MinimalFile file;
   BOOST_CHECK_THROW(Header::parseRecord<std::string>(file.fptr, "MISSING"), std::runtime_error);
 }
@@ -129,38 +129,30 @@ struct ValueList {
   std::string s;
 };
 
-void check_contains(
-    const std::vector<std::string>& list,
-    const std::vector<std::string>& values) {
-  for (const auto& v : values) {
+void check_contains(const std::vector<std::string> &list, const std::vector<std::string> &values) {
+  for (const auto &v : values) {
     BOOST_CHECK(std::find(list.begin(), list.end(), v) != list.end());
   }
 }
 
-BOOST_AUTO_TEST_CASE( struct_io_test ) {
+BOOST_AUTO_TEST_CASE(struct_io_test) {
   FitsIO::Test::MinimalFile file;
-  RecordList input {
+  RecordList input { { "BOOL", true }, { "INT", 2 }, { "DOUBLE", 3. }, { "STRING", "four" } };
+  Header::writeRecords<bool, int, double, std::string>(
+      file.fptr,
       { "BOOL", true },
       { "INT", 2 },
-      { "DOUBLE", 3.},
-      { "STRING", "four"}
-  };
-  Header::writeRecords<bool, int, double, std::string>(file.fptr,
-    { "BOOL", true },
-    { "INT", 2 },
-    { "DOUBLE", 3.},
-    { "STRING", "four"});
+      { "DOUBLE", 3. },
+      { "STRING", "four" });
   std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
   const auto found = Header::listKeywords(file.fptr);
   check_contains(found, keywords);
-  auto records = Header::parseRecordsAs<RecordList, bool, int, double, std::string>
-      (file.fptr, keywords);
+  auto records = Header::parseRecordsAs<RecordList, bool, int, double, std::string>(file.fptr, keywords);
   BOOST_CHECK_EQUAL(records.b.value, input.b.value);
   BOOST_CHECK_EQUAL(records.i.value, input.i.value);
   BOOST_CHECK_EQUAL(records.d.value, input.d.value);
   BOOST_CHECK_EQUAL(records.s.value, input.s.value);
-  auto values = Header::parseRecordsAs<ValueList, bool, int, double, std::string>
-      (file.fptr, keywords);
+  auto values = Header::parseRecordsAs<ValueList, bool, int, double, std::string>(file.fptr, keywords);
   BOOST_CHECK_EQUAL(values.b, input.b.value);
   BOOST_CHECK_EQUAL(values.i, input.i.value);
   BOOST_CHECK_EQUAL(values.d, input.d.value);
@@ -169,4 +161,4 @@ BOOST_AUTO_TEST_CASE( struct_io_test ) {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
+BOOST_AUTO_TEST_SUITE_END()

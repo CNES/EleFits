@@ -29,14 +29,14 @@
 using namespace Euclid;
 using namespace Cfitsio;
 
-template<typename T>
-void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
+template <typename T>
+void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
+BOOST_AUTO_TEST_SUITE(BintableWrapper_test)
 
 //-----------------------------------------------------------------------------
 
@@ -44,20 +44,17 @@ BOOST_AUTO_TEST_SUITE (BintableWrapper_test)
  * Learning test which checks that there is indeed a bug in the way
  * CFitsIO handles unsigned integers with BZERO.
  */
-BOOST_AUTO_TEST_CASE( cfitsio_overflow_bug_test ) {
+BOOST_AUTO_TEST_CASE(cfitsio_overflow_bug_test) {
   FitsIO::Test::MinimalFile file;
-  CStrArray ttype({"COL"});
+  CStrArray ttype({ "COL" });
   auto tform1 = TypeCode<unsigned>::tform(1);
-  char* tforms[1];
-  tforms[0] = (char*)malloc(3);
+  char *tforms[1];
+  tforms[0] = (char *)malloc(3);
   strcpy(tforms[0], tform1.c_str());
-  CStrArray tunit({""});
-  printf("TTYPE: %s\nTFORM: %s\nTUNIT: %s\n",
-      ttype.data()[0], tforms[0], tunit.data()[0]);
+  CStrArray tunit({ "" });
+  printf("TTYPE: %s\nTFORM: %s\nTUNIT: %s\n", ttype.data()[0], tforms[0], tunit.data()[0]);
   int status = 0;
-  fits_create_tbl(file.fptr, BINARY_TBL, 0, 1,
-      ttype.data(), tforms, tunit.data(),
-      "TBL", &status);
+  fits_create_tbl(file.fptr, BINARY_TBL, 0, 1, ttype.data(), tforms, tunit.data(), "TBL", &status);
   free(tforms[0]);
 
   constexpr unsigned small = 0;
@@ -84,7 +81,7 @@ BOOST_AUTO_TEST_CASE( cfitsio_overflow_bug_test ) {
   BOOST_CHECK_EQUAL(status, 0);
 }
 
-template<typename T>
+template <typename T>
 void checkScalar() {
   FitsIO::Test::RandomScalarColumn<T> input;
   FitsIO::Test::MinimalFile file;
@@ -92,9 +89,9 @@ void checkScalar() {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     checkEqualVectors(output.vector(), input.vector());
-  } catch(const CfitsioError& e) {
+  } catch (const CfitsioError &e) {
     std::cerr << "Input:" << std::endl;
-    for (const auto& v : input.vector()) {
+    for (const auto &v : input.vector()) {
       std::cerr << v << ' ';
     }
     std::cerr << std::endl;
@@ -107,13 +104,13 @@ void checkScalar() {
 }
 
 #define TEST_SCALAR_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( name##_test ) { checkScalar<type>(); }
+  BOOST_AUTO_TEST_CASE(name##_test) { \
+    checkScalar<type>(); \
+  }
 
-#define TEST_SCALAR(type) \
-  TEST_SCALAR_ALIAS(type, type)
+#define TEST_SCALAR(type) TEST_SCALAR_ALIAS(type, type)
 
-#define TEST_SCALAR_UNSIGNED(type) \
-  TEST_SCALAR_ALIAS(unsigned type, u##type)
+#define TEST_SCALAR_UNSIGNED(type) TEST_SCALAR_ALIAS(unsigned type, u##type)
 
 // TEST_SCALAR(bool) //TODO won't compile because a vector of bools has no .data()
 TEST_SCALAR(char)
@@ -134,7 +131,7 @@ TEST_SCALAR_ALIAS(std::uint16_t, uint16)
 TEST_SCALAR_ALIAS(std::uint32_t, uint32)
 TEST_SCALAR_ALIAS(std::uint64_t, uint64)
 
-template<typename T>
+template <typename T>
 void checkVector() {
   constexpr long rows = 3;
   constexpr long repeat = 2;
@@ -146,28 +143,28 @@ void checkVector() {
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     BOOST_CHECK_EQUAL(output.info.repeat, repeat);
     checkEqualVectors(output.vector(), input.vector());
-  } catch(const CfitsioError& e) {
+  } catch (const CfitsioError &e) {
     std::cerr << "Input:" << std::endl;
-    for (const auto& v : input.vector()) {
+    for (const auto &v : input.vector()) {
       std::cerr << v << ' ';
     }
     std::cerr << std::endl;
     if (e.status == NUM_OVERFLOW) {
       BOOST_WARN(e.what());
-     } else {
+    } else {
       BOOST_FAIL(e.what());
-     }
+    }
   }
 }
 
 #define TEST_VECTOR_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( vector_##name##_test ) { checkVector<type>(); }
+  BOOST_AUTO_TEST_CASE(vector_##name##_test) { \
+    checkVector<type>(); \
+  }
 
-#define TEST_VECTOR(type) \
-  TEST_VECTOR_ALIAS(type, type)
+#define TEST_VECTOR(type) TEST_VECTOR_ALIAS(type, type)
 
-#define TEST_VECTOR_UNSIGNED(type) \
-  TEST_VECTOR_ALIAS(unsigned type, u##type)
+#define TEST_VECTOR_UNSIGNED(type) TEST_VECTOR_ALIAS(unsigned type, u##type)
 
 // TEST_VECTOR(bool) //TODO won't compile because of vector specialization for bool
 TEST_VECTOR(char)
@@ -187,11 +184,10 @@ TEST_VECTOR_ALIAS(std::uint16_t, uint16)
 TEST_VECTOR_ALIAS(std::uint32_t, uint32)
 TEST_VECTOR_ALIAS(std::uint64_t, uint64)
 
-BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
   using FitsIO::Test::SmallTable;
   SmallTable input;
-  Hdu::createBintableExtension(this->fptr, "IMGEXT",
-      input.numCol, input.radecCol, input.nameCol, input.distMagCol);
+  Hdu::createBintableExtension(this->fptr, "IMGEXT", input.numCol, input.radecCol, input.nameCol, input.distMagCol);
   const auto outputNums = Bintable::readColumn<SmallTable::Num>(this->fptr, input.numCol.info.name);
   checkEqualVectors(outputNums.vector(), input.numCol.vector());
   const auto outputRadecs = Bintable::readColumn<SmallTable::Radec>(this->fptr, input.radecCol.info.name);
@@ -202,7 +198,7 @@ BOOST_FIXTURE_TEST_CASE( small_table_test, FitsIO::Test::MinimalFile ) {
   checkEqualVectors(outputDistsMags.vector(), input.distMagCol.vector());
 }
 
-BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   constexpr long rows(10000);
   FitsIO::Test::RandomScalarColumn<int> i(rows);
   i.info.name = "I";
@@ -217,7 +213,7 @@ BOOST_FIXTURE_TEST_CASE( rowwise_test, FitsIO::Test::MinimalFile ) {
   checkEqualVectors(std::get<2>(table).vector(), d.vector());
 }
 
-BOOST_FIXTURE_TEST_CASE( append_test, FitsIO::Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE(append_test, FitsIO::Test::MinimalFile) {
   using FitsIO::Test::SmallTable;
   SmallTable table;
   Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol);
@@ -232,4 +228,4 @@ BOOST_FIXTURE_TEST_CASE( append_test, FitsIO::Test::MinimalFile ) {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
+BOOST_AUTO_TEST_SUITE_END()

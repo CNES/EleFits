@@ -28,11 +28,11 @@ using namespace Euclid::FitsIO::Test;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (CfitsioFixture_test)
+BOOST_AUTO_TEST_SUITE(CfitsioFixture_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( open_close_test ) {
+BOOST_AUTO_TEST_CASE(open_close_test) {
   std::string filename;
   {
     MinimalFile f;
@@ -44,4 +44,4 @@ BOOST_AUTO_TEST_CASE( open_close_test ) {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
+BOOST_AUTO_TEST_SUITE_END()

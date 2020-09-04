@@ -25,32 +25,31 @@
 #include "EL_CfitsioWrapper/ImageWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 
-
 using namespace Euclid;
 using namespace Cfitsio;
 
-template<typename T>
-void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
+template <typename T>
+void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (ImageWrapper_test)
+BOOST_AUTO_TEST_SUITE(ImageWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-template<typename T>
+template <typename T>
 void check_random_3d() {
-  FitsIO::Test::RandomRaster<T, 3> input({2, 3, 4});
+  FitsIO::Test::RandomRaster<T, 3> input({ 2, 3, 4 });
   FitsIO::Test::MinimalFile file;
   try {
     Hdu::createImageExtension(file.fptr, "IMGEXT", input);
     const auto output = Image::readRaster<T, 3>(file.fptr);
     checkEqualVectors(output.vector(), input.vector());
-  } catch(const CfitsioError& e) {
+  } catch (const CfitsioError &e) {
     std::cerr << "Input:" << std::endl;
-    for (const auto& v : input.vector()) {
+    for (const auto &v : input.vector()) {
       std::cerr << v << ' ';
     }
     std::cerr << std::endl;
@@ -59,13 +58,13 @@ void check_random_3d() {
 }
 
 #define TEST_3D_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( name##_test ) { check_random_3d<type>(); }
+  BOOST_AUTO_TEST_CASE(name##_test) { \
+    check_random_3d<type>(); \
+  }
 
-#define TEST_3D(type) \
-  TEST_3D_ALIAS(type, type)
+#define TEST_3D(type) TEST_3D_ALIAS(type, type)
 
-#define TEST_3D_UNSIGNED(type) \
-  TEST_3D_ALIAS(unsigned type, u##type)
+#define TEST_3D_UNSIGNED(type) TEST_3D_ALIAS(unsigned type, u##type)
 
 TEST_3D(char)
 TEST_3D(short)
@@ -86,4 +85,4 @@ TEST_3D_ALIAS(std::uint64_t, uint64)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
+BOOST_AUTO_TEST_SUITE_END()

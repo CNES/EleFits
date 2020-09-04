@@ -27,7 +27,7 @@
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (CfitsioWrapper_test)
+BOOST_AUTO_TEST_SUITE(CfitsioWrapper_test)
 
 //-----------------------------------------------------------------------------
 
@@ -35,10 +35,10 @@ BOOST_AUTO_TEST_SUITE (CfitsioWrapper_test)
  * This is just a smoke test to ckeck that we can import the whole Cfitsio namespace
  * and get the necessary classes with a single import.
  */
-BOOST_AUTO_TEST_CASE( smoke_test ) {
+BOOST_AUTO_TEST_CASE(smoke_test) {
   using namespace Euclid;
   using namespace Cfitsio;
-  fitsfile* fptr;
+  fitsfile *fptr;
   (void)fptr;
   using FitsIO::Record;
   using FitsIO::Column;
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( smoke_test ) {
 /**
  * Check that CFitsIO is not able to read unsigned long records if greater than max(long).
  */
-BOOST_FIXTURE_TEST_CASE( read_ulong_record_learning_test , Euclid::FitsIO::Test::MinimalFile ) {
+BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::FitsIO::Test::MinimalFile) {
   /* Write */
   int status = 0;
   unsigned long signed_max = std::numeric_limits<long>::max();
@@ -69,4 +69,4 @@ BOOST_FIXTURE_TEST_CASE( read_ulong_record_learning_test , Euclid::FitsIO::Test:
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
+BOOST_AUTO_TEST_SUITE_END()
