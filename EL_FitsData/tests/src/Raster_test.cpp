@@ -26,42 +26,31 @@ using namespace Euclid;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (Raster_test)
+BOOST_AUTO_TEST_SUITE(Raster_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( index_test ) {
+BOOST_AUTO_TEST_CASE(index_test) {
 
   FitsIO::Position<4> shape;
-  for (auto& length : shape) {
+  for (auto &length : shape) {
     length = std::rand();
   }
   FitsIO::Position<4> pos;
-  for (auto& coord : pos) {
+  for (auto &coord : pos) {
     coord = std::rand();
   }
   auto index = FitsIO::internal::IndexImpl<3>::template offset<4>(shape, pos);
-  BOOST_CHECK_EQUAL(index,
-    pos[0] + shape[0] * (
-      pos[1] + shape[1] * (
-        pos[2] + shape[2] * 
-          (pos[3])
-        )
-      )
-    );
-
+  BOOST_CHECK_EQUAL(index, pos[0] + shape[0] * (pos[1] + shape[1] * (pos[2] + shape[2] * (pos[3]))));
 }
 
-BOOST_FIXTURE_TEST_CASE( raster_2D_test, FitsIO::Test::SmallRaster ) {
+BOOST_FIXTURE_TEST_CASE(raster_2D_test, FitsIO::Test::SmallRaster) {
 
   long size(this->width * this->height);
   BOOST_CHECK_EQUAL(this->size(), size);
   BOOST_CHECK_EQUAL(this->vector().size(), size);
-
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
-
-
+BOOST_AUTO_TEST_SUITE_END()

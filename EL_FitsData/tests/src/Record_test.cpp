@@ -27,11 +27,11 @@ using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (Record_test)
+BOOST_AUTO_TEST_SUITE(Record_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( full_init_test ) {
+BOOST_AUTO_TEST_CASE(full_init_test) {
 
   Record<int> full { "FULL", 4, "m", "Full" };
 
@@ -39,10 +39,9 @@ BOOST_AUTO_TEST_CASE( full_init_test ) {
   BOOST_CHECK_EQUAL(full.value, 4);
   BOOST_CHECK_EQUAL(full.unit, "m");
   BOOST_CHECK_EQUAL(full.comment, "Full");
-
 }
 
-BOOST_AUTO_TEST_CASE( unit_init_test ) {
+BOOST_AUTO_TEST_CASE(unit_init_test) {
 
   Record<int> unit { "UNIT", 3, "m" };
 
@@ -50,10 +49,9 @@ BOOST_AUTO_TEST_CASE( unit_init_test ) {
   BOOST_CHECK_EQUAL(unit.value, 3);
   BOOST_CHECK_EQUAL(unit.unit, "m");
   BOOST_CHECK_EQUAL(unit.comment, "");
-  
 }
 
-BOOST_AUTO_TEST_CASE( mini_init_test ) {
+BOOST_AUTO_TEST_CASE(mini_init_test) {
 
   Record<int> mini { "MINI", 2 };
 
@@ -61,15 +59,14 @@ BOOST_AUTO_TEST_CASE( mini_init_test ) {
   BOOST_CHECK_EQUAL(mini.value, 2);
   BOOST_CHECK_EQUAL(mini.unit, "");
   BOOST_CHECK_EQUAL(mini.comment, "");
-  
 }
 
-template<typename T>
+template <typename T>
 void checkEqual(T value, T expected) {
   BOOST_CHECK_EQUAL(value, expected);
 }
 
-template<typename T>
+template <typename T>
 void checkCast() {
   T v = Test::generateRandomValue<T>();
   Record<T> r("KEY", v);
@@ -77,13 +74,13 @@ void checkCast() {
 }
 
 #define TEST_CAST_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE( name##_test ) { checkCast<type>(); }
+  BOOST_AUTO_TEST_CASE(name##_test) { \
+    checkCast<type>(); \
+  }
 
-#define TEST_CAST(type) \
-  TEST_CAST_ALIAS(type, type)
+#define TEST_CAST(type) TEST_CAST_ALIAS(type, type)
 
-#define TEST_CAST_UNSIGNED(type) \
-  TEST_CAST_ALIAS(unsigned type, u##type)
+#define TEST_CAST_UNSIGNED(type) TEST_CAST_ALIAS(unsigned type, u##type)
 
 TEST_CAST(bool)
 TEST_CAST(int)
@@ -91,6 +88,4 @@ TEST_CAST_ALIAS(std::string, string)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
-
-
+BOOST_AUTO_TEST_SUITE_END()

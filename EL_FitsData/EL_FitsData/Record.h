@@ -37,7 +37,7 @@ namespace FitsIO {
  * otherwise.
  * @see \ref data-classes
  */
-template<typename T>
+template <typename T>
 struct Record {
 
   /**
@@ -47,7 +47,7 @@ struct Record {
    * @param u The unit
    * @param c The comment
    */
-  Record(const std::string& k="", T v=T(), const std::string& u="", const std::string& c="");
+  Record(const std::string &k = "", T v = T(), const std::string &u = "", const std::string &c = "");
 
   /**
    * @brief Slice the record as its value.
@@ -63,7 +63,7 @@ struct Record {
    * int value = h.parseRecord<int>("KEYWORD").value;
    * @endcode
    */
-  operator T () const;
+  operator T() const;
 
   /**
    * @brief The keyword.
@@ -84,28 +84,23 @@ struct Record {
    * @brief The comment without the unit.
    */
   std::string comment;
-
 };
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
+template <typename T>
+Record<T>::Record(const std::string &k, T v, const std::string &u, const std::string &c) :
+    keyword(k), value(v), unit(u), comment(c) {
+}
 
-template<typename T>
-Record<T>::Record(const std::string& k, T v, const std::string& u, const std::string& c) :
-  keyword(k),
-  value(v),
-  unit(u),
-  comment(c) {}
-
-template<typename T>
+template <typename T>
 Record<T>::operator T() const {
   return value;
 }
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif

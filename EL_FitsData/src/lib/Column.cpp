@@ -17,7 +17,6 @@
  *
  */
 
-
 #include "ElementsKernel/Unused.h"
 #include "EL_FitsData/Column.h"
 
@@ -27,13 +26,13 @@ namespace FitsIO {
 /// @cond INTERNAL
 namespace internal {
 
-template<>
+template <>
 long rowsImpl<std::string>(long nelements, ELEMENTS_UNUSED long repeat) {
   return nelements;
 }
 
-}
+} // namespace internal
 /// @endcond
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid

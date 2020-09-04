@@ -20,11 +20,9 @@
 #ifndef _EL_FITSDATA_COLUMN_H
 #define _EL_FITSDATA_COLUMN_H
 
-
 #include <string>
 #include <tuple>
 #include <vector>
-
 
 namespace Euclid {
 namespace FitsIO {
@@ -33,7 +31,7 @@ namespace FitsIO {
  * @brief Column metadata, i.e. { name, unit, repeat }
  * @see \ref data-classes
  */
-template<typename T>
+template <typename T>
 struct ColumnInfo {
 
   /**
@@ -56,9 +54,7 @@ struct ColumnInfo {
    * including the \c '\0' character.
    */
   long repeat;
-
 };
-
 
 /**
  * @brief Bintable column data and metadata.
@@ -69,11 +65,10 @@ struct ColumnInfo {
  * (e.g. with other external libraries with custom containers).
  * @see \ref data-classes
  */
-template<typename T>
+template <typename T>
 class Column {
 
 public:
-
   /**
    * @brief Destructor.
    */
@@ -99,15 +94,13 @@ public:
   /**
    * @brief Const pointer to the first data element.
    */
-  virtual const T* data() const = 0;
+  virtual const T *data() const = 0;
 
   /**
    * @brief Column metadata.
    */
   ColumnInfo<T> info;
-
 };
-
 
 /**
  * @brief Column which references some external pointer data.
@@ -115,21 +108,20 @@ public:
  * Use it for temporary columns.
  * @see \ref data-classes
  */
-template<typename T>
+template <typename T>
 class PtrColumn : public Column<T> {
 
 public:
-
   /** @brief Destructor. */
   virtual ~PtrColumn() = default;
   /** @brief Copy constructor. */
-  PtrColumn(const PtrColumn&) = default;
+  PtrColumn(const PtrColumn &) = default;
   /** @brief Move constructor. */
-  PtrColumn(PtrColumn&&) = default;
+  PtrColumn(PtrColumn &&) = default;
   /** @brief Copy assignment. */
-  PtrColumn& operator=(const PtrColumn&) = default;
+  PtrColumn &operator=(const PtrColumn &) = default;
   /** @brief Move assignment. */
-  PtrColumn& operator=(PtrColumn&&) = default;
+  PtrColumn &operator=(PtrColumn &&) = default;
 
   /**
    * @brief Create a new column with given metadata and data.
@@ -138,86 +130,78 @@ public:
    * which is the number of rows for scalar and string columns.
    * @param data Pointer to the first element of the data.
    */
-  PtrColumn(ColumnInfo<T> info, long nelements, const T* data);
+  PtrColumn(ColumnInfo<T> info, long nelements, const T *data);
 
   /** @see Column::nelements */
   long nelements() const override;
 
   /** @see Column::data */
-  const T* data() const override;
+  const T *data() const override;
 
 private:
-
   long m_nelements;
-  const T* m_data;
-
+  const T *m_data;
 };
-
 
 /**
  * @brief Column which references some external vector data.
  * @details Use it for temporary columns.
  * @see \ref data-classes
  */
-template<typename T>
+template <typename T>
 class VecRefColumn : public Column<T> {
 
 public:
-
   /** @brief Destructor. */
   virtual ~VecRefColumn() = default;
   /** @brief Copy constructor. */
-  VecRefColumn(const VecRefColumn&) = default;
+  VecRefColumn(const VecRefColumn &) = default;
   /** @brief Move constructor. */
-  VecRefColumn(VecRefColumn&&) = default;
+  VecRefColumn(VecRefColumn &&) = default;
   /** @brief Copy assignment. */
-  VecRefColumn& operator=(const VecRefColumn&) = default;
+  VecRefColumn &operator=(const VecRefColumn &) = default;
   /** @brief Move assignment. */
-  VecRefColumn& operator=(VecRefColumn&&) = default;
+  VecRefColumn &operator=(VecRefColumn &&) = default;
 
   /**
    * @brief Create a VecRefColumn with given metadata and reference to data.
    */
-  VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vectorRef);
+  VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vectorRef);
 
   /** @see Column::nelements */
   long nelements() const override;
 
   /** @see Column::data */
-  const T* data() const override;
+  const T *data() const override;
 
   /**
    * @brief Const reference to the vector data.
    */
-  const std::vector<T>& vector() const;
+  const std::vector<T> &vector() const;
 
 private:
-
-  const std::vector<T>& m_ref;
-
+  const std::vector<T> &m_ref;
 };
-
 
 /**
  * @brief Column which stores internally the data.
  * @details Use it (via move semantics) if you don't need your data after the write operation.
  * @see \ref data-classes
  */
-template<typename T>
+template <typename T>
 class VecColumn : public Column<T> {
 
 public:
-
   /** @brief Destructor. */
   virtual ~VecColumn() = default;
   /** @brief Copy constructor. */
-  VecColumn(const VecColumn&) = default;
+  VecColumn(const VecColumn &) = default;
   /** @brief Move constructor. */
-  VecColumn(VecColumn&&) = default;
+  VecColumn(VecColumn &&) = default;
   /** @brief Copy assignment. */
-  VecColumn& operator=(const VecColumn&) = default;
+  VecColumn &operator=(const VecColumn &) = default;
   /** @brief Move assignment. */
-  VecColumn& operator=(VecColumn&&) = default;
+  VecColumn &operator=(VecColumn &&) = default;
 
   /**
    * @brief Create an empty VecColumn.
@@ -236,35 +220,31 @@ public:
   long nelements() const override;
 
   /** @see Column::data */
-  const T* data() const override;
+  const T *data() const override;
 
   /**
    * @brief Non-const pointer to the first data element.
    */
-  T* data();
+  T *data();
 
   /**
    * @brief Const reference to the vector data.
    */
-  const std::vector<T>& vector() const;
+  const std::vector<T> &vector() const;
 
   /**
    * @brief Non-const reference to the data, useful to take ownership through move semantics.
    * @code std::vector<T> v = std::move(column.vector()); @endcode
    */
-  std::vector<T>& vector();
+  std::vector<T> &vector();
 
 private:
-
   std::vector<T> m_vec;
-
 };
-
 
 ///////////////
 // INTERNAL //
 /////////////
-
 
 /// @cond INTERNAL
 namespace internal {
@@ -272,119 +252,108 @@ namespace internal {
 /**
  * @brief Implementation for Column::rows to dispatch std::string and other types.
  */
-template<typename T>
+template <typename T>
 long rowsImpl(long nelements, long repeat);
 
 /**
  * std::string dispatch.
  */
-template<>
+template <>
 long rowsImpl<std::string>(long nelements, long repeat);
 
 /**
  * Other types dispatch.
  */
-template<typename T>
+template <typename T>
 long rowsImpl(long nelements, long repeat) {
   return (nelements + repeat - 1) / repeat;
 }
 
-}
+} // namespace internal
 /// @endcond
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<typename T>
-Column<T>::Column(ColumnInfo<T> columnInfo) :
-    info(columnInfo) {
+template <typename T>
+Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
 }
 
-template<typename T>
+template <typename T>
 long Column<T>::rows() const {
   return internal::rowsImpl<T>(nelements(), info.repeat);
 }
 
-template<typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long nelements, const T* data) :
-    Column<T>(columnInfo),
-    m_nelements(nelements),
-    m_data(data) {
+template <typename T>
+PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long nelements, const T *data) :
+    Column<T>(columnInfo), m_nelements(nelements), m_data(data) {
 }
 
-template<typename T>
+template <typename T>
 long PtrColumn<T>::nelements() const {
   return m_nelements;
 }
 
-template<typename T>
-const T* PtrColumn<T>::data() const {
+template <typename T>
+const T *PtrColumn<T>::data() const {
   return m_data;
 }
 
-template<typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vectorRef) :
-    Column<T>(columnInfo),
-    m_ref(vectorRef) {
+template <typename T>
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vectorRef) :
+    Column<T>(columnInfo), m_ref(vectorRef) {
 }
 
-template<typename T>
+template <typename T>
 long VecRefColumn<T>::nelements() const {
   return m_ref.size();
 }
 
-template<typename T>
-const T* VecRefColumn<T>::data() const {
+template <typename T>
+const T *VecRefColumn<T>::data() const {
   return m_ref.data();
 }
 
-template<typename T>
-const std::vector<T>& VecRefColumn<T>::vector() const {
+template <typename T>
+const std::vector<T> &VecRefColumn<T>::vector() const {
   return m_ref;
 }
 
-
-template<typename T>
-VecColumn<T>::VecColumn() :
-    Column<T>({ "", "", 1 }),
-    m_vec() {
+template <typename T>
+VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {
 }
 
-template<typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector) :
-    Column<T>(columnInfo),
-    m_vec(vector) {
+template <typename T>
+VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector) : Column<T>(columnInfo), m_vec(vector) {
 }
 
-template<typename T>
+template <typename T>
 long VecColumn<T>::nelements() const {
   return m_vec.size();
 }
 
-template<typename T>
-const T* VecColumn<T>::data() const {
+template <typename T>
+const T *VecColumn<T>::data() const {
   return m_vec.data();
 }
 
-template<typename T>
-T* VecColumn<T>::data() {
+template <typename T>
+T *VecColumn<T>::data() {
   return m_vec.data();
 }
 
-template<typename T>
-const std::vector<T>& VecColumn<T>::vector() const {
+template <typename T>
+const std::vector<T> &VecColumn<T>::vector() const {
   return m_vec;
 }
 
-template<typename T>
-std::vector<T>& VecColumn<T>::vector() {
+template <typename T>
+std::vector<T> &VecColumn<T>::vector() {
   return m_vec;
 }
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif

@@ -35,36 +35,34 @@ namespace FitsIO {
 /**
  * @brief Test-related classes and functions.
  */
-namespace Test { //TODO move to FitsDataFixture
+namespace Test { // TODO move to FitsDataFixture
 
-template<typename T>
+template <typename T>
 T generateRandomValue();
 
-template<typename T>
+template <typename T>
 std::vector<T> generateRandomVector(long size);
 
-template<>
+template <>
 std::vector<std::complex<float>> generateRandomVector<std::complex<float>>(long size);
 
-template<>
+template <>
 std::vector<std::complex<double>> generateRandomVector<std::complex<double>>(long size);
 
-template<>
+template <>
 std::vector<std::string> generateRandomVector<std::string>(long size);
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<typename T>
+template <typename T>
 T generateRandomValue() {
   auto vec = generateRandomVector<T>(1);
   return vec[0];
 }
 
-template<typename T>
+template <typename T>
 std::vector<T> generateRandomVector(long size) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
@@ -72,43 +70,44 @@ std::vector<T> generateRandomVector(long size) {
   const double max = std::numeric_limits<T>::max();
   std::uniform_real_distribution<double> distribution(min, max);
   std::vector<T> vec(size);
-  for (auto&& val : vec) {
+  for (auto &&val : vec) {
     val = T(distribution(generator));
   }
   return vec;
 }
 
-template<>
+template <>
 std::vector<std::complex<float>> generateRandomVector<std::complex<float>>(long size) {
   const auto re_im_vec = generateRandomVector<float>(size * 2);
   std::vector<std::complex<float>> vec(size);
   const auto im_begin = re_im_vec.begin() + size;
-  std::transform(re_im_vec.begin(), im_begin, im_begin, vec.begin(),
-      [](float re, float im) { return std::complex<float> {re, im}; });
+  std::transform(re_im_vec.begin(), im_begin, im_begin, vec.begin(), [](float re, float im) {
+    return std::complex<float> { re, im };
+  });
   return vec;
 }
 
-template<>
+template <>
 std::vector<std::complex<double>> generateRandomVector<std::complex<double>>(long size) {
   const auto re_vec = generateRandomVector<double>(size);
   const auto im_vec = generateRandomVector<double>(size);
   std::vector<std::complex<double>> vec(size);
-  std::transform(re_vec.begin(), re_vec.end(), im_vec.begin(), vec.begin(),
-      [](double re, double im) { return std::complex<double> {re, im}; });
+  std::transform(re_vec.begin(), re_vec.end(), im_vec.begin(), vec.begin(), [](double re, double im) {
+    return std::complex<double> { re, im };
+  });
   return vec;
 }
 
-template<>
+template <>
 std::vector<std::string> generateRandomVector<std::string>(long size) {
   std::vector<int> int_vec = generateRandomVector<int>(size);
   std::vector<std::string> vec(size);
-  std::transform(int_vec.begin(), int_vec.end(), vec.begin(),
-      [](int i) { return std::to_string(i); } );
+  std::transform(int_vec.begin(), int_vec.end(), vec.begin(), [](int i) { return std::to_string(i); });
   return vec;
 }
 
-}
-}
-}
+} // namespace Test
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif
