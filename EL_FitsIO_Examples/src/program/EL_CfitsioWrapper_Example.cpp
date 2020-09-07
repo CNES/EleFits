@@ -38,9 +38,9 @@ class EL_CfitsioWrapper_Example : public Elements::Program {
 
 public:
   options_description defineSpecificProgramOptions() override {
-
     options_description options {};
-    options.add_options()("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    auto add = options.add_options();
+    add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
 

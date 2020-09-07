@@ -50,10 +50,10 @@ class EL_FitsIO_BufferedReadPerf : public Elements::Program {
 public:
   options_description defineSpecificProgramOptions() override {
     options_description options {};
-    options.add_options()("tables", value<int>()->default_value(1), "Number of bintable extensions")(
-        "rows",
-        value<int>()->default_value(1),
-        "Number of rows")("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    auto add = options.add_options();
+    add("tables", value<int>()->default_value(1), "Number of bintable extensions");
+    add("rows", value<int>()->default_value(1), "Number of rows");
+    add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
 

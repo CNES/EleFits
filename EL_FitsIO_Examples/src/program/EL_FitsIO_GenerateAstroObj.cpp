@@ -87,10 +87,10 @@ public:
   options_description defineSpecificProgramOptions() override {
 
     options_description options {};
-    options.add_options()("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file")(
-        "nobj",
-        value<int>()->default_value(1),
-        "AstroObj count")("nbin", value<int>()->default_value(1000), "Wavelength bin count");
+    auto add = options.add_options();
+    add("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file");
+    add("nobj", value<int>()->default_value(1), "AstroObj count");
+    add("nbin", value<int>()->default_value(1000), "Wavelength bin count");
     return options;
   }
 

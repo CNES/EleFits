@@ -302,8 +302,7 @@ void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
   long index = columnIndex(fptr, column.info.name);
   const auto begin = column.data();
   const auto end = begin + column.nelements();
-  std::vector<T> nonconstData(begin, end); // We need a non-const data for
-                                           // CFitsIO
+  std::vector<T> nonconstData(begin, end); // We need a non-const data for CFitsIO
   int status = 0;
   fits_write_col(
       fptr,

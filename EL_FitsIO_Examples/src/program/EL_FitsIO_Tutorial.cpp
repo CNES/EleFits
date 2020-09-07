@@ -76,9 +76,9 @@ class EL_FitsIO_Tutorial : public Elements::Program {
 public:
   options_description defineSpecificProgramOptions() override {
     options_description options {};
-
-    auto defaultOutputFile = m_tempDir.path() / "test.fits";
-    options.add_options()("output", value<std::string>()->default_value(defaultOutputFile.string()), "Output file");
+    auto add = options.add_options();
+    const auto defaultOutputFile = m_tempDir.path() / "test.fits";
+    add("output", value<std::string>()->default_value(defaultOutputFile.string()), "Output file");
     return options;
   }
 
