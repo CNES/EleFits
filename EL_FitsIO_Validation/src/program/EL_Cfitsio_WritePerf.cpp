@@ -114,15 +114,13 @@ class EL_Cfitsio_WritePerf : public Elements::Program {
 
 public:
   options_description defineSpecificProgramOptions() override {
-
     options_description options {};
-    options.add_options()("images", value<int>()->default_value(0), "Number of image extensions")(
-        "tables",
-        value<int>()->default_value(0),
-        "Number of bintable extensions")("naxis1", value<int>()->default_value(1), "First axis size")(
-        "naxis2",
-        value<int>()->default_value(1),
-        "Second axis size")("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    auto add = options.add_options();
+    add("images", value<int>()->default_value(0), "Number of image extensions");
+    add("tables", value<int>()->default_value(0), "Number of bintable extensions");
+    add("naxis1", value<int>()->default_value(1), "First axis size");
+    add("naxis2", value<int>()->default_value(1), "Second axis size");
+    add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
 
