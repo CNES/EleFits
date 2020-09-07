@@ -92,7 +92,10 @@ struct Record {
 
 template <typename T>
 Record<T>::Record(const std::string &k, T v, const std::string &u, const std::string &c) :
-    keyword(k), value(v), unit(u), comment(c) {
+    keyword(k),
+    value(v),
+    unit(u),
+    comment(c) {
 }
 
 template <typename T>

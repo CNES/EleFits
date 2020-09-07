@@ -34,20 +34,17 @@ using boost::program_options::value;
 using namespace Euclid;
 using namespace FitsIO;
 
-
 class EL_FitsFile_Example : public Elements::Program {
 
 public:
-
   options_description defineSpecificProgramOptions() override {
 
     options_description options {};
-    options.add_options()
-        ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    options.add_options()("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
 
@@ -59,7 +56,7 @@ public:
     //! [Create Fits]
     MefFile f(filename, MefFile::Permission::Overwrite);
     //! [Create Fits]
-    const auto& primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
+    const auto &primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
     primary.writeRecord("VALUE", 1);
@@ -82,7 +79,7 @@ public:
     Test::SmallRaster raster; // Predefined image raster for testing purpose
     logger.info() << "Creating image extension: SMALLIMG";
     //! [Create image ext]
-    const auto& ext = f.assignImageExt("SMALLIMG", raster);
+    const auto &ext = f.assignImageExt("SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     Record<std::string> strRecord("STRING", "string");
@@ -112,7 +109,7 @@ public:
 
     logger.info() << "Reading bintable.";
     //! [Find HDU by name]
-    const auto& bintableExt = f.accessFirst<BintableHdu>("SMALLTBL");
+    const auto &bintableExt = f.accessFirst<BintableHdu>("SMALLTBL");
     //! [Find HDU by name]
     //! [Get HDU index]
     const auto index = bintableExt.index();
@@ -124,28 +121,28 @@ public:
     //! [Read column]
     logger.info() << "First id: " << firstCell;
     const auto names = bintableExt.readColumn<std::string>("NAME").vector();
-    logger.info() << "Last name: " << names[names.size()-1];
+    logger.info() << "Last name: " << names[names.size() - 1];
 
     logger.info();
-    
+
     logger.info() << "Reading image.";
     //! [Find HDU by index]
-    const auto& ext3 = f.access<>(3);
+    const auto &ext3 = f.access<>(3);
     //! [Find HDU by index]
     //! [Get HDU name]
     const auto extname = ext3.name();
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
-    const auto records = ext3.parseRecords<std::string, int>({"STRING", "INTEGER"});
+    const auto records = ext3.parseRecords<std::string, int>({ "STRING", "INTEGER" });
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-    const auto& imageExt = f.accessFirst<ImageHdu>("SMALLIMG");
+    const auto &imageExt = f.accessFirst<ImageHdu>("SMALLIMG");
     //! [Read raster]
     const auto image = imageExt.readRaster<float>();
-    const auto firstPixel = image[{0, 0}];
+    const auto firstPixel = image[{ 0, 0 }];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
-    const auto lastPixel = image[{width-1, height-1}];
+    const auto lastPixel = image[{ width - 1, height - 1 }];
     //! [Read raster]
     logger.info() << "First pixel: " << firstPixel;
     logger.info() << "Last pixel: " << lastPixel;
@@ -158,7 +155,6 @@ public:
 
     return Elements::ExitCode::OK;
   } // File is closed by destructor
-
 };
 
 MAIN_FOR(EL_FitsFile_Example)

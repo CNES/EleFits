@@ -39,13 +39,13 @@ namespace Test {
  */
 class MinimalFile {
 
-  protected:
+protected:
   /**
    * @brief The handler which generates the name and removes the file at desctruction.
    */
   Elements::TempFile tmp;
 
-  public:
+public:
   /**
    * @brief Create a file with generated filename.
    */

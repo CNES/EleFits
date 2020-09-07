@@ -41,8 +41,8 @@ std::string temporaryFilename() {
 class TemporarySifFile : public SifFile {
 public:
   /** @brief Constructor */
-  TemporarySifFile() :
-      SifFile(temporaryFilename(), SifFile::Permission::Temporary) {}
+  TemporarySifFile() : SifFile(temporaryFilename(), SifFile::Permission::Temporary) {
+  }
 };
 
 /**
@@ -51,8 +51,8 @@ public:
 class NewSifFile : public SifFile {
 public:
   /** @brief Constructor */
-  NewSifFile() :
-      SifFile(temporaryFilename(), SifFile::Permission::Create) {}
+  NewSifFile() : SifFile(temporaryFilename(), SifFile::Permission::Create) {
+  }
 };
 
 /**
@@ -61,8 +61,8 @@ public:
 class TemporaryMefFile : public MefFile {
 public:
   /** @brief Constructor */
-  TemporaryMefFile() :
-      MefFile(temporaryFilename(), SifFile::Permission::Temporary) {}
+  TemporaryMefFile() : MefFile(temporaryFilename(), SifFile::Permission::Temporary) {
+  }
 };
 
 /**
@@ -71,11 +71,11 @@ public:
 class NewMefFile : public MefFile {
 public:
   /** @brief Constructor */
-  NewMefFile() :
-      MefFile(temporaryFilename(), SifFile::Permission::Create) {}
+  NewMefFile() : MefFile(temporaryFilename(), SifFile::Permission::Create) {
+  }
 };
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif

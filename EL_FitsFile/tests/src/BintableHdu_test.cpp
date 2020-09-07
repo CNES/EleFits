@@ -28,18 +28,18 @@
 
 using namespace Euclid::FitsIO;
 
-template<typename T> //TODO move to FitsDataFixture
-void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
+template <typename T> // TODO move to FitsDataFixture
+void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (BintableHdu_test)
+BOOST_AUTO_TEST_SUITE(BintableHdu_test)
 
 //-----------------------------------------------------------------------------
 
-template<typename T>
+template <typename T>
 void checkScalar() {
   Test::RandomScalarColumn<T> input;
   const std::string filename = Elements::TempFile().path().string();
@@ -49,7 +49,7 @@ void checkScalar() {
   checkEqualVectors(output.vector(), input.vector());
 }
 
-template<typename T>
+template <typename T>
 void checkVector() {
   constexpr long rows = 10;
   constexpr long repeat = 2;
@@ -66,20 +66,20 @@ void checkVector() {
  * We test only one type here to check the flow from the top-level API to CFitsIO.
  * Support for other types is tested in EL_CfitsioWrapper.
  */
-BOOST_AUTO_TEST_CASE( float_test ) {
+BOOST_AUTO_TEST_CASE(float_test) {
   checkScalar<float>();
   checkVector<float>();
 }
 
-BOOST_AUTO_TEST_CASE( empty_column_test ) {
+BOOST_AUTO_TEST_CASE(empty_column_test) {
   const std::string filename = Elements::TempFile().path().string();
-  VecColumn<float> input({"NAME", "", 1}, std::vector<float>());
+  VecColumn<float> input({ "NAME", "", 1 }, std::vector<float>());
   MefFile file(filename, MefFile::Permission::Temporary);
   file.assignBintableExt("BINEXT", input);
 }
 
-BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
-  VecColumn<float> input0({"COL0", "", 1}, std::vector<float>());
+BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
+  VecColumn<float> input0({ "COL0", "", 1 }, std::vector<float>());
   Test::RandomScalarColumn<float> input1(1);
   Test::RandomScalarColumn<float> input2(2);
   input1.info.name = "COL1";
@@ -96,4 +96,4 @@ BOOST_AUTO_TEST_CASE( colsize_mismatch_test ) {
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
+BOOST_AUTO_TEST_SUITE_END()

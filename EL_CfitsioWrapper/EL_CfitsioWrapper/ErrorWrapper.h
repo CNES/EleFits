@@ -32,7 +32,7 @@ namespace Cfitsio {
  */
 class CfitsioError : public std::runtime_error {
 
-  public:
+public:
   /**
    * @brief Create from CFitsIO error code.
    * @details This generate the associated CFitsIO message with no context.

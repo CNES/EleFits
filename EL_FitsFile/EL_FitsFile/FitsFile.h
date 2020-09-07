@@ -51,7 +51,6 @@ namespace FitsIO {
 class FitsFile {
 
 public:
-
   /**
    * @brief Fits file read/write permissions.
    */
@@ -66,7 +65,7 @@ public:
   /**
    * @brief Create a new Fits file handler with given filename and permission.
    */
-  FitsFile(const std::string& filename, Permission permission);
+  FitsFile(const std::string &filename, Permission permission);
 
   /**
    * @brief Destroy the FitsFile and close the file.
@@ -82,7 +81,7 @@ public:
   /**
    * @brief Open a Fits file with given filename and permission.
    */
-  void open(const std::string& filename, Permission permission);
+  void open(const std::string &filename, Permission permission);
 
   /**
    * @brief Close the file.
@@ -95,19 +94,17 @@ public:
   void closeAndDelete();
 
 protected:
-
   /** @brief The CFitsIO file handler. */
-  fitsfile* m_fptr;
+  fitsfile *m_fptr;
   /** @brief The file name. */
   std::string m_filename;
   /** @brief The file permission. */
   Permission m_permission;
   /** @brief An open flag to nullify m_fptr at close. */
   bool m_open;
-
 };
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif

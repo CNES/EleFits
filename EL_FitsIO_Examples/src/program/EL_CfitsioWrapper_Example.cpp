@@ -34,20 +34,17 @@ using boost::program_options::value;
 using namespace Euclid;
 using namespace Cfitsio;
 
-
 class EL_CfitsioWrapper_Example : public Elements::Program {
 
 public:
-
   options_description defineSpecificProgramOptions() override {
 
     options_description options {};
-    options.add_options()
-      ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    options.add_options()("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_CfitsioWrapper_Example");
 
@@ -61,11 +58,11 @@ public:
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
-    Header::writeRecord<int>(fptr, { "VALUE", 1 } );
+    Header::writeRecord<int>(fptr, { "VALUE", 1 });
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
-    Header::updateRecord<int>(fptr, { "VALUE", 2 } );
+    Header::updateRecord<int>(fptr, { "VALUE", 2 });
     //! [Update record]
 
     logger.info();
@@ -73,8 +70,7 @@ public:
     logger.info() << "Creating bintable extension: SMALLTBL";
     FitsIO::Test::SmallTable table; // Predefined table for testing purpose
     //! [Create bintable ext]
-    Hdu::createBintableExtension(fptr, "SMALLTBL",
-        table.numCol, table.radecCol, table.nameCol, table.distMagCol);
+    Hdu::createBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create bintable ext]
 
     logger.info();
@@ -124,7 +120,7 @@ public:
     //! [Read column]
     logger.info() << "First id: " << firstCell;
     const auto names = Bintable::readColumn<std::string>(fptr, "NAME").vector();
-    logger.info() << "Last name: " << names[names.size()-1];
+    logger.info() << "Last name: " << names[names.size() - 1];
 
     logger.info();
 
@@ -136,16 +132,16 @@ public:
     const auto extname = Hdu::currentName(fptr);
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
-    const auto records = Header::parseRecords<std::string, int>(fptr, {"STRING", "INTEGER"});
+    const auto records = Header::parseRecords<std::string, int>(fptr, { "STRING", "INTEGER" });
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     Hdu::gotoName(fptr, "SMALLIMG");
     //! [Read raster]
     const auto image = Image::readRaster<float>(fptr);
-    const auto firstPixel = image[{0, 0}];
+    const auto firstPixel = image[{ 0, 0 }];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
-    const auto lastPixel = image[{width-1, height-1}];
+    const auto lastPixel = image[{ width - 1, height - 1 }];
     //! [Read raster]
     logger.info() << "First pixel: " << firstPixel;
     logger.info() << "Last pixel: " << lastPixel;
@@ -159,7 +155,6 @@ public:
 
     return Elements::ExitCode::OK;
   }
-
 };
 
 MAIN_FOR(EL_CfitsioWrapper_Example)

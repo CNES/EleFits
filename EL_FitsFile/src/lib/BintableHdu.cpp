@@ -22,12 +22,11 @@
 namespace Euclid {
 namespace FitsIO {
 
-BintableHdu::BintableHdu(fitsfile*& fptr, long index) :
-    RecordHdu(fptr, index) {}
+BintableHdu::BintableHdu(fitsfile *&fptr, long index) : RecordHdu(fptr, index) {
+}
 
 #ifndef COMPILE_READ_COLUMN
-#define COMPILE_READ_COLUMN(T) \
-    template VecColumn<T> BintableHdu::readColumn(const std::string&) const;
+#define COMPILE_READ_COLUMN(T) template VecColumn<T> BintableHdu::readColumn(const std::string &) const;
 COMPILE_READ_COLUMN(char)
 COMPILE_READ_COLUMN(short)
 COMPILE_READ_COLUMN(int)
@@ -42,8 +41,7 @@ COMPILE_READ_COLUMN(unsigned long)
 #endif
 
 #ifndef COMPILE_WRITE_COLUMN
-#define COMPILE_WRITE_COLUMN(T) \
-    template void BintableHdu::writeColumn(const Column<T>&) const;
+#define COMPILE_WRITE_COLUMN(T) template void BintableHdu::writeColumn(const Column<T> &) const;
 COMPILE_WRITE_COLUMN(char)
 COMPILE_WRITE_COLUMN(short)
 COMPILE_WRITE_COLUMN(int)
@@ -57,5 +55,5 @@ COMPILE_WRITE_COLUMN(unsigned long)
 #undef COMPILE_WRITE_COLUMN
 #endif
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid

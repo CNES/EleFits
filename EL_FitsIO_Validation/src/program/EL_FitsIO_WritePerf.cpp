@@ -33,16 +33,15 @@ using boost::program_options::value;
 
 using namespace Euclid::FitsIO;
 
-
 VecRaster<float> generateRaster(long naxis1, long naxis2) {
   long order = 10;
   while (order < naxis2) {
     order *= 10;
   }
-  VecRaster<float, 2> raster({naxis1, naxis2});
-  for (long j=0; j<naxis2; ++j) {
-    for (long i=0; i<naxis1; ++i) {
-      raster[{i, j}] = float(i + j) / float(order);
+  VecRaster<float, 2> raster({ naxis1, naxis2 });
+  for (long j = 0; j < naxis2; ++j) {
+    for (long i = 0; i < naxis1; ++i) {
+      raster[{ i, j }] = float(i + j) / float(order);
     }
   }
   return raster;
@@ -58,36 +57,33 @@ Table generateColumns(long naxis2) {
   std::vector<std::string> strings(naxis2);
   std::vector<float> floats(naxis2);
   std::vector<int> ints(naxis2);
-  for (long i=0; i<naxis2; ++i) {
+  for (long i = 0; i < naxis2; ++i) {
     strings[i] = "Text";
     floats[i] = float(i) / float(naxis2);
     ints[i] = int(i * naxis2);
   }
-  Table table {
-      VecColumn<std::string>({"STRINGS", "", 8}, std::move(strings)),
-      VecColumn<float>({"FLOATS", "", 1}, std::move(floats)),
-      VecColumn<int>({ "INTS", "", 1}, std::move(ints))
-  };
+  Table table { VecColumn<std::string>({ "STRINGS", "", 8 }, std::move(strings)),
+                VecColumn<float>({ "FLOATS", "", 1 }, std::move(floats)),
+                VecColumn<int>({ "INTS", "", 1 }, std::move(ints)) };
   return table;
 }
-
 
 class EL_FitsIO_WritePerf : public Elements::Program {
 
 public:
-
   options_description defineSpecificProgramOptions() override {
     options_description options {};
-    options.add_options()
-        ("images", value<int>()->default_value(0), "Number of image extensions")
-        ("tables", value<int>()->default_value(0), "Number of bintable extensions")
-        ("naxis1", value<int>()->default_value(1), "First axis size")
-        ("naxis2", value<int>()->default_value(1), "Second axis size")
-        ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    options.add_options()("images", value<int>()->default_value(0), "Number of image extensions")(
+        "tables",
+        value<int>()->default_value(0),
+        "Number of bintable extensions")("naxis1", value<int>()->default_value(1), "First axis size")(
+        "naxis2",
+        value<int>()->default_value(1),
+        "Second axis size")("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
 
@@ -103,10 +99,10 @@ public:
     MefFile f(filename, FitsFile::Permission::Overwrite);
 
     logger.info() << "Generating " << imageCount << " image extension(s)"
-        << " of size " << naxis1 << " x " << naxis2;
+                  << " of size " << naxis1 << " x " << naxis2;
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    for (int i=0; i<imageCount; ++i) {
+    for (int i = 0; i < imageCount; ++i) {
       f.assignImageExt("I_" + std::to_string(i), raster);
     }
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
@@ -115,12 +111,11 @@ public:
     logger.info() << "\tElapsed: " << durationMilli << " ms";
 
     logger.info() << "Generating " << tableCount << " bintable extension(s)"
-        << " of size " << 3 << " x " << naxis2;
+                  << " of size " << 3 << " x " << naxis2;
 
     begin = std::chrono::steady_clock::now();
-    for (int i=0; i<tableCount; ++i) {
-      f.assignBintableExt("T_" + std::to_string(i),
-          table.stringCol, table.floatCol, table.intCol);
+    for (int i = 0; i < tableCount; ++i) {
+      f.assignBintableExt("T_" + std::to_string(i), table.stringCol, table.floatCol, table.intCol);
     }
     end = std::chrono::steady_clock::now();
     durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
@@ -129,7 +124,6 @@ public:
 
     return Elements::ExitCode::OK;
   }
-
 };
 
 MAIN_FOR(EL_FitsIO_WritePerf)

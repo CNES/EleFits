@@ -28,21 +28,19 @@
 namespace Euclid {
 namespace FitsIO {
 
-
 /**
  * @brief Bintable HDU reader-writer.
  */
 class BintableHdu : public RecordHdu {
 
 public:
-
   /**
    * @brief Constructor.
    * @warning
    * You should not instantiate RecordHdus yourself,
    * but using the dedicated MefFile creation method.
    */
-  BintableHdu(fitsfile*& fptr, long index);
+  BintableHdu(fitsfile *&fptr, long index);
 
   /**
    * @brief Destructor.
@@ -52,89 +50,85 @@ public:
   /**
    * @brief Read a column with given name.
    */
-  template<typename T>
-  VecColumn<T> readColumn(const std::string& name) const;
+  template <typename T>
+  VecColumn<T> readColumn(const std::string &name) const;
 
   /**
    * @brief Read several columns with given names.
    */
-  template<typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<std::string>& names) const;
+  template <typename... Ts>
+  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<std::string> &names) const;
 
   /**
    * @brief Write a column.
    */
-  template<typename T>
-  void writeColumn(const Column<T>& column) const;
+  template <typename T>
+  void writeColumn(const Column<T> &column) const;
 
   /**
    * @brief Write several columns.
    * @warning All columns should have the same number of rows.
    */
-  template<typename... Ts>
-  void writeColumns(const Column<Ts>&... columns) const;
+  template <typename... Ts>
+  void writeColumns(const Column<Ts> &... columns) const;
 
   /**
    * @brief Append a column.
    * @warning The column should have the same number of rows as the existing columns.
    */
-  template<typename T>
-  void appendColumn(const Column<T>& column) const;
+  template <typename T>
+  void appendColumn(const Column<T> &column) const;
 
   /**
    * @brief Append several columns.
    * @warning All new columns should have the same number of rows as the existing columns.
    */
-  template<typename... Ts>
-  void appendColumns(const Column<Ts>&... columns) const;
-
+  template <typename... Ts>
+  void appendColumns(const Column<Ts> &... columns) const;
 };
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<typename T>
-VecColumn<T> BintableHdu::readColumn(const std::string& name) const {
+template <typename T>
+VecColumn<T> BintableHdu::readColumn(const std::string &name) const {
   gotoThisHdu();
   return Cfitsio::Bintable::readColumn<T>(m_fptr, name);
 }
 
-template<typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<std::string>& names) const {
+template <typename... Ts>
+std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<std::string> &names) const {
   gotoThisHdu();
   return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, names);
 }
 
-template<typename T>
-void BintableHdu::writeColumn(const Column<T>& column) const {
+template <typename T>
+void BintableHdu::writeColumn(const Column<T> &column) const {
   gotoThisHdu();
   Cfitsio::Bintable::writeColumn(m_fptr, column);
 }
 
-template<typename... Ts>
-void BintableHdu::writeColumns(const Column<Ts>&... columns) const {
+template <typename... Ts>
+void BintableHdu::writeColumns(const Column<Ts> &... columns) const {
   gotoThisHdu();
   Cfitsio::Bintable::writeColumns(m_fptr, columns...);
 }
 
-template<typename T>
-void BintableHdu::appendColumn(const Column<T>& column) const {
+template <typename T>
+void BintableHdu::appendColumn(const Column<T> &column) const {
   gotoThisHdu();
   Cfitsio::Bintable::appendColumn(m_fptr, column);
 }
 
-template<typename... Ts>
-void BintableHdu::appendColumns(const Column<Ts>&... columns) const {
+template <typename... Ts>
+void BintableHdu::appendColumns(const Column<Ts> &... columns) const {
   gotoThisHdu();
   Cfitsio::Bintable::appendColumns(m_fptr, columns...);
 }
 
 #ifndef DECLARE_READ_COLUMN
-#define DECLARE_READ_COLUMN(T) \
-    extern template VecColumn<T> BintableHdu::readColumn(const std::string&) const;
+#define DECLARE_READ_COLUMN(T) extern template VecColumn<T> BintableHdu::readColumn(const std::string &) const;
 DECLARE_READ_COLUMN(char)
 DECLARE_READ_COLUMN(short)
 DECLARE_READ_COLUMN(int)
@@ -149,8 +143,7 @@ DECLARE_READ_COLUMN(unsigned long)
 #endif
 
 #ifndef DECLARE_WRITE_COLUMN
-#define DECLARE_WRITE_COLUMN(T) \
-    extern template void BintableHdu::writeColumn(const Column<T>&) const;
+#define DECLARE_WRITE_COLUMN(T) extern template void BintableHdu::writeColumn(const Column<T> &) const;
 DECLARE_WRITE_COLUMN(char)
 DECLARE_WRITE_COLUMN(short)
 DECLARE_WRITE_COLUMN(int)
@@ -164,8 +157,7 @@ DECLARE_WRITE_COLUMN(unsigned long)
 #undef DECLARE_WRITE_COLUMN
 #endif
 
-}
-}
-
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif

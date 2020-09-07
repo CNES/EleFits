@@ -29,49 +29,43 @@
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 
-
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 using Euclid::Cfitsio::CStrArray;
 
-
 struct SmallTable {
   static constexpr long cols = 4;
   static constexpr long rows = 3;
-  CStrArray colName {"ID", "RADEC", "NAME", "DIST_MAG"};
-  CStrArray colFormat {"1J", "1C", "68A", "2D"};
-  CStrArray colUnit {"", "deg", "", "kal"};
+  CStrArray colName { "ID", "RADEC", "NAME", "DIST_MAG" };
+  CStrArray colFormat { "1J", "1C", "68A", "2D" };
+  CStrArray colUnit { "", "deg", "", "kal" };
   int ids[rows] = { 45, 7, 31 };
   std::complex<float> radecs[rows] = { { 56.8500F, 24.1167F }, { 268.4667F, -34.7928F }, { 10.6833F, 41.2692F } };
-  CStrArray names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
+  CStrArray names { "Pleiades", "Ptolemy Cluster", "Ptolemy Cluster" };
   std::vector<double> dist_mags[rows] = { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900., 3.4 } };
 };
-
 
 struct SmallImage {
   static constexpr long naxis1 = 3;
   static constexpr long naxis2 = 2;
-  static constexpr long size = naxis1*naxis2;
+  static constexpr long size = naxis1 * naxis2;
   long naxes[2] = { naxis1, naxis2 };
   float data[size] = { 0.0F, 0.1F, 1.0F, 1.1F, 2.0F, 2.1F };
 };
 
-
 class EL_Cfitsio_Example : public Elements::Program {
 
 public:
-
   options_description defineSpecificProgramOptions() override {
     options_description options {};
-      options.add_options()
-        ("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    options.add_options()("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
 
-      Elements::Logging logger = Elements::Logging::getLogger("EL_Cfitsio_Example");
+    Elements::Logging logger = Elements::Logging::getLogger("EL_Cfitsio_Example");
 
     const std::string filename = args["output"].as<std::string>();
 
@@ -104,14 +98,21 @@ public:
     logger.info() << "Creating bintable extension: SMALLTBL";
     SmallTable table;
     //! [Create bintable ext]
-    fits_create_tbl(fptr, BINARY_TBL, 0,
-        table.cols, table.colName.data(), table.colFormat.data(), table.colUnit.data(),
-        "SMALLTBL", &status);
+    fits_create_tbl(
+        fptr,
+        BINARY_TBL,
+        0,
+        table.cols,
+        table.colName.data(),
+        table.colFormat.data(),
+        table.colUnit.data(),
+        "SMALLTBL",
+        &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while creating bintable extension");
     fits_write_col(fptr, TINT, 1, 1, 1, table.rows, table.ids, &status);
     fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.rows, table.radecs, &status);
     fits_write_col(fptr, TSTRING, 3, 1, 1, table.rows, table.names.data(), &status);
-    fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.rows*2, table.dist_mags, &status);
+    fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.rows * 2, table.dist_mags, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing columns");
     //! [Create bintable ext]
 
@@ -182,31 +183,31 @@ public:
     fits_get_colnum(fptr, CASESEN, const_cast<char *>("NAME"), &colnum, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while finding column NAME");
     char *names[table.rows];
-    for (int i=0; i<table.rows; ++i) {
-      names[i] = (char*) malloc(68);
+    for (int i = 0; i < table.rows; ++i) {
+      names[i] = (char *)malloc(68);
     }
     fits_read_col(fptr, TSTRING, colnum, 1, 1, table.rows, nullptr, names, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading column NAME");
-    logger.info() << "Last name: " << names[table.rows-1];
-    for (int i=0; i<table.rows; ++i) {
+    logger.info() << "Last name: " << names[table.rows - 1];
+    for (int i = 0; i < table.rows; ++i) {
       free(names[i]);
     }
 
     logger.info();
-    
+
     logger.info() << "Reading image.";
     //! [Find HDU by index]
     fits_movabs_hdu(fptr, 3, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while moving to image extension");
     //! [Find HDU by index]
     //! [Get HDU name]
-    char* extnameRead = (char*) malloc(69);
+    char *extnameRead = (char *)malloc(69);
     fits_read_key(fptr, TSTRING, "EXTNAME", extnameRead, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading extension name");
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extnameRead;
     free(extnameRead);
-    char* stringRead = (char*) malloc(69);
+    char *stringRead = (char *)malloc(69);
     fits_read_key(fptr, TSTRING, "STRING", stringRead, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading STRING record");
     logger.info() << "Reading record: STRING = " << stringRead;
@@ -220,7 +221,7 @@ public:
     fits_read_img(fptr, TFLOAT, 1, image.size, nullptr, data, nullptr, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while reading image raster");
     const auto firstPixel = data[0];
-    const auto lastPixel = data[image.size-1];
+    const auto lastPixel = data[image.size - 1];
     //! [Read raster]
     logger.info() << "First pixel: " << firstPixel;
     logger.info() << "Last pixel: " << lastPixel;
@@ -235,7 +236,6 @@ public:
 
     return Elements::ExitCode::OK;
   }
-
 };
 
 MAIN_FOR(EL_Cfitsio_Example)

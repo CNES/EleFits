@@ -23,7 +23,6 @@
 namespace Euclid {
 namespace FitsIO {
 
-/// @cond INTERNAL
 namespace internal {
 
 template <>
@@ -32,7 +31,6 @@ long rowsImpl<std::string>(long nelements, ELEMENTS_UNUSED long repeat) {
 }
 
 } // namespace internal
-/// @endcond
 
 } // namespace FitsIO
 } // namespace Euclid

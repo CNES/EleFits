@@ -34,7 +34,6 @@ namespace FitsIO {
 class SifFile : public FitsFile {
 
 public:
-
   /**
    * @copydoc FitsFile::Permission
    */
@@ -48,50 +47,46 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  SifFile(const std::string& filename, Permission permission);
+  SifFile(const std::string &filename, Permission permission);
 
   /**
    * @brief Access the header.
    */
-  const RecordHdu& header() const;
+  const RecordHdu &header() const;
 
   /**
    * @brief Read the Raster.
    */
-  template<typename T, long n=2>
+  template <typename T, long n = 2>
   VecRaster<T, n> readRaster() const;
 
   /**
    * @brief Write the Raster (initialize primary HDU if not done).
    */
-  template<typename T, long n>
-  void writeRaster(const Raster<T, n>& raster) const;
+  template <typename T, long n>
+  void writeRaster(const Raster<T, n> &raster) const;
 
 private:
-
   ImageHdu m_hdu;
-
 };
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<typename T, long n>
+template <typename T, long n>
 VecRaster<T, n> SifFile::readRaster() const {
   return Cfitsio::Image::readRaster<T, n>(m_fptr);
 }
 
-template<typename T, long n>
-void SifFile::writeRaster(const Raster<T, n>& raster) const {
+template <typename T, long n>
+void SifFile::writeRaster(const Raster<T, n> &raster) const {
   Cfitsio::Hdu::gotoPrimary(m_fptr);
   Cfitsio::Image::resize<T, n>(m_fptr, raster.shape);
   Cfitsio::Image::writeRaster(m_fptr, raster);
 }
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif

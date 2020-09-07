@@ -37,7 +37,6 @@ namespace FitsIO {
 class MefFile : public FitsFile {
 
 public:
-
   /**
    * @copydoc FitsFile::Permission
    */
@@ -51,7 +50,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  MefFile(const std::string& filename, Permission permission);
+  MefFile(const std::string &filename, Permission permission);
 
   /**
    * @brief Count the number of HDUs.
@@ -74,146 +73,142 @@ public:
    * (e.g., \c dynamic_cast<ImageHdu&>(hdu) )
    * or merely be used as a metadata reader-writer.
    */
-  template<class T=RecordHdu>
-  const T& access(long index);
+  template <class T = RecordHdu>
+  const T &access(long index);
 
   /**
    * @brief Access the first HDU with given name.
    * @see access
    */
-  template<class T=RecordHdu>
-  const T& accessFirst(const std::string& name);
+  template <class T = RecordHdu>
+  const T &accessFirst(const std::string &name);
 
   /**
    * @brief Access the Primary HDU.
    * @see access
    */
-  template<class T=RecordHdu>
-  const T& accessPrimary();
+  template <class T = RecordHdu>
+  const T &accessPrimary();
 
   /**
    * @brief Append an extension.
    * @return A reference to the new HDU of type T.
    */
-  template<class T=RecordHdu>
-  const T& appendExt(T extension);
+  template <class T = RecordHdu>
+  const T &appendExt(T extension);
 
   /**
    * @brief Append a new RecordHdu (as empty ImageHdu) with given name.
    * @return A reference to the new RecordHdu.
    */
-  const RecordHdu& initRecordExt(const std::string& name);
+  const RecordHdu &initRecordExt(const std::string &name);
   /**
    * @brief Append a new ImageHdu with given name and shape.
    * @see assignImageExt
    */
-  template<typename T, long n>
-  const ImageHdu& initImageExt(const std::string& name, const Position<n>& shape);
+  template <typename T, long n>
+  const ImageHdu &initImageExt(const std::string &name, const Position<n> &shape);
 
   /**
    * @brief Append an ImageHdu with given name and data.
    * @return A reference to the new ImageHdu.
    */
-  template<typename T, long n>
-  const ImageHdu& assignImageExt(const std::string& name, const Raster<T, n>& raster);
+  template <typename T, long n>
+  const ImageHdu &assignImageExt(const std::string &name, const Raster<T, n> &raster);
 
   /**
    * @brief Append a BintableHdu with given name and columns info.
    * @see assignBintableExt
    */
-  template<typename ...Ts>
-  const BintableHdu& initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header);
+  template <typename... Ts>
+  const BintableHdu &initBintableExt(const std::string &name, const ColumnInfo<Ts> &... header);
 
   /**
    * @brief Append a BintableHdu with given name and data.
    * @warning All columns should have the same number of rows.
    * @return A reference to the new BintableHdu.
    */
-  template<typename ...Ts>
-  const BintableHdu& assignBintableExt(const std::string& name, const Column<Ts>&... columns);
+  template <typename... Ts>
+  const BintableHdu &assignBintableExt(const std::string &name, const Column<Ts> &... columns);
 
 protected:
-
   /**
    * @brief Vector of RecordHdus (castable to ImageHdu or BintableHdu).
    * @warning m_hdus is 0-based while Cfitsio HDUs are 1-based.
    */
   std::vector<std::unique_ptr<RecordHdu>> m_hdus;
-
 };
-
 
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
 
-
-template<class T>
-const T& MefFile::access(long index) {
+template <class T>
+const T &MefFile::access(long index) {
   Cfitsio::Hdu::gotoIndex(m_fptr, index);
   auto hduType = Cfitsio::Hdu::currentType(m_fptr);
-  auto& ptr = m_hdus[index-1];
+  auto &ptr = m_hdus[index - 1];
   switch (hduType) {
-  case Cfitsio::Hdu::Type::Image:
-    ptr.reset(new ImageHdu(m_fptr, index));
-    break;
-  case Cfitsio::Hdu::Type::Bintable:
-    ptr.reset(new BintableHdu(m_fptr, index));
-    break;
-  default:
-    ptr.reset(new RecordHdu(m_fptr, index));
-    break;
+    case Cfitsio::Hdu::Type::Image:
+      ptr.reset(new ImageHdu(m_fptr, index));
+      break;
+    case Cfitsio::Hdu::Type::Bintable:
+      ptr.reset(new BintableHdu(m_fptr, index));
+      break;
+    default:
+      ptr.reset(new RecordHdu(m_fptr, index));
+      break;
   }
-  return dynamic_cast<T&>(*ptr.get());
-  //TODO return pointer to allow nullptr when HDU handler is obsolete?
+  return dynamic_cast<T &>(*ptr.get());
+  // TODO return pointer to allow nullptr when HDU handler is obsolete?
 }
 
-template<class T>
-const T& MefFile::accessFirst(const std::string& name) {
-    Cfitsio::Hdu::gotoName(m_fptr, name);
-    return access<T>(Cfitsio::Hdu::currentIndex(m_fptr));
+template <class T>
+const T &MefFile::accessFirst(const std::string &name) {
+  Cfitsio::Hdu::gotoName(m_fptr, name);
+  return access<T>(Cfitsio::Hdu::currentIndex(m_fptr));
 }
 
-template<class T>
-const T& MefFile::accessPrimary() {
+template <class T>
+const T &MefFile::accessPrimary() {
   return access<T>(1);
 }
 
-template<typename T, long n>
-const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
+template <typename T, long n>
+const ImageHdu &MefFile::initImageExt(const std::string &name, const Position<n> &shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
-  return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
+  m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size + 1)));
+  return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
 }
 
-template<typename T, long n>
-const ImageHdu& MefFile::assignImageExt(const std::string& name, const Raster<T, n>& raster) {
+template <typename T, long n>
+const ImageHdu &MefFile::assignImageExt(const std::string &name, const Raster<T, n> &raster) {
   Cfitsio::Hdu::createImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size+1)));
-  return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
+  m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size + 1)));
+  return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
 }
 
-template<typename ...Ts>
-const BintableHdu& MefFile::initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header) {
+template <typename... Ts>
+const BintableHdu &MefFile::initBintableExt(const std::string &name, const ColumnInfo<Ts> &... header) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, header...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));
-  return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
+  m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size + 1)));
+  return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
 }
 
-template<typename ...Ts>
-const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Column<Ts>&... columns) {
+template <typename... Ts>
+const BintableHdu &MefFile::assignBintableExt(const std::string &name, const Column<Ts> &... columns) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size+1)));
-  return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
+  m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size + 1)));
+  return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
 }
 
 #ifndef DECLARE_ASSIGN_IMAGE_EXT
 #define DECLARE_ASSIGN_IMAGE_EXT(T, n) \
-  extern template const ImageHdu& MefFile::assignImageExt<T, n>(const std::string&, const Raster<T, n>&);
+  extern template const ImageHdu &MefFile::assignImageExt<T, n>(const std::string &, const Raster<T, n> &);
 DECLARE_ASSIGN_IMAGE_EXT(char, 2)
 DECLARE_ASSIGN_IMAGE_EXT(int, 2)
 DECLARE_ASSIGN_IMAGE_EXT(float, 2)
@@ -225,7 +220,7 @@ DECLARE_ASSIGN_IMAGE_EXT(double, 3)
 #undef DECLARE_ASSIGN_IMAGE_EXT
 #endif
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid
 
 #endif

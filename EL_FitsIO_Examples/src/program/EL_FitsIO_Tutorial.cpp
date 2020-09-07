@@ -41,15 +41,14 @@ using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
-
 VecRaster<float, 3> createRaster() {
   //! [Create and fill a raster]
   long width = 16, height = 9, depth = 3;
-  VecRaster<float, 3> raster({width, height, depth});
-  for (long z=0; z < depth; ++z) {
-    for (long y=0; y < height; ++y) {
-      for (long x=0; x < width; ++x) {
-        raster[{x, y, z}] = float(x + y + z);
+  VecRaster<float, 3> raster({ width, height, depth });
+  for (long z = 0; z < depth; ++z) {
+    for (long y = 0; y < height; ++y) {
+      for (long x = 0; x < width; ++x) {
+        raster[{ x, y, z }] = float(x + y + z);
       }
     }
   }
@@ -66,10 +65,8 @@ TutoTable createColumns() {
   //! [Create and fill a column]
   std::vector<std::string> nameData { "snail", "Antoine", "light", "Millennium Falcon" };
   std::vector<double> speedData { 1.3e-2, 1.4, 3.0e8, 4.5e8 };
-  TutoTable table {
-      VecColumn<std::string>({"NAME", "", 42}, std::move(nameData)),
-      VecColumn<double>({"SPEED", "m/s", 1}, std::move(speedData))
-  };
+  TutoTable table { VecColumn<std::string>({ "NAME", "", 42 }, std::move(nameData)),
+                    VecColumn<double>({ "SPEED", "m/s", 1 }, std::move(speedData)) };
   //! [Create and fill a column]
   return table;
 }
@@ -77,17 +74,15 @@ TutoTable createColumns() {
 class EL_FitsIO_Tutorial : public Elements::Program {
 
 public:
-
   options_description defineSpecificProgramOptions() override {
     options_description options {};
 
     auto defaultOutputFile = m_tempDir.path() / "test.fits";
-    options.add_options()
-        ("output", value<std::string>()->default_value(defaultOutputFile.string()), "Output file");
+    options.add_options()("output", value<std::string>()->default_value(defaultOutputFile.string()), "Output file");
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
@@ -99,7 +94,7 @@ public:
     //! [Open a MefFile]
 
     //! [Access primary HDU]
-    const auto& primary = f.accessPrimary<>();
+    const auto &primary = f.accessPrimary<>();
     //! [Access primary HDU]
 
     //! [Write and update a record]
@@ -123,7 +118,7 @@ public:
     const auto shape = raster.shape;
     //! [Initialize an image extension]
     logger.info() << "Assigning new Image HDU";
-    const auto& ext = f.initImageExt<float, 3>("Image", shape);
+    const auto &ext = f.initImageExt<float, 3>("Image", shape);
     ext.writeRaster(raster);
     //! [Initialize an image extension]
 
@@ -141,7 +136,7 @@ public:
 
     logger.info() << "Here's the list of keywords in the extension:";
     const auto keywords = ext.keywords();
-    for (const auto& k : keywords) {
+    for (const auto &k : keywords) {
       logger.info() << "    " << k;
     }
 
@@ -157,7 +152,7 @@ public:
 
     //! [Access an HDU by name]
     logger.info() << "Accessing bintable HDU by name";
-    const auto& bintableExt = f.accessFirst<BintableHdu>("TABLE");
+    const auto &bintableExt = f.accessFirst<BintableHdu>("TABLE");
     logger.info() << "    Index: " << bintableExt.index();
     //! [Access an HDU by name]
 
@@ -166,20 +161,20 @@ public:
     const auto names = bintableExt.readColumn<std::string>("NAME").vector();
     const auto speeds = bintableExt.readColumn<double>("SPEED").vector();
     const auto slowestGuy = names[0];
-    const auto maxSpeed = speeds[speeds.size()-1];
+    const auto maxSpeed = speeds[speeds.size() - 1];
     logger.info() << "    Slowest guy: " << slowestGuy;
     logger.info() << "    Max speed: " << maxSpeed;
     //! [Read bintable values]
 
     //! [Access an HDU by index]
     logger.info() << "Accessing image HDU by index";
-    const auto& imageExt = f.access<ImageHdu>(3);
+    const auto &imageExt = f.access<ImageHdu>(3);
     logger.info() << "    Name: " << imageExt.name();
     //! [Access an HDU by index]
 
     //! [Read several records]
     // Option 1. As a tuple
-    auto records = imageExt.parseRecords<std::string, int>({"STRING", "INTEGER"});
+    auto records = imageExt.parseRecords<std::string, int>({ "STRING", "INTEGER" });
     const auto strValue = std::get<0>(records).value;
     const auto intValue = std::get<1>(records).value;
     logger.info() << "    String value from tuple: " << strValue;
@@ -191,18 +186,18 @@ public:
       int intValue;
     };
 
-    auto header = imageExt.parseRecordsAs<Header, std::string, int>({"STRING", "INTEGER"});
+    auto header = imageExt.parseRecordsAs<Header, std::string, int>({ "STRING", "INTEGER" });
     logger.info() << "    String value from struct: " << header.strValue;
     logger.info() << "    Integer value from struct: " << header.intValue;
     //! [Read several records]
 
     //! [Read image values]
     const auto image = imageExt.readRaster<float, 3>();
-    const auto& firstPixel = image[{0, 0}];
+    const auto &firstPixel = image[{ 0, 0 }];
     const auto width = image.length<0>();
     const auto height = image.length<1>();
     const auto depth = image.length<2>();
-    const auto& lastPixel = image[{width-1, height-1, depth-1}];
+    const auto &lastPixel = image[{ width - 1, height - 1, depth - 1 }];
     logger.info() << "    First pixel: " << firstPixel;
     logger.info() << "    Last pixel: " << lastPixel;
     //! [Read image values]
@@ -211,9 +206,7 @@ public:
   }
 
 private:
-
   Elements::TempDir m_tempDir {};
-
 };
 
 MAIN_FOR(EL_FitsIO_Tutorial)

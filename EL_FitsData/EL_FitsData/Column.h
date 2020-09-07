@@ -287,7 +287,9 @@ long Column<T>::rows() const {
 
 template <typename T>
 PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long nelements, const T *data) :
-    Column<T>(columnInfo), m_nelements(nelements), m_data(data) {
+    Column<T>(columnInfo),
+    m_nelements(nelements),
+    m_data(data) {
 }
 
 template <typename T>
@@ -302,7 +304,8 @@ const T *PtrColumn<T>::data() const {
 
 template <typename T>
 VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vectorRef) :
-    Column<T>(columnInfo), m_ref(vectorRef) {
+    Column<T>(columnInfo),
+    m_ref(vectorRef) {
 }
 
 template <typename T>

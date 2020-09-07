@@ -187,7 +187,6 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
   Bintable::writeColumns(fptr, table...);
 }
 
-/// @cond INTERNAL
 template <typename T>
 void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<T> &column) {
   constexpr long count = 1;
@@ -202,7 +201,6 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
   mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
   Bintable::writeColumn(fptr, column);
 }
-/// @endcond
 
 } // namespace Hdu
 } // namespace Cfitsio

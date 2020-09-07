@@ -74,6 +74,10 @@ struct CStrArray {
   char **data();
 };
 
+///////////////
+// INTERNAL //
+/////////////
+
 /// @cond INTERNAL
 
 /**

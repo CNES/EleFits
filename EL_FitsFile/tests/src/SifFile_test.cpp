@@ -29,13 +29,13 @@ using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (SifFile_test)
+BOOST_AUTO_TEST_SUITE(SifFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE( simple_image_test, NewSifFile ) {
+BOOST_FIXTURE_TEST_CASE(simple_image_test, NewSifFile) {
   BOOST_CHECK(boost::filesystem::is_regular_file(this->filename()));
-  Test::SmallRaster input; //TODO RandomRaster
+  Test::SmallRaster input; // TODO RandomRaster
   const std::string keyword = "KEYWORD";
   const int value = 8;
   this->header().writeRecord(keyword, value);
@@ -45,11 +45,15 @@ BOOST_FIXTURE_TEST_CASE( simple_image_test, NewSifFile ) {
   const auto record = this->header().parseRecord<int>(keyword);
   BOOST_CHECK_EQUAL(record, value);
   const auto output = this->readRaster<float>();
-  BOOST_CHECK_EQUAL_COLLECTIONS(input.vector().begin(), input.vector().end(), output.vector().begin(), output.vector().end()); //TODO factor
+  BOOST_CHECK_EQUAL_COLLECTIONS(
+      input.vector().begin(),
+      input.vector().end(),
+      output.vector().begin(),
+      output.vector().end()); // TODO factor
   BOOST_CHECK(input.approx(output));
   remove(this->filename().c_str());
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
+BOOST_AUTO_TEST_SUITE_END()

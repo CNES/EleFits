@@ -22,12 +22,11 @@
 namespace Euclid {
 namespace FitsIO {
 
-ImageHdu::ImageHdu(fitsfile*& fptr, long index) :
-    RecordHdu(fptr, index) {}
+ImageHdu::ImageHdu(fitsfile *&fptr, long index) : RecordHdu(fptr, index) {
+}
 
 #ifndef COMPILE_READ_RASTER
-#define COMPILE_READ_RASTER(T, n) \
-  template VecRaster<T, n> ImageHdu::readRaster() const;
+#define COMPILE_READ_RASTER(T, n) template VecRaster<T, n> ImageHdu::readRaster() const;
 COMPILE_READ_RASTER(char, 2)
 COMPILE_READ_RASTER(int, 2)
 COMPILE_READ_RASTER(float, 2)
@@ -40,8 +39,7 @@ COMPILE_READ_RASTER(double, 3)
 #endif
 
 #ifndef COMPILE_WRITE_RASTER
-#define COMPILE_WRITE_RASTER(T, n) \
-  template void ImageHdu::writeRaster(const Raster<T, n>&) const;
+#define COMPILE_WRITE_RASTER(T, n) template void ImageHdu::writeRaster(const Raster<T, n> &) const;
 COMPILE_WRITE_RASTER(char, 2)
 COMPILE_WRITE_RASTER(int, 2)
 COMPILE_WRITE_RASTER(float, 2)
@@ -53,5 +51,5 @@ COMPILE_WRITE_RASTER(double, 3)
 #undef COMPILE_WRITE_RASTER
 #endif
 
-}
-}
+} // namespace FitsIO
+} // namespace Euclid
