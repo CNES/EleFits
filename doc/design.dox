@@ -1,0 +1,70 @@
+/**
+
+\page design Software design
+
+\section design-purpose Purpose and scope
+
+The purpose of this page is to describe the internal implementation of the library.
+Usage of the API is described in the main pages of this documentation.
+When implementation and usage are titghly coupled, links are provided to get the user point-of-view.
+
+\section design-overview Overview
+
+The library is split in two layers:
+
+- A high-level object-oriented layer (namespace Euclid::FitsIO)
+which aims at handling Fits files and their contents with an as-simple-as-possible modern API:
+  - The file structure is mapped to a class tree (file, HDUs, records and co. are represented by dedicated classes),
+  - Data classes represent the data contents of the file,
+  - Service classes provide access to each node of the file structure;
+- A low-level procedural layer (namespace Euclid::Cfitsio)
+which consists in C++ wrapper functions of selected CFitsIO functions:
+  - C arrays are wrapped with aforementioned data classes,
+  - The use of raw pointers is limitted to \c fitsfile*, which is itself wrapped in the service classes,
+  - Templates wrap the CFitsIO type codes,
+  - Exceptions wrap the CFitsIO error codes.
+
+This translates into the following set of Modules:
+
+- **EL_FitsData** contains basic **data-storage structures**:
+Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
+See \ref data-classes for more details on their API and usage.
+- **EL_CfitsioWrapper** is the low-level layer:
+The set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
+ease type handling through templates, and throw exceptions instead of returning error codes;
+Yet, this API is **not meant for end-users**: it exposes the fitsfile* type and is still a bit verbose and cumbersome.
+- **EL_FitsFile** exposes the end-user API:
+It provides set of **read-write services** in dedicated classes;
+See \ref handlers for more details.
+- **EL_FitsIO_Examples** provides **examples**!
+Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program (see \ref apis-comp),
+which demonstrates the reading and writing of records, images and bintables with the three APIs;
+Of course, this is also where the tutorial is implemented.
+- **EL_FitsIO_Validation** contains **validation executables**:
+  - Generator programs allow creating dummy Fits files from scratch;
+  - The performances of the library are compared to those of CFitsIO;
+  - A validation script checks that all of the provided programs run smoothly.
+
+\section design-types Type codes
+
+// TODO CFitsIO types, template handling, string dispatching
+
+\section design-variadic Variadic templates
+
+// TODO Variatic template design patterns
+// - recursive implementation
+// - partial specialization
+// - return parameters
+// - packs vs. tuples
+
+\section design-file-handlers File handlers
+
+// TODO File operations
+
+\section design-hdu-handlers HDU handlers
+
+// TODO Handling of HDUs through vector of pointers
+// HDU factory
+// Access through references
+
+*/
