@@ -1,0 +1,51 @@
+@startuml
+actor "Jean-René" as User
+box EL_FitsFile
+participant SifFile
+participant RecordHdu
+participant ImageHdu
+endbox
+box EL_CfitsioWrapper
+participant "Cfitsio namespace" as CfitsioWrapper
+endbox
+box EL_FitsData
+participant Record
+participant Raster
+endbox
+== SifFile file("file.fits"); ==
+User -> SifFile* : create()
+activate SifFile
+SifFile -> CfitsioWrapper : open()
+CfitsioWrapper --> SifFile : fitsfile*
+SifFile --> User : SifFile
+== auto &header = file.header(); ==
+User -> SifFile : header()
+SifFile -> RecordHdu* : create()
+activate RecordHdu
+RecordHdu --> SifFile : RecordHdu
+SifFile --> User : RecordHdu
+== int value = header.parseRecord<int>("KEYWORD"); ==
+User -> RecordHdu : parseRecord()
+RecordHdu -> CfitsioWrapper : parseRecord()
+CfitsioWrapper -> Record* : create()
+activate Record
+Record --> CfitsioWrapper : Record
+CfitsioWrapper --> RecordHdu : Record
+RecordHdu --> User : Record
+User -> Record : int()
+Record --> User : value
+destroy Record
+== auto raster = file.readRaster<float>(); ==
+User -> SifFile : readRaster()
+SifFile -> ImageHdu* : create()
+activate ImageHdu
+ImageHdu --> SifFile : ImageHdu
+SifFile -> ImageHdu : readRaster()
+ImageHdu -> CfitsioWrapper : readRaster()
+CfitsioWrapper -> Raster* : create()
+activate Raster
+Raster --> CfitsioWrapper : Raster
+CfitsioWrapper --> ImageHdu : Raster
+ImageHdu --> User : Raster
+destroy ImageHdu
+@enduml

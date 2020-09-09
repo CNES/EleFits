@@ -1,0 +1,18 @@
+@startuml
+package Euclid {
+package Cfitsio {}
+package FitsIO {
+class DataClasses {
++ data
+}
+class ServiceClasses {
++ methods()
+}
+}
+}
+DataClasses <- ServiceClasses : create
+DataClasses <- ServiceClasses : use
+DataClasses <-- Cfitsio : create
+DataClasses <-- Cfitsio : use
+ServiceClasses --> Cfitsio : call
+@enduml

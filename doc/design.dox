@@ -1,3 +1,5 @@
+namespace Euclid {
+
 /**
 
 \page design Software design
@@ -8,23 +10,23 @@ The purpose of this page is to describe the internal implementation of the libra
 Usage of the API is described in the main pages of this documentation.
 When implementation and usage are titghly coupled, links are provided to get the user point-of-view.
 
-\section design-overview Overview
+\section design-overview Library organization: layers, modules, namespaces
 
-The library is split in two layers:
+The library is split in two **layers**:
 
-- A high-level object-oriented layer (namespace Euclid::FitsIO)
+- A high-level object-oriented layer (namespace FitsIO, see below)
 which aims at handling Fits files and their contents with an as-simple-as-possible modern API:
   - The file structure is mapped to a class tree (file, HDUs, records and co. are represented by dedicated classes),
   - Data classes represent the data contents of the file,
   - Service classes provide access to each node of the file structure;
-- A low-level procedural layer (namespace Euclid::Cfitsio)
+- A low-level procedural layer (namespace Cfitsio, see below)
 which consists in C++ wrapper functions of selected CFitsIO functions:
   - C arrays are wrapped with aforementioned data classes,
   - The use of raw pointers is limitted to \c fitsfile*, which is itself wrapped in the service classes,
   - Templates wrap the CFitsIO type codes,
   - Exceptions wrap the CFitsIO error codes.
 
-This translates into the following set of Modules:
+This translates into the following set of **modules**:
 
 - **EL_FitsData** contains basic **data-storage structures**:
 Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
@@ -44,6 +46,16 @@ Of course, this is also where the tutorial is implemented.
   - Generator programs allow creating dummy Fits files from scratch;
   - The performances of the library are compared to those of CFitsIO;
   - A validation script checks that all of the provided programs run smoothly.
+
+The API is organized in **namespaces** as follows:
+
+- Euclid is the top level namespace, which contains everything;
+- Cfitsio corresponds to the EL_CfitsioWrapper module:
+  - It is organized in thematic namespaces like Cfitsio::File or Cfitsio::Image;
+- FitsIO is the end-user namespace:
+  - Data classes and service classes are implemented in it,
+  - FitsIO::Test contains test helper classes and functions like fixtures,
+  - FitsIO::Internal contains implementation details, not displayed to the end-user.
 
 \section design-types Type codes
 
@@ -68,3 +80,5 @@ Of course, this is also where the tutorial is implemented.
 // Access through references
 
 */
+
+}
