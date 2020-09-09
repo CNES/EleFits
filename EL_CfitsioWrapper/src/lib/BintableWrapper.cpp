@@ -34,7 +34,7 @@ long columnIndex(fitsfile *fptr, const std::string &name) {
   return index;
 }
 
-namespace internal {
+namespace Internal {
 
 template <> // TODO clean
 void initColumnImpl<std::string>(
@@ -123,7 +123,7 @@ void writeColumnChunkImpl<std::string>(
           std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "-");
 }
 
-} // namespace internal
+} // namespace Internal
 
 template <>
 FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std::string &name) {

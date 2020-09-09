@@ -232,7 +232,7 @@ private:
 /////////////
 
 /// @cond INTERNAL
-namespace internal {
+namespace Internal {
 
 /**
  * @brief nD-index recursive implementation.
@@ -268,7 +268,7 @@ inline long IndexImpl<0>::offset(const Position<n> &shape, const Position<n> &po
   return std::get<n - 1>(pos);
 }
 
-} // namespace internal
+} // namespace Internal
 /// @endcond
 
 /////////////////////
@@ -292,7 +292,7 @@ inline long Raster<T, n>::size() const {
 
 template <typename T, long n>
 inline long Raster<T, n>::index(const Position<n> &pos) const {
-  return internal::IndexImpl<n - 1>::template offset<n>(shape, pos);
+  return Internal::IndexImpl<n - 1>::template offset<n>(shape, pos);
 }
 
 template <typename T, long n>

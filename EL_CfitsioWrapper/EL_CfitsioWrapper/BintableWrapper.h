@@ -94,7 +94,7 @@ void appendColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns);
 /////////////
 
 /// @cond INTERNAL
-namespace internal {
+namespace Internal {
 
 template <typename T>
 void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rows);
@@ -254,7 +254,7 @@ void writeColumnsImpl(
   writeColumns<Ts...>(fptr, std::get<Is>(columns)...);
 } // TODO used?
 
-} // namespace internal
+} // namespace Internal
 /// @endcond
 
 /////////////////////
@@ -329,7 +329,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
   fits_get_num_rows(fptr, &rows, &status);
   /* Read column metadata */
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
-  internal::InitColumnsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, names, columns, rows);
+  Internal::InitColumnsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, names, columns, rows);
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
@@ -341,7 +341,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
     if (last > rows) {
       chunkRows = rows - first + 1;
     }
-    internal::ReadColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, columns, first, chunkRows);
+    Internal::ReadColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, columns, first, chunkRows);
   }
   return columns;
 }
@@ -366,7 +366,7 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
     if (last > rows) {
       chunkRows = rows - first + 1;
     }
-    internal::WriteColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, table, first, chunkRows);
+    Internal::WriteColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, table, first, chunkRows);
   }
 }
 

@@ -247,7 +247,7 @@ private:
 /////////////
 
 /// @cond INTERNAL
-namespace internal {
+namespace Internal {
 
 /**
  * @brief Implementation for Column::rows to dispatch std::string and other types.
@@ -269,7 +269,7 @@ long rowsImpl(long nelements, long repeat) {
   return (nelements + repeat - 1) / repeat;
 }
 
-} // namespace internal
+} // namespace Internal
 /// @endcond
 
 /////////////////////
@@ -282,7 +282,7 @@ Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
 
 template <typename T>
 long Column<T>::rows() const {
-  return internal::rowsImpl<T>(nelements(), info.repeat);
+  return Internal::rowsImpl<T>(nelements(), info.repeat);
 }
 
 template <typename T>

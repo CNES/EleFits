@@ -98,7 +98,7 @@ void deleteRecord(fitsfile *fptr, const std::string &keyword);
 /////////////
 
 /// @cond INTERNAL
-namespace internal {
+namespace Internal {
 
 // Signature change (output argument) for further use with variadic templates.
 template <typename T>
@@ -130,7 +130,7 @@ TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywo
   return { parseRecord<Ts>(fptr, keywords[Is])... };
 }
 
-} // namespace internal
+} // namespace Internal
 /// @endcond
 
 /////////////////////
@@ -172,13 +172,13 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
 template <typename... Ts>
 std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector<std::string> &keywords) {
   std::tuple<FitsIO::Record<Ts>...> records;
-  internal::ParseRecordsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, keywords, records);
+  Internal::ParseRecordsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, keywords, records);
   return records;
 }
 
 template <class Return, typename... Ts>
 Return parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords) {
-  return internal::parseRecordsAsImpl<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
+  return Internal::parseRecordsAsImpl<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
