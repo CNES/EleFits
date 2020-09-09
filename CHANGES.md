@@ -1,5 +1,21 @@
 # Change log
 
+# 2.0 (breaking)
+
+## API changes
+
+* pascalCase functions and methods
+
+## Cleaning
+
+* Format with clang-format
+
+## Known bugs/issues
+
+* `unsigned long` records larger than the greatest `long` cannot be read (CFitsIO bug), although they can be written
+* Boolean columns are not supported
+* Columns are assumed to have consistent sizes
+
 # 1.9
 
 ## API changes
