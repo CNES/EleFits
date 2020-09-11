@@ -29,7 +29,7 @@ long count(fitsfile *fptr) {
   int count = 0;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot count HDUs");
   return count;
 }
 
@@ -85,7 +85,7 @@ bool gotoName(fitsfile *fptr, const std::string &name) {
   }
   int status = 0;
   fits_movnam_hdu(fptr, ANY_HDU, toCharPtr(name).get(), 0, &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot move to HDU: " + name);
   return true;
 }
 
@@ -96,7 +96,7 @@ bool gotoNext(fitsfile *fptr, long step) {
   int status = 0;
   int type = 0;
   fits_movrel_hdu(fptr, static_cast<int>(step), &type, &status); // HDU indices are int
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot move to next HDU (" + std::to_string(step) + ")");
   return true;
 }
 

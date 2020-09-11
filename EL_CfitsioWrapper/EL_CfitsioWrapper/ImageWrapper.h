@@ -64,6 +64,7 @@ void resize(fitsfile *fptr, const FitsIO::Position<n> &shape) {
   int status = 0;
   auto nonconstShape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconstShape.data(), &status);
+  mayThrowCfitsioError(status, "Cannot resize raster");
 }
 
 template <typename T, long n>
@@ -71,7 +72,7 @@ FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr) {
   FitsIO::VecRaster<T, n> raster;
   int status = 0;
   fits_get_img_size(fptr, n, &raster.shape[0], &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot read raster size");
   const auto size = raster.size();
   raster.vector().resize(size); // TODO instantiate here directly with right shape
   fits_read_img(fptr, TypeCode<T>::forImage(), 1, size, nullptr, raster.data(), nullptr, &status);

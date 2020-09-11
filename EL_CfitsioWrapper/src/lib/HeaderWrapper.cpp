@@ -83,7 +83,7 @@ void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> 
   }
   fits_write_key_longstr(fptr, record.keyword.c_str(), &std::string(record.value)[0], &record.comment[0], &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot write record: " + record.keyword);
 }
 
 template <>
@@ -94,7 +94,7 @@ void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *
   }
   fits_write_key_longstr(fptr, record.keyword.c_str(), record.value, &record.comment[0], &status);
   fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot write record: " + record.keyword);
 }
 
 template <>
@@ -107,7 +107,7 @@ void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string>
       &std::string(record.value)[0],
       &record.comment[0],
       &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot update record: " + record.keyword);
 }
 
 template <>
@@ -120,13 +120,13 @@ void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char 
       &std::string(record.value)[0],
       &record.comment[0],
       &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot update record: " + record.keyword);
 }
 
 void deleteRecord(fitsfile *fptr, const std::string &keyword) {
   int status = 0;
   fits_delete_key(fptr, keyword.c_str(), &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot delete record: " + keyword);
 }
 
 } // namespace Header

@@ -16,11 +16,12 @@
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
 
-# 1.9
+# 1.9.0
 
 ## API changes
 
 * Indices and lengths as `long`s instead of `std::size_t`s
+* Records can be created from `const char*` values in addition to `std::string`
 
 ## Safety
 

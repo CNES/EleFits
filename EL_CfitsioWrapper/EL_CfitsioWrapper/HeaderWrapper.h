@@ -77,6 +77,12 @@ template <typename... Ts>
 void writeRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records);
 
 /**
+ * @brief Write new records.
+ */
+template <typename... Ts>
+void writeRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records);
+
+/**
  * @brief Update an existing record or write a new one.
  */
 template <typename T>
@@ -87,6 +93,12 @@ void updateRecord(fitsfile *fptr, const FitsIO::Record<T> &record);
  */
 template <typename... Ts>
 void updateRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records);
+
+/**
+ * @brief Update existing records or write new ones.
+ */
+template <typename... Ts>
+void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records);
 
 /**
  * @brief Delete an existing record.
@@ -128,6 +140,18 @@ struct ParseRecordsImpl<0, Ts...> {
 template <class TReturn, typename... Ts, std::size_t... Is>
 TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywords, std14::index_sequence<Is...>) {
   return { parseRecord<Ts>(fptr, keywords[Is])... };
+}
+
+template <typename... Ts, std::size_t... Is>
+void writeRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std14::index_sequence<Is...>) {
+  using mockUnpack = int[];
+  (void)mockUnpack { (writeRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
+}
+
+template <typename... Ts, std::size_t... Is>
+void updateRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std14::index_sequence<Is...>) {
+  using mockUnpack = int[];
+  (void)mockUnpack { (updateRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
 }
 
 } // namespace Internal
@@ -204,6 +228,11 @@ void writeRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
   (void)mockUnpack { (writeRecord(fptr, records), 0)... };
 }
 
+template <typename... Ts>
+void writeRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
+  Internal::writeRecordsImpl(fptr, records, std14::make_index_sequence<sizeof...(Ts)>());
+}
+
 template <typename T>
 void updateRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
   int status = 0;
@@ -219,6 +248,17 @@ void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string>
 
 template <>
 void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
+
+template <typename... Ts>
+void updateRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
+  using mockUnpack = int[];
+  (void)mockUnpack { (updateRecord(fptr, records), 0)... };
+}
+
+template <typename... Ts>
+void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
+  Internal::updateRecordsImpl(fptr, records, std14::make_index_sequence<sizeof...(Ts)>());
+}
 
 } // namespace Header
 } // namespace Cfitsio

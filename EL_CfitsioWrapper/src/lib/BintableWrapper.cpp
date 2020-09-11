@@ -30,7 +30,7 @@ long columnIndex(fitsfile *fptr, const std::string &name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot find index of column: " + name);
   return index;
 }
 
@@ -74,7 +74,7 @@ void readColumnChunkImpl<std::string>(
       &repeat,
       nullptr,
       &status); // TODO wrap?
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot read type of column: #" + std::to_string(index));
   std::vector<char *> data(rowCount);
   for (long i = 0; i < rowCount; ++i) { // TODO iterator
     data[i] = (char *)malloc(repeat);
@@ -90,6 +90,7 @@ void readColumnChunkImpl<std::string>(
       data.data(),
       nullptr,
       &status);
+  mayThrowCfitsioError(status, "Cannot read column chunk: #" + std::to_string(index));
   for (long i = 0; i < rowCount; ++i) {
     column.vector()[i + firstRow] = std::string(data[i]);
     free(data[i]);
@@ -120,7 +121,7 @@ void writeColumnChunkImpl<std::string>(
   mayThrowCfitsioError(
       status,
       "Cannot write column chunk: " + column.info.name + " (" + std::to_string(index) + "); " + "rows: [" +
-          std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "-");
+          std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "]");
 }
 
 } // namespace Internal
@@ -131,16 +132,16 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
   long rows = 0;
   int status = 0;
   fits_get_num_rows(fptr, &rows, &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot read the number of table rows");
   long repeat = 0;
-  fits_get_coltype(
+  fits_get_coltype( // TODO factor
       fptr,
       static_cast<int>(index), // column indices are int
       nullptr,
       &repeat,
       nullptr,
       &status); // TODO wrap?
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot read type of column: #" + std::to_string(index));
   std::vector<char *> data(rows);
   for (long i = 0; i < rows; ++i) { // TODO iterator
     data[i] = (char *)malloc(repeat);
@@ -157,7 +158,7 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
       &data[0],
       nullptr, // anynul
       &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot read column: " + name);
   for (long i = 0; i < rows; ++i) {
     column.vector()[i] = std::string(data[i]);
     free(data[i]);
@@ -181,7 +182,7 @@ void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> 
       column.nelements(), // nelements
       array.data(),
       &status);
-  mayThrowCfitsioError(status);
+  mayThrowCfitsioError(status, "Cannot write column: " + column.info.name);
 }
 
 } // namespace Bintable
