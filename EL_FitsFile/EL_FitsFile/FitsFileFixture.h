@@ -27,6 +27,7 @@
 
 namespace Euclid {
 namespace FitsIO {
+namespace Test {
 
 /**
  * @brief Valid name for temporary files.
@@ -75,6 +76,7 @@ public:
   }
 };
 
+} // namespace Test
 } // namespace FitsIO
 } // namespace Euclid
 

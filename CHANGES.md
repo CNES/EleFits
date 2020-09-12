@@ -6,6 +6,10 @@
 
 * pascalCase functions and methods
 
+## New features
+
+* Records can be written as tuples in addition to parameter packs
+
 ## Cleaning
 
 * Format with clang-format
@@ -21,6 +25,9 @@
 ## API changes
 
 * Indices and lengths as `long`s instead of `std::size_t`s
+
+## New features
+
 * Records can be created from `const char*` values in addition to `std::string`
 
 ## Safety

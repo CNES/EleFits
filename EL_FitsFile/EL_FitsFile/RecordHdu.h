@@ -27,6 +27,10 @@ namespace FitsIO {
 
 /**
  * @brief Header reader-writer.
+ * @details
+ * When reading or writing several Records, it is recommended to use the plural form of the methods
+ * (e.g. one call to RecordHdu::writeRecords instead of several calls to RecordHdu::writeRecord),
+ * which are optimized.
  * @warning
  * There is a known bug in CFitsIO with the reading of Record<unsigned long>:
  * if the value is greater than max(long), CFitsIO returns an overflow error.
@@ -119,6 +123,12 @@ public:
   void writeRecords(const Record<Ts> &... records) const;
 
   /**
+   * @brief Write several records.
+   */
+  template <typename... Ts>
+  void writeRecords(const std::tuple<Record<Ts>...> &records) const;
+
+  /**
    * @brief Update a record if it exists; write a new record otherwise.
    */
   template <typename T>
@@ -139,6 +149,12 @@ public:
    */
   template <typename... Ts>
   void updateRecords(const Record<Ts> &... records) const;
+
+  /**
+   * @brief Update several records if they exist; write new records otherwise.
+   */
+  template <typename... Ts>
+  void updateRecords(const std::tuple<Record<Ts>...> &records) const;
 
   /**
    * @brief Delete a record.
@@ -204,6 +220,12 @@ void RecordHdu::writeRecords(const Record<Ts> &... records) const {
   Cfitsio::Header::writeRecords(m_fptr, records...);
 }
 
+template <typename... Ts>
+void RecordHdu::writeRecords(const std::tuple<Record<Ts>...> &records) const {
+  gotoThisHdu();
+  Cfitsio::Header::writeRecords(m_fptr, records);
+}
+
 template <typename T>
 void RecordHdu::updateRecord(const Record<T> &record) const {
   gotoThisHdu();
@@ -219,6 +241,12 @@ template <typename... Ts>
 void RecordHdu::updateRecords(const Record<Ts> &... records) const {
   gotoThisHdu();
   Cfitsio::Header::updateRecords(m_fptr, records...);
+}
+
+template <typename... Ts>
+void RecordHdu::updateRecords(const std::tuple<Record<Ts>...> &records) const {
+  gotoThisHdu();
+  Cfitsio::Header::updateRecords(m_fptr, records);
 }
 
 #ifndef DECLARE_PARSE_RECORD

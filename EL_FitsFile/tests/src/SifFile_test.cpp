@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_SUITE(SifFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(simple_image_test, NewSifFile) {
+BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile) {
   BOOST_CHECK(boost::filesystem::is_regular_file(this->filename()));
   Test::SmallRaster input; // TODO RandomRaster
   const std::string keyword = "KEYWORD";

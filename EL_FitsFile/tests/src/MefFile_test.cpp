@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_SUITE(MefFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(primary_resize_test, NewMefFile) {
+BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   Test::SmallRaster input; // TODO RandomRaster
   const auto &primary = this->accessPrimary<ImageHdu>();
   primary.resize<float, 2>(input.shape);
@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, NewMefFile) {
   remove(this->filename().c_str());
 }
 
-BOOST_FIXTURE_TEST_CASE(count_test, TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
   BOOST_CHECK_EQUAL(this->hduCount(), 1); // 0 with CFitsIO
   Test::SmallRaster raster;
   const auto &primary = this->accessPrimary<ImageHdu>();
@@ -58,7 +58,7 @@ BOOST_FIXTURE_TEST_CASE(count_test, TemporaryMefFile) {
   BOOST_CHECK_EQUAL(this->hduCount(), 2);
 }
 
-BOOST_FIXTURE_TEST_CASE(append_test, NewMefFile) {
+BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   Test::SmallRaster raster; // TODO RandomRaster
   const auto &ext1 = this->assignImageExt("IMG1", raster);
   BOOST_CHECK_EQUAL(ext1.index(), 2);

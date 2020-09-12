@@ -23,6 +23,7 @@
 
 #include "EL_FitsFile/MefFile.h"
 #include "EL_FitsFile/SifFile.h"
+#include "EL_FitsFile/FitsFileFixture.h"
 
 #include "EL_FitsFile/RecordHdu.h"
 
@@ -34,11 +35,8 @@ BOOST_AUTO_TEST_SUITE(RecordHdu_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(continued_str_test) {
-  Elements::TempPath tmp("%%%%%%.fits");
-  std::string filename = tmp.path().string();
-  SifFile f(filename, SifFile::Permission::Temporary);
-  const auto &h = f.header();
+BOOST_FIXTURE_TEST_CASE(continued_str_test, Test::TemporarySifFile) {
+  const auto &h = this->header();
   const std::string shortStr = "S";
   const std::string longStr = "This is probably one of the longest strings "
                               "that I have ever written in a serious code.";
@@ -51,11 +49,8 @@ BOOST_AUTO_TEST_CASE(continued_str_test) {
   BOOST_CHECK_EQUAL(output.value, longStr);
 }
 
-BOOST_AUTO_TEST_CASE(rename_test) {
-  Elements::TempPath tmp("%%%%%%.fits");
-  std::string filename = tmp.path().string();
-  MefFile f(filename, MefFile::Permission::Temporary);
-  const auto &h = f.initRecordExt("A");
+BOOST_FIXTURE_TEST_CASE(rename_test, Test::TemporaryMefFile) {
+  const auto &h = this->initRecordExt("A");
   BOOST_CHECK_EQUAL(h.index(), 2);
   BOOST_CHECK_EQUAL(h.name(), "A");
   h.rename("B");
@@ -64,17 +59,29 @@ BOOST_AUTO_TEST_CASE(rename_test) {
   BOOST_CHECK_EQUAL(h.name(), "");
 }
 
-BOOST_AUTO_TEST_CASE(c_str_record_test) {
-  Elements::TempPath tmp("%%%%%%.fits");
-  std::string filename = tmp.path().string();
-  SifFile f(filename, SifFile::Permission::Temporary);
-  const auto &h = f.header();
+BOOST_FIXTURE_TEST_CASE(c_str_record_test, Test::TemporarySifFile) {
+  const auto &h = this->header();
   h.writeRecord("C_STR", "1");
   const auto output1 = h.parseRecord<std::string>("C_STR");
   BOOST_CHECK_EQUAL(output1.value, "1");
   h.updateRecord("C_STR", "2");
   const auto output2 = h.parseRecord<std::string>("C_STR");
   BOOST_CHECK_EQUAL(output2.value, "2");
+}
+
+BOOST_FIXTURE_TEST_CASE(tuple_write_update_test, Test::TemporarySifFile) {
+  const auto &h = this->header();
+  Record<short> short_record { "SHORT", 1 };
+  Record<long> long_record { "LONG", 1000 };
+  auto records = std::make_tuple(short_record, long_record);
+  h.writeRecords(records);
+  BOOST_CHECK_EQUAL(h.parseRecord<short>("SHORT"), 1);
+  BOOST_CHECK_EQUAL(h.parseRecord<long>("LONG"), 1000);
+  std::get<0>(records).value = 2;
+  std::get<1>(records).value = 2000;
+  h.updateRecords(records);
+  BOOST_CHECK_EQUAL(h.parseRecord<short>("SHORT"), 2);
+  BOOST_CHECK_EQUAL(h.parseRecord<long>("LONG"), 2000);
 }
 
 //-----------------------------------------------------------------------------
