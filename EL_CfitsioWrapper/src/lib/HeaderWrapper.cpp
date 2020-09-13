@@ -17,6 +17,8 @@
  *
  */
 
+#include <limits>
+
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {
@@ -127,6 +129,93 @@ void deleteRecord(fitsfile *fptr, const std::string &keyword) {
   int status = 0;
   fits_delete_key(fptr, keyword.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot delete record: " + keyword);
+}
+
+namespace Internal {
+
+/**
+ * @return
+ * TSBYTE      -128 to 127
+ * TBYTE        128 to 255
+ * TSHORT      -32768 to 32767
+ * TUSHORT      32768 to 65535
+ * TINT        -2147483648 to 2147483647
+ * TUINT        2147483648 to 4294967295
+ * TLONGLONG   -9223372036854775808 to 9223372036854775807
+ */
+int intRecordTypecodeImpl(char *value) {
+  int status = 0;
+  int typecode = 0;
+  int isNegative = 0;
+  fits_get_inttype(value, &typecode, &isNegative, &status);
+  mayThrowCfitsioError(status, "Cannot deduce integer type code of value: " + std::string(value));
+  return typecode;
+}
+
+/**
+ * @return TFLOAT, TDOUBLE.
+ */
+int floatRecordTypecodeImpl(char *value) {
+  double parsed = std::atof(value);
+  if (parsed < std::numeric_limits<float>::lowest()) {
+    return TDOUBLE;
+  }
+  if (parsed > std::numeric_limits<float>::max()) {
+    return TDOUBLE;
+  }
+  return TFLOAT;
+}
+
+/**
+ * @return TCOMPLEX, TDBLCOMPLEX.
+ */
+int complexRecordTypecodeImpl(char *value) {
+  const std::size_t re_begin = 1; // 1 for '('
+  const std::size_t re_end = std::string(value).find(",");
+  const std::size_t im_begin = re_end + 2; // 1 for ', '
+  const std::size_t im_end = std::string(value).find(")");
+  char re[FLEN_VALUE];
+  strncpy(re, value + re_begin, re_end - re_begin);
+  char im[FLEN_VALUE];
+  strncpy(im, value + im_begin, im_end - im_begin);
+  if (floatRecordTypecodeImpl(re) == TDOUBLE) {
+    return TDBLCOMPLEX;
+  }
+  if (floatRecordTypecodeImpl(im) == TDOUBLE) {
+    return TDBLCOMPLEX;
+  }
+  return TCOMPLEX;
+}
+
+} // namespace Internal
+
+/**
+ * @see https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node52.html
+ */
+int recordTypecode(fitsfile *fptr, const std::string &keyword) {
+  int status = 0;
+  char value[FLEN_VALUE];
+  auto nonconstKeyword = keyword;
+  fits_read_keyword(fptr, &keyword[0], value, nullptr, &status);
+  mayThrowCfitsioError(status, "Cannot read record: " + keyword);
+  char dtype = ' ';
+  fits_get_keytype(value, &dtype, &status);
+  mayThrowCfitsioError(status, "Cannot deduce type code of keyword: " + keyword);
+  // 'C', 'L', 'I', 'F' or 'X', for character string, logical, integer, floating point, or complex
+  switch (dtype) {
+    case 'C':
+      return TSTRING;
+    case 'L':
+      return TLOGICAL;
+    case 'I':
+      return Internal::intRecordTypecodeImpl(value);
+    case 'F':
+      return Internal::floatRecordTypecodeImpl(value);
+    case 'X':
+      return Internal::complexRecordTypecodeImpl(value);
+    default:
+      throw CfitsioError(status);
+  }
 }
 
 } // namespace Header

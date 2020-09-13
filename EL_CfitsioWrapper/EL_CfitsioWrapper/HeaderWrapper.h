@@ -105,6 +105,11 @@ void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &reco
  */
 void deleteRecord(fitsfile *fptr, const std::string &keyword);
 
+/**
+ * @brief Get the CFitsIO type code of a record.
+ */
+int recordTypecode(fitsfile *fptr, const std::string &keyword);
+
 ///////////////
 // INTERNAL //
 /////////////

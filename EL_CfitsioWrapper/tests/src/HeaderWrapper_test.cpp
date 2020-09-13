@@ -182,6 +182,53 @@ BOOST_FIXTURE_TEST_CASE(several_records_test, FitsIO::Test::MinimalFile) {
   checkClose(Header::parseRecord<float>(this->fptr, "FLOAT").value, 4.14F);
 }
 
+template <typename T>
+void checkRecordTypecode(T value, int expectedTypecode) {
+  FitsIO::Test::MinimalFile f;
+  FitsIO::Record<T> record { "KEYWORD", value };
+  Header::writeRecord(f.fptr, record);
+  BOOST_CHECK_EQUAL(Header::recordTypecode(f.fptr, "KEYWORD"), expectedTypecode);
+}
+
+template <typename T>
+void checkRecordTypecodeMin(int expectedTypecode) {
+  using limits = std::numeric_limits<T>;
+  const auto min = limits::lowest() + limits::epsilon();
+  checkRecordTypecode(min, expectedTypecode);
+}
+
+template <typename T>
+void checkRecordTypecodeMax(int expectedTypecode) {
+  using limits = std::numeric_limits<T>;
+  const auto max = limits::max() - limits::epsilon();
+  checkRecordTypecode(max, expectedTypecode);
+}
+
+BOOST_AUTO_TEST_CASE(record_type_test) {
+  checkRecordTypecode<bool>(true, TLOGICAL);
+  checkRecordTypecodeMin<char>(TSBYTE);
+  checkRecordTypecodeMin<short>(TSHORT);
+  checkRecordTypecodeMin<int>(TINT); // TODO long?
+  // checkRecordTypecodeMin<long>(TLONG); // TODO fix
+  checkRecordTypecodeMin<long long>(TLONGLONG);
+  checkRecordTypecodeMax<float>(TFLOAT);
+  checkRecordTypecodeMin<double>(TDOUBLE);
+  using float_limits = std::numeric_limits<float>;
+  checkRecordTypecode<std::complex<float>>(
+      { float_limits::lowest() + float_limits::epsilon(), float_limits::max() - float_limits::epsilon() },
+      TCOMPLEX);
+  using double_limits = std::numeric_limits<double>;
+  checkRecordTypecode<std::complex<double>>(
+      { double_limits::lowest() + double_limits::epsilon(), double_limits::max() - double_limits::epsilon() },
+      TDBLCOMPLEX);
+  checkRecordTypecode<std::string>("VALUE", TSTRING);
+  checkRecordTypecodeMax<unsigned char>(TBYTE);
+  checkRecordTypecodeMax<unsigned short>(TUSHORT);
+  checkRecordTypecodeMax<unsigned int>(TUINT); // TODO long?
+  // checkRecordTypecodeMax<unsigned long>(TULONG); // TODO fix
+  checkRecordTypecodeMax<unsigned long long>(TULONGLONG);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
