@@ -78,6 +78,47 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
 }
 
 template <>
+FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword) {
+  const auto code = recordTypecode(fptr, keyword);
+  switch (code) {
+    case TLOGICAL:
+      return parseRecord<bool>(fptr, keyword);
+    case TSBYTE:
+      return parseRecord<char>(fptr, keyword);
+    case TSHORT:
+      return parseRecord<short>(fptr, keyword);
+    case TINT:
+      return parseRecord<int>(fptr, keyword);
+    case TLONG:
+      return parseRecord<long>(fptr, keyword);
+    case TLONGLONG:
+      return parseRecord<long long>(fptr, keyword);
+    case TFLOAT:
+      return parseRecord<float>(fptr, keyword);
+    case TDOUBLE:
+      return parseRecord<double>(fptr, keyword);
+    case TCOMPLEX:
+      return parseRecord<std::complex<float>>(fptr, keyword);
+    case TDBLCOMPLEX:
+      return parseRecord<std::complex<double>>(fptr, keyword);
+    case TSTRING:
+      return parseRecord<std::string>(fptr, keyword);
+    case TBYTE:
+      return parseRecord<unsigned char>(fptr, keyword);
+    case TUSHORT:
+      return parseRecord<unsigned short>(fptr, keyword);
+    case TUINT:
+      return parseRecord<unsigned int>(fptr, keyword);
+    case TULONG:
+      return parseRecord<unsigned long>(fptr, keyword);
+    case TULONGLONG:
+      return parseRecord<unsigned long long>(fptr, keyword);
+    default:
+      throw std::runtime_error("Cannot deduce type for keyword: " + keyword);
+  }
+}
+
+template <>
 void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record) {
   int status = 0;
   if (record.value.length() > 68) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html

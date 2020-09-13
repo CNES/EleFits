@@ -20,6 +20,7 @@
 #ifndef _EL_FITSDATA_RECORD_H
 #define _EL_FITSDATA_RECORD_H
 
+#include <boost/any.hpp>
 #include <string>
 #include <tuple>
 
@@ -48,6 +49,16 @@ struct Record {
    * @param c The comment
    */
   Record(const std::string &k = "", T v = T(), const std::string &u = "", const std::string &c = "");
+
+  /**
+   * @brief Cast a Record.
+   * @details
+   * Destination type U must be constructible from T.
+   * This constructor can be used to homogeneize types, for example to create a
+   * \c vector<Record<any>> from various \c Record<T>.
+   */
+  template <typename U>
+  Record(const Record<U> &other);
 
   /**
    * @brief Slice the record as its value.
@@ -96,6 +107,15 @@ Record<T>::Record(const std::string &k, T v, const std::string &u, const std::st
     value(v),
     unit(u),
     comment(c) {
+}
+
+template <typename T>
+template <typename U>
+Record<T>::Record(const Record<U> &other) :
+    keyword(other.keyword),
+    value(other.value),
+    unit(other.unit),
+    comment(other.comment) {
 }
 
 template <typename T>

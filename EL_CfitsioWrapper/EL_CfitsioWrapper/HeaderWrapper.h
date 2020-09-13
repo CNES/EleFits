@@ -20,6 +20,7 @@
 #ifndef _EL_CFITSIOWRAPPER_RECORDHANDLER_H
 #define _EL_CFITSIOWRAPPER_RECORDHANDLER_H
 
+#include <boost/any.hpp>
 #include <fitsio.h>
 #include <string>
 #include <tuple>
@@ -197,6 +198,9 @@ FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword) {
 
 template <>
 FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword);
+
+template <>
+FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword);
 
 template <typename... Ts>
 std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector<std::string> &keywords) {
