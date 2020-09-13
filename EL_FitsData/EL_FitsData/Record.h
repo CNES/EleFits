@@ -51,11 +51,11 @@ struct Record {
   Record(const std::string &k = "", T v = T(), const std::string &u = "", const std::string &c = "");
 
   /**
-   * @brief Cast a Record.
+   * @brief Create a Record from a Record of another type.
    * @details
-   * Destination type U must be constructible from T.
+   * Destination type T must be constructible from source type U.
    * This constructor can be used to homogeneize types, for example to create a
-   * \c vector<Record<any>> from various \c Record<T>.
+   * \c vector<Record<any>> from various \c Record<T>'s with different \c T's.
    */
   template <typename U>
   Record(const Record<U> &other);

@@ -86,6 +86,24 @@ TEST_CAST(bool)
 TEST_CAST(int)
 TEST_CAST_ALIAS(std::string, string)
 
+template <typename T>
+void checkAnyEqual(boost::any value, T expected) {
+  BOOST_CHECK_EQUAL(boost::any_cast<T>(value), expected);
+}
+
+BOOST_AUTO_TEST_CASE(vector_of_any_test) {
+  Record<std::string> str_record("STRING", "HEY!");
+  Record<bool> boo_record("BOOL", false);
+  Record<std::complex<float>> com_record("COMPLEX", { 1.F, 2.F });
+  std::vector<Record<boost::any>> vec;
+  vec.emplace_back(str_record);
+  vec.emplace_back(boo_record);
+  vec.emplace_back(com_record);
+  checkAnyEqual<std::string>(vec[0].value, str_record);
+  checkAnyEqual<bool>(vec[1].value, boo_record);
+  checkAnyEqual<std::complex<float>>(vec[2].value, com_record);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
