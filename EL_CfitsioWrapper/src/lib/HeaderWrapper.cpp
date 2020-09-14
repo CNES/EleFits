@@ -140,41 +140,46 @@ void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *
   mayThrowCfitsioError(status, "Cannot write record: " + record.keyword);
 }
 
+template <typename T>
+void writeRecordAnyImpl(fitsfile *fptr, const FitsIO::Record<boost::any> &record) {
+  writeRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
+}
+
 template <>
 void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record) {
   const auto &id = record.value.type();
   if (id == typeid(bool)) {
-    writeRecord<bool>(fptr, record.keyword);
+    writeRecordAnyImpl<bool>(fptr, record);
   } else if (id == typeid(char)) {
-    writeRecord<char>(fptr, record.keyword);
+    writeRecordAnyImpl<char>(fptr, record);
   } else if (id == typeid(short)) {
-    writeRecord<short>(fptr, record.keyword);
+    writeRecordAnyImpl<short>(fptr, record);
   } else if (id == typeid(int)) {
-    writeRecord<int>(fptr, record.keyword);
+    writeRecordAnyImpl<int>(fptr, record);
   } else if (id == typeid(long)) {
-    writeRecord<long>(fptr, record.keyword);
+    writeRecordAnyImpl<long>(fptr, record);
   } else if (id == typeid(long long)) {
-    writeRecord<long long>(fptr, record.keyword);
+    writeRecordAnyImpl<long long>(fptr, record);
   } else if (id == typeid(float)) {
-    writeRecord<float>(fptr, record.keyword);
+    writeRecordAnyImpl<float>(fptr, record);
   } else if (id == typeid(double)) {
-    writeRecord<double>(fptr, record.keyword);
+    writeRecordAnyImpl<double>(fptr, record);
   } else if (id == typeid(std::complex<float>)) {
-    writeRecord<std::complex<float>>(fptr, record.keyword);
+    writeRecordAnyImpl<std::complex<float>>(fptr, record);
   } else if (id == typeid(std::complex<double>)) {
-    writeRecord<std::complex<double>>(fptr, record.keyword);
+    writeRecordAnyImpl<std::complex<double>>(fptr, record);
   } else if (id == typeid(std::string)) {
-    writeRecord<std::string>(fptr, record.keyword);
+    writeRecordAnyImpl<std::string>(fptr, record);
   } else if (id == typeid(unsigned char)) {
-    writeRecord<unsigned char>(fptr, record.keyword);
+    writeRecordAnyImpl<unsigned char>(fptr, record);
   } else if (id == typeid(unsigned short)) {
-    writeRecord<unsigned short>(fptr, record.keyword);
+    writeRecordAnyImpl<unsigned short>(fptr, record);
   } else if (id == typeid(unsigned int)) {
-    writeRecord<unsigned int>(fptr, record.keyword);
+    writeRecordAnyImpl<unsigned int>(fptr, record);
   } else if (id == typeid(unsigned long)) {
-    writeRecord<unsigned long>(fptr, record.keyword);
+    writeRecordAnyImpl<unsigned long>(fptr, record);
   } else if (id == typeid(unsigned long long)) {
-    writeRecord<unsigned long long>(fptr, record.keyword);
+    writeRecordAnyImpl<unsigned long long>(fptr, record);
   } else {
     throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
   }
@@ -206,41 +211,46 @@ void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char 
   mayThrowCfitsioError(status, "Cannot update record: " + record.keyword);
 }
 
+template <typename T>
+void updateRecordAnyImpl(fitsfile *fptr, const FitsIO::Record<boost::any> &record) {
+  updateRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
+}
+
 template <>
 void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record) {
   const auto &id = record.value.type();
   if (id == typeid(bool)) {
-    updateRecord<bool>(fptr, record.keyword);
+    updateRecordAnyImpl<bool>(fptr, record);
   } else if (id == typeid(char)) {
-    updateRecord<char>(fptr, record.keyword);
+    updateRecordAnyImpl<char>(fptr, record);
   } else if (id == typeid(short)) {
-    updateRecord<short>(fptr, record.keyword);
+    updateRecordAnyImpl<short>(fptr, record);
   } else if (id == typeid(int)) {
-    updateRecord<int>(fptr, record.keyword);
+    updateRecordAnyImpl<int>(fptr, record);
   } else if (id == typeid(long)) {
-    updateRecord<long>(fptr, record.keyword);
+    updateRecordAnyImpl<long>(fptr, record);
   } else if (id == typeid(long long)) {
-    updateRecord<long long>(fptr, record.keyword);
+    updateRecordAnyImpl<long long>(fptr, record);
   } else if (id == typeid(float)) {
-    updateRecord<float>(fptr, record.keyword);
+    updateRecordAnyImpl<float>(fptr, record);
   } else if (id == typeid(double)) {
-    updateRecord<double>(fptr, record.keyword);
+    updateRecordAnyImpl<double>(fptr, record);
   } else if (id == typeid(std::complex<float>)) {
-    updateRecord<std::complex<float>>(fptr, record.keyword);
+    updateRecordAnyImpl<std::complex<float>>(fptr, record);
   } else if (id == typeid(std::complex<double>)) {
-    updateRecord<std::complex<double>>(fptr, record.keyword);
+    updateRecordAnyImpl<std::complex<double>>(fptr, record);
   } else if (id == typeid(std::string)) {
-    updateRecord<std::string>(fptr, record.keyword);
+    updateRecordAnyImpl<std::string>(fptr, record);
   } else if (id == typeid(unsigned char)) {
-    updateRecord<unsigned char>(fptr, record.keyword);
+    updateRecordAnyImpl<unsigned char>(fptr, record);
   } else if (id == typeid(unsigned short)) {
-    updateRecord<unsigned short>(fptr, record.keyword);
+    updateRecordAnyImpl<unsigned short>(fptr, record);
   } else if (id == typeid(unsigned int)) {
-    updateRecord<unsigned int>(fptr, record.keyword);
+    updateRecordAnyImpl<unsigned int>(fptr, record);
   } else if (id == typeid(unsigned long)) {
-    updateRecord<unsigned long>(fptr, record.keyword);
+    updateRecordAnyImpl<unsigned long>(fptr, record);
   } else if (id == typeid(unsigned long long)) {
-    updateRecord<unsigned long long>(fptr, record.keyword);
+    updateRecordAnyImpl<unsigned long long>(fptr, record);
   } else {
     throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
   }
@@ -293,11 +303,14 @@ int floatRecordTypecodeImpl(char *value) {
 int complexRecordTypecodeImpl(char *value) {
   const std::size_t re_begin = 1; // 1 for '('
   const std::size_t re_end = std::string(value).find(",");
-  const std::size_t im_begin = re_end + 2; // 1 for ', '
+  const std::size_t im_begin = re_end + 2; // 2 for ', '
   const std::size_t im_end = std::string(value).find(")");
-  char re[FLEN_VALUE];
+  if (re_end == std::string::npos || im_end == std::string::npos) {
+    throw std::runtime_error("Cannot parse complex value: " + std::string(value));
+  }
+  char re[FLEN_VALUE] = "\0";
   strncpy(re, value + re_begin, re_end - re_begin);
-  char im[FLEN_VALUE];
+  char im[FLEN_VALUE] = "\0";
   strncpy(im, value + im_begin, im_end - im_begin);
   if (floatRecordTypecodeImpl(re) == TDOUBLE) {
     return TDBLCOMPLEX;
