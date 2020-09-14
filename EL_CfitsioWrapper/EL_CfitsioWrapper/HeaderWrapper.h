@@ -24,6 +24,7 @@
 #include <fitsio.h>
 #include <string>
 #include <tuple>
+#include <map>
 #include <vector>
 
 #include "EL_FitsData/Record.h"
@@ -64,6 +65,12 @@ std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector
  */
 template <class TReturn, typename... Ts>
 TReturn parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords);
+
+template <typename T>
+std::vector<FitsIO::Record<T>> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords);
+
+template <typename T>
+std::map<std::string, FitsIO::Record<T>> parseRecordMap(fitsfile *fptr, const std::vector<std::string> &keywords);
 
 /**
  * @brief Write a new record.
@@ -212,6 +219,24 @@ std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector
 template <class Return, typename... Ts>
 Return parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords) {
   return Internal::parseRecordsAsImpl<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <typename T>
+std::vector<FitsIO::Record<T>> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords) {
+  std::vector<FitsIO::Record<T>> vec(keywords.size());
+  std::transform(keywords.begin(), keywords.end(), vec.begin(), [&](const std::string &k) {
+    return parseRecord<T>(fptr, k);
+  });
+  return vec;
+}
+
+template <typename T>
+std::map<std::string, FitsIO::Record<T>> parseRecordMap(fitsfile *fptr, const std::vector<std::string> &keywords) {
+  std::map<std::string, FitsIO::Record<T>> map;
+  for (const auto &k : keywords) {
+    map[k] = parseRecord<T>(fptr, k);
+  }
+  return map;
 }
 
 template <typename T>
