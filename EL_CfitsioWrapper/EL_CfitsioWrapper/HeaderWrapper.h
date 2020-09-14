@@ -66,9 +66,28 @@ std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector
 template <class TReturn, typename... Ts>
 TReturn parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords);
 
+/**
+ * @brief Parse homogeneous records and store them in a vector.
+ */
 template <typename T>
 std::vector<FitsIO::Record<T>> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords);
 
+/**
+ * @brief Parse homogeneous records and store them in a map indexed by the keywords.
+ * @details
+ * This is a useful way of accessing records by keyword,
+ * but each entry contains a duplicate of the keyword:
+ * - as the key,
+ * - as the keyword of the value.
+ * For example, an entry might be such as:
+ * @code
+ * map["KEYWORD"] = Record<T>("KEYWORD", "VALUE", "UNIT", "COMMENT");
+ * @endcode
+ * but not such as:
+ * @code
+ * map["MAP_KEY"] = Record<T>("KEYWORD", "VALUE", "UNIT", "COMMENT");
+ * @endcode
+ */
 template <typename T>
 std::map<std::string, FitsIO::Record<T>> parseRecordMap(fitsfile *fptr, const std::vector<std::string> &keywords);
 
@@ -91,6 +110,25 @@ template <typename... Ts>
 void writeRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records);
 
 /**
+ * @brief Write homogeneous records.
+ */
+template <typename T>
+void writeRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records);
+
+/**
+ * @brief Write homogeneous records.
+ * @warning
+ * The map keys are ignored: the keyword of the records is used instead.
+ * If for some reason the map contains such an entry:
+ * @code
+ * map["MAP_KEY"] = Record<T>("KEYWORD", "VALUE", "UNIT", "COMMENT");
+ * @endcode
+ * then \c "KEYWORD" will be written.
+ */
+template <typename T>
+void writeRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records);
+
+/**
  * @brief Update an existing record or write a new one.
  */
 template <typename T>
@@ -107,6 +145,20 @@ void updateRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records);
  */
 template <typename... Ts>
 void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records);
+
+/**
+ * @brief Update existing homogeneous records or write new ones.
+ */
+template <typename T>
+void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records);
+
+/**
+ * @brief Update existing homogeneous records or write new ones.
+ * @warning
+ * The map keys are ignored: the keyword of the records is used instead.
+ */
+template <typename T>
+void updateRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records);
 
 /**
  * @brief Delete an existing record.
@@ -256,6 +308,9 @@ void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> 
 template <>
 void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
 
+template <>
+void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
+
 template <typename... Ts>
 void writeRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
   using mockUnpack = int[];
@@ -265,6 +320,20 @@ void writeRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
 template <typename... Ts>
 void writeRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
   Internal::writeRecordsImpl(fptr, records, std14::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <typename T>
+void writeRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records) {
+  for (const auto &r : records) {
+    writeRecord(fptr, r);
+  }
+}
+
+template <typename T>
+void writeRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records) {
+  for (const auto &kr : records) {
+    writeRecord(fptr, kr.second);
+  }
 }
 
 template <typename T>
@@ -292,6 +361,20 @@ void updateRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
 template <typename... Ts>
 void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
   Internal::updateRecordsImpl(fptr, records, std14::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <typename T>
+void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records) {
+  for (const auto &r : records) {
+    updateRecord(fptr, r);
+  }
+}
+
+template <typename T>
+void updateRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records) {
+  for (const auto &kr : records) {
+    updateRecord(fptr, kr.second);
+  }
 }
 
 } // namespace Header

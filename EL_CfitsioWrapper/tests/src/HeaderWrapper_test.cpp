@@ -229,23 +229,16 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypecodeMax<unsigned long long>(TULONGLONG);
 }
 
-BOOST_FIXTURE_TEST_CASE(parse_vector_test, FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, FitsIO::Test::MinimalFile) {
   FitsIO::Record<short> short_record("SHORT", 0);
   FitsIO::Record<long> long_record("LONG", 1);
   FitsIO::Record<long long> longlong_record("LONGLONG", 2);
   Header::writeRecords(this->fptr, short_record, long_record, longlong_record);
   const auto vec = Header::parseRecordVector<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
+  const auto map = Header::parseRecordMap<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
   BOOST_CHECK_EQUAL(vec[0].value, short_record);
   BOOST_CHECK_EQUAL(vec[1].value, long_record);
   BOOST_CHECK_EQUAL(vec[2].value, longlong_record);
-}
-
-BOOST_FIXTURE_TEST_CASE(parse_map_test, FitsIO::Test::MinimalFile) {
-  FitsIO::Record<short> short_record("SHORT", 0);
-  FitsIO::Record<long> long_record("LONG", 1);
-  FitsIO::Record<long long> longlong_record("LONGLONG", 2);
-  Header::writeRecords(this->fptr, short_record, long_record, longlong_record);
-  const auto map = Header::parseRecordMap<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
   BOOST_CHECK_EQUAL(map.at("SHORT").value, short_record);
   BOOST_CHECK_EQUAL(map.at("LONG").value, long_record);
   BOOST_CHECK_EQUAL(map.at("LONGLONG").value, longlong_record);
