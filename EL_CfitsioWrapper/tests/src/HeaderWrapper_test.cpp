@@ -234,14 +234,10 @@ BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, FitsIO::Test::MinimalFile) {
   FitsIO::Record<long> long_record("LONG", 1);
   FitsIO::Record<long long> longlong_record("LONGLONG", 2);
   Header::writeRecords(this->fptr, short_record, long_record, longlong_record);
-  const auto vec = Header::parseRecordVector<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
-  const auto map = Header::parseRecordMap<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
-  BOOST_CHECK_EQUAL(vec[0].value, short_record);
-  BOOST_CHECK_EQUAL(vec[1].value, long_record);
-  BOOST_CHECK_EQUAL(vec[2].value, longlong_record);
-  BOOST_CHECK_EQUAL(map.at("SHORT").value, short_record);
-  BOOST_CHECK_EQUAL(map.at("LONG").value, long_record);
-  BOOST_CHECK_EQUAL(map.at("LONGLONG").value, longlong_record);
+  const auto records = Header::parseRecordVector<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
+  BOOST_CHECK_EQUAL(records.find("SHORT").value, short_record);
+  BOOST_CHECK_EQUAL(records.find("LONG").value, long_record);
+  BOOST_CHECK_EQUAL(records.find("LONGLONG").value, longlong_record);
 }
 
 //-----------------------------------------------------------------------------

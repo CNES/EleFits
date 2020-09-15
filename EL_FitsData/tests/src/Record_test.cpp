@@ -91,6 +91,14 @@ void checkAnyEqual(boost::any value, T expected) {
   BOOST_CHECK_EQUAL(boost::any_cast<T>(value), expected);
 }
 
+BOOST_AUTO_TEST_CASE(any_cast_test) {
+  Record<int> int_record { "KEY", 1 };
+  Record<boost::any> any_record(int_record);
+  Record<int> int2_record(any_record);
+  Record<bool> bool_record(int_record);
+  BOOST_CHECK_EQUAL(bool_record.value, int_record.value);
+}
+
 BOOST_AUTO_TEST_CASE(vector_of_any_test) {
   Record<std::string> str_record("STRING", "HEY!");
   Record<bool> boo_record("BOOL", false);

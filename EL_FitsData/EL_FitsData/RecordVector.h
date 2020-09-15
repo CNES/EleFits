@@ -1,0 +1,110 @@
+/**
+ * @file EL_FitsData/RecordVector.h
+ * @date 09/15/20
+ * @author user
+ *
+ * @copyright (C) 2012-2020 Euclid Science Ground Segment
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3.0 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ *
+ */
+
+#ifndef _EL_FITSDATA_RECORDVECTOR_H
+#define _EL_FITSDATA_RECORDVECTOR_H
+
+#include <algorithm>
+#include <vector>
+
+#include "EL_FitsData/Record.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+/**
+ * @brief A collection of records of homogeneous value types.
+ * @tparam T The value type of the records
+ */
+template <typename T>
+class RecordVector {
+
+public:
+  /**
+   * @brief Create a RecordVector with given number of records.
+   */
+  RecordVector(std::size_t size);
+
+  /**
+   * @brief The records.
+   */
+  std::vector<Record<T>> vector;
+
+  /**
+   * @brief Find the first record with given keyword.
+   */
+  const Record<T> &find(const std::string &keyword) const;
+
+  /**
+   * @brief Find the first record with given keyword.
+   */
+  Record<T> &find(const std::string &keyword);
+
+  /**
+   * @brief Find and cast the first record with given keyword.
+   * @tparam TValue The destination value type
+   * @details
+   * Althoug the method returns a Record, it can itself be sliced as its value,
+   * so the following works:
+   * @code
+   * RecordVector<any> records;
+   * // ...
+   * int i = records.findAs<int>("KEYWORD"); // Get the value as int
+   * @endcode
+   */
+  template <typename TValue>
+  Record<TValue> findAs(const std::string &keyword) const;
+};
+
+///////////////////////
+/// IMPLEMENTATION ///
+/////////////////////
+
+template <typename T>
+RecordVector<T>::RecordVector(std::size_t size) : vector(size) {
+}
+
+template <typename T>
+const Record<T> &RecordVector<T>::find(const std::string &keyword) const {
+  const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T> &r) { return r.keyword == keyword; });
+  if (it == vector.end()) {
+    throw std::runtime_error("Cannot find keyword: " + keyword);
+  }
+  return *it;
+}
+
+template <typename T>
+Record<T> &RecordVector<T>::find(const std::string &keyword) {
+  return const_cast<Record<T> &>(const_cast<const RecordVector<T> *>(this)->find(keyword));
+}
+
+template <typename T>
+template <typename TValue>
+Record<TValue> RecordVector<T>::findAs(const std::string &keyword) const {
+  return find(keyword);
+}
+
+} // namespace FitsIO
+} // namespace Euclid
+
+#endif

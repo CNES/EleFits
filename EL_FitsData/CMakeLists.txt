@@ -31,6 +31,7 @@ elements_depends_on_subdirs(ElementsKernel)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EL_FitsData src/lib/*.cpp
+                     INCLUDE_DIRS ElementsKernel
                      LINK_LIBRARIES ElementsKernel
                      PUBLIC_HEADERS EL_FitsData)
 
@@ -64,6 +65,10 @@ elements_add_unit_test(Raster tests/src/Raster_test.cpp
                      TYPE Boost)
 elements_add_unit_test(Record tests/src/Record_test.cpp 
                      EXECUTABLE EL_FitsData_Record_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
+elements_add_unit_test(RecordVector tests/src/RecordVector_test.cpp 
+                     EXECUTABLE EL_FitsData_RecordVector_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
 

@@ -53,12 +53,12 @@ struct Record {
   /**
    * @brief Create a Record from a Record of another type.
    * @details
-   * Destination type T must be constructible from source type U.
+   * Destination type T must be constructible from source type TOther.
    * This constructor can be used to homogeneize types, for example to create a
    * \c vector<Record<any>> from various \c Record<T>'s with different \c T's.
    */
-  template <typename U>
-  Record(const Record<U> &other);
+  template <typename TOther>
+  Record(const Record<TOther> &other);
 
   /**
    * @brief Slice the record as its value.
@@ -97,6 +97,36 @@ struct Record {
   std::string comment;
 };
 
+/////////////////
+/// INTERNAL ///
+///////////////
+
+namespace Internal {
+
+template <typename TOther>
+struct CasterImpl {
+  template <typename T>
+  static T cast(TOther value);
+};
+
+template <typename TOther>
+template <typename T>
+T CasterImpl<TOther>::cast(TOther value) {
+  return T(value);
+}
+
+template <>
+template <typename T>
+T CasterImpl<boost::any>::cast(boost::any value);
+
+template <>
+template <typename T>
+T CasterImpl<boost::any>::cast(boost::any value) {
+  return boost::any_cast<T>(value);
+}
+
+} // namespace Internal
+
 /////////////////////
 // IMPLEMENTATION //
 ///////////////////
@@ -110,10 +140,10 @@ Record<T>::Record(const std::string &k, T v, const std::string &u, const std::st
 }
 
 template <typename T>
-template <typename U>
-Record<T>::Record(const Record<U> &other) :
+template <typename TOther>
+Record<T>::Record(const Record<TOther> &other) :
     keyword(other.keyword),
-    value(other.value),
+    value(Internal::CasterImpl<TOther>::template cast<T>(other.value)),
     unit(other.unit),
     comment(other.comment) {
 }

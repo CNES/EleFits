@@ -24,10 +24,10 @@
 #include <fitsio.h>
 #include <string>
 #include <tuple>
-#include <map>
 #include <vector>
 
 #include "EL_FitsData/Record.h"
+#include "EL_FitsData/RecordVector.h"
 
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
@@ -70,26 +70,7 @@ TReturn parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords)
  * @brief Parse homogeneous records and store them in a vector.
  */
 template <typename T>
-std::vector<FitsIO::Record<T>> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords);
-
-/**
- * @brief Parse homogeneous records and store them in a map indexed by the keywords.
- * @details
- * This is a useful way of accessing records by keyword,
- * but each entry contains a duplicate of the keyword:
- * - as the key,
- * - as the keyword of the value.
- * For example, an entry might be such as:
- * @code
- * map["KEYWORD"] = Record<T>("KEYWORD", "VALUE", "UNIT", "COMMENT");
- * @endcode
- * but not such as:
- * @code
- * map["MAP_KEY"] = Record<T>("KEYWORD", "VALUE", "UNIT", "COMMENT");
- * @endcode
- */
-template <typename T>
-std::map<std::string, FitsIO::Record<T>> parseRecordMap(fitsfile *fptr, const std::vector<std::string> &keywords);
+FitsIO::RecordVector<T> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords);
 
 /**
  * @brief Write a new record.
@@ -116,19 +97,6 @@ template <typename T>
 void writeRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records);
 
 /**
- * @brief Write homogeneous records.
- * @warning
- * The map keys are ignored: the keyword of the records is used instead.
- * If for some reason the map contains such an entry:
- * @code
- * map["MAP_KEY"] = Record<T>("KEYWORD", "VALUE", "UNIT", "COMMENT");
- * @endcode
- * then \c "KEYWORD" will be written.
- */
-template <typename T>
-void writeRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records);
-
-/**
  * @brief Update an existing record or write a new one.
  */
 template <typename T>
@@ -151,14 +119,6 @@ void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &reco
  */
 template <typename T>
 void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records);
-
-/**
- * @brief Update existing homogeneous records or write new ones.
- * @warning
- * The map keys are ignored: the keyword of the records is used instead.
- */
-template <typename T>
-void updateRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records);
 
 /**
  * @brief Delete an existing record.
@@ -274,21 +234,12 @@ Return parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords) 
 }
 
 template <typename T>
-std::vector<FitsIO::Record<T>> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords) {
-  std::vector<FitsIO::Record<T>> vec(keywords.size());
-  std::transform(keywords.begin(), keywords.end(), vec.begin(), [&](const std::string &k) {
+FitsIO::RecordVector<T> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords) {
+  FitsIO::RecordVector<T> records(keywords.size());
+  std::transform(keywords.begin(), keywords.end(), records.vector.begin(), [&](const std::string &k) {
     return parseRecord<T>(fptr, k);
   });
-  return vec;
-}
-
-template <typename T>
-std::map<std::string, FitsIO::Record<T>> parseRecordMap(fitsfile *fptr, const std::vector<std::string> &keywords) {
-  std::map<std::string, FitsIO::Record<T>> map;
-  for (const auto &k : keywords) {
-    map[k] = parseRecord<T>(fptr, k);
-  }
-  return map;
+  return records;
 }
 
 template <typename T>
@@ -330,13 +281,6 @@ void writeRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records)
 }
 
 template <typename T>
-void writeRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records) {
-  for (const auto &kr : records) {
-    writeRecord(fptr, kr.second);
-  }
-}
-
-template <typename T>
 void updateRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
   int status = 0;
   std::string comment = record.comment;
@@ -367,13 +311,6 @@ template <typename T>
 void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records) {
   for (const auto &r : records) {
     updateRecord(fptr, r);
-  }
-}
-
-template <typename T>
-void updateRecords(fitsfile *fptr, const std::map<std::string, FitsIO::Record<T>> &records) {
-  for (const auto &kr : records) {
-    updateRecord(fptr, kr.second);
   }
 }
 
