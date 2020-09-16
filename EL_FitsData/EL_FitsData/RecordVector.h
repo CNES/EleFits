@@ -53,12 +53,12 @@ public:
   /**
    * @brief Find the first record with given keyword.
    */
-  const Record<T> &find(const std::string &keyword) const;
+  const Record<T> &operator[](const std::string &keyword) const;
 
   /**
    * @brief Find the first record with given keyword.
    */
-  Record<T> &find(const std::string &keyword);
+  Record<T> &operator[](const std::string &keyword);
 
   /**
    * @brief Find and cast the first record with given keyword.
@@ -69,11 +69,11 @@ public:
    * @code
    * RecordVector<any> records;
    * // ...
-   * int i = records.findAs<int>("KEYWORD"); // Get the value as int
+   * int i = records.as<int>("KEYWORD"); // Get the value as int
    * @endcode
    */
   template <typename TValue>
-  Record<TValue> findAs(const std::string &keyword) const;
+  Record<TValue> as(const std::string &keyword) const;
 };
 
 ///////////////////////
@@ -85,7 +85,7 @@ RecordVector<T>::RecordVector(std::size_t size) : vector(size) {
 }
 
 template <typename T>
-const Record<T> &RecordVector<T>::find(const std::string &keyword) const {
+const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
   const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T> &r) { return r.keyword == keyword; });
   if (it == vector.end()) {
     throw std::runtime_error("Cannot find keyword: " + keyword);
@@ -94,14 +94,14 @@ const Record<T> &RecordVector<T>::find(const std::string &keyword) const {
 }
 
 template <typename T>
-Record<T> &RecordVector<T>::find(const std::string &keyword) {
-  return const_cast<Record<T> &>(const_cast<const RecordVector<T> *>(this)->find(keyword));
+Record<T> &RecordVector<T>::operator[](const std::string &keyword) {
+  return const_cast<Record<T> &>(const_cast<const RecordVector<T> *>(this)->operator[](keyword));
 }
 
 template <typename T>
 template <typename TValue>
-Record<TValue> RecordVector<T>::findAs(const std::string &keyword) const {
-  return find(keyword);
+Record<TValue> RecordVector<T>::as(const std::string &keyword) const {
+  return operator[](keyword);
 }
 
 } // namespace FitsIO

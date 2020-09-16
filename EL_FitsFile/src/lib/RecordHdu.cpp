@@ -70,8 +70,12 @@ COMPILE_PARSE_RECORD(unsigned long)
 #undef COMPILE_PARSE_RECORD
 #endif
 
+template RecordVector<boost::any> RecordHdu::parseRecordVector(const std::vector<std::string> &) const;
+
 #ifndef COMPILE_WRITE_RECORD
-#define COMPILE_WRITE_RECORD(T) template void RecordHdu::writeRecord(const Record<T> &) const;
+#define COMPILE_WRITE_RECORD(T) \
+  template void RecordHdu::writeRecord(const Record<T> &) const; \
+  template void RecordHdu::updateRecord(const Record<T> &) const;
 COMPILE_WRITE_RECORD(char)
 COMPILE_WRITE_RECORD(short)
 COMPILE_WRITE_RECORD(int)
@@ -84,6 +88,9 @@ COMPILE_WRITE_RECORD(unsigned int)
 COMPILE_WRITE_RECORD(unsigned long)
 #undef COMPILE_WRITE_RECORD
 #endif
+
+template void RecordHdu::writeRecords(const std::vector<Record<boost::any>> &) const;
+template void RecordHdu::updateRecords(const std::vector<Record<boost::any>> &) const;
 
 } // namespace FitsIO
 } // namespace Euclid

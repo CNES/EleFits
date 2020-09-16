@@ -101,6 +101,20 @@ public:
   Return parseRecordsAs(const std::vector<std::string> &keywords) const;
 
   /**
+   * @brief Parse several homogeneous records.
+   * @tparam T The common value type.
+   * @details
+   * In addition to parsing homogeneous records, like a set of integer records,
+   * this method can be used with boost::any records to allow for runtime type deduction:
+   * @code
+   * auto records = f.parseRecordVector<boost::any>({ "INT", "FLOAT", "DOUBLE", "BOOL" });
+   * int value = records.as<int>("INT");
+   * @endcode
+   */
+  template <typename T>
+  RecordVector<T> parseRecordVector(const std::vector<std::string> &keywords) const;
+
+  /**
    * @brief Write a record.
    */
   template <typename T>
@@ -127,6 +141,12 @@ public:
    */
   template <typename... Ts>
   void writeRecords(const std::tuple<Record<Ts>...> &records) const;
+
+  /**
+   * @brief Write several homogeneous records.
+   */
+  template <typename T>
+  void writeRecords(const std::vector<Record<T>> &records) const;
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
@@ -157,6 +177,12 @@ public:
   void updateRecords(const std::tuple<Record<Ts>...> &records) const;
 
   /**
+   * @brief Update several homogeneous records if they exist; write new records otherwise.
+   */
+  template <typename T>
+  void updateRecords(const std::vector<Record<T>> &records) const;
+
+  /**
    * @brief Delete a record.
    */
   void deleteRecord(const std::string &keyword) const;
@@ -181,105 +207,9 @@ protected:
   long m_index;
 };
 
-/////////////////////
-// IMPLEMENTATION //
-///////////////////
-
-template <typename T>
-Record<T> RecordHdu::parseRecord(const std::string &keyword) const {
-  gotoThisHdu();
-  return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
-}
-
-template <typename... Ts>
-std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string> &keywords) const {
-  gotoThisHdu();
-  return Cfitsio::Header::parseRecords<Ts...>(m_fptr, keywords);
-}
-
-template <class Return, typename... Ts>
-Return RecordHdu::parseRecordsAs(const std::vector<std::string> &keywords) const {
-  gotoThisHdu();
-  return Cfitsio::Header::parseRecordsAs<Return, Ts...>(m_fptr, keywords);
-}
-
-template <typename T>
-void RecordHdu::writeRecord(const Record<T> &record) const {
-  gotoThisHdu();
-  Cfitsio::Header::writeRecord(m_fptr, record);
-}
-
-template <typename T>
-void RecordHdu::writeRecord(const std::string &k, T v, const std::string &u, const std::string &c) const {
-  writeRecord(Record<T>(k, v, u, c));
-}
-
-template <typename... Ts>
-void RecordHdu::writeRecords(const Record<Ts> &... records) const {
-  gotoThisHdu();
-  Cfitsio::Header::writeRecords(m_fptr, records...);
-}
-
-template <typename... Ts>
-void RecordHdu::writeRecords(const std::tuple<Record<Ts>...> &records) const {
-  gotoThisHdu();
-  Cfitsio::Header::writeRecords(m_fptr, records);
-}
-
-template <typename T>
-void RecordHdu::updateRecord(const Record<T> &record) const {
-  gotoThisHdu();
-  Cfitsio::Header::updateRecord(m_fptr, record);
-}
-
-template <typename T>
-void RecordHdu::updateRecord(const std::string &k, T v, const std::string &u, const std::string &c) const {
-  updateRecord(Record<T>(k, v, u, c));
-}
-
-template <typename... Ts>
-void RecordHdu::updateRecords(const Record<Ts> &... records) const {
-  gotoThisHdu();
-  Cfitsio::Header::updateRecords(m_fptr, records...);
-}
-
-template <typename... Ts>
-void RecordHdu::updateRecords(const std::tuple<Record<Ts>...> &records) const {
-  gotoThisHdu();
-  Cfitsio::Header::updateRecords(m_fptr, records);
-}
-
-#ifndef DECLARE_PARSE_RECORD
-#define DECLARE_PARSE_RECORD(T) extern template Record<T> RecordHdu::parseRecord(const std::string &) const;
-DECLARE_PARSE_RECORD(char)
-DECLARE_PARSE_RECORD(short)
-DECLARE_PARSE_RECORD(int)
-DECLARE_PARSE_RECORD(long)
-DECLARE_PARSE_RECORD(float)
-DECLARE_PARSE_RECORD(double)
-DECLARE_PARSE_RECORD(unsigned char)
-DECLARE_PARSE_RECORD(unsigned short)
-DECLARE_PARSE_RECORD(unsigned int)
-DECLARE_PARSE_RECORD(unsigned long)
-#undef DECLARE_PARSE_RECORD
-#endif
-
-#ifndef DECLARE_WRITE_RECORD
-#define DECLARE_WRITE_RECORD(T) extern template void RecordHdu::writeRecord(const Record<T> &) const;
-DECLARE_WRITE_RECORD(char)
-DECLARE_WRITE_RECORD(short)
-DECLARE_WRITE_RECORD(int)
-DECLARE_WRITE_RECORD(long)
-DECLARE_WRITE_RECORD(float)
-DECLARE_WRITE_RECORD(double)
-DECLARE_WRITE_RECORD(unsigned char)
-DECLARE_WRITE_RECORD(unsigned short)
-DECLARE_WRITE_RECORD(unsigned int)
-DECLARE_WRITE_RECORD(unsigned long)
-#undef DECLARE_WRITE_RECORD
-#endif
-
 } // namespace FitsIO
 } // namespace Euclid
+
+#include "impl/RecordHdu.hpp"
 
 #endif

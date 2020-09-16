@@ -10,7 +10,7 @@ The purpose of this page is to describe the internal implementation of the libra
 Usage of the API is described in the main pages of this documentation.
 When implementation and usage are titghly coupled, links are provided to get the user point-of-view.
 
-\section design-overview Library organization: layers, modules, namespaces
+\section design-overview Library organization: layers, modules, namespaces, files
 
 The library is split in two **layers**:
 
@@ -56,6 +56,14 @@ The API is organized in **namespaces** as follows:
   - Data classes and service classes are implemented in it,
   - FitsIO::Test contains test helper classes and functions like fixtures,
   - FitsIO::Internal contains implementation details, not displayed to the end-user.
+
+Inside each module, the **source files** are organized as follows:
+
+- Declarations are in files with .h extension in a folder named after the module;
+- Inline definitions are in files with .ipp extension in a subfolder impl of the header folder;
+- Other library definitions are in files with .cpp extension in the folder src/lib;
+- Tests are implemented in files with _test suffix and .cpp extension;
+- Programs are implemented in .cpp files in the folder src/program.
 
 \section design-types Type codes
 

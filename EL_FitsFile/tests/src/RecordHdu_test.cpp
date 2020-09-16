@@ -84,6 +84,20 @@ BOOST_FIXTURE_TEST_CASE(tuple_write_update_test, Test::TemporarySifFile) {
   BOOST_CHECK_EQUAL(h.parseRecord<long>("LONG"), 2000);
 }
 
+BOOST_FIXTURE_TEST_CASE(vector_of_any_test, Test::TemporarySifFile) {
+  const auto &h = this->header();
+  std::vector<Record<boost::any>> records;
+  records.push_back({ "TSTRING", std::string("WIDE") });
+  records.push_back({ "TFLOAT", 3.14F });
+  records.push_back({ "TINT", 666 });
+  h.writeRecords(records);
+  auto parsed = h.parseRecordVector<boost::any>({ "TSTRING", "TINT" });
+  BOOST_CHECK_EQUAL(parsed.as<std::string>("TSTRING").value, "WIDE");
+  BOOST_CHECK_EQUAL(parsed.as<int>("TINT").value, 666); // TODO 666 is parsed as short although it was written as int
+  BOOST_CHECK_THROW(parsed["TFLOAT"], std::exception);
+  BOOST_CHECK_THROW(parsed.as<float>("TINT"), std::exception);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
