@@ -120,9 +120,91 @@ template <typename T>
 T CasterImpl<boost::any>::cast(boost::any value);
 
 template <>
+template <>
+std::string CasterImpl<boost::any>::cast<std::string>(boost::any value);
+
+template <>
 template <typename T>
 T CasterImpl<boost::any>::cast(boost::any value) {
-  return boost::any_cast<T>(value);
+  const auto &id = value.type();
+  if (id == typeid(T)) {
+    return static_cast<T>(boost::any_cast<T>(value));
+  } else if (id == typeid(bool)) {
+    return static_cast<T>(boost::any_cast<bool>(value));
+  } else if (id == typeid(char)) {
+    return static_cast<T>(boost::any_cast<char>(value));
+  } else if (id == typeid(short)) {
+    return static_cast<T>(boost::any_cast<short>(value));
+  } else if (id == typeid(int)) {
+    return static_cast<T>(boost::any_cast<int>(value));
+  } else if (id == typeid(long)) {
+    return static_cast<T>(boost::any_cast<long>(value));
+  } else if (id == typeid(long long)) {
+    return static_cast<T>(boost::any_cast<long long>(value));
+  } else if (id == typeid(float)) {
+    return static_cast<T>(boost::any_cast<float>(value));
+  } else if (id == typeid(double)) {
+    return static_cast<T>(boost::any_cast<double>(value));
+    // } else if (id == typeid(std::complex<float>)) {
+    //   return static_cast<T>(boost::any_cast<std::complex<float>>(value));
+    // } else if (id == typeid(std::complex<double>)) {
+    //   return static_cast<T>(boost::any_cast<std::complex<double>>(value));
+    // } else if (id == typeid(std::string)) {
+    //   return static_cast<T>(boost::any_cast<std::string>(value));
+  } else if (id == typeid(unsigned char)) {
+    return static_cast<T>(boost::any_cast<unsigned char>(value));
+  } else if (id == typeid(unsigned short)) {
+    return static_cast<T>(boost::any_cast<unsigned short>(value));
+  } else if (id == typeid(unsigned int)) {
+    return static_cast<T>(boost::any_cast<unsigned int>(value));
+  } else if (id == typeid(unsigned long)) {
+    return static_cast<T>(boost::any_cast<unsigned long>(value));
+  } else if (id == typeid(unsigned long long)) {
+    return static_cast<T>(boost::any_cast<unsigned long long>(value));
+  } else {
+    throw boost::bad_any_cast();
+  }
+}
+
+template <>
+template <>
+std::string CasterImpl<boost::any>::cast<std::string>(boost::any value) {
+  const auto &id = value.type();
+  if (id == typeid(std::string)) {
+    return boost::any_cast<std::string>(value);
+  } else if (id == typeid(bool)) {
+    return std::to_string(boost::any_cast<bool>(value));
+  } else if (id == typeid(char)) {
+    return std::to_string(boost::any_cast<char>(value));
+  } else if (id == typeid(short)) {
+    return std::to_string(boost::any_cast<short>(value));
+  } else if (id == typeid(int)) {
+    return std::to_string(boost::any_cast<int>(value));
+  } else if (id == typeid(long)) {
+    return std::to_string(boost::any_cast<long>(value));
+  } else if (id == typeid(long long)) {
+    return std::to_string(boost::any_cast<long long>(value));
+  } else if (id == typeid(float)) {
+    return std::to_string(boost::any_cast<float>(value));
+  } else if (id == typeid(double)) {
+    return std::to_string(boost::any_cast<double>(value));
+    // } else if (id == typeid(std::complex<float>)) {
+    //   return std::to_string(boost::any_cast<std::complex<float>>(value));
+    // } else if (id == typeid(std::complex<double>)) {
+    //   return std::to_string(boost::any_cast<std::complex<double>>(value));
+  } else if (id == typeid(unsigned char)) {
+    return std::to_string(boost::any_cast<unsigned char>(value));
+  } else if (id == typeid(unsigned short)) {
+    return std::to_string(boost::any_cast<unsigned short>(value));
+  } else if (id == typeid(unsigned int)) {
+    return std::to_string(boost::any_cast<unsigned int>(value));
+  } else if (id == typeid(unsigned long)) {
+    return std::to_string(boost::any_cast<unsigned long>(value));
+  } else if (id == typeid(unsigned long long)) {
+    return std::to_string(boost::any_cast<unsigned long long>(value));
+  } else {
+    throw boost::bad_any_cast();
+  }
 }
 
 } // namespace Internal
