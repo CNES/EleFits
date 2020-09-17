@@ -59,6 +59,13 @@ struct Record {
    * \c vector<Record<any>> from various \c Record<T>'s with different \c T's.
    * @warning
    * Source type TOther must be castable to destination type T.
+   * @see cast
+   */
+  template <typename TOther>
+  Record(const Record<TOther> &other);
+
+  /**
+   * @brief Helper function to cast Record value types.
    * Valid casts are:
    * - scalar number -> scalar number
    * - complex number -> complex number
@@ -70,7 +77,7 @@ struct Record {
    * - \c string -> \c any
    */
   template <typename TOther>
-  Record(const Record<TOther> &other);
+  static T cast(TOther value);
 
   /**
    * @brief Slice the record as its value.
@@ -113,6 +120,7 @@ struct Record {
 /// INTERNAL ///
 ///////////////
 
+/// @cond INTERNAL
 namespace Internal {
 
 /**
@@ -202,7 +210,7 @@ TFrom CasterImpl<TFrom, TFrom, void>::cast(TFrom value) {
 template <typename TFrom, typename TTo>
 std::complex<TTo>
 CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cast(std::complex<TFrom> value) {
-  return { CasterImpl<TFrom, TTo>::cast(value.im()), CasterImpl<TFrom, TTo>::cast(value.re()) };
+  return { CasterImpl<TFrom, TTo>::cast(value.real()), CasterImpl<TFrom, TTo>::cast(value.imag()) };
 }
 
 template <typename TTo>
@@ -265,6 +273,7 @@ boost::any CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>>::cast(T
 }
 
 } // namespace Internal
+/// @endcond
 
 /////////////////////
 // IMPLEMENTATION //
@@ -290,6 +299,12 @@ Record<T>::Record(const Record<TOther> &other) :
 template <typename T>
 Record<T>::operator T() const {
   return value;
+}
+
+template <typename T>
+template <typename TOther>
+T Record<T>::cast(TOther value) {
+  return Internal::CasterImpl<TOther, T>::cast(value);
 }
 
 } // namespace FitsIO

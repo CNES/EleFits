@@ -86,6 +86,62 @@ TEST_CAST(bool)
 TEST_CAST(int)
 TEST_CAST_ALIAS(std::string, string)
 
+template <typename TV, typename TE>
+void checkApprox(TV value, TE expected) {
+  BOOST_CHECK_LE(std::abs(value - expected), std::numeric_limits<TE>::epsilon());
+}
+
+template <typename TV, typename TE>
+void checkApprox(std::complex<TV> value, std::complex<TE> expected) {
+  checkApprox(value.real(), expected.real());
+  checkApprox(value.imag(), expected.imag());
+}
+
+template <>
+void checkApprox(std::string value, std::string expected) {
+  BOOST_CHECK_EQUAL(value, expected);
+}
+
+template <typename TFrom, typename TTo>
+void checkCaster() {
+  TFrom input = Test::generateRandomValue<TFrom>();
+  TTo output = Record<TTo>::cast(input);
+  checkApprox(output, input);
+}
+
+template <typename TFrom, typename TTo>
+void checkCasterFromAny() {
+  TFrom value = Test::generateRandomValue<TFrom>();
+  boost::any input(value);
+  TTo output = Record<TTo>::cast(input);
+  checkApprox(output, value);
+}
+
+BOOST_AUTO_TEST_CASE(cast_scalar_test) {
+  checkCaster<bool, long long>();
+  checkCaster<char, long>();
+  checkCaster<short, int>();
+  checkCaster<float, double>();
+}
+
+BOOST_AUTO_TEST_CASE(cast_complex_test) {
+  checkCaster<std::complex<float>, std::complex<float>>();
+  checkCaster<std::complex<float>, std::complex<double>>();
+  checkCaster<std::complex<double>, std::complex<double>>();
+}
+
+BOOST_AUTO_TEST_CASE(cast_string_test) {
+  checkCaster<std::string, std::string>();
+}
+
+BOOST_AUTO_TEST_CASE(cast_any_test) {
+  checkCasterFromAny<short, int>();
+  checkCasterFromAny<int, int>();
+  checkCasterFromAny<long, long long>();
+  checkCasterFromAny<float, double>();
+  checkCasterFromAny<std::string, std::string>();
+}
+
 template <typename T>
 void checkAnyEqual(boost::any value, T expected) {
   BOOST_CHECK_EQUAL(boost::any_cast<T>(value), expected);
