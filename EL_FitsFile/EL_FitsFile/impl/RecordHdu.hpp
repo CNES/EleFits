@@ -17,6 +17,8 @@
  *
  */
 
+#include "EL_FitsFile/RecordHdu.h"
+
 namespace Euclid {
 namespace FitsIO {
 

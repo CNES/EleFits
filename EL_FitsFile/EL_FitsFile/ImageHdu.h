@@ -21,6 +21,7 @@
 #define _EL_FITSFILE_IMAGEHDU_H
 
 #include "EL_CfitsioWrapper/ImageWrapper.h"
+#include "EL_FitsData/Raster.h"
 #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
@@ -64,55 +65,9 @@ public:
   void writeRaster(const Raster<T, n> &raster) const;
 };
 
-/////////////////////
-// IMPLEMENTATION //
-///////////////////
-
-template <typename T, long n>
-void ImageHdu::resize(const Position<n> &shape) const {
-  gotoThisHdu();
-  Cfitsio::Image::resize<T, n>(m_fptr, shape);
-}
-
-template <typename T, long n>
-VecRaster<T, n> ImageHdu::readRaster() const {
-  gotoThisHdu();
-  return Cfitsio::Image::readRaster<T, n>(m_fptr);
-}
-
-template <typename T, long n>
-void ImageHdu::writeRaster(const Raster<T, n> &raster) const {
-  gotoThisHdu();
-  Cfitsio::Image::writeRaster(m_fptr, raster);
-}
-
-#ifndef DECLARE_READ_RASTER
-#define DECLARE_READ_RASTER(T, n) extern template VecRaster<T, n> ImageHdu::readRaster() const;
-DECLARE_READ_RASTER(char, 2)
-DECLARE_READ_RASTER(int, 2)
-DECLARE_READ_RASTER(float, 2)
-DECLARE_READ_RASTER(double, 2)
-DECLARE_READ_RASTER(char, 3)
-DECLARE_READ_RASTER(int, 3)
-DECLARE_READ_RASTER(float, 3)
-DECLARE_READ_RASTER(double, 3)
-#undef DECLARE_READ_RASTER
-#endif
-
-#ifndef DECLARE_WRITE_RASTER
-#define DECLARE_WRITE_RASTER(T, n) extern template void ImageHdu::writeRaster(const Raster<T, n> &) const;
-DECLARE_WRITE_RASTER(char, 2)
-DECLARE_WRITE_RASTER(int, 2)
-DECLARE_WRITE_RASTER(float, 2)
-DECLARE_WRITE_RASTER(double, 2)
-DECLARE_WRITE_RASTER(char, 3)
-DECLARE_WRITE_RASTER(int, 3)
-DECLARE_WRITE_RASTER(float, 3)
-DECLARE_WRITE_RASTER(double, 3)
-#undef DECLARE_WRITE_RASTER
-#endif
-
 } // namespace FitsIO
 } // namespace Euclid
+
+#include "impl/ImageHdu.hpp"
 
 #endif

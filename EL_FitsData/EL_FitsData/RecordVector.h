@@ -1,8 +1,4 @@
 /**
- * @file EL_FitsData/RecordVector.h
- * @date 09/15/20
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -24,7 +20,6 @@
 #ifndef _EL_FITSDATA_RECORDVECTOR_H
 #define _EL_FITSDATA_RECORDVECTOR_H
 
-#include <algorithm>
 #include <vector>
 
 #include "EL_FitsData/Record.h"
@@ -76,35 +71,9 @@ public:
   Record<TValue> as(const std::string &keyword) const;
 };
 
-///////////////////////
-/// IMPLEMENTATION ///
-/////////////////////
-
-template <typename T>
-RecordVector<T>::RecordVector(std::size_t size) : vector(size) {
-}
-
-template <typename T>
-const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
-  const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T> &r) { return r.keyword == keyword; });
-  if (it == vector.end()) {
-    throw std::runtime_error("Cannot find keyword: " + keyword);
-  }
-  return *it;
-}
-
-template <typename T>
-Record<T> &RecordVector<T>::operator[](const std::string &keyword) {
-  return const_cast<Record<T> &>(const_cast<const RecordVector<T> *>(this)->operator[](keyword));
-}
-
-template <typename T>
-template <typename TValue>
-Record<TValue> RecordVector<T>::as(const std::string &keyword) const {
-  return operator[](keyword);
-}
-
 } // namespace FitsIO
 } // namespace Euclid
+
+#include "impl/RecordVector.hpp"
 
 #endif

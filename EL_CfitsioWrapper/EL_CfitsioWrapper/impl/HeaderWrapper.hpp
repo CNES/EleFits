@@ -17,21 +17,76 @@
  *
  */
 
-/// @cond INTERNAL
+#include "EL_CfitsioWrapper/HeaderWrapper.h"
+
+#include <boost/any.hpp>
 
 namespace Euclid {
 namespace Cfitsio {
 namespace Header {
 
+/**
+ * @see parseRecord
+ */
+template <>
+FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword);
+
+/**
+ * @see parseRecord
+ */
+template <>
+FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword);
+
+/**
+ * @see writeRecord
+ */
+template <>
+void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
+
+/**
+ * @see writeRecord
+ */
+template <>
+void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
+
+/**
+ * @see writeRecord
+ */
+template <>
+void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
+
+/**
+ * @see updateRecord
+ */
+template <>
+void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
+
+/**
+ * @see updateRecord
+ */
+template <>
+void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
+
+/**
+ * @see updateRecord
+ */
+template <>
+void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
+
+/// @cond INTERNAL
 namespace Internal {
 
-// Signature change (output argument) for further use with variadic templates.
+/**
+ * @brief Signature change (output argument) for further use with variadic templates.
+ */
 template <typename T>
 inline void parseRecordImpl(fitsfile *fptr, const std::string &keyword, FitsIO::Record<T> &record) {
   record = parseRecord<T>(fptr, keyword);
 }
 
-// Parse the records of the i+1 first keywords of a given list (recursive approach).
+/**
+ * @brief Parse the records of the i+1 first keywords of a given list (recursive approach).
+ */
 template <std::size_t i, typename... Ts>
 struct ParseRecordsImpl {
   void
@@ -41,7 +96,9 @@ struct ParseRecordsImpl {
   }
 };
 
-// Parse the value of the first keyword of a given list (terminal case of the recursion).
+/**
+ * @brief Parse the value of the first keyword of a given list (terminal case of the recursion).
+ */
 template <typename... Ts>
 struct ParseRecordsImpl<0, Ts...> {
   void
@@ -68,6 +125,7 @@ void updateRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &
 }
 
 } // namespace Internal
+/// @endcond
 
 template <typename T>
 FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword) {
@@ -179,5 +237,3 @@ void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records
 } // namespace Header
 } // namespace Cfitsio
 } // namespace Euclid
-
-/// @endcond

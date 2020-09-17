@@ -70,23 +70,9 @@ private:
   ImageHdu m_hdu;
 };
 
-/////////////////////
-// IMPLEMENTATION //
-///////////////////
-
-template <typename T, long n>
-VecRaster<T, n> SifFile::readRaster() const {
-  return Cfitsio::Image::readRaster<T, n>(m_fptr);
-}
-
-template <typename T, long n>
-void SifFile::writeRaster(const Raster<T, n> &raster) const {
-  Cfitsio::Hdu::gotoPrimary(m_fptr);
-  Cfitsio::Image::resize<T, n>(m_fptr, raster.shape);
-  Cfitsio::Image::writeRaster(m_fptr, raster);
-}
-
 } // namespace FitsIO
 } // namespace Euclid
+
+#include "impl/SifFile.hpp"
 
 #endif

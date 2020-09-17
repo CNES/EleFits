@@ -9,10 +9,15 @@
 ## New features
 
 * Records can be written as tuples in addition to parameter packs
+* Records of `any` can be read and written
+* New helper method `Record<T>::cast<U>` where `T` and `U` can be `any`
+* Vectors of homogeneous records can be read and written
+* New helper class `RecordVector` to find homogeneous records by keyword
 
 ## Cleaning
 
 * Format with clang-format
+* Inline definitions in dedicated source files
 
 ## Known bugs/issues
 

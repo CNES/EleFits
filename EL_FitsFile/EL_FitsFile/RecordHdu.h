@@ -21,6 +21,7 @@
 #define _EL_FITSFILE_HDU_H
 
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
+#include "EL_FitsData/Record.h"
 
 namespace Euclid {
 namespace FitsIO {

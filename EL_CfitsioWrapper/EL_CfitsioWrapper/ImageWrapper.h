@@ -25,9 +25,9 @@
 
 #include "EL_FitsData/Raster.h"
 
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
-#include "EL_CfitsioWrapper/FileWrapper.h"
-#include "EL_CfitsioWrapper/TypeWrapper.h"
+#include "ErrorWrapper.h"
+#include "FileWrapper.h"
+#include "TypeWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -55,45 +55,10 @@ FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr);
 template <typename T, long n = 2>
 void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster);
 
-/////////////////////
-// IMPLEMENTATION //
-///////////////////
-
-template <typename T, long n>
-void resize(fitsfile *fptr, const FitsIO::Position<n> &shape) {
-  int status = 0;
-  auto nonconstShape = shape;
-  fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconstShape.data(), &status);
-  mayThrowCfitsioError(status, "Cannot resize raster");
-}
-
-template <typename T, long n>
-FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr) {
-  FitsIO::VecRaster<T, n> raster;
-  int status = 0;
-  fits_get_img_size(fptr, n, &raster.shape[0], &status);
-  mayThrowCfitsioError(status, "Cannot read raster size");
-  const auto size = raster.size();
-  raster.vector().resize(size); // TODO instantiate here directly with right shape
-  fits_read_img(fptr, TypeCode<T>::forImage(), 1, size, nullptr, raster.data(), nullptr, &status);
-  // Number 1 is a 1-base offset (so we read the whole raster here)
-  mayThrowCfitsioError(status, "Cannot read raster");
-  return raster;
-}
-
-template <typename T, long n>
-void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster) {
-  mayThrowReadonlyError(fptr);
-  int status = 0;
-  const auto begin = raster.data();
-  const auto end = begin + raster.size();
-  std::vector<T> nonconstData(begin, end); // const-correctness issue
-  fits_write_img(fptr, TypeCode<T>::forImage(), 1, raster.size(), nonconstData.data(), &status);
-  mayThrowCfitsioError(status, "Cannot write raster");
-}
-
 } // namespace Image
 } // namespace Cfitsio
 } // namespace Euclid
+
+#include "impl/ImageWrapper.hpp"
 
 #endif

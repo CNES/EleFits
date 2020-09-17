@@ -23,10 +23,10 @@
 #include <fitsio.h>
 #include <string>
 
-#include "EL_CfitsioWrapper/BintableWrapper.h"
-#include "EL_CfitsioWrapper/CfitsioUtils.h"
-#include "EL_CfitsioWrapper/ImageWrapper.h"
-#include "EL_CfitsioWrapper/TypeWrapper.h"
+#include "BintableWrapper.h"
+#include "CfitsioUtils.h"
+#include "ImageWrapper.h"
+#include "TypeWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -143,67 +143,10 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
  */
 void deleteHdu(fitsfile *fptr, long index);
 
-/////////////////////
-// IMPLEMENTATION //
-///////////////////
-
-template <typename T, long n>
-void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Position<n> &shape) {
-  mayThrowReadonlyError(fptr);
-  int status = 0;
-  auto nonconstShape = shape; // const-correctness issue
-  fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconstShape[0], &status);
-  mayThrowCfitsioError(status, "Cannot create image extension");
-  updateName(fptr, name);
-}
-
-template <typename T, long n>
-void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Raster<T, n> &raster) {
-  mayThrowReadonlyError(fptr);
-  createImageExtension<T, n>(fptr, name, raster.shape);
-  Image::writeRaster<T, n>(fptr, raster);
-}
-
-template <typename... Ts>
-void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::ColumnInfo<Ts> &... header) {
-  constexpr long ncols = sizeof...(Ts);
-  CStrArray colName { header.name... };
-  CStrArray colFormat { TypeCode<Ts>::tform(header.repeat)... };
-  CStrArray colUnit { header.unit... };
-  int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
-  mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
-}
-
-template <typename... Ts>
-void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<Ts> &... table) {
-  constexpr long ncols = sizeof...(Ts);
-  CStrArray colName { table.info.name... };
-  CStrArray colFormat { TypeCode<Ts>::tform(table.info.repeat)... };
-  CStrArray colUnit { table.info.unit... };
-  int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
-  mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
-  Bintable::writeColumns(fptr, table...);
-}
-
-template <typename T>
-void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<T> &column) {
-  constexpr long count = 1;
-  std::string colName = column.info.name;
-  char *cName = &colName[0];
-  std::string colFormat = TypeCode<T>::tform(column.info.repeat);
-  char *cFormat = &colFormat[0];
-  std::string colUnit = column.info.unit;
-  char *cUnit = &colUnit[0];
-  int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, count, &cName, &cFormat, &cUnit, name.c_str(), &status);
-  mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
-  Bintable::writeColumn(fptr, column);
-}
-
 } // namespace Hdu
 } // namespace Cfitsio
 } // namespace Euclid
+
+#include "impl/HduWrapper.hpp"
 
 #endif

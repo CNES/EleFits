@@ -20,19 +20,17 @@
 #ifndef _EL_CFITSIOWRAPPER_RECORDHANDLER_H
 #define _EL_CFITSIOWRAPPER_RECORDHANDLER_H
 
-#include <boost/any.hpp>
 #include <fitsio.h>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "EL_FitsData/Record.h"
-#include "EL_FitsData/RecordVector.h"
-
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
+#include "EL_FitsData/Record.h"
+#include "EL_FitsData/RecordVector.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -130,58 +128,10 @@ void deleteRecord(fitsfile *fptr, const std::string &keyword);
  */
 int recordTypecode(fitsfile *fptr, const std::string &keyword);
 
-/**
- * @see parseRecord
- */
-template <>
-FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword);
-
-/**
- * @see parseRecord
- */
-template <>
-FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword);
-
-/**
- * @see writeRecord
- */
-template <>
-void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
-
-/**
- * @see writeRecord
- */
-template <>
-void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
-
-/**
- * @see writeRecord
- */
-template <>
-void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
-
-/**
- * @see updateRecord
- */
-template <>
-void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
-
-/**
- * @see updateRecord
- */
-template <>
-void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
-
-/**
- * @see updateRecord
- */
-template <>
-void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
-
 } // namespace Header
 } // namespace Cfitsio
 } // namespace Euclid
 
-#include "impl/HeaderWrapper.ipp"
+#include "impl/HeaderWrapper.hpp"
 
 #endif
