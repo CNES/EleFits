@@ -21,8 +21,10 @@
 #define _EL_FITSDATA_RECORD_H
 
 #include <boost/any.hpp>
+#include <complex>
 #include <string>
 #include <tuple>
+#include <type_traits> // enable_if
 
 namespace Euclid {
 namespace FitsIO {
@@ -53,9 +55,19 @@ struct Record {
   /**
    * @brief Create a Record from a Record of another type.
    * @details
-   * Destination type T must be constructible from source type TOther.
    * This constructor can be used to homogeneize types, for example to create a
    * \c vector<Record<any>> from various \c Record<T>'s with different \c T's.
+   * @warning
+   * Source type TOther must be castable to destination type T.
+   * Valid casts are:
+   * - scalar number -> scalar number
+   * - complex number -> complex number
+   * - \c any -> scalar number if the underlying value type is a scalar number
+   * - \c any -> complex number if the value type is a complex number
+   * - \c any -> \c string if the value type is a \c string
+   * - scalar number -> \c any
+   * - complex number -> \c any
+   * - \c string -> \c any
    */
   template <typename TOther>
   Record(const Record<TOther> &other);
@@ -103,108 +115,153 @@ struct Record {
 
 namespace Internal {
 
-template <typename TOther>
+/**
+ * @brief Valid only if TFrom and TTo are different.
+ */
+template <typename TFrom, typename TTo>
+using ifDifferent = typename std::enable_if<!std::is_same<TFrom, TTo>::value>::type;
+
+/**
+ * @brief Valid only if TTo is a number (not a complex, not a string, and not an any).
+ */
+template <typename TTo>
+using ifScalar = typename std::enable_if<std::is_arithmetic<TTo>::value>::type;
+
+/**
+ * @brief Helper class to cast TFrom to TTo.
+ * @details
+ * Valid casts are:
+ * - scalar -> scalar
+ * - complex -> complex
+ * - any -> scalar/complex/string according to underlying value
+ * - anything -> any
+ */
+template <typename TFrom, typename TTo, class TValid = void>
 struct CasterImpl {
-  template <typename T>
-  static T cast(TOther value);
+  inline static TTo cast(TFrom value);
 };
 
-template <typename TOther>
-template <typename T>
-T CasterImpl<TOther>::cast(TOther value) {
-  return T(value);
+/**
+ * @brief Not a cast.
+ */
+template <typename TFrom>
+struct CasterImpl<TFrom, TFrom, void> {
+  inline static TFrom cast(TFrom value);
+};
+
+/**
+ * @brief Cast complex<TFrom> to complex<TTo>.
+ */
+template <typename TFrom, typename TTo>
+struct CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>> {
+  inline static std::complex<TTo> cast(std::complex<TFrom> value);
+};
+
+/**
+ * @brief Cast any to number.
+ */
+template <typename TTo>
+struct CasterImpl<boost::any, TTo, ifScalar<TTo>> {
+  inline static TTo cast(boost::any value);
+};
+
+/**
+ * @brief Cast any to complex.
+ */
+template <typename TTo>
+struct CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>> {
+  inline static TTo cast(boost::any value);
+};
+
+/**
+ * @brief Cast any to string.
+ */
+template <>
+struct CasterImpl<boost::any, std::string, void> {
+  inline static std::string cast(boost::any value);
+};
+
+/**
+ * @brief Cast all to any.
+ */
+template <typename TFrom>
+struct CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>> {
+  inline static boost::any cast(TFrom value);
+};
+
+template <typename TFrom, typename TTo, class TValid>
+TTo CasterImpl<TFrom, TTo, TValid>::cast(TFrom value) {
+  return static_cast<TTo>(value);
 }
 
-template <>
-template <typename T>
-T CasterImpl<boost::any>::cast(boost::any value);
+template <typename TFrom>
+TFrom CasterImpl<TFrom, TFrom, void>::cast(TFrom value) {
+  return value;
+}
 
-template <>
-template <>
-std::string CasterImpl<boost::any>::cast<std::string>(boost::any value);
+template <typename TFrom, typename TTo>
+std::complex<TTo>
+CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cast(std::complex<TFrom> value) {
+  return { CasterImpl<TFrom, TTo>::cast(value.im()), CasterImpl<TFrom, TTo>::cast(value.re()) };
+}
 
-template <>
-template <typename T>
-T CasterImpl<boost::any>::cast(boost::any value) {
+template <typename TTo>
+TTo CasterImpl<boost::any, TTo, ifScalar<TTo>>::cast(boost::any value) {
   const auto &id = value.type();
-  if (id == typeid(T)) {
-    return static_cast<T>(boost::any_cast<T>(value));
+  if (id == typeid(TTo)) {
+    return boost::any_cast<TTo>(value);
   } else if (id == typeid(bool)) {
-    return static_cast<T>(boost::any_cast<bool>(value));
+    return CasterImpl<bool, TTo>::cast(boost::any_cast<bool>(value));
   } else if (id == typeid(char)) {
-    return static_cast<T>(boost::any_cast<char>(value));
+    return CasterImpl<char, TTo>::cast(boost::any_cast<char>(value));
   } else if (id == typeid(short)) {
-    return static_cast<T>(boost::any_cast<short>(value));
+    return CasterImpl<short, TTo>::cast(boost::any_cast<short>(value));
   } else if (id == typeid(int)) {
-    return static_cast<T>(boost::any_cast<int>(value));
+    return CasterImpl<int, TTo>::cast(boost::any_cast<int>(value));
   } else if (id == typeid(long)) {
-    return static_cast<T>(boost::any_cast<long>(value));
+    return CasterImpl<long, TTo>::cast(boost::any_cast<long>(value));
   } else if (id == typeid(long long)) {
-    return static_cast<T>(boost::any_cast<long long>(value));
+    return CasterImpl<long long, TTo>::cast(boost::any_cast<long long>(value));
   } else if (id == typeid(float)) {
-    return static_cast<T>(boost::any_cast<float>(value));
+    return CasterImpl<float, TTo>::cast(boost::any_cast<float>(value));
   } else if (id == typeid(double)) {
-    return static_cast<T>(boost::any_cast<double>(value));
-    // } else if (id == typeid(std::complex<float>)) {
-    //   return static_cast<T>(boost::any_cast<std::complex<float>>(value));
-    // } else if (id == typeid(std::complex<double>)) {
-    //   return static_cast<T>(boost::any_cast<std::complex<double>>(value));
-    // } else if (id == typeid(std::string)) {
-    //   return static_cast<T>(boost::any_cast<std::string>(value));
+    return CasterImpl<double, TTo>::cast(boost::any_cast<double>(value));
   } else if (id == typeid(unsigned char)) {
-    return static_cast<T>(boost::any_cast<unsigned char>(value));
+    return CasterImpl<unsigned char, TTo>::cast(boost::any_cast<unsigned char>(value));
   } else if (id == typeid(unsigned short)) {
-    return static_cast<T>(boost::any_cast<unsigned short>(value));
+    return CasterImpl<unsigned short, TTo>::cast(boost::any_cast<unsigned short>(value));
   } else if (id == typeid(unsigned int)) {
-    return static_cast<T>(boost::any_cast<unsigned int>(value));
+    return CasterImpl<unsigned int, TTo>::cast(boost::any_cast<unsigned int>(value));
   } else if (id == typeid(unsigned long)) {
-    return static_cast<T>(boost::any_cast<unsigned long>(value));
+    return CasterImpl<unsigned long, TTo>::cast(boost::any_cast<unsigned long>(value));
   } else if (id == typeid(unsigned long long)) {
-    return static_cast<T>(boost::any_cast<unsigned long long>(value));
+    return CasterImpl<unsigned long long, TTo>::cast(boost::any_cast<unsigned long long>(value));
   } else {
     throw boost::bad_any_cast();
   }
 }
 
-template <>
-template <>
-std::string CasterImpl<boost::any>::cast<std::string>(boost::any value) {
+template <typename TTo>
+TTo CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>>::cast(boost::any value) {
   const auto &id = value.type();
-  if (id == typeid(std::string)) {
-    return boost::any_cast<std::string>(value);
-  } else if (id == typeid(bool)) {
-    return std::to_string(boost::any_cast<bool>(value));
-  } else if (id == typeid(char)) {
-    return std::to_string(boost::any_cast<char>(value));
-  } else if (id == typeid(short)) {
-    return std::to_string(boost::any_cast<short>(value));
-  } else if (id == typeid(int)) {
-    return std::to_string(boost::any_cast<int>(value));
-  } else if (id == typeid(long)) {
-    return std::to_string(boost::any_cast<long>(value));
-  } else if (id == typeid(long long)) {
-    return std::to_string(boost::any_cast<long long>(value));
-  } else if (id == typeid(float)) {
-    return std::to_string(boost::any_cast<float>(value));
-  } else if (id == typeid(double)) {
-    return std::to_string(boost::any_cast<double>(value));
-    // } else if (id == typeid(std::complex<float>)) {
-    //   return std::to_string(boost::any_cast<std::complex<float>>(value));
-    // } else if (id == typeid(std::complex<double>)) {
-    //   return std::to_string(boost::any_cast<std::complex<double>>(value));
-  } else if (id == typeid(unsigned char)) {
-    return std::to_string(boost::any_cast<unsigned char>(value));
-  } else if (id == typeid(unsigned short)) {
-    return std::to_string(boost::any_cast<unsigned short>(value));
-  } else if (id == typeid(unsigned int)) {
-    return std::to_string(boost::any_cast<unsigned int>(value));
-  } else if (id == typeid(unsigned long)) {
-    return std::to_string(boost::any_cast<unsigned long>(value));
-  } else if (id == typeid(unsigned long long)) {
-    return std::to_string(boost::any_cast<unsigned long long>(value));
+  if (id == typeid(TTo)) {
+    return boost::any_cast<TTo>(value);
+  } else if (id == typeid(std::complex<float>)) {
+    return CasterImpl<std::complex<float>, TTo>::cast(boost::any_cast<std::complex<float>>(value));
+  } else if (id == typeid(std::complex<double>)) {
+    return CasterImpl<std::complex<double>, TTo>::cast(boost::any_cast<std::complex<double>>(value));
   } else {
     throw boost::bad_any_cast();
   }
+}
+
+std::string CasterImpl<boost::any, std::string, void>::cast(boost::any value) {
+  return boost::any_cast<std::string>(value);
+}
+
+template <typename TFrom>
+boost::any CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>>::cast(TFrom value) {
+  return boost::any(value);
 }
 
 } // namespace Internal
@@ -225,7 +282,7 @@ template <typename T>
 template <typename TOther>
 Record<T>::Record(const Record<TOther> &other) :
     keyword(other.keyword),
-    value(Internal::CasterImpl<TOther>::template cast<T>(other.value)),
+    value(Internal::CasterImpl<TOther, T>::cast(other.value)),
     unit(other.unit),
     comment(other.comment) {
 }

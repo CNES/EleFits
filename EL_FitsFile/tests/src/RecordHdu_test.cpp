@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_test, Test::TemporarySifFile) {
   BOOST_CHECK_EQUAL(parsed.as<std::string>("TSTRING").value, "WIDE");
   BOOST_CHECK_EQUAL(parsed.as<int>("TINT").value, 666);
   BOOST_CHECK_THROW(parsed["TFLOAT"], std::exception);
-  BOOST_CHECK_NO_THROW(parsed.as<float>("TINT"));
+  BOOST_CHECK_THROW(parsed.as<std::string>("TINT"), std::exception);
 }
 
 //-----------------------------------------------------------------------------
