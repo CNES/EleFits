@@ -98,6 +98,26 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_test, Test::TemporarySifFile) {
   BOOST_CHECK_THROW(parsed.as<std::string>("TINT"), std::exception);
 }
 
+BOOST_FIXTURE_TEST_CASE(brackets_in_comment_test, Test::TemporaryMefFile) {
+  const auto &primary = this->accessPrimary<>();
+  primary.writeRecord("PLAN_ID", 1, "", "[0:1] SOC Planning ID");
+  const auto intRecord = primary.parseRecord<int>("PLAN_ID");
+  BOOST_CHECK_EQUAL(intRecord.unit, "0:1");
+  BOOST_CHECK_EQUAL(intRecord.comment, "SOC Planning ID");
+  primary.writeRecord("STRING", std::string("1"), "", "[0:1] SOC Planning ID");
+  const auto stringRecord = primary.parseRecord<std::string>("STRING");
+  BOOST_CHECK_EQUAL(stringRecord.unit, "0:1");
+  BOOST_CHECK_EQUAL(stringRecord.comment, "SOC Planning ID");
+  primary.writeRecord("CSTR", "1", "", "[0:1] SOC Planning ID");
+  const auto cstrRecord = primary.parseRecord<std::string>("CSTR");
+  BOOST_CHECK_EQUAL(cstrRecord.unit, "0:1");
+  BOOST_CHECK_EQUAL(cstrRecord.comment, "SOC Planning ID");
+  primary.writeRecord("WEIRD", 2, "m", "[0:1] SOC Planning ID");
+  const auto weirdRecord = primary.parseRecord<std::string>("WEIRD");
+  BOOST_CHECK_EQUAL(weirdRecord.unit, "m");
+  BOOST_CHECK_EQUAL(weirdRecord.comment, "[0:1] SOC Planning ID");
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

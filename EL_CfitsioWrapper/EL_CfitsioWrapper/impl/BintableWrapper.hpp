@@ -27,9 +27,15 @@ namespace Bintable {
 /// @cond INTERNAL
 namespace Internal {
 
+/**
+ * @brief Read column size to assign data.
+ */
 template <typename T>
 void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rows);
 
+/**
+ * @brief String specialization.
+ */
 template <>
 void initColumnImpl<std::string>(
     fitsfile *fptr,
@@ -49,6 +55,9 @@ void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO:
   column.vector() = std::vector<T>(rows * column.info.repeat);
 }
 
+/**
+ * @brief Helper class to loop on columns.
+ */
 template <std::size_t i, typename... Ts>
 struct InitColumnsImpl {
   void operator()(
@@ -62,6 +71,9 @@ struct InitColumnsImpl {
   }
 };
 
+/**
+ * @brief Terminal case.
+ */
 template <typename... Ts>
 struct InitColumnsImpl<0, Ts...> {
   void operator()(
@@ -74,9 +86,15 @@ struct InitColumnsImpl<0, Ts...> {
   }
 };
 
+/**
+ * @brief Read a column chunk.
+ */
 template <typename T>
 void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long firstRow, long rowCount);
 
+/**
+ * @brief String specialization.
+ */
 template <>
 void readColumnChunkImpl<std::string>(
     fitsfile *fptr,
@@ -102,6 +120,9 @@ void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &colum
       &status);
 }
 
+/**
+ * @brief Helper class to loop on columns.
+ */
 template <std::size_t i, typename... Ts>
 struct ReadColumnChunksImpl {
   void operator()(
@@ -115,6 +136,9 @@ struct ReadColumnChunksImpl {
   }
 };
 
+/**
+ * @brief Terminal case.
+ */
 template <typename... Ts>
 struct ReadColumnChunksImpl<0, Ts...> {
   void operator()(
@@ -125,11 +149,17 @@ struct ReadColumnChunksImpl<0, Ts...> {
       long rowCount) {
     readColumnChunkImpl(fptr, indices[0], std::get<0>(columns), firstRow, rowCount);
   }
-};
+}; // TODO merge with InitColumnChunksImpl
 
+/**
+ * @brief Write a column chunk.
+ */
 template <typename T>
 void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount);
 
+/**
+ * @brief String specialization.
+ */
 template <>
 void writeColumnChunkImpl<std::string>(
     fitsfile *fptr,
@@ -152,6 +182,9 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
           std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "-");
 }
 
+/**
+ * @brief Helper class to loop over columns.
+ */
 template <std::size_t i, typename... Ts>
 struct WriteColumnChunksImpl {
   void operator()(
@@ -163,8 +196,11 @@ struct WriteColumnChunksImpl {
     writeColumnChunkImpl(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
     WriteColumnChunksImpl<i - 1, Ts...> {}(fptr, indices, columns, firstRow, rowCount);
   }
-};
+}; // TODO merge with other helpers
 
+/**
+ * @brief Terminal case.
+ */
 template <typename... Ts>
 struct WriteColumnChunksImpl<0, Ts...> {
   void operator()(
@@ -188,9 +224,15 @@ void writeColumnsImpl(
 } // namespace Internal
 /// @endcond
 
+/**
+ * @brief String specialization.
+ */
 template <>
 FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std::string &name);
 
+/**
+ * @brief String specialization.
+ */
 template <>
 void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> &column);
 

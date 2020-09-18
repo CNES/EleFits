@@ -61,6 +61,15 @@ BOOST_AUTO_TEST_CASE(mini_init_test) {
   BOOST_CHECK_EQUAL(mini.comment, "");
 }
 
+BOOST_AUTO_TEST_CASE(raw_comment_test) {
+  Record<int> noUnit { "V", 1, "", "Speed" };
+  Record<int> unit { "V", 1, "m", "Speed" };
+  Record<int> unitInComment { "V", 1, "", "[m] Speed" };
+  BOOST_CHECK_EQUAL(noUnit.raw_comment(), "Speed");
+  BOOST_CHECK_EQUAL(unit.raw_comment(), "[m] Speed");
+  BOOST_CHECK_EQUAL(unitInComment.raw_comment(), "[m] Speed");
+}
+
 template <typename T>
 void checkEqual(T value, T expected) {
   BOOST_CHECK_EQUAL(value, expected);

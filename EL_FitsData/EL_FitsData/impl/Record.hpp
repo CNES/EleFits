@@ -52,6 +52,7 @@ using ifScalar = typename std::enable_if<std::is_arithmetic<TTo>::value>::type;
  */
 template <typename TFrom, typename TTo, class TValid = void>
 struct CasterImpl {
+  /** @brief Cast. */
   inline static TTo cast(TFrom value);
 };
 
@@ -60,6 +61,7 @@ struct CasterImpl {
  */
 template <typename TFrom>
 struct CasterImpl<TFrom, TFrom, void> {
+  /** @brief Cast. */
   inline static TFrom cast(TFrom value);
 };
 
@@ -68,6 +70,7 @@ struct CasterImpl<TFrom, TFrom, void> {
  */
 template <typename TFrom, typename TTo>
 struct CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>> {
+  /** @brief Cast. */
   inline static std::complex<TTo> cast(std::complex<TFrom> value);
 };
 
@@ -76,6 +79,7 @@ struct CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo
  */
 template <typename TTo>
 struct CasterImpl<boost::any, TTo, ifScalar<TTo>> {
+  /** @brief Cast. */
   inline static TTo cast(boost::any value);
 };
 
@@ -84,6 +88,7 @@ struct CasterImpl<boost::any, TTo, ifScalar<TTo>> {
  */
 template <typename TTo>
 struct CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>> {
+  /** @brief Cast. */
   inline static TTo cast(boost::any value);
 };
 
@@ -92,6 +97,7 @@ struct CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>> {
  */
 template <>
 struct CasterImpl<boost::any, std::string, void> {
+  /** @brief Cast. */
   inline static std::string cast(boost::any value);
 };
 
@@ -100,6 +106,7 @@ struct CasterImpl<boost::any, std::string, void> {
  */
 template <typename TFrom>
 struct CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>> {
+  /** @brief Cast. */
   inline static boost::any cast(TFrom value);
 };
 
@@ -207,6 +214,14 @@ template <typename T>
 template <typename TOther>
 T Record<T>::cast(TOther value) {
   return Internal::CasterImpl<TOther, T>::cast(value);
+}
+
+template <typename T>
+std::string Record<T>::raw_comment() const {
+  if (unit.empty()) {
+    return comment;
+  }
+  return "[" + unit + "] " + comment;
 }
 
 } // namespace FitsIO

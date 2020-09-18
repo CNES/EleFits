@@ -124,8 +124,7 @@ void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> 
   if (record.value.length() > 68) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
   }
-  fits_write_key_longstr(fptr, record.keyword.c_str(), &std::string(record.value)[0], &record.comment[0], &status);
-  fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
+  fits_write_key_longstr(fptr, record.keyword.c_str(), record.value.c_str(), record.raw_comment().c_str(), &status);
   mayThrowCfitsioError(status, "Cannot write record: " + record.keyword);
 }
 
@@ -135,8 +134,7 @@ void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *
   if (strlen(record.value) > 68) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
   }
-  fits_write_key_longstr(fptr, record.keyword.c_str(), record.value, &record.comment[0], &status);
-  fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
+  fits_write_key_longstr(fptr, record.keyword.c_str(), record.value, record.raw_comment().c_str(), &status);
   mayThrowCfitsioError(status, "Cannot write record: " + record.keyword);
 }
 

@@ -15,9 +15,9 @@
 | unsigned short | TUSHORT | TUSHORT |  | TUSHORT |  |
 | unsigned int | TUINT | TUINT |  | TUINT |  |
 | unsigned long | TULONG | TULONG |  | TULONG |  |
-| unsigned std::int16_t |  |  | U |  | USHORT_IMG |
-| unsigned std::int32_t |  |  | V |  | ULONG_IMG |
-| unsigned std::int64_t |  |  | W |  |  |
+| std::uint16_t |  |  | U |  | USHORT_IMG |
+| std::uint32_t |  |  | V |  | ULONG_IMG |
+| std::uint64_t |  |  | W |  | ULONGLONG_IMG |
 | float | TFLOAT | TFLOAT | E | TFLOAT | FLOAT_IMG |
 | double | TDOUBLE | TDOUBLE | D | TDOUBLE | DOUBLE_IMG |
 | std::complex<float> | TCOMPLEX | TCOMPLEX | C |  |  |

@@ -94,6 +94,14 @@ struct Record {
   operator T() const;
 
   /**
+   * @brief Get the raw comment string.
+   * @details
+   * When there is a unit, the raw comment is: "[unit] comment".
+   * When unit is empty, the raw comment is "comment".
+   */
+  std::string raw_comment() const;
+
+  /**
    * @brief The keyword.
    */
   std::string keyword;

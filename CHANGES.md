@@ -2,6 +2,10 @@
 
 # 2.0 (breaking)
 
+## Bug fixes
+
+* Records with comments of the form `[foo] bar` are correctly written.
+
 ## API changes
 
 * pascalCase functions and methods

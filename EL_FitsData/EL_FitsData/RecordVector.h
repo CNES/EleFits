@@ -38,7 +38,7 @@ public:
   /**
    * @brief Create a RecordVector with given number of records.
    */
-  RecordVector(std::size_t size);
+  explicit RecordVector(std::size_t size);
 
   /**
    * @brief The records.

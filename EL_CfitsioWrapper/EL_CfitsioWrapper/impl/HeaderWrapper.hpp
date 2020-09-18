@@ -180,11 +180,15 @@ FitsIO::RecordVector<T> parseRecordVector(fitsfile *fptr, const std::vector<std:
 template <typename T>
 void writeRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
   int status = 0;
-  std::string comment = record.comment;
-  T value = record.value;
-  fits_write_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
-  fits_write_key_unit(fptr, record.keyword.c_str(), record.unit.c_str(), &status);
-  std::string context = "while writing '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
+  T nonconstValue = record.value;
+  fits_write_key(
+      fptr,
+      TypeCode<T>::forRecord(),
+      record.keyword.c_str(),
+      &nonconstValue,
+      record.raw_comment().c_str(),
+      &status);
+  std::string context = "Cannot write '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
   mayThrowCfitsioError(status, context);
 }
 
