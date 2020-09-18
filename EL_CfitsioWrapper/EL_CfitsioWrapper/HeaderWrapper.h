@@ -126,7 +126,17 @@ void deleteRecord(fitsfile *fptr, const std::string &keyword);
 /**
  * @brief Get the CFitsIO type code of a record.
  */
-int recordTypecode(fitsfile *fptr, const std::string &keyword);
+int recordTypecode(fitsfile *fptr, const std::string &keyword); // TODO return typeid instead?
+
+/**
+ * @brief Write COMMENT record.
+ */
+void writeComment(fitsfile *fptr, const std::string &comment);
+
+/**
+ * @brief Write HISTORY record.
+ */
+void writeHistory(fitsfile *fptr, const std::string &history);
 
 } // namespace Header
 } // namespace Cfitsio

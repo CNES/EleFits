@@ -350,6 +350,20 @@ int recordTypecode(fitsfile *fptr, const std::string &keyword) {
   }
 }
 
+void writeComment(fitsfile *fptr, const std::string &comment) {
+  int status = 0;
+  std::string nonconstComment = comment;
+  fits_write_comment(fptr, &nonconstComment[0], &status);
+  mayThrowCfitsioError(status, "Cannot write COMMENT record");
+}
+
+void writeHistory(fitsfile *fptr, const std::string &history) {
+  int status = 0;
+  std::string nonconstHistory = history;
+  fits_write_history(fptr, &nonconstHistory[0], &status);
+  mayThrowCfitsioError(status, "Cannot write HISTORY record");
+}
+
 } // namespace Header
 } // namespace Cfitsio
 } // namespace Euclid
