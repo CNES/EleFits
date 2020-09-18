@@ -1,18 +1,26 @@
 @startuml
-package Euclid {
-package Cfitsio {}
-package FitsIO {
-class DataClasses {
+class CFitsIO {
++ functions()
+}
+hide CFitsIO circle
+package EL_CfitsioWrapper {
+class SomeNamespace {
++ functions()
+}
+}
+hide SomeNamespace circle
+package EL_FitsData {
+class SomeDataClass {
 + data
 }
-class ServiceClasses {
+}
+package EL_FitsFile {
+class SomeServiceClass {
 + methods()
 }
 }
-}
-DataClasses <- ServiceClasses : create
-DataClasses <- ServiceClasses : use
-DataClasses <-- Cfitsio : create
-DataClasses <-- Cfitsio : use
-ServiceClasses --> Cfitsio : call
+SomeDataClass <- SomeServiceClass : create and use
+SomeDataClass <-- SomeNamespace : create and use
+SomeServiceClass --> SomeNamespace : call
+SomeNamespace --> CFitsIO : call
 @enduml

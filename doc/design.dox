@@ -10,9 +10,11 @@ The purpose of this page is to describe the internal implementation of the libra
 Usage of the API is described in the main pages of this documentation.
 When implementation and usage are titghly coupled, links are provided to get the user point-of-view.
 
-\section design-overview Library organization: layers, modules, namespaces, files
+\section design-overview Library organization
 
-The library is split in two **layers**:
+\subsection design-layers Layers
+
+The library is split in two layers:
 
 - A high-level object-oriented layer (namespace FitsIO, see below)
 which aims at handling Fits files and their contents with an as-simple-as-possible modern API:
@@ -26,7 +28,21 @@ which consists in C++ wrapper functions of selected CFitsIO functions:
   - Templates wrap the CFitsIO type codes,
   - Exceptions wrap the CFitsIO error codes.
 
-This translates into the following set of **modules**:
+\subsection design-namespace Namespaces
+
+The API is organized in namespaces as follows:
+
+- Euclid is the top level namespace, which contains everything;
+- Cfitsio corresponds to the low-level layer module:
+  - It is organized in thematic namespaces like Cfitsio::File or Cfitsio::Image;
+- FitsIO is the end-user namespace:
+  - Data classes and service classes are implemented in it,
+  - FitsIO::Test contains test helper classes and functions like fixtures;
+- Whatever the level, Internal namespaces contain implementation details, not displayed to the end-user.
+
+\subsection design-modules Modules
+
+This translates into the following set of modules:
 
 - **EL_FitsData** contains basic **data-storage structures**:
 Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
@@ -47,45 +63,97 @@ Of course, this is also where the tutorial is implemented.
   - The performances of the library are compared to those of CFitsIO;
   - A validation script checks that all of the provided programs run smoothly.
 
-The API is organized in **namespaces** as follows:
+The organization of the free functions, data classes and service classes in modules is illustrated below in the form of a class diagram.
 
-- Euclid is the top level namespace, which contains everything;
-- Cfitsio corresponds to the EL_CfitsioWrapper module:
-  - It is organized in thematic namespaces like Cfitsio::File or Cfitsio::Image;
-- FitsIO is the end-user namespace:
-  - Data classes and service classes are implemented in it,
-  - FitsIO::Test contains test helper classes and functions like fixtures,
-  - FitsIO::Internal contains implementation details, not displayed to the end-user.
+\image html doc/diagrams/out/ClassOverview.png
 
-Inside each module, the **source files** are organized as follows:
+\subsection design-sources Source files
+
+Inside each module, the source files are organized as follows:
 
 - Declarations are in files with .h extension in a folder named after the module;
-- Inline definitions are in files with .ipp extension in a subfolder impl of the header folder;
+- Inline definitions are in files with .hpp extension in a subfolder impl of the header folder;
 - Other library definitions are in files with .cpp extension in the folder src/lib;
 - Tests are implemented in files with _test suffix and .cpp extension;
 - Programs are implemented in .cpp files in the folder src/program.
 
 \section design-types Type codes
 
-// TODO CFitsIO types, template handling, string dispatching
+\subsection design-types-overview Overview
+
+Simple things first:
+- Indices and lengths are implemented as longs instead of std::size_t's,
+as recommended in the C++ core guidelines.
+- Strings are generally handled as std::string, except for a few shortcuts with const char *.
+In the latter case, a std::string version is still provided.
+
+As for the binary parts of Fits files (image and bintable data), the mapping is not straightforward.
+CFitsIO functions are not consistent with this respect:
+half of them work with built-in types (e.g. CFitsIO type code TSHORT corresponds to short)
+and the other half with fixed types (e.g. CFitsIO type code SHORT_IMG corresponds to std::int16_t).
+This makes the user responsible of knowing the underlying architecture,
+or to spend runtime in converting at each value reading and writing operation.
+Check the \ref type_map for more details.
+
+\subsection design-types-codes Type code handling
+
+One of the main purposes of EL_FitsIO is to abstract from type codes, and to provide homogeneous template functions.
+This is implemented in class Cfitsio::TypeCode, which provides one method per column of the \ref type_map.
+Template specialization are made with built-in types or fixed types depending on what the CFitsIO functions expect.
+For example, TSHORT is Cfitsio::TypeCode<short>::forImage() and SHORT_IMG is Cfitsio::TypeCode<std::int16_t>::bitpix().
+
+\note
+Internally, CFitsIO does the opposite when working with built-in types:
+it detects the length of those types and selects the appropriate fixed type.
+Therefore, a possible improvement would be to bypass top-level CFitsIO functions,
+and avoid casting fixed types to built-ins and back.
+
+\subsection design-types-string Specific types: std::string
+
+As stated above, strings are handled with std::string, while CFitsIO is using const char * or char *.
+Most of the template functions are therefore specialized for std::string.
+Moreover, strings are treated very differently from other types in bintable columns:
+they are considered by CFitsIO like scalar columns with a repeat count greater than one.
+Therefore, FitsIO::Column methods are also specialized.
+
+\subsection design-types-any Specific types: boost::any
+
+Another specific type is boost::any.
+It was added to the library to handle large sets of heterogeneous records.
+It is obviously necessary to provide read and write functions for this type,
+and they have to work with any underlying value type.
+This is implemented as runtime switches in read and write functions.
+
+In addition, Record<boost::any> can be cast to Record<T> if T is compatible with the boost::any value type.
+This cast is more complex than a mere boost::any_cast because the size of an integer record cannot be known at compile time.
+For example, 666 is read a short, while 1,000,000 is read as an int or long.
+Since there is no way for the user to know the type of a record,
+the casting service should allow to request an int when a short was read.
+This is the role of FitsIO::Record::cast.
 
 \section design-variadic Variadic templates
 
-// TODO Variatic template design patterns
-// - recursive implementation
-// - partial specialization
-// - return parameters
-// - packs vs. tuples
+Reading and writing collections of heterogeneous objects, like columns of different types, requires using variadic templates
+(or abstraction classes like boost::any which cost too much for thousands of values).
+
+\todo
+Variatic template design patterns:
+- recursive implementation
+- partial specialization
+- return parameters
+- packs vs. tuples
 
 \section design-file-handlers File handlers
 
-// TODO File operations
+\todo
+File operations
 
 \section design-hdu-handlers HDU handlers
 
-// TODO Handling of HDUs through vector of pointers
-// HDU factory
-// Access through references
+\todo
+Handling of HDUs through vector of pointers
+HDU factory
+Access through references
 
 */
 
