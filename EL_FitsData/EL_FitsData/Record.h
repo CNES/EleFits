@@ -99,7 +99,7 @@ struct Record {
    * When there is a unit, the raw comment is: "[unit] comment".
    * When unit is empty, the raw comment is "comment".
    */
-  std::string raw_comment() const;
+  std::string rawComment() const;
 
   /**
    * @brief The keyword.

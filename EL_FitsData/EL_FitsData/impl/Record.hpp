@@ -217,7 +217,7 @@ T Record<T>::cast(TOther value) {
 }
 
 template <typename T>
-std::string Record<T>::raw_comment() const {
+std::string Record<T>::rawComment() const {
   if (unit.empty()) {
     return comment;
   }

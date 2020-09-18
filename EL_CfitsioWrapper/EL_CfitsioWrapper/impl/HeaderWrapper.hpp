@@ -186,7 +186,7 @@ void writeRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
       TypeCode<T>::forRecord(),
       record.keyword.c_str(),
       &nonconstValue,
-      record.raw_comment().c_str(),
+      record.rawComment().c_str(),
       &status);
   std::string context = "Cannot write '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
   mayThrowCfitsioError(status, context);
