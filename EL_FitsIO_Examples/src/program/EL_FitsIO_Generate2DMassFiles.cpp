@@ -132,11 +132,32 @@ public:
 
     logger.info("Writing bintable...");
     writeBintable(bintable, rows);
-    logger.info("Writing image...");
-    writeImage(image, shape);
-
     logger.info("Done.");
 
+    logger.info("Writing image...");
+    writeImage(image, shape);
+    logger.info("Done.");
+
+    logger.info("Reading bintable...");
+    MefFile b(bintable, MefFile::Permission::Read);
+    const auto someColumn = b.access<BintableHdu>(2).readColumn<float>("SHE_LENSMC_G1");
+    logger.info() << "First value of SHE_LENSMC_G1 = " << someColumn.vector()[0];
+
+    logger.info("Reading image...");
+    MefFile i(image, MefFile::Permission::Read);
+    const auto &ext = i.accessFirst<ImageHdu>("KAPPA_PATCH");
+    const auto raster = ext.readRaster<float, 3>();
+    const Position<3> center { raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2 };
+    logger.info() << "Central pixel = " << raster[center];
+
+    logger.info("Reading header...");
+    const auto someRecords = ext.parseRecordVector<boost::any>({ "CRVAL1", "CUNIT1" });
+    const auto intRecord = someRecords.as<int>("CRVAL1");
+    logger.info() << intRecord.comment << " = " << intRecord.value << " " << intRecord.unit;
+    const auto strRecord = someRecords.as<std::string>("CUNIT1");
+    logger.info() << strRecord.comment << " = " << strRecord.value << " " << strRecord.unit;
+
+    logger.info("The end!");
     return Elements::ExitCode::OK;
   }
 };
