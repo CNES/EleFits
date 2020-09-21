@@ -151,10 +151,10 @@ public:
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");
-    const auto someRecords = ext.parseAllRecords<boost::any>();
-    const auto intRecord = someRecords.as<int>("CRVAL1");
+    const auto records = ext.parseAllRecords<boost::any>();
+    const auto intRecord = records.as<int>("CRVAL1");
     logger.info() << intRecord.comment << " = " << intRecord.value << " " << intRecord.unit;
-    const auto strRecord = someRecords.as<std::string>("CUNIT1");
+    const auto strRecord = records.as<std::string>("CUNIT1");
     logger.info() << strRecord.comment << " = " << strRecord.value << " " << strRecord.unit;
 
     logger.info("The end!");

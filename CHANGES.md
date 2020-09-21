@@ -17,6 +17,7 @@
 * New helper method `Record<T>::cast<U>` where `T` and `U` can be `any`
 * Vectors of homogeneous records can be read and written
 * New helper class `RecordVector` to find homogeneous records by keyword
+* Method `RecordHdu::parseAllRecords` parses a whole header unit
 
 ## Cleaning
 
