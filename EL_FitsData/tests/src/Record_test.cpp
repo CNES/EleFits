@@ -19,9 +19,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "EL_FitsData/FitsDataFixture.h"
 #include "EL_FitsData/Record.h"
-
-#include "FixtureRandom.h" //TODO replace with FitsDataFixture?
 
 using namespace Euclid::FitsIO;
 
@@ -97,7 +96,7 @@ TEST_CAST_ALIAS(std::string, string)
 
 template <typename TV, typename TE>
 void checkApprox(TV value, TE expected) {
-  BOOST_CHECK_LE(std::abs(value - expected), std::numeric_limits<TE>::epsilon());
+  BOOST_CHECK_LE(std::abs(static_cast<TV>(expected) - value), std::numeric_limits<TV>::epsilon() * 2);
 }
 
 template <typename TV, typename TE>

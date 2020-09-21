@@ -192,16 +192,12 @@ void checkRecordTypecode(T value, int expectedTypecode) {
 
 template <typename T>
 void checkRecordTypecodeMin(int expectedTypecode) {
-  using limits = std::numeric_limits<T>;
-  const auto min = limits::lowest() + limits::epsilon();
-  checkRecordTypecode(min, expectedTypecode);
+  checkRecordTypecode(FitsIO::Test::almostMin<T>(), expectedTypecode);
 }
 
 template <typename T>
 void checkRecordTypecodeMax(int expectedTypecode) {
-  using limits = std::numeric_limits<T>;
-  const auto max = limits::max() - limits::epsilon();
-  checkRecordTypecode(max, expectedTypecode);
+  checkRecordTypecode(FitsIO::Test::almostMax<T>(), expectedTypecode);
 }
 
 BOOST_AUTO_TEST_CASE(record_type_test) {
@@ -213,13 +209,11 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypecodeMin<long long>(TLONGLONG);
   checkRecordTypecodeMax<float>(TFLOAT);
   checkRecordTypecodeMin<double>(TDOUBLE);
-  using float_limits = std::numeric_limits<float>;
   checkRecordTypecode<std::complex<float>>(
-      { float_limits::lowest() + float_limits::epsilon(), float_limits::max() - float_limits::epsilon() },
+      { FitsIO::Test::almostMin<float>(), FitsIO::Test::almostMax<float>() },
       TCOMPLEX);
-  using double_limits = std::numeric_limits<double>;
   checkRecordTypecode<std::complex<double>>(
-      { double_limits::lowest() + double_limits::epsilon(), double_limits::max() - double_limits::epsilon() },
+      { FitsIO::Test::almostMin<double>(), FitsIO::Test::almostMax<double>() },
       TDBLCOMPLEX);
   checkRecordTypecode<std::string>("VALUE", TSTRING);
   checkRecordTypecodeMax<unsigned char>(TBYTE);

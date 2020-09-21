@@ -42,7 +42,7 @@ using namespace FitsIO;
  */
 template <typename T>
 VecColumn<T> randomColumn(const std::string &name, long rows) {
-  return VecColumn<T>({ name, "", 1 }, Test::generateRandomVector<T>(rows));
+  return VecColumn<T>({ name, "", 1 }, Test::generateRandomVector<T>(rows, T(0), T(1)));
 }
 
 /**
@@ -101,7 +101,7 @@ void writeSomeRecords(const RecordHdu &hdu) {
  */
 void writeImage(const std::string &filename, const Position<3> &shape) {
   MefFile f(filename, MefFile::Permission::Overwrite);
-  Test::RandomRaster<float, 3> raster(shape);
+  Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
   const auto &ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
   writeSomeRecords(ext);
 }
