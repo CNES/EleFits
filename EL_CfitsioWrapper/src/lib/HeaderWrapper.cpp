@@ -168,6 +168,8 @@ void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &r
     writeRecordAnyImpl<std::complex<double>>(fptr, record);
   } else if (id == typeid(std::string)) {
     writeRecordAnyImpl<std::string>(fptr, record);
+  } else if (id == typeid(const char *)) {
+    writeRecordAnyImpl<const char *>(fptr, record);
   } else if (id == typeid(unsigned char)) {
     writeRecordAnyImpl<unsigned char>(fptr, record);
   } else if (id == typeid(unsigned short)) {
@@ -239,6 +241,8 @@ void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &
     updateRecordAnyImpl<std::complex<double>>(fptr, record);
   } else if (id == typeid(std::string)) {
     updateRecordAnyImpl<std::string>(fptr, record);
+  } else if (id == typeid(const char *)) {
+    updateRecordAnyImpl<const char *>(fptr, record);
   } else if (id == typeid(unsigned char)) {
     updateRecordAnyImpl<unsigned char>(fptr, record);
   } else if (id == typeid(unsigned short)) {

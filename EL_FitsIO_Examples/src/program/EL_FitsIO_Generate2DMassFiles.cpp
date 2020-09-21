@@ -47,6 +47,8 @@ VecColumn<T> randomColumn(const std::string &name, long rows) {
 
 /**
  * @brief Append a 2D-MASS-like bintable extension to a file.
+ * @details
+ * Random columns of type double ('D') and float ('E') are generated and written.
  */
 void writeBintable(const std::string &filename, long rows) {
   MefFile f(filename, MefFile::Permission::Overwrite);
@@ -61,12 +63,47 @@ void writeBintable(const std::string &filename, long rows) {
 }
 
 /**
- * @brief Append a 2D-MASS-like bintable extension to a file.
+ * @brief Write some records to given HDU.
+ * @details
+ * WCS shows examples of records of different types (int and string), with and without units.
+ * We rely on boost::any, but it would be possible to skip this abstraction and go with raw types
+ * using a tuple instead of a vector.
+ */
+void writeSomeRecords(const RecordHdu &hdu) {
+  std::vector<Record<boost::any>> records = {
+    { "WCSAXES", 2, "", "Number of axes in World Coordinate System" },
+    { "CRPIX1", "", "", "Pixel coordinate of reference point" },
+    { "CRPIX2", "", "", "Pixel coordinate of reference point" },
+    { "PC1_1", 0, "", "Coordinate transformation matrix element" },
+    { "PC1_2", 0, "", "Coordinate transformation matrix element" },
+    { "PC2_1", 0, "", "Coordinate transformation matrix element" },
+    { "PC2_2", 0, "", "Coordinate transformation matrix element" },
+    { "CDELT1", "", "deg", "Coordinate increment at reference point" },
+    { "CDELT2", "", "deg", "Coordinate increment at reference point" },
+    { "CUNIT1", "deg", "", "Unit of the first coordinate value" },
+    { "CUNIT2", "deg", "", "Unit of the second coordinate value" },
+    { "CTYPE1", "RA---TAN", "", "Right ascension, gnomonic projection" },
+    { "CTYPE2", "DEC--TAN", "", "Declination, gnomonic projection" },
+    { "CRVAL1", 0, "deg", "Coordinate value at reference point" },
+    { "CRVAL2", 0, "deg", "Coordinate value at reference point" },
+    { "LONPOLE", "", "deg", "Native longitude of celestial pole" },
+    { "LATPOLE", "", "deg", "Native latitude of celestial pole" },
+    { "RADESYS", "", "", "Equatorial coordinate system" },
+    { "EQUINOX", "", "", "Equinox of celestial coordinate system (e.g. 2000)" }
+  };
+  hdu.writeRecords(records);
+}
+
+/**
+ * @brief Append a 2D-MASS-like image extension to a file.
+ * @details
+ * A random 3D raster is generated and written.
  */
 void writeImage(const std::string &filename, const Position<3> &shape) {
   MefFile f(filename, MefFile::Permission::Overwrite);
-  Test::RandomRaster<float, 3> raster(shape); // Random raster with given shape
-  f.assignImageExt("KAPPA_PATCH", raster);
+  Test::RandomRaster<float, 3> raster(shape);
+  const auto &ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
+  writeSomeRecords(ext);
 }
 
 class EL_FitsIO_Generate2DMassFiles : public Elements::Program {
