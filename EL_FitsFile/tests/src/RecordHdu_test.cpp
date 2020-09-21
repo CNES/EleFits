@@ -87,15 +87,27 @@ BOOST_FIXTURE_TEST_CASE(tuple_write_update_test, Test::TemporarySifFile) {
 BOOST_FIXTURE_TEST_CASE(vector_of_any_test, Test::TemporarySifFile) {
   const auto &h = this->header();
   std::vector<Record<boost::any>> records;
-  records.push_back({ "TSTRING", std::string("WIDE") });
-  records.push_back({ "TFLOAT", 3.14F });
-  records.push_back({ "TINT", 666 });
+  records.push_back({ "STRING", std::string("WIDE") });
+  records.push_back({ "FLOAT", 3.14F });
+  records.push_back({ "INT", 666 });
   h.writeRecords(records);
-  auto parsed = h.parseRecordVector<boost::any>({ "TSTRING", "TINT" });
-  BOOST_CHECK_EQUAL(parsed.as<std::string>("TSTRING").value, "WIDE");
-  BOOST_CHECK_EQUAL(parsed.as<int>("TINT").value, 666);
-  BOOST_CHECK_THROW(parsed["TFLOAT"], std::exception);
-  BOOST_CHECK_THROW(parsed.as<std::string>("TINT"), std::exception);
+  auto parsed = h.parseAllRecords<boost::any>();
+  BOOST_CHECK_EQUAL(parsed.as<std::string>("STRING").value, "WIDE");
+  BOOST_CHECK_EQUAL(parsed.as<int>("INT").value, 666);
+  BOOST_CHECK_THROW(parsed.as<std::string>("INT"), std::exception);
+}
+
+BOOST_FIXTURE_TEST_CASE(vector_of_any_subset_test, Test::TemporarySifFile) {
+  const auto &h = this->header();
+  RecordVector<boost::any> records(3);
+  records.vector[0] = Record<std::string>("STRING", "WIDE");
+  records.vector[1] = Record<float>("FLOAT", 3.14F);
+  records.vector[2] = Record<int>("INT", 666);
+  h.writeRecords(records, { "FLOAT", "INT" });
+  BOOST_CHECK_THROW(h.parseRecord<boost::any>("STRING"), std::exception);
+  auto parsed = h.parseRecordVector<boost::any>({ "INT" });
+  BOOST_CHECK_EQUAL(parsed.as<int>("INT").value, 666);
+  BOOST_CHECK_THROW(parsed.as<float>("FLOAT"), std::exception);
 }
 
 BOOST_FIXTURE_TEST_CASE(brackets_in_comment_test, Test::TemporaryMefFile) {

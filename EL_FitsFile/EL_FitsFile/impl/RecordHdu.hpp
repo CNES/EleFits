@@ -81,6 +81,14 @@ void RecordHdu::writeRecords(const std::vector<Record<T>> &records) const {
 }
 
 template <typename T>
+void RecordHdu::writeRecords(const RecordVector<T> &records, const std::vector<std::string> &keywords) const {
+  gotoThisHdu();
+  for (const auto &k : keywords) {
+    Cfitsio::Header::writeRecord(m_fptr, records[k]);
+  }
+}
+
+template <typename T>
 void RecordHdu::updateRecord(const Record<T> &record) const {
   gotoThisHdu();
   Cfitsio::Header::updateRecord(m_fptr, record);
@@ -107,6 +115,14 @@ template <typename T>
 void RecordHdu::updateRecords(const std::vector<Record<T>> &records) const {
   gotoThisHdu();
   Cfitsio::Header::updateRecords(m_fptr, records);
+}
+
+template <typename T>
+void RecordHdu::updateRecords(const RecordVector<T> &records, const std::vector<std::string> &keywords) const {
+  gotoThisHdu();
+  for (const auto &k : keywords) {
+    Cfitsio::Header::updateRecord(m_fptr, records[k]);
+  }
 }
 
 #ifndef DECLARE_PARSE_RECORD

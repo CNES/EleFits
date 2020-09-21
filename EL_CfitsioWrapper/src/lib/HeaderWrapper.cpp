@@ -25,16 +25,19 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Header {
 
-std::vector<std::string> listKeywords(fitsfile *fptr) {
+std::vector<std::string> listValuedKeywords(fitsfile *fptr) {
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
-  std::vector<std::string> keywords(count);
+  std::vector<std::string> keywords;
   char keyword[FLEN_KEYWORD];
   char value[FLEN_KEYWORD];
   for (int i = 0; i < count; ++i) {
     fits_read_keyn(fptr, i + 1, keyword, value, nullptr, &status);
-    keywords[i].assign(keyword);
+    if (strcmp(value, "") != 0) {
+      // Valued keyword record
+      keywords.emplace_back(keyword);
+    }
   }
   return keywords;
 }

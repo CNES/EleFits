@@ -68,7 +68,9 @@ public:
   void rename(const std::string &name) const;
 
   /**
-   * @brief List the record keywords.
+   * @brief List the valued record keywords.
+   * @warning
+   * Non-valued records, like COMMENT and HISTORY, are bypassed.
    */
   std::vector<std::string> keywords() const;
 
@@ -156,6 +158,12 @@ public:
   void writeRecords(const std::vector<Record<T>> &records) const;
 
   /**
+   * @brief Write a subset of a RecordVector.
+   */
+  template <typename T>
+  void writeRecords(const RecordVector<T> &records, const std::vector<std::string> &keywords) const;
+
+  /**
    * @brief Update a record if it exists; write a new record otherwise.
    */
   template <typename T>
@@ -188,6 +196,12 @@ public:
    */
   template <typename T>
   void updateRecords(const std::vector<Record<T>> &records) const;
+
+  /**
+   * @brief Update a subset of a RecordVector.
+   */
+  template <typename T>
+  void updateRecords(const RecordVector<T> &records, const std::vector<std::string> &keywords) const;
 
   /**
    * @brief Delete a record.

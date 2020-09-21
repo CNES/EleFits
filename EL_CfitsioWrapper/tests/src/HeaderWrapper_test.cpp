@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, FitsIO::Test::MinimalFile) {
       { "DOUBLE", 3. },
       { "STRING", "four" });
   std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
-  const auto found = Header::listKeywords(this->fptr);
+  const auto found = Header::listValuedKeywords(this->fptr);
   checkContains(found, keywords);
   auto records = Header::parseRecordsAs<RecordList, bool, int, double, std::string>(this->fptr, keywords);
   BOOST_CHECK_EQUAL(records.b.value, input.b.value);

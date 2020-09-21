@@ -43,7 +43,7 @@ void RecordHdu::rename(const std::string &name) const {
 }
 
 std::vector<std::string> RecordHdu::keywords() const {
-  return Cfitsio::Header::listKeywords(m_fptr);
+  return Cfitsio::Header::listValuedKeywords(m_fptr);
 }
 
 void RecordHdu::deleteRecord(const std::string &keyword) const {

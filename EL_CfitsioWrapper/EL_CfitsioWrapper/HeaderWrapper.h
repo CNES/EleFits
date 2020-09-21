@@ -41,9 +41,11 @@ namespace Cfitsio {
 namespace Header {
 
 /**
- * @brief List all the keywords.
+ * @brief List all the valued keywords.
+ * @details
+ * Records with no value indicator are bypassed.
  */
-std::vector<std::string> listKeywords(fitsfile *fptr);
+std::vector<std::string> listValuedKeywords(fitsfile *fptr);
 
 /**
  * @brief Parse a record.
