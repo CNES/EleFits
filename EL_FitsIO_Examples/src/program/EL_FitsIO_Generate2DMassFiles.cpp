@@ -151,7 +151,7 @@ public:
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");
-    const auto someRecords = ext.parseRecordVector<boost::any>({ "CRVAL1", "CUNIT1" });
+    const auto someRecords = ext.parseAllRecords<boost::any>();
     const auto intRecord = someRecords.as<int>("CRVAL1");
     logger.info() << intRecord.comment << " = " << intRecord.value << " " << intRecord.unit;
     const auto strRecord = someRecords.as<std::string>("CUNIT1");

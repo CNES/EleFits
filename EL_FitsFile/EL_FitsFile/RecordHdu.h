@@ -116,6 +116,12 @@ public:
   RecordVector<T> parseRecordVector(const std::vector<std::string> &keywords) const;
 
   /**
+   * @brief Parse all the records as a RecordVector.
+   */
+  template <typename T>
+  RecordVector<T> parseAllRecords() const;
+
+  /**
    * @brief Write a record.
    */
   template <typename T>

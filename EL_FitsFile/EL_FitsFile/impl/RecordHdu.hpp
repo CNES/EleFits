@@ -47,6 +47,11 @@ RecordVector<T> RecordHdu::parseRecordVector(const std::vector<std::string> &key
 }
 
 template <typename T>
+RecordVector<T> RecordHdu::parseAllRecords() const {
+  return parseRecordVector<T>(keywords());
+}
+
+template <typename T>
 void RecordHdu::writeRecord(const Record<T> &record) const {
   gotoThisHdu();
   Cfitsio::Header::writeRecord(m_fptr, record);
