@@ -44,7 +44,7 @@ class FitsFile {
 class MefFile {
 + MefFile (filename, permission)
 + hduCount ()
-+ hduNames ()
++ readHduNames ()
 + access<THdu> (index)
 + accessFirst<THdu> (name)
 + accessPrimary<THdu> ()
@@ -64,9 +64,9 @@ class SifFile {
 
 class RecordHdu {
 + index ()
-+ name ()
-+ rename (name)
-+ keywords ()
++ readName ()
++ updateName (name)
++ readKeywords ()
 + parseRecord<T> (keyword)
 + parseRecords<T...> (keywords...)
 + parseRecordsAs<TReturn, T...> (keywords...)
@@ -78,7 +78,8 @@ class RecordHdu {
 }
 
 class ImageHdu {
-+ resize<T, n> (shape)
++ readShape ()
++ updateShape<T, n> (shape)
 + readRaster<T, n> ()
 + writeRaster<T, n> (raster)
 }

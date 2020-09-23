@@ -22,10 +22,16 @@
 namespace Euclid {
 namespace FitsIO {
 
-template <typename T, long n>
-void ImageHdu::resize(const Position<n> &shape) const {
+template <long n = 2>
+Position<n> ImageHdu::readShape() const {
   gotoThisHdu();
-  Cfitsio::Image::resize<T, n>(m_fptr, shape);
+  return Cfitsio::Image::readShape<n>(m_fptr);
+}
+
+template <typename T, long n>
+void ImageHdu::updateShape(const Position<n> &shape) const {
+  gotoThisHdu();
+  Cfitsio::Image::updateShape<T, n>(m_fptr, shape);
 }
 
 template <typename T, long n>

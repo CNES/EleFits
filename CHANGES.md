@@ -9,6 +9,12 @@
 ## API changes
 
 * pascalCase functions and methods
+* Reading and writing operations are made explicit in method naming:
+  * `RecordHdu::name` -> `RecordHdu::readName`
+  * `RecordHdu::rename` -> `RecordHdu::updateName`
+  * `RecordHdu::keywords` -> `RecordHdu::readKeywords`
+  * `MefFile::hduNames` -> `MefFile::readHduNames`
+  * `ImageHdu::resize` -> `ImageHdu::updateShape`
 
 ## New features
 
@@ -18,6 +24,8 @@
 * Vectors of homogeneous records can be read and written
 * New helper class `RecordVector` to find homogeneous records by keyword
 * Method `RecordHdu::parseAllRecords` parses a whole header unit
+* Minor additions:
+  * `ImageHdu::readShape`
 
 ## Cleaning
 

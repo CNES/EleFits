@@ -121,7 +121,7 @@ public:
    */
   PtrRaster(Position<n> rasterShape, const T *data);
 
-  /** @see Raster::data */
+  /** @copydoc Raster::data */
   const T *data() const override;
 
 private:
@@ -153,7 +153,7 @@ public:
    */
   VecRefRaster(Position<n> rasterShape, const std::vector<T> &vectorRef);
 
-  /** @see Raster::data */
+  /** @copydoc Raster::data */
   const T *data() const override;
 
   /**
@@ -188,7 +188,9 @@ public:
    * @brief Create a VecRaster with given shape and values.
    * @details
    * To transfer ownership of the data instead of copying it, use move semantics:
-   * @code VecRaster column(shape, std::move(data)); @endcode
+   * \code
+   * VecRaster column(shape, std::move(data));
+   * \endcode
    */
   VecRaster(Position<n> rasterShape, std::vector<T> vector);
 
@@ -202,7 +204,7 @@ public:
    */
   VecRaster() = default;
 
-  /** @see Raster::data */
+  /** @copydoc Raster::data */
   const T *data() const override;
 
   /**
@@ -217,7 +219,9 @@ public:
 
   /**
    * @brief Non-const reference to the vector, useful to take ownership through move semantics.
-   * @code std::vector<T> v = std::move(raster.vector()); @endcode
+   * \code
+   * std::vector<T> v = std::move(raster.vector());
+   * \endcode
    */
   std::vector<T> &vector();
 

@@ -28,9 +28,18 @@ namespace FitsIO {
 
 /**
  * @brief Multi-Extension Fits file reader-writer.
- * @details Provide HDU access/create services.
- * @warning HDU access is provided through references.
- * Reaccessing a given HDU makes any previous reference obsolete.
+ * @details
+ * Provide HDU access/create services.
+ * Single Image Fits files can be handled by this class, but SifFile is better suited:
+ * it is safer and provide shortcuts.
+ * @warning
+ * HDU access is provided through references.
+ * Reaccessing a given HDU makes any previous reference obsolete:
+ * \code
+ * const auto &first = f.accessPrimary<>();
+ * const auto &second = f.accessPrimary<>();
+ * // first is not valid anymore!
+ * \endcode
  * @see \ref handlers
  */
 class MefFile : public FitsFile {
@@ -52,31 +61,43 @@ public:
   MefFile(const std::string &filename, Permission permission);
 
   /**
-   * @brief Count the number of HDUs.
+   * @brief Get the number of HDUs.
+   * @details
+   * As opposed to CFitsIO HDU counting, the number is not read by this function:
+   * it is initialized by the constructor and then updated at each modification through MefFile methods.
+   * This way, incomplete HDUs are also taken into account where CFitsIO would exclude them.
+   * This means, for example, that the initial number of HDUs in a new file is 1 instead of 0.
    */
   long hduCount() const;
 
   /**
    * @brief Read the name of each HDU.
-   * @warning hduNames()[i] is the name of HDU i+1 because Fits index is 1-based.
+   * @details
+   * Unnamed HDUs are taken into account: an empty string is returned for them.
+   * @warning
+   * readHduNames()[i] is the name of HDU i+1 because Fits index is 1-based.
    */
-  std::vector<std::string> hduNames();
+  std::vector<std::string> readHduNames();
 
   /**
-   * @brief Access the Hdu at given index.
-   * @tparam The type of Hdu: ImageHdu, BintableHdu or RecordHdu to just handle metadata.
+   * @brief Access the HDU at given index.
+   * @tparam T The type of HDU: ImageHdu, BintableHdu, or RecordHdu to just handle metadata.
    * @return A reference to the HDU reader-writer.
    * @details
-   * The type can be ImageHdu, BintableHdu or unspecified (i.e. base class RecordHdu).
-   * In the latter case, if needs be, the returned Hdu can still be cast to an ImageHdu or BintableHdu
-   * (e.g., \c dynamic_cast<ImageHdu&>(hdu) )
-   * or merely be used as a metadata reader-writer.
+   * The type can be ImageHdu, BintableHdu or unspecified (i.e. base class RecordHdu, the metadata reader-writer.).
+   * In the latter case, if needs be, the returned HDU can still be cast to an ImageHdu or BintableHdu:
+   * \code
+   * const auto &ext = f.access<>(1);
+   * dynamic_cast<ImageHdu&>(ext).readRaster...
+   * \endcode
    */
   template <class T = RecordHdu>
   const T &access(long index);
 
   /**
    * @brief Access the first HDU with given name.
+   * @details
+   * In the case where several HDUs have the same name, method readHduNames can be used to get the indices.
    * @see access
    */
   template <class T = RecordHdu>
@@ -90,20 +111,14 @@ public:
   const T &accessPrimary();
 
   /**
-   * @brief Append an extension.
-   * @return A reference to the new HDU of type T.
-   */
-  template <class T = RecordHdu>
-  const T &appendExt(T extension);
-
-  /**
-   * @brief Append a new RecordHdu (as empty ImageHdu) with given name.
+   * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.
    * @return A reference to the new RecordHdu.
    */
   const RecordHdu &initRecordExt(const std::string &name);
   /**
    * @brief Append a new ImageHdu with given name and shape.
-   * @see assignImageExt
+   * @details
+   * To not only initialize the HDU but also write data, use assignImageExt instead.
    */
   template <typename T, long n>
   const ImageHdu &initImageExt(const std::string &name, const Position<n> &shape);
@@ -117,23 +132,33 @@ public:
 
   /**
    * @brief Append a BintableHdu with given name and columns info.
-   * @see assignBintableExt
+   * @details
+   * To not only initialize the HDU but also write data, use assignBintableExt instead.
    */
   template <typename... Ts>
   const BintableHdu &initBintableExt(const std::string &name, const ColumnInfo<Ts> &... header);
 
   /**
    * @brief Append a BintableHdu with given name and data.
-   * @warning All columns should have the same number of rows.
    * @return A reference to the new BintableHdu.
+   * @warning
+   * All columns should have the same number of rows.
    */
   template <typename... Ts>
   const BintableHdu &assignBintableExt(const std::string &name, const Column<Ts> &... columns);
 
 protected:
   /**
+   * @brief Append an extension.
+   * @return A reference to the new HDU of type T.
+   */
+  template <class T = RecordHdu>
+  const T &appendExt(T extension);
+
+  /**
    * @brief Vector of RecordHdus (castable to ImageHdu or BintableHdu).
-   * @warning m_hdus is 0-based while Cfitsio HDUs are 1-based.
+   * @warning
+   * m_hdus is 0-based while Cfitsio HDUs are 1-based.
    */
   std::vector<std::unique_ptr<RecordHdu>> m_hdus;
 };

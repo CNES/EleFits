@@ -12,12 +12,12 @@ namespace FitsIO {
 Record is a very basic template structure which holds a keyword, value, unit and comment.
 Naturally, the template parameter is the type of the value.
 
-Here's a record of type \c double with keyword \c "LIGHT", value \c 3.0e8, unit \c "m/s" and comment \c "speed of light":
+Here's a record of type `double` with keyword `"LIGHT"`, value `3.0e8`, unit `"m/s"` and comment `"speed of light"`:
 \code
 Record<double> light_sp { "LIGHT", 3.0e8, "m/s", "speed of light" };
 \endcode
 
-It can be cast to \c double (records of type \c T can be cast to \c T):
+It can be cast to `double` (records of type `T` can be cast to `T`):
 \code
 double falcon_sp = 1.5 * light_sp;
 \endcode

@@ -36,8 +36,11 @@ public:
   /**
    * @brief Constructor.
    * @warning
-   * You should not instantiate RecordHdus yourself,
-   * but using the dedicated MefFile creation method.
+   * You should probably not instantiate ImageHdus yourself,
+   * but use the dedicated MefFile creation method
+   * MefFile::initImageExt or MefFile::assignImageExt.
+   * @todo
+   * The constructor should be protected, with MefFile a friend of the class.
    */
   ImageHdu(fitsfile *&fptr, long index);
 
@@ -47,10 +50,16 @@ public:
   virtual ~ImageHdu() = default;
 
   /**
+   * @brief Read the image shape.
+   */
+  template <long n = 2>
+  Position<n> readShape() const;
+
+  /**
    * @brief Redefine the image shape and type.
    */
   template <typename T, long n = 2>
-  void resize(const Position<n> &shape) const;
+  void updateShape(const Position<n> &shape) const;
 
   /**
    * @brief Read the Raster.

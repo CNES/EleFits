@@ -33,11 +33,11 @@ long MefFile::hduCount() const {
   return m_hdus.size();
 }
 
-std::vector<std::string> MefFile::hduNames() {
+std::vector<std::string> MefFile::readHduNames() {
   const long count = hduCount();
   std::vector<std::string> names(count);
   for (long i = 0; i < count; ++i) {
-    names[i] = access<>(i + 1).name();
+    names[i] = access<>(i + 1).readName();
   }
   return names;
 }

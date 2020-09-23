@@ -26,49 +26,49 @@ namespace Cfitsio {
 namespace Header {
 
 /**
- * @see parseRecord
+ * @copydoc parseRecord
  */
 template <>
 FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword);
 
 /**
- * @see parseRecord
+ * @copydoc parseRecord
  */
 template <>
 FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword);
 
 /**
- * @see writeRecord
+ * @copydoc writeRecord
  */
 template <>
 void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
 
 /**
- * @see writeRecord
+ * @copydoc writeRecord
  */
 template <>
 void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
 
 /**
- * @see writeRecord
+ * @copydoc writeRecord
  */
 template <>
 void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
 
 /**
- * @see updateRecord
+ * @copydoc updateRecord
  */
 template <>
 void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
 
 /**
- * @see updateRecord
+ * @copydoc updateRecord
  */
 template <>
 void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
 
 /**
- * @see updateRecord
+ * @copydoc updateRecord
  */
 template <>
 void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);

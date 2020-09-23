@@ -28,7 +28,7 @@ namespace FitsIO {
 /**
  * @brief Keyword-value pair with optional unit and comment.
  * @tparam T The value type;
- * Can be an integer, floating point, complex, \c std::string or \c boost::any.
+ * Can be an integer, floating point, complex, `std::string` or `boost::any`.
  * @details
  * Record is meant to be used to read and write Fits headers.
  * The Record in the Fits file is rendered as:
@@ -54,7 +54,7 @@ struct Record {
    * @brief Create a Record from a Record of another type.
    * @details
    * This constructor can be used to homogeneize types, for example to create a
-   * \c vector<Record<any>> from various \c Record<T>'s with different \c T's.
+   * `vector<Record<any>>` from various `Record<T>`s with different `T`s.
    * @warning
    * Source type TOther must be castable to destination type T.
    * @see cast
@@ -67,12 +67,12 @@ struct Record {
    * Valid casts are:
    * - scalar number -> scalar number
    * - complex number -> complex number
-   * - \c any -> scalar number if the underlying value type is a scalar number
-   * - \c any -> complex number if the value type is a complex number
-   * - \c any -> \c string if the value type is a \c string
-   * - scalar number -> \c any
-   * - complex number -> \c any
-   * - \c string -> \c any
+   * - `any` -> scalar number if the underlying value type is a scalar number
+   * - `any` -> complex number if the value type is a complex number
+   * - `any` -> `string` if the value type is a `string`
+   * - scalar number -> `any`
+   * - complex number -> `any`
+   * - `string` -> `any`
    */
   template <typename TOther>
   static T cast(TOther value);
@@ -82,14 +82,14 @@ struct Record {
    * @details
    * A Record is often read for using its value only;
    * This shortcut is merely a const version of the value member.
-   * @code
+   * \code
    * SifFile f("filename.fits");
    * const auto& h = f.header();
    * // Immediately cast to int:
    * int value = h.parseRecord<int>("KEYWORD");
    * // Same as:
    * int value = h.parseRecord<int>("KEYWORD").value;
-   * @endcode
+   * \endcode
    */
   operator T() const;
 

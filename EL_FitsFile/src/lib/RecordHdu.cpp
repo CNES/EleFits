@@ -32,17 +32,17 @@ long RecordHdu::index() const {
   return m_index;
 }
 
-std::string RecordHdu::name() const {
+std::string RecordHdu::readName() const {
   gotoThisHdu();
   return Cfitsio::Hdu::currentName(m_fptr);
 }
 
-void RecordHdu::rename(const std::string &name) const {
+void RecordHdu::updateName(const std::string &name) const {
   gotoThisHdu();
   Cfitsio::Hdu::updateName(m_fptr, name);
 }
 
-std::vector<std::string> RecordHdu::keywords() const {
+std::vector<std::string> RecordHdu::readKeywords() const {
   return Cfitsio::Header::listValuedKeywords(m_fptr);
 }
 

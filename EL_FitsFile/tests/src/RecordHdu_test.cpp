@@ -52,11 +52,11 @@ BOOST_FIXTURE_TEST_CASE(continued_str_test, Test::TemporarySifFile) {
 BOOST_FIXTURE_TEST_CASE(rename_test, Test::TemporaryMefFile) {
   const auto &h = this->initRecordExt("A");
   BOOST_CHECK_EQUAL(h.index(), 2);
-  BOOST_CHECK_EQUAL(h.name(), "A");
-  h.rename("B");
-  BOOST_CHECK_EQUAL(h.name(), "B");
+  BOOST_CHECK_EQUAL(h.readName(), "A");
+  h.updateName("B");
+  BOOST_CHECK_EQUAL(h.readName(), "B");
   h.deleteRecord("EXTNAME");
-  BOOST_CHECK_EQUAL(h.name(), "");
+  BOOST_CHECK_EQUAL(h.readName(), "");
 }
 
 BOOST_FIXTURE_TEST_CASE(c_str_record_test, Test::TemporarySifFile) {

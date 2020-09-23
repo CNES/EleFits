@@ -28,7 +28,8 @@ namespace FitsIO {
 
 /**
  * @brief Single image Fits file handler.
- * @details Provide read/write access to the header and image raster.
+ * @details
+ * Provide read/write access to the header and image raster.
  * @see \ref handlers
  */
 class SifFile : public FitsFile {
@@ -55,18 +56,19 @@ public:
   const RecordHdu &header() const;
 
   /**
-   * @brief Read the Raster.
+   * @brief Read the raster.
    */
   template <typename T, long n = 2>
   VecRaster<T, n> readRaster() const;
 
   /**
-   * @brief Write the Raster (initialize primary HDU if not done).
+   * @brief Write the raster (initialize primary HDU if not done).
    */
   template <typename T, long n>
   void writeRaster(const Raster<T, n> &raster) const;
 
 private:
+  /** @brief The Primary (and only) HDU */
   ImageHdu m_hdu;
 };
 

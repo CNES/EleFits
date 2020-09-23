@@ -38,10 +38,16 @@ namespace Cfitsio {
 namespace Image {
 
 /**
- * @brief Resize the Raster of the current Image HDU.
+ * @brief Read the shape of the current Image HDU.
+ */
+template <long n = 2>
+FitsIO::Position<n> readShape(fitsfile *fptr);
+
+/**
+ * @brief Reshape the Raster of the current Image HDU.
  */
 template <typename T, long n = 2>
-void resize(fitsfile *fptr, const FitsIO::Position<n> &shape);
+void updateShape(fitsfile *fptr, const FitsIO::Position<n> &shape);
 
 /**
  * @brief Read a Raster in current Image HDU.

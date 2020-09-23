@@ -50,7 +50,7 @@ struct ColumnInfo {
    * @warning
    * String columns are considered vector columns.
    * Their repeat count must be greater or equal to the longest string of the column
-   * including the \c '\0' character.
+   * including the `\0` character.
    */
   long repeat;
 };
@@ -131,10 +131,10 @@ public:
    */
   PtrColumn(ColumnInfo<T> info, long nelements, const T *data);
 
-  /** @see Column::nelements */
+  /** @copydoc Column::nelements */
   long nelements() const override;
 
-  /** @see Column::data */
+  /** @copydoc Column::data */
   const T *data() const override;
 
 private:
@@ -167,10 +167,10 @@ public:
    */
   VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vectorRef);
 
-  /** @see Column::nelements */
+  /** @copydoc Column::nelements */
   long nelements() const override;
 
-  /** @see Column::data */
+  /** @copydoc Column::data */
   const T *data() const override;
 
   /**
@@ -211,14 +211,16 @@ public:
    * @brief Crate a VecColumn with given data and metadata.
    * @details
    * To transfer ownership of the data instead of copying it, use move semantics:
-   * @code VecColumn column(info, std::move(vector)); @endcode
+   * \code
+   * VecColumn column(info, std::move(vector));
+   * \endcode
    */
   VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector);
 
-  /** @see Column::nelements */
+  /** @copydoc Column::nelements */
   long nelements() const override;
 
-  /** @see Column::data */
+  /** @copydoc Column::data */
   const T *data() const override;
 
   /**
@@ -233,7 +235,9 @@ public:
 
   /**
    * @brief Non-const reference to the data, useful to take ownership through move semantics.
-   * @code std::vector<T> v = std::move(column.vector()); @endcode
+   * \code
+   * std::vector<T> v = std::move(column.vector());
+   * \endcode
    */
   std::vector<T> &vector();
 

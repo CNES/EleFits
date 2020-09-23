@@ -130,7 +130,7 @@ public:
     const auto &ext3 = f.access<>(3);
     //! [Find HDU by index]
     //! [Get HDU name]
-    const auto extname = ext3.name();
+    const auto extname = ext3.readName();
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
     const auto records = ext3.parseRecords<std::string, int>({ "STRING", "INTEGER" });

@@ -37,26 +37,26 @@ BOOST_AUTO_TEST_CASE(empty_file_test) {
   std::string filename = tmp.path().string();
   BOOST_CHECK(not boost::filesystem::exists(filename));
 
-  FitsFile new_file(filename, FitsFile::Permission::Create);
-  BOOST_CHECK_EQUAL(new_file.filename(), filename);
+  FitsFile newFile(filename, FitsFile::Permission::Create);
+  BOOST_CHECK_EQUAL(newFile.filename(), filename);
   BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-  new_file.close();
+  newFile.close();
 
   BOOST_CHECK_THROW(FitsFile(filename, FitsFile::Permission::Create), std::exception);
 
-  FitsFile overwritten_file(filename, FitsFile::Permission::Overwrite);
-  overwritten_file.close();
+  FitsFile overwrittenFile(filename, FitsFile::Permission::Overwrite);
+  overwrittenFile.close();
 
-  FitsFile read_only_file(filename, FitsFile::Permission::Read);
-  BOOST_CHECK_THROW(read_only_file.closeAndDelete(), std::exception);
-  read_only_file.close();
+  FitsFile readonlyFile(filename, FitsFile::Permission::Read);
+  BOOST_CHECK_THROW(readonlyFile.closeAndDelete(), std::exception);
+  readonlyFile.close();
 
-  FitsFile editable_file(filename, FitsFile::Permission::Edit);
-  editable_file.closeAndDelete();
+  FitsFile editableFile(filename, FitsFile::Permission::Edit);
+  editableFile.closeAndDelete();
   BOOST_CHECK(not boost::filesystem::exists(filename));
 
   {
-    FitsFile temp_file(filename, FitsFile::Permission::Temporary);
+    FitsFile tempFile(filename, FitsFile::Permission::Temporary);
     BOOST_CHECK(boost::filesystem::is_regular_file(filename));
   }
   BOOST_CHECK(not boost::filesystem::exists(filename));

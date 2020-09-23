@@ -29,12 +29,17 @@ namespace FitsIO {
 /**
  * @brief Header reader-writer.
  * @details
- * When reading or writing several Records, it is recommended to use the plural form of the methods
+ * This class provides services common to all HDUs, including for reading and writing records.
+ * When reading or writing several records, it is recommended to use the plural form of the methods
  * (e.g. one call to RecordHdu::writeRecords instead of several calls to RecordHdu::writeRecord),
  * which are optimized.
+ * Methods to update records are analogous to methods to read records:
+ * refer to the documentation of the latter for more details on the former.
  * @warning
  * There is a known bug in CFitsIO with the reading of Record<unsigned long>:
- * if the value is greater than max(long), CFitsIO returns an overflow error.
+ * if the value is greater than `max(long)`, CFitsIO returns an overflow error.
+ * This is a false alarm but cannot be worked around easily.
+ * There should be a fix on CFitsIO side.
  */
 class RecordHdu {
 
@@ -42,8 +47,10 @@ public:
   /**
    * @brief Constructor.
    * @warning
-   * You should not instantiate RecordHdus yourself,
-   * but using the dedicated MefFile creation method.
+   * You should probablt not instantiate `RecordHdu`s yourself,
+   * but use the dedicated MefFile creation method MefFile::initRecordExt.
+   * @todo
+   * The constructor should be protected, with MefFile a friend of the class.
    */
   RecordHdu(fitsfile *&file, long index);
 
@@ -53,26 +60,26 @@ public:
   virtual ~RecordHdu() = default;
 
   /**
-   * @brief 1-based index of the HDU.
+   * @brief Get the 1-based index of the HDU.
    */
   long index() const;
 
   /**
    * @brief Read the extension name.
    */
-  std::string name() const;
+  std::string readName() const;
 
   /**
    * @brief Write or update the extension name.
    */
-  void rename(const std::string &name) const;
+  void updateName(const std::string &name) const;
 
   /**
    * @brief List the valued record keywords.
    * @warning
-   * Non-valued records, like COMMENT and HISTORY, are bypassed.
+   * Non-valued records, like COMMENT and HISTORY records, are bypassed.
    */
-  std::vector<std::string> keywords() const;
+  std::vector<std::string> readKeywords() const;
 
   /**
    * @brief Parse a record.
@@ -88,7 +95,7 @@ public:
 
   /**
    * @brief Parse several records as a user-defined structure.
-   * @tparam Return A structure which can be constructed as:
+   * @tparam TReturn A structure which can be constructed as:
    * \code Return { T1, T2, ... } \endcode
    * or:
    * \code Return { Record<T1>, Record<T2>, ... } \endcode
@@ -96,29 +103,33 @@ public:
    * \code struct Return { T1 p1; T2 p2; ... }; \endcode
    * or a class with such constructor:
    * \code Return::Return(T1, T2, ...) \endcode
-   * @details This is generally more convenient than a tuple
+   * @details
+   * This is generally more convenient than a tuple
    * because you chose how to to access the records in your own class
-   * insted of accessing them by their indices -- with \c std::get<i>(tuple).
+   * insted of accessing them by their indices -- with `std::get<i>(tuple)`.
    */
-  template <class Return, typename... Ts>
-  Return parseRecordsAs(const std::vector<std::string> &keywords) const;
+  template <class TReturn, typename... Ts>
+  TReturn parseRecordsAs(const std::vector<std::string> &keywords) const;
 
   /**
    * @brief Parse several homogeneous records.
    * @tparam T The common value type.
    * @details
    * In addition to parsing homogeneous records, like a set of integer records,
-   * this method can be used with boost::any records to allow for runtime type deduction:
-   * @code
+   * this method can be used with `boost::any` records to allow for runtime type deduction:
+   * \code
    * auto records = f.parseRecordVector<boost::any>({ "INT", "FLOAT", "DOUBLE", "BOOL" });
    * int value = records.as<int>("INT");
-   * @endcode
+   * \endcode
+   * In this case, the underlying type of each record is deduced from the value in the Fits file.
    */
   template <typename T>
   RecordVector<T> parseRecordVector(const std::vector<std::string> &keywords) const;
 
   /**
    * @brief Parse all the records as a RecordVector.
+   * @details
+   * This method is similar to parseRecordVector.
    */
   template <typename T>
   RecordVector<T> parseAllRecords() const;
@@ -153,6 +164,8 @@ public:
 
   /**
    * @brief Write several homogeneous records.
+   * @details
+   * Similarly to the reading counterpart parseRecordVector, `T` can also be `boost::any`.
    */
   template <typename T>
   void writeRecords(const std::vector<Record<T>> &records) const;

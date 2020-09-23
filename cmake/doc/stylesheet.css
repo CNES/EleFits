@@ -1,4 +1,4 @@
-
+/* Reduce contents width */
 div.contents {
     margin-bottom: 10px;
     padding: 12px;
@@ -6,4 +6,10 @@ div.contents {
     margin-right: auto;
     max-width: 960px;
     border-radius: 8px;
+}
+
+/* Frame inline code */
+tt, code, kbd, samp {
+    border: 1px solid #C4CFE5;
+    background-color: #FBFCFD;
 }

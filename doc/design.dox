@@ -24,7 +24,7 @@ which aims at handling Fits files and their contents with an as-simple-as-possib
 - A low-level procedural layer (namespace Cfitsio, see below)
 which consists in C++ wrapper functions of selected CFitsIO functions:
   - C arrays are wrapped with aforementioned data classes,
-  - The use of raw pointers is limitted to \c fitsfile*, which is itself wrapped in the service classes,
+  - The use of raw pointers is limitted to `fitsfile*`, which is itself wrapped in the service classes,
   - Templates wrap the CFitsIO type codes,
   - Exceptions wrap the CFitsIO error codes.
 

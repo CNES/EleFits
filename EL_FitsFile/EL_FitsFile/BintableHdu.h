@@ -37,8 +37,11 @@ public:
   /**
    * @brief Constructor.
    * @warning
-   * You should not instantiate RecordHdus yourself,
-   * but using the dedicated MefFile creation method.
+   * You should probably not instantiate BintableHdus yourself,
+   * but use the dedicated MefFile creation method
+   * MefFile::initBintableExt or MefFile::assignBintableExt.
+   * @todo
+   * The constructor should be protected, with MefFile a friend of the class.
    */
   BintableHdu(fitsfile *&fptr, long index);
 
@@ -67,21 +70,24 @@ public:
 
   /**
    * @brief Write several columns.
-   * @warning All columns should have the same number of rows.
+   * @warning
+   * All columns should have the same number of rows.
    */
   template <typename... Ts>
   void writeColumns(const Column<Ts> &... columns) const;
 
   /**
    * @brief Append a column.
-   * @warning The column should have the same number of rows as the existing columns.
+   * @warning
+   * The column should have the same number of rows as the existing columns.
    */
   template <typename T>
   void appendColumn(const Column<T> &column) const;
 
   /**
    * @brief Append several columns.
-   * @warning All new columns should have the same number of rows as the existing columns.
+   * @warning
+   * All new columns should have the same number of rows as the existing columns.
    */
   template <typename... Ts>
   void appendColumns(const Column<Ts> &... columns) const;

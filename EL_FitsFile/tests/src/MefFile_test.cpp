@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_SUITE(MefFile_test)
 BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   Test::SmallRaster input; // TODO RandomRaster
   const auto &primary = this->accessPrimary<ImageHdu>();
-  primary.resize<float, 2>(input.shape);
+  primary.updateShape<float, 2>(input.shape);
   primary.writeRaster(input);
   this->close();
   // Reopen as read-only
@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
   BOOST_CHECK_EQUAL(this->hduCount(), 1); // 0 with CFitsIO
   Test::SmallRaster raster;
   const auto &primary = this->accessPrimary<ImageHdu>();
-  primary.resize<float, 2>(raster.shape);
+  primary.updateShape<float, 2>(raster.shape);
   BOOST_CHECK_EQUAL(this->hduCount(), 1);
   const auto &ext = this->initImageExt<float, 2>("IMG", raster.shape);
   BOOST_CHECK_EQUAL(this->hduCount(), 2); // 1 with CFitsIO
@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   BOOST_CHECK_EQUAL(ext2.index(), 3);
   BOOST_CHECK_EQUAL(this->hduCount(), 3);
   std::vector<std::string> inputNames { "", "IMG1", "IMG2" };
-  const auto outputNames = this->hduNames();
+  const auto outputNames = this->readHduNames();
   BOOST_CHECK_EQUAL_COLLECTIONS(outputNames.begin(), outputNames.end(), inputNames.begin(), inputNames.end());
   remove(this->filename().c_str());
 }

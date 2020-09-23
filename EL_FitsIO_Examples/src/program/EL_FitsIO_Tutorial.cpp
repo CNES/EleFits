@@ -135,7 +135,7 @@ public:
     //! [Write several records]
 
     logger.info() << "Here's the list of keywords in the extension:";
-    const auto keywords = ext.keywords();
+    const auto keywords = ext.readKeywords();
     for (const auto &k : keywords) {
       logger.info() << "    " << k;
     }
@@ -169,7 +169,7 @@ public:
     //! [Access an HDU by index]
     logger.info() << "Accessing image HDU by index";
     const auto &imageExt = f.access<ImageHdu>(3);
-    logger.info() << "    Name: " << imageExt.name();
+    logger.info() << "    Name: " << imageExt.readName();
     //! [Access an HDU by index]
 
     //! [Read several records]

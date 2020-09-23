@@ -61,11 +61,11 @@ public:
    * @details
    * Althoug the method returns a Record, it can itself be sliced as its value,
    * so the following works:
-   * @code
+   * \code
    * RecordVector<any> records;
    * // ...
    * int i = records.as<int>("KEYWORD"); // Get the value as int
-   * @endcode
+   * \endcode
    */
   template <typename TValue>
   Record<TValue> as(const std::string &keyword) const;
