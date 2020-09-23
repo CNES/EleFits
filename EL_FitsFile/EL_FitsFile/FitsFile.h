@@ -40,17 +40,17 @@ namespace Euclid {
  * -# Data classes -- Record, Raster and Column -- store data to be read and written.
  *
  * The following naming conventions are adopted:
- * * "Hdu" refers to both the Primary HDU and the extensions, while "Ext" refers only to the extensions;
- * * "read" and "parse" means that some data are read from the Fits file;
- * * "parse" differs from "read" in that the raw contents of the Fits file are interpretted
+ * * `Hdu` refers to both the Primary HDU and the extensions, while `Ext` refers only to the extensions;
+ * * `read` and `parse` means that some data are read from the Fits file;
+ * * `parse` differs from `read` in that the raw contents of the Fits file are interpretted
  * instead of being simply forwarded:
  * for example, RecordHdu::parseRecord returns a Record with user-defined type
  * by parsing the characters in the Fits file,
  * while RecordHdu::readName returns the raw value of the EXTNAME keyword.
- * * "write", "update", "init" and "assign" means that some data are written to the Fits file;
- * * "update" differs from "write" (e.g. RecordHdu::updateRecord vs. RecordHdu::writeRecord)
+ * * `write`, `update`, `init` and `assign` means that some data are written to the Fits file;
+ * * `update` differs from `write` (e.g. RecordHdu::updateRecord vs. RecordHdu::writeRecord)
  * in that if the data already exist in the Fits file, they are overriden instead of new data to be written.
- * * "init" methods write metadata (e.g. image size) while "assign" methods also write data (e.g. image pixels);
+ * * `init` methods write metadata (e.g. image size) while `assign` methods also write data (e.g. image pixels);
  * * Getters -- which do not imply reading from the Files but only working with class members -- are nouns:
  * for example, RecordHdu::readHduName is a reading operation, while RecordHdu::index is a simple getter.
  */
