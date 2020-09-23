@@ -81,14 +81,14 @@ public:
   /**
    * @brief Number of elements in the column, i.e. number of rows * repeat count.
    * @warning
-   * For strings, CFitsIO requires nelements to be just the number of rows.
+   * For strings, CFitsIO requires elementCount to be just the number of rows.
    */
-  virtual long nelements() const = 0;
+  virtual long elementCount() const = 0;
 
   /**
    * @brief Number of rows in the column.
    */
-  long rows() const;
+  long rowCount() const;
 
   /**
    * @brief Const pointer to the first data element.
@@ -125,14 +125,14 @@ public:
   /**
    * @brief Create a new column with given metadata and data.
    * @param info The column metadata.
-   * @param nelements The number of elements in the column,
+   * @param elementCount The number of elements in the column,
    * which is the number of rows for scalar and string columns.
    * @param data Pointer to the first element of the data.
    */
-  PtrColumn(ColumnInfo<T> info, long nelements, const T *data);
+  PtrColumn(ColumnInfo<T> info, long elementCount, const T *data);
 
-  /** @copydoc Column::nelements */
-  long nelements() const override;
+  /** @copydoc Column::elementCount */
+  long elementCount() const override;
 
   /** @copydoc Column::data */
   const T *data() const override;
@@ -167,8 +167,8 @@ public:
    */
   VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vectorRef);
 
-  /** @copydoc Column::nelements */
-  long nelements() const override;
+  /** @copydoc Column::elementCount */
+  long elementCount() const override;
 
   /** @copydoc Column::data */
   const T *data() const override;
@@ -217,8 +217,8 @@ public:
    */
   VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector);
 
-  /** @copydoc Column::nelements */
-  long nelements() const override;
+  /** @copydoc Column::elementCount */
+  long elementCount() const override;
 
   /** @copydoc Column::data */
   const T *data() const override;

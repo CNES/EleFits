@@ -65,8 +65,8 @@ class ColumnInfo<T> {
 abstract class Column<T> {
 + info
 + {abstract} data ()
-+ nelements ()
-+ rows ()
++ elementCount ()
++ rowCount ()
 }
 
 class VecColumn<T> {
@@ -87,7 +87,7 @@ class VecRefColumn<T> {
 
 class PtrColumn<T> {
 - m_data
-+ PtrColumn (info, rows, vector)
++ PtrColumn (info, rowCount, vector)
 + data ()
 }
 

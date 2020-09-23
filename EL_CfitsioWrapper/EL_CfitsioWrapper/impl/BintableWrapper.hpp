@@ -31,7 +31,7 @@ namespace Internal {
  * @brief Read column size to assign data.
  */
 template <typename T>
-void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rows);
+void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rowCount);
 
 /**
  * @brief String specialization.
@@ -42,17 +42,17 @@ void initColumnImpl<std::string>(
     long index,
     const std::string &name,
     FitsIO::VecColumn<std::string> &column,
-    long rows);
+    long rowCount);
 
 template <typename T>
-void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rows) {
+void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rowCount) {
   column.info.name = name;
   column.info.unit = ""; // TODO
   int typecode = 0;
   long width = 0;
   int status = 0;
   fits_get_coltype(fptr, static_cast<int>(index), &typecode, &column.info.repeat, &width, &status);
-  column.vector() = std::vector<T>(rows * column.info.repeat);
+  column.vector() = std::vector<T>(rowCount * column.info.repeat);
 }
 
 /**
@@ -65,9 +65,9 @@ struct InitColumnsImpl {
       const std::vector<long> &indices,
       const std::vector<std::string> &names,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
-      long rows) {
-    initColumnImpl(fptr, indices[i], names[i], std::get<i>(columns), rows);
-    InitColumnsImpl<i - 1, Ts...> {}(fptr, indices, names, columns, rows);
+      long rowCount) {
+    initColumnImpl(fptr, indices[i], names[i], std::get<i>(columns), rowCount);
+    InitColumnsImpl<i - 1, Ts...> {}(fptr, indices, names, columns, rowCount);
   }
 };
 
@@ -81,8 +81,8 @@ struct InitColumnsImpl<0, Ts...> {
       const std::vector<long> &indices,
       const std::vector<std::string> &names,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
-      long rows) {
-    initColumnImpl(fptr, indices[0], names[0], std::get<0>(columns), rows);
+      long rowCount) {
+    initColumnImpl(fptr, indices[0], names[0], std::get<0>(columns), rowCount);
   }
 };
 
@@ -243,13 +243,13 @@ FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
   int typecode = 0;
   long repeat = 0;
   long width = 0;
-  long rows = 0;
+  long rowCount = 0;
   int status = 0;
   fits_get_coltype(fptr, static_cast<int>(index), &typecode, &repeat, &width, &status);
-  fits_get_num_rows(fptr, &rows, &status);
+  fits_get_num_rows(fptr, &rowCount, &status);
   mayThrowCfitsioError(status, "Cannot read column dimensions");
   FitsIO::VecColumn<T> column({ name, "", repeat },
-                              std::vector<T>(repeat * rows)); // TODO unit
+                              std::vector<T>(repeat * rowCount)); // TODO unit
   /* Read data */
   fits_read_col(
       fptr,
@@ -257,7 +257,7 @@ FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
       static_cast<int>(index), // colnum
       1, // firstrow (1-based)
       1, // firstelemn (1-based)
-      column.nelements(), // nelements
+      column.elementCount(), // nelements
       nullptr, // nulval
       column.data(),
       nullptr, // anynul
@@ -270,7 +270,7 @@ template <typename T>
 void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
   long index = columnIndex(fptr, column.info.name);
   const auto begin = column.data();
-  const auto end = begin + column.nelements();
+  const auto end = begin + column.elementCount();
   std::vector<T> nonconstData(begin, end); // We need a non-const data for CFitsIO
   int status = 0;
   fits_write_col(
@@ -279,7 +279,7 @@ void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
       static_cast<int>(index), // colnum
       1, // firstrow (1-based)
       1, // firstelem (1-based)
-      column.nelements(), // nelements
+      column.elementCount(), // nelements
       nonconstData.data(),
       &status);
   mayThrowCfitsioError(status, "Cannot write column data");
@@ -294,21 +294,21 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
   }
   /* Read row count */
   int status = 0;
-  long rows = 0;
-  fits_get_num_rows(fptr, &rows, &status);
+  long rowCount = 0;
+  fits_get_num_rows(fptr, &rowCount, &status);
   /* Read column metadata */
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
-  Internal::InitColumnsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, names, columns, rows);
+  Internal::InitColumnsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, names, columns, rowCount);
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
     throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
   }
   /* Read column data */
-  for (long first = 1; first <= rows; first += chunkRows) {
+  for (long first = 1; first <= rowCount; first += chunkRows) {
     long last = first + chunkRows - 1;
-    if (last > rows) {
-      chunkRows = rows - first + 1;
+    if (last > rowCount) {
+      chunkRows = rowCount - first + 1;
     }
     Internal::ReadColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, columns, first, chunkRows);
   }
@@ -320,9 +320,9 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
   int status = 0;
   /* Get chunk size */
   auto table = std::forward_as_tuple(columns...);
-  auto rows = std::get<0>(table).rows(); // TODO assumes all columns have
-                                         // same height => move to write
-                                         // chunks
+  auto rowCount = std::get<0>(table).rowCount(); // TODO assumes all columns have
+                                                 // same height => move to write
+                                                 // chunks
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
@@ -330,10 +330,10 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
   }
   /* Write column data */
   std::vector<long> indices { columnIndex(fptr, columns.info.name)... };
-  for (long first = 1; first <= rows; first += chunkRows) {
+  for (long first = 1; first <= rowCount; first += chunkRows) {
     long last = first + chunkRows - 1;
-    if (last > rows) {
-      chunkRows = rows - first + 1;
+    if (last > rowCount) {
+      chunkRows = rowCount - first + 1;
     }
     Internal::WriteColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, table, first, chunkRows);
   }

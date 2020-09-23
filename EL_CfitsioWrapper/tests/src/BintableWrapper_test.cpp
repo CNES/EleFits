@@ -133,9 +133,9 @@ TEST_SCALAR_ALIAS(std::uint64_t, uint64)
 
 template <typename T>
 void checkVector() {
-  constexpr long rows = 3;
+  constexpr long rowCount = 3;
   constexpr long repeat = 2;
-  FitsIO::Test::RandomScalarColumn<T> input(rows * repeat);
+  FitsIO::Test::RandomScalarColumn<T> input(rowCount * repeat);
   input.info.repeat = repeat;
   FitsIO::Test::MinimalFile file;
   try {
@@ -199,12 +199,12 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
-  constexpr long rows(10000);
-  FitsIO::Test::RandomScalarColumn<int> i(rows);
+  constexpr long rowCount(10000);
+  FitsIO::Test::RandomScalarColumn<int> i(rowCount);
   i.info.name = "I";
-  FitsIO::Test::RandomScalarColumn<float> f(rows);
+  FitsIO::Test::RandomScalarColumn<float> f(rowCount);
   f.info.name = "F";
-  FitsIO::Test::RandomScalarColumn<double> d(rows);
+  FitsIO::Test::RandomScalarColumn<double> d(rowCount);
   d.info.name = "D";
   Hdu::createBintableExtension(this->fptr, "BINEXT", i, f, d);
   const auto table = Bintable::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });

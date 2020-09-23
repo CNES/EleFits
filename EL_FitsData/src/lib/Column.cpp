@@ -26,8 +26,8 @@ namespace FitsIO {
 namespace Internal {
 
 template <>
-long rowsImpl<std::string>(long nelements, ELEMENTS_UNUSED long repeat) {
-  return nelements;
+long rowCountImpl<std::string>(long elementCount, ELEMENTS_UNUSED long repeat) {
+  return elementCount;
 }
 
 } // namespace Internal

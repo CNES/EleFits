@@ -42,7 +42,7 @@ void initColumnImpl<std::string>(
     long index,
     const std::string &name,
     FitsIO::VecColumn<std::string> &column,
-    long rows) {
+    long rowCount) {
   column.info.name = name;
   column.info.unit = ""; // TODO
   int typecode = 0;
@@ -55,7 +55,7 @@ void initColumnImpl<std::string>(
       &column.info.repeat,
       &width,
       &status);
-  column.vector() = std::vector<std::string>(rows);
+  column.vector() = std::vector<std::string>(rowCount);
 }
 
 template <> // TODO clean
@@ -129,9 +129,9 @@ void writeColumnChunkImpl<std::string>(
 template <>
 FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std::string &name) {
   long index = columnIndex(fptr, name);
-  long rows = 0;
+  long rowCount = 0;
   int status = 0;
-  fits_get_num_rows(fptr, &rows, &status);
+  fits_get_num_rows(fptr, &rowCount, &status);
   mayThrowCfitsioError(status, "Cannot read the number of table rows");
   long repeat = 0;
   fits_get_coltype( // TODO factor
@@ -142,24 +142,24 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
       nullptr,
       &status); // TODO wrap?
   mayThrowCfitsioError(status, "Cannot read type of column: #" + std::to_string(index));
-  std::vector<char *> data(rows);
-  for (long i = 0; i < rows; ++i) { // TODO iterator
+  std::vector<char *> data(rowCount);
+  for (long i = 0; i < rowCount; ++i) { // TODO iterator
     data[i] = (char *)malloc(repeat);
   }
-  FitsIO::VecColumn<std::string> column({ name, "", repeat }, std::vector<std::string>(rows)); // TODO unit
+  FitsIO::VecColumn<std::string> column({ name, "", repeat }, std::vector<std::string>(rowCount)); // TODO unit
   fits_read_col(
       fptr,
       TypeCode<std::string>::forBintable(), // datatype
       static_cast<int>(index), // colnum // column indices are int
       1, // firstrow (1-based)
       1, // firstelemn (1-based)
-      column.nelements(), // nelements
+      column.elementCount(), // nelements
       nullptr, // nulval
       &data[0],
       nullptr, // anynul
       &status);
   mayThrowCfitsioError(status, "Cannot read column: " + name);
-  for (long i = 0; i < rows; ++i) {
+  for (long i = 0; i < rowCount; ++i) {
     column.vector()[i] = std::string(data[i]);
     free(data[i]);
   }
@@ -169,7 +169,7 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
 template <>
 void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> &column) {
   const auto begin = column.data();
-  const auto end = begin + column.nelements();
+  const auto end = begin + column.elementCount();
   CStrArray array(begin, end);
   long index = columnIndex(fptr, column.info.name);
   int status = 0;
@@ -179,7 +179,7 @@ void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> 
       static_cast<int>(index), // colnum // column indices are int
       1, // firstrow (1-based)
       1, // firstelem (1-based)
-      column.nelements(), // nelements
+      column.elementCount(), // nelements
       array.data(),
       &status);
   mayThrowCfitsioError(status, "Cannot write column: " + column.info.name);

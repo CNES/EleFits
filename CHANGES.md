@@ -10,11 +10,14 @@
 
 * pascalCase functions and methods
 * Reading and writing operations are made explicit in method naming:
+  * `ImageHdu::resize` -> `ImageHdu::updateShape`
+  * `MefFile::hduNames` -> `MefFile::readHduNames`
+  * `RecordHdu::keywords` -> `RecordHdu::readKeywords`
   * `RecordHdu::name` -> `RecordHdu::readName`
   * `RecordHdu::rename` -> `RecordHdu::updateName`
-  * `RecordHdu::keywords` -> `RecordHdu::readKeywords`
-  * `MefFile::hduNames` -> `MefFile::readHduNames`
-  * `ImageHdu::resize` -> `ImageHdu::updateShape`
+* Naming homogeneization:
+  * `Column::nelements` -> `Column::elementCount`
+  * `Column::rows` -> `Column::rowCount`
 
 ## New features
 

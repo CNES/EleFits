@@ -29,20 +29,20 @@ namespace Internal {
  * @brief Implementation for Column::rows to dispatch std::string and other types.
  */
 template <typename T>
-long rowsImpl(long nelements, long repeat);
+long rowCountImpl(long elementCount, long repeat);
 
 /**
  * std::string dispatch.
  */
 template <>
-long rowsImpl<std::string>(long nelements, long repeat);
+long rowCountImpl<std::string>(long elementCount, long repeat);
 
 /**
  * Other types dispatch.
  */
 template <typename T>
-long rowsImpl(long nelements, long repeat) {
-  return (nelements + repeat - 1) / repeat;
+long rowCountImpl(long elementCount, long repeat) {
+  return (elementCount + repeat - 1) / repeat;
 }
 
 } // namespace Internal
@@ -53,19 +53,19 @@ Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
 }
 
 template <typename T>
-long Column<T>::rows() const {
-  return Internal::rowsImpl<T>(nelements(), info.repeat);
+long Column<T>::rowCount() const {
+  return Internal::rowCountImpl<T>(elementCount(), info.repeat);
 }
 
 template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long nelements, const T *data) :
+PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T *data) :
     Column<T>(columnInfo),
-    m_nelements(nelements),
+    m_nelements(elementCount),
     m_data(data) {
 }
 
 template <typename T>
-long PtrColumn<T>::nelements() const {
+long PtrColumn<T>::elementCount() const {
   return m_nelements;
 }
 
@@ -81,7 +81,7 @@ VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &ve
 }
 
 template <typename T>
-long VecRefColumn<T>::nelements() const {
+long VecRefColumn<T>::elementCount() const {
   return m_ref.size();
 }
 
@@ -104,7 +104,7 @@ VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector) : Colum
 }
 
 template <typename T>
-long VecColumn<T>::nelements() const {
+long VecColumn<T>::elementCount() const {
   return m_vec.size();
 }
 

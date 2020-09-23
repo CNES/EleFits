@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(move_test) {
   input = std::move(column.vector());
   BOOST_CHECK_EQUAL(input[1], 5);
   BOOST_CHECK_EQUAL(column.vector().size(), 0);
-  BOOST_CHECK_EQUAL(column.nelements(), 0);
+  BOOST_CHECK_EQUAL(column.elementCount(), 0);
 }
 
 //-----------------------------------------------------------------------------

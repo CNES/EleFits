@@ -51,9 +51,9 @@ void checkScalar() {
 
 template <typename T>
 void checkVector() {
-  constexpr long rows = 10;
+  constexpr long rowCount = 10;
   constexpr long repeat = 2;
-  Test::RandomScalarColumn<T> input(rows * repeat);
+  Test::RandomScalarColumn<T> input(rowCount * repeat);
   input.info.repeat = repeat;
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::Temporary);
