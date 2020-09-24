@@ -23,10 +23,10 @@
 #include <fitsio.h>
 #include <string>
 
-#include "BintableWrapper.h"
-#include "CfitsioUtils.h"
-#include "ImageWrapper.h"
-#include "TypeWrapper.h"
+#include "EL_CfitsioWrapper/BintableWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioUtils.h"
+#include "EL_CfitsioWrapper/ImageWrapper.h"
+#include "EL_CfitsioWrapper/TypeWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -147,6 +147,8 @@ void deleteHdu(fitsfile *fptr, long index);
 } // namespace Cfitsio
 } // namespace Euclid
 
-#include "impl/HduWrapper.hpp"
+#define _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
+#include "EL_CfitsioWrapper/impl/HduWrapper.hpp"
+#undef _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
 
 #endif

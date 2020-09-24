@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSFILE_SIFFILE_IMPL
+
 #include "EL_FitsFile/SifFile.h"
 
 namespace Euclid {
@@ -36,3 +38,5 @@ void SifFile::writeRaster(const Raster<T, n> &raster) const {
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

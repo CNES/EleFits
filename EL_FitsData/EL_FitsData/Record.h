@@ -125,6 +125,8 @@ struct Record {
 } // namespace FitsIO
 } // namespace Euclid
 
-#include "impl/Record.hpp"
+#define _EL_FITSDATA_RECORD_IMPL
+#include "EL_FitsData/impl/Record.hpp"
+#undef _EL_FITSDATA_RECORD_IMPL
 
 #endif

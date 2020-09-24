@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_RECORDHANDLER_H
-#define _EL_CFITSIOWRAPPER_RECORDHANDLER_H
+#ifndef _EL_CFITSIOWRAPPER_HEADERWRAPPER_H
+#define _EL_CFITSIOWRAPPER_HEADERWRAPPER_H
 
 #include <fitsio.h>
 #include <string>
@@ -144,6 +144,8 @@ void writeHistory(fitsfile *fptr, const std::string &history);
 } // namespace Cfitsio
 } // namespace Euclid
 
-#include "impl/HeaderWrapper.hpp"
+#define _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
+#include "EL_CfitsioWrapper/impl/HeaderWrapper.hpp"
+#undef _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
 
 #endif

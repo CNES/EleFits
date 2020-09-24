@@ -25,8 +25,8 @@
 
 #include "EL_FitsData/Column.h"
 
-#include "CfitsioUtils.h"
-#include "TypeWrapper.h"
+#include "EL_CfitsioWrapper/CfitsioUtils.h"
+#include "EL_CfitsioWrapper/TypeWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -93,6 +93,8 @@ void appendColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns);
 } // namespace Cfitsio
 } // namespace Euclid
 
-#include "impl/BintableWrapper.hpp"
+#define _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
+#include "EL_CfitsioWrapper/impl/BintableWrapper.hpp"
+#undef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
 
 #endif

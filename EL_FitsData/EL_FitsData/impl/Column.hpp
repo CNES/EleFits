@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSDATA_COLUMN_IMPL
+
 #include "EL_FitsData/Column.h"
 
 namespace Euclid {
@@ -130,3 +132,5 @@ std::vector<T> &VecColumn<T>::vector() {
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

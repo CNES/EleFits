@@ -77,6 +77,8 @@ public:
 } // namespace FitsIO
 } // namespace Euclid
 
-#include "impl/ImageHdu.hpp"
+#define _EL_FITSFILE_IMAGEHDU_IMPL
+#include "EL_FitsFile/impl/ImageHdu.hpp"
+#undef _EL_FITSFILE_IMAGEHDU_IMPL
 
 #endif

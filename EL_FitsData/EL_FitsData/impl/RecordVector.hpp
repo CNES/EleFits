@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSDATA_RECORDVECTOR_IMPL
+
 #include <algorithm> // find_if
 
 #include "EL_FitsData/RecordVector.h"
@@ -50,3 +52,5 @@ Record<TValue> RecordVector<T>::as(const std::string &keyword) const {
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

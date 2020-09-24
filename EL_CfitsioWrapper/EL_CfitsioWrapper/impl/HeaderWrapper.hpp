@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
+
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 #include <boost/any.hpp>
@@ -241,3 +243,5 @@ void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records
 } // namespace Header
 } // namespace Cfitsio
 } // namespace Euclid
+
+#endif

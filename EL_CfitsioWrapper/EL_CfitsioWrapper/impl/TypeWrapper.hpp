@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_CFITSIOWRAPPER_TYPEWRAPPER_IMPL
+
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
 namespace Euclid {
@@ -180,3 +182,5 @@ DEF_IMAGE_BITPIX(std::uint64_t, ULONGLONG_IMG)
 
 } // namespace Cfitsio
 } // namespace Euclid
+
+#endif
