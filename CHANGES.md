@@ -1,6 +1,6 @@
 # Change log
 
-# 2.0 (breaking)
+# 2.0.0 (breaking)
 
 ## Bug fixes
 
