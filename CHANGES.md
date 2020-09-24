@@ -1,6 +1,16 @@
 # Change log
 
-# 2.0 (breaking)
+# 2.1
+
+## Expected features
+
+* Read a whole header unit as a `string`
+* Read bintable dimensions
+* Check whether a keyword or column exists
+* Check whether a file is open
+* Write COMMENT and HISTORY records
+
+# 2.0.0 (breaking)
 
 ## Bug fixes
 
