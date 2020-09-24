@@ -96,6 +96,8 @@ public:
 } // namespace FitsIO
 } // namespace Euclid
 
-#include "impl/BintableHdu.hpp"
+#define _EL_FITSFILE_BINTABLEHDU_IMPL
+#include "EL_FitsFile/impl/BintableHdu.hpp"
+#undef _EL_FITSFILE_BINTABLEHDU_IMPL
 
 #endif

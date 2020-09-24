@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSFILE_MEFFILE_IMPL
+
 #include "EL_FitsFile/MefFile.h"
 
 namespace Euclid {
@@ -101,3 +103,5 @@ DECLARE_ASSIGN_IMAGE_EXT(double, 3)
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

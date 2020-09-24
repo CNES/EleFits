@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSFILE_HDU_IMPL
+
 #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
@@ -164,3 +166,5 @@ extern template void RecordHdu::updateRecords(const std::vector<Record<boost::an
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

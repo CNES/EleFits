@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_CFITSIOWRAPPER_CFITSIOUTILS_IMPL
+
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 
 namespace Euclid {
@@ -61,3 +63,5 @@ CStrArray::CStrArray(const T begin, const T end) : smartPtrVector(end - begin), 
 
 } // namespace Cfitsio
 } // namespace Euclid
+
+#endif

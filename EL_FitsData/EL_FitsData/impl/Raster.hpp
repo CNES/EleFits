@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSDATA_RASTER_IMPL
+
 #include <functional> // multiplies
 #include <numeric> // accumulate
 
@@ -148,3 +150,6 @@ std::vector<T> &VecRaster<T, n>::vector() {
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif
+

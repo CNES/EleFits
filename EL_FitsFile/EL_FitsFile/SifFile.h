@@ -75,6 +75,8 @@ private:
 } // namespace FitsIO
 } // namespace Euclid
 
-#include "impl/SifFile.hpp"
+#define _EL_FITSFILE_SIFFILE_IMPL
+#include "EL_FitsFile/impl/SifFile.hpp"
+#undef _EL_FITSFILE_SIFFILE_IMPL
 
 #endif

@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
+
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 
@@ -376,3 +378,5 @@ void appendColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
 } // namespace Bintable
 } // namespace Cfitsio
 } // namespace Euclid
+
+#endif

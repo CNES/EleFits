@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSDATA_RECORD_IMPL
+
 #include <boost/any.hpp>
 #include <complex>
 #include <type_traits> // enable_if & co
@@ -226,3 +228,6 @@ std::string Record<T>::rawComment() const {
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif
+

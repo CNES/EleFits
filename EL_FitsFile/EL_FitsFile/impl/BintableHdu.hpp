@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSFILE_BINTABLEHDU_IMPL
+
 #include "EL_FitsFile/BintableHdu.h"
 
 namespace Euclid {
@@ -90,3 +92,5 @@ DECLARE_WRITE_COLUMN(unsigned long)
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

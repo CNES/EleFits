@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_FITSFILE_IMAGEHDU_IMPL
+
 #include "EL_FitsFile/ImageHdu.h"
 
 namespace Euclid {
@@ -74,3 +76,5 @@ DECLARE_WRITE_RASTER(double, 3)
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

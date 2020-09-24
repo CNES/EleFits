@@ -17,6 +17,8 @@
  *
  */
 
+#ifdef _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
+
 #include "EL_CfitsioWrapper/HduWrapper.h"
 
 namespace Euclid {
@@ -81,3 +83,5 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
 } // namespace Hdu
 } // namespace Cfitsio
 } // namespace Euclid
+
+#endif

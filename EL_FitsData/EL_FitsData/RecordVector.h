@@ -74,6 +74,8 @@ public:
 } // namespace FitsIO
 } // namespace Euclid
 
-#include "impl/RecordVector.hpp"
+#define _EL_FITSDATA_RECORDVECTOR_IMPL
+#include "EL_FitsData/impl/RecordVector.hpp"
+#undef _EL_FITSDATA_RECORDVECTOR_IMPL
 
 #endif
