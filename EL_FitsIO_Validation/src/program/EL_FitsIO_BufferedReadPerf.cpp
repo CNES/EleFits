@@ -27,7 +27,7 @@ using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestUtils.h"
 #include "EL_FitsFile/MefFile.h"
 
 using namespace Euclid::FitsIO;

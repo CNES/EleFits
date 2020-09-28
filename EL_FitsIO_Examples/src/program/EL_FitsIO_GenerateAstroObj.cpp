@@ -23,7 +23,7 @@
 #include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
 
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestRaster.h"
 #include "EL_FitsFile/MefFile.h"
 
 using boost::program_options::options_description;

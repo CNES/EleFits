@@ -17,7 +17,7 @@
  *
  */
 
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestRaster.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -50,18 +50,6 @@ bool SmallRaster::approx(const Raster<float> &other, float tol) const {
     }
   }
   return true;
-}
-
-SmallTable::SmallTable() :
-    extname("MESSIER"),
-    nums { 45, 7, 31 },
-    radecs { { 56.8500F, 24.1167F }, { 268.4667F, -34.7928F }, { 10.6833F, 41.2692F } },
-    names { "Pleiades", "Ptolemy Cluster", "Andromeda Galaxy" },
-    distsMags { 0.44, 1.6, 0.8, 3.3, 2900.0, 3.4 },
-    numCol({ "ID", "", 1 }, nums),
-    radecCol({ "RADEC", "deg", 1 }, radecs),
-    nameCol({ "NAME", "", 68 }, names), // TODO 68?
-    distMagCol({ "DIST_MAG", "kal", 2 }, distsMags) {
 }
 
 } // namespace Test

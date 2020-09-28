@@ -22,7 +22,7 @@
 #include "ElementsKernel/Temporary.h"
 
 #include "EL_FitsFile/MefFile.h"
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestColumn.h"
 
 #include "EL_FitsFile/BintableHdu.h"
 

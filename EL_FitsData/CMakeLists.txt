@@ -55,8 +55,8 @@ elements_add_unit_test(Column tests/src/Column_test.cpp
                      EXECUTABLE EL_FitsData_Column_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
-elements_add_unit_test(FitsDataFixture tests/src/FitsDataFixture_test.cpp 
-                     EXECUTABLE EL_FitsData_FitsDataFixture_test
+elements_add_unit_test(TestRaster tests/src/TestRaster_test.cpp 
+                     EXECUTABLE EL_FitsData_TestRaster_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
 elements_add_unit_test(Raster tests/src/Raster_test.cpp 

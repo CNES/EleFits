@@ -19,13 +19,13 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestRaster.h"
 
 using namespace Euclid::FitsIO::Test;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(FitsDataFixture_test)
+BOOST_AUTO_TEST_SUITE(TestRaster_test)
 
 //-----------------------------------------------------------------------------
 

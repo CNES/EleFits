@@ -24,7 +24,7 @@
 #include "ElementsKernel/ProgramHeaders.h"
 #include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestUtils.h"
 
 //! [Include]
 #include "EL_FitsFile/MefFile.h"

@@ -19,7 +19,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestColumn.h"
 
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"

@@ -21,7 +21,7 @@
 
 #include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsData/FitsDataFixture.h"
+#include "EL_FitsData/TestRaster.h"
 #include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsFile/SifFile.h"
 
