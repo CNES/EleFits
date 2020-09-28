@@ -52,7 +52,7 @@ public:
    * @todo
    * The constructor should be protected, with MefFile a friend of the class.
    */
-  RecordHdu(fitsfile *&file, long index);
+  RecordHdu(fitsfile *&file, long index, HduType type = HduType::Image);
 
   /**
    * @brief Destructor.
@@ -63,6 +63,11 @@ public:
    * @brief Get the 1-based index of the HDU.
    */
   long index() const;
+
+  /**
+   * @brief Get the type of the HDU.
+   */
+  HduType type() const;
 
   /**
    * @brief Read the extension name.
@@ -239,6 +244,11 @@ protected:
    * @brief The HDU index.
    */
   long m_index;
+
+  /**
+   * @brief The HDU type.
+   */
+  HduType m_type;
 };
 
 } // namespace FitsIO

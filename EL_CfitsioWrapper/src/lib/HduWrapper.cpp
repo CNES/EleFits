@@ -48,14 +48,14 @@ std::string currentName(fitsfile *fptr) {
   }
 }
 
-Type currentType(fitsfile *fptr) {
+FitsIO::HduType currentType(fitsfile *fptr) {
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
   if (type == BINARY_TBL) {
-    return Type::Bintable;
+    return FitsIO::HduType::Bintable;
   }
-  return Type::Image;
+  return FitsIO::HduType::Image;
 }
 
 bool currentIsPrimary(fitsfile *fptr) {

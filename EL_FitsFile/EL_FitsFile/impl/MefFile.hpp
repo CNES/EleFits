@@ -30,10 +30,10 @@ const T &MefFile::access(long index) {
   auto hduType = Cfitsio::Hdu::currentType(m_fptr);
   auto &ptr = m_hdus[index - 1];
   switch (hduType) {
-    case Cfitsio::Hdu::Type::Image:
+    case HduType::Image:
       ptr.reset(new ImageHdu(m_fptr, index));
       break;
-    case Cfitsio::Hdu::Type::Bintable:
+    case HduType::Bintable:
       ptr.reset(new BintableHdu(m_fptr, index));
       break;
     default:

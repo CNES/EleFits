@@ -30,13 +30,28 @@ namespace Euclid {
 namespace Cfitsio {
 
 /**
- * @brief Convert a string to a unique_ptr<char>.
- * @details Used to work around non-const correctness of CFitsIO.
+ * @brief Convert a string to a `unique_ptr<char>`.
+ * @details
+ * Used to work around non-const correctness of CFitsIO:
+ * when a function expects a `char *` instead of a `const char *`,
+ * `string::c_str()` cannot be used.
+ * To call some function `f(char *)` with a string `s`, do:
+ * \code
+ * f(toCharPtr(s).get());
+ * \endcode
  */
 std::unique_ptr<char[]> toCharPtr(const std::string &str);
 
 /**
- * @brief A helper structure to safely convert vector<string> to char**.
+ * @brief A helper structure to safely convert `vector<string>` to `char **`.
+ * @details
+ * To call some function `f(char **)` with a vector of strings `v`, do:
+ * \code
+ * CStrArray a(v);
+ * f(a.data());
+ * \endcode
+ * @warning
+ * The CStrArray should not be destroyed before the user function ends.
  */
 struct CStrArray {
 
@@ -57,19 +72,21 @@ struct CStrArray {
   explicit CStrArray(const std::initializer_list<std::string> &data);
 
   /**
-   * @brief A vector of smart pointers to char[].
-   * @warning Modification makes CStrArray object invalid.
+   * @brief A vector of smart pointers to `char[]`.
+   * @warning
+   * Modification makes CStrArray object invalid.
    */
   std::vector<std::unique_ptr<char[]>> smartPtrVector;
 
   /**
-   * @brief A vector of char*.
-   * @warning Modification makes CStrArray object invalid.
+   * @brief A vector of `char*`.
+   * @warning
+   * Modification makes CStrArray object invalid.
    */
   std::vector<char *> cStrVector;
 
   /**
-   * @brief Get the data as a non-const char**.
+   * @brief Get the data as a non-const `char **`.
    */
   char **data();
 };

@@ -46,8 +46,8 @@ RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, 
 }
 
 template <typename T>
-SmallVectorColumn<T>::SmallVectorColumn() :
-    VecColumn<std::vector<T>>({ "VECTOR", "m2", 2 }, { { T(0.), T(1.) }, { T(2.), T(3.) }, { T(4.), T(5.) } }) {
+RandomVectorColumn<T>::RandomVectorColumn(long repeat, long size, T min, T max) :
+    VecColumn<T>({ "VECTOR", "m", repeat }, generateRandomVector<T>(repeat * size, min, max)) {
 }
 
 } // namespace Test

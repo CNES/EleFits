@@ -22,7 +22,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-ImageHdu::ImageHdu(fitsfile *&fptr, long index) : RecordHdu(fptr, index) {
+ImageHdu::ImageHdu(fitsfile *&fptr, long index) : RecordHdu(fptr, index, HduType::Image) {
 }
 
 #ifndef COMPILE_READ_RASTER

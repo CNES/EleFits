@@ -29,6 +29,19 @@
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 
 namespace Euclid {
+
+namespace FitsIO {
+
+/**
+ * @brief HDU type (ASCII tables not supported).
+ */
+enum class HduType {
+  Image, ///< Image HDU
+  Bintable ///< Binary table HDU
+};
+
+} // namespace FitsIO
+
 namespace Cfitsio {
 
 /**
@@ -44,14 +57,6 @@ namespace Cfitsio {
  * Functions to create an HDU append it at the end of the file.
  */
 namespace Hdu {
-
-/**
- * @brief HDU type (ASCII tables not supported).
- */
-enum class Type {
-  Image, ///< Image HDU
-  Bintable ///< Binary table HDU
-};
 
 /**
  * @brief Read the number of HDUs in a Fits file.
@@ -72,7 +77,7 @@ std::string currentName(fitsfile *fptr);
 /**
  * @brief Get the Type of the current HDU.
  */
-Type currentType(fitsfile *fptr);
+FitsIO::HduType currentType(fitsfile *fptr);
 
 /**
  * @brief Check whether current HDU is the Primary HDU.

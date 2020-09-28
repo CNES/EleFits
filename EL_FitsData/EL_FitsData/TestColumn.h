@@ -124,34 +124,19 @@ public:
 };
 
 /**
- * @brief A small string column.
- */
-class SmallStringColumn : public VecColumn<std::string> {
-
-public:
-  /**
-   * @brief Generate a Column of given size.
-   */
-  SmallStringColumn(long size = 3);
-
-  /** @brief Destructor. */
-  virtual ~SmallStringColumn() = default;
-};
-
-/**
  * @brief A small vector column of given type.
  */
 template <typename T>
-class SmallVectorColumn : public VecColumn<std::vector<T>> {
+class RandomVectorColumn : public VecColumn<std::vector<T>> {
 
 public:
   /**
    * @brief Generate a Column.
    */
-  SmallVectorColumn();
+  explicit RandomVectorColumn(long repeat = 3, long size = 3, T min = almostMin<T>(), T max = almostMax<T>());
 
   /** @brief Destructor. */
-  virtual ~SmallVectorColumn() = default;
+  virtual ~RandomVectorColumn() = default;
 };
 
 } // namespace Test

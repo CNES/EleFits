@@ -2,6 +2,14 @@
 
 # 2.1
 
+## New features
+
+* New method `RecordHdu::type` returns the HDU type (Image or Bintable)
+
+## Cleaning
+
+* Fixture classes better organized
+
 ## Expected features
 
 * Read a whole header unit as a `string`
