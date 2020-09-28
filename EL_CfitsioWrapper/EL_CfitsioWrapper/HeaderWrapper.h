@@ -41,6 +41,12 @@ namespace Cfitsio {
 namespace Header {
 
 /**
+ * @brief Read the whole header as a string.
+ * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank)
+ */
+std::string readHeader(fitsfile *fptr, bool incNonValued = true);
+
+/**
  * @brief List all the valued keywords.
  * @details
  * Records with no value indicator are bypassed.

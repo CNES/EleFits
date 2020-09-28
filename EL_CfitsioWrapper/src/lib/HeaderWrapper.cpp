@@ -25,6 +25,24 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Header {
 
+std::string readHeader(fitsfile *fptr, bool incNonValued) {
+  int status = 0;
+  char *header = nullptr;
+  int recordCount = 0;
+  fits_hdr2str(
+      fptr,
+      !incNonValued,
+      nullptr, // exclist => do not exclude any keyword
+      0, // nexc => idem
+      &header,
+      &recordCount,
+      &status);
+  std::string headerString(header);
+  free(header);
+  mayThrowCfitsioError(status, "Cannot read the complete header");
+  return headerString;
+}
+
 std::vector<std::string> listValuedKeywords(fitsfile *fptr) {
   int count = 0;
   int status = 0;

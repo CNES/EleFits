@@ -46,6 +46,11 @@ void RecordHdu::updateName(const std::string &name) const {
   Cfitsio::Hdu::updateName(m_fptr, name);
 }
 
+std::string RecordHdu::readHeader(bool incNonValued) const {
+  gotoThisHdu();
+  return Cfitsio::Header::readHeader(m_fptr, incNonValued);
+}
+
 std::vector<std::string> RecordHdu::readKeywords() const {
   return Cfitsio::Header::listValuedKeywords(m_fptr);
 }

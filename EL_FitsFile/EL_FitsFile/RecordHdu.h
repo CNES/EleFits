@@ -80,6 +80,18 @@ public:
   void updateName(const std::string &name) const;
 
   /**
+   * @brief Read the header as a string.
+   * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank)
+   * @details
+   * The main purpose of this function is to interface with external libraries like WcsLib:
+   * \code
+   * std::string header = readHeader(false);
+   * WcsLib::wcspih(&header[0], header.size()/80, WCSHDR_all, 0, &nreject, &nwcs, &wcs);
+   * \endcode
+   */
+  std::string readHeader(bool incNonValued = true) const;
+
+  /**
    * @brief List the valued record keywords.
    * @warning
    * Non-valued records, like COMMENT and HISTORY records, are bypassed.
