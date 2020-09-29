@@ -31,7 +31,7 @@ std::string readHeader(fitsfile *fptr, bool incNonValued) {
   int recordCount = 0;
   fits_hdr2str(
       fptr,
-      !incNonValued,
+      not incNonValued,
       nullptr, // exclist => do not exclude any keyword
       0, // nexc => idem
       &header,
@@ -69,7 +69,7 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
   if (length == 0) {
     return { keyword, "" };
   }
-  char *value = nullptr; // That's the only function in which CFitsIO allocates itself!
+  char *value = nullptr; // That's almost the only function in which CFitsIO allocates itself!
   char unit[FLEN_COMMENT];
   unit[0] = '\0';
   char comment[FLEN_COMMENT];

@@ -12,6 +12,7 @@
 
 ## Cleaning
 
+* `FitsFile::open` throws an error if already open
 * Fixture classes better organized
 
 ## Expected features

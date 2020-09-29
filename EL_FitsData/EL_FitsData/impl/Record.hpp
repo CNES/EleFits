@@ -35,7 +35,7 @@ namespace Internal {
  * @brief Valid only if TFrom and TTo are different.
  */
 template <typename TFrom, typename TTo>
-using ifDifferent = typename std::enable_if<!std::is_same<TFrom, TTo>::value>::type;
+using ifDifferent = typename std::enable_if<not std::is_same<TFrom, TTo>::value>::type;
 
 /**
  * @brief Valid only if TTo is a number (not a complex, not a string, and not an any).
@@ -230,4 +230,3 @@ std::string Record<T>::rawComment() const {
 } // namespace Euclid
 
 #endif
-

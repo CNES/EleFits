@@ -40,7 +40,20 @@ std::string FitsFile::filename() const {
   return m_filename;
 }
 
+bool FitsFile::isOpen() const {
+  return m_open;
+}
+
+void FitsFile::reopen() {
+  if (not m_open) {
+    open(m_filename, m_permission);
+  }
+}
+
 void FitsFile::open(const std::string &filename, Permission permission) {
+  if (m_open) {
+    throw std::runtime_error("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
+  }
   switch (permission) {
     case Permission::Read:
       m_fptr = Cfitsio::File::open(filename, Cfitsio::File::OpenPolicy::ReadOnly);
@@ -57,6 +70,8 @@ void FitsFile::open(const std::string &filename, Permission permission) {
     case Permission::Temporary:
       m_fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::CreateOnly);
   }
+  m_filename = filename;
+  m_permission = permission;
   m_open = true; // If this line is reached, no error was raised
 }
 

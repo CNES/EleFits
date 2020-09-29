@@ -107,12 +107,12 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   BOOST_CHECK_EQUAL(ext.readRowCount(), column1.rowCount());
   BOOST_CHECK(ext.hasColumn(name1));
   BOOST_CHECK(ext.hasColumn(name2));
-  BOOST_CHECK(!ext.hasColumn("NOTHERE"));
+  BOOST_CHECK(not ext.hasColumn("NOTHERE"));
   const auto presence = ext.hasColumns({ name1, name2, "NOTHERE" });
   BOOST_CHECK_EQUAL(presence.size(), 3);
   BOOST_CHECK(presence[0]);
   BOOST_CHECK(presence[1]);
-  BOOST_CHECK(!presence[2]);
+  BOOST_CHECK(not presence[2]);
 }
 
 //-----------------------------------------------------------------------------

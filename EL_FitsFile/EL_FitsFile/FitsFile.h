@@ -95,9 +95,34 @@ public:
   std::string filename() const;
 
   /**
+   * @brief Check whether the file is open.
+   */
+  bool isOpen() const;
+
+  /**
    * @brief Open a Fits file with given filename and permission.
+   * @details
+   * This method can only be used after having closed the file;
+   * It throws an exception otherwise.
+   * This method can be used to change the permission:
+   * \code
+   * FitsFile f(filename, FitsFile::Permission::CREATE);
+   * ... // Write things
+   * f.close();
+   * f.open(filename, FitsFile::Permission::READ);
+   * ... // Read things
+   * \endcode
+   * ... but not to change the filename:
+   * If called with another filename, another Fits file will be opened.
+   * @warning
+   * In any case, relying on the constructors and destructors by managing the object lifetime is preferrable.
    */
   void open(const std::string &filename, Permission permission);
+
+  /**
+   * @brief Reopen the file.
+   */
+  void reopen();
 
   /**
    * @brief Close the file.
