@@ -26,6 +26,29 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Bintable {
 
+long columnCount(fitsfile *fptr) {
+  int status = 0;
+  int ncols = 0;
+  fits_get_num_cols(fptr, &ncols, &status);
+  mayThrowCfitsioError(status, "Cannot read the number of columns");
+  return ncols;
+}
+
+long rowCount(fitsfile *fptr) {
+  int status = 0;
+  long nrows = 0;
+  fits_get_num_rows(fptr, &nrows, &status);
+  mayThrowCfitsioError(status, "Cannot read the number of rows");
+  return nrows;
+}
+
+bool hasColumn(fitsfile *fptr, const std::string &name) {
+  int index = 0;
+  int status = 0;
+  fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
+  return (status == 0) || (status == COL_NOT_UNIQUE);
+}
+
 long columnIndex(fitsfile *fptr, const std::string &name) {
   int index = 0;
   int status = 0;

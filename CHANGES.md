@@ -4,7 +4,11 @@
 
 ## New features
 
-* New method `RecordHdu::type` returns the HDU type (Image or Bintable)
+* New methods in `RecordHdu`:
+  * `type` returns the HDU type (Image or Bintable)
+  * `readHeader` returns the full header as a string
+* Read bintable dimensions
+* Check whether a column exists
 
 ## Cleaning
 
@@ -12,9 +16,7 @@
 
 ## Expected features
 
-* Read a whole header unit as a `string`
-* Read bintable dimensions
-* Check whether a keyword or column exists
+* Check whether a keyword exists
 * Check whether a file is open
 * Write COMMENT and HISTORY records
 

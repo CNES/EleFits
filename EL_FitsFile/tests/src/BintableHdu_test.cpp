@@ -22,6 +22,7 @@
 #include "ElementsKernel/Temporary.h"
 
 #include "EL_FitsFile/MefFile.h"
+#include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsData/TestColumn.h"
 
 #include "EL_FitsFile/BintableHdu.h"
@@ -92,6 +93,26 @@ BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
   BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND2", input1, input2));
   // BOOST_CHECK_NO_THROW(file.assignBintableExt("2AND1", input2, input1));
   // Syscall param write(buf) points to uninitialised byte(s)
+}
+
+BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
+  const std::string name1 = "COL1";
+  Test::RandomScalarColumn<std::string> column1;
+  column1.info.name = name1;
+  const std::string name2 = "COL2";
+  Test::RandomScalarColumn<double> column2;
+  column2.info.name = name2;
+  const auto &ext = assignBintableExt("", column1, column2);
+  BOOST_CHECK_EQUAL(ext.readColumnCount(), 2);
+  BOOST_CHECK_EQUAL(ext.readRowCount(), column1.rowCount());
+  BOOST_CHECK(ext.hasColumn(name1));
+  BOOST_CHECK(ext.hasColumn(name2));
+  BOOST_CHECK(!ext.hasColumn("NOTHERE"));
+  const auto presence = ext.hasColumns({ name1, name2, "NOTHERE" });
+  BOOST_CHECK_EQUAL(presence.size(), 3);
+  BOOST_CHECK(presence[0]);
+  BOOST_CHECK(presence[1]);
+  BOOST_CHECK(!presence[2]);
 }
 
 //-----------------------------------------------------------------------------

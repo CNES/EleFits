@@ -19,6 +19,8 @@
 
 #ifdef _EL_FITSFILE_BINTABLEHDU_IMPL
 
+#include <algorithm>
+
 #include "EL_FitsFile/BintableHdu.h"
 
 namespace Euclid {

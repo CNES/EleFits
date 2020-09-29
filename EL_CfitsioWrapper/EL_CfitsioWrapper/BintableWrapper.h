@@ -37,6 +37,21 @@ namespace Cfitsio {
 namespace Bintable {
 
 /**
+ * @brief Get the number of columns.
+ */
+long columnCount(fitsfile *fptr);
+
+/**
+ * @bref Get the number of rows.
+ */
+long rowCount(fitsfile *fptr);
+
+/**
+ * @brief Check whether a given column exists.
+ */
+bool hasColumn(fitsfile *fptr, const std::string &name);
+
+/**
  * @brief Get the index of a Bintable column.
  */
 long columnIndex(fitsfile *fptr, const std::string &name);

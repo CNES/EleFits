@@ -51,6 +51,27 @@ public:
   virtual ~BintableHdu() = default;
 
   /**
+   * @brief Read the number of columns.
+   */
+  long readColumnCount() const;
+
+  /**
+   * @brief Read the number of rows.
+   */
+  long readRowCount() const;
+
+  /**
+   * @brief Check whether the HDU contains a given column.
+   */
+  bool hasColumn(const std::string &name) const;
+
+  /**
+   * @brief Check whether the HDU contains a given set of columns.
+   * @see hasColumn
+   */
+  std::vector<bool> hasColumns(const std::vector<std::string> &names) const;
+
+  /**
    * @brief Read a column with given name.
    */
   template <typename T>

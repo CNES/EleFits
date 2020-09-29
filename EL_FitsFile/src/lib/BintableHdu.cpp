@@ -25,6 +25,31 @@ namespace FitsIO {
 BintableHdu::BintableHdu(fitsfile *&fptr, long index) : RecordHdu(fptr, index, HduType::Bintable) {
 }
 
+long BintableHdu::readColumnCount() const {
+  gotoThisHdu();
+  return Cfitsio::Bintable::columnCount(m_fptr);
+}
+
+long BintableHdu::readRowCount() const {
+  gotoThisHdu();
+  return Cfitsio::Bintable::rowCount(m_fptr);
+}
+
+bool BintableHdu::hasColumn(const std::string &name) const {
+  gotoThisHdu();
+  return Cfitsio::Bintable::hasColumn(m_fptr, name);
+}
+
+std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string> &names) const {
+  gotoThisHdu();
+  const auto size = names.size();
+  std::vector<bool> counts(size);
+  std::transform(names.begin(), names.end(), counts.begin(), [&](const std::string &n) {
+    return Cfitsio::Bintable::hasColumn(m_fptr, n);
+  });
+  return counts;
+}
+
 #ifndef COMPILE_READ_COLUMN
 #define COMPILE_READ_COLUMN(T) template VecColumn<T> BintableHdu::readColumn(const std::string &) const;
 COMPILE_READ_COLUMN(char)
