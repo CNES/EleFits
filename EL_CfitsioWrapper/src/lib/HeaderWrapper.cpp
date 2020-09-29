@@ -37,8 +37,8 @@ std::string readHeader(fitsfile *fptr, bool incNonValued) {
       &header,
       &recordCount,
       &status);
-  std::string headerString(header);
-  free(header);
+  std::string headerString { header };
+  fits_free_memory(header, &status);
   mayThrowCfitsioError(status, "Cannot read the complete header");
   return headerString;
 }

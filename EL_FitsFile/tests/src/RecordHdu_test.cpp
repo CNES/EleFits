@@ -130,6 +130,13 @@ BOOST_FIXTURE_TEST_CASE(brackets_in_comment_test, Test::TemporaryMefFile) {
   BOOST_CHECK_EQUAL(weirdRecord.comment, "[0:1] SOC Planning ID");
 }
 
+BOOST_FIXTURE_TEST_CASE(header_read_test, Test::TemporarySifFile) {
+  const auto header = this->header().readHeader();
+  BOOST_CHECK_GT(header.size(), 0);
+  BOOST_CHECK_EQUAL(header.size() % 80, 0);
+  // TODO check contents
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
