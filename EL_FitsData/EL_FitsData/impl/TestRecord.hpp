@@ -19,7 +19,8 @@
 
 #ifdef _EL_FITSDATA_TESTRECORD_IMPL
 
-#include <algorithm>
+#include <algorithm> // transform
+#include <cctype> // toupper
 
 #include "EL_FitsData/TestUtils.h"
 #include "EL_FitsData/TestRecord.h"
@@ -29,7 +30,7 @@ namespace FitsIO {
 namespace Test {
 
 template <typename T>
-Record<T> RandomHeader::generateRecord(std::string typeName) {
+Record<T> generateRandomRecord(const std::string &typeName) {
   std::vector<std::string> typeChunks;
   std::string chunk;
   std::istringstream chunkStream(typeName);
@@ -43,8 +44,14 @@ Record<T> RandomHeader::generateRecord(std::string typeName) {
     prefixes[i] = typeChunks[i][0];
   }
   std::string keyword = prefixes + suffix;
-  std::transform(keyword.begin(), keyword.end(), keyword.begin(), std::toupper);
-  return Record<T>(keyword, generateRandomValue<T>(), prefixes + suffix[0], prefixes + " " + suffix);
+  std::transform(keyword.begin(), keyword.end(), keyword.begin(), [](unsigned char c) { return std::toupper(c); });
+  std::string comment = prefixes.empty() ? suffix : prefixes + " " + suffix;
+  return generateRandomRecord<T>(keyword, prefixes + suffix[0], comment);
+}
+
+template <typename T>
+Record<T> generateRandomRecord(const std::string &k, const std::string &u, const std::string &c) {
+  return Record<T>(k, generateRandomValue<T>(), u, c);
 }
 
 } // namespace Test

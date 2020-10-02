@@ -41,6 +41,12 @@ public:
   explicit RecordVector(std::size_t size);
 
   /**
+   * @brief Create a RecordVector from a list of records.
+   */
+  template <typename... Ts>
+  RecordVector(const Record<Ts> &... records);
+
+  /**
    * @brief The records.
    */
   std::vector<Record<T>> vector;

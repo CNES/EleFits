@@ -31,6 +31,11 @@ RecordVector<T>::RecordVector(std::size_t size) : vector(size) {
 }
 
 template <typename T>
+template <typename... Ts>
+RecordVector<T>::RecordVector(const Record<Ts> &... records) : vector { Record<T>(records)... } {
+}
+
+template <typename T>
 const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
   const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T> &r) { return r.keyword == keyword; });
   if (it == vector.end()) {

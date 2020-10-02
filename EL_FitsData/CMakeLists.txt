@@ -55,10 +55,6 @@ elements_add_unit_test(Column tests/src/Column_test.cpp
                      EXECUTABLE EL_FitsData_Column_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
-elements_add_unit_test(TestRaster tests/src/TestRaster_test.cpp 
-                     EXECUTABLE EL_FitsData_TestRaster_test
-                     LINK_LIBRARIES EL_FitsData
-                     TYPE Boost)
 elements_add_unit_test(Raster tests/src/Raster_test.cpp 
                      EXECUTABLE EL_FitsData_Raster_test
                      LINK_LIBRARIES EL_FitsData
@@ -69,6 +65,14 @@ elements_add_unit_test(Record tests/src/Record_test.cpp
                      TYPE Boost)
 elements_add_unit_test(RecordVector tests/src/RecordVector_test.cpp 
                      EXECUTABLE EL_FitsData_RecordVector_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
+elements_add_unit_test(TestRaster tests/src/TestRaster_test.cpp 
+                     EXECUTABLE EL_FitsData_TestRaster_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
+elements_add_unit_test(TestRecord tests/src/TestRecord_test.cpp 
+                     EXECUTABLE EL_FitsData_TestRecord_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
 

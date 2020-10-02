@@ -39,6 +39,11 @@ std::string almostMin<std::string>() {
 }
 
 template <>
+const char *almostMin<const char *>() {
+  return almostMin<std::string>().c_str();
+}
+
+template <>
 std::complex<float> almostMax<std::complex<float>>() {
   return { almostMax<float>(), almostMax<float>() };
 }
@@ -51,6 +56,16 @@ std::complex<double> almostMax<std::complex<double>>() {
 template <>
 std::string almostMax<std::string>() {
   return std::to_string(almostMax<int>());
+}
+
+template <>
+const char *almostMax<const char *>() {
+  return almostMax<std::string>().c_str();
+}
+
+template <>
+const char *generateRandomValue<const char *>(const char *min, const char *max) {
+  return generateRandomValue<std::string>(min, max).c_str();
 }
 
 template <>

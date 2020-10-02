@@ -47,6 +47,9 @@ std::complex<double> almostMin<std::complex<double>>();
 template <>
 std::string almostMin<std::string>();
 
+template <>
+const char *almostMin<const char *>();
+
 /**
  * @brief Value very close to the max of the type.
  */
@@ -62,11 +65,20 @@ std::complex<double> almostMax<std::complex<double>>();
 template <>
 std::string almostMax<std::string>();
 
+template <>
+const char *almostMax<const char *>();
+
 /**
  * @brief Generate a random value of given type.
  */
 template <typename T>
 T generateRandomValue(T min = almostMin<T>(), T max = almostMax<T>());
+
+/**
+ * @brief Specialization of generateRandomValue for C string.
+ */
+template <>
+const char *generateRandomValue<const char *>(const char *min, const char *max);
 
 /**
  * @brief Generate a random vector of given type and size.
