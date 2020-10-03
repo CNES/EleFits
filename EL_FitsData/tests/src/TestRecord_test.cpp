@@ -30,63 +30,69 @@ BOOST_FIXTURE_TEST_SUITE(TestRecord_test, Test::RandomHeader)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkFieldsAreAllSet(const Record<T> &record) {
+void checkFieldsAreAllSet(const Record<T> &record, long &count) {
   BOOST_CHECK(not record.keyword.empty());
   BOOST_CHECK(not record.unit.empty());
   BOOST_CHECK(not record.comment.empty());
+  count++;
 }
 
 template <typename T>
-void checkFieldsAreAllDifferent(const Record<T> &record) {
+void checkFieldsAreAllDifferent(const Record<T> &record, long &count) {
   BOOST_CHECK_NE(record.keyword, record.unit);
   BOOST_CHECK_NE(record.unit, record.comment);
   BOOST_CHECK_NE(record.comment, record.keyword);
+  count++;
 }
 
 BOOST_AUTO_TEST_CASE(fields_are_all_set_test) {
-  checkFieldsAreAllSet(b);
-  checkFieldsAreAllSet(c);
-  checkFieldsAreAllSet(s);
-  checkFieldsAreAllSet(i);
-  checkFieldsAreAllSet(l);
-  checkFieldsAreAllSet(ll);
-  checkFieldsAreAllSet(uc);
-  checkFieldsAreAllSet(us);
-  checkFieldsAreAllSet(ui);
-  checkFieldsAreAllSet(ul);
-  checkFieldsAreAllSet(ull);
-  checkFieldsAreAllSet(str);
-  checkFieldsAreAllSet(cstr);
-  checkFieldsAreAllSet(f);
-  checkFieldsAreAllSet(d);
-  checkFieldsAreAllSet(cf);
-  checkFieldsAreAllSet(cd);
+  long count = 0;
+  checkFieldsAreAllSet(b, count);
+  checkFieldsAreAllSet(c, count);
+  checkFieldsAreAllSet(s, count);
+  checkFieldsAreAllSet(i, count);
+  checkFieldsAreAllSet(l, count);
+  checkFieldsAreAllSet(ll, count);
+  checkFieldsAreAllSet(uc, count);
+  checkFieldsAreAllSet(us, count);
+  checkFieldsAreAllSet(ui, count);
+  checkFieldsAreAllSet(ul, count);
+  checkFieldsAreAllSet(ull, count);
+  checkFieldsAreAllSet(str, count);
+  checkFieldsAreAllSet(cstr, count);
+  checkFieldsAreAllSet(f, count);
+  checkFieldsAreAllSet(d, count);
+  checkFieldsAreAllSet(cf, count);
+  checkFieldsAreAllSet(cd, count);
+  BOOST_CHECK_EQUAL(count, recordCount);
 }
 
 BOOST_AUTO_TEST_CASE(fields_are_all_different_test) {
-  checkFieldsAreAllDifferent(b);
-  checkFieldsAreAllDifferent(c);
-  checkFieldsAreAllDifferent(s);
-  checkFieldsAreAllDifferent(i);
-  checkFieldsAreAllDifferent(l);
-  checkFieldsAreAllDifferent(ll);
-  checkFieldsAreAllDifferent(uc);
-  checkFieldsAreAllDifferent(us);
-  checkFieldsAreAllDifferent(ui);
-  checkFieldsAreAllDifferent(ul);
-  checkFieldsAreAllDifferent(ull);
-  checkFieldsAreAllDifferent(str);
-  checkFieldsAreAllDifferent(cstr);
-  checkFieldsAreAllDifferent(f);
-  checkFieldsAreAllDifferent(d);
-  checkFieldsAreAllDifferent(cf);
-  checkFieldsAreAllDifferent(cd);
+  long count = 0;
+  checkFieldsAreAllDifferent(b, count);
+  checkFieldsAreAllDifferent(c, count);
+  checkFieldsAreAllDifferent(s, count);
+  checkFieldsAreAllDifferent(i, count);
+  checkFieldsAreAllDifferent(l, count);
+  checkFieldsAreAllDifferent(ll, count);
+  checkFieldsAreAllDifferent(uc, count);
+  checkFieldsAreAllDifferent(us, count);
+  checkFieldsAreAllDifferent(ui, count);
+  checkFieldsAreAllDifferent(ul, count);
+  checkFieldsAreAllDifferent(ull, count);
+  checkFieldsAreAllDifferent(str, count);
+  checkFieldsAreAllDifferent(cstr, count);
+  checkFieldsAreAllDifferent(f, count);
+  checkFieldsAreAllDifferent(d, count);
+  checkFieldsAreAllDifferent(cf, count);
+  checkFieldsAreAllDifferent(cd, count);
+  BOOST_CHECK_EQUAL(count, recordCount);
 }
 
 BOOST_AUTO_TEST_CASE(records_are_all_different_test) {
   const auto v = allRecords().vector;
-  BOOST_CHECK_EQUAL(v.size(), RandomHeader::recordCount);
-  for (long lhs = 0; lhs < RandomHeader::recordCount; ++lhs) {
+  BOOST_CHECK_EQUAL(v.size(), recordCount);
+  for (long lhs = 0; lhs < recordCount; ++lhs) {
     const auto &vlhs = v[lhs];
     for (long rhs = 0; rhs < lhs; ++rhs) {
       const auto &vrhs = v[rhs];

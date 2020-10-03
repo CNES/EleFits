@@ -98,7 +98,9 @@ inline T &Raster<T, n>::operator[](const Position<n> &pos) {
 }
 
 template <typename T, long n>
-PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, const T *data) : Raster<T, n>(rasterShape), m_data(data) {
+PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, const T *rasterData) :
+    Raster<T, n>(rasterShape),
+    m_data(rasterData) {
 }
 
 template <typename T, long n>
@@ -107,7 +109,9 @@ const T *PtrRaster<T, n>::data() const {
 }
 
 template <typename T, long n>
-VecRefRaster<T, n>::VecRefRaster(Position<n> shape, const std::vector<T> &data) : Raster<T, n>(shape), m_ref(data) {
+VecRefRaster<T, n>::VecRefRaster(Position<n> rasterShape, const std::vector<T> &rasterVecRef) :
+    Raster<T, n>(rasterShape),
+    m_ref(rasterVecRef) {
 }
 
 template <typename T, long n>
@@ -121,7 +125,9 @@ const std::vector<T> &VecRefRaster<T, n>::vector() const {
 }
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> shape, std::vector<T> data) : Raster<T, n>(shape), m_vec(data) {
+VecRaster<T, n>::VecRaster(Position<n> rasterShape, std::vector<T> rasterVec) :
+    Raster<T, n>(rasterShape),
+    m_vec(rasterVec) {
 }
 
 template <typename T, long n>
@@ -152,4 +158,3 @@ std::vector<T> &VecRaster<T, n>::vector() {
 } // namespace Euclid
 
 #endif
-

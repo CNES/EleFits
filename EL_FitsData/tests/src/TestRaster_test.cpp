@@ -21,7 +21,7 @@
 
 #include "EL_FitsData/TestRaster.h"
 
-using namespace Euclid::FitsIO::Test;
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
@@ -29,24 +29,104 @@ BOOST_AUTO_TEST_SUITE(TestRaster_test)
 
 //-----------------------------------------------------------------------------
 
+template <typename T, long n>
+void checkSelfApprox(const Raster<T, n> &raster) {
+  BOOST_CHECK(Test::rasterApprox(raster, raster));
+}
+
+template <typename T>
+void checkSelfApproxRandom() {
+  checkSelfApprox(Test::RandomRaster<T, 0>({}));
+  checkSelfApprox(Test::RandomRaster<T, 1>({ 2 }));
+  checkSelfApprox(Test::RandomRaster<T, 2>({ 2, 3 }));
+  checkSelfApprox(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
+  checkSelfApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+}
+
 BOOST_AUTO_TEST_CASE(approx_self_test) {
-  SmallRaster a(1, 2);
-  BOOST_CHECK(a.approx(a));
+  checkSelfApprox(Test::SmallRaster());
+  checkSelfApproxRandom<char>();
+  checkSelfApproxRandom<std::int16_t>();
+  checkSelfApproxRandom<std::int32_t>();
+  checkSelfApproxRandom<std::int64_t>();
+  checkSelfApproxRandom<unsigned char>();
+  checkSelfApproxRandom<std::uint16_t>();
+  checkSelfApproxRandom<std::uint32_t>();
+  checkSelfApproxRandom<std::uint64_t>();
+  checkSelfApproxRandom<float>();
+  checkSelfApproxRandom<double>();
 }
 
-BOOST_AUTO_TEST_CASE(approx_different_shapes_test) {
-  SmallRaster a(1, 2);
-  SmallRaster b(2, 3);
-  BOOST_CHECK(not a.approx(b));
+template <typename T, long n>
+void checkDifferentShapesNotApprox(const Raster<T, n> &raster) {
+  auto shape = raster.shape;
+  shape[0]++;
+  VecRaster<T, n> other(shape);
+  for (long i = 0; i < raster.size(); ++i) {
+    other.vector()[i] = *(raster.data() + i);
+  }
+  BOOST_CHECK(not Test::rasterApprox(other, raster));
 }
 
-BOOST_AUTO_TEST_CASE(not_approx_test) {
-  SmallRaster a(1, 1);
-  SmallRaster b(1, 1);
-  b.vector()[0] = 2 * (a.vector()[0] + 1);
-  BOOST_CHECK(not a.approx(b));
-  BOOST_CHECK(not b.approx(a));
+template <typename T>
+void checkDifferentShapesNotApproxRandom() {
+  checkDifferentShapesNotApprox(Test::RandomRaster<T, 1>({ 2 }));
+  checkDifferentShapesNotApprox(Test::RandomRaster<T, 2>({ 2, 3 }));
+  checkDifferentShapesNotApprox(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
+  checkDifferentShapesNotApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
 }
+
+BOOST_AUTO_TEST_CASE(different_shapes_not_approx_test) {
+  checkDifferentShapesNotApprox(Test::SmallRaster());
+  checkDifferentShapesNotApproxRandom<char>();
+  checkDifferentShapesNotApproxRandom<std::int16_t>();
+  checkDifferentShapesNotApproxRandom<std::int32_t>();
+  checkDifferentShapesNotApproxRandom<std::int64_t>();
+  checkDifferentShapesNotApproxRandom<unsigned char>();
+  checkDifferentShapesNotApproxRandom<std::uint16_t>();
+  checkDifferentShapesNotApproxRandom<std::uint32_t>();
+  checkDifferentShapesNotApproxRandom<std::uint64_t>();
+  checkDifferentShapesNotApproxRandom<float>();
+  checkDifferentShapesNotApproxRandom<double>();
+}
+
+template <typename T, long n>
+void checkDifferentValuesNotApprox(const VecRaster<T, n> &raster) {
+  VecRaster<T, n> other(raster.shape);
+  BOOST_CHECK(not Test::rasterApprox(other, raster));
+  BOOST_CHECK(not Test::rasterApprox(raster, other));
+}
+
+template <typename T>
+void checkDifferentValuesNotApproxRandom() {
+  checkDifferentValuesNotApprox(Test::RandomRaster<T, 1>({ 2 }));
+  checkDifferentValuesNotApprox(Test::RandomRaster<T, 2>({ 2, 3 }));
+  checkDifferentValuesNotApprox(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
+  checkDifferentValuesNotApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+}
+
+BOOST_AUTO_TEST_CASE(not_approx_small_test) {
+  checkDifferentValuesNotApprox(Test::SmallRaster());
+}
+
+#define NOT_APPROX_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(not_approx_##name##_test) { \
+    checkDifferentValuesNotApproxRandom<type>(); \
+  }
+
+#define FOREACH_BITPIX(MACRO) \
+  MACRO(char, char) \
+  MACRO(std::int16_t, int16) \
+  MACRO(std::int32_t, int32) \
+  MACRO(std::int64_t, int64) \
+  MACRO(unsigned char, uchar) \
+  MACRO(std::uint16_t, uint16) \
+  MACRO(std::uint32_t, uint32) \
+  MACRO(std::uint64_t, uint64) \
+  MACRO(float, float) \
+  MACRO(double, double)
+
+FOREACH_BITPIX(NOT_APPROX_TEST)
 
 //-----------------------------------------------------------------------------
 

@@ -46,11 +46,9 @@ public:
   virtual ~SmallRaster() = default;
 
   /**
-   * @brief Check whether the Raster is approximately equal to another Raster.
-   * @details
-   * Test each pixel as: (other - this) / this < tol
+   * @brief Shortcut for rasterApprox
    */
-  bool approx(const Raster<float> &other, float tol = 0.1F) const;
+  bool approx(const Raster<float> &other, double tol = 0.01) const;
 
   /**
    * @brief Raster width.
@@ -77,7 +75,20 @@ public:
 
   /** @brief Destructor. */
   virtual ~RandomRaster() = default;
+
+  /**
+   * @brief Shortcut for rasterApprox
+   */
+  bool approx(const Raster<T, n> &other, double tol = 0.01) const;
 };
+
+/**
+ * @brief Check whether a test raster is approximately equal to a reference raster.
+ * @details
+ * Test each pixel as: |ref - test| / test < tol
+ */
+template <typename T, long n>
+bool rasterApprox(const Raster<T, n> &test, const Raster<T, n> &ref, double tol = 0.01);
 
 } // namespace Test
 } // namespace FitsIO

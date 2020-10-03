@@ -34,22 +34,8 @@ SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
   }
 }
 
-bool SmallRaster::approx(const Raster<float> &other, float tol) const {
-  if (other.shape != this->shape) {
-    return false;
-  }
-  for (long i = 0; i < this->size(); ++i) {
-    const auto o = other.data()[i];
-    const auto t = this->data()[i];
-    const auto rel = (o - t) / t;
-    if (rel > 0 && rel > tol) {
-      return false;
-    }
-    if (rel < 0 && -rel > tol) {
-      return false;
-    }
-  }
-  return true;
+bool SmallRaster::approx(const Raster<float> &other, double tol) const {
+  return rasterApprox(*this, other, tol);
 }
 
 } // namespace Test
