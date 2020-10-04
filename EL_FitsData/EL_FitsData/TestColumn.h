@@ -143,6 +143,22 @@ public:
 } // namespace FitsIO
 } // namespace Euclid
 
+#define EL_FITSIO_FOREACH_COLUMN_TYPE(MACRO) \
+  /* MACRO(bool, bool) */ \
+  MACRO(char, char) \
+  MACRO(std::int16_t, int16) \
+  MACRO(std::int32_t, int32) \
+  MACRO(std::int64_t, int64) \
+  MACRO(float, float) \
+  MACRO(double, double) \
+  MACRO(std::complex<float>, complex_float) \
+  MACRO(std::complex<double>, complex_double) \
+  MACRO(std::string, string) \
+  MACRO(unsigned char, uchar) \
+  MACRO(std::uint16_t, uint16) \
+  MACRO(std::uint32_t, uint32) \
+  MACRO(std::uint64_t, uint64)
+
 #define _EL_FITSDATA_TESTCOLUMN_IMPL
 #include "EL_FitsData/impl/TestColumn.hpp"
 #undef _EL_FITSDATA_TESTCOLUMN_IMPL

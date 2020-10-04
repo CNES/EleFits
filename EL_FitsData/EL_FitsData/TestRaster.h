@@ -94,6 +94,18 @@ bool rasterApprox(const Raster<T, n> &test, const Raster<T, n> &ref, double tol 
 } // namespace FitsIO
 } // namespace Euclid
 
+#define EL_FITSIO_FOREACH_RASTER_TYPE(MACRO) \
+  MACRO(char, char) \
+  MACRO(std::int16_t, int16) \
+  MACRO(std::int32_t, int32) \
+  MACRO(std::int64_t, int64) \
+  MACRO(float, float) \
+  MACRO(double, double) \
+  MACRO(unsigned char, uchar) \
+  MACRO(std::uint16_t, uint16) \
+  MACRO(std::uint32_t, uint32) \
+  MACRO(std::uint64_t, uint64)
+
 #define _EL_FITSDATA_TESTRASTER_IMPL
 #include "EL_FitsData/impl/TestRaster.hpp"
 #undef _EL_FITSDATA_TESTRASTER_IMPL

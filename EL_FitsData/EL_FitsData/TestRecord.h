@@ -113,6 +113,25 @@ struct RandomHeader {
 } // namespace FitsIO
 } // namespace Euclid
 
+#define EL_FITSIO_FOREACH_RECORD_TYPE(MACRO) \
+  MACRO(bool, bool) \
+  MACRO(char, char) \
+  MACRO(short, short) \
+  MACRO(int, int) \
+  MACRO(long, long) \
+  MACRO(long long, longlong) \
+  MACRO(float, float) \
+  MACRO(double, double) \
+  MACRO(std::complex<float>, complex_float) \
+  MACRO(std::complex<double>, complex_double) \
+  MACRO(std::string, string) \
+  MACRO(std::string, C_str) \
+  MACRO(unsigned char, uchar) \
+  MACRO(unsigned short, ushort) \
+  MACRO(unsigned int, uint) \
+  MACRO(unsigned long, ulong) \
+  MACRO(unsigned long long, ulonglong)
+
 #define _EL_FITSDATA_TESTRECORD_IMPL
 #include "EL_FitsData/impl/TestRecord.hpp"
 #undef _EL_FITSDATA_TESTRECORD_IMPL

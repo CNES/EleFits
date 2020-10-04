@@ -57,31 +57,12 @@ void check_random_3d() {
   }
 }
 
-#define TEST_3D_ALIAS(type, name) \
+#define TEST_3D(type, name) \
   BOOST_AUTO_TEST_CASE(name##_test) { \
     check_random_3d<type>(); \
   }
 
-#define TEST_3D(type) TEST_3D_ALIAS(type, type)
-
-#define TEST_3D_UNSIGNED(type) TEST_3D_ALIAS(unsigned type, u##type)
-
-TEST_3D(char)
-TEST_3D(short)
-TEST_3D(int)
-TEST_3D(long)
-TEST_3D_ALIAS(std::int16_t, int16)
-TEST_3D_ALIAS(std::int32_t, int32)
-TEST_3D_ALIAS(std::int64_t, int64)
-TEST_3D(float)
-TEST_3D(double)
-TEST_3D_UNSIGNED(char)
-TEST_3D_UNSIGNED(short)
-TEST_3D_UNSIGNED(int)
-TEST_3D_UNSIGNED(long)
-TEST_3D_ALIAS(std::uint16_t, uint16)
-TEST_3D_ALIAS(std::uint32_t, uint32)
-TEST_3D_ALIAS(std::uint64_t, uint64)
+EL_FITSIO_FOREACH_RASTER_TYPE(TEST_3D)
 
 //-----------------------------------------------------------------------------
 

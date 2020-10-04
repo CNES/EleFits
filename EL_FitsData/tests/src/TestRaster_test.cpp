@@ -114,19 +114,7 @@ BOOST_AUTO_TEST_CASE(not_approx_small_test) {
     checkDifferentValuesNotApproxRandom<type>(); \
   }
 
-#define FOREACH_BITPIX(MACRO) \
-  MACRO(char, char) \
-  MACRO(std::int16_t, int16) \
-  MACRO(std::int32_t, int32) \
-  MACRO(std::int64_t, int64) \
-  MACRO(unsigned char, uchar) \
-  MACRO(std::uint16_t, uint16) \
-  MACRO(std::uint32_t, uint32) \
-  MACRO(std::uint64_t, uint64) \
-  MACRO(float, float) \
-  MACRO(double, double)
-
-FOREACH_BITPIX(NOT_APPROX_TEST)
+EL_FITSIO_FOREACH_RASTER_TYPE(NOT_APPROX_TEST)
 
 //-----------------------------------------------------------------------------
 
