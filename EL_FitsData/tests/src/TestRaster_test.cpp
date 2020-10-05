@@ -30,32 +30,32 @@ BOOST_AUTO_TEST_SUITE(TestRaster_test)
 //-----------------------------------------------------------------------------
 
 template <typename T, long n>
-void checkSelfApprox(const Raster<T, n> &raster) {
+void checkRasterEqualsItself(const Raster<T, n> &raster) {
   BOOST_CHECK(Test::rasterApprox(raster, raster));
 }
 
 template <typename T>
-void checkSelfApproxRandom() {
-  checkSelfApprox(Test::RandomRaster<T, 0>({}));
-  checkSelfApprox(Test::RandomRaster<T, 1>({ 2 }));
-  checkSelfApprox(Test::RandomRaster<T, 2>({ 2, 3 }));
-  checkSelfApprox(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
-  checkSelfApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+void checkRandomRasterEqualsItself() {
+  checkRasterEqualsItself(Test::RandomRaster<T, 0>({}));
+  checkRasterEqualsItself(Test::RandomRaster<T, 1>({ 2 }));
+  checkRasterEqualsItself(Test::RandomRaster<T, 2>({ 2, 3 }));
+  checkRasterEqualsItself(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
+  checkRasterEqualsItself(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
 }
 
-BOOST_AUTO_TEST_CASE(approx_self_small_test) {
-  checkSelfApprox(Test::SmallRaster());
+BOOST_AUTO_TEST_CASE(small_raster_equals_itself_test) {
+  checkRasterEqualsItself(Test::SmallRaster());
 }
 
-#define SELF_APPROX_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(self_approx_##name##_test) { \
-    checkSelfApproxRandom<type>(); \
+#define RANDOM_RASTER_EQUALS_ITSELF_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_random_raster_equals_itself_test) { \
+    checkRandomRasterEqualsItself<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(SELF_APPROX_TEST)
+EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
 
 template <typename T, long n>
-void checkDifferentShapesNotApprox(const Raster<T, n> &raster) {
+void checkRastersWithDifferentShapesDiffer(const Raster<T, n> &raster) {
   auto shape = raster.shape;
   shape[0]++;
   VecRaster<T, n> other(shape);
@@ -66,49 +66,49 @@ void checkDifferentShapesNotApprox(const Raster<T, n> &raster) {
 }
 
 template <typename T>
-void checkDifferentShapesNotApproxRandom() {
-  checkDifferentShapesNotApprox(Test::RandomRaster<T, 1>({ 2 }));
-  checkDifferentShapesNotApprox(Test::RandomRaster<T, 2>({ 2, 3 }));
-  checkDifferentShapesNotApprox(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
-  checkDifferentShapesNotApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+void checkRandomRastersWithDifferentShapesDiffer() {
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 1>({ 2 }));
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 2>({ 2, 3 }));
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
 }
 
-BOOST_AUTO_TEST_CASE(different_shapes_not_approx_small_test) {
-  checkDifferentShapesNotApprox(Test::SmallRaster());
+BOOST_AUTO_TEST_CASE(small_rasters_with_different_shapes_differ_test) {
+  checkRastersWithDifferentShapesDiffer(Test::SmallRaster());
 }
 
-#define DIFFERENT_SHAPES_NOT_APPROX_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(different_shapes_not_approx_##name##_test) { \
-    checkDifferentShapesNotApproxRandom<type>(); \
+#define RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_random_rasters_with_different_shapes_differ_test) { \
+    checkRandomRastersWithDifferentShapesDiffer<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(DIFFERENT_SHAPES_NOT_APPROX_TEST)
+EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 
 template <typename T, long n>
-void checkDifferentValuesNotApprox(const VecRaster<T, n> &raster) {
+void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n> &raster) {
   VecRaster<T, n> other(raster.shape);
   BOOST_CHECK(not Test::rasterApprox(other, raster));
   BOOST_CHECK(not Test::rasterApprox(raster, other));
 }
 
 template <typename T>
-void checkDifferentValuesNotApproxRandom() {
-  checkDifferentValuesNotApprox(Test::RandomRaster<T, 1>({ 2 }));
-  checkDifferentValuesNotApprox(Test::RandomRaster<T, 2>({ 2, 3 }));
-  checkDifferentValuesNotApprox(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
-  checkDifferentValuesNotApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+void checkRandomRastersWithDifferentValuesDiffer() {
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 1>({ 2 }));
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 2>({ 2, 3 }));
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
 }
 
-BOOST_AUTO_TEST_CASE(not_approx_small_test) {
-  checkDifferentValuesNotApprox(Test::SmallRaster());
+BOOST_AUTO_TEST_CASE(small_rasters_with_different_values_differ_test) {
+  checkRastersWithDifferentValuesDiffer(Test::SmallRaster());
 }
 
-#define NOT_APPROX_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(not_approx_##name##_test) { \
-    checkDifferentValuesNotApproxRandom<type>(); \
+#define RASTERS_WITH_DIFFERENT_VALUES_DIFFER_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_rasters_with_different_values_differ_test) { \
+    checkRandomRastersWithDifferentValuesDiffer<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(NOT_APPROX_TEST)
+EL_FITSIO_FOREACH_RASTER_TYPE(RASTERS_WITH_DIFFERENT_VALUES_DIFFER_TEST)
 
 //-----------------------------------------------------------------------------
 

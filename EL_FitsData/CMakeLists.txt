@@ -68,6 +68,10 @@ elements_add_unit_test(RecordVector tests/src/RecordVector_test.cpp
                      EXECUTABLE EL_FitsData_RecordVector_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
+elements_add_unit_test(TestColumn tests/src/TestColumn_test.cpp 
+                     EXECUTABLE EL_FitsData_TestColumn_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
 elements_add_unit_test(TestRaster tests/src/TestRaster_test.cpp 
                      EXECUTABLE EL_FitsData_TestRaster_test
                      LINK_LIBRARIES EL_FitsData

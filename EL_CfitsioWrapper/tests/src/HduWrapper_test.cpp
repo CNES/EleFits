@@ -19,6 +19,7 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "EL_FitsData/TestColumn.h"
 #include "EL_FitsData/TestRaster.h"
 
 #include "EL_CfitsioWrapper/HduWrapper.h"
@@ -33,15 +34,24 @@ BOOST_AUTO_TEST_SUITE(HduWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(minimal_file_test, FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(minimal_file_has_accessible_primary_test, FitsIO::Test::MinimalFile) {
   Hdu::gotoPrimary(this->fptr);
+  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 1);
+  BOOST_CHECK(Hdu::currentIsPrimary(this->fptr));
 }
 
-BOOST_FIXTURE_TEST_CASE(write_read_image_test, FitsIO::Test::MinimalFile) {
-  FitsIO::Test::SmallRaster input;
+BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, FitsIO::Test::MinimalFile) {
+  using namespace FitsIO::Test;
+  SmallRaster input;
   Hdu::createImageExtension(this->fptr, "IMGEXT", input);
+  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 2);
+  BOOST_CHECK(Hdu::currentType(this->fptr) == FitsIO::HduType::Image);
+  Hdu::gotoNext(this->fptr, -1);
+  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 1);
+  Hdu::gotoName(this->fptr, "IMGEXT");
+  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 2);
   const auto output = Image::readRaster<float, 2>(fptr);
-  BOOST_CHECK(input.approx(output));
+  checkEqualVectors(output.vector(), input.vector());
 }
 
 //-----------------------------------------------------------------------------

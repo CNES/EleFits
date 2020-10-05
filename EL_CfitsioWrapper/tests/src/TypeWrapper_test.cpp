@@ -19,10 +19,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include "EL_FitsData/TestColumn.h" // Macro to loop on types
+#include "EL_FitsData/TestRaster.h" // Macro to loop on types
+#include "EL_FitsData/TestRecord.h" // Macro to loop on types
+
 #include "EL_CfitsioWrapper/TypeWrapper.h"
-#include "EL_FitsData/TestColumn.h" // EL_FITSIO_LOOP...
-#include "EL_FitsData/TestRaster.h" // EL_FITSIO_LOOP...
-#include "EL_FitsData/TestRecord.h" // EL_FITSIO_LOOP...
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -41,31 +42,33 @@ void checkCfitsioRecordTypeExists() {
 template <typename T>
 void checkCfitsioBintableTypeExists() {
   BOOST_CHECK_NO_THROW(TypeCode<T>::forBintable());
+  BOOST_CHECK_NO_THROW(TypeCode<T>::tform(1));
 }
 
 template <typename T>
 void checkCfitsioImageTypeExists() {
   BOOST_CHECK_NO_THROW(TypeCode<T>::forImage());
+  BOOST_CHECK_NO_THROW(TypeCode<T>::bitpix());
 }
 
-#define TEST_RECORD_TYPECODE(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_typecode_test) { \
+#define RECORD_TYPECODE_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_record_typecode_test) { \
     checkCfitsioRecordTypeExists<type>(); \
   }
 
-#define TEST_BINTABLE_TFORM(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_tform_test) { \
+#define BINTABLE_TFORM_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_bintable_tform_test) { \
     checkCfitsioBintableTypeExists<type>(); \
   }
 
-#define TEST_IMAGE_BITPIX(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_bitpix_test) { \
+#define IMAGE_BITPIX_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_image_bitpix_test) { \
     checkCfitsioImageTypeExists<type>(); \
   }
 
-EL_FITSIO_FOREACH_RECORD_TYPE(TEST_RECORD_TYPECODE)
-EL_FITSIO_FOREACH_COLUMN_TYPE(TEST_BINTABLE_TFORM)
-EL_FITSIO_FOREACH_RASTER_TYPE(TEST_IMAGE_BITPIX)
+EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_TYPECODE_TEST)
+EL_FITSIO_FOREACH_COLUMN_TYPE(BINTABLE_TFORM_TEST)
+EL_FITSIO_FOREACH_RASTER_TYPE(IMAGE_BITPIX_TEST)
 
 //-----------------------------------------------------------------------------
 

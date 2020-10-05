@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(cfitsio_overflow_bug_test) {
 }
 
 template <typename T>
-void checkScalar() {
+void checkScalarColumnIsReadBack() {
   using namespace FitsIO::Test;
   RandomScalarColumn<T> input;
   MinimalFile file;
@@ -99,28 +99,19 @@ void checkScalar() {
   }
 }
 
-template <>
-void checkScalar<std::string>();
-
-template <>
-void checkScalar<std::string>() {
-  // String cannot be considered a scalar type
-}
-
-#define TEST_SCALAR(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_test) { \
-    checkScalar<type>(); \
+#define SCALAR_COLUMN_IS_READ_BACK_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_scalar_column_is_read_back_test_test) { \
+    checkScalarColumnIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_COLUMN_TYPE(TEST_SCALAR)
+EL_FITSIO_FOREACH_COLUMN_TYPE(SCALAR_COLUMN_IS_READ_BACK_TEST)
 
 template <typename T>
-void checkVector() {
+void checkVectorColumnIsReadBack() {
   using namespace FitsIO::Test;
   constexpr long rowCount = 3;
   constexpr long repeat = 2;
-  RandomScalarColumn<T> input(rowCount * repeat);
-  input.info.repeat = repeat;
+  RandomVectorColumn<T> input(repeat, rowCount);
   MinimalFile file;
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
@@ -142,19 +133,19 @@ void checkVector() {
 }
 
 template <>
-void checkVector<std::string>();
+void checkVectorColumnIsReadBack<std::string>();
 
 template <>
-void checkVector<std::string>() {
-  // String is tested specifically
+void checkVectorColumnIsReadBack<std::string>() {
+  // String is tested as a scalar column
 }
 
-#define TEST_VECTOR(type, name) \
-  BOOST_AUTO_TEST_CASE(vector_##name##_test) { \
-    checkVector<type>(); \
+#define VECTOR_COLUMN_IS_READ_BACK_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_vector_column_is_read_back_test_test) { \
+    checkVectorColumnIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_COLUMN_TYPE(TEST_VECTOR)
+EL_FITSIO_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
@@ -172,7 +163,7 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
-  constexpr long rowCount(10000);
+  constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full // TODO check
   RandomScalarColumn<int> i(rowCount);
   i.info.name = "I";
   RandomScalarColumn<float> f(rowCount);

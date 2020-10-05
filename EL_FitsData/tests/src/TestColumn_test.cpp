@@ -19,36 +19,17 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData/TestRaster.h"
-#include "EL_FitsData/Raster.h"
+#include "EL_FitsData/TestColumn.h"
 
-using namespace Euclid;
-
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE(Raster_test)
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(index_test) {
+BOOST_AUTO_TEST_SUITE(TestColumn_test)
 
-  FitsIO::Position<4> shape;
-  for (auto &length : shape) {
-    length = std::rand();
-  }
-  FitsIO::Position<4> pos;
-  for (auto &coord : pos) {
-    coord = std::rand();
-  }
-  auto index = FitsIO::Internal::IndexImpl<3>::template offset<4>(shape, pos);
-  BOOST_CHECK_EQUAL(index, pos[0] + shape[0] * (pos[1] + shape[1] * (pos[2] + shape[2] * (pos[3]))));
-}
+//-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(raster_size_test, FitsIO::Test::SmallRaster) {
-  long size(this->width * this->height);
-  BOOST_CHECK_EQUAL(this->size(), size);
-  BOOST_CHECK_EQUAL(this->vector().size(), size);
-}
+// TODO
 
 //-----------------------------------------------------------------------------
 

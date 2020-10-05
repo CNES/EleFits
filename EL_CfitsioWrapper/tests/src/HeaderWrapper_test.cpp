@@ -19,7 +19,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData/TestUtils.h"
+#include "EL_FitsData/TestRecord.h"
 
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
@@ -64,43 +64,31 @@ void checkClose(std::complex<double> value, std::complex<double> expected) {
 }
 
 template <typename T>
-void checkRecord(const std::string &label) {
+void checkRecordIsReadBack(const std::string &label) {
   FitsIO::Test::MinimalFile file;
-  T input = FitsIO::Test::generateRandomValue<T>();
-  std::string unit = label;
-  std::string comment = label;
-  Header::writeRecord(file.fptr, FitsIO::Record<T>(label, input, unit, comment));
-  const auto output = Header::parseRecord<T>(file.fptr, label);
-  checkClose(output.value, input);
-  BOOST_CHECK_EQUAL(output.unit, unit);
-  BOOST_CHECK_EQUAL(output.comment, comment);
+  T value = FitsIO::Test::generateRandomValue<T>();
+  std::string keyword = label.substr(0, 8);
+  std::string unit = label.substr(0, 1);
+  std::string comment = label.substr(0, 10);
+  Header::writeRecord(file.fptr, FitsIO::Record<T>(keyword, value, unit, comment));
+  const auto parsed = Header::parseRecord<T>(file.fptr, keyword);
+  checkClose(parsed.value, value);
+  BOOST_CHECK_EQUAL(parsed.unit, unit);
+  BOOST_CHECK_EQUAL(parsed.comment, comment);
 }
 
-#define TEST_RECORD_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_test) { \
-    checkRecord<type>(#name); \
+template <>
+void checkRecordIsReadBack<unsigned long>(const std::string &label) {
+  // Known CFitsIO bug: error if value is > max(long)
+  (void)(label); // Silent "unused parameter" warning
+}
+
+#define RECORD_IS_READ_BACK_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_record_is_read_back_test) { \
+    checkRecordIsReadBack<type>(#name); \
   }
 
-#define TEST_RECORD(type) TEST_RECORD_ALIAS(type, type)
-
-#define TEST_RECORD_UNSIGNED(type) TEST_RECORD_ALIAS(unsigned type, u##type)
-
-TEST_RECORD(bool)
-TEST_RECORD(char)
-TEST_RECORD(short)
-TEST_RECORD(int)
-TEST_RECORD(long)
-TEST_RECORD_ALIAS(long long, longlong)
-TEST_RECORD(float)
-TEST_RECORD(double)
-TEST_RECORD_ALIAS(std::complex<float>, cfloat)
-TEST_RECORD_ALIAS(std::complex<double>, cdouble)
-TEST_RECORD_ALIAS(std::string, string)
-TEST_RECORD_UNSIGNED(char)
-TEST_RECORD_UNSIGNED(short)
-TEST_RECORD_UNSIGNED(int)
-// TEST_RECORD_UNSIGNED(long) //TODO random error: wait for CFitsIO feedback
-TEST_RECORD_ALIAS(unsigned long long, ulonglong)
+EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_IS_READ_BACK_TEST)
 
 BOOST_AUTO_TEST_CASE(empty_value_test) {
   FitsIO::Test::MinimalFile file;

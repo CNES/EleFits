@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE(ImageWrapper_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_random_3d() {
+void checkRandom3DRasterIsReadBack() {
   using namespace FitsIO::Test;
   RandomRaster<T, 3> input({ 2, 3, 4 });
   MinimalFile file;
@@ -53,12 +53,12 @@ void check_random_3d() {
   }
 }
 
-#define TEST_3D(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_test) { \
-    check_random_3d<type>(); \
+#define RANDOM_3D_RASTER_IS_READ_BACK_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_random_3d_raster_is_read_back_test) { \
+    checkRandom3DRasterIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(TEST_3D)
+EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)
 
 //-----------------------------------------------------------------------------
 

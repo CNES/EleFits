@@ -46,20 +46,20 @@ void checkFieldsAreAllDifferent(const Test::RandomHeader &header) {
 }
 
 #define FIELDS_ARE_ALL_SET_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(fields_are_all_set_##name##_test) { \
+  BOOST_AUTO_TEST_CASE(name##_fields_are_all_set_test) { \
     checkFieldsAreAllSet<type>(*this); \
   }
 
 EL_FITSIO_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_SET_TEST)
 
 #define FIELDS_ARE_ALL_DIFFERENT_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(fields_are_all_different_##name##_test) { \
+  BOOST_AUTO_TEST_CASE(name##_fields_are_all_different_test) { \
     checkFieldsAreAllDifferent<type>(*this); \
   }
 
 EL_FITSIO_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_DIFFERENT_TEST)
 
-BOOST_AUTO_TEST_CASE(records_are_all_different_test) {
+BOOST_AUTO_TEST_CASE(keywords_are_all_different_test) {
   const auto v = allRecords().vector;
   BOOST_CHECK_EQUAL(v.size(), recordCount);
   for (long lhs = 0; lhs < recordCount; ++lhs) {

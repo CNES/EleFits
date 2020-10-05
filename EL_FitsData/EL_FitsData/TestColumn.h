@@ -127,7 +127,7 @@ public:
  * @brief A small vector column of given type.
  */
 template <typename T>
-class RandomVectorColumn : public VecColumn<std::vector<T>> {
+class RandomVectorColumn : public VecColumn<T> {
 
 public:
   /**

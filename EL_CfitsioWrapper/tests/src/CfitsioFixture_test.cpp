@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE(CfitsioFixture_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(open_close_test) {
+BOOST_AUTO_TEST_CASE(temporary_file_is_removed_by_destructor_test) {
   std::string filename;
   {
     MinimalFile f;

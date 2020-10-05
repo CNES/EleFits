@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_SUITE(Column_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(share_test) {
+BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test) {
   std::vector<int> input { 1, 2, 3 };
   FitsIO::VecRefColumn<int> column({ "SHARED", "", 1 }, input);
   BOOST_CHECK_EQUAL(column.data()[1], 2);
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(share_test) {
   BOOST_CHECK_EQUAL(column.data()[1], 4);
 }
 
-BOOST_AUTO_TEST_CASE(move_test) {
+BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test) {
   std::vector<int> input { 4, 5, 6 };
   FitsIO::VecColumn<int> column({ "DATA", "", 1 }, std::move(input));
   BOOST_CHECK_EQUAL(column.vector()[1], 5);

@@ -19,7 +19,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData/TestUtils.h"
+#include "EL_FitsData/TestRecord.h"
 #include "EL_FitsData/Record.h"
 
 using namespace Euclid::FitsIO;
@@ -60,10 +60,12 @@ BOOST_AUTO_TEST_CASE(mini_init_test) {
   BOOST_CHECK_EQUAL(mini.comment, "");
 }
 
-BOOST_AUTO_TEST_CASE(rawComment_test) {
+BOOST_AUTO_TEST_CASE(raw_comment_test) {
+
   Record<int> noUnit { "V", 1, "", "Speed" };
   Record<int> unit { "V", 1, "m", "Speed" };
   Record<int> unitInComment { "V", 1, "", "[m] Speed" };
+
   BOOST_CHECK_EQUAL(noUnit.rawComment(), "Speed");
   BOOST_CHECK_EQUAL(unit.rawComment(), "[m] Speed");
   BOOST_CHECK_EQUAL(unitInComment.rawComment(), "[m] Speed");
@@ -75,24 +77,18 @@ void checkEqual(T value, T expected) {
 }
 
 template <typename T>
-void checkCast() {
+void checkRecordSlicing() {
   T v = Test::generateRandomValue<T>();
   Record<T> r("KEY", v);
   checkEqual<T>(r, v);
 }
 
-#define TEST_CAST_ALIAS(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_test) { \
-    checkCast<type>(); \
+#define RECORD_SLICING_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_record_slicing_test) { \
+    checkRecordSlicing<type>(); \
   }
 
-#define TEST_CAST(type) TEST_CAST_ALIAS(type, type)
-
-#define TEST_CAST_UNSIGNED(type) TEST_CAST_ALIAS(unsigned type, u##type)
-
-TEST_CAST(bool)
-TEST_CAST(int)
-TEST_CAST_ALIAS(std::string, string)
+EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_SLICING_TEST)
 
 template <typename TV, typename TE>
 void checkApprox(TV value, TE expected) {
@@ -111,43 +107,43 @@ void checkApprox(std::string value, std::string expected) {
 }
 
 template <typename TFrom, typename TTo>
-void checkCaster() {
+void checkRecordCasting() {
   TFrom input = Test::generateRandomValue<TFrom>();
   TTo output = Record<TTo>::cast(input);
   checkApprox(output, input);
 }
 
 template <typename TFrom, typename TTo>
-void checkCasterFromAny() {
+void checkRecordCastingFromAny() {
   TFrom value = Test::generateRandomValue<TFrom>();
   boost::any input(value);
   TTo output = Record<TTo>::cast(input);
   checkApprox(output, value);
 }
 
-BOOST_AUTO_TEST_CASE(cast_scalar_test) {
-  checkCaster<bool, long long>();
-  checkCaster<char, long>();
-  checkCaster<short, int>();
-  checkCaster<float, double>();
+BOOST_AUTO_TEST_CASE(scalar_record_casting_test) {
+  checkRecordCasting<bool, long long>();
+  checkRecordCasting<char, long>();
+  checkRecordCasting<short, int>();
+  checkRecordCasting<float, double>();
 }
 
-BOOST_AUTO_TEST_CASE(cast_complex_test) {
-  checkCaster<std::complex<float>, std::complex<float>>();
-  checkCaster<std::complex<float>, std::complex<double>>();
-  checkCaster<std::complex<double>, std::complex<double>>();
+BOOST_AUTO_TEST_CASE(complex_record_casting_test) {
+  checkRecordCasting<std::complex<float>, std::complex<float>>();
+  checkRecordCasting<std::complex<float>, std::complex<double>>();
+  checkRecordCasting<std::complex<double>, std::complex<double>>();
 }
 
-BOOST_AUTO_TEST_CASE(cast_string_test) {
-  checkCaster<std::string, std::string>();
+BOOST_AUTO_TEST_CASE(string_record_casting_test) {
+  checkRecordCasting<std::string, std::string>();
 }
 
-BOOST_AUTO_TEST_CASE(cast_any_test) {
-  checkCasterFromAny<short, int>();
-  checkCasterFromAny<int, int>();
-  checkCasterFromAny<long, long long>();
-  checkCasterFromAny<float, double>();
-  checkCasterFromAny<std::string, std::string>();
+BOOST_AUTO_TEST_CASE(any_record_casting_test) {
+  checkRecordCastingFromAny<short, int>();
+  checkRecordCastingFromAny<int, int>();
+  checkRecordCastingFromAny<long, long long>();
+  checkRecordCastingFromAny<float, double>();
+  checkRecordCastingFromAny<std::string, std::string>();
 }
 
 template <typename T>
@@ -155,15 +151,7 @@ void checkAnyEqual(boost::any value, T expected) {
   BOOST_CHECK_EQUAL(boost::any_cast<T>(value), expected);
 }
 
-BOOST_AUTO_TEST_CASE(any_cast_test) {
-  Record<int> int_record { "KEY", 1 };
-  Record<boost::any> any_record(int_record);
-  Record<int> int2_record(any_record);
-  Record<bool> bool_record(int_record);
-  BOOST_CHECK_EQUAL(bool_record.value, int_record.value);
-}
-
-BOOST_AUTO_TEST_CASE(vector_of_any_test) {
+BOOST_AUTO_TEST_CASE(vector_of_any_is_built_and_cast_back_test) {
   Record<std::string> str_record("STRING", "HEY!");
   Record<bool> boo_record("BOOL", false);
   Record<std::complex<float>> com_record("COMPLEX", { 1.F, 2.F });
