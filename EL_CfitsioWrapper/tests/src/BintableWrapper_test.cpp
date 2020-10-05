@@ -29,11 +29,6 @@
 using namespace Euclid;
 using namespace Cfitsio;
 
-template <typename T>
-void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
-  BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
-}
-
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(BintableWrapper_test)
@@ -83,8 +78,9 @@ BOOST_AUTO_TEST_CASE(cfitsio_overflow_bug_test) {
 
 template <typename T>
 void checkScalar() {
-  FitsIO::Test::RandomScalarColumn<T> input;
-  FitsIO::Test::MinimalFile file;
+  using namespace FitsIO::Test;
+  RandomScalarColumn<T> input;
+  MinimalFile file;
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
@@ -103,6 +99,14 @@ void checkScalar() {
   }
 }
 
+template <>
+void checkScalar<std::string>();
+
+template <>
+void checkScalar<std::string>() {
+  // String cannot be considered a scalar type
+}
+
 #define TEST_SCALAR(type, name) \
   BOOST_AUTO_TEST_CASE(name##_test) { \
     checkScalar<type>(); \
@@ -112,11 +116,12 @@ EL_FITSIO_FOREACH_COLUMN_TYPE(TEST_SCALAR)
 
 template <typename T>
 void checkVector() {
+  using namespace FitsIO::Test;
   constexpr long rowCount = 3;
   constexpr long repeat = 2;
-  FitsIO::Test::RandomScalarColumn<T> input(rowCount * repeat);
+  RandomScalarColumn<T> input(rowCount * repeat);
   input.info.repeat = repeat;
-  FitsIO::Test::MinimalFile file;
+  MinimalFile file;
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
@@ -136,6 +141,14 @@ void checkVector() {
   }
 }
 
+template <>
+void checkVector<std::string>();
+
+template <>
+void checkVector<std::string>() {
+  // String is tested specifically
+}
+
 #define TEST_VECTOR(type, name) \
   BOOST_AUTO_TEST_CASE(vector_##name##_test) { \
     checkVector<type>(); \
@@ -144,7 +157,7 @@ void checkVector() {
 EL_FITSIO_FOREACH_COLUMN_TYPE(TEST_VECTOR)
 
 BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
-  using FitsIO::Test::SmallTable;
+  using namespace FitsIO::Test;
   SmallTable input;
   Hdu::createBintableExtension(this->fptr, "IMGEXT", input.numCol, input.radecCol, input.nameCol, input.distMagCol);
   const auto outputNums = Bintable::readColumn<SmallTable::Num>(this->fptr, input.numCol.info.name);
@@ -158,12 +171,13 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
+  using namespace FitsIO::Test;
   constexpr long rowCount(10000);
-  FitsIO::Test::RandomScalarColumn<int> i(rowCount);
+  RandomScalarColumn<int> i(rowCount);
   i.info.name = "I";
-  FitsIO::Test::RandomScalarColumn<float> f(rowCount);
+  RandomScalarColumn<float> f(rowCount);
   f.info.name = "F";
-  FitsIO::Test::RandomScalarColumn<double> d(rowCount);
+  RandomScalarColumn<double> d(rowCount);
   d.info.name = "D";
   Hdu::createBintableExtension(this->fptr, "BINEXT", i, f, d);
   const auto table = Bintable::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });
@@ -173,7 +187,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(append_test, FitsIO::Test::MinimalFile) {
-  using FitsIO::Test::SmallTable;
+  using namespace FitsIO::Test;
   SmallTable table;
   Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol);
   const auto names = Bintable::readColumn<SmallTable::Name>(fptr, table.nameCol.info.name);

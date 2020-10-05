@@ -30,64 +30,34 @@ BOOST_FIXTURE_TEST_SUITE(TestRecord_test, Test::RandomHeader)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkFieldsAreAllSet(const Record<T> &record, long &count) {
+void checkFieldsAreAllSet(const Test::RandomHeader &header) {
+  const auto &record = header.getRecord<T>();
   BOOST_CHECK(not record.keyword.empty());
   BOOST_CHECK(not record.unit.empty());
   BOOST_CHECK(not record.comment.empty());
-  count++;
 }
 
 template <typename T>
-void checkFieldsAreAllDifferent(const Record<T> &record, long &count) {
+void checkFieldsAreAllDifferent(const Test::RandomHeader &header) {
+  const auto &record = header.getRecord<T>();
   BOOST_CHECK_NE(record.keyword, record.unit);
   BOOST_CHECK_NE(record.unit, record.comment);
   BOOST_CHECK_NE(record.comment, record.keyword);
-  count++;
 }
 
-BOOST_AUTO_TEST_CASE(fields_are_all_set_test) {
-  long count = 0;
-  checkFieldsAreAllSet(b, count);
-  checkFieldsAreAllSet(c, count);
-  checkFieldsAreAllSet(s, count);
-  checkFieldsAreAllSet(i, count);
-  checkFieldsAreAllSet(l, count);
-  checkFieldsAreAllSet(ll, count);
-  checkFieldsAreAllSet(uc, count);
-  checkFieldsAreAllSet(us, count);
-  checkFieldsAreAllSet(ui, count);
-  checkFieldsAreAllSet(ul, count);
-  checkFieldsAreAllSet(ull, count);
-  checkFieldsAreAllSet(str, count);
-  checkFieldsAreAllSet(cstr, count);
-  checkFieldsAreAllSet(f, count);
-  checkFieldsAreAllSet(d, count);
-  checkFieldsAreAllSet(cf, count);
-  checkFieldsAreAllSet(cd, count);
-  BOOST_CHECK_EQUAL(count, recordCount);
-}
+#define FIELDS_ARE_ALL_SET_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(fields_are_all_set_##name##_test) { \
+    checkFieldsAreAllSet<type>(*this); \
+  }
 
-BOOST_AUTO_TEST_CASE(fields_are_all_different_test) {
-  long count = 0;
-  checkFieldsAreAllDifferent(b, count);
-  checkFieldsAreAllDifferent(c, count);
-  checkFieldsAreAllDifferent(s, count);
-  checkFieldsAreAllDifferent(i, count);
-  checkFieldsAreAllDifferent(l, count);
-  checkFieldsAreAllDifferent(ll, count);
-  checkFieldsAreAllDifferent(uc, count);
-  checkFieldsAreAllDifferent(us, count);
-  checkFieldsAreAllDifferent(ui, count);
-  checkFieldsAreAllDifferent(ul, count);
-  checkFieldsAreAllDifferent(ull, count);
-  checkFieldsAreAllDifferent(str, count);
-  checkFieldsAreAllDifferent(cstr, count);
-  checkFieldsAreAllDifferent(f, count);
-  checkFieldsAreAllDifferent(d, count);
-  checkFieldsAreAllDifferent(cf, count);
-  checkFieldsAreAllDifferent(cd, count);
-  BOOST_CHECK_EQUAL(count, recordCount);
-}
+EL_FITSIO_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_SET_TEST)
+
+#define FIELDS_ARE_ALL_DIFFERENT_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(fields_are_all_different_##name##_test) { \
+    checkFieldsAreAllDifferent<type>(*this); \
+  }
+
+EL_FITSIO_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_DIFFERENT_TEST)
 
 BOOST_AUTO_TEST_CASE(records_are_all_different_test) {
   const auto v = allRecords().vector;

@@ -43,19 +43,16 @@ void checkSelfApproxRandom() {
   checkSelfApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
 }
 
-BOOST_AUTO_TEST_CASE(approx_self_test) {
+BOOST_AUTO_TEST_CASE(approx_self_small_test) {
   checkSelfApprox(Test::SmallRaster());
-  checkSelfApproxRandom<char>();
-  checkSelfApproxRandom<std::int16_t>();
-  checkSelfApproxRandom<std::int32_t>();
-  checkSelfApproxRandom<std::int64_t>();
-  checkSelfApproxRandom<unsigned char>();
-  checkSelfApproxRandom<std::uint16_t>();
-  checkSelfApproxRandom<std::uint32_t>();
-  checkSelfApproxRandom<std::uint64_t>();
-  checkSelfApproxRandom<float>();
-  checkSelfApproxRandom<double>();
 }
+
+#define SELF_APPROX_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(self_approx_##name##_test) { \
+    checkSelfApproxRandom<type>(); \
+  }
+
+EL_FITSIO_FOREACH_RASTER_TYPE(SELF_APPROX_TEST)
 
 template <typename T, long n>
 void checkDifferentShapesNotApprox(const Raster<T, n> &raster) {
@@ -76,19 +73,16 @@ void checkDifferentShapesNotApproxRandom() {
   checkDifferentShapesNotApprox(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
 }
 
-BOOST_AUTO_TEST_CASE(different_shapes_not_approx_test) {
+BOOST_AUTO_TEST_CASE(different_shapes_not_approx_small_test) {
   checkDifferentShapesNotApprox(Test::SmallRaster());
-  checkDifferentShapesNotApproxRandom<char>();
-  checkDifferentShapesNotApproxRandom<std::int16_t>();
-  checkDifferentShapesNotApproxRandom<std::int32_t>();
-  checkDifferentShapesNotApproxRandom<std::int64_t>();
-  checkDifferentShapesNotApproxRandom<unsigned char>();
-  checkDifferentShapesNotApproxRandom<std::uint16_t>();
-  checkDifferentShapesNotApproxRandom<std::uint32_t>();
-  checkDifferentShapesNotApproxRandom<std::uint64_t>();
-  checkDifferentShapesNotApproxRandom<float>();
-  checkDifferentShapesNotApproxRandom<double>();
 }
+
+#define DIFFERENT_SHAPES_NOT_APPROX_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(different_shapes_not_approx_##name##_test) { \
+    checkDifferentShapesNotApproxRandom<type>(); \
+  }
+
+EL_FITSIO_FOREACH_RASTER_TYPE(DIFFERENT_SHAPES_NOT_APPROX_TEST)
 
 template <typename T, long n>
 void checkDifferentValuesNotApprox(const VecRaster<T, n> &raster) {

@@ -106,6 +106,14 @@ generateRandomVector<std::complex<double>>(long size, std::complex<double> min, 
 template <>
 std::vector<std::string> generateRandomVector<std::string>(long size, std::string min, std::string max);
 
+/**
+ * @brief Check that two vectors are exactly equal.
+ * @details
+ * This is using BOOST_CHECK_EQUAL_COLLECTIONS.
+ */
+template <typename T>
+void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &ref);
+
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid

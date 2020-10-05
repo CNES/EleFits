@@ -21,6 +21,7 @@ elements_depends_on_subdirs(ElementsKernel)
 # Examples:
 #          find_package(CppUnit)
 #===============================================================================
+find_package(Boost)
 
 #===============================================================================
 # Declare the library dependencies here
@@ -31,8 +32,8 @@ elements_depends_on_subdirs(ElementsKernel)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EL_FitsData src/lib/*.cpp
-                     INCLUDE_DIRS ElementsKernel
-                     LINK_LIBRARIES ElementsKernel
+                     INCLUDE_DIRS Boost ElementsKernel
+                     LINK_LIBRARIES Boost ElementsKernel
                      PUBLIC_HEADERS EL_FitsData)
 
 #===============================================================================

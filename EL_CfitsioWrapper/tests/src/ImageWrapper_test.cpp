@@ -28,11 +28,6 @@
 using namespace Euclid;
 using namespace Cfitsio;
 
-template <typename T>
-void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
-  BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
-}
-
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(ImageWrapper_test)
@@ -41,8 +36,9 @@ BOOST_AUTO_TEST_SUITE(ImageWrapper_test)
 
 template <typename T>
 void check_random_3d() {
-  FitsIO::Test::RandomRaster<T, 3> input({ 2, 3, 4 });
-  FitsIO::Test::MinimalFile file;
+  using namespace FitsIO::Test;
+  RandomRaster<T, 3> input({ 2, 3, 4 });
+  MinimalFile file;
   try {
     Hdu::createImageExtension(file.fptr, "IMGEXT", input);
     const auto output = Image::readRaster<T, 3>(file.fptr);

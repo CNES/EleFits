@@ -101,6 +101,18 @@ struct RandomHeader {
   Record<const char *> cstr;
 
   /**
+   * @brief Get the record with given type.
+   */
+  template <typename T>
+  const Record<T> &getRecord() const;
+
+  /**
+   * @brief Get the record with given type.
+   */
+  template <typename T>
+  Record<T> &getRecord();
+
+  /**
    * @brief Get all the records.
    */
   RecordVector<boost::any> allRecords() const;

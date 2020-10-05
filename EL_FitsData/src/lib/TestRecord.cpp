@@ -45,6 +45,91 @@ RandomHeader::RandomHeader() :
     cstr { generateRandomRecord<const char *>("C string") } {
 }
 
+template <>
+const Record<bool> &RandomHeader::getRecord<bool>() const {
+  return b;
+}
+
+template <>
+const Record<char> &RandomHeader::getRecord<char>() const {
+  return c;
+}
+
+template <>
+const Record<short> &RandomHeader::getRecord<short>() const {
+  return s;
+}
+
+template <>
+const Record<int> &RandomHeader::getRecord<int>() const {
+  return i;
+}
+
+template <>
+const Record<long> &RandomHeader::getRecord<long>() const {
+  return l;
+}
+
+template <>
+const Record<long long> &RandomHeader::getRecord<long long>() const {
+  return ll;
+}
+
+template <>
+const Record<unsigned char> &RandomHeader::getRecord<unsigned char>() const {
+  return uc;
+}
+
+template <>
+const Record<unsigned short> &RandomHeader::getRecord<unsigned short>() const {
+  return us;
+}
+
+template <>
+const Record<unsigned int> &RandomHeader::getRecord<unsigned int>() const {
+  return ui;
+}
+
+template <>
+const Record<unsigned long> &RandomHeader::getRecord<unsigned long>() const {
+  return ul;
+}
+
+template <>
+const Record<unsigned long long> &RandomHeader::getRecord<unsigned long long>() const {
+  return ull;
+}
+
+template <>
+const Record<float> &RandomHeader::getRecord<float>() const {
+  return f;
+}
+
+template <>
+const Record<double> &RandomHeader::getRecord<double>() const {
+  return d;
+}
+
+template <>
+const Record<std::complex<float>> &RandomHeader::getRecord<std::complex<float>>() const {
+  return cf;
+}
+
+template <>
+const Record<std::complex<double>> &RandomHeader::getRecord<std::complex<double>>() const {
+  return cd;
+}
+
+template <>
+const Record<std::string> &RandomHeader::getRecord<std::string>() const {
+  return str;
+}
+
+template <>
+const Record<const char *> &RandomHeader::getRecord<const char *>() const {
+  return cstr;
+}
+
 RecordVector<boost::any> RandomHeader::allRecords() const {
   return { b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str, cstr };
 }

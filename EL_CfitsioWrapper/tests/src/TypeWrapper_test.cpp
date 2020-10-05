@@ -20,6 +20,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include "EL_CfitsioWrapper/TypeWrapper.h"
+#include "EL_FitsData/TestColumn.h" // EL_FITSIO_LOOP...
+#include "EL_FitsData/TestRaster.h" // EL_FITSIO_LOOP...
+#include "EL_FitsData/TestRecord.h" // EL_FITSIO_LOOP...
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -45,52 +48,24 @@ void checkCfitsioImageTypeExists() {
   BOOST_CHECK_NO_THROW(TypeCode<T>::forImage());
 }
 
-BOOST_AUTO_TEST_CASE(cfitsio_record_codes_test) {
-  checkCfitsioRecordTypeExists<bool>();
-  checkCfitsioRecordTypeExists<char>();
-  checkCfitsioRecordTypeExists<short>();
-  checkCfitsioRecordTypeExists<int>();
-  checkCfitsioRecordTypeExists<long>();
-  checkCfitsioRecordTypeExists<float>();
-  checkCfitsioRecordTypeExists<double>();
-  checkCfitsioRecordTypeExists<std::complex<float>>();
-  checkCfitsioRecordTypeExists<std::complex<double>>();
-  checkCfitsioRecordTypeExists<std::string>();
-  checkCfitsioRecordTypeExists<unsigned char>();
-  checkCfitsioRecordTypeExists<unsigned short>();
-  checkCfitsioRecordTypeExists<unsigned int>();
-  checkCfitsioRecordTypeExists<unsigned long>();
-}
+#define TEST_RECORD_TYPECODE(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_typecode_test) { \
+    checkCfitsioRecordTypeExists<type>(); \
+  }
 
-BOOST_AUTO_TEST_CASE(cfitsio_bintable_codes_test) {
-  checkCfitsioBintableTypeExists<bool>();
-  checkCfitsioBintableTypeExists<char>();
-  checkCfitsioBintableTypeExists<short>();
-  checkCfitsioBintableTypeExists<int>();
-  checkCfitsioBintableTypeExists<long>();
-  checkCfitsioBintableTypeExists<float>();
-  checkCfitsioBintableTypeExists<double>();
-  checkCfitsioBintableTypeExists<std::complex<float>>();
-  checkCfitsioBintableTypeExists<std::complex<double>>();
-  checkCfitsioBintableTypeExists<std::string>();
-  checkCfitsioBintableTypeExists<unsigned char>();
-  checkCfitsioBintableTypeExists<unsigned short>();
-  checkCfitsioBintableTypeExists<unsigned int>();
-  checkCfitsioBintableTypeExists<unsigned long>();
-}
+#define TEST_BINTABLE_TFORM(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_tform_test) { \
+    checkCfitsioBintableTypeExists<type>(); \
+  }
 
-BOOST_AUTO_TEST_CASE(cfitsio_image_codes_test) {
-  checkCfitsioImageTypeExists<char>();
-  checkCfitsioImageTypeExists<short>();
-  checkCfitsioImageTypeExists<int>();
-  checkCfitsioImageTypeExists<long>();
-  checkCfitsioImageTypeExists<float>();
-  checkCfitsioImageTypeExists<double>();
-  checkCfitsioImageTypeExists<unsigned char>();
-  checkCfitsioImageTypeExists<unsigned short>();
-  checkCfitsioImageTypeExists<unsigned int>();
-  checkCfitsioImageTypeExists<unsigned long>();
-}
+#define TEST_IMAGE_BITPIX(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_bitpix_test) { \
+    checkCfitsioImageTypeExists<type>(); \
+  }
+
+EL_FITSIO_FOREACH_RECORD_TYPE(TEST_RECORD_TYPECODE)
+EL_FITSIO_FOREACH_COLUMN_TYPE(TEST_BINTABLE_TFORM)
+EL_FITSIO_FOREACH_RASTER_TYPE(TEST_IMAGE_BITPIX)
 
 //-----------------------------------------------------------------------------
 

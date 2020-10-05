@@ -57,6 +57,11 @@ std::vector<T> generateRandomVector(long size, T min, T max) {
   return vec;
 }
 
+template <typename T>
+void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
+  BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
+}
+
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid
