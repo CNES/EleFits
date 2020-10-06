@@ -37,7 +37,9 @@ RecordVector<T>::RecordVector(const Record<Ts> &... records) : vector { Record<T
 
 template <typename T>
 const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
-  const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T> &r) { return r.keyword == keyword; });
+  const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T> &r) {
+    return r.keyword == keyword;
+  });
   if (it == vector.end()) {
     throw std::runtime_error("Cannot find keyword: " + keyword);
   }

@@ -53,7 +53,9 @@ std::vector<T> generateRandomVector(long size, T min, T max) {
       static_cast<long double>(min),
       static_cast<long double>(max));
   std::vector<T> vec(size);
-  std::generate(vec.begin(), vec.end(), [&]() { return T(distribution(generator)); });
+  std::generate(vec.begin(), vec.end(), [&]() {
+    return T(distribution(generator));
+  });
   return vec;
 }
 
