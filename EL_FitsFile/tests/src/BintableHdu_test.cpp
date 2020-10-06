@@ -29,11 +29,6 @@
 
 using namespace Euclid::FitsIO;
 
-template <typename T> // TODO move to FitsDataFixture
-void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
-  BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
-}
-
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(BintableHdu_test)
@@ -47,7 +42,7 @@ void checkScalar() {
   MefFile file(filename, MefFile::Permission::Temporary);
   file.assignBintableExt("BINEXT", input);
   const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
-  checkEqualVectors(output.vector(), input.vector());
+  Test::checkEqualVectors(output.vector(), input.vector());
 }
 
 template <typename T>

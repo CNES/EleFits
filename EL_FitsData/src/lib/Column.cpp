@@ -26,6 +26,12 @@ namespace FitsIO {
 namespace Internal {
 
 template <>
+VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount) :
+    Column<std::string>(columnInfo),
+    m_vec(rowCount) {
+}
+
+template <>
 long rowCountImpl<std::string>(long elementCount, ELEMENTS_UNUSED long repeat) {
   return elementCount;
 }

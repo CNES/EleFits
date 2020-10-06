@@ -217,6 +217,11 @@ public:
    */
   VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector);
 
+  /**
+   * @brief Create a VecColumn with given metadata.
+   */
+  VecColumn(ColumnInfo<T> columnInfo, long rowCount);
+
   /** @copydoc Column::elementCount */
   long elementCount() const override;
 

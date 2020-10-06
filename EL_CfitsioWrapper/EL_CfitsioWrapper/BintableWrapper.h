@@ -57,6 +57,12 @@ bool hasColumn(fitsfile *fptr, const std::string &name);
 long columnIndex(fitsfile *fptr, const std::string &name);
 
 /**
+ * @brief Read the metadata of a bintable column with given index.
+ */
+template <typename T>
+FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index);
+
+/**
  * @brief Read a Bintable column with given name.
  */
 template <typename T>

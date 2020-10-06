@@ -2,6 +2,10 @@
 
 # 2.1
 
+## Bug fixes
+
+* Column units are correctly read
+
 ## New features
 
 * New methods in `RecordHdu`:
@@ -21,7 +25,7 @@
 * Check whether a file is open
 * Write COMMENT and HISTORY records
 
-# 2.0.0 (breaking)
+# 2.0 (breaking)
 
 ## Bug fixes
 

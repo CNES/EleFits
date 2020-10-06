@@ -33,28 +33,19 @@ namespace Internal {
  * @brief Read column size to assign data.
  */
 template <typename T>
-void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rowCount);
+void initColumnImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long rowCount);
 
 /**
  * @brief String specialization.
  */
 template <>
-void initColumnImpl<std::string>(
-    fitsfile *fptr,
-    long index,
-    const std::string &name,
-    FitsIO::VecColumn<std::string> &column,
-    long rowCount);
+void initColumnImpl<std::string>(fitsfile *fptr, long index, FitsIO::VecColumn<std::string> &column, long rowCount);
 
 template <typename T>
-void initColumnImpl(fitsfile *fptr, long index, const std::string &name, FitsIO::VecColumn<T> &column, long rowCount) {
-  column.info.name = name;
-  column.info.unit = ""; // TODO
-  int typecode = 0;
-  long width = 0;
-  int status = 0;
-  fits_get_coltype(fptr, static_cast<int>(index), &typecode, &column.info.repeat, &width, &status);
-  column.vector() = std::vector<T>(rowCount * column.info.repeat);
+void initColumnImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long rowCount) {
+  // TODO rm name? read anyway by fits_get_bcolparms
+  column.info = readColumnInfo<T>(fptr, index);
+  column.vector() = std::vector<T>(column.info.repeat * rowCount);
 }
 
 /**
@@ -65,11 +56,10 @@ struct InitColumnsImpl {
   void operator()(
       fitsfile *fptr,
       const std::vector<long> &indices,
-      const std::vector<std::string> &names,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
       long rowCount) {
-    initColumnImpl(fptr, indices[i], names[i], std::get<i>(columns), rowCount);
-    InitColumnsImpl<i - 1, Ts...> {}(fptr, indices, names, columns, rowCount);
+    initColumnImpl(fptr, indices[i], std::get<i>(columns), rowCount);
+    InitColumnsImpl<i - 1, Ts...> {}(fptr, indices, columns, rowCount);
   }
 };
 
@@ -81,10 +71,9 @@ struct InitColumnsImpl<0, Ts...> {
   void operator()(
       fitsfile *fptr,
       const std::vector<long> &indices,
-      const std::vector<std::string> &names,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
       long rowCount) {
-    initColumnImpl(fptr, indices[0], names[0], std::get<0>(columns), rowCount);
+    initColumnImpl(fptr, indices[0], std::get<0>(columns), rowCount);
   }
 };
 
@@ -226,6 +215,30 @@ void writeColumnsImpl(
 } // namespace Internal
 /// @endcond
 
+template <typename T>
+FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index) {
+  FitsIO::ColumnInfo<T> info;
+  int status = 0;
+  char name[FLEN_VALUE];
+  char unit[FLEN_VALUE];
+  fits_get_bcolparms(
+      fptr,
+      index,
+      name,
+      unit,
+      nullptr, // typechar
+      &info.repeat,
+      nullptr, // scale
+      nullptr, // zero
+      nullptr, // nulval
+      nullptr, // tdisp
+      &status);
+  info.name.assign(name);
+  info.unit.assign(unit);
+  mayThrowCfitsioError(status, "Cannot read column metadata: #" + std::to_string(index));
+  return info;
+}
+
 /**
  * @brief String specialization.
  */
@@ -242,16 +255,9 @@ template <typename T>
 FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
   /* Read metadata */
   long index = columnIndex(fptr, name);
-  int typecode = 0;
-  long repeat = 0;
-  long width = 0;
-  long rowCount = 0;
+  long rows = rowCount(fptr);
+  FitsIO::VecColumn<T> column(readColumnInfo<T>(fptr, index), rows);
   int status = 0;
-  fits_get_coltype(fptr, static_cast<int>(index), &typecode, &repeat, &width, &status);
-  fits_get_num_rows(fptr, &rowCount, &status);
-  mayThrowCfitsioError(status, "Cannot read column dimensions");
-  FitsIO::VecColumn<T> column({ name, "", repeat },
-                              std::vector<T>(repeat * rowCount)); // TODO unit
   /* Read data */
   fits_read_col(
       fptr,
@@ -291,26 +297,24 @@ template <typename... Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names) {
   /* List column indices */
   std::vector<long> indices(names.size());
-  for (std::size_t c = 0; c < names.size(); ++c) { // TODO iterator
+  for (std::size_t c = 0; c < names.size(); ++c) { // TODO transform
     indices[c] = columnIndex(fptr, names[c]);
   }
-  /* Read row count */
-  int status = 0;
-  long rowCount = 0;
-  fits_get_num_rows(fptr, &rowCount, &status);
   /* Read column metadata */
+  long rows = rowCount(fptr);
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
-  Internal::InitColumnsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, names, columns, rowCount);
+  Internal::InitColumnsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, columns, rows);
+  int status = 0;
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
     throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
   }
   /* Read column data */
-  for (long first = 1; first <= rowCount; first += chunkRows) {
+  for (long first = 1; first <= rows; first += chunkRows) {
     long last = first + chunkRows - 1;
-    if (last > rowCount) {
-      chunkRows = rowCount - first + 1;
+    if (last > rows) {
+      chunkRows = rows - first + 1;
     }
     Internal::ReadColumnChunksImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, indices, columns, first, chunkRows);
   }

@@ -19,9 +19,11 @@
 
 #ifdef _EL_FITSDATA_TESTUTILS_IMPL
 
-#include <algorithm>
-#include <chrono>
-#include <random>
+#include <algorithm> // generate
+#include <chrono> // chrono
+#include <random> // default_random_engine, uniform_real_distribution
+
+// #include <boost/test/unit_test.hpp> // See checkEqualVectors below
 
 #include "EL_FitsData/TestUtils.h"
 
@@ -61,6 +63,8 @@ std::vector<T> generateRandomVector(long size, T min, T max) {
 
 template <typename T>
 void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
+  // BOOST_CHECK_EQUAL_COLLECTIONS needs some values to be set from the test suite
+  // so the header for it is included in the unit test sources only
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 

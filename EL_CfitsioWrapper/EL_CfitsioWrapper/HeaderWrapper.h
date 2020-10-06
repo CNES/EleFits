@@ -134,7 +134,7 @@ void deleteRecord(fitsfile *fptr, const std::string &keyword);
 /**
  * @brief Get the CFitsIO type code of a record.
  */
-int recordTypecode(fitsfile *fptr, const std::string &keyword); // TODO return typeid instead?
+int recordTypecode(fitsfile *fptr, const std::string &keyword);
 
 /**
  * @brief Write COMMENT record.

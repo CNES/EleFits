@@ -83,6 +83,12 @@ void checkScalarColumnIsReadBack() {
   MinimalFile file;
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
+    const auto index = Bintable::columnIndex(file.fptr, input.info.name);
+    BOOST_CHECK_EQUAL(index, 1);
+    const auto info = Bintable::readColumnInfo<T>(file.fptr, index);
+    BOOST_CHECK_EQUAL(info.name, input.info.name);
+    BOOST_CHECK_EQUAL(info.unit, input.info.unit);
+    BOOST_CHECK_EQUAL(info.repeat, input.info.repeat);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     checkEqualVectors(output.vector(), input.vector());
   } catch (const CfitsioError &e) {
@@ -163,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
-  constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full // TODO check
+  constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full // FIXME check
   RandomScalarColumn<int> i(rowCount);
   i.info.name = "I";
   RandomScalarColumn<float> f(rowCount);

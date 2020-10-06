@@ -106,6 +106,18 @@ VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector) : Colum
 }
 
 template <typename T>
+VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, long rowCount) :
+    Column<T>(columnInfo),
+    m_vec(columnInfo.repeat * rowCount) {
+}
+
+/**
+ * @brief String specialization.
+ */
+template<>
+VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount);
+
+template <typename T>
 long VecColumn<T>::elementCount() const {
   return m_vec.size();
 }
