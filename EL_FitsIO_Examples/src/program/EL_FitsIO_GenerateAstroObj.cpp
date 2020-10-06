@@ -48,11 +48,11 @@ void writeCombinedSignal(MefFile &f, int objIndex, int bins) {
   auto signalData = Test::generateRandomVector<float>(bins);
   auto qualityData = Test::generateRandomVector<char>(bins);
   auto varData = Test::generateRandomVector<float>(bins);
-  const long repeat = 1; // TODO bins?
-  VecRefColumn<float> wminCol({ "WMIN", "nm", repeat }, wminData);
-  VecRefColumn<float> signalCol({ "SIGNAL", "erg", repeat }, signalData);
-  VecRefColumn<char> qualityCol({ "QUALITY", "", repeat }, qualityData);
-  VecRefColumn<float> varCol({ "VAR", "erg^2", repeat }, varData);
+  const long repeatCount = 1; // TODO bins?
+  VecRefColumn<float> wminCol({ "WMIN", "nm", repeatCount }, wminData);
+  VecRefColumn<float> signalCol({ "SIGNAL", "erg", repeatCount }, signalData);
+  VecRefColumn<char> qualityCol({ "QUALITY", "", repeatCount }, qualityData);
+  VecRefColumn<float> varCol({ "VAR", "erg^2", repeatCount }, varData);
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_SIGNAL";
   const auto &ext = f.assignBintableExt(extname, wminCol, signalCol);
   ext.appendColumn(qualityCol);

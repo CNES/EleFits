@@ -1,6 +1,11 @@
 # Change log
 
-# 2.1
+# 2.1 (breaking)
+
+## API changes
+
+* Naming homogeneization:
+  * `ColumnInfo::repeat` -> `ColumnInfo::repeatCount`
 
 ## Bug fixes
 

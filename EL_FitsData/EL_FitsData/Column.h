@@ -27,7 +27,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Column metadata, i.e. { name, unit, repeat }
+ * @brief Column metadata, i.e. { name, unit, repeatCount }
  * @see \ref data-classes
  */
 template <typename T>
@@ -52,7 +52,7 @@ struct ColumnInfo {
    * Their repeat count must be greater or equal to the longest string of the column
    * including the `\0` character.
    */
-  long repeat;
+  long repeatCount;
 };
 
 /**

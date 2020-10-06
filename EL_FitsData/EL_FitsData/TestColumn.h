@@ -133,7 +133,7 @@ public:
   /**
    * @brief Generate a Column.
    */
-  explicit RandomVectorColumn(long repeat = 3, long size = 3, T min = almostMin<T>(), T max = almostMax<T>());
+  explicit RandomVectorColumn(long repeatCount = 3, long size = 3, T min = almostMin<T>(), T max = almostMax<T>());
 
   /** @brief Destructor. */
   virtual ~RandomVectorColumn() = default;

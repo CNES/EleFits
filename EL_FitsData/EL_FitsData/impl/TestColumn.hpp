@@ -39,15 +39,15 @@ RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, 
     VecColumn<std::string>({ "SCALAR", "m", 1 }, generateRandomVector<std::string>(size, min, max)) {
   for (const auto &v : vector()) {
     long currentSize = static_cast<long>(v.length() + 1); // +1 for '\0'
-    if (currentSize > info.repeat) {
-      info.repeat = currentSize;
+    if (currentSize > info.repeatCount) {
+      info.repeatCount = currentSize;
     }
   }
 }
 
 template <typename T>
-RandomVectorColumn<T>::RandomVectorColumn(long repeat, long size, T min, T max) :
-    VecColumn<T>({ "VECTOR", "m", repeat }, generateRandomVector<T>(repeat * size, min, max)) {
+RandomVectorColumn<T>::RandomVectorColumn(long repeatCount, long size, T min, T max) :
+    VecColumn<T>({ "VECTOR", "m", repeatCount }, generateRandomVector<T>(repeatCount * size, min, max)) {
 }
 
 } // namespace Test

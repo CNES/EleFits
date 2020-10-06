@@ -45,7 +45,7 @@ template <typename T>
 void initColumnImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long rowCount) {
   // TODO rm name? read anyway by fits_get_bcolparms
   column.info = readColumnInfo<T>(fptr, index);
-  column.vector() = std::vector<T>(column.info.repeat * rowCount);
+  column.vector() = std::vector<T>(column.info.repeatCount * rowCount);
 }
 
 /**
@@ -97,14 +97,14 @@ void readColumnChunkImpl<std::string>(
 template <typename T>
 void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long firstRow, long rowCount) {
   int status = 0;
-  auto begin = column.vector().data() + (firstRow - 1) * column.info.repeat;
+  auto begin = column.vector().data() + (firstRow - 1) * column.info.repeatCount;
   fits_read_col(
       fptr,
       TypeCode<T>::forBintable(),
       static_cast<int>(index),
       firstRow,
       1,
-      rowCount * column.info.repeat,
+      rowCount * column.info.repeatCount,
       nullptr,
       begin,
       nullptr,
@@ -162,8 +162,8 @@ void writeColumnChunkImpl<std::string>(
 template <typename T>
 void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount) {
   int status = 0;
-  auto begin = column.data() + (firstRow - 1) * column.info.repeat;
-  long size = rowCount * column.info.repeat;
+  auto begin = column.data() + (firstRow - 1) * column.info.repeatCount;
+  long size = rowCount * column.info.repeatCount;
   auto end = begin + size;
   std::vector<T> vec(begin, end);
   fits_write_col(fptr, TypeCode<T>::forBintable(), static_cast<int>(index), firstRow, 1, size, vec.data(), &status);
@@ -227,7 +227,7 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index) {
       name,
       unit,
       nullptr, // typechar
-      &info.repeat,
+      &info.repeatCount,
       nullptr, // scale
       nullptr, // zero
       nullptr, // nulval
@@ -348,7 +348,7 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
 template <typename T>
 void insertColumn(fitsfile *fptr, long index, const FitsIO::Column<T> &column) {
   auto name = toCharPtr(column.info.name);
-  auto tform = toCharPtr(TypeCode<T>::tform(column.info.repeat));
+  auto tform = toCharPtr(TypeCode<T>::tform(column.info.repeatCount));
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
   writeColumn(fptr, column);
@@ -357,7 +357,7 @@ void insertColumn(fitsfile *fptr, long index, const FitsIO::Column<T> &column) {
 template <typename... Ts>
 void insertColumns(fitsfile *fptr, long index, const FitsIO::Column<Ts> &... columns) {
   auto names = CStrArray({ columns.info.name... });
-  auto tforms = CStrArray({ TypeCode<Ts>::tform(columns.info.repeat)... });
+  auto tforms = CStrArray({ TypeCode<Ts>::tform(columns.info.repeatCount)... });
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(Ts), names.data(), tforms.data(), &status);
   writeColumns(fptr, columns...);

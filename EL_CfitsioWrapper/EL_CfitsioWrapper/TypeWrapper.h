@@ -52,7 +52,7 @@ struct TypeCode {
   /**
    * @brief Get the TFORM value to handle Bintable columns.
    */
-  inline static std::string tform(long repeat);
+  inline static std::string tform(long repeatCount);
 
   /**
    * @brief Get the type code for an Image.

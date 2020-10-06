@@ -73,18 +73,18 @@ void readColumnChunkImpl<std::string>(
     long firstRow,
     long rowCount) {
   int status = 0;
-  long repeat = 0;
+  long repeatCount = 0;
   fits_get_coltype(
       fptr,
       static_cast<int>(index), // column indices are int
       nullptr,
-      &repeat,
+      &repeatCount,
       nullptr,
       &status); // TODO wrap?
   mayThrowCfitsioError(status, "Cannot read type of column: #" + std::to_string(index));
   std::vector<char *> data(rowCount);
   for (long i = 0; i < rowCount; ++i) { // TODO iterator
-    data[i] = (char *)malloc(repeat);
+    data[i] = (char *)malloc(repeatCount);
   }
   fits_read_col(
       fptr,
@@ -140,7 +140,7 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
   FitsIO::VecColumn<std::string> column(readColumnInfo<std::string>(fptr, index), rows);
   std::vector<char *> data(rows);
   for (long i = 0; i < rows; ++i) { // TODO transform
-    data[i] = (char *)malloc(column.info.repeat);
+    data[i] = (char *)malloc(column.info.repeatCount);
   }
   int status = 0;
   fits_read_col(

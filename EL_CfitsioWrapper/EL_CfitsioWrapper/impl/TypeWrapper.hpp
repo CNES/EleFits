@@ -105,8 +105,8 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
 #ifndef DEF_TABLE_TFORM
 #define DEF_TABLE_TFORM(type, code) \
   template <> \
-  inline std::string TypeCode<type>::tform(long repeat) { \
-    return std::to_string(repeat) + code; \
+  inline std::string TypeCode<type>::tform(long repeatCount) { \
+    return std::to_string(repeatCount) + code; \
   }
 DEF_TABLE_TFORM(bool, 'X')
 DEF_TABLE_TFORM(char, 'S')

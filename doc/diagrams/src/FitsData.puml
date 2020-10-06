@@ -59,7 +59,7 @@ class Record<T> {
 class ColumnInfo<T> {
 + name
 + unit
-+ repeat
++ repeatCount
 }
 
 abstract class Column<T> {

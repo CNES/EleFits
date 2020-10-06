@@ -88,7 +88,7 @@ void checkScalarColumnIsReadBack() {
     const auto info = Bintable::readColumnInfo<T>(file.fptr, index);
     BOOST_CHECK_EQUAL(info.name, input.info.name);
     BOOST_CHECK_EQUAL(info.unit, input.info.unit);
-    BOOST_CHECK_EQUAL(info.repeat, input.info.repeat);
+    BOOST_CHECK_EQUAL(info.repeatCount, input.info.repeatCount);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     checkEqualVectors(output.vector(), input.vector());
   } catch (const CfitsioError &e) {
@@ -116,13 +116,13 @@ template <typename T>
 void checkVectorColumnIsReadBack() {
   using namespace FitsIO::Test;
   constexpr long rowCount = 3;
-  constexpr long repeat = 2;
-  RandomVectorColumn<T> input(repeat, rowCount);
+  constexpr long repeatCount = 2;
+  RandomVectorColumn<T> input(repeatCount, rowCount);
   MinimalFile file;
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
-    BOOST_CHECK_EQUAL(output.info.repeat, repeat);
+    BOOST_CHECK_EQUAL(output.info.repeatCount, repeatCount);
     checkEqualVectors(output.vector(), input.vector());
   } catch (const CfitsioError &e) {
     std::cerr << "Input:" << std::endl;

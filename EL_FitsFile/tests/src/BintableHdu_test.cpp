@@ -48,9 +48,9 @@ void checkScalar() {
 template <typename T>
 void checkVector() {
   constexpr long rowCount = 10;
-  constexpr long repeat = 2;
-  Test::RandomScalarColumn<T> input(rowCount * repeat);
-  input.info.repeat = repeat;
+  constexpr long repeatCount = 2;
+  Test::RandomScalarColumn<T> input(rowCount * repeatCount);
+  input.info.repeatCount = repeatCount;
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::Temporary);
   file.initBintableExt("BINEXT", input.info);

@@ -31,20 +31,20 @@ namespace Internal {
  * @brief Implementation for Column::rows to dispatch std::string and other types.
  */
 template <typename T>
-long rowCountImpl(long elementCount, long repeat);
+long rowCountImpl(long elementCount, long repeatCount);
 
 /**
  * std::string dispatch.
  */
 template <>
-long rowCountImpl<std::string>(long elementCount, long repeat);
+long rowCountImpl<std::string>(long elementCount, long repeatCount);
 
 /**
  * Other types dispatch.
  */
 template <typename T>
-long rowCountImpl(long elementCount, long repeat) {
-  return (elementCount + repeat - 1) / repeat;
+long rowCountImpl(long elementCount, long repeatCount) {
+  return (elementCount + repeatCount - 1) / repeatCount;
 }
 
 } // namespace Internal
@@ -56,7 +56,7 @@ Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
 
 template <typename T>
 long Column<T>::rowCount() const {
-  return Internal::rowCountImpl<T>(elementCount(), info.repeat);
+  return Internal::rowCountImpl<T>(elementCount(), info.repeatCount);
 }
 
 template <typename T>
@@ -108,13 +108,13 @@ VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector) : Colum
 template <typename T>
 VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, long rowCount) :
     Column<T>(columnInfo),
-    m_vec(columnInfo.repeat * rowCount) {
+    m_vec(columnInfo.repeatCount * rowCount) {
 }
 
 /**
  * @brief String specialization.
  */
-template<>
+template <>
 VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount);
 
 template <typename T>

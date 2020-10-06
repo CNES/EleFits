@@ -46,7 +46,7 @@ template <typename... Ts>
 void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::ColumnInfo<Ts> &... header) {
   constexpr long ncols = sizeof...(Ts);
   CStrArray colName { header.name... };
-  CStrArray colFormat { TypeCode<Ts>::tform(header.repeat)... };
+  CStrArray colFormat { TypeCode<Ts>::tform(header.repeatCount)... };
   CStrArray colUnit { header.unit... };
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
@@ -57,7 +57,7 @@ template <typename... Ts>
 void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<Ts> &... table) {
   constexpr long ncols = sizeof...(Ts);
   CStrArray colName { table.info.name... };
-  CStrArray colFormat { TypeCode<Ts>::tform(table.info.repeat)... };
+  CStrArray colFormat { TypeCode<Ts>::tform(table.info.repeatCount)... };
   CStrArray colUnit { table.info.unit... };
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
@@ -70,7 +70,7 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
   constexpr long count = 1;
   std::string colName = column.info.name;
   char *cName = &colName[0];
-  std::string colFormat = TypeCode<T>::tform(column.info.repeat);
+  std::string colFormat = TypeCode<T>::tform(column.info.repeatCount);
   char *cFormat = &colFormat[0];
   std::string colUnit = column.info.unit;
   char *cUnit = &colUnit[0];
