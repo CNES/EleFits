@@ -31,19 +31,19 @@ namespace Internal {
  * @brief Implementation for Column::rows to dispatch std::string and other types.
  */
 template <typename T>
-long rowCountImpl(long elementCount, long repeatCount);
+long rowCountDispatchImpl(long elementCount, long repeatCount);
 
 /**
  * std::string dispatch.
  */
 template <>
-long rowCountImpl<std::string>(long elementCount, long repeatCount);
+long rowCountDispatchImpl<std::string>(long elementCount, long repeatCount);
 
 /**
  * Other types dispatch.
  */
 template <typename T>
-long rowCountImpl(long elementCount, long repeatCount) {
+long rowCountDispatchImpl(long elementCount, long repeatCount) {
   return (elementCount + repeatCount - 1) / repeatCount;
 }
 
@@ -56,7 +56,7 @@ Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
 
 template <typename T>
 long Column<T>::rowCount() const {
-  return Internal::rowCountImpl<T>(elementCount(), info.repeatCount);
+  return Internal::rowCountDispatchImpl<T>(elementCount(), info.repeatCount);
 }
 
 template <typename T>

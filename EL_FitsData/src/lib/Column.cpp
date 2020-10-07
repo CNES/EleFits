@@ -32,7 +32,7 @@ VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCo
 }
 
 template <>
-long rowCountImpl<std::string>(long elementCount, ELEMENTS_UNUSED long repeatCount) {
+long rowCountDispatchImpl<std::string>(long elementCount, ELEMENTS_UNUSED long repeatCount) {
   return elementCount;
 }
 

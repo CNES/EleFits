@@ -19,6 +19,7 @@
   * `readHeader` returns the full header as a string
 * Read bintable dimensions
 * Check whether a column exists
+* Program `EL_FitsIO_PrintSupportedTypes` prints supported types!
 
 ## Cleaning
 

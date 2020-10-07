@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(index_test) {
   for (auto &coord : pos) {
     coord = std::rand();
   }
-  auto index = FitsIO::Internal::IndexImpl<3>::template offset<4>(shape, pos);
+  auto index = FitsIO::Internal::IndexRecursionImpl<3>::template index<4>(shape, pos);
   BOOST_CHECK_EQUAL(index, pos[0] + shape[0] * (pos[1] + shape[1] * (pos[2] + shape[2] * (pos[3]))));
 }
 

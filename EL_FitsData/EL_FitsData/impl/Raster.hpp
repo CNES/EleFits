@@ -37,13 +37,13 @@ namespace Internal {
  * We need a class for partial specialization.
  */
 template <long i>
-struct IndexImpl {
+struct IndexRecursionImpl {
 
   /**
    * @brief Index of given position in given shape for Raster::index.
    */
   template <long n>
-  static long offset(const Position<n> &shape, const Position<n> &pos);
+  static long index(const Position<n> &shape, const Position<n> &pos);
 };
 
 /**
@@ -51,16 +51,17 @@ struct IndexImpl {
  */
 template <long i>
 template <long n>
-inline long IndexImpl<i>::offset(const Position<n> &shape, const Position<n> &pos) {
-  return std::get<n - 1 - i>(pos) + std::get<n - 1 - i>(shape) * IndexImpl<i - 1>::template offset<n>(shape, pos);
+inline long IndexRecursionImpl<i>::index(const Position<n> &shape, const Position<n> &pos) {
+  return std::get<n - 1 - i>(pos) +
+      std::get<n - 1 - i>(shape) * IndexRecursionImpl<i - 1>::template index<n>(shape, pos);
 }
 
 /**
- * @brief Base case: dimension 0.
+ * @brief Terminal case: dimension 0.
  */
 template <>
 template <long n>
-inline long IndexImpl<0>::offset(const Position<n> &shape, const Position<n> &pos) {
+inline long IndexRecursionImpl<0>::index(const Position<n> &shape, const Position<n> &pos) {
   return std::get<n - 1>(pos);
 }
 
@@ -84,7 +85,7 @@ inline long Raster<T, n>::size() const {
 
 template <typename T, long n>
 inline long Raster<T, n>::index(const Position<n> &pos) const {
-  return Internal::IndexImpl<n - 1>::template offset<n>(shape, pos);
+  return Internal::IndexRecursionImpl<n - 1>::template index<n>(shape, pos);
 }
 
 template <typename T, long n>

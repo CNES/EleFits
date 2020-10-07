@@ -79,47 +79,25 @@ void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &
 namespace Internal {
 
 /**
- * @brief Signature change (output argument) for further use with variadic templates.
+ * @brief Use index_sequence to loop on keywords.
  */
-template <typename T>
-inline void parseRecordImpl(fitsfile *fptr, const std::string &keyword, FitsIO::Record<T> &record) {
-  record = parseRecord<T>(fptr, keyword);
-}
-
-/**
- * @brief Parse the records of the i+1 first keywords of a given list (recursive approach).
- */
-template <std::size_t i, typename... Ts>
-struct ParseRecordsImpl {
-  void
-  operator()(fitsfile *fptr, const std::vector<std::string> &keywords, std::tuple<FitsIO::Record<Ts>...> &records) {
-    parseRecordImpl(fptr, keywords[i], std::get<i>(records));
-    ParseRecordsImpl<i - 1, Ts...> {}(fptr, keywords, records);
-  }
-};
-
-/**
- * @brief Parse the value of the first keyword of a given list (terminal case of the recursion).
- */
-template <typename... Ts>
-struct ParseRecordsImpl<0, Ts...> {
-  void
-  operator()(fitsfile *fptr, const std::vector<std::string> &keywords, std::tuple<FitsIO::Record<Ts>...> &records) {
-    parseRecordImpl(fptr, keywords[0], std::get<0>(records));
-  }
-};
-
 template <class TReturn, typename... Ts, std::size_t... Is>
 TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywords, std14::index_sequence<Is...>) {
   return { parseRecord<Ts>(fptr, keywords[Is])... };
 }
 
+/**
+ * @brief Use index_sequence to loop on records.
+ */
 template <typename... Ts, std::size_t... Is>
 void writeRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std14::index_sequence<Is...>) {
   using mockUnpack = int[];
   (void)mockUnpack { (writeRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
 }
 
+/**
+ * @brief Use index_sequence to loop on records.
+ */
 template <typename... Ts, std::size_t... Is>
 void updateRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std14::index_sequence<Is...>) {
   using mockUnpack = int[];
@@ -160,9 +138,7 @@ FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword) {
 
 template <typename... Ts>
 std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector<std::string> &keywords) {
-  std::tuple<FitsIO::Record<Ts>...> records;
-  Internal::ParseRecordsImpl<sizeof...(Ts) - 1, Ts...> {}(fptr, keywords, records);
-  return records;
+  return parseRecordsAs<std::tuple<FitsIO::Record<Ts>...>, Ts...>(fptr, keywords);
 }
 
 template <class Return, typename... Ts>
