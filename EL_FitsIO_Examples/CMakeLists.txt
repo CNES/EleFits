@@ -51,6 +51,8 @@ elements_add_executable(EL_FitsIO_Tutorial src/program/EL_FitsIO_Tutorial.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
 elements_add_executable(EL_FitsIO_Generate2DMassFiles src/program/EL_FitsIO_Generate2DMassFiles.cpp
                      LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_FitsIO_PrintSupportedTypes src/program/EL_FitsIO_PrintSupportedTypes.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
 #===============================================================================
 # Declare the Boost tests here

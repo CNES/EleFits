@@ -137,7 +137,7 @@ struct RandomHeader {
   MACRO(std::complex<float>, complex_float) \
   MACRO(std::complex<double>, complex_double) \
   MACRO(std::string, string) \
-  MACRO(std::string, C_str) \
+  /* MACRO(const char *, C_str) // Not realy a supported type */ \
   MACRO(unsigned char, uchar) \
   MACRO(unsigned short, ushort) \
   MACRO(unsigned int, uint) \
