@@ -10,6 +10,7 @@
 ## Bug fixes
 
 * Column units are correctly read
+* No more memory error when columns of different sizes are written
 
 ## New features
 
@@ -31,6 +32,11 @@
 * Check whether a keyword exists
 * Check whether a file is open
 * Write COMMENT and HISTORY records
+
+## Known bugs/issues
+
+* `unsigned long` records larger than the greatest `long` cannot be read (CFitsIO bug), although they can be written
+* Boolean columns are not supported
 
 # 2.0 (breaking)
 

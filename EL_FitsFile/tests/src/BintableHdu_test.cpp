@@ -83,11 +83,9 @@ BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, MefFile::Permission::Temporary);
   BOOST_CHECK_NO_THROW(file.assignBintableExt("0AND1", input0, input1));
-  // BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND0", input1, input0));
-  // no mapping at fault address 0x0, see https://euclid.roe.ac.uk/issues/13572
+  BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND0", input1, input0));
   BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND2", input1, input2));
-  // BOOST_CHECK_NO_THROW(file.assignBintableExt("2AND1", input2, input1));
-  // Syscall param write(buf) points to uninitialised byte(s)
+  BOOST_CHECK_NO_THROW(file.assignBintableExt("2AND1", input2, input1));
 }
 
 BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {

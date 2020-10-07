@@ -106,11 +106,14 @@ void writeColumnChunkImpl<std::string>(
 
 template <typename T>
 void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount) {
-  int status = 0;
-  auto begin = column.data() + (firstRow - 1) * column.info.repeatCount;
-  long size = rowCount * column.info.repeatCount;
-  auto end = begin + size;
+  /* Allocate vector */
+  const auto clipedRowCount = std::min(rowCount, column.rowCount() - firstRow + 1);
+  const auto begin = column.data() + (firstRow - 1) * column.info.repeatCount;
+  const auto size = clipedRowCount * column.info.repeatCount;
+  const auto end = begin + size;
   std::vector<T> vec(begin, end);
+  /* Write data */
+  int status = 0;
   fits_write_col(fptr, TypeCode<T>::forBintable(), static_cast<int>(index), firstRow, 1, size, vec.data(), &status);
   mayThrowCfitsioError(
       status,
@@ -120,8 +123,8 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
 
 /**
  * @brief Helper class to loop on a collection of columns.
- * @tparam i The index of the column to which the methods should be applied on:
- * to be initialized with `sizeof...(Ts) - 1`
+ * @tparam i The index of the column the methods should be applied to:
+ * should be initialized with `sizeof...(Ts) - 1`
  * @details
  * This is a recursive implementation, decreasing from `sizeof...(Ts) - 1` to 0.
  * Calling a method with index `i` means applying the change to the `i`-th column,
@@ -130,7 +133,9 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
 template <std::size_t i, typename... Ts>
 struct ColumnLooperImpl {
 
-  /** @brief Read metadata and allocate data for each column */
+  /**
+   * @brief Read metadata and allocate data for each column
+   */
   static void readInfos(
       fitsfile *fptr,
       const std::vector<long> &indices,
@@ -140,7 +145,9 @@ struct ColumnLooperImpl {
     ColumnLooperImpl<i - 1, Ts...>::readInfos(fptr, indices, columns, rowCount);
   }
 
-  /** @brief Read a chunk of each column */
+  /**
+   * @brief Read a chunk of each column
+   */
   static void readChunks(
       fitsfile *fptr,
       const std::vector<long> &indices,
@@ -149,6 +156,14 @@ struct ColumnLooperImpl {
       long rowCount) {
     readColumnChunkImpl(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
     ColumnLooperImpl<i - 1, Ts...>::readChunks(fptr, indices, columns, firstRow, rowCount);
+  }
+
+  /**
+   * @brief Get the max number of rows of the columns.
+   */
+  static void maxRowCount(const std::tuple<const FitsIO::Column<Ts> &...> &columns, long &count = 0) {
+    count = std::max(std::get<i>(columns).rowCount(), count);
+    ColumnLooperImpl<i - 1, Ts...>::maxRowCount(columns, count);
   }
 
   /** @brief Write a chunk of each colum */
@@ -164,7 +179,7 @@ struct ColumnLooperImpl {
 };
 
 /**
- * @brief Passed-terminal case (do nothing).
+ * @brief Past-the-terminal case (do nothing).
  */
 template <typename... Ts>
 struct ColumnLooperImpl<-1, Ts...> {
@@ -187,6 +202,11 @@ struct ColumnLooperImpl<-1, Ts...> {
   }
 
   /** @brief Pass */
+  static void
+  maxRowCount(ELEMENTS_UNUSED const std::tuple<const FitsIO::Column<Ts> &...> &columns, ELEMENTS_UNUSED long &count) {
+  }
+
+  /** @brief Pass */
   static void writeChunks(
       ELEMENTS_UNUSED fitsfile *fptr,
       ELEMENTS_UNUSED const std::vector<long> &indices,
@@ -205,22 +225,21 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index) {
   int status = 0;
   char name[FLEN_VALUE];
   char unit[FLEN_VALUE];
+  long repeatCount = 0;
   fits_get_bcolparms(
       fptr,
       index,
       name,
       unit,
       nullptr, // typechar
-      &info.repeatCount,
+      &repeatCount,
       nullptr, // scale
       nullptr, // zero
       nullptr, // nulval
       nullptr, // tdisp
       &status);
   mayThrowCfitsioError(status, "Cannot read column metadata: #" + std::to_string(index));
-  info.name.assign(name);
-  info.unit.assign(unit);
-  return info;
+  return { name, unit, repeatCount };
 }
 
 /**
@@ -238,8 +257,8 @@ void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> 
 template <typename T>
 FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
   /* Read metadata */
-  long index = columnIndex(fptr, name);
-  long rows = rowCount(fptr);
+  const long index = columnIndex(fptr, name);
+  const long rows = rowCount(fptr);
   FitsIO::VecColumn<T> column(readColumnInfo<T>(fptr, index), rows);
   int status = 0;
   /* Read data */
@@ -285,7 +304,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
     indices[c] = columnIndex(fptr, names[c]);
   }
   /* Read column metadata */
-  long rows = rowCount(fptr);
+  const long rows = rowCount(fptr);
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
   Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::readInfos(fptr, indices, columns, rows);
   int status = 0;
@@ -309,9 +328,9 @@ template <typename... Ts>
 void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
   int status = 0;
   /* Get chunk size */
-  auto table = std::forward_as_tuple(columns...);
-  auto rowCount = std::get<0>(table).rowCount();
-  // FIXME assumes all columns have same height => move to write chunks
+  const auto table = std::forward_as_tuple(columns...);
+  long rowCount = 0;
+  Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::maxRowCount(table, rowCount);
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
