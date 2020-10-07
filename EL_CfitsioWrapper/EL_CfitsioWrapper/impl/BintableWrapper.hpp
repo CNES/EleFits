@@ -19,6 +19,8 @@
 
 #ifdef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
 
+#include "ElementsKernel/Unused.h"
+
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 
@@ -33,16 +35,16 @@ namespace Internal {
  * @brief Read metadata and allocate data.
  */
 template <typename T>
-void readInfo(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long rowCount);
+void readColumnInfoImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long rowCount);
 
 /**
  * @brief String specialization.
  */
 template <>
-void readInfo<std::string>(fitsfile *fptr, long index, FitsIO::VecColumn<std::string> &column, long rowCount);
+void readColumnInfoImpl<std::string>(fitsfile *fptr, long index, FitsIO::VecColumn<std::string> &column, long rowCount);
 
 template <typename T>
-void readInfo(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long rowCount) {
+void readColumnInfoImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long rowCount) {
   column.info = readColumnInfo<T>(fptr, index);
   column.vector() = std::vector<T>(column.info.repeatCount * rowCount);
 }
@@ -51,13 +53,13 @@ void readInfo(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long row
  * @brief Read a column chunk.
  */
 template <typename T>
-void readChunk(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long firstRow, long rowCount);
+void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long firstRow, long rowCount);
 
 /**
  * @brief String specialization.
  */
 template <>
-void readChunk<std::string>(
+void readColumnChunkImpl<std::string>(
     fitsfile *fptr,
     long index,
     FitsIO::VecColumn<std::string> &column,
@@ -65,7 +67,7 @@ void readChunk<std::string>(
     long rowCount);
 
 template <typename T>
-void readChunk(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long firstRow, long rowCount) {
+void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long firstRow, long rowCount) {
   int status = 0;
   auto begin = column.vector().data() + (firstRow - 1) * column.info.repeatCount;
   fits_read_col(
@@ -89,13 +91,13 @@ void readChunk(fitsfile *fptr, long index, FitsIO::VecColumn<T> &column, long fi
  * @brief Write a column chunk.
  */
 template <typename T>
-void writeChunk(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount);
+void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount);
 
 /**
  * @brief String specialization.
  */
 template <>
-void writeChunk<std::string>(
+void writeColumnChunkImpl<std::string>(
     fitsfile *fptr,
     long index,
     const FitsIO::Column<std::string> &column,
@@ -103,7 +105,7 @@ void writeChunk<std::string>(
     long rowCount);
 
 template <typename T>
-void writeChunk(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount) {
+void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &column, long firstRow, long rowCount) {
   int status = 0;
   auto begin = column.data() + (firstRow - 1) * column.info.repeatCount;
   long size = rowCount * column.info.repeatCount;
@@ -118,9 +120,15 @@ void writeChunk(fitsfile *fptr, long index, const FitsIO::Column<T> &column, lon
 
 /**
  * @brief Helper class to loop on a collection of columns.
+ * @tparam i The index of the column to which the methods should be applied on:
+ * to be initialized with `sizeof...(Ts) - 1`
+ * @details
+ * This is a recursive implementation, decreasing from `sizeof...(Ts) - 1` to 0.
+ * Calling a method with index `i` means applying the change to the `i`-th column,
+ * and then calling the method with index `i - 1`.
  */
 template <std::size_t i, typename... Ts>
-struct ColumnLooper {
+struct ColumnLooperImpl {
 
   /** @brief Read metadata and allocate data for each column */
   static void readInfos(
@@ -128,8 +136,8 @@ struct ColumnLooper {
       const std::vector<long> &indices,
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
       long rowCount) {
-    readInfo(fptr, indices[i], std::get<i>(columns), rowCount);
-    ColumnLooper<i - 1, Ts...>::readInfos(fptr, indices, columns, rowCount);
+    readColumnInfoImpl(fptr, indices[i], std::get<i>(columns), rowCount);
+    ColumnLooperImpl<i - 1, Ts...>::readInfos(fptr, indices, columns, rowCount);
   }
 
   /** @brief Read a chunk of each column */
@@ -139,8 +147,8 @@ struct ColumnLooper {
       std::tuple<FitsIO::VecColumn<Ts>...> &columns,
       long firstRow,
       long rowCount) {
-    readChunk(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
-    ColumnLooper<i - 1, Ts...>::readChunks(fptr, indices, columns, firstRow, rowCount);
+    readColumnChunkImpl(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
+    ColumnLooperImpl<i - 1, Ts...>::readChunks(fptr, indices, columns, firstRow, rowCount);
   }
 
   /** @brief Write a chunk of each colum */
@@ -150,44 +158,41 @@ struct ColumnLooper {
       std::tuple<const FitsIO::Column<Ts> &...> columns,
       long firstRow,
       long rowCount) {
-    writeChunk(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
-    ColumnLooper<i - 1, Ts...>::writeChunks(fptr, indices, columns, firstRow, rowCount);
+    writeColumnChunkImpl(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
+    ColumnLooperImpl<i - 1, Ts...>::writeChunks(fptr, indices, columns, firstRow, rowCount);
   }
 };
 
 /**
- * @brief Terminal case.
+ * @brief Passed-terminal case (do nothing).
  */
 template <typename... Ts>
-struct ColumnLooper<0, Ts...> {
+struct ColumnLooperImpl<-1, Ts...> {
 
-  /** @brief Read metadata and allocate data for the first column */
+  /** @brief Pass */
   static void readInfos(
-      fitsfile *fptr,
-      const std::vector<long> &indices,
-      std::tuple<FitsIO::VecColumn<Ts>...> &columns,
-      long rowCount) {
-    readInfo(fptr, indices[0], std::get<0>(columns), rowCount);
+      ELEMENTS_UNUSED fitsfile *fptr,
+      ELEMENTS_UNUSED const std::vector<long> &indices,
+      ELEMENTS_UNUSED std::tuple<FitsIO::VecColumn<Ts>...> &columns,
+      ELEMENTS_UNUSED long rowCount) {
   }
 
-  /** @brief Read a chunk of the first column */
+  /** @brief Pass */
   static void readChunks(
-      fitsfile *fptr,
-      const std::vector<long> &indices,
-      std::tuple<FitsIO::VecColumn<Ts>...> &columns,
-      long firstRow,
-      long rowCount) {
-    readChunk(fptr, indices[0], std::get<0>(columns), firstRow, rowCount);
+      ELEMENTS_UNUSED fitsfile *fptr,
+      ELEMENTS_UNUSED const std::vector<long> &indices,
+      ELEMENTS_UNUSED std::tuple<FitsIO::VecColumn<Ts>...> &columns,
+      ELEMENTS_UNUSED long firstRow,
+      ELEMENTS_UNUSED long rowCount) {
   }
 
-  /** @brief Write a chunk of the first colum */
+  /** @brief Pass */
   static void writeChunks(
-      fitsfile *fptr,
-      const std::vector<long> &indices,
-      std::tuple<const FitsIO::Column<Ts> &...> columns,
-      long firstRow,
-      long rowCount) {
-    writeChunk(fptr, indices[0], std::get<0>(columns), firstRow, rowCount);
+      ELEMENTS_UNUSED fitsfile *fptr,
+      ELEMENTS_UNUSED const std::vector<long> &indices,
+      ELEMENTS_UNUSED std::tuple<const FitsIO::Column<Ts> &...> columns,
+      ELEMENTS_UNUSED long firstRow,
+      ELEMENTS_UNUSED long rowCount) {
   }
 };
 
@@ -282,7 +287,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
   /* Read column metadata */
   long rows = rowCount(fptr);
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
-  Internal::ColumnLooper<sizeof...(Ts) - 1, Ts...>::readInfos(fptr, indices, columns, rows);
+  Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::readInfos(fptr, indices, columns, rows);
   int status = 0;
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
@@ -295,7 +300,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
     if (last > rows) {
       chunkRows = rows - first + 1;
     }
-    Internal::ColumnLooper<sizeof...(Ts) - 1, Ts...>::readChunks(fptr, indices, columns, first, chunkRows);
+    Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::readChunks(fptr, indices, columns, first, chunkRows);
   }
   return columns;
 }
@@ -319,7 +324,7 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
     if (last > rowCount) {
       chunkRows = rowCount - first + 1;
     }
-    Internal::ColumnLooper<sizeof...(Ts) - 1, Ts...>::writeChunks(fptr, indices, table, first, chunkRows);
+    Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::writeChunks(fptr, indices, table, first, chunkRows);
   }
 }
 

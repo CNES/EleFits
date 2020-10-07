@@ -23,6 +23,8 @@
 
 * `FitsFile::open` throws an error if already open
 * Fixture classes better organized
+* Comprehensive testing of the supported types
+* Cleaning of the variadic template patterns
 
 ## Expected features
 

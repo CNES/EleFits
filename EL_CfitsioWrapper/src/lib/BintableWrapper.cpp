@@ -60,13 +60,17 @@ long columnIndex(fitsfile *fptr, const std::string &name) {
 namespace Internal {
 
 template <> // TODO clean
-void readInfo<std::string>(fitsfile *fptr, long index, FitsIO::VecColumn<std::string> &column, long rowCount) {
+void readColumnInfoImpl<std::string>(
+    fitsfile *fptr,
+    long index,
+    FitsIO::VecColumn<std::string> &column,
+    long rowCount) {
   column.info = readColumnInfo<std::string>(fptr, index);
   column.vector() = std::vector<std::string>(rowCount);
 }
 
 template <> // TODO clean
-void readChunk<std::string>(
+void readColumnChunkImpl<std::string>(
     fitsfile *fptr,
     long index,
     FitsIO::VecColumn<std::string> &column,
@@ -105,7 +109,7 @@ void readChunk<std::string>(
 }
 
 template <>
-void writeChunk<std::string>(
+void writeColumnChunkImpl<std::string>(
     fitsfile *fptr,
     long index,
     const FitsIO::Column<std::string> &column,
