@@ -118,8 +118,10 @@ void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &ref);
 } // namespace FitsIO
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_FITSDATA_TESTUTILS_IMPL
 #include "EL_FitsData/impl/TestUtils.hpp"
 #undef _EL_FITSDATA_TESTUTILS_IMPL
+/// @endcond
 
 #endif

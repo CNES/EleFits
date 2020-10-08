@@ -166,8 +166,10 @@ protected:
 } // namespace FitsIO
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_FITSFILE_MEFFILE_IMPL
 #include "EL_FitsFile/impl/MefFile.hpp"
 #undef _EL_FITSFILE_MEFFILE_IMPL
+/// @endcond
 
 #endif

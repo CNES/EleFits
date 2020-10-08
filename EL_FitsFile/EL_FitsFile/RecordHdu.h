@@ -266,8 +266,10 @@ protected:
 } // namespace FitsIO
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_FITSFILE_HDU_IMPL
 #include "EL_FitsFile/impl/RecordHdu.hpp"
 #undef _EL_FITSFILE_HDU_IMPL
+/// @endcond
 
 #endif

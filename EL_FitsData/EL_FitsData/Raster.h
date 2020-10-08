@@ -232,8 +232,10 @@ private:
 } // namespace FitsIO
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_FITSDATA_RASTER_IMPL
 #include "EL_FitsData/impl/Raster.hpp"
 #undef _EL_FITSDATA_RASTER_IMPL
+/// @endcond
 
 #endif

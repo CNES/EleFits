@@ -68,8 +68,10 @@ struct TypeCode {
 } // namespace Cfitsio
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_CFITSIOWRAPPER_TYPEWRAPPER_IMPL
 #include "EL_CfitsioWrapper/impl/TypeWrapper.hpp"
 #undef _EL_CFITSIOWRAPPER_TYPEWRAPPER_IMPL
+/// @endcond
 
 #endif

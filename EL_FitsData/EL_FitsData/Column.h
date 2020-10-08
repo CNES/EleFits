@@ -253,8 +253,10 @@ private:
 } // namespace FitsIO
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_FITSDATA_COLUMN_IMPL
 #include "EL_FitsData/impl/Column.hpp"
 #undef _EL_FITSDATA_COLUMN_IMPL
+/// @endcond
 
 #endif

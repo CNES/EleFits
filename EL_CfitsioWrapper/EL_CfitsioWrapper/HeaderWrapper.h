@@ -150,8 +150,10 @@ void writeHistory(fitsfile *fptr, const std::string &history);
 } // namespace Cfitsio
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
 #include "EL_CfitsioWrapper/impl/HeaderWrapper.hpp"
 #undef _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
+/// @endcond
 
 #endif

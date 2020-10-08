@@ -42,7 +42,7 @@ namespace Bintable {
 long columnCount(fitsfile *fptr);
 
 /**
- * @bref Get the number of rows.
+ * @brief Get the number of rows.
  */
 long rowCount(fitsfile *fptr);
 
@@ -114,8 +114,10 @@ void appendColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns);
 } // namespace Cfitsio
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
 #include "EL_CfitsioWrapper/impl/BintableWrapper.hpp"
 #undef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
+/// @endcond
 
 #endif

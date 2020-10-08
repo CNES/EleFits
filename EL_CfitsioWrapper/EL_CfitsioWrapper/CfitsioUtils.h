@@ -94,8 +94,10 @@ struct CStrArray {
 } // namespace Cfitsio
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_CFITSIOWRAPPER_CFITSIOUTILS_IMPL
 #include "EL_CfitsioWrapper/impl/CfitsioUtils.hpp"
 #undef _EL_CFITSIOWRAPPER_CFITSIOUTILS_IMPL
+/// @endcond
 
 #endif

@@ -23,6 +23,14 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
+#define GENERATE_COLUMN(type, name) getColumn<type>() = generateColumn<type>(#name, repeatCount, rowCount);
+
+RandomTable::RandomTable(long repeatCount, long rowCount) : columns {} {
+  EL_FITSIO_FOREACH_COLUMN_TYPE(GENERATE_COLUMN)
+}
+
+constexpr long RandomTable::columnCount;
+
 SmallTable::SmallTable() :
     extname("MESSIER"),
     nums { 45, 7, 31 },

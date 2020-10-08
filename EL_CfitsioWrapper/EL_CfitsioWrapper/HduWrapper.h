@@ -152,8 +152,10 @@ void deleteHdu(fitsfile *fptr, long index);
 } // namespace Cfitsio
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
 #include "EL_CfitsioWrapper/impl/HduWrapper.hpp"
 #undef _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
+/// @endcond
 
 #endif

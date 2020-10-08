@@ -33,6 +33,32 @@ namespace FitsIO {
 namespace Test {
 
 /**
+ * @brief Loop over supported record types.
+ * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it
+ * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
+ * @see EL_FITSIO_FOREACH_RASTER_TYPE
+ * @see EL_FITSIO_FOREACH_COLUMN_TYPE
+ */
+#define EL_FITSIO_FOREACH_RECORD_TYPE(MACRO) \
+  MACRO(bool, bool) \
+  MACRO(char, char) \
+  MACRO(short, short) \
+  MACRO(int, int) \
+  MACRO(long, long) \
+  MACRO(long long, longlong) \
+  MACRO(float, float) \
+  MACRO(double, double) \
+  MACRO(std::complex<float>, complex_float) \
+  MACRO(std::complex<double>, complex_double) \
+  MACRO(std::string, string) \
+  /* MACRO(const char *, C_str) // Supported by few services only */ \
+  MACRO(unsigned char, uchar) \
+  MACRO(unsigned short, ushort) \
+  MACRO(unsigned int, uint) \
+  MACRO(unsigned long, ulong) \
+  MACRO(unsigned long long, ulonglong)
+
+/**
  * @brief Generate a random record.
  * @tparam T The value type
  * @param typeName The type name as a string, e.g. `"unsigned long int"`
@@ -125,27 +151,10 @@ struct RandomHeader {
 } // namespace FitsIO
 } // namespace Euclid
 
-#define EL_FITSIO_FOREACH_RECORD_TYPE(MACRO) \
-  MACRO(bool, bool) \
-  MACRO(char, char) \
-  MACRO(short, short) \
-  MACRO(int, int) \
-  MACRO(long, long) \
-  MACRO(long long, longlong) \
-  MACRO(float, float) \
-  MACRO(double, double) \
-  MACRO(std::complex<float>, complex_float) \
-  MACRO(std::complex<double>, complex_double) \
-  MACRO(std::string, string) \
-  /* MACRO(const char *, C_str) // Not realy a supported type */ \
-  MACRO(unsigned char, uchar) \
-  MACRO(unsigned short, ushort) \
-  MACRO(unsigned int, uint) \
-  MACRO(unsigned long, ulong) \
-  MACRO(unsigned long long, ulonglong)
-
+/// @cond INTERNAL
 #define _EL_FITSDATA_TESTRECORD_IMPL
 #include "EL_FitsData/impl/TestRecord.hpp"
 #undef _EL_FITSDATA_TESTRECORD_IMPL
+/// @endcond
 
 #endif

@@ -32,6 +32,25 @@ namespace FitsIO {
 namespace Test {
 
 /**
+ * @brief Loop over supported raster types.
+ * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it
+ * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
+ * @see EL_FITSIO_FOREACH_RECORD_TYPE
+ * @see EL_FITSIO_FOREACH_COLUMN_TYPE
+ */
+#define EL_FITSIO_FOREACH_RASTER_TYPE(MACRO) \
+  MACRO(char, char) \
+  MACRO(std::int16_t, int16) \
+  MACRO(std::int32_t, int32) \
+  MACRO(std::int64_t, int64) \
+  MACRO(float, float) \
+  MACRO(double, double) \
+  MACRO(unsigned char, uchar) \
+  MACRO(std::uint16_t, uint16) \
+  MACRO(std::uint32_t, uint32) \
+  MACRO(std::uint64_t, uint64)
+
+/**
  * @brief A 2D image Raster of floats.
  */
 class SmallRaster : public VecRaster<float> {
@@ -94,20 +113,10 @@ bool rasterApprox(const Raster<T, n> &test, const Raster<T, n> &ref, double tol 
 } // namespace FitsIO
 } // namespace Euclid
 
-#define EL_FITSIO_FOREACH_RASTER_TYPE(MACRO) \
-  MACRO(char, char) \
-  MACRO(std::int16_t, int16) \
-  MACRO(std::int32_t, int32) \
-  MACRO(std::int64_t, int64) \
-  MACRO(float, float) \
-  MACRO(double, double) \
-  MACRO(unsigned char, uchar) \
-  MACRO(std::uint16_t, uint16) \
-  MACRO(std::uint32_t, uint32) \
-  MACRO(std::uint64_t, uint64)
-
+/// @cond INTERNAL
 #define _EL_FITSDATA_TESTRASTER_IMPL
 #include "EL_FitsData/impl/TestRaster.hpp"
 #undef _EL_FITSDATA_TESTRASTER_IMPL
+/// @endcond
 
 #endif

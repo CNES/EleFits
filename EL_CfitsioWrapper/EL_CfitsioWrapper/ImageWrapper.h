@@ -65,8 +65,10 @@ void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster);
 } // namespace Cfitsio
 } // namespace Euclid
 
+/// @cond INTERNAL
 #define _EL_CFITSIOWRAPPER_IMAGEWRAPPER_IMPL
 #include "EL_CfitsioWrapper/impl/ImageWrapper.hpp"
 #undef _EL_CFITSIOWRAPPER_IMAGEWRAPPER_IMPL
+/// @endcond
 
 #endif

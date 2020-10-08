@@ -32,6 +32,29 @@ namespace FitsIO {
 namespace Test {
 
 /**
+ * @brief Loop over supported column types.
+ * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it
+ * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
+ * @see EL_FITSIO_FOREACH_RECORD_TYPE
+ * @see EL_FITSIO_FOREACH_RASTER_TYPE
+ */
+#define EL_FITSIO_FOREACH_COLUMN_TYPE(MACRO) \
+  /* MACRO(bool, bool) // TODO Could be supported at some point */ \
+  MACRO(char, char) \
+  MACRO(std::int16_t, int16) \
+  MACRO(std::int32_t, int32) \
+  MACRO(std::int64_t, int64) \
+  MACRO(float, float) \
+  MACRO(double, double) \
+  MACRO(std::complex<float>, complex_float) \
+  MACRO(std::complex<double>, complex_double) \
+  MACRO(std::string, string) \
+  MACRO(unsigned char, uchar) \
+  MACRO(std::uint16_t, uint16) \
+  MACRO(std::uint32_t, uint32) \
+  MACRO(std::uint64_t, uint64)
+
+/**
  * @brief A set of random columns whihch cover the whole set of supported types.
  */
 struct RandomTable {
@@ -81,6 +104,9 @@ struct RandomTable {
       VecColumn<std::uint32_t>,
       VecColumn<std::uint64_t>>
       columns;
+
+  /** @brief The number of columns. */
+  static constexpr long columnCount = 13;
 }; // namespace Test
 
 /**
@@ -196,24 +222,10 @@ public:
 } // namespace FitsIO
 } // namespace Euclid
 
-#define EL_FITSIO_FOREACH_COLUMN_TYPE(MACRO) \
-  /* MACRO(bool, bool) */ \
-  MACRO(char, char) \
-  MACRO(std::int16_t, int16) \
-  MACRO(std::int32_t, int32) \
-  MACRO(std::int64_t, int64) \
-  MACRO(float, float) \
-  MACRO(double, double) \
-  MACRO(std::complex<float>, complex_float) \
-  MACRO(std::complex<double>, complex_double) \
-  MACRO(std::string, string) \
-  MACRO(unsigned char, uchar) \
-  MACRO(std::uint16_t, uint16) \
-  MACRO(std::uint32_t, uint32) \
-  MACRO(std::uint64_t, uint64)
-
+/// @cond INTERNAL
 #define _EL_FITSDATA_TESTCOLUMN_IMPL
 #include "EL_FitsData/impl/TestColumn.hpp"
 #undef _EL_FITSDATA_TESTCOLUMN_IMPL
+/// @endcond
 
 #endif

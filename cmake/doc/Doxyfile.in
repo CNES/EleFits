@@ -557,7 +557,7 @@ SHOW_USED_FILES = YES
 # This will remove the Files entry from the Quick Index and from the
 # Folder Tree View (if specified). The default is YES.
 
-SHOW_FILES = NO
+SHOW_FILES = YES
 
 # Set the SHOW_NAMESPACES tag to NO to disable the generation of the
 # Namespaces page.
@@ -655,7 +655,12 @@ WARN_LOGFILE =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT = @PROJECT_SOURCE_DIR@/doc @PROJECT_SOURCE_DIR@
+INPUT = @PROJECT_SOURCE_DIR@/doc \
+@PROJECT_SOURCE_DIR@/EL_CfitsioWrapper \
+@PROJECT_SOURCE_DIR@/EL_FitsData \
+@PROJECT_SOURCE_DIR@/EL_FitsFile \
+@PROJECT_SOURCE_DIR@/EL_FitsIO_Examples \
+@PROJECT_SOURCE_DIR@/EL_FitsIO_Validation
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -1682,7 +1687,7 @@ TEMPLATE_RELATIONS = NO
 # file showing the direct and indirect include dependencies of the file with
 # other documented files.
 
-INCLUDE_GRAPH = YES
+INCLUDE_GRAPH = NO
 
 # If the ENABLE_PREPROCESSING, SEARCH_INCLUDES, INCLUDED_BY_GRAPH, and
 # HAVE_DOT tags are set to YES then doxygen will generate a graph for each
