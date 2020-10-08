@@ -44,7 +44,9 @@ Record<T> generateRandomRecord(const std::string &typeName) {
     prefixes[i] = typeChunks[i][0];
   }
   std::string keyword = prefixes + suffix;
-  std::transform(keyword.begin(), keyword.end(), keyword.begin(), [](unsigned char c) { return std::toupper(c); });
+  std::transform(keyword.begin(), keyword.end(), keyword.begin(), [](unsigned char c) {
+    return std::toupper(c);
+  });
   std::string comment = prefixes.empty() ? suffix : prefixes + " " + suffix;
   return generateRandomRecord<T>(keyword, prefixes + suffix[0], comment);
 }

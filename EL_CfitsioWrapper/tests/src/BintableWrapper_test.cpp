@@ -35,47 +35,6 @@ BOOST_AUTO_TEST_SUITE(BintableWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-/**
- * Learning test which checks that there is indeed a bug in the way
- * CFitsIO handles unsigned integers with BZERO.
- */
-BOOST_AUTO_TEST_CASE(cfitsio_overflow_bug_test) {
-  FitsIO::Test::MinimalFile file;
-  CStrArray ttype({ "COL" });
-  auto tform1 = TypeCode<unsigned>::tform(1);
-  char *tforms[1];
-  tforms[0] = (char *)malloc(3);
-  strcpy(tforms[0], tform1.c_str());
-  CStrArray tunit({ "" });
-  printf("TTYPE: %s\nTFORM: %s\nTUNIT: %s\n", ttype.data()[0], tforms[0], tunit.data()[0]);
-  int status = 0;
-  fits_create_tbl(file.fptr, BINARY_TBL, 0, 1, ttype.data(), tforms, tunit.data(), "TBL", &status);
-  free(tforms[0]);
-
-  constexpr unsigned small = 0;
-  constexpr unsigned medium = std::numeric_limits<int>::max();
-  constexpr unsigned large = medium + 1;
-  constexpr unsigned max = std::numeric_limits<unsigned>::max();
-  BOOST_CHECK_LE(large, std::numeric_limits<unsigned>::max());
-  unsigned values[] = { small, medium, large, max };
-
-  printf("Small value: %u\n", small);
-  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[0], &status);
-  BOOST_CHECK_EQUAL(status, 0);
-  status = 0;
-  printf("Medium value: %u\n", medium);
-  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[1], &status);
-  BOOST_CHECK_EQUAL(status, 0);
-  status = 0;
-  printf("Large value: %u\n", large);
-  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[2], &status);
-  BOOST_CHECK_EQUAL(status, 0);
-  status = 0;
-  printf("Max value: %u\n", max);
-  fits_write_col(file.fptr, TUINT, 1, 1, 1, 1, &values[3], &status);
-  BOOST_CHECK_EQUAL(status, 0);
-}
-
 template <typename T>
 void checkScalarColumnIsReadBack() {
   using namespace FitsIO::Test;

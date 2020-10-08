@@ -29,7 +29,12 @@ BOOST_AUTO_TEST_SUITE(TestColumn_test)
 
 //-----------------------------------------------------------------------------
 
-// TODO
+#define COLUMN_HAS_MORE_THAN_2_ROWS_TEST(type, name) \
+  BOOST_FIXTURE_TEST_CASE(name##_column_has_more_than_2_rows_test, Test::RandomTable) { \
+    BOOST_CHECK_GT(getColumn<type>().rowCount(), 2); \
+  }
+
+EL_FITSIO_FOREACH_COLUMN_TYPE(COLUMN_HAS_MORE_THAN_2_ROWS_TEST)
 
 //-----------------------------------------------------------------------------
 

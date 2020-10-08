@@ -21,6 +21,7 @@
 #define _EL_FITSDATA_TESTCOLUMN_H
 
 #include <complex>
+#include <tuple>
 #include <string>
 
 #include "EL_FitsData/Column.h"
@@ -29,6 +30,58 @@
 namespace Euclid {
 namespace FitsIO {
 namespace Test {
+
+/**
+ * @brief A set of random columns whihch cover the whole set of supported types.
+ */
+struct RandomTable {
+
+  /**
+   * @brief Generate the table.
+   * @param repeatCount The repeat count of each column
+   */
+  RandomTable(long repeatCount = 1, long rowCount = 3);
+
+  /**
+   * @brief Generate a column.
+   * @param typeName The value type name
+   * @param repeatCount The repeat count
+   * @details
+   */
+  template <typename T>
+  static VecColumn<T> generateColumn(const std::string &typeName, long repeatCount = 1, long rowCount = 3);
+
+  /**
+   * @brief Get the column with given value type.
+   */
+  template <typename T>
+  const VecColumn<T> &getColumn() const;
+
+  /**
+   * @brief Get the column with given value type.
+   */
+  template <typename T>
+  VecColumn<T> &getColumn();
+
+  /**
+   * @brief The columns.
+   */
+  std::tuple<
+      VecColumn<char>,
+      VecColumn<std::int16_t>,
+      VecColumn<std::int32_t>,
+      VecColumn<std::int64_t>,
+      VecColumn<float>,
+      VecColumn<double>,
+      VecColumn<std::complex<float>>,
+      VecColumn<std::complex<double>>,
+      VecColumn<std::string>,
+      VecColumn<unsigned char>,
+      VecColumn<std::uint16_t>,
+      VecColumn<std::uint32_t>,
+      VecColumn<std::uint64_t>>
+      columns;
+}; // namespace Test
 
 /**
  * @brief A small set of columns with various types.
