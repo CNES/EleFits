@@ -33,7 +33,7 @@ namespace Test {
 
 /**
  * @brief Loop over supported raster types.
- * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it
+ * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
  * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
  * @see EL_FITSIO_FOREACH_RECORD_TYPE
  * @see EL_FITSIO_FOREACH_COLUMN_TYPE

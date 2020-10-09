@@ -84,7 +84,7 @@ public:
 
   /**
    * @brief Read the header as a string.
-   * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank)
+   * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank).
    * @details
    * The main purpose of this function is to interface with external libraries like WcsLib:
    * \code
@@ -114,8 +114,8 @@ public:
 
   /**
    * @brief Parse a record if it exists, return a fallback otherwise.
-   * @param fallback A record with the keyword to be looked for and fallback value,
-   * fallback unit (optional), and fallback comment (optional)
+   * @param fallback A record with the keyword to be looked for, the fallback value,
+   * a fallback unit (optional), and a fallback comment (optional).
    * @details
    * If a record with the given keyword exists, it is parsed and returned.
    * Otherwise, a copy of the given fallback record is returned.
@@ -184,10 +184,10 @@ public:
 
   /**
    * @brief Write a record.
-   * @param k The keyword
-   * @param v The value
-   * @param u The unit
-   * @param c The comment
+   * @param k The keyword.
+   * @param v The value.
+   * @param u The unit.
+   * @param c The comment.
    */
   template <typename T>
   void writeRecord(const std::string &k, T v, const std::string &u = "", const std::string &c = "") const;
@@ -236,10 +236,10 @@ public:
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
-   * @param k The keyword
-   * @param v The value
-   * @param u The unit
-   * @param c The comment
+   * @param k The keyword.
+   * @param v The value.
+   * @param u The unit.
+   * @param c The comment.
    */
   template <typename T>
   void updateRecord(const std::string &k, T v, const std::string &u = "", const std::string &c = "") const;

@@ -124,7 +124,7 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
 /**
  * @brief Helper class to loop on a collection of columns.
  * @tparam i The index of the column the methods should be applied to:
- * should be initialized with `sizeof...(Ts) - 1`
+ * should be initialized with `sizeof...(Ts) - 1`.
  * @details
  * This is a recursive implementation, decreasing from `sizeof...(Ts) - 1` to 0.
  * Calling a method with index `i` means applying the change to the `i`-th column,

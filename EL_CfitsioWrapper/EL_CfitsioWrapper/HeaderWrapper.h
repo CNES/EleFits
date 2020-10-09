@@ -42,7 +42,8 @@ namespace Header {
 
 /**
  * @brief Read the whole header as a string.
- * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank)
+ * @param fptr A pointer to the fitsfile object.
+ * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank).
  */
 std::string readHeader(fitsfile *fptr, bool incNonValued = true);
 

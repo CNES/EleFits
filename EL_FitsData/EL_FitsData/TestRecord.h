@@ -34,7 +34,7 @@ namespace Test {
 
 /**
  * @brief Loop over supported record types.
- * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it
+ * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
  * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
  * @see EL_FITSIO_FOREACH_RASTER_TYPE
  * @see EL_FITSIO_FOREACH_COLUMN_TYPE
@@ -60,8 +60,8 @@ namespace Test {
 
 /**
  * @brief Generate a random record.
- * @tparam T The value type
- * @param typeName The type name as a string, e.g. `"unsigned long int"`
+ * @tparam T The value type.
+ * @param typeName The type name as a string, e.g. `"unsigned long int"`.
  * @details
  * In `"unsigned long int"`, `"unsigned"` and `"long"` are prefixes, and `"int"` is the suffix.
  * The generated record is as follows:

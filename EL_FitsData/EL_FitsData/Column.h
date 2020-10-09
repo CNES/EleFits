@@ -27,7 +27,71 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Column metadata, i.e. { name, unit, repeatCount }
+ * @brief Column metadata, i.e. `{ name, unit, repeatCount }`
+ * and the value type as the template parameter.
+ * @details
+ * Bintable columns are either scalar (`repeatCount` = 1) or vector (`repeatCount` > 1).
+ * In the case of vector columns, each cell of the column contains `repeatCount` values.
+ * Here is an example of a 4-row table with a scalar column and a vector column with a repeat count of 3:
+ * \code
+ * === ======== ========
+ * ROW REPEAT_1 REPEAT_3
+ * === ======== ========
+ *  1     11    11 12 13
+ * --- -------- --------
+ *  2     21    21 22 23
+ * --- -------- --------
+ *  3     31    31 32 33
+ * --- -------- --------
+ *  4     41    41 42 43
+ * === ======== ========
+ * \endcode
+ * For performance, the values are stored sequentially in a 1D array as follows:
+ * \code
+ * int scalar[] = { 11, 21, 31, 41 };
+ * int vector[] = { 11, 12, 13, 21, 22, 33, 41, 42, 43, 44 };
+ * \endcode
+ *
+ * The only exception to this is string columns, which are vector columns
+ * -- they should have a repeat count greater than the maximum number of characters in a cell --
+ * but each cell contains only one string:
+ * \code
+ * === ========
+ * ROW REPEAT_7
+ * === ========
+ *  1  "CELL_1"
+ * --- --------
+ *  2  "CELL_2"
+ * --- --------
+ *  3  "CELL_3"
+ * --- --------
+ *  4  "CELL_4"
+ * === ========
+ * \endcode
+ * The data array is a simple array of `std::string`s:
+ * \code
+ * std::string data[] = { "CELL_1", "CELL_2", "CELL_3", "CELL_4" };
+ * \endcode
+ * but the repeat count should be at least 7 (beware of the null terminating character).
+ *
+ * @note
+ * Since the values are stored sequentially even for vector columns,
+ * a scalar column can be "fold" into a vector column by
+ * just setting a repeat count greater than 1, and vice-versa.
+ * This trick allows writing scalar columns as vector columns,
+ * which is what CFitsIO recommends for performance.
+ * Indeed, with CFitsIO, it is much faster to write 1 row with a repeat count of 10.000
+ * than 10.000 rows with a repeat count of 1.
+ * This is because bintables are written row-wise in the Fits file.
+ * CFitsIO uses an internal buffer, which can be exploited to optimize reading and writing.
+ * This is generally handled through the "iterator function" provided by CFitsIO.
+ * @note
+ * Fortunately, this complexity is already embedded in EL_FitsIO internals:
+ * the buffer is used optimally when reading and writing several columns.
+ * In general, it is nearly as fast to read and write scalar columns as vector columns with EL_FitsIO.
+ * Therefore, users are encouraged to consider the repeat count as a meaningful value,
+ * rather than as an optimization trick.
+ *
  * @see \ref data-classes
  */
 template <typename T>
@@ -58,7 +122,7 @@ struct ColumnInfo {
 /**
  * @brief Bintable column data and metadata.
  * @details
- * This is an interface to be implemented with a concrete data container (e.g. std::vector).
+ * This is an interface to be implemented with a concrete data container (e.g. `std::vector`).
  * Some implementations are provided with the library,
  * but others could be useful to interface with client code
  * (e.g. with other external libraries with custom containers).
@@ -79,9 +143,9 @@ public:
   explicit Column(ColumnInfo<T> columnInfo);
 
   /**
-   * @brief Number of elements in the column, i.e. number of rows * repeat count.
+   * @brief Number of elements in the column, i.e. repeat count * number of rows.
    * @warning
-   * For strings, CFitsIO requires elementCount to be just the number of rows.
+   * For string columns, CFitsIO requires elementCount to be just the number of rows.
    */
   virtual long elementCount() const = 0;
 
@@ -144,7 +208,8 @@ private:
 
 /**
  * @brief Column which references some external vector data.
- * @details Use it for temporary columns.
+ * @details
+ * Use it for temporary columns.
  * @see \ref data-classes
  */
 template <typename T>
@@ -184,7 +249,8 @@ private:
 
 /**
  * @brief Column which stores internally the data.
- * @details Use it (via move semantics) if you don't need your data after the write operation.
+ * @details
+ * Use it (via move semantics) if you don't need your data after the write operation.
  * @see \ref data-classes
  */
 template <typename T>

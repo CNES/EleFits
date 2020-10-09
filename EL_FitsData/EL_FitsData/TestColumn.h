@@ -33,8 +33,8 @@ namespace Test {
 
 /**
  * @brief Loop over supported column types.
- * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it
- * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
+ * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
+ * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types.
  * @see EL_FITSIO_FOREACH_RECORD_TYPE
  * @see EL_FITSIO_FOREACH_RASTER_TYPE
  */
@@ -61,15 +61,16 @@ struct RandomTable {
 
   /**
    * @brief Generate the table.
-   * @param repeatCount The repeat count of each column
+   * @param repeatCount The repeat count of each column.
+   * @param rowCount The row count of each column.
    */
   RandomTable(long repeatCount = 1, long rowCount = 3);
 
   /**
    * @brief Generate a column.
-   * @param typeName The value type name
-   * @param repeatCount The repeat count
-   * @details
+   * @param typeName The value type name.
+   * @param repeatCount The repeat count.
+   * @param rowCount The row count.
    */
   template <typename T>
   static VecColumn<T> generateColumn(const std::string &typeName, long repeatCount = 1, long rowCount = 3);

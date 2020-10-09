@@ -60,10 +60,10 @@ struct Record {
 
   /**
    * @brief Assign a record.
-   * @param k The keyword
-   * @param v The value
-   * @param u The unit
-   * @param c The comment
+   * @param k The keyword.
+   * @param v The value.
+   * @param u The unit.
+   * @param c The comment.
    */
   Record(const std::string &k = "", T v = T(), const std::string &u = "", const std::string &c = "");
 
@@ -162,6 +162,11 @@ struct Record {
   std::string comment;
 };
 
+/**
+ * @brief Check whether two records are equal.
+ * @details
+ * Equality of keyword, value, unit and comment is tested.
+ */
 template <typename T>
 bool operator==(const Record<T> &lhs, const Record<T> &rhs) {
   if (lhs.keyword != rhs.keyword) {
@@ -179,6 +184,9 @@ bool operator==(const Record<T> &lhs, const Record<T> &rhs) {
   return true;
 }
 
+/**
+ * @brief Check whether two records are different.
+ */
 template <typename T>
 bool operator!=(const Record<T> &lhs, const Record<T> &rhs) {
   return not(lhs == rhs);

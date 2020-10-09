@@ -29,7 +29,7 @@ namespace FitsIO {
 
 /**
  * @brief A collection of records of homogeneous value types.
- * @tparam T The value type of the records
+ * @tparam T The value type of the records.
  */
 template <typename T>
 class RecordVector {
@@ -63,7 +63,7 @@ public:
 
   /**
    * @brief Find and cast the first record with given keyword.
-   * @tparam TValue The destination value type
+   * @tparam TValue The destination value type.
    * @details
    * Althoug the method returns a Record, it can itself be sliced as its value,
    * so the following works:
