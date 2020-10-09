@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE(RecordHdu_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(continued_str_test, Test::TemporarySifFile) {
+BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifFile) {
   const auto &h = this->header();
   const std::string shortStr = "S";
   const std::string longStr = "This is probably one of the longest strings "
@@ -50,18 +50,29 @@ BOOST_FIXTURE_TEST_CASE(continued_str_test, Test::TemporarySifFile) {
   BOOST_CHECK(output.hasLongStringValue());
 }
 
-BOOST_FIXTURE_TEST_CASE(hierarch_record_is_read_back, Test::TemporarySifFile) {
-  const auto &h = this->header();
-  BOOST_CHECK_EQUAL(h.readHeader(false).find("HIERARCH"), std::string::npos);
-  const Record<int> record("123456789", 10);
-  BOOST_CHECK(record.hasLongKeyword());
+void checkHierarchKeywordIsReadBack(const RecordHdu &h, const std::string &keyword) {
+  BOOST_CHECK_EQUAL(h.readHeader(false).find("HIERARCH"), std::string::npos); // Not found
+  const Record<int> record(keyword, 10);
+  BOOST_CHECK_EQUAL(record.hasLongKeyword(), keyword.length() > 8);
   h.writeRecord(record);
-  BOOST_CHECK_NE(h.readHeader(false).find("HIERARCH"), std::string::npos);
-  const auto output = h.parseRecord<int>("123456789");
+  BOOST_CHECK_NE(h.readHeader(false).find("HIERARCH"), std::string::npos); // Found
+  const auto output = h.parseRecord<int>(keyword);
   BOOST_CHECK_EQUAL(output.value, 10);
 }
 
-BOOST_FIXTURE_TEST_CASE(rename_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(long_keyword_is_read_back_test, Test::TemporarySifFile) {
+  checkHierarchKeywordIsReadBack(this->header(), "123456789");
+}
+
+BOOST_FIXTURE_TEST_CASE(keyword_with_space_is_read_back_test, Test::TemporarySifFile) {
+  checkHierarchKeywordIsReadBack(this->header(), "A B");
+}
+
+BOOST_FIXTURE_TEST_CASE(keyword_with_symbol_is_read_back_test, Test::TemporarySifFile) {
+  checkHierarchKeywordIsReadBack(this->header(), "1$");
+}
+
+BOOST_FIXTURE_TEST_CASE(hdu_is_renamed_test, Test::TemporaryMefFile) {
   const auto &h = this->initRecordExt("A");
   BOOST_CHECK_EQUAL(h.index(), 2);
   BOOST_CHECK_EQUAL(h.readName(), "A");
@@ -71,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE(rename_test, Test::TemporaryMefFile) {
   BOOST_CHECK_EQUAL(h.readName(), "");
 }
 
-BOOST_FIXTURE_TEST_CASE(c_str_record_test, Test::TemporarySifFile) {
+BOOST_FIXTURE_TEST_CASE(c_str_record_is_read_back_as_string_record_test, Test::TemporarySifFile) {
   const auto &h = this->header();
   h.writeRecord("C_STR", "1");
   const auto output1 = h.parseRecord<std::string>("C_STR");
@@ -81,10 +92,10 @@ BOOST_FIXTURE_TEST_CASE(c_str_record_test, Test::TemporarySifFile) {
   BOOST_CHECK_EQUAL(output2.value, "2");
 }
 
-BOOST_FIXTURE_TEST_CASE(tuple_write_update_test, Test::TemporarySifFile) {
+BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::TemporarySifFile) {
   const auto &h = this->header();
-  Record<short> short_record { "SHORT", 1 };
-  Record<long> long_record { "LONG", 1000 };
+  const Record<short> short_record { "SHORT", 1 };
+  const Record<long> long_record { "LONG", 1000 };
   auto records = std::make_tuple(short_record, long_record);
   h.writeRecords(records);
   BOOST_CHECK_EQUAL(h.parseRecord<short>("SHORT"), 1);
@@ -96,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE(tuple_write_update_test, Test::TemporarySifFile) {
   BOOST_CHECK_EQUAL(h.parseRecord<long>("LONG"), 2000);
 }
 
-BOOST_FIXTURE_TEST_CASE(vector_of_any_test, Test::TemporarySifFile) {
+BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
   const auto &h = this->header();
   std::vector<Record<boost::any>> records;
   records.push_back({ "STRING", std::string("WIDE") });
@@ -109,7 +120,7 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_test, Test::TemporarySifFile) {
   BOOST_CHECK_THROW(parsed.as<std::string>("INT"), std::exception);
 }
 
-BOOST_FIXTURE_TEST_CASE(vector_of_any_subset_test, Test::TemporarySifFile) {
+BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
   const auto &h = this->header();
   RecordVector<boost::any> records(3);
   records.vector[0] = Record<std::string>("STRING", "WIDE");
@@ -122,7 +133,7 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_subset_test, Test::TemporarySifFile) {
   BOOST_CHECK_THROW(parsed.as<float>("FLOAT"), std::exception);
 }
 
-BOOST_FIXTURE_TEST_CASE(brackets_in_comment_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(brackets_in_comment_are_read_back_test, Test::TemporaryMefFile) {
   const auto &primary = this->accessPrimary<>();
   primary.writeRecord("PLAN_ID", 1, "", "[0:1] SOC Planning ID");
   const auto intRecord = primary.parseRecord<int>("PLAN_ID");
@@ -142,8 +153,8 @@ BOOST_FIXTURE_TEST_CASE(brackets_in_comment_test, Test::TemporaryMefFile) {
   BOOST_CHECK_EQUAL(weirdRecord.comment, "[0:1] SOC Planning ID");
 }
 
-BOOST_FIXTURE_TEST_CASE(header_read_test, Test::TemporarySifFile) {
-  const auto header = this->header().readHeader();
+BOOST_FIXTURE_TEST_CASE(full_header_is_read_as_string_test, Test::TemporarySifFile) {
+  const auto header = this->header().readHeader(); // TODO check with false
   BOOST_CHECK_GT(header.size(), 0);
   BOOST_CHECK_EQUAL(header.size() % 80, 0);
   // TODO check contents
