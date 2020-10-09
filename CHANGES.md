@@ -17,9 +17,13 @@
 * New methods in `RecordHdu`:
   * `type` returns the HDU type (Image or Bintable)
   * `readHeader` returns the full header as a string
+* New methods in `Record`:
+  * `hasLongKeyword` for > 8-char keywords
+  * `hasLongStringValue` for > 68-char string values
 * Read bintable dimensions
 * Check whether a column exists
 * Program `EL_FitsIO_PrintSupportedTypes` prints supported types!
+* Check whether a SifFile or MefFile is open with `FitsFile::isOpen`
 
 ## Cleaning
 
@@ -31,7 +35,6 @@
 ## Expected features
 
 * Check whether a keyword exists
-* Check whether a file is open
 * Write COMMENT and HISTORY records
 
 ## Known bugs/issues

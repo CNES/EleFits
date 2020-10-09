@@ -142,7 +142,7 @@ FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::st
 template <>
 void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record) {
   int status = 0;
-  if (record.value.length() > 68) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
+  if (record.hasLongStringValue()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
   }
   fits_write_key_longstr(fptr, record.keyword.c_str(), record.value.c_str(), record.rawComment().c_str(), &status);
@@ -152,7 +152,7 @@ void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> 
 template <>
 void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record) {
   int status = 0;
-  if (strlen(record.value) > 68) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
+  if (record.hasLongStringValue()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
   }
   fits_write_key_longstr(fptr, record.keyword.c_str(), record.value, record.rawComment().c_str(), &status);

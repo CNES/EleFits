@@ -226,6 +226,25 @@ std::string Record<T>::rawComment() const {
   return "[" + unit + "] " + comment;
 }
 
+template <typename T>
+bool Record<T>::hasLongKeyword() const {
+  return keyword.length() > 8;
+}
+
+template <typename T>
+bool Record<T>::hasLongStringValue() const {
+  return false;
+}
+
+template <>
+bool Record<std::string>::hasLongStringValue() const;
+
+template <>
+bool Record<const char *>::hasLongStringValue() const;
+
+template <>
+bool Record<boost::any>::hasLongStringValue() const;
+
 } // namespace FitsIO
 } // namespace Euclid
 

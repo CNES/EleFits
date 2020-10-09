@@ -18,3 +18,36 @@
  */
 
 #include "EL_FitsData/Record.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+/*
+ * 70 bytes minus opening and closing quotes
+ */
+constexpr std::size_t maxShortValueLength = 68;
+
+template <>
+bool Record<std::string>::hasLongStringValue() const {
+  return value.length() > maxShortValueLength;
+}
+
+template <>
+bool Record<const char *>::hasLongStringValue() const {
+  return std::strlen(value) > maxShortValueLength;
+}
+
+template <>
+bool Record<boost::any>::hasLongStringValue() const {
+  const auto &id = value.type();
+  if (id == typeid(std::string)) {
+    return boost::any_cast<std::string>(value).length() > maxShortValueLength;
+  }
+  if (id == typeid(const char *)) {
+    return std::strlen(boost::any_cast<const char *>(value)) > maxShortValueLength;
+  }
+  return false;
+}
+
+} // namespace FitsIO
+} // namespace Euclid

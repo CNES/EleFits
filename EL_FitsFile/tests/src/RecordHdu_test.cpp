@@ -42,11 +42,23 @@ BOOST_FIXTURE_TEST_CASE(continued_str_test, Test::TemporarySifFile) {
                               "that I have ever written in a serious code.";
   BOOST_CHECK_GT(longStr.length(), FLEN_VALUE);
   h.writeRecord<std::string>("SHORT", shortStr);
-  BOOST_CHECK_THROW(h.parseRecord<std::string>("LONGSTRN"), std::exception);
+  BOOST_CHECK_THROW(h.parseRecord<std::string>("LONGSTRN"), std::exception); // TODO replace with not h.hasKeyword()
   h.writeRecord<std::string>("LONG", longStr);
   const auto output = h.parseRecord<std::string>("LONG");
-  h.parseRecord<std::string>("LONGSTRN");
+  h.parseRecord<std::string>("LONGSTRN"); // TODO replace with h.hasKeyword()
   BOOST_CHECK_EQUAL(output.value, longStr);
+  BOOST_CHECK(output.hasLongStringValue());
+}
+
+BOOST_FIXTURE_TEST_CASE(hierarch_record_is_read_back, Test::TemporarySifFile) {
+  const auto &h = this->header();
+  BOOST_CHECK_EQUAL(h.readHeader(false).find("HIERARCH"), std::string::npos);
+  const Record<int> record("123456789", 10);
+  BOOST_CHECK(record.hasLongKeyword());
+  h.writeRecord(record);
+  BOOST_CHECK_NE(h.readHeader(false).find("HIERARCH"), std::string::npos);
+  const auto output = h.parseRecord<int>("123456789");
+  BOOST_CHECK_EQUAL(output.value, 10);
 }
 
 BOOST_FIXTURE_TEST_CASE(rename_test, Test::TemporaryMefFile) {
