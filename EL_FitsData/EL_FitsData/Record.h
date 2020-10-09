@@ -162,6 +162,28 @@ struct Record {
   std::string comment;
 };
 
+template <typename T>
+bool operator==(const Record<T> &lhs, const Record<T> &rhs) {
+  if (lhs.keyword != rhs.keyword) {
+    return false;
+  }
+  if (lhs.value != rhs.value) {
+    return false;
+  }
+  if (lhs.unit != rhs.unit) {
+    return false;
+  }
+  if (lhs.comment != rhs.comment) {
+    return false;
+  }
+  return true;
+}
+
+template <typename T>
+bool operator!=(const Record<T> &lhs, const Record<T> &rhs) {
+  return not(lhs == rhs);
+}
+
 } // namespace FitsIO
 } // namespace Euclid
 

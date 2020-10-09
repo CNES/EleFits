@@ -33,8 +33,11 @@ namespace FitsIO {
  * When reading or writing several records, it is recommended to use the plural form of the methods
  * (e.g. one call to RecordHdu::writeRecords instead of several calls to RecordHdu::writeRecord),
  * which are optimized.
- * Methods to update records are analogous to methods to read records:
+ * Methods to update records are analogous to methods to write records:
  * refer to the documentation of the latter for more details on the former.
+ *
+ * In a Fits file, a RecordHdu is mapped to an IMAGE HDU with NAXIS=0.
+ * This means that working with a RecordHdu is equivalent to working with an ImageHdu with an empty shape.
  * @warning
  * There is a known bug in CFitsIO with the reading of Record<unsigned long>:
  * if the value is greater than `max(long)`, CFitsIO returns an overflow error.
@@ -92,17 +95,39 @@ public:
   std::string readHeader(bool incNonValued = true) const;
 
   /**
-   * @brief List the valued record keywords.
+   * @brief List the valued keywords.
    * @warning
    * Non-valued records, like COMMENT and HISTORY records, are bypassed.
    */
   std::vector<std::string> readKeywords() const;
 
   /**
+   * @brief Check whether the HDU contains a given keyword.
+   */
+  bool hasKeyword(const std::string &keyword) const;
+
+  /**
    * @brief Parse a record.
    */
   template <typename T>
   Record<T> parseRecord(const std::string &keyword) const;
+
+  /**
+   * @brief Parse a record if it exists, return a fallback otherwise.
+   * @param fallback A record with the keyword to be looked for and fallback value,
+   * fallback unit (optional), and fallback comment (optional)
+   * @details
+   * If a record with the given keyword exists, it is parsed and returned.
+   * Otherwise, a copy of the given fallback record is returned.
+   * For example, when calling:
+   * \code
+   * const auto record = hdu.parseRecordOr<int>({"KEY", 0});
+   * \endcode
+   * if KEY is found, the record is parsed;
+   * otherwise, the returned record has keyword "KEY", value 0, empty unit, and empty comment.
+   */
+  template <typename T>
+  Record<T> parseRecordOr(const Record<T> &fallback) const;
 
   /**
    * @brief Parse several records.
@@ -192,6 +217,16 @@ public:
    */
   template <typename T>
   void writeRecords(const RecordVector<T> &records, const std::vector<std::string> &keywords) const;
+
+  /**
+   * @brief Write a COMMENT record.
+   */
+  void writeComment(const std::string &comment) const;
+
+  /**
+   * @brief Write a HISTORY record.
+   */
+  void writeHistory(const std::string &history) const;
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.

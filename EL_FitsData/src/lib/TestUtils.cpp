@@ -96,8 +96,40 @@ template <>
 std::vector<std::string> generateRandomVector<std::string>(long size, std::string min, std::string max) {
   std::vector<int> intVec = generateRandomVector<int>(size, std::atoi(min.c_str()), std::atoi(max.c_str()));
   std::vector<std::string> vec(size);
-  std::transform(intVec.begin(), intVec.end(), vec.begin(), [](int i) { return std::to_string(i); });
+  std::transform(intVec.begin(), intVec.end(), vec.begin(), [](int i) {
+    return std::to_string(i);
+  });
   return vec;
+}
+
+template <>
+bool approx<float>(float test, float ref, double tol) {
+  return approx<double>(test, ref, tol);
+}
+
+template <>
+bool approx<double>(double test, double ref, double tol) {
+  if (tol == 0 || test == 0) {
+    return test == ref;
+  }
+  const double rel = (test - ref) / ref;
+  if (rel > 0 && rel > tol) {
+    return false;
+  }
+  if (rel < 0 && -rel > tol) {
+    return false;
+  }
+  return true;
+}
+
+template <>
+bool approx<std::complex<float>>(std::complex<float> test, std::complex<float> ref, double tol) {
+  return approx(test.real(), ref.real(), tol) && approx(test.imag(), ref.imag(), tol);
+}
+
+template <>
+bool approx<std::complex<double>>(std::complex<double> test, std::complex<double> ref, double tol) {
+  return approx(test.real(), ref.real(), tol) && approx(test.imag(), ref.imag(), tol);
 }
 
 } // namespace Test

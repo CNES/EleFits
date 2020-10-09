@@ -26,7 +26,7 @@ Legend:
   - **Move to the first HDU with given name**
   - **HDU count** (flawed in CFitsIO, fixed in EL_FitsIO)
   - **HDU index**
-  - HDU type
+  - **HDU type**
   - Copy HDUs
   - Copy header
   - *Delete HDU*
@@ -39,7 +39,7 @@ Legend:
 - Keyword Writing Routines
   - **Write/update keyword**
   - **Write CONTINUE'd string record**
-  - Write COMMENT/HISTORY record
+  - **Write COMMENT/HISTORY record**
   - Write/update DATE record
   - Update comment (useful?)
   - **Write unit**
@@ -47,7 +47,7 @@ Legend:
   - **Delete record**
 - Primary Array or Image Extension I/O Routines
   - Read image type
-  - *Read image size*
+  - **Read image size**
   - **Create image extension**
   - Copy image data to image or bintable extension
   - Write image region
@@ -63,7 +63,7 @@ Legend:
   - *Read row/column count*
   - **Find the first column which matches a name template**
   - Read column type
-  - Read column dimension (vector columns)
+  - **Read column dimension (vector columns)**
   - Insert rows
   - Delete rows
   - **Insert columns**

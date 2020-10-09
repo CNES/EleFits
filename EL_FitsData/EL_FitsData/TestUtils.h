@@ -114,6 +114,16 @@ std::vector<std::string> generateRandomVector<std::string>(long size, std::strin
 template <typename T>
 void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &ref);
 
+/**
+ * @brief Check whether a test value is approximately equal to a reference value.
+ * @details
+ * Floating point values are compared as: |test - ref| / ref < tol
+ * Complex values are tested component-wise.
+ * Other types are tested for equality.
+ */
+template <typename T>
+bool approx(T test, T ref, double tol = 0.01);
+
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid

@@ -43,13 +43,7 @@ bool rasterApprox(const Raster<T, n> &test, const Raster<T, n> &ref, double tol)
     return false;
   }
   for (long i = 0; i < test.size(); ++i) {
-    const double r = ref.data()[i];
-    const double t = test.data()[i];
-    const double rel = (r - t) / t;
-    if (rel > 0 && rel > tol) {
-      return false;
-    }
-    if (rel < 0 && -rel > tol) {
+    if (not approx(test.data()[i], ref.data()[i], tol)) {
       return false;
     }
   }

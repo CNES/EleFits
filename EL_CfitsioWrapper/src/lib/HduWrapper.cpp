@@ -40,12 +40,13 @@ long currentIndex(fitsfile *fptr) {
 }
 
 std::string currentName(fitsfile *fptr) {
-  try {
+  if (Header::hasKeyword(fptr, "EXTNAME")) {
     return Header::parseRecord<std::string>(fptr, "EXTNAME");
-  } catch (const std::exception &e) {
-    // EXTNAME not provided
-    return "";
   }
+  if (Header::hasKeyword(fptr, "HDUNAME")) {
+    return Header::parseRecord<std::string>(fptr, "HDUNAME");
+  }
+  return "";
 }
 
 FitsIO::HduType currentType(fitsfile *fptr) {

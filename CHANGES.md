@@ -14,28 +14,24 @@
 
 ## New features
 
-* New methods in `RecordHdu`:
-  * `type` returns the HDU type (Image or Bintable)
-  * `readHeader` returns the full header as a string
-* New methods in `Record`:
-  * `hasLongKeyword` for > 8-char keywords
-  * `hasLongStringValue` for > 68-char string values
-* Read bintable dimensions
-* Check whether a column exists
-* Program `EL_FitsIO_PrintSupportedTypes` prints supported types!
-* Check whether a SifFile or MefFile is open with `FitsFile::isOpen`
+* Check whether a record has a long keyword (> 8 characters) or a long string value (> 68 characters)
+* Get the type of an HDU
+* Read the full header as a string
+* Check whether a record or column exists
+* Provide a fallback value when a record is not found
+* Read bintable or image dimensions
+* Write a COMMENT or HISTORY record
+* Check whether a SifFile or MefFile is open with
+* Program `EL_FitsIO_PrintSupportedTypes` prints supported types for each data class!
+* `HDUNAME` keyword support for extension name
 
 ## Cleaning
 
 * `FitsFile::open` throws an error if already open
 * Fixture classes better organized
 * Comprehensive testing of the supported types
-* Cleaning of the variadic template patterns
-
-## Expected features
-
-* Check whether a keyword exists
-* Write COMMENT and HISTORY records
+* Reviewed documentation
+* Cleaned variadic template patterns
 
 ## Known bugs/issues
 

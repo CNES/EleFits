@@ -21,6 +21,8 @@
 
 #include "ElementsKernel/Temporary.h"
 
+#include "EL_FitsData/TestRecord.h"
+
 #include "EL_FitsFile/MefFile.h"
 #include "EL_FitsFile/SifFile.h"
 #include "EL_FitsFile/FitsFileFixture.h"
@@ -34,6 +36,38 @@ using namespace Euclid::FitsIO;
 BOOST_AUTO_TEST_SUITE(RecordHdu_test)
 
 //-----------------------------------------------------------------------------
+
+template <typename T>
+void checkRecordWithFallbackIsReadBack(const RecordHdu &h, const std::string &keyword) {
+  BOOST_CHECK(not h.hasKeyword(keyword));
+  BOOST_CHECK_THROW(h.parseRecord<T>(keyword), std::exception);
+  const Record<T> fallback { keyword, Test::generateRandomValue<T>(), "", "FALLBACK" };
+  auto output = h.parseRecordOr<T>(fallback);
+  BOOST_CHECK(output == fallback);
+  const Record<T> input { keyword, Test::generateRandomValue<T>(), "", "INPUT" };
+  h.writeRecord(input);
+  BOOST_CHECK(input != fallback); // At least the comments differ
+  output = h.parseRecordOr<T>(fallback);
+  // BOOST_CHECK(output == input);
+  BOOST_CHECK_EQUAL(output.keyword, input.keyword);
+  BOOST_CHECK(Test::approx(output.value, input.value));
+  BOOST_CHECK_EQUAL(output.unit, input.unit);
+  BOOST_CHECK_EQUAL(output.comment, input.comment);
+}
+
+template <>
+void checkRecordWithFallbackIsReadBack<unsigned long>(const RecordHdu &h, const std::string &keyword) {
+  // Wait for CFitsIO bug to be fixed
+  (void)h;
+  (void)keyword;
+}
+
+#define RECORD_WITH_FALLBACK_IS_READ_BACK_TEST(type, name) \
+  BOOST_FIXTURE_TEST_CASE(name##_record_with_fallback_is_read_back_test, Test::TemporarySifFile) { \
+    checkRecordWithFallbackIsReadBack<type>(this->header(), std::string(#name).substr(0, 8)); \
+  }
+
+EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_WITH_FALLBACK_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifFile) {
   const auto &h = this->header();

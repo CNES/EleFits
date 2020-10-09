@@ -30,6 +30,15 @@ Record<T> RecordHdu::parseRecord(const std::string &keyword) const {
   return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
 }
 
+template <typename T>
+Record<T> RecordHdu::parseRecordOr(const Record<T> &fallback) const {
+  gotoThisHdu();
+  if (hasKeyword(fallback.keyword)) {
+    return parseRecord<T>(fallback.keyword);
+  }
+  return fallback;
+}
+
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string> &keywords) const {
   gotoThisHdu();

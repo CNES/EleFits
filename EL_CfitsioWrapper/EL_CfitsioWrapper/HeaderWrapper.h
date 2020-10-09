@@ -54,6 +54,11 @@ std::string readHeader(fitsfile *fptr, bool incNonValued = true);
 std::vector<std::string> listValuedKeywords(fitsfile *fptr);
 
 /**
+ * @brief Check whether the current HDU contains a given keyword.
+ */
+bool hasKeyword(fitsfile *fptr, const std::string &keyword);
+
+/**
  * @brief Parse a record.
  */
 template <typename T>

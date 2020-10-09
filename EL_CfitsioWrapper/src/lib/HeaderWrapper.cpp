@@ -60,6 +60,17 @@ std::vector<std::string> listValuedKeywords(fitsfile *fptr) {
   return keywords;
 }
 
+bool hasKeyword(fitsfile *fptr, const std::string &keyword) {
+  int status = 0;
+  int length = 0;
+  fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
+  if (status == KEY_NO_EXIST) {
+    return false;
+  }
+  mayThrowCfitsioError(status, "Cannot check if keyword exists: " + keyword); // Other error codes
+  return true; // No error
+}
+
 template <>
 FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) {
   int status = 0;
@@ -76,15 +87,14 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
   comment[0] = '\0';
   fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-  std::string str_value(value);
+  std::string strValue(value);
   if (status == VALUE_UNDEFINED) {
-    str_value = "";
+    strValue = "";
     status = 0;
   }
-  FitsIO::Record<std::string> record(keyword, str_value, std::string(unit), std::string(comment));
+  FitsIO::Record<std::string> record(keyword, strValue, std::string(unit), std::string(comment));
   free(value);
   std::string context = "while parsing '" + keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
-  mayThrowCfitsioError(status, context);
   mayThrowCfitsioError(status, context);
   if (record.comment == record.unit) {
     record.comment == "";
@@ -324,17 +334,17 @@ int floatRecordTypecodeImpl(char *value) {
  * @return TCOMPLEX, TDBLCOMPLEX.
  */
 int complexRecordTypecodeImpl(char *value) {
-  const std::size_t re_begin = 1; // 1 for '('
-  const std::size_t re_end = std::string(value).find(",");
-  const std::size_t im_begin = re_end + 2; // 2 for ', '
-  const std::size_t im_end = std::string(value).find(")");
-  if (re_end == std::string::npos || im_end == std::string::npos) {
+  const std::size_t reBegin = 1; // 1 for '('
+  const std::size_t reEnd = std::string(value).find(",");
+  const std::size_t imBegin = reEnd + 2; // 2 for ', '
+  const std::size_t imEnd = std::string(value).find(")");
+  if (reEnd == std::string::npos || imEnd == std::string::npos) {
     throw std::runtime_error("Cannot parse complex value: " + std::string(value));
   }
   char re[FLEN_VALUE] = "\0";
-  strncpy(re, value + re_begin, re_end - re_begin);
+  strncpy(re, value + reBegin, reEnd - reBegin);
   char im[FLEN_VALUE] = "\0";
-  strncpy(im, value + im_begin, im_end - im_begin);
+  strncpy(im, value + imBegin, imEnd - imBegin);
   if (floatRecordTypecodeImpl(re) == TDOUBLE) {
     return TDBLCOMPLEX;
   }

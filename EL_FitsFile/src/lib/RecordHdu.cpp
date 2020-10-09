@@ -55,6 +55,18 @@ std::vector<std::string> RecordHdu::readKeywords() const {
   return Cfitsio::Header::listValuedKeywords(m_fptr);
 }
 
+bool RecordHdu::hasKeyword(const std::string &keyword) const {
+  return Cfitsio::Header::hasKeyword(m_fptr, keyword);
+}
+
+void RecordHdu::writeComment(const std::string &comment) const {
+  return Cfitsio::Header::writeComment(m_fptr, comment);
+}
+
+void RecordHdu::writeHistory(const std::string &history) const {
+  return Cfitsio::Header::writeHistory(m_fptr, history);
+}
+
 void RecordHdu::deleteRecord(const std::string &keyword) const {
   gotoThisHdu();
   Cfitsio::Header::deleteRecord(m_fptr, keyword);

@@ -25,6 +25,8 @@
 
 // #include <boost/test/unit_test.hpp> // See checkEqualVectors below
 
+#include "ElementsKernel/Unused.h"
+
 #include "EL_FitsData/TestUtils.h"
 
 namespace Euclid {
@@ -67,6 +69,23 @@ void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expecte
   // so the header for it is included in the unit test sources only
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
+
+template <typename T>
+bool approx(T test, T ref, ELEMENTS_UNUSED double tol) {
+  return test == ref;
+}
+
+template <>
+bool approx<float>(float test, float ref, double tol);
+
+template <>
+bool approx<double>(double test, double ref, double tol);
+
+template <>
+bool approx<std::complex<float>>(std::complex<float> test, std::complex<float> ref, double tol);
+
+template <>
+bool approx<std::complex<double>>(std::complex<double> test, std::complex<double> ref, double tol);
 
 } // namespace Test
 } // namespace FitsIO
