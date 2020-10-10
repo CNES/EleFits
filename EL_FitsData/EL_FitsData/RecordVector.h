@@ -44,7 +44,7 @@ public:
    * @brief Create a RecordVector from a list of records.
    */
   template <typename... Ts>
-  RecordVector(const Record<Ts> &... records);
+  explicit RecordVector(const Record<Ts> &... records);
 
   /**
    * @brief The records.

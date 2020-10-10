@@ -230,7 +230,7 @@ public:
   /**
    * @brief Create a VecRefColumn with given metadata and reference to data.
    */
-  VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vectorRef);
+  VecRefColumn(ColumnInfo<T> info, const std::vector<T> &vecRef);
 
   /** @copydoc Column::elementCount */
   long elementCount() const override;
@@ -278,15 +278,15 @@ public:
    * @details
    * To transfer ownership of the data instead of copying it, use move semantics:
    * \code
-   * VecColumn column(info, std::move(vector));
+   * VecColumn column(info, std::move(vec));
    * \endcode
    */
-  VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector);
+  VecColumn(ColumnInfo<T> info, std::vector<T> vec);
 
   /**
    * @brief Create a VecColumn with given metadata.
    */
-  VecColumn(ColumnInfo<T> columnInfo, long rowCount);
+  VecColumn(ColumnInfo<T> info, long rowCount);
 
   /** @copydoc Column::elementCount */
   long elementCount() const override;

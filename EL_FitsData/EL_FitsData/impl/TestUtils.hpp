@@ -38,16 +38,43 @@ T almostMin() {
   return std::numeric_limits<T>::lowest() + std::numeric_limits<T>::epsilon();
 }
 
+template <>
+std::complex<float> almostMin<std::complex<float>>();
+
+template <>
+std::complex<double> almostMin<std::complex<double>>();
+
+template <>
+std::string almostMin<std::string>();
+
+template <>
+const char *almostMin<const char *>();
+
 template <typename T>
 T almostMax() {
   return std::numeric_limits<T>::max() - std::numeric_limits<T>::epsilon();
 }
+
+template <>
+std::complex<float> almostMax<std::complex<float>>();
+
+template <>
+std::complex<double> almostMax<std::complex<double>>();
+
+template <>
+std::string almostMax<std::string>();
+
+template <>
+const char *almostMax<const char *>();
 
 template <typename T>
 T generateRandomValue(T min, T max) {
   const auto vec = generateRandomVector<T>(1, min, max);
   return vec[0];
 }
+
+template <>
+const char *generateRandomValue<const char *>(const char *min, const char *max);
 
 template <typename T>
 std::vector<T> generateRandomVector(long size, T min, T max) {
@@ -62,6 +89,17 @@ std::vector<T> generateRandomVector(long size, T min, T max) {
   });
   return vec;
 }
+
+template <>
+std::vector<std::complex<float>>
+generateRandomVector<std::complex<float>>(long size, std::complex<float> min, std::complex<float> max);
+
+template <>
+std::vector<std::complex<double>>
+generateRandomVector<std::complex<double>>(long size, std::complex<double> min, std::complex<double> max);
+
+template <>
+std::vector<std::string> generateRandomVector<std::string>(long size, std::string min, std::string max);
 
 template <typename T>
 void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {

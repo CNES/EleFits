@@ -119,7 +119,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  PtrRaster(Position<n> rasterShape, const T *rasterData);
+  PtrRaster(Position<n> shape, const T *data);
 
   /** @copydoc Raster::data */
   const T *data() const override;
@@ -151,7 +151,7 @@ public:
   /**
    * @brief Create a Raster with given shape and values.
    */
-  VecRefRaster(Position<n> rasterShape, const std::vector<T> &rasterVecRef);
+  VecRefRaster(Position<n> shape, const std::vector<T> &vecRef);
 
   /** @copydoc Raster::data */
   const T *data() const override;
@@ -192,12 +192,12 @@ public:
    * VecRaster column(shape, std::move(data));
    * \endcode
    */
-  VecRaster(Position<n> rasterShape, std::vector<T> rasterVec);
+  VecRaster(Position<n> shape, std::vector<T> vec);
 
   /**
    * @brief Create a VecRaster with given shape and empty data.
    */
-  explicit VecRaster(Position<n> rasterShape);
+  explicit VecRaster(Position<n> shape);
 
   /**
    * @brief Create an empty VecRaster.

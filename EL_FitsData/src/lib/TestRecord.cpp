@@ -131,7 +131,7 @@ const Record<const char *> &RandomHeader::getRecord<const char *>() const {
 }
 
 RecordVector<boost::any> RandomHeader::allRecords() const {
-  return { b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str, cstr };
+  return RecordVector<boost::any>(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str, cstr);
 }
 
 } // namespace Test

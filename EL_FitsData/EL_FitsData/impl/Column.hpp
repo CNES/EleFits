@@ -51,7 +51,7 @@ long rowCountDispatchImpl(long elementCount, long repeatCount) {
 /// @endcond
 
 template <typename T>
-Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
+Column<T>::Column(ColumnInfo<T> info_) : info(info_) {
 }
 
 template <typename T>
@@ -60,8 +60,8 @@ long Column<T>::rowCount() const {
 }
 
 template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T *data) :
-    Column<T>(columnInfo),
+PtrColumn<T>::PtrColumn(ColumnInfo<T> info_, long elementCount, const T *data) :
+    Column<T>(info_),
     m_nelements(elementCount),
     m_data(data) {
 }
@@ -77,9 +77,7 @@ const T *PtrColumn<T>::data() const {
 }
 
 template <typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vectorRef) :
-    Column<T>(columnInfo),
-    m_ref(vectorRef) {
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info_, const std::vector<T> &vecRef) : Column<T>(info_), m_ref(vecRef) {
 }
 
 template <typename T>
@@ -102,20 +100,15 @@ VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {
 }
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vector) : Column<T>(columnInfo), m_vec(vector) {
+VecColumn<T>::VecColumn(ColumnInfo<T> info_, std::vector<T> vec) : Column<T>(info_), m_vec(vec) {
 }
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, long rowCount) :
-    Column<T>(columnInfo),
-    m_vec(columnInfo.repeatCount * rowCount) {
+VecColumn<T>::VecColumn(ColumnInfo<T> info_, long rowCount) : Column<T>(info_), m_vec(info_.repeatCount * rowCount) {
 }
 
-/**
- * @brief String specialization.
- */
 template <>
-VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount);
+VecColumn<std::string>::VecColumn(ColumnInfo<std::string> info_, long rowCount);
 
 template <typename T>
 long VecColumn<T>::elementCount() const {

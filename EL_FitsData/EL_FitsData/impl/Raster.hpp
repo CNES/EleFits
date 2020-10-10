@@ -69,7 +69,7 @@ inline long IndexRecursionImpl<0>::index(const Position<n> &shape, const Positio
 /// @endcond
 
 template <typename T, long n>
-Raster<T, n>::Raster(Position<n> rasterShape) : shape(rasterShape) {
+Raster<T, n>::Raster(Position<n> shape_) : shape(shape_) {
 }
 
 template <typename T, long n>
@@ -99,9 +99,7 @@ inline T &Raster<T, n>::operator[](const Position<n> &pos) {
 }
 
 template <typename T, long n>
-PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, const T *rasterData) :
-    Raster<T, n>(rasterShape),
-    m_data(rasterData) {
+PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T *data) : Raster<T, n>(shape_), m_data(data) {
 }
 
 template <typename T, long n>
@@ -110,9 +108,9 @@ const T *PtrRaster<T, n>::data() const {
 }
 
 template <typename T, long n>
-VecRefRaster<T, n>::VecRefRaster(Position<n> rasterShape, const std::vector<T> &rasterVecRef) :
-    Raster<T, n>(rasterShape),
-    m_ref(rasterVecRef) {
+VecRefRaster<T, n>::VecRefRaster(Position<n> shape_, const std::vector<T> &vecRef) :
+    Raster<T, n>(shape_),
+    m_ref(vecRef) {
 }
 
 template <typename T, long n>
@@ -126,13 +124,11 @@ const std::vector<T> &VecRefRaster<T, n>::vector() const {
 }
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> rasterShape, std::vector<T> rasterVec) :
-    Raster<T, n>(rasterShape),
-    m_vec(rasterVec) {
+VecRaster<T, n>::VecRaster(Position<n> shape_, std::vector<T> vec) : Raster<T, n>(shape_), m_vec(vec) {
 }
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> rasterShape) : Raster<T, n>(rasterShape), m_vec(this->size()) {
+VecRaster<T, n>::VecRaster(Position<n> shape_) : Raster<T, n>(shape_), m_vec(this->size()) {
 }
 
 template <typename T, long n>

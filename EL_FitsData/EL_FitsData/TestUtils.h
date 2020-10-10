@@ -38,35 +38,11 @@ namespace Test {
 template <typename T>
 T almostMin();
 
-template <>
-std::complex<float> almostMin<std::complex<float>>();
-
-template <>
-std::complex<double> almostMin<std::complex<double>>();
-
-template <>
-std::string almostMin<std::string>();
-
-template <>
-const char *almostMin<const char *>();
-
 /**
  * @brief Value very close to the max of the type.
  */
 template <typename T>
 T almostMax();
-
-template <>
-std::complex<float> almostMax<std::complex<float>>();
-
-template <>
-std::complex<double> almostMax<std::complex<double>>();
-
-template <>
-std::string almostMax<std::string>();
-
-template <>
-const char *almostMax<const char *>();
 
 /**
  * @brief Generate a random value of given type.
@@ -75,36 +51,10 @@ template <typename T>
 T generateRandomValue(T min = almostMin<T>(), T max = almostMax<T>());
 
 /**
- * @brief Specialization of generateRandomValue for C string.
- */
-template <>
-const char *generateRandomValue<const char *>(const char *min, const char *max);
-
-/**
  * @brief Generate a random vector of given type and size.
  */
 template <typename T>
 std::vector<T> generateRandomVector(long size, T min = almostMin<T>(), T max = almostMax<T>());
-
-/**
- * @brief Specialization of generateRandomVector for complex<float>.
- */
-template <>
-std::vector<std::complex<float>>
-generateRandomVector<std::complex<float>>(long size, std::complex<float> min, std::complex<float> max);
-
-/**
- * @brief Specialization of generateRandomVector for complex<double>.
- */
-template <>
-std::vector<std::complex<double>>
-generateRandomVector<std::complex<double>>(long size, std::complex<double> min, std::complex<double> max);
-
-/**
- * @brief Specialization of generateRandomVector for string.
- */
-template <>
-std::vector<std::string> generateRandomVector<std::string>(long size, std::string min, std::string max);
 
 /**
  * @brief Check that two vectors are exactly equal.
