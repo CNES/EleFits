@@ -128,6 +128,13 @@ CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cas
   return { CasterImpl<TFrom, TTo>::cast(value.real()), CasterImpl<TFrom, TTo>::cast(value.imag()) };
 }
 
+/*
+ * TODO
+ * This function only handles a subset of the supported types (scalar types),
+ * therefore macro EL_FITSIO_FOREACH_RECORD_TYPE cannot be used straightforwardly:
+ * ifScalar could be used.
+ * Another option is to rely on a map<typeid, function>
+ */
 template <typename TTo>
 TTo CasterImpl<boost::any, TTo, ifScalar<TTo>>::cast(boost::any value) {
   const auto &id = value.type();

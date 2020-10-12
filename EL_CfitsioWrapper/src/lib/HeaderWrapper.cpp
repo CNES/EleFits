@@ -174,46 +174,17 @@ void writeRecordAnyImpl(fitsfile *fptr, const FitsIO::Record<boost::any> &record
   writeRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
 }
 
+#define WRITE_RECORD_ANY_FOR_TYPE(type, unused) \
+  if (id == typeid(type)) { \
+    return writeRecordAnyImpl<type>(fptr, record); \
+  }
+
 template <>
 void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record) {
   const auto &id = record.value.type();
-  if (id == typeid(bool)) {
-    writeRecordAnyImpl<bool>(fptr, record);
-  } else if (id == typeid(char)) {
-    writeRecordAnyImpl<char>(fptr, record);
-  } else if (id == typeid(short)) {
-    writeRecordAnyImpl<short>(fptr, record);
-  } else if (id == typeid(int)) {
-    writeRecordAnyImpl<int>(fptr, record);
-  } else if (id == typeid(long)) {
-    writeRecordAnyImpl<long>(fptr, record);
-  } else if (id == typeid(long long)) {
-    writeRecordAnyImpl<long long>(fptr, record);
-  } else if (id == typeid(float)) {
-    writeRecordAnyImpl<float>(fptr, record);
-  } else if (id == typeid(double)) {
-    writeRecordAnyImpl<double>(fptr, record);
-  } else if (id == typeid(std::complex<float>)) {
-    writeRecordAnyImpl<std::complex<float>>(fptr, record);
-  } else if (id == typeid(std::complex<double>)) {
-    writeRecordAnyImpl<std::complex<double>>(fptr, record);
-  } else if (id == typeid(std::string)) {
-    writeRecordAnyImpl<std::string>(fptr, record);
-  } else if (id == typeid(const char *)) {
-    writeRecordAnyImpl<const char *>(fptr, record);
-  } else if (id == typeid(unsigned char)) {
-    writeRecordAnyImpl<unsigned char>(fptr, record);
-  } else if (id == typeid(unsigned short)) {
-    writeRecordAnyImpl<unsigned short>(fptr, record);
-  } else if (id == typeid(unsigned int)) {
-    writeRecordAnyImpl<unsigned int>(fptr, record);
-  } else if (id == typeid(unsigned long)) {
-    writeRecordAnyImpl<unsigned long>(fptr, record);
-  } else if (id == typeid(unsigned long long)) {
-    writeRecordAnyImpl<unsigned long long>(fptr, record);
-  } else {
-    throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
-  }
+  EL_FITSIO_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
+  WRITE_RECORD_ANY_FOR_TYPE(const char *, C_str)
+  throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
 }
 
 template <>
@@ -247,46 +218,17 @@ void updateRecordAnyImpl(fitsfile *fptr, const FitsIO::Record<boost::any> &recor
   updateRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
 }
 
+#define UPDATE_RECORD_ANY_FOR_TYPE(type, unused) \
+  if (id == typeid(type)) { \
+    return updateRecordAnyImpl<type>(fptr, record); \
+  }
+
 template <>
 void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record) {
   const auto &id = record.value.type();
-  if (id == typeid(bool)) {
-    updateRecordAnyImpl<bool>(fptr, record);
-  } else if (id == typeid(char)) {
-    updateRecordAnyImpl<char>(fptr, record);
-  } else if (id == typeid(short)) {
-    updateRecordAnyImpl<short>(fptr, record);
-  } else if (id == typeid(int)) {
-    updateRecordAnyImpl<int>(fptr, record);
-  } else if (id == typeid(long)) {
-    updateRecordAnyImpl<long>(fptr, record);
-  } else if (id == typeid(long long)) {
-    updateRecordAnyImpl<long long>(fptr, record);
-  } else if (id == typeid(float)) {
-    updateRecordAnyImpl<float>(fptr, record);
-  } else if (id == typeid(double)) {
-    updateRecordAnyImpl<double>(fptr, record);
-  } else if (id == typeid(std::complex<float>)) {
-    updateRecordAnyImpl<std::complex<float>>(fptr, record);
-  } else if (id == typeid(std::complex<double>)) {
-    updateRecordAnyImpl<std::complex<double>>(fptr, record);
-  } else if (id == typeid(std::string)) {
-    updateRecordAnyImpl<std::string>(fptr, record);
-  } else if (id == typeid(const char *)) {
-    updateRecordAnyImpl<const char *>(fptr, record);
-  } else if (id == typeid(unsigned char)) {
-    updateRecordAnyImpl<unsigned char>(fptr, record);
-  } else if (id == typeid(unsigned short)) {
-    updateRecordAnyImpl<unsigned short>(fptr, record);
-  } else if (id == typeid(unsigned int)) {
-    updateRecordAnyImpl<unsigned int>(fptr, record);
-  } else if (id == typeid(unsigned long)) {
-    updateRecordAnyImpl<unsigned long>(fptr, record);
-  } else if (id == typeid(unsigned long long)) {
-    updateRecordAnyImpl<unsigned long long>(fptr, record);
-  } else {
-    throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
-  }
+  EL_FITSIO_FOREACH_RECORD_TYPE(UPDATE_RECORD_ANY_FOR_TYPE)
+  UPDATE_RECORD_ANY_FOR_TYPE(const char *, C_str)
+  throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
 }
 
 void deleteRecord(fitsfile *fptr, const std::string &keyword) {
