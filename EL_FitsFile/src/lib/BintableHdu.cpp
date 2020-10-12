@@ -51,32 +51,14 @@ std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string> &names)
 }
 
 #ifndef COMPILE_READ_COLUMN
-#define COMPILE_READ_COLUMN(T) template VecColumn<T> BintableHdu::readColumn(const std::string &) const;
-COMPILE_READ_COLUMN(char)
-COMPILE_READ_COLUMN(short)
-COMPILE_READ_COLUMN(int)
-COMPILE_READ_COLUMN(long)
-COMPILE_READ_COLUMN(float)
-COMPILE_READ_COLUMN(double)
-COMPILE_READ_COLUMN(unsigned char)
-COMPILE_READ_COLUMN(unsigned short)
-COMPILE_READ_COLUMN(unsigned int)
-COMPILE_READ_COLUMN(unsigned long)
+#define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string &) const;
+EL_FITSIO_FOREACH_COLUMN_TYPE(COMPILE_READ_COLUMN)
 #undef COMPILE_READ_COLUMN
 #endif
 
 #ifndef COMPILE_WRITE_COLUMN
-#define COMPILE_WRITE_COLUMN(T) template void BintableHdu::writeColumn(const Column<T> &) const;
-COMPILE_WRITE_COLUMN(char)
-COMPILE_WRITE_COLUMN(short)
-COMPILE_WRITE_COLUMN(int)
-COMPILE_WRITE_COLUMN(long)
-COMPILE_WRITE_COLUMN(float)
-COMPILE_WRITE_COLUMN(double)
-COMPILE_WRITE_COLUMN(unsigned char)
-COMPILE_WRITE_COLUMN(unsigned short)
-COMPILE_WRITE_COLUMN(unsigned int)
-COMPILE_WRITE_COLUMN(unsigned long)
+#define COMPILE_WRITE_COLUMN(type, unused) template void BintableHdu::writeColumn(const Column<type> &) const;
+EL_FITSIO_FOREACH_COLUMN_TYPE(COMPILE_WRITE_COLUMN)
 #undef COMPILE_WRITE_COLUMN
 #endif
 

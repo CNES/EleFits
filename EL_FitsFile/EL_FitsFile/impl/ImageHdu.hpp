@@ -49,28 +49,18 @@ void ImageHdu::writeRaster(const Raster<T, n> &raster) const {
 }
 
 #ifndef DECLARE_READ_RASTER
-#define DECLARE_READ_RASTER(T, n) extern template VecRaster<T, n> ImageHdu::readRaster() const;
-DECLARE_READ_RASTER(char, 2)
-DECLARE_READ_RASTER(int, 2)
-DECLARE_READ_RASTER(float, 2)
-DECLARE_READ_RASTER(double, 2)
-DECLARE_READ_RASTER(char, 3)
-DECLARE_READ_RASTER(int, 3)
-DECLARE_READ_RASTER(float, 3)
-DECLARE_READ_RASTER(double, 3)
+#define DECLARE_READ_RASTER(type, unused) \
+  extern template VecRaster<type, 2> ImageHdu::readRaster() const; \
+  extern template VecRaster<type, 3> ImageHdu::readRaster() const;
+EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
 #undef DECLARE_READ_RASTER
 #endif
 
 #ifndef DECLARE_WRITE_RASTER
-#define DECLARE_WRITE_RASTER(T, n) extern template void ImageHdu::writeRaster(const Raster<T, n> &) const;
-DECLARE_WRITE_RASTER(char, 2)
-DECLARE_WRITE_RASTER(int, 2)
-DECLARE_WRITE_RASTER(float, 2)
-DECLARE_WRITE_RASTER(double, 2)
-DECLARE_WRITE_RASTER(char, 3)
-DECLARE_WRITE_RASTER(int, 3)
-DECLARE_WRITE_RASTER(float, 3)
-DECLARE_WRITE_RASTER(double, 3)
+#define DECLARE_WRITE_RASTER(type, unused) \
+  extern template void ImageHdu::writeRaster(const Raster<type, 2> &) const; \
+  extern template void ImageHdu::writeRaster(const Raster<type, 3> &) const;
+EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
 #undef DECLARE_WRITE_RASTER
 #endif
 

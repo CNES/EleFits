@@ -50,16 +50,10 @@ const RecordHdu &MefFile::initRecordExt(const std::string &name) {
 }
 
 #ifndef COMPILE_ASSIGN_IMAGE_EXT
-#define COMPILE_ASSIGN_IMAGE_EXT(T, n) \
-  template const ImageHdu &MefFile::assignImageExt<T, n>(const std::string &, const Raster<T, n> &);
-COMPILE_ASSIGN_IMAGE_EXT(char, 2)
-COMPILE_ASSIGN_IMAGE_EXT(int, 2)
-COMPILE_ASSIGN_IMAGE_EXT(float, 2)
-COMPILE_ASSIGN_IMAGE_EXT(double, 2)
-COMPILE_ASSIGN_IMAGE_EXT(char, 3)
-COMPILE_ASSIGN_IMAGE_EXT(int, 3)
-COMPILE_ASSIGN_IMAGE_EXT(float, 3)
-COMPILE_ASSIGN_IMAGE_EXT(double, 3)
+#define COMPILE_ASSIGN_IMAGE_EXT(type, unused) \
+  template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, 2> &); \
+  template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, 3> &);
+EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_ASSIGN_IMAGE_EXT)
 #undef COMPILE_ASSIGN_IMAGE_EXT
 #endif
 

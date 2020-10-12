@@ -88,16 +88,10 @@ const BintableHdu &MefFile::assignBintableExt(const std::string &name, const Col
 }
 
 #ifndef DECLARE_ASSIGN_IMAGE_EXT
-#define DECLARE_ASSIGN_IMAGE_EXT(T, n) \
-  extern template const ImageHdu &MefFile::assignImageExt<T, n>(const std::string &, const Raster<T, n> &);
-DECLARE_ASSIGN_IMAGE_EXT(char, 2)
-DECLARE_ASSIGN_IMAGE_EXT(int, 2)
-DECLARE_ASSIGN_IMAGE_EXT(float, 2)
-DECLARE_ASSIGN_IMAGE_EXT(double, 2)
-DECLARE_ASSIGN_IMAGE_EXT(char, 3)
-DECLARE_ASSIGN_IMAGE_EXT(int, 3)
-DECLARE_ASSIGN_IMAGE_EXT(float, 3)
-DECLARE_ASSIGN_IMAGE_EXT(double, 3)
+#define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
+  extern template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, 2> &); \
+  extern template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, 3> &);
+EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
 #undef DECLARE_ASSIGN_IMAGE_EXT
 #endif
 

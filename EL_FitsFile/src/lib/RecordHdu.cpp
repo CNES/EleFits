@@ -77,36 +77,18 @@ void RecordHdu::gotoThisHdu() const {
 }
 
 #ifndef COMPILE_PARSE_RECORD
-#define COMPILE_PARSE_RECORD(T) template Record<T> RecordHdu::parseRecord(const std::string &) const;
-COMPILE_PARSE_RECORD(char)
-COMPILE_PARSE_RECORD(short)
-COMPILE_PARSE_RECORD(int)
-COMPILE_PARSE_RECORD(long)
-COMPILE_PARSE_RECORD(float)
-COMPILE_PARSE_RECORD(double)
-COMPILE_PARSE_RECORD(unsigned char)
-COMPILE_PARSE_RECORD(unsigned short)
-COMPILE_PARSE_RECORD(unsigned int)
-COMPILE_PARSE_RECORD(unsigned long)
+#define COMPILE_PARSE_RECORD(type, unused) template Record<type> RecordHdu::parseRecord(const std::string &) const;
+EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
 #undef COMPILE_PARSE_RECORD
 #endif
 
 template RecordVector<boost::any> RecordHdu::parseRecordVector(const std::vector<std::string> &) const;
 
 #ifndef COMPILE_WRITE_RECORD
-#define COMPILE_WRITE_RECORD(T) \
-  template void RecordHdu::writeRecord(const Record<T> &) const; \
-  template void RecordHdu::updateRecord(const Record<T> &) const;
-COMPILE_WRITE_RECORD(char)
-COMPILE_WRITE_RECORD(short)
-COMPILE_WRITE_RECORD(int)
-COMPILE_WRITE_RECORD(long)
-COMPILE_WRITE_RECORD(float)
-COMPILE_WRITE_RECORD(double)
-COMPILE_WRITE_RECORD(unsigned char)
-COMPILE_WRITE_RECORD(unsigned short)
-COMPILE_WRITE_RECORD(unsigned int)
-COMPILE_WRITE_RECORD(unsigned long)
+#define COMPILE_WRITE_RECORD(type, unused) \
+  template void RecordHdu::writeRecord(const Record<type> &) const; \
+  template void RecordHdu::updateRecord(const Record<type> &) const;
+EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
 #undef COMPILE_WRITE_RECORD
 #endif
 

@@ -137,36 +137,19 @@ void RecordHdu::updateRecords(const RecordVector<T> &records, const std::vector<
 }
 
 #ifndef DECLARE_PARSE_RECORD
-#define DECLARE_PARSE_RECORD(T) extern template Record<T> RecordHdu::parseRecord(const std::string &) const;
-DECLARE_PARSE_RECORD(char)
-DECLARE_PARSE_RECORD(short)
-DECLARE_PARSE_RECORD(int)
-DECLARE_PARSE_RECORD(long)
-DECLARE_PARSE_RECORD(float)
-DECLARE_PARSE_RECORD(double)
-DECLARE_PARSE_RECORD(unsigned char)
-DECLARE_PARSE_RECORD(unsigned short)
-DECLARE_PARSE_RECORD(unsigned int)
-DECLARE_PARSE_RECORD(unsigned long)
+#define DECLARE_PARSE_RECORD(type, unused) \
+  extern template Record<type> RecordHdu::parseRecord(const std::string &) const;
+EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_PARSE_RECORD)
 #undef DECLARE_PARSE_RECORD
 #endif
 
 extern template RecordVector<boost::any> RecordHdu::parseRecordVector(const std::vector<std::string> &) const;
 
 #ifndef DECLARE_WRITE_RECORD
-#define DECLARE_WRITE_RECORD(T) \
-  extern template void RecordHdu::writeRecord(const Record<T> &) const; \
-  extern template void RecordHdu::updateRecord(const Record<T> &) const;
-DECLARE_WRITE_RECORD(char)
-DECLARE_WRITE_RECORD(short)
-DECLARE_WRITE_RECORD(int)
-DECLARE_WRITE_RECORD(long)
-DECLARE_WRITE_RECORD(float)
-DECLARE_WRITE_RECORD(double)
-DECLARE_WRITE_RECORD(unsigned char)
-DECLARE_WRITE_RECORD(unsigned short)
-DECLARE_WRITE_RECORD(unsigned int)
-DECLARE_WRITE_RECORD(unsigned long)
+#define DECLARE_WRITE_RECORD(type, unused) \
+  extern template void RecordHdu::writeRecord(const Record<type> &) const; \
+  extern template void RecordHdu::updateRecord(const Record<type> &) const;
+EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
 #undef DECLARE_WRITE_RECORD
 #endif
 

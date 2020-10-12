@@ -63,32 +63,15 @@ void BintableHdu::appendColumns(const Column<Ts> &... columns) const {
 }
 
 #ifndef DECLARE_READ_COLUMN
-#define DECLARE_READ_COLUMN(T) extern template VecColumn<T> BintableHdu::readColumn(const std::string &) const;
-DECLARE_READ_COLUMN(char)
-DECLARE_READ_COLUMN(short)
-DECLARE_READ_COLUMN(int)
-DECLARE_READ_COLUMN(long)
-DECLARE_READ_COLUMN(float)
-DECLARE_READ_COLUMN(double)
-DECLARE_READ_COLUMN(unsigned char)
-DECLARE_READ_COLUMN(unsigned short)
-DECLARE_READ_COLUMN(unsigned int)
-DECLARE_READ_COLUMN(unsigned long)
+#define DECLARE_READ_COLUMN(type, unused) \
+  extern template VecColumn<type> BintableHdu::readColumn(const std::string &) const;
+EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_READ_COLUMN)
 #undef DECLARE_READ_COLUMN
 #endif
 
 #ifndef DECLARE_WRITE_COLUMN
-#define DECLARE_WRITE_COLUMN(T) extern template void BintableHdu::writeColumn(const Column<T> &) const;
-DECLARE_WRITE_COLUMN(char)
-DECLARE_WRITE_COLUMN(short)
-DECLARE_WRITE_COLUMN(int)
-DECLARE_WRITE_COLUMN(long)
-DECLARE_WRITE_COLUMN(float)
-DECLARE_WRITE_COLUMN(double)
-DECLARE_WRITE_COLUMN(unsigned char)
-DECLARE_WRITE_COLUMN(unsigned short)
-DECLARE_WRITE_COLUMN(unsigned int)
-DECLARE_WRITE_COLUMN(unsigned long)
+#define DECLARE_WRITE_COLUMN(type, unused) extern template void BintableHdu::writeColumn(const Column<type> &) const;
+EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_WRITE_COLUMN)
 #undef DECLARE_WRITE_COLUMN
 #endif
 

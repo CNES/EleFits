@@ -27,6 +27,25 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @brief Loop over supported raster types.
+ * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
+ * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
+ * @see EL_FITSIO_FOREACH_RECORD_TYPE
+ * @see EL_FITSIO_FOREACH_COLUMN_TYPE
+ */
+#define EL_FITSIO_FOREACH_RASTER_TYPE(MACRO) \
+  MACRO(char, char) \
+  MACRO(std::int16_t, int16) \
+  MACRO(std::int32_t, int32) \
+  MACRO(std::int64_t, int64) \
+  MACRO(float, float) \
+  MACRO(double, double) \
+  MACRO(unsigned char, uchar) \
+  MACRO(std::uint16_t, uint16) \
+  MACRO(std::uint32_t, uint32) \
+  MACRO(std::uint64_t, uint64)
+
+/**
  * @brief n-dimensional pixel position or image shape, i.e. set of integer coordinates.
  * @details
  * Alias for std::array<long, n>.
