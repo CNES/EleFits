@@ -47,9 +47,6 @@ std::complex<double> almostMin<std::complex<double>>();
 template <>
 std::string almostMin<std::string>();
 
-template <>
-const char *almostMin<const char *>();
-
 template <typename T>
 T almostMax() {
   return std::numeric_limits<T>::max() - std::numeric_limits<T>::epsilon();
@@ -64,17 +61,11 @@ std::complex<double> almostMax<std::complex<double>>();
 template <>
 std::string almostMax<std::string>();
 
-template <>
-const char *almostMax<const char *>();
-
 template <typename T>
 T generateRandomValue(T min, T max) {
   const auto vec = generateRandomVector<T>(1, min, max);
   return vec[0];
 }
-
-template <>
-const char *generateRandomValue<const char *>(const char *min, const char *max);
 
 template <typename T>
 std::vector<T> generateRandomVector(long size, T min, T max) {

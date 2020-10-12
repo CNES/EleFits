@@ -123,8 +123,6 @@ struct RandomHeader {
   Record<std::complex<double>> cd;
   /** @brief std::string */
   Record<std::string> str;
-  /** @brief const char* */
-  Record<const char *> cstr;
 
   /**
    * @brief Get the record with given type.
@@ -144,7 +142,7 @@ struct RandomHeader {
   RecordVector<boost::any> allRecords() const;
 
   /** @brief The number of records. */
-  static constexpr long recordCount = 17;
+  static constexpr long recordCount = 16;
 };
 
 } // namespace Test

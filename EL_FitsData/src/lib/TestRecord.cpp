@@ -41,8 +41,7 @@ RandomHeader::RandomHeader() :
     d { generateRandomRecord<double>("double") },
     cf { generateRandomRecord<std::complex<float>>("complex float") },
     cd { generateRandomRecord<std::complex<double>>("complex double") },
-    str { generateRandomRecord<std::string>("string") },
-    cstr { generateRandomRecord<const char *>("C string") } {
+    str { generateRandomRecord<std::string>("string") } {
 }
 
 template <>
@@ -125,13 +124,8 @@ const Record<std::string> &RandomHeader::getRecord<std::string>() const {
   return str;
 }
 
-template <>
-const Record<const char *> &RandomHeader::getRecord<const char *>() const {
-  return cstr;
-}
-
 RecordVector<boost::any> RandomHeader::allRecords() const {
-  return RecordVector<boost::any>(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str, cstr);
+  return RecordVector<boost::any>(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str);
 }
 
 } // namespace Test
