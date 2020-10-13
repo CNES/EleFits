@@ -72,7 +72,35 @@ bool hasKeyword(fitsfile *fptr, const std::string &keyword) {
 }
 
 template <>
-FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) {
+FitsIO::Record<bool> parseRecord<bool>(fitsfile *fptr, const std::string &keyword) { // TODO rm duplication
+  int status = 0;
+  /* Read value and comment */
+  int nonconstIntValue; // TLOGICAL is for int in CFitsIO
+  char comment[FLEN_COMMENT];
+  fits_read_key(fptr, TypeCode<bool>::forRecord(), keyword.c_str(), &nonconstIntValue, comment, &status);
+  /* Read unit */
+  char unit[FLEN_COMMENT];
+  fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
+  const std::string context = "Cannot parse '" + keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
+  mayThrowCfitsioError(status, context);
+  /* Build Record */
+  FitsIO::Record<bool> record(keyword, nonconstIntValue, std::string(unit), std::string(comment));
+  /* Separate comment and unit */
+  if (record.comment == record.unit) {
+    record.comment == "";
+  } else if (record.unit != "") {
+    std::string match = "[" + record.unit + "] ";
+    auto pos = record.comment.find(match);
+    if (pos != std::string::npos) {
+      record.comment.erase(pos, match.length());
+    }
+  }
+  return record;
+}
+
+template <>
+FitsIO::Record<std::string>
+parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) { // TODO rm duplication
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
@@ -150,6 +178,22 @@ FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::st
 }
 
 template <>
+void writeRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record) {
+  int status = 0;
+  int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
+  fits_write_key(
+      fptr,
+      TypeCode<bool>::forRecord(),
+      record.keyword.c_str(),
+      &nonconstIntValue,
+      record.rawComment().c_str(),
+      &status);
+  const std::string context =
+      "Cannot write '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
+  mayThrowCfitsioError(status, context);
+}
+
+template <>
 void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record) {
   int status = 0;
   if (record.hasLongStringValue()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
@@ -185,6 +229,17 @@ void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &r
   EL_FITSIO_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
   WRITE_RECORD_ANY_FOR_TYPE(const char *, C_str)
   throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
+}
+
+template <>
+void updateRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record) {
+  int status = 0;
+  std::string comment = record.comment;
+  int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
+  fits_update_key(fptr, TypeCode<bool>::forRecord(), record.keyword.c_str(), &nonconstIntValue, &comment[0], &status);
+  const std::string context =
+      "Cannot update '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
+  mayThrowCfitsioError(status, context);
 }
 
 template <>
