@@ -35,7 +35,7 @@ Legend:
   - **Read/parse keyword**
   - **Read CONTINUE'd string record**
   - **Read unit**
-  - **Read header** (partially: keyword list)
+  - **Read header**
 - Keyword Writing Routines
   - **Write/update keyword**
   - **Write CONTINUE'd string record**
@@ -60,7 +60,7 @@ Legend:
   - Decompress image
 - Binary Table Routines (ASCII tables not supported)
   - **Create table extension**
-  - *Read row/column count*
+  - **Read row/column count**
   - **Find the first column which matches a name template**
   - Read column type
   - **Read column dimension (vector columns)**

@@ -21,7 +21,7 @@
 * Provide a fallback value when a record is not found
 * Read bintable or image dimensions
 * Write a COMMENT or HISTORY record
-* Check whether a SifFile or MefFile is open with
+* Check whether a SifFile or MefFile is open
 * Program `EL_FitsIO_PrintSupportedTypes` prints supported types for each data class!
 * `HDUNAME` keyword support for extension name
 
@@ -32,6 +32,7 @@
 * Comprehensive testing of the supported types
 * Reviewed documentation
 * Cleaned variadic template patterns
+* Cleaned boost::any patterns
 
 ## Known bugs/issues
 
