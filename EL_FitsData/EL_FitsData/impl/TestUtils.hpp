@@ -62,6 +62,37 @@ template <>
 std::string almostMax<std::string>();
 
 template <typename T>
+T halfMin() {
+  return std::numeric_limits<T>::lowest() / 2;
+}
+
+template <>
+std::complex<float> halfMin<std::complex<float>>();
+
+template <>
+std::complex<double> halfMin<std::complex<double>>();
+
+template <>
+std::string halfMin<std::string>();
+
+template <typename T>
+T halfMax() {
+  return std::numeric_limits<T>::max() / 2;
+}
+
+template <>
+bool halfMax<bool>();
+
+template <>
+std::complex<float> halfMax<std::complex<float>>();
+
+template <>
+std::complex<double> halfMax<std::complex<double>>();
+
+template <>
+std::string halfMax<std::string>();
+
+template <typename T>
 T generateRandomValue(T min, T max) {
   const auto vec = generateRandomVector<T>(1, min, max);
   return vec[0];

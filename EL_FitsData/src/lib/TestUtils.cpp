@@ -54,6 +54,41 @@ std::string almostMax<std::string>() {
 }
 
 template <>
+std::complex<float> halfMin<std::complex<float>>() {
+  return { halfMin<float>(), halfMin<float>() };
+}
+
+template <>
+std::complex<double> halfMin<std::complex<double>>() {
+  return { halfMin<double>(), halfMin<double>() };
+}
+
+template <>
+std::string halfMin<std::string>() {
+  return std::to_string(halfMin<int>());
+}
+
+template <>
+bool halfMax<bool>() {
+  return true;
+}
+
+template <>
+std::complex<float> halfMax<std::complex<float>>() {
+  return { halfMax<float>(), halfMax<float>() };
+}
+
+template <>
+std::complex<double> halfMax<std::complex<double>>() {
+  return { halfMax<double>(), halfMax<double>() };
+}
+
+template <>
+std::string halfMax<std::string>() {
+  return std::to_string(halfMax<int>());
+}
+
+template <>
 std::vector<std::complex<float>>
 generateRandomVector<std::complex<float>>(long size, std::complex<float> min, std::complex<float> max) {
   const auto reVec = generateRandomVector<float>(size, min.real(), max.real());
