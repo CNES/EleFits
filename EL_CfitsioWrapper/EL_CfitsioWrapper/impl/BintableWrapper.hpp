@@ -182,7 +182,7 @@ struct ColumnLooperImpl {
  * @brief Past-the-terminal case (do nothing).
  */
 template <typename... Ts>
-struct ColumnLooperImpl<-1, Ts...> {
+struct ColumnLooperImpl<std::size_t(-1), Ts...> {
 
   /** @brief Pass */
   static void readInfos(
