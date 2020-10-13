@@ -92,7 +92,7 @@ EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_SLICING_TEST)
 
 template <typename TV, typename TE>
 void checkApprox(TV value, TE expected) {
-  BOOST_CHECK_LE(std::abs(static_cast<TV>(expected) - value), std::numeric_limits<TV>::epsilon() * 2);
+  BOOST_CHECK(Test::approx(value, static_cast<TV>(expected)));
 }
 
 template <typename TV, typename TE>
