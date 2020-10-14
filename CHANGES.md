@@ -1,12 +1,12 @@
 # Change log
 
-# 2.1.1 (hotfix)
+# 2.2
 
-## Bug fixes
+## New features
 
-* Fix memory issue with `Record<bool>`
+* Raster has variable dimension with `n = -1`
 
-# 2.1.0 (breaking)
+# 2.1 (breaking)
 
 ## API changes
 

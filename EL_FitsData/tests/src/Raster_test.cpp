@@ -32,22 +32,42 @@ BOOST_AUTO_TEST_SUITE(Raster_test)
 
 BOOST_AUTO_TEST_CASE(index_test) {
 
-  FitsIO::Position<4> shape;
-  for (auto &length : shape) {
+  /* Fixed dimension */
+  FitsIO::Position<4> fixedShape;
+  for (auto &length : fixedShape) {
     length = std::rand();
   }
-  FitsIO::Position<4> pos;
-  for (auto &coord : pos) {
+  FitsIO::Position<4> fixedPos;
+  for (auto &coord : fixedPos) {
     coord = std::rand();
   }
-  auto index = FitsIO::Internal::IndexRecursionImpl<3>::template index<4>(shape, pos);
-  BOOST_CHECK_EQUAL(index, pos[0] + shape[0] * (pos[1] + shape[1] * (pos[2] + shape[2] * (pos[3]))));
+  auto fixedIndex = FitsIO::Internal::IndexRecursionImpl<4>::index(fixedShape, fixedPos);
+  BOOST_CHECK_EQUAL(
+      fixedIndex,
+      fixedPos[0] + fixedShape[0] * (fixedPos[1] + fixedShape[1] * (fixedPos[2] + fixedShape[2] * (fixedPos[3]))));
+
+  /* Variable dimension */
+  FitsIO::Position<-1> variableShape(fixedShape.begin(), fixedShape.end());
+  FitsIO::Position<-1> variablePos(fixedPos.begin(), fixedPos.end());
+  auto variableIndex = FitsIO::Internal::IndexRecursionImpl<-1>::index(variableShape, variablePos);
+  BOOST_CHECK_EQUAL(variableIndex, fixedIndex);
 }
 
-BOOST_FIXTURE_TEST_CASE(raster_size_test, FitsIO::Test::SmallRaster) {
+BOOST_FIXTURE_TEST_CASE(small_raster_size_test, FitsIO::Test::SmallRaster) {
   long size(this->width * this->height);
+  BOOST_CHECK_EQUAL(this->dimension(), 2);
   BOOST_CHECK_EQUAL(this->size(), size);
   BOOST_CHECK_EQUAL(this->vector().size(), size);
+}
+
+BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test) {
+  const long width = 4;
+  const long height = 3;
+  const long size = width * height;
+  FitsIO::Test::RandomRaster<int, -1> raster({ width, height });
+  BOOST_CHECK_EQUAL(raster.dimension(), 2);
+  BOOST_CHECK_EQUAL(raster.size(), size);
+  BOOST_CHECK_EQUAL(raster.vector().size(), size);
 }
 
 //-----------------------------------------------------------------------------

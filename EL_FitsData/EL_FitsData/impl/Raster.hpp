@@ -32,44 +32,61 @@ namespace Internal {
 
 /**
  * @brief nD-index recursive implementation.
- * @tparam i The dimension of the current recursion step.
- * @details
- * We need a class for partial specialization.
+ * @tparam n The raster dimension.
+ * @tparam i The dimension of the current recursion step, should be initialized with `n - 1`.
  */
-template <long i>
+template <long n, long i = n - 1>
 struct IndexRecursionImpl {
 
   /**
    * @brief Index of given position in given shape for Raster::index.
    */
-  template <long n>
-  static long index(const Position<n> &shape, const Position<n> &pos);
+  static long index(const Position<n> &shape, const Position<n> &pos) {
+    return std::get<n - 1 - i>(pos) + std::get<n - 1 - i>(shape) * IndexRecursionImpl<n, i - 1>::index(shape, pos);
+  }
 };
-
-/**
- * @brief Recurse: dimension i.
- */
-template <long i>
-template <long n>
-inline long IndexRecursionImpl<i>::index(const Position<n> &shape, const Position<n> &pos) {
-  return std::get<n - 1 - i>(pos) +
-      std::get<n - 1 - i>(shape) * IndexRecursionImpl<i - 1>::template index<n>(shape, pos);
-}
 
 /**
  * @brief Terminal case: dimension 0.
  */
-template <>
 template <long n>
-inline long IndexRecursionImpl<0>::index(const Position<n> &shape, const Position<n> &pos) {
-  return std::get<n - 1>(pos);
-}
+struct IndexRecursionImpl<n, 0> {
+  static long index(const Position<n> &shape, const Position<n> &pos) {
+    (void)(shape);
+    return std::get<n - 1>(pos);
+  }
+};
+
+/**
+ * @brief Variable dimension case.
+ */
+template <long i>
+struct IndexRecursionImpl<-1, i> {
+  static long index(const Position<-1> &shape, const Position<-1> &pos) {
+    const auto n = shape.size();
+    if (pos.size() != n) {
+      throw std::runtime_error(
+          "Dimension mismatch. Raster is of dimension " + std::to_string(n) + " while position is of dimension " +
+          std::to_string(pos.size()));
+    }
+    long res = 0;
+    for (std::size_t j = 0; j < shape.size(); ++j) {
+      res = pos[n - 1 - j] + shape[n - 1 - j] * res;
+    }
+    return res;
+  }
+};
 
 } // namespace Internal
 /// @endcond
 
 template <typename T, long n>
 Raster<T, n>::Raster(Position<n> shape_) : shape(shape_) {
+}
+
+template <typename T, long n>
+inline long Raster<T, n>::dimension() const {
+  return shape.size();
 }
 
 template <typename T, long n>
@@ -85,7 +102,7 @@ inline long Raster<T, n>::size() const {
 
 template <typename T, long n>
 inline long Raster<T, n>::index(const Position<n> &pos) const {
-  return Internal::IndexRecursionImpl<n - 1>::template index<n>(shape, pos);
+  return Internal::IndexRecursionImpl<n>::index(shape, pos);
 }
 
 template <typename T, long n>

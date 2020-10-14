@@ -21,6 +21,7 @@
 #define _EL_FITSDATA_RASTER_H
 
 #include <array>
+#include <type_traits> // conditional
 #include <vector>
 
 namespace Euclid {
@@ -47,12 +48,14 @@ namespace FitsIO {
 
 /**
  * @brief n-dimensional pixel position or image shape, i.e. set of integer coordinates.
+ * @tparam n A non-negative dimension (0 is allowed), or -1 for variable dimension.
  * @details
- * Alias for std::array<long, n>.
- * Indices are long, so we stick to the convention.
+ * Alias for std::array<long, n> in general, or std::vector<long> for variable dimension.
+ *
+ * Memory is and services are optimized when dimension is fixed (n != -1).
  */
 template <long n = 2>
-using Position = std::array<long, (std::size_t)n>;
+using Position = typename std::conditional<(n == -1), std::vector<long>, std::array<long, (std::size_t)n>>::type;
 
 /**
  * @brief Raster of a n-dimensional image (2D by default).
@@ -61,6 +64,7 @@ using Position = std::array<long, (std::size_t)n>;
  * Some implementations are provided with the library,
  * but others could be useful to interface with client code
  * (e.g. with other external libraries with custom containers).
+ * @see Position for details on the fixed- and variable-dimension cases.
  * @see \ref data-classes
  */
 template <typename T, long n = 2>
@@ -82,6 +86,14 @@ public:
    * @brief Const pointer to the first data element.
    */
   virtual const T *data() const = 0;
+
+  /**
+   * @brief Dimension.
+   * @details
+   * This corresponds to the `n` template parameter in general,
+   * or to the current dimension if variable.
+   */
+  long dimension() const;
 
   /**
    * @brief Length along given axis.
