@@ -60,6 +60,23 @@ BOOST_AUTO_TEST_CASE(mini_init_test) {
   BOOST_CHECK_EQUAL(mini.comment, "");
 }
 
+template <typename T>
+void checkRecordCopy(const std::string &keyword) {
+  Record<T> original { keyword, Test::generateRandomValue<T>() };
+  Record<T> copy(original);
+  Record<T> assigned;
+  assigned = original;
+  BOOST_CHECK(copy == original);
+  BOOST_CHECK(assigned == original);
+}
+
+#define RECORD_COPY_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_record_copy_test) { \
+    checkRecordCopy<type>(#name); \
+  }
+
+EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_COPY_TEST)
+
 BOOST_AUTO_TEST_CASE(raw_comment_test) {
 
   Record<int> noUnit { "V", 1, "", "Speed" };

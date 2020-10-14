@@ -157,9 +157,9 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::Temporary
 BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
   const auto &h = this->header();
   RecordVector<boost::any> records(3);
-  records.vector[0] = Record<std::string>("STRING", "WIDE");
-  records.vector[1] = Record<float>("FLOAT", 3.14F);
-  records.vector[2] = Record<int>("INT", 666);
+  records.vector[0].assign(Record<std::string>("STRING", "WIDE"));
+  records.vector[1].assign(Record<float>("FLOAT", 3.14F));
+  records.vector[2].assign(Record<int>("INT", 666));
   h.writeRecords(records, { "FLOAT", "INT" });
   BOOST_CHECK_THROW(h.parseRecord<boost::any>("STRING"), std::exception);
   auto parsed = h.parseRecordVector<boost::any>({ "INT" });

@@ -54,7 +54,7 @@ Record<T> &RecordVector<T>::operator[](const std::string &keyword) {
 template <typename T>
 template <typename TValue>
 Record<TValue> RecordVector<T>::as(const std::string &keyword) const {
-  return operator[](keyword);
+  return Record<TValue>(operator[](keyword));
 }
 
 } // namespace FitsIO
