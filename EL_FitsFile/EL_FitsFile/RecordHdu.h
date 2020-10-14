@@ -29,15 +29,26 @@ namespace FitsIO {
 /**
  * @brief Header reader-writer.
  * @details
- * This class provides services common to all HDUs, including for reading and writing records.
+ * This class provides services common to all HDUs for reading and writing records.
+ *
  * When reading or writing several records, it is recommended to use the plural form of the methods
- * (e.g. one call to RecordHdu::writeRecords instead of several calls to RecordHdu::writeRecord),
+ * (e.g. one call to writeRecords() instead of several calls to writeRecord()),
  * which are optimized.
  * Methods to update records are analogous to methods to write records:
  * refer to the documentation of the latter for more details on the former.
  *
- * In a Fits file, a RecordHdu is mapped to an IMAGE HDU with NAXIS=0.
- * This means that working with a RecordHdu is equivalent to working with an ImageHdu with an empty shape.
+ * There are two approaches to read and write several records at onces:
+ * - As heterogeneous collections, through variadic methods or tuples;
+ * - As homogeneous collections, using vectors of Records or RecordVector.
+ *
+ * Heterogeneous collections can also be wrapped in vectors using boost::any.
+ * This is the mandatory option when types are not all known at compile time,
+ * and can be a more comfortable option in other cases.
+ * Indeed, working with a tuple might become a nightmare with many values,
+ * and std::vector<boost::any> can provide valuable help.
+ *
+ * @note
+ * RecordHdus are written as Image HDUs with NAXIS=0.
  * @warning
  * There is a known bug in CFitsIO with the reading of Record<unsigned long>:
  * if the value is greater than `max(long)`, CFitsIO returns an overflow error.
@@ -146,9 +157,26 @@ public:
    * or a class with such constructor:
    * \code Return::Return(T1, T2, ...) \endcode
    * @details
-   * This is generally more convenient than a tuple
+   * This method can be used to mimic a named tuple,
+   * which is generally more convenient than a std::tuple,
    * because you chose how to to access the records in your own class
    * insted of accessing them by their indices -- with `std::get<i>(tuple)`.
+   *
+   * Here's a dummy example to show the usage with a simple structure:
+   * \code
+   * struct Body {
+   *   std::string name;
+   *   int age;
+   *   float height;
+   *   float mass;
+   *   float bmi() { return mass / (height * height); }
+   * };
+   *
+   * auto body = hdu.parseRecordsAs<Body, std::string, int, float, float>({ "NAME", "AGE", "HEIGHT", "MASS" });
+   *
+   * std::cout << "Hello, " << body.name << "!" << std::endl;
+   * std::cout << "Your BMI is: " << body.bmi() << std::endl;
+   * \endcode
    */
   template <class TReturn, typename... Ts>
   TReturn parseRecordsAs(const std::vector<std::string> &keywords) const;

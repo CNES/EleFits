@@ -18,3 +18,22 @@
  */
 
 #include "EL_CfitsioWrapper/ImageWrapper.h"
+
+namespace Euclid {
+namespace Cfitsio {
+namespace Image {
+
+template <>
+FitsIO::Position<-1> readShape<-1>(fitsfile *fptr) {
+  int status = 0;
+  int naxis = 0;
+  fits_get_img_dim(fptr, &naxis, &status);
+  FitsIO::Position<-1> shape(naxis);
+  fits_get_img_size(fptr, naxis, &shape[0], &status);
+  mayThrowCfitsioError(status, "Cannot read raster shape");
+  return shape;
+}
+
+} // namespace Image
+} // namespace Cfitsio
+} // namespace Euclid

@@ -39,18 +39,12 @@ void checkRandom3DRasterIsReadBack() {
   using namespace FitsIO::Test;
   RandomRaster<T, 3> input({ 2, 3, 4 });
   MinimalFile file;
-  try {
-    Hdu::createImageExtension(file.fptr, "IMGEXT", input);
-    const auto output = Image::readRaster<T, 3>(file.fptr);
-    checkEqualVectors(output.vector(), input.vector());
-  } catch (const CfitsioError &e) {
-    std::cerr << "Input:" << std::endl;
-    for (const auto &v : input.vector()) {
-      std::cerr << v << ' ';
-    }
-    std::cerr << std::endl;
-    BOOST_FAIL(e.what());
-  }
+  Hdu::createImageExtension(file.fptr, "IMGEXT", input);
+  const auto fixedOutput = Image::readRaster<T, 3>(file.fptr);
+  checkEqualVectors(fixedOutput.vector(), input.vector());
+  const auto variableOuptut = Image::readRaster<T, -1>(file.fptr);
+  BOOST_CHECK_EQUAL(variableOuptut.dimension(), 3);
+  checkEqualVectors(variableOuptut.vector(), input.vector());
 }
 
 #define RANDOM_3D_RASTER_IS_READ_BACK_TEST(type, name) \

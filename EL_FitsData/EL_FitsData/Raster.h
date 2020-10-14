@@ -52,7 +52,7 @@ namespace FitsIO {
  * @details
  * Alias for std::array<long, n> in general, or std::vector<long> for variable dimension.
  *
- * Memory is and services are optimized when dimension is fixed (n != -1).
+ * Memory and services are optimized when dimension is fixed (n != -1).
  */
 template <long n = 2>
 using Position = typename std::conditional<(n == -1), std::vector<long>, std::array<long, (std::size_t)n>>::type;

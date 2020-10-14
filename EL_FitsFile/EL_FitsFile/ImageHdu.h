@@ -29,6 +29,30 @@ namespace FitsIO {
 
 /**
  * @brief Image HDU reader-writer.
+ * @details
+ * The Fits format can accomodate images of any dimension.
+ * EL_FitsIO stores them in n-dimensional containers: Raster objects.
+ * This is visible in the ImageHdu services as a template parameter `n`.
+ *
+ * When the dimension is known at compile time and fixed,
+ * it is recommended to specify it (`n > 0`),
+ * which allows for a few internal optimizations
+ * and brings safety as the code is less error-prone with fewer degrees of freedom.
+ *
+ * The zero vector space (`n = 0`) is supported;
+ * It is used to represent HDUs with no data, as recommended in the Fits standard.
+ *
+ * When the dimension is unknown at compile time, or is expected to change
+ * (e.g. 2D images to be merged as a 3D image),
+ * special value `n = -1` can be specified.
+ * In this case, the dimension is read in the Fits file,
+ * but the user should be careful to handle all possible values.
+ * @see
+ * RecordHdu for services to read and write records.
+ * @see
+ * Position for details on the handling of fixed- and variable-dimension arrays.
+ * @see
+ * EL_FITSIO_FOREACH_RASTER_TYPE and program EL_FitsIO_PrintSupportedTypes for the list of supported pixel types.
  */
 class ImageHdu : public RecordHdu {
 

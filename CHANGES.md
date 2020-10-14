@@ -4,7 +4,7 @@
 
 ## New features
 
-* Raster has variable dimension with `n = -1`
+* Raster with variable dimension (`n = -1`) can be read and written
 
 # 2.1 (breaking)
 

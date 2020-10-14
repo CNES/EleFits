@@ -51,6 +51,10 @@ struct IndexRecursionImpl {
  */
 template <long n>
 struct IndexRecursionImpl<n, 0> {
+
+  /**
+   * @brief pos[n - 1]
+   */
   static long index(const Position<n> &shape, const Position<n> &pos) {
     (void)(shape);
     return std::get<n - 1>(pos);
@@ -62,6 +66,10 @@ struct IndexRecursionImpl<n, 0> {
  */
 template <long i>
 struct IndexRecursionImpl<-1, i> {
+
+  /**
+   * @brief pos[0] + shape[1] * (pos[1] + shape[2] * (pos[2] + shape[3] * (...)))
+   */
   static long index(const Position<-1> &shape, const Position<-1> &pos) {
     const auto n = shape.size();
     if (pos.size() != n) {

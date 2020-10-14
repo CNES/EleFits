@@ -25,6 +25,12 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Image {
 
+/**
+ * @brief Variable dimension case.
+ */
+template <>
+FitsIO::Position<-1> readShape<-1>(fitsfile *fptr);
+
 template <long n = 2>
 FitsIO::Position<n> readShape(fitsfile *fptr) {
   FitsIO::Position<n> shape;
@@ -38,7 +44,7 @@ template <typename T, long n>
 void updateShape(fitsfile *fptr, const FitsIO::Position<n> &shape) {
   int status = 0;
   auto nonconstShape = shape;
-  fits_resize_img(fptr, TypeCode<T>::bitpix(), n, nonconstShape.data(), &status);
+  fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconstShape.data(), &status);
   mayThrowCfitsioError(status, "Cannot reshape raster");
 }
 
