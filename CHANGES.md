@@ -1,6 +1,12 @@
 # Change log
 
-# 2.1 (breaking)
+# 2.1.1 (hotfix)
+
+## Bug fixes
+
+* Fix memory issue with `Record<bool>`
+
+# 2.1.0 (breaking)
 
 ## API changes
 

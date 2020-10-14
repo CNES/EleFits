@@ -72,7 +72,35 @@ bool hasKeyword(fitsfile *fptr, const std::string &keyword) {
 }
 
 template <>
-FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) {
+FitsIO::Record<bool> parseRecord<bool>(fitsfile *fptr, const std::string &keyword) { // TODO rm duplication
+  int status = 0;
+  /* Read value and comment */
+  int nonconstIntValue; // TLOGICAL is for int in CFitsIO
+  char comment[FLEN_COMMENT];
+  fits_read_key(fptr, TypeCode<bool>::forRecord(), keyword.c_str(), &nonconstIntValue, comment, &status);
+  /* Read unit */
+  char unit[FLEN_COMMENT];
+  fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
+  const std::string context = "Cannot parse '" + keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
+  mayThrowCfitsioError(status, context);
+  /* Build Record */
+  FitsIO::Record<bool> record(keyword, nonconstIntValue, std::string(unit), std::string(comment));
+  /* Separate comment and unit */
+  if (record.comment == record.unit) {
+    record.comment == "";
+  } else if (record.unit != "") {
+    std::string match = "[" + record.unit + "] ";
+    auto pos = record.comment.find(match);
+    if (pos != std::string::npos) {
+      record.comment.erase(pos, match.length());
+    }
+  }
+  return record;
+}
+
+template <>
+FitsIO::Record<std::string>
+parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) { // TODO rm duplication
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
@@ -108,45 +136,66 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
   return record;
 }
 
+#define PARSE_RECORD_ANY_FOR_TYPE(type, unused) \
+  if (id == typeid(type)) { \
+    return FitsIO::Record<boost::any>(parseRecord<type>(fptr, keyword)); \
+  }
+
 template <>
 FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword) {
-  const auto code = recordTypecode(fptr, keyword);
+  const auto code = recordTypecode(fptr, keyword); // TODO use typeid
   switch (code) {
     case TLOGICAL:
-      return parseRecord<bool>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<bool>(fptr, keyword));
     case TSBYTE:
-      return parseRecord<char>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<char>(fptr, keyword));
     case TSHORT:
-      return parseRecord<short>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<short>(fptr, keyword));
     case TINT:
-      return parseRecord<int>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<int>(fptr, keyword));
     case TLONG:
-      return parseRecord<long>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<long>(fptr, keyword));
     case TLONGLONG:
-      return parseRecord<long long>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<long long>(fptr, keyword));
     case TFLOAT:
-      return parseRecord<float>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<float>(fptr, keyword));
     case TDOUBLE:
-      return parseRecord<double>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<double>(fptr, keyword));
     case TCOMPLEX:
-      return parseRecord<std::complex<float>>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<std::complex<float>>(fptr, keyword));
     case TDBLCOMPLEX:
-      return parseRecord<std::complex<double>>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<std::complex<double>>(fptr, keyword));
     case TSTRING:
-      return parseRecord<std::string>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<std::string>(fptr, keyword));
     case TBYTE:
-      return parseRecord<unsigned char>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<unsigned char>(fptr, keyword));
     case TUSHORT:
-      return parseRecord<unsigned short>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<unsigned short>(fptr, keyword));
     case TUINT:
-      return parseRecord<unsigned int>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<unsigned int>(fptr, keyword));
     case TULONG:
-      return parseRecord<unsigned long>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<unsigned long>(fptr, keyword));
     case TULONGLONG:
-      return parseRecord<unsigned long long>(fptr, keyword);
+      return FitsIO::Record<boost::any>(parseRecord<unsigned long long>(fptr, keyword));
     default:
       throw std::runtime_error("Cannot deduce type for keyword: " + keyword);
   }
+}
+
+template <>
+void writeRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record) {
+  int status = 0;
+  int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
+  fits_write_key(
+      fptr,
+      TypeCode<bool>::forRecord(),
+      record.keyword.c_str(),
+      &nonconstIntValue,
+      record.rawComment().c_str(),
+      &status);
+  const std::string context =
+      "Cannot write '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
+  mayThrowCfitsioError(status, context);
 }
 
 template <>
@@ -185,6 +234,17 @@ void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &r
   EL_FITSIO_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
   WRITE_RECORD_ANY_FOR_TYPE(const char *, C_str)
   throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
+}
+
+template <>
+void updateRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record) {
+  int status = 0;
+  std::string comment = record.comment;
+  int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
+  fits_update_key(fptr, TypeCode<bool>::forRecord(), record.keyword.c_str(), &nonconstIntValue, &comment[0], &status);
+  const std::string context =
+      "Cannot update '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
+  mayThrowCfitsioError(status, context);
 }
 
 template <>

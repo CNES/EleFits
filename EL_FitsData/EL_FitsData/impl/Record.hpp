@@ -215,6 +215,16 @@ Record<T>::Record(const Record<TOther> &other) :
 }
 
 template <typename T>
+template <typename TOther>
+Record<T> &Record<T>::assign(const Record<TOther> &other) {
+  keyword = other.keyword;
+  value = Internal::CasterImpl<TOther, T>::cast(other.value);
+  unit = other.unit;
+  comment = other.comment;
+  return *this;
+}
+
+template <typename T>
 Record<T>::operator T() const {
   return value;
 }

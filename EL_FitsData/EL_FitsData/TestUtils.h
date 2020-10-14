@@ -45,16 +45,28 @@ template <typename T>
 T almostMax();
 
 /**
+ * @brief Half the min of the type.
+ */
+template <typename T>
+T halfMin();
+
+/**
+ * @brief Half the max of the type.
+ */
+template <typename T>
+T halfMax();
+
+/**
  * @brief Generate a random value of given type.
  */
 template <typename T>
-T generateRandomValue(T min = almostMin<T>(), T max = almostMax<T>());
+T generateRandomValue(T min = halfMin<T>(), T max = halfMax<T>());
 
 /**
  * @brief Generate a random vector of given type and size.
  */
 template <typename T>
-std::vector<T> generateRandomVector(long size, T min = almostMin<T>(), T max = almostMax<T>());
+std::vector<T> generateRandomVector(long size, T min = halfMin<T>(), T max = halfMax<T>());
 
 /**
  * @brief Check that two vectors are exactly equal.

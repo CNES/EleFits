@@ -99,12 +99,16 @@ struct Record {
    * `vector<Record<any>>` from various `Record<T>`s with different `T`s.
    * @warning
    * Source type TOther must be castable to destination type T.
-   * @note
-   * This constructor is purposely not explicit.
    * @see cast
    */
   template <typename TOther>
-  Record(const Record<TOther> &other);
+  explicit Record(const Record<TOther> &other);
+
+  /**
+   * @brief Copy a Record of another type.
+   */
+  template <typename TOther>
+  Record<T> &assign(const Record<TOther> &other);
 
   /**
    * @brief Helper function to cast Record value types.

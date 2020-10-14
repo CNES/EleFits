@@ -206,7 +206,7 @@ public:
   }
 
 private:
-  Elements::TempDir m_tempDir {};
+  Elements::TempDir m_tempDir;
 };
 
 MAIN_FOR(EL_FitsIO_Tutorial)

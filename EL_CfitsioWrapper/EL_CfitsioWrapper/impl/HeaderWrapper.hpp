@@ -31,6 +31,12 @@ namespace Header {
  * @copydoc parseRecord
  */
 template <>
+FitsIO::Record<bool> parseRecord<bool>(fitsfile *fptr, const std::string &keyword);
+
+/**
+ * @copydoc parseRecord
+ */
+template <>
 FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword);
 
 /**
@@ -38,6 +44,12 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::
  */
 template <>
 FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword);
+
+/**
+ * @copydoc writeRecord
+ */
+template <>
+void writeRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record);
 
 /**
  * @copydoc writeRecord
@@ -56,6 +68,12 @@ void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *
  */
 template <>
 void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
+
+/**
+ * @copydoc updateRecord
+ */
+template <>
+void updateRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record);
 
 /**
  * @copydoc updateRecord
