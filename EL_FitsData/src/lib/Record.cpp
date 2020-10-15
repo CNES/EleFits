@@ -49,5 +49,11 @@ bool Record<boost::any>::hasLongStringValue() const {
   return false;
 }
 
+#ifndef COMPILE_RECORD_CLASS
+#define COMPILE_RECORD_CLASS(type, unused) template struct Record<type>;
+EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_RECORD_CLASS)
+#undef COMPILE_RECORD_CLASS
+#endif
+
 } // namespace FitsIO
 } // namespace Euclid

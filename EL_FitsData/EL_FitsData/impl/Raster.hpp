@@ -176,6 +176,24 @@ std::vector<T> &VecRaster<T, n>::vector() {
   return m_vec;
 }
 
+#ifndef DECLARE_RASTER_CLASSES
+#define DECLARE_RASTER_CLASSES(type, unused) \
+  extern template class Raster<type, -1>; \
+  extern template class PtrRaster<type, -1>; \
+  extern template class VecRefRaster<type, -1>; \
+  extern template class VecRaster<type, -1>; \
+  extern template class Raster<type, 2>; \
+  extern template class PtrRaster<type, 2>; \
+  extern template class VecRefRaster<type, 2>; \
+  extern template class VecRaster<type, 2>; \
+  extern template class Raster<type, 3>; \
+  extern template class PtrRaster<type, 3>; \
+  extern template class VecRefRaster<type, 3>; \
+  extern template class VecRaster<type, 3>;
+EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
+#undef DECLARE_COLUMN_CLASSES
+#endif
+
 } // namespace FitsIO
 } // namespace Euclid
 

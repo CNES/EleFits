@@ -20,8 +20,9 @@
 #ifndef _EL_FITSDATA_RECORD_H
 #define _EL_FITSDATA_RECORD_H
 
+#include <boost/any.hpp>
+#include <complex>
 #include <string>
-#include <type_traits> // enable_if
 
 namespace Euclid {
 namespace FitsIO {

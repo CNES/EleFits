@@ -50,6 +50,7 @@ void ImageHdu::writeRaster(const Raster<T, n> &raster) const {
 
 #ifndef DECLARE_READ_RASTER
 #define DECLARE_READ_RASTER(type, unused) \
+  extern template VecRaster<type, -1> ImageHdu::readRaster() const; \
   extern template VecRaster<type, 2> ImageHdu::readRaster() const; \
   extern template VecRaster<type, 3> ImageHdu::readRaster() const;
 EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
@@ -58,6 +59,7 @@ EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
 
 #ifndef DECLARE_WRITE_RASTER
 #define DECLARE_WRITE_RASTER(type, unused) \
+  extern template void ImageHdu::writeRaster(const Raster<type, -1> &) const; \
   extern template void ImageHdu::writeRaster(const Raster<type, 2> &) const; \
   extern template void ImageHdu::writeRaster(const Raster<type, 3> &) const;
 EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)

@@ -20,6 +20,8 @@
 #ifndef _EL_FITSDATA_COLUMN_H
 #define _EL_FITSDATA_COLUMN_H
 
+#include <complex>
+#include <cstdint>
 #include <string>
 #include <vector>
 

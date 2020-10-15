@@ -21,6 +21,9 @@
 #define _EL_FITSDATA_RASTER_H
 
 #include <array>
+#include <complex>
+#include <cstdint>
+#include <string>
 #include <type_traits> // conditional
 #include <vector>
 

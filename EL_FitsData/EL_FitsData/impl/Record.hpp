@@ -19,8 +19,6 @@
 
 #ifdef _EL_FITSDATA_RECORD_IMPL
 
-#include <boost/any.hpp>
-#include <complex>
 #include <type_traits> // enable_if & co
 
 #include "EL_FitsData/Record.h"
@@ -261,6 +259,12 @@ bool Record<const char *>::hasLongStringValue() const;
 
 template <>
 bool Record<boost::any>::hasLongStringValue() const;
+
+#ifndef DECLARE_RECORD_CLASS
+#define DECLARE_RECORD_CLASS(type, unused) extern template struct Record<type>;
+EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_RECORD_CLASS)
+#undef DECLARE_RECORD_CLASS
+#endif
 
 } // namespace FitsIO
 } // namespace Euclid

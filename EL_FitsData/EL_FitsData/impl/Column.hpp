@@ -135,6 +135,17 @@ std::vector<T> &VecColumn<T>::vector() {
   return m_vec;
 }
 
+#ifndef DECLARE_COLUMN_CLASSES
+#define DECLARE_COLUMN_CLASSES(type, unused) \
+  extern template struct ColumnInfo<type>; \
+  extern template class Column<type>; \
+  extern template class PtrColumn<type>; \
+  extern template class VecRefColumn<type>; \
+  extern template class VecColumn<type>;
+EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
+#undef DECLARE_COLUMN_CLASSES
+#endif
+
 } // namespace FitsIO
 } // namespace Euclid
 

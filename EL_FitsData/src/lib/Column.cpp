@@ -38,5 +38,16 @@ long rowCountDispatchImpl<std::string>(long elementCount, ELEMENTS_UNUSED long r
 
 } // namespace Internal
 
+#ifndef COMPILE_COLUMN_CLASSES
+#define COMPILE_COLUMN_CLASSES(type, unused) \
+  template struct ColumnInfo<type>; \
+  template class Column<type>; \
+  template class PtrColumn<type>; \
+  template class VecRefColumn<type>; \
+  template class VecColumn<type>;
+EL_FITSIO_FOREACH_COLUMN_TYPE(COMPILE_COLUMN_CLASSES)
+#undef COMPILE_COLUMN_CLASSES
+#endif
+
 } // namespace FitsIO
 } // namespace Euclid
