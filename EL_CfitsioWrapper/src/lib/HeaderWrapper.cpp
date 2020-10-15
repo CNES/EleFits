@@ -143,43 +143,9 @@ parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) { // TODO r
 
 template <>
 FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword) {
-  const auto code = recordTypecode(fptr, keyword); // TODO use typeid
-  switch (code) {
-    case TLOGICAL:
-      return FitsIO::Record<boost::any>(parseRecord<bool>(fptr, keyword));
-    case TSBYTE:
-      return FitsIO::Record<boost::any>(parseRecord<char>(fptr, keyword));
-    case TSHORT:
-      return FitsIO::Record<boost::any>(parseRecord<short>(fptr, keyword));
-    case TINT:
-      return FitsIO::Record<boost::any>(parseRecord<int>(fptr, keyword));
-    case TLONG:
-      return FitsIO::Record<boost::any>(parseRecord<long>(fptr, keyword));
-    case TLONGLONG:
-      return FitsIO::Record<boost::any>(parseRecord<long long>(fptr, keyword));
-    case TFLOAT:
-      return FitsIO::Record<boost::any>(parseRecord<float>(fptr, keyword));
-    case TDOUBLE:
-      return FitsIO::Record<boost::any>(parseRecord<double>(fptr, keyword));
-    case TCOMPLEX:
-      return FitsIO::Record<boost::any>(parseRecord<std::complex<float>>(fptr, keyword));
-    case TDBLCOMPLEX:
-      return FitsIO::Record<boost::any>(parseRecord<std::complex<double>>(fptr, keyword));
-    case TSTRING:
-      return FitsIO::Record<boost::any>(parseRecord<std::string>(fptr, keyword));
-    case TBYTE:
-      return FitsIO::Record<boost::any>(parseRecord<unsigned char>(fptr, keyword));
-    case TUSHORT:
-      return FitsIO::Record<boost::any>(parseRecord<unsigned short>(fptr, keyword));
-    case TUINT:
-      return FitsIO::Record<boost::any>(parseRecord<unsigned int>(fptr, keyword));
-    case TULONG:
-      return FitsIO::Record<boost::any>(parseRecord<unsigned long>(fptr, keyword));
-    case TULONGLONG:
-      return FitsIO::Record<boost::any>(parseRecord<unsigned long long>(fptr, keyword));
-    default:
-      throw std::runtime_error("Cannot deduce type for keyword: " + keyword);
-  }
+  const auto &id = recordTypeid(fptr, keyword);
+  EL_FITSIO_FOREACH_RECORD_TYPE(PARSE_RECORD_ANY_FOR_TYPE)
+  throw std::runtime_error("Cannot deduce type for keyword: " + keyword);
 }
 
 template <>
@@ -300,60 +266,89 @@ void deleteRecord(fitsfile *fptr, const std::string &keyword) {
 namespace Internal {
 
 /**
- * @return
- * TSBYTE      -128 to 127
- * TBYTE        128 to 255
- * TSHORT      -32768 to 32767
- * TUSHORT      32768 to 65535
- * TINT        -2147483648 to 2147483647
- * TUINT        2147483648 to 4294967295
- * TLONGLONG   -9223372036854775808 to 9223372036854775807
+ * @brief Get the a typeid compatible with a negative integer value given as a string.
  */
-int intRecordTypecodeImpl(char *value) {
-  int status = 0;
-  int typecode = 0;
-  int isNegative = 0;
-  fits_get_inttype(value, &typecode, &isNegative, &status);
-  mayThrowCfitsioError(status, "Cannot deduce integer type code of value: " + std::string(value));
-  return typecode;
+const std::type_info &negIntRecordTypeidImpl(const std::string &value) {
+  const long long parsed = std::stoll(value);
+  if (parsed >= std::numeric_limits<char>::lowest()) {
+    return typeid(char);
+  }
+  if (parsed >= std::numeric_limits<short>::lowest()) {
+    return typeid(short);
+  }
+  if (parsed >= std::numeric_limits<int>::lowest()) {
+    return typeid(int);
+  }
+  if (parsed >= std::numeric_limits<long>::lowest()) {
+    return typeid(long);
+  }
+  return typeid(long long);
 }
 
 /**
- * @return TFLOAT, TDOUBLE.
+ * @brief Get the a typeid compatible with a positive integer value given as a string.
  */
-int floatRecordTypecodeImpl(char *value) {
-  double parsed = std::atof(value);
+const std::type_info &posIntRecordTypeidImpl(const std::string &value) {
+  const unsigned long long parsed = std::stoull(value);
+  if (parsed <= std::numeric_limits<unsigned char>::max()) {
+    return typeid(char);
+  }
+  if (parsed <= std::numeric_limits<unsigned short>::max()) {
+    return typeid(short);
+  }
+  if (parsed <= std::numeric_limits<unsigned int>::max()) {
+    return typeid(int);
+  }
+  if (parsed <= std::numeric_limits<unsigned long>::max()) {
+    return typeid(long);
+  }
+  return typeid(unsigned long long);
+}
+
+/**
+ * @brief Get the a typeid compatible with an integer value given as a string.
+ * @return The typeid of the smallest signed (resp. unsigned) int type which can accomodate the value
+ * if the first character is (resp. is not) '-'.
+ */
+const std::type_info &intRecordTypeidImpl(const std::string &value) {
+  return (value[0] == '-') ? negIntRecordTypeidImpl(value) : posIntRecordTypeidImpl(value);
+}
+
+/**
+ * @return typeid(float) if in (lowest(float), max(float)); typeid(double) otherwise.
+ */
+const std::type_info &floatRecordTypeidImpl(const std::string &value) {
+  double parsed = std::stod(value);
   if (parsed < std::numeric_limits<float>::lowest()) {
-    return TDOUBLE;
+    return typeid(double);
   }
   if (parsed > std::numeric_limits<float>::max()) {
-    return TDOUBLE;
+    return typeid(double);
   }
-  return TFLOAT;
+  return typeid(float);
 }
 
 /**
- * @return TCOMPLEX, TDBLCOMPLEX.
+ * @return typeid(std::complex<float>) if both real and imaginary parts are in (lowest(float), max(float));
+ * typeid(std::complex<double>) otherwise.
  */
-int complexRecordTypecodeImpl(char *value) {
+const std::type_info &complexRecordTypeidImpl(const std::string &value) {
   const std::size_t reBegin = 1; // 1 for '('
-  const std::size_t reEnd = std::string(value).find(",");
-  const std::size_t imBegin = reEnd + 2; // 2 for ', '
-  const std::size_t imEnd = std::string(value).find(")");
+  const std::size_t reEnd = value.find(",");
+  const std::size_t imBegin = reEnd + 2; // 2 for ", "
+  const std::size_t imEnd = value.find(")");
   if (reEnd == std::string::npos || imEnd == std::string::npos) {
-    throw std::runtime_error("Cannot parse complex value: " + std::string(value));
+    throw std::runtime_error("Cannot parse complex value: " + value);
   }
-  char re[FLEN_VALUE] = "\0";
-  strncpy(re, value + reBegin, reEnd - reBegin);
-  char im[FLEN_VALUE] = "\0";
-  strncpy(im, value + imBegin, imEnd - imBegin);
-  if (floatRecordTypecodeImpl(re) == TDOUBLE) {
-    return TDBLCOMPLEX;
+  const std::string re = value.substr(reBegin, reEnd - reBegin);
+  if (floatRecordTypeidImpl(re) == typeid(double)) {
+    return typeid(std::complex<double>);
   }
-  if (floatRecordTypecodeImpl(im) == TDOUBLE) {
-    return TDBLCOMPLEX;
+  const std::string im = value.substr(imBegin, imEnd - imBegin);
+  if (floatRecordTypeidImpl(im) == typeid(double)) {
+    return typeid(std::complex<double>);
   }
-  return TCOMPLEX;
+  return typeid(std::complex<float>);
 }
 
 } // namespace Internal
@@ -361,7 +356,7 @@ int complexRecordTypecodeImpl(char *value) {
 /**
  * @see https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node52.html
  */
-int recordTypecode(fitsfile *fptr, const std::string &keyword) {
+const std::type_info &recordTypeid(fitsfile *fptr, const std::string &keyword) {
   int status = 0;
   char value[FLEN_VALUE];
   auto nonconstKeyword = keyword;
@@ -373,17 +368,17 @@ int recordTypecode(fitsfile *fptr, const std::string &keyword) {
   // 'C', 'L', 'I', 'F' or 'X', for character string, logical, integer, floating point, or complex
   switch (dtype) {
     case 'C':
-      return TSTRING;
+      return typeid(std::string);
     case 'L':
-      return TLOGICAL;
+      return typeid(bool);
     case 'I':
-      return Internal::intRecordTypecodeImpl(value);
+      return Internal::intRecordTypeidImpl(value);
     case 'F':
-      return Internal::floatRecordTypecodeImpl(value);
+      return Internal::floatRecordTypeidImpl(value);
     case 'X':
-      return Internal::complexRecordTypecodeImpl(value);
+      return Internal::complexRecordTypeidImpl(value);
     default:
-      throw CfitsioError(status);
+      throw std::runtime_error("Cannot deduce type code of keyword: " + keyword);
   }
 }
 

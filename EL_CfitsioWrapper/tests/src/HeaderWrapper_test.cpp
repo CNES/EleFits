@@ -171,44 +171,52 @@ BOOST_FIXTURE_TEST_CASE(several_records_test, FitsIO::Test::MinimalFile) {
 }
 
 template <typename T>
-void checkRecordTypecode(T value, int expectedTypecode) {
+void checkRecordTypeid(T value, const std::vector<std::size_t> &validTypeCodes) {
   FitsIO::Test::MinimalFile f;
   FitsIO::Record<T> record { "KEYWORD", value };
   Header::writeRecord(f.fptr, record);
-  BOOST_CHECK_EQUAL(Header::recordTypecode(f.fptr, "KEYWORD"), expectedTypecode);
+  const auto &id = Header::recordTypeid(f.fptr, "KEYWORD").hash_code();
+  const auto &it = std::find(validTypeCodes.begin(), validTypeCodes.end(), id);
+  BOOST_CHECK(it != validTypeCodes.end());
 }
 
 template <typename T>
-void checkRecordTypecodeMin(int expectedTypecode) {
-  checkRecordTypecode(FitsIO::Test::almostMin<T>(), expectedTypecode);
+void checkRecordTypeidMin(const std::vector<std::size_t> &validTypeCodes) {
+  checkRecordTypeid(FitsIO::Test::almostMin<T>(), validTypeCodes);
 }
 
 template <typename T>
-void checkRecordTypecodeMax(int expectedTypecode) {
-  checkRecordTypecode(FitsIO::Test::almostMax<T>(), expectedTypecode);
+void checkRecordTypeidMax(const std::vector<std::size_t> &validTypeCodes) {
+  checkRecordTypeid(FitsIO::Test::almostMax<T>(), validTypeCodes);
 }
 
 BOOST_AUTO_TEST_CASE(record_type_test) {
-  checkRecordTypecode<bool>(true, TLOGICAL);
-  checkRecordTypecodeMin<char>(TSBYTE);
-  checkRecordTypecodeMin<short>(TSHORT);
-  checkRecordTypecodeMin<int>(TINT); // TODO long?
-  // checkRecordTypecodeMin<long>(TLONG); // TODO fix
-  checkRecordTypecodeMin<long long>(TLONGLONG);
-  checkRecordTypecodeMax<float>(TFLOAT);
-  checkRecordTypecodeMin<double>(TDOUBLE);
-  checkRecordTypecode<std::complex<float>>(
-      { FitsIO::Test::almostMin<float>(), FitsIO::Test::almostMax<float>() },
-      TCOMPLEX);
-  checkRecordTypecode<std::complex<double>>(
-      { FitsIO::Test::almostMin<double>(), FitsIO::Test::almostMax<double>() },
-      TDBLCOMPLEX);
-  checkRecordTypecode<std::string>("VALUE", TSTRING);
-  checkRecordTypecodeMax<unsigned char>(TBYTE);
-  checkRecordTypecodeMax<unsigned short>(TUSHORT);
-  checkRecordTypecodeMax<unsigned int>(TUINT); // TODO long?
-  // checkRecordTypecodeMax<unsigned long>(TULONG); // TODO fix
-  checkRecordTypecodeMax<unsigned long long>(TULONGLONG);
+  checkRecordTypeidMin<bool>({ typeid(bool).hash_code() });
+  checkRecordTypeidMin<char>({ typeid(char).hash_code(), typeid(unsigned char).hash_code() });
+  checkRecordTypeidMin<short>({ typeid(short).hash_code() });
+  checkRecordTypeidMin<int>({ typeid(short).hash_code(), typeid(int).hash_code() });
+  checkRecordTypeidMin<long>({ typeid(int).hash_code(), typeid(long).hash_code() });
+  checkRecordTypeidMin<long long>({ typeid(long).hash_code(), typeid(long long).hash_code() });
+  checkRecordTypeidMin<float>({ typeid(float).hash_code() });
+  checkRecordTypeidMin<double>({ typeid(double).hash_code() });
+  checkRecordTypeidMin<std::complex<float>>({ typeid(std::complex<float>).hash_code() });
+  checkRecordTypeid<std::complex<double>>(
+      FitsIO::Test::halfMin<std::complex<double>>(),
+      { typeid(std::complex<double>).hash_code() });
+  checkRecordTypeid<std::string>("VALUE", { typeid(std::string).hash_code() });
+  checkRecordTypeidMax<bool>({ typeid(bool).hash_code() });
+  checkRecordTypeidMax<unsigned char>({ typeid(unsigned char).hash_code() });
+  checkRecordTypeidMax<unsigned short>({ typeid(unsigned short).hash_code() });
+  checkRecordTypeidMax<unsigned int>({ typeid(unsigned short).hash_code(), typeid(unsigned int).hash_code() });
+  checkRecordTypeidMax<unsigned long>({ typeid(unsigned int).hash_code(), typeid(unsigned long).hash_code() });
+  checkRecordTypeidMax<unsigned long long>(
+      { typeid(unsigned long).hash_code(), typeid(unsigned long long).hash_code() });
+  checkRecordTypeidMax<float>({ typeid(float).hash_code() });
+  checkRecordTypeidMax<double>({ typeid(double).hash_code() });
+  checkRecordTypeidMax<std::complex<float>>({ typeid(std::complex<float>).hash_code() });
+  checkRecordTypeid<std::complex<double>>(
+      FitsIO::Test::halfMax<std::complex<double>>(),
+      { typeid(std::complex<double>).hash_code() });
 }
 
 BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, FitsIO::Test::MinimalFile) {

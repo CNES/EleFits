@@ -23,6 +23,7 @@
 #include <fitsio.h>
 #include <string>
 #include <tuple>
+#include <typeinfo> // type_info
 #include <vector>
 
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
@@ -138,9 +139,9 @@ void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records
 void deleteRecord(fitsfile *fptr, const std::string &keyword);
 
 /**
- * @brief Get the CFitsIO type code of a record.
+ * @brief Get the typeid of a record value.
  */
-int recordTypecode(fitsfile *fptr, const std::string &keyword);
+const std::type_info &recordTypeid(fitsfile *fptr, const std::string &keyword);
 
 /**
  * @brief Write COMMENT record.
