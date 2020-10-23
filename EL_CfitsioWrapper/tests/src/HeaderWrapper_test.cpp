@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypeidMin<long>({ typeid(int).hash_code(), typeid(long).hash_code() });
   checkRecordTypeidMin<long long>({ typeid(long).hash_code(), typeid(long long).hash_code() });
   checkRecordTypeidMin<float>({ typeid(float).hash_code() });
-  checkRecordTypeidMin<double>({ typeid(double).hash_code() });
+  checkRecordTypeid<double>(FitsIO::Test::halfMin<double>(), { typeid(double).hash_code() });
   checkRecordTypeidMin<std::complex<float>>({ typeid(std::complex<float>).hash_code() });
   checkRecordTypeid<std::complex<double>>(
       FitsIO::Test::halfMin<std::complex<double>>(),
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypeidMax<unsigned long long>(
       { typeid(unsigned long).hash_code(), typeid(unsigned long long).hash_code() });
   checkRecordTypeidMax<float>({ typeid(float).hash_code() });
-  checkRecordTypeidMax<double>({ typeid(double).hash_code() });
+  checkRecordTypeid<double>(FitsIO::Test::halfMax<double>(), { typeid(double).hash_code() });
   checkRecordTypeidMax<std::complex<float>>({ typeid(std::complex<float>).hash_code() });
   checkRecordTypeid<std::complex<double>>(
       FitsIO::Test::halfMax<std::complex<double>>(),

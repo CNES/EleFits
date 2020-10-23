@@ -291,16 +291,16 @@ const std::type_info &negIntRecordTypeidImpl(const std::string &value) {
 const std::type_info &posIntRecordTypeidImpl(const std::string &value) {
   const unsigned long long parsed = std::stoull(value);
   if (parsed <= std::numeric_limits<unsigned char>::max()) {
-    return typeid(char);
+    return typeid(unsigned char);
   }
   if (parsed <= std::numeric_limits<unsigned short>::max()) {
-    return typeid(short);
+    return typeid(unsigned short);
   }
   if (parsed <= std::numeric_limits<unsigned int>::max()) {
-    return typeid(int);
+    return typeid(unsigned int);
   }
   if (parsed <= std::numeric_limits<unsigned long>::max()) {
-    return typeid(long);
+    return typeid(unsigned long);
   }
   return typeid(unsigned long long);
 }

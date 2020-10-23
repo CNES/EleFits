@@ -67,7 +67,7 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
 
 template <typename T>
 void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<T> &column) {
-  constexpr long count = 1;
+  constexpr long columnCount = 1;
   std::string colName = column.info.name;
   char *cName = &colName[0];
   std::string colFormat = TypeCode<T>::tform(column.info.repeatCount);
@@ -75,7 +75,7 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
   std::string colUnit = column.info.unit;
   char *cUnit = &colUnit[0];
   int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, count, &cName, &cFormat, &cUnit, name.c_str(), &status);
+  fits_create_tbl(fptr, BINARY_TBL, 0, columnCount, &cName, &cFormat, &cUnit, name.c_str(), &status);
   mayThrowCfitsioError(status, "Cannot create bintable extension " + name);
   Bintable::writeColumn(fptr, column);
 }
