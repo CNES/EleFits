@@ -29,16 +29,18 @@ const T &MefFile::access(long index) {
   Cfitsio::Hdu::gotoIndex(m_fptr, index);
   auto hduType = Cfitsio::Hdu::currentType(m_fptr);
   auto &ptr = m_hdus[index - 1];
-  switch (hduType) {
-    case HduType::Image:
-      ptr.reset(new ImageHdu(m_fptr, index));
-      break;
-    case HduType::Bintable:
-      ptr.reset(new BintableHdu(m_fptr, index));
-      break;
-    default:
-      ptr.reset(new RecordHdu(m_fptr, index));
-      break;
+  if (ptr == nullptr) {
+    switch (hduType) {
+      case HduType::Image:
+        ptr.reset(new ImageHdu(m_fptr, index));
+        break;
+      case HduType::Bintable:
+        ptr.reset(new BintableHdu(m_fptr, index));
+        break;
+      default:
+        ptr.reset(new RecordHdu(m_fptr, index));
+        break;
+    }
   }
   return dynamic_cast<T &>(*ptr.get());
   // TODO return pointer to allow nullptr when HDU handler is obsolete?

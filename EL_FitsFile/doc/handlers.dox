@@ -49,26 +49,6 @@ It is obviously associated to the Record data class.
 - A BintableHdu additionally reads and writes bintable columns as Column objects.
 - Finally, an ImageHdu reads and writes images as Raster objects.
 
-\warning Reaccessing any previously accessed HDU makes any previous reference obsolete.
-
-Don't:
-
-\code
-const auto& record_hdu = f.accessPrimary<>();
-record_hdu.writeRecord("KEY1", 1);
-const auto& image_hdu = f.accessPrimary<ImageHdu>();
-image_hdu.writeRaster(raster);
-record_hdu.writeRecord("KEY2", 2); // Error: record_hdu is no more valid!
-\endcode
-
-Do instead:
-
-\code
-const auto& hdu = f.accessPrimary<ImageHdu>();
-hdu.writeRecord("KEY1", 1);
-hdu.writeRaster(raster);
-hdu.writeRecord("KEY2", 2);
-\endcode
 
 \section handlers-sif Single image Fits
 

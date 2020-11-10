@@ -76,6 +76,14 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   remove(this->filename().c_str());
 }
 
+BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile) {
+  const auto &firstlyAccessedPrimary = this->accessPrimary<>();
+  BOOST_CHECK_NO_THROW(firstlyAccessedPrimary.readName());
+  this->initImageExt<float, 2>("IMG", {});
+  const auto &secondlyAccessedPrimary = this->accessPrimary<>();
+  BOOST_CHECK_EQUAL(firstlyAccessedPrimary.readName(), secondlyAccessedPrimary.readName());
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

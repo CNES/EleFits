@@ -32,14 +32,6 @@ namespace FitsIO {
  * Provide HDU access/create services.
  * Single Image Fits files can be handled by this class, but SifFile is better suited:
  * it is safer and provide shortcuts.
- * @warning
- * HDU access is provided through references.
- * Reaccessing a given HDU makes any previous reference obsolete:
- * \code
- * const auto &first = f.accessPrimary<>();
- * const auto &second = f.accessPrimary<>();
- * // first is not valid anymore!
- * \endcode
  * @see \ref handlers
  */
 class MefFile : public FitsFile {

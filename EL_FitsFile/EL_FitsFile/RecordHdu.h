@@ -61,7 +61,7 @@ public:
   /**
    * @brief Constructor.
    * @warning
-   * You should probablt not instantiate `RecordHdu`s yourself,
+   * You should probably not instantiate `RecordHdu`s yourself,
    * but use the dedicated MefFile creation method MefFile::initRecordExt.
    * @todo
    * The constructor should be protected, with MefFile a friend of the class.
