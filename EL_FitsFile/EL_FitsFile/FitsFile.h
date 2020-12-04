@@ -57,6 +57,11 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @brief Version number of the EL_FitsIO project.
+ */
+std::string version();
+
+/**
  * @brief Fits file reader-writer.
  * @details
  * Mostly en empty shell for file opening and closing operations;

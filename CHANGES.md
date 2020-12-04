@@ -1,5 +1,15 @@
 # Change log
 
+# 3.0 (breaking)
+
+## Changes
+
+* Update to Elements 5.12.0 (C++14)
+
+## New features
+
+* Function `version()` returns the version of EL_FitsIO
+
 # 2.2
 
 ## New features

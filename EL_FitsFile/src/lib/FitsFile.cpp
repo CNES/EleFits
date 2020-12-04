@@ -17,12 +17,18 @@
  *
  */
 
+#include "ElementsKernel/Project.h"
+
 #include "EL_CfitsioWrapper/FileWrapper.h"
 
 #include "EL_FitsFile/FitsFile.h"
 
 namespace Euclid {
 namespace FitsIO {
+
+std::string version() {
+  return Elements::Project::versionString();
+}
 
 FitsFile::FitsFile(const std::string &filename, Permission permission) :
     m_fptr(nullptr),

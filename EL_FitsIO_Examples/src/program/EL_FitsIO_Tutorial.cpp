@@ -88,6 +88,10 @@ public:
 
     const std::string filename = args["output"].as<std::string>();
 
+    logger.info() << "---";
+    logger.info() << "Hello, EL_FitsIO " << Euclid::FitsIO::version() << "!";
+    logger.info() << "---";
+
     //! [Open a MefFile]
     logger.info() << "Opening file: " << filename;
     MefFile f(filename, MefFile::Permission::Overwrite);
@@ -140,9 +144,13 @@ public:
       logger.info() << "    " << k;
     }
 
-    logger.info() << "Closing and reopening file just for fun";
+    logger.info() << "---";
+
+    logger.info() << "Closing and reopening file in read-only mode";
     f.close();
     f.open(filename, MefFile::Permission::Read);
+
+    logger.info() << "---";
 
     //! [Read a record]
     logger.info() << "Reading record in primary";
@@ -201,6 +209,10 @@ public:
     logger.info() << "    First pixel: " << firstPixel;
     logger.info() << "    Last pixel: " << lastPixel;
     //! [Read image values]
+
+    logger.info() << "---";
+    logger.info() << "The end!";
+    logger.info() << "---";
 
     return Elements::ExitCode::OK;
   }
