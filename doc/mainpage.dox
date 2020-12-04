@@ -40,31 +40,83 @@ like iterators covered by EL_CatalogLib;
 For a clear overview of what's there and what's missing, see \ref cfitsio-cov.
 
 
-\section cmake Configuring an Elements project to depend on EL_FitsIO
+\section build Install and depend on EL_FitsIO
 
+`EL_FitsIO` depends on `Elements`, a build framework based on CMake.
+As such, `EL_FitsIO` can be used either from an Elements project or from a CMake project.
 
-EL_FitsIO is a standard Elements project, so using the library means declaring the dependency to the EL_FitsIO project in the root CMakeLists:
+\subsection build-elements For an Elements project
+
+An elements project is made of modules.
+The project contains a root `CMakeLists.txt`, as well as each module.
+For more information, please refer to the [`Elements` documentation](TODO).
+
+Using the library means declaring the dependency to the `EL_FitsIO` project in the root `CMakeLists.txt`:
 
 \verbatim
 elements_project(MyProject X.X
     USE EL_FitsIO Y.Y)
 \endverbatim
 
-and to the EL_FitsFile module (for the end-user API) in the CMakeLists of each module which requires EL_FitsIO:
+and to the `EL_FitsFile` module (for the end-user API) in the `CMakeLists.txt` of each module which requires `EL_FitsIO`:
 
 \verbatim
 elements_depends_on_subdirs(EL_FitsFile)
 
-elements_add_executable(MyProgram src/program/MyProgram.cpp
+elements_add_executable(<program_name> src/program/<program_name>.cpp
     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
-elements_add_library(MyLibrary src/Lib/*.cpp
+elements_add_library(<library_name> src/Lib/*.cpp
     LINK_LIBRARIES ElementsKernel EL_FitsFile
     INCLUDE_DIRS ElementsKernel EL_FitsFile
-    PUBLIC_HEADERS MyLibrary)
+    PUBLIC_HEADERS <library_name>)
 \endverbatim
 
-For advanced users, a description of the module contents is provided in the \ref design page.
+\subsection build-cmake For a CMake project
+
+First, install `Elements` with user-defined prefix (e.g. the standard `/usr`):
+
+\verbatim
+cd <root>/Elements
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
+sudo make install -j
+\endverbatim
+
+Then, install EL_FitsIO the same way:
+
+\verbatim
+cd <root>/EL_FitsIO
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
+sudo make install -j
+\endverbatim
+
+This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
+The end-user library is named `EL_FitsFile`.
+Here's a minimal `CMakeLists.txt` file to use it:
+
+\verbatim
+CMAKE_MINIMUM_REQUIRED(VERSION <version>)
+project(<project_name>)
+find_package(EL_FitsFile REQUIRED)
+add_executable(<exe_name> <exe_source>)
+target_link_libraries(<exe_name> EL_FitsFile)
+\endverbatim
+
+The `find_package` command expects parent folder of the file `FindEL_FitsFile.cmake` to be in the `CMAKE_MODULE_PATH`.
+For now, it is located in the sources of `EL_FitsIO`, in `cmake/modules`.
+
+Here's an example to configure a project:
+
+\verbatim
+cd <root>/<project_name>
+mkdir build
+cd build
+cmake -DCMAKE_MODULE_PATH=<root>/EL_FitsIO/cmake/modules ..
+\endverbatim
 
 
 \section api End-user API overview (and tutorial)

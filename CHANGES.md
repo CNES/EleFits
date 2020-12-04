@@ -5,6 +5,9 @@
 ## New features
 
 * Raster with variable dimension (`n = -1`) can be read and written
+* Reaccessing an HDU doesn't prevent anymore using previous references to it
+* Program `EL_FitsIO_PrintStructure` lists HDU characteristics and keywords
+* File `FindEL_FitsIO.cmake` added to link against the library outside of EDEN
 
 # 2.1 (breaking)
 
