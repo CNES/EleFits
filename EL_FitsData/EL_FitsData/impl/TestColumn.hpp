@@ -50,76 +50,9 @@ VecColumn<T> RandomTable::generateColumn(const std::string &typeName, long repea
   return { { keyword, prefixes + suffix[0], repeatCount }, generateRandomVector<T>(repeatCount * rowCount) };
 }
 
-/* With C++14
 template <typename T>
 const VecColumn<T> &RandomTable::getColumn() const {
   return std::get<VecColumn<T>>(columns);
-}
-*/
-
-template <>
-const VecColumn<char> &RandomTable::getColumn() const {
-  return std::get<0>(columns);
-}
-
-template <>
-const VecColumn<std::int16_t> &RandomTable::getColumn() const {
-  return std::get<1>(columns);
-}
-
-template <>
-const VecColumn<std::int32_t> &RandomTable::getColumn() const {
-  return std::get<2>(columns);
-}
-
-template <>
-const VecColumn<std::int64_t> &RandomTable::getColumn() const {
-  return std::get<3>(columns);
-}
-
-template <>
-const VecColumn<float> &RandomTable::getColumn() const {
-  return std::get<4>(columns);
-}
-
-template <>
-const VecColumn<double> &RandomTable::getColumn() const {
-  return std::get<5>(columns);
-}
-
-template <>
-const VecColumn<std::complex<float>> &RandomTable::getColumn() const {
-  return std::get<6>(columns);
-}
-
-template <>
-const VecColumn<std::complex<double>> &RandomTable::getColumn() const {
-  return std::get<7>(columns);
-}
-
-template <>
-const VecColumn<std::string> &RandomTable::getColumn() const {
-  return std::get<8>(columns);
-}
-
-template <>
-const VecColumn<unsigned char> &RandomTable::getColumn() const {
-  return std::get<9>(columns);
-}
-
-template <>
-const VecColumn<std::uint16_t> &RandomTable::getColumn() const {
-  return std::get<10>(columns);
-}
-
-template <>
-const VecColumn<std::uint32_t> &RandomTable::getColumn() const {
-  return std::get<11>(columns);
-}
-
-template <>
-const VecColumn<std::uint64_t> &RandomTable::getColumn() const {
-  return std::get<12>(columns);
 }
 
 template <typename T>
