@@ -28,7 +28,7 @@ template <typename T>
 CStrArray::CStrArray(const T begin, const T end) : smartPtrVector(end - begin), cStrVector(end - begin) {
   for (long i = 0; i < static_cast<long>(end - begin); ++i) { // TODO iterators?
     auto &smart_ptr_i = smartPtrVector[i];
-    smart_ptr_i = std::unique_ptr<char[]>(new char[(begin + i)->length() + 1]);
+    smart_ptr_i = std::make_unique<char[]>((begin + i)->length() + 1);
     std::strcpy(smart_ptr_i.get(), (begin + i)->c_str());
     cStrVector[i] = smart_ptr_i.get();
   }

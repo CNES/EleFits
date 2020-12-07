@@ -24,7 +24,7 @@ namespace Cfitsio {
 
 std::unique_ptr<char[]> toCharPtr(const std::string &str) {
   const long size = str.length();
-  std::unique_ptr<char[]> c_str(new char[size + 1]);
+  auto c_str = std::make_unique<char[]>(size + 1);
   strcpy(c_str.get(), str.c_str());
   return c_str;
 }

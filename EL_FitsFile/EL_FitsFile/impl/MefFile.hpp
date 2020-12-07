@@ -61,7 +61,7 @@ template <typename T, long n>
 const ImageHdu &MefFile::initImageExt(const std::string &name, const Position<n> &shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size + 1)));
+  m_hdus.push_back(std::make_unique<ImageHdu>(m_fptr, size + 1));
   return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
 }
 
@@ -69,7 +69,7 @@ template <typename T, long n>
 const ImageHdu &MefFile::assignImageExt(const std::string &name, const Raster<T, n> &raster) {
   Cfitsio::Hdu::createImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new ImageHdu(m_fptr, size + 1)));
+  m_hdus.push_back(std::make_unique<ImageHdu>(m_fptr, size + 1));
   return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
 }
 
@@ -77,7 +77,7 @@ template <typename... Ts>
 const BintableHdu &MefFile::initBintableExt(const std::string &name, const ColumnInfo<Ts> &... header) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, header...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size + 1)));
+  m_hdus.push_back(std::make_unique<BintableHdu>(m_fptr, size + 1));
   return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
 }
 
@@ -85,7 +85,7 @@ template <typename... Ts>
 const BintableHdu &MefFile::assignBintableExt(const std::string &name, const Column<Ts> &... columns) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::unique_ptr<RecordHdu>(new BintableHdu(m_fptr, size + 1)));
+  m_hdus.push_back(std::make_unique<BintableHdu>(m_fptr, size + 1));
   return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
 }
 
