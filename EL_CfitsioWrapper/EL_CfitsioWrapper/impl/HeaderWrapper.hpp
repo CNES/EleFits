@@ -19,6 +19,8 @@
 
 #ifdef _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
 
+#include <utility> // index_sequence, make_index_sequence
+
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 #include <boost/any.hpp>
@@ -100,7 +102,7 @@ namespace Internal {
  * @brief Use index_sequence to loop on keywords.
  */
 template <class TReturn, typename... Ts, std::size_t... Is>
-TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywords, std14::index_sequence<Is...>) {
+TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywords, std::index_sequence<Is...>) {
   return { parseRecord<Ts>(fptr, keywords[Is])... };
 }
 
@@ -108,7 +110,7 @@ TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywo
  * @brief Use index_sequence to loop on records.
  */
 template <typename... Ts, std::size_t... Is>
-void writeRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std14::index_sequence<Is...>) {
+void writeRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std::index_sequence<Is...>) {
   using mockUnpack = int[];
   (void)mockUnpack { (writeRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
 }
@@ -117,7 +119,7 @@ void writeRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &r
  * @brief Use index_sequence to loop on records.
  */
 template <typename... Ts, std::size_t... Is>
-void updateRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std14::index_sequence<Is...>) {
+void updateRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std::index_sequence<Is...>) {
   using mockUnpack = int[];
   (void)mockUnpack { (updateRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
 }
@@ -159,7 +161,7 @@ std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector
 
 template <class Return, typename... Ts>
 Return parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords) {
-  return Internal::parseRecordsAsImpl<Return, Ts...>(fptr, keywords, std14::make_index_sequence<sizeof...(Ts)>());
+  return Internal::parseRecordsAsImpl<Return, Ts...>(fptr, keywords, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
@@ -195,7 +197,7 @@ void writeRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
 
 template <typename... Ts>
 void writeRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
-  Internal::writeRecordsImpl(fptr, records, std14::make_index_sequence<sizeof...(Ts)>());
+  Internal::writeRecordsImpl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
@@ -224,7 +226,7 @@ void updateRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
 
 template <typename... Ts>
 void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
-  Internal::updateRecordsImpl(fptr, records, std14::make_index_sequence<sizeof...(Ts)>());
+  Internal::updateRecordsImpl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
