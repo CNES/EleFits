@@ -19,6 +19,8 @@
 
 #ifdef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
 
+#include <algorithm> // transform
+
 #include "ElementsKernel/Unused.h"
 
 #include "EL_CfitsioWrapper/BintableWrapper.h"
@@ -300,9 +302,9 @@ template <typename... Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names) {
   /* List column indices */
   std::vector<long> indices(names.size());
-  for (std::size_t c = 0; c < names.size(); ++c) { // TODO transform
-    indices[c] = columnIndex(fptr, names[c]);
-  }
+  std::transform(names.cbegin(), names.cend(), indices.begin(), [&](const std::string &n) {
+    return columnIndex(fptr, n);
+  });
   /* Read column metadata */
   const long rows = rowCount(fptr);
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
@@ -329,8 +331,8 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
   int status = 0;
   /* Get chunk size */
   const auto table = std::forward_as_tuple(columns...);
-  long rowCount = 0;
-  Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::maxRowCount(table, rowCount);
+  long rows = 0;
+  Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::maxRowCount(table, rows);
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
@@ -338,10 +340,10 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
   }
   /* Write column data */
   std::vector<long> indices { columnIndex(fptr, columns.info.name)... };
-  for (long first = 1; first <= rowCount; first += chunkRows) {
+  for (long first = 1; first <= rows; first += chunkRows) {
     long last = first + chunkRows - 1;
-    if (last > rowCount) {
-      chunkRows = rowCount - first + 1;
+    if (last > rows) {
+      chunkRows = rows - first + 1;
     }
     Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::writeChunks(fptr, indices, table, first, chunkRows);
   }

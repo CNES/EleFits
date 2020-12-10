@@ -30,7 +30,7 @@ namespace Euclid {
 namespace Cfitsio {
 
 /**
- * @brief Convert a string to a `unique_ptr<char>`.
+ * @brief Convert a string to a `unique_ptr<char[]>`.
  * @details
  * Used to work around non-const correctness of CFitsIO:
  * when a function expects a `char *` instead of a `const char *`,

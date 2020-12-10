@@ -87,9 +87,9 @@ void readColumnChunkImpl<std::string>(
       &status); // TODO wrap?
   mayThrowCfitsioError(status, "Cannot read type of column: #" + std::to_string(index));
   std::vector<char *> data(rowCount);
-  for (long i = 0; i < rowCount; ++i) { // TODO iterator
-    data[i] = (char *)malloc(repeatCount);
-  }
+  std::generate(data.begin(), data.end(), [&]() {
+    return (char *)malloc(repeatCount);
+  });
   fits_read_col(
       fptr,
       TypeCode<std::string>::forBintable(),
@@ -102,9 +102,10 @@ void readColumnChunkImpl<std::string>(
       nullptr,
       &status);
   mayThrowCfitsioError(status, "Cannot read column chunk: #" + std::to_string(index));
-  for (long i = 0; i < rowCount; ++i) {
-    column.vector()[i + firstRow] = std::string(data[i]);
-    free(data[i]);
+  auto columnIt = column.vector().begin() + firstRow;
+  for (auto dataIt = &data[0]; dataIt != &dataIt[rowCount]; ++dataIt, ++columnIt) {
+    *columnIt = std::string(*dataIt);
+    free(*dataIt);
   }
 }
 
@@ -143,9 +144,9 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
   long rows = rowCount(fptr);
   FitsIO::VecColumn<std::string> column(readColumnInfo<std::string>(fptr, index), rows);
   std::vector<char *> data(rows);
-  for (long i = 0; i < rows; ++i) { // TODO transform
-    data[i] = (char *)malloc(column.info.repeatCount);
-  }
+  std::generate(data.begin(), data.end(), [&]() {
+    return (char *)malloc(column.info.repeatCount);
+  });
   int status = 0;
   fits_read_col(
       fptr,
@@ -159,9 +160,10 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
       nullptr, // anynul
       &status);
   mayThrowCfitsioError(status, "Cannot read string column: " + name);
-  for (long i = 0; i < rows; ++i) { // TODO transform
-    column.vector()[i] = std::string(data[i]);
-    free(data[i]);
+  auto columnIt = column.vector().begin();
+  for (auto dataIt = &data[0]; dataIt != &data[rows]; ++dataIt, ++columnIt) {
+    *columnIt = std::string(*dataIt);
+    free(*dataIt);
   }
   return column;
 }

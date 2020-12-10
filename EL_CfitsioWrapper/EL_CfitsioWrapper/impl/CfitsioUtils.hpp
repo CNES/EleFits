@@ -19,6 +19,8 @@
 
 #ifdef _EL_CFITSIOWRAPPER_CFITSIOUTILS_IMPL
 
+#include <algorithm>
+
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 
 namespace Euclid {
@@ -26,12 +28,18 @@ namespace Cfitsio {
 
 template <typename T>
 CStrArray::CStrArray(const T begin, const T end) : smartPtrVector(end - begin), cStrVector(end - begin) {
-  for (long i = 0; i < static_cast<long>(end - begin); ++i) { // TODO iterators?
-    auto &smart_ptr_i = smartPtrVector[i];
-    smart_ptr_i = std::make_unique<char[]>((begin + i)->length() + 1);
-    std::strcpy(smart_ptr_i.get(), (begin + i)->c_str());
-    cStrVector[i] = smart_ptr_i.get();
-  }
+
+  /* Build the vector of smart pointers */
+  std::transform(begin, end, smartPtrVector.begin(), [](const std::string &str) {
+    auto ptr = std::make_unique<char[]>(str.length() + 1);
+    std::strcpy(ptr.get(), str.c_str());
+    return ptr;
+  });
+
+  /* Build the vector of raw pointers */
+  std::transform(smartPtrVector.begin(), smartPtrVector.end(), cStrVector.begin(), [](std::unique_ptr<char[]> &ptr) {
+    return ptr.get();
+  });
 }
 
 } // namespace Cfitsio

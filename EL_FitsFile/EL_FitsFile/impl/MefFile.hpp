@@ -43,7 +43,6 @@ const T &MefFile::access(long index) {
     }
   }
   return dynamic_cast<T &>(*ptr.get());
-  // TODO return pointer to allow nullptr when HDU handler is obsolete?
 }
 
 template <class T>

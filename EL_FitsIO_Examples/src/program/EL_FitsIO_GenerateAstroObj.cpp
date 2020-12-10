@@ -48,7 +48,7 @@ void writeCombinedSignal(MefFile &f, int objIndex, int bins) {
   auto signalData = Test::generateRandomVector<float>(bins);
   auto qualityData = Test::generateRandomVector<char>(bins);
   auto varData = Test::generateRandomVector<float>(bins);
-  const long repeatCount = 1; // TODO bins?
+  const long repeatCount = 1;
   VecRefColumn<float> wminCol({ "WMIN", "nm", repeatCount }, wminData);
   VecRefColumn<float> signalCol({ "SIGNAL", "erg", repeatCount }, signalData);
   VecRefColumn<char> qualityCol({ "QUALITY", "", repeatCount }, qualityData);
