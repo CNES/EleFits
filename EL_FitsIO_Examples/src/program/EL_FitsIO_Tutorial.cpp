@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 
+#include <boost/any.hpp>
 #include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
 #include "ElementsKernel/Temporary.h"
@@ -35,11 +36,14 @@ using Euclid::FitsIO::VecRaster;
 using Euclid::FitsIO::MefFile;
 using Euclid::FitsIO::BintableHdu;
 using Euclid::FitsIO::ImageHdu;
+using Euclid::FitsIO::RecordHdu;
 //! [Include]
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
+
+static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
 VecRaster<float, 3> createRaster() {
   //! [Create and fill a raster]
@@ -71,6 +75,81 @@ TutoTable createColumns() {
   return table;
 }
 
+void readRecords(const RecordHdu &hdu) {
+
+  logger.info() << "Reading some records:";
+
+  //! [Read a single record]
+  auto single = hdu.parseRecord<int>("INT");
+  logger.info() << single.keyword << " = " << single.value << " " << single.unit;
+  //! [Read a single record]
+
+  //! [Read heterogeneous records]
+  auto heterogeneous = hdu.parseRecords<std::string, float, std::complex<double>>({ "STRING", "FLOAT", "D_COMPLEX" });
+  auto second = std::get<1>(heterogeneous);
+  logger.info() << second.keyword << " = " << second.value << " " << second.unit;
+  //! [Read heterogeneous records]
+
+  //! [Read homogeneous records]
+  auto homogeneous = hdu.parseRecordVector<int>({ "INT1", "INT2" });
+  auto homogeneous1 = homogeneous["INT1"];
+  logger.info() << homogeneous1.keyword << " = " << homogeneous1.value << " " << homogeneous1.unit;
+  //! [Read homogeneous records]
+
+  //! [Read std::any records]
+  auto any = hdu.parseRecordVector<boost::any>({ "STRING", "FLOAT", "D_COMPLEX" });
+  auto third = any.as<std::complex<double>>("D_COMPLEX"); // Cast boost::any value to std::complex<double>
+  logger.info() << third.keyword << " = " << third.value.real() << "+" << third.value.imag() << "j";
+  //! [Read std::any records]
+
+  //! [Read a record struct]
+  struct MyHeader {
+    std::string someString;
+    Record<float> someFloat;
+    std::complex<double> someComplex;
+  };
+
+  auto header =
+      hdu.parseRecordsAs<MyHeader, std::string, float, std::complex<double>>({ "STRING", "FLOAT", "D_COMPLEX" });
+  logger.info() << header.someString;
+  //! [Read a record struct]
+}
+
+void writeRecords(const RecordHdu &hdu) {
+  // TODO
+}
+
+const RecordHdu &createRecordHdu(MefFile &file) {
+  // TODO
+  return file.accessPrimary<>();
+}
+
+void readRaster(const ImageHdu &hdu) {
+  // TODO
+}
+
+void writeRaster(const ImageHdu &hdu) {
+  // TODO
+}
+
+const ImageHdu &createImageHdu(MefFile &file) {
+  // TODO
+  return file.accessPrimary<ImageHdu>();
+}
+
+void readColumns(const BintableHdu &hdu) {
+  // TODO single scalar, single vector, several mixed
+}
+
+void writeColumns(const BintableHdu &hdu) {
+  // TODO idem
+}
+
+const BintableHdu &createBintableHdu(MefFile &file) {
+  // TODO
+  return file.accessPrimary<BintableHdu>();
+}
+
 class EL_FitsIO_Tutorial : public Elements::Program {
 
 public:
@@ -83,8 +162,6 @@ public:
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
-
-    Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
     const std::string filename = args["output"].as<std::string>();
 

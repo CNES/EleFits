@@ -67,6 +67,8 @@ using Position = typename std::conditional<(n == -1), std::vector<long>, std::ar
  * Some implementations are provided with the library,
  * but others could be useful to interface with client code
  * (e.g. with other external libraries with custom containers).
+ *
+ * The dimension can be 0, >0 for fixed dimension, or -1 for variable dimension.
  * @see Position for details on the fixed- and variable-dimension cases.
  * @see \ref data-classes
  */

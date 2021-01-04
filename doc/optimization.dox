@@ -1,0 +1,157 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\page optim Optimization good practices
+
+\section optim-intro Foreword
+
+The library focusses firstly on memory management, and secondly on performance.
+Much of its complexity is imputable to performance, like the heavy use of tuples which are not that fun to manipulates.
+On user side, few operations would be very detrimental to performance.
+Yet, a few would be, and there are thus a few things to know if one wants to get the most out of `EL_FitsIO`.
+Although it's not possible to statically sort the following items w.r.t. performance gain,
+we've tried to sort by orders of magnitude for classical use cases.
+
+\section optim-data-copy Avoid copies and implicit transforms
+
+This one is not specific to the Fits format or library at all,
+but is probably worth remembering when using a code devoted to dataset manipulation.
+
+In the frame of the library usage, avoiding such operations boils down to:
+
+- Relying on move semantics;
+- Avoiding casting;
+- Avoiding "scaling".
+
+Move semantics is a C++ feature you can look for on the Internet;
+Let us focus on the two other items.
+
+When casting is explicit, let's assume that you know what to do.
+The case we'll describe in more details is implicit casting made internally by CFitsIO.
+
+The Fits format is obviously specified in terms of actual bytes, and therefore fixed-size types (e.g. 16- or 32-bit integers).
+CFitsIO mixes such fixed-size types with C types (e.g. `TLONG` maps to `long` while `LONG_IMG` maps to 32-bit integer),
+without providing to the user any straightforwad way of avoiding casting.
+
+`EL_FitsIO` abstracts from this and provides a templated API, which internally handles fixed-size types and C types transparently
+to enforce consistency and limit the number of casts.
+Yet, only fixed-size types guarantee that there is no time spent in casting operation.
+It is therefore recommended to use fixed-size integers as the template parameters (e.g. `std::int16_t`).
+
+Scaling is an affine transform specified in the Fits files as a pair of offset and scale parameters.
+The transform is applied at read-time by CFitsIO (and therefore `EL_FitsIO`),
+and at write-time when the type is not natively supported by Fits.
+For example, Fits does not support unsigned 16-bit integer values, but CFitsIO (and `EL_FitsIO`) does.
+To this end, it offsets the value to be written, writes it, and writes the offset parameter.
+This obviously has a non-negligible cost when applied to many values, like for table columns.
+In order to avoid scaling, users should stick to native Fits types (e.g. `std::int16_t` but not `std::uint16_t`).
+
+\section optim-hdu-jumping Avoid jumping from one HDU to another
+
+Fits files are made of consecutive HDUs, themeselves made of an ASCII header unit followed by a binary data unit.
+Reading or writing data to or from an HDU consists in:
+
+- Finding the HDU (more on that later) and accessing it;
+- Spotting the target location inside the ASCII or binary unit;
+- Reading or writing bits.
+
+In order to limit as much as possible the time spent in the first two operations,
+it is recommended to exploit each HDU as much as possible before moving to another one,
+and to group operations in the header or data unit.
+For example, read all the records you need to read from an HDU at once,
+or write all the columns you need to write in a table at once.
+
+Ultimate optimization when creating an HDU, is to complete the header unit first before writing the data unit:
+
+- Rely on the initialization services (as opposed to the assignment services);
+- Write all of the additionnal records;
+- Write the data unit at once.
+
+\code
+// Initialize the header unit (write some standard records)
+const auto &ext = f.initImageHdu<float, 3>(name);
+
+// Write user records
+ext.writeRecords(record1, record2, record3);
+
+// Write data unit
+ext.writeRaster(raster);
+\endcode
+
+For very large files, following the file ordering (HDU sequence and record sequence in the HDUs) can also make a difference.
+
+\section optim-hdu-as-parameters Use HDU handlers as function parameters
+
+`EL_FitsIO` is providing HDU handlers as light objects designed to be passed by reference.
+The other options are to specify the HDU index or name instead of passing the handler itself.
+This is subobtimal because:
+- Each time you access an HDU by index, its position in the file is searched for;
+- Each time you access an HDU by name, header units are sequentially visited, and `EXTNAME` keyword is searched for,
+until its value matches the name.
+
+\code
+// Good :)
+void doSomethingWithHdu(const RecordHdu &hdu);
+
+// Bad :(
+void doSomethingWithHdu(long index);
+
+// Very bad ;(
+void doSomethingWithHdu(const std::string &name);
+\endcode
+
+\section optim-multiple-read-write Read and write multiple values at once
+
+`EL_FitsIO` provides services to read and write bunches of data through one single call.
+The reason is to skip steps (like bunny hopping in the file) and lower runtime and memory footprint.
+
+This is especially true for bintable writing.
+Without diving into the implementation details, let's give a brief overview of what's happening in CFitsIO.
+Fits tables are stored row-wise.
+When reading a single column, CFitsIO has to load each of the rows.
+When reaching the last value of the target column, CFitsIO has finally loaded the whole set of columns!
+
+`EL_FitsIO`'s multi-column reading and writing functions internally take advantage of a CFitsIO buffer
+to avoid passing through the data unit several times.
+
+\code
+// Good :)
+auto columns = hdu.readColumns<int, float>({ "INT", "FLOAT" });
+
+// Very bad ;(
+auto column1 = hdu.readColumn<int>("INT");
+auto column2 = hdu.readColumn<float>("FLOAT");
+\endcode
+
+The strategy holds for record IOs too, yet with smaller improvements to be expected.
+
+\code
+// Good :)
+auto records = hdu.parseRecords<int, float>({ "INT", "FLOAT" });
+
+// Bad :(
+auto record1 = hdu.parseRecord<int>("INT");
+auto record2 = hdu.parseRecord<float>("FLOAT");
+\endcode
+
+\section optim-vector-column-trick On the CFitsIO vector column trick
+
+In order to lower the impact of reading table data colomn-wise,
+CFitsIO documentation recommends writing vector columns even for scalar concepts.
+That is, if scalar columns of 10,000 rows should be written, rather write 10,000 value-wide vector columns over one row.
+This indeed allows storing the column values contiguously, and therefore speeds up the accesses.
+
+We think software optimization should not obfuscate the data, and the trick should be avoided as much as possible.
+Aforementionned multi-column reading and writing services of `EL_FitsIO` have no counterpart in CFitsIO,
+which makes the trick more relevant to CFitsIO users than to `EL_FitsIO` users.
+
+To go further, CFitsIO "iterator" mechanism is the way to go for performance;
+it is a clean solution which keeps the data in the logical format.
+It has no counterpart in `EL_FitsIO`. For now...
+
+*/
+
+}
+}

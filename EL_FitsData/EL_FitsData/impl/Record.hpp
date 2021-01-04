@@ -89,7 +89,7 @@ struct CasterImpl<boost::any, TTo, ifScalar<TTo>> {
 template <typename TTo>
 struct CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>> {
   /** @brief Cast. */
-  inline static TTo cast(boost::any value);
+  inline static std::complex<TTo> cast(boost::any value);
 };
 
 /**
@@ -170,14 +170,14 @@ TTo CasterImpl<boost::any, TTo, ifScalar<TTo>>::cast(boost::any value) {
 }
 
 template <typename TTo>
-TTo CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>>::cast(boost::any value) {
+std::complex<TTo> CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>>::cast(boost::any value) {
   const auto &id = value.type();
-  if (id == typeid(TTo)) {
-    return boost::any_cast<TTo>(value);
+  if (id == typeid(std::complex<TTo>)) {
+    return boost::any_cast<std::complex<TTo>>(value);
   } else if (id == typeid(std::complex<float>)) {
-    return CasterImpl<std::complex<float>, TTo>::cast(boost::any_cast<std::complex<float>>(value));
+    return CasterImpl<std::complex<float>, std::complex<TTo>>::cast(boost::any_cast<std::complex<float>>(value));
   } else if (id == typeid(std::complex<double>)) {
-    return CasterImpl<std::complex<double>, TTo>::cast(boost::any_cast<std::complex<double>>(value));
+    return CasterImpl<std::complex<double>, std::complex<TTo>>::cast(boost::any_cast<std::complex<double>>(value));
   } else {
     throw boost::bad_any_cast();
   }

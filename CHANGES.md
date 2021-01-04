@@ -2,9 +2,17 @@
 
 # 3.0 (breaking)
 
-## Changes
+## Breaking changes
 
-* Update to Elements 5.12.0 (C++14)
+* Update to `Elements` 5.12.0 and C++14
+
+## Bug fixes
+
+* Records of `any` are properly cast to records of `complex`
+
+## Cleaning
+
+* Internal optimizations
 
 ## New features
 
@@ -99,7 +107,7 @@
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
 
-# 1.9.0
+# 1.9
 
 ## API changes
 
@@ -124,12 +132,17 @@
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
 
-## Considered changes for 2.0.0
+## Considered changes for 2.0
 
 * pascalCase functions and methods
 * C++14
 
-# 1.4.0
+# 1.4
+
+## Bug fixes
+
+* Fix row-wise reading and writing of string columns
+* Fix memory issue with multiple closing of a FitsFile
 
 ## Safety
 
@@ -153,11 +166,6 @@
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
 * `const char*` is not supported; `string` should be used instead
-
-# 1.2.1 (Patch)
-
-* Fix row-wise reading and writing of string columns
-* Fix memory issue with multiple closing of a FitsFile
 
 # 1.2
 

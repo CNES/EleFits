@@ -72,7 +72,7 @@ public:
   std::vector<std::string> readHduNames();
 
   /**
-   * @brief Access the HDU at given index.
+   * @brief Access the HDU at given 1-based index.
    * @tparam T The type of HDU: ImageHdu, BintableHdu, or RecordHdu to just handle metadata.
    * @return A reference to the HDU reader-writer.
    * @details

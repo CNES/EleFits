@@ -161,6 +161,7 @@ BOOST_AUTO_TEST_CASE(any_record_casting_test) {
   checkRecordCastingFromAny<long, long long>();
   checkRecordCastingFromAny<float, double>();
   checkRecordCastingFromAny<std::string, std::string>();
+  checkRecordCastingFromAny<std::complex<float>, std::complex<float>>();
 }
 
 template <typename T>
