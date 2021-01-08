@@ -21,6 +21,7 @@
 
 #include "EL_CfitsioWrapper/FileWrapper.h"
 
+#include "EL_FitsData/FitsIOError.h"
 #include "EL_FitsFile/FitsFile.h"
 
 namespace Euclid {
@@ -58,7 +59,7 @@ void FitsFile::reopen() {
 
 void FitsFile::open(const std::string &filename, Permission permission) {
   if (m_open) {
-    throw std::runtime_error("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
+    throw FitsIOError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
   }
   switch (permission) {
     case Permission::Read:

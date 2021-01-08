@@ -21,6 +21,7 @@
 
 #include <algorithm> // find_if
 
+#include "EL_FitsData/FitsIOError.h"
 #include "EL_FitsData/RecordVector.h"
 
 namespace Euclid {
@@ -41,7 +42,7 @@ const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
     return r.keyword == keyword;
   });
   if (it == vector.end()) {
-    throw std::runtime_error("Cannot find keyword: " + keyword);
+    throw FitsIOError("Cannot find keyword: " + keyword);
   }
   return *it;
 }

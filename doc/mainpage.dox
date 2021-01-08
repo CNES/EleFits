@@ -18,12 +18,12 @@ The library merely consists in a thin CFitsIO wrapper:
 There is no intelligence inside.
 The actual reading and writing are delegated to CFitsIO,
 with as few indirections as possible to minimize overhead.
-As compared to CFitsIO API, the main benefits are:
+As compared to CFitsIO API, the main benefits are those of C++ over C:
 
 - No more raw pointers for a **safe memory management**;
 - No more type codes but **template classes** which handle architecture specifics for you;
 - No more error codes but proper **exception handling**;
-- Structures dedicated to **data storage** instead of zillions of unorganized and redundent variables;
+- Structures dedicated to **data storage** instead of zillions of unorganized and redundant variables;
 - A **lightweight class hierarchy** to represent the actual Fits organization (e.g. extensions, records, columns...)
 instead of the all-in-one and flat `fitsfile` structure;
 - A **concise and clear API** instead of the cluttered and verbose one of CFitsIO;

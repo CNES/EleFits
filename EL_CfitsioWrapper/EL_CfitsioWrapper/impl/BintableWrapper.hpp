@@ -26,6 +26,8 @@
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 
+#include "EL_FitsData/FitsIOError.h"
+
 namespace Euclid {
 namespace Cfitsio {
 namespace Bintable {
@@ -313,7 +315,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
-    throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
+    throw FitsIO::FitsIOError("Cannot compute the optimal number of rows to be read at once");
   }
   /* Read column data */
   for (long first = 1; first <= rows; first += chunkRows) {
@@ -336,7 +338,7 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
-    throw std::runtime_error("Cannot compute the optimal number of rows to be read at once");
+    throw FitsIO::FitsIOError("Cannot compute the optimal number of rows to be read at once");
   }
   /* Write column data */
   std::vector<long> indices { columnIndex(fptr, columns.info.name)... };

@@ -20,9 +20,11 @@
 #ifndef _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
 #define _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
 
-#include <stdexcept>
-#include <fitsio.h>
 #include <string>
+
+#include <fitsio.h>
+
+#include "EL_FitsData/FitsIOError.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -30,9 +32,14 @@ namespace Cfitsio {
 /**
  * @brief Runtime error printing CFitsIO messages.
  */
-class CfitsioError : public std::runtime_error {
+class CfitsioError : public FitsIO::FitsIOError {
 
 public:
+  /**
+   * @brief Destructor.
+   */
+  virtual ~CfitsioError() = default;
+
   /**
    * @brief Create from CFitsIO error code.
    * @details This generate the associated CFitsIO message with no context.

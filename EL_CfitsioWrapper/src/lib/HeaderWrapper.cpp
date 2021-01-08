@@ -19,6 +19,8 @@
 
 #include <limits>
 
+#include "EL_FitsData/FitsIOError.h"
+
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {
@@ -145,7 +147,7 @@ template <>
 FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword) {
   const auto &id = recordTypeid(fptr, keyword);
   EL_FITSIO_FOREACH_RECORD_TYPE(PARSE_RECORD_ANY_FOR_TYPE)
-  throw std::runtime_error("Cannot deduce type for keyword: " + keyword);
+  throw FitsIO::FitsIOError("Cannot deduce type for keyword: " + keyword);
 }
 
 template <>
@@ -199,7 +201,7 @@ void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &r
   const auto &id = record.value.type();
   EL_FITSIO_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
   WRITE_RECORD_ANY_FOR_TYPE(const char *, C_str)
-  throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
+  throw FitsIO::FitsIOError("Cannot deduce type for record: " + record.keyword);
 }
 
 template <>
@@ -254,7 +256,7 @@ void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &
   const auto &id = record.value.type();
   EL_FITSIO_FOREACH_RECORD_TYPE(UPDATE_RECORD_ANY_FOR_TYPE)
   UPDATE_RECORD_ANY_FOR_TYPE(const char *, C_str)
-  throw std::runtime_error("Cannot deduce type for record: " + record.keyword);
+  throw FitsIO::FitsIOError("Cannot deduce type for record: " + record.keyword);
 }
 
 void deleteRecord(fitsfile *fptr, const std::string &keyword) {
@@ -338,7 +340,7 @@ const std::type_info &complexRecordTypeidImpl(const std::string &value) {
   const std::size_t imBegin = reEnd + 2; // 2 for ", "
   const std::size_t imEnd = value.find(")");
   if (reEnd == std::string::npos || imEnd == std::string::npos) {
-    throw std::runtime_error("Cannot parse complex value: " + value);
+    throw FitsIO::FitsIOError("Cannot parse complex value: " + value);
   }
   const std::string re = value.substr(reBegin, reEnd - reBegin);
   if (floatRecordTypeidImpl(re) == typeid(double)) {
@@ -378,7 +380,7 @@ const std::type_info &recordTypeid(fitsfile *fptr, const std::string &keyword) {
     case 'X':
       return Internal::complexRecordTypeidImpl(value);
     default:
-      throw std::runtime_error("Cannot deduce type code of keyword: " + keyword);
+      throw FitsIO::FitsIOError("Cannot deduce type code of keyword: " + keyword);
   }
 }
 

@@ -80,6 +80,10 @@ elements_add_unit_test(TestRecord tests/src/TestRecord_test.cpp
                      EXECUTABLE EL_FitsData_TestRecord_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
+elements_add_unit_test(FitsIOError tests/src/FitsIOError_test.cpp 
+                     EXECUTABLE EL_FitsData_FitsIOError_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

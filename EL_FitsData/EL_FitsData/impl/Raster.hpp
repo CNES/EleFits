@@ -23,6 +23,7 @@
 #include <numeric> // accumulate
 
 #include "EL_FitsData/Raster.h"
+#include "EL_FitsData/FitsIOError.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -73,7 +74,7 @@ struct IndexRecursionImpl<-1, i> {
   static long index(const Position<-1> &shape, const Position<-1> &pos) {
     const auto n = shape.size();
     if (pos.size() != n) {
-      throw std::runtime_error(
+      throw FitsIOError(
           "Dimension mismatch. Raster is of dimension " + std::to_string(n) + " while position is of dimension " +
           std::to_string(pos.size()));
     }

@@ -16,6 +16,7 @@
 
 ## New features
 
+* Class `FitsIOError` is used to throw all exceptions
 * Function `version()` returns the version of EL_FitsIO
 
 # 2.2
