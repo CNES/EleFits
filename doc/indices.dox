@@ -1,0 +1,24 @@
+namespace Euclid {
+
+/**
+
+\page indices On indices
+
+Indices in the FitsIO namespace are 0-based `long`s (or will be in the case of HDU indices which are 1-based).
+
+There is no way to make everybody happy:
+
+- FITS uses 1-based integers (sign undefined);
+- C uses 0-based signed integers;
+- The C++ standard library uses 0-based unsigned integers;
+- CFitsIO uses 1-based signed integers with varying type (e.g. `int` for column count and `long` or `LONGLONG` for row count).
+
+Following the <a href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Res-subscripts">C++ Core Guidelines</a>,
+we've opted for signed integers, and precisely for `long`'s, in order to distinguish from integer data values which are generally `int`'s.
+To reduce the noise, we did not create a custom type like "index", "length" or "size".
+
+Since indices in `std::vector`s (and therefore in Raster and Column) are 0-based, we had no other choice to provide a fully consistent API.
+
+*/
+
+}

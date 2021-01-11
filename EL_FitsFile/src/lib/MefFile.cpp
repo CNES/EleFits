@@ -49,6 +49,8 @@ const RecordHdu &MefFile::initRecordExt(const std::string &name) {
   return *m_hdus[size].get();
 }
 
+const long MefFile::primaryIndex;
+
 #ifndef COMPILE_ASSIGN_IMAGE_EXT
 #define COMPILE_ASSIGN_IMAGE_EXT(type, unused) \
   template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, -1> &); \

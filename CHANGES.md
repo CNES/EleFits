@@ -19,6 +19,10 @@
 * Class `FitsIOError` is used to throw all exceptions
 * Function `version()` returns the version of EL_FitsIO
 
+## Expected changes
+
+* HDU indices will be 0-based, like positions and other indices.
+
 # 2.2
 
 ## New features

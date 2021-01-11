@@ -53,7 +53,7 @@ const T &MefFile::accessFirst(const std::string &name) {
 
 template <class T>
 const T &MefFile::accessPrimary() {
-  return access<T>(1);
+  return access<T>(MefFile::primaryIndex);
 }
 
 template <typename T, long n>

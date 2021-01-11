@@ -54,7 +54,7 @@ FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr) {
   FitsIO::VecRaster<T, n> raster(readShape<n>(fptr));
   const auto size = raster.size();
   fits_read_img(fptr, TypeCode<T>::forImage(), 1, size, nullptr, raster.data(), nullptr, &status);
-  // Number 1 is a 1-base index (so we read the whole raster here)
+  // Number 1 is a 1-based index (so we read the whole raster here)
   mayThrowCfitsioError(status, "Cannot read raster");
   return raster;
 }

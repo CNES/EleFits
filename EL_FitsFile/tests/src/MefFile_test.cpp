@@ -34,6 +34,11 @@ BOOST_AUTO_TEST_SUITE(MefFile_test)
 
 //-----------------------------------------------------------------------------
 
+BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::NewMefFile) {
+  const auto &primary = this->accessPrimary<>();
+  BOOST_CHECK_EQUAL(primary.index(), MefFile::primaryIndex);
+}
+
 BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   Test::SmallRaster input; // TODO RandomRaster
   const auto &primary = this->accessPrimary<ImageHdu>();

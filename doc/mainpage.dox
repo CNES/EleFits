@@ -42,82 +42,7 @@ For a clear overview of what's there and what's missing, see \ref cfitsio-cov.
 
 \section build Install and depend on EL_FitsIO
 
-`EL_FitsIO` depends on `Elements`, a build framework based on CMake.
-As such, `EL_FitsIO` can be used either from an Elements project or from a CMake project.
-
-\subsection build-elements For an Elements project
-
-An elements project is made of modules.
-The project contains a root `CMakeLists.txt`, as well as each module.
-For more information, please refer to the [`Elements` documentation](TODO).
-
-Using the library means declaring the dependency to the `EL_FitsIO` project in the root `CMakeLists.txt`:
-
-\verbatim
-elements_project(MyProject X.X
-    USE EL_FitsIO Y.Y)
-\endverbatim
-
-and to the `EL_FitsFile` module (for the end-user API) in the `CMakeLists.txt` of each module which requires `EL_FitsIO`:
-
-\verbatim
-elements_depends_on_subdirs(EL_FitsFile)
-
-elements_add_executable(<program_name> src/program/<program_name>.cpp
-    LINK_LIBRARIES ElementsKernel EL_FitsFile)
-
-elements_add_library(<library_name> src/Lib/*.cpp
-    LINK_LIBRARIES ElementsKernel EL_FitsFile
-    INCLUDE_DIRS ElementsKernel EL_FitsFile
-    PUBLIC_HEADERS <library_name>)
-\endverbatim
-
-\subsection build-cmake For a CMake project
-
-First, install `Elements` with user-defined prefix (e.g. the standard `/usr`):
-
-\verbatim
-cd <root>/Elements
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
-sudo make install -j
-\endverbatim
-
-Then, install EL_FitsIO the same way:
-
-\verbatim
-cd <root>/EL_FitsIO
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
-sudo make install -j
-\endverbatim
-
-This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
-The end-user library is named `EL_FitsFile`.
-Here's a minimal `CMakeLists.txt` file to use it:
-
-\verbatim
-CMAKE_MINIMUM_REQUIRED(VERSION <version>)
-project(<project_name>)
-find_package(EL_FitsFile REQUIRED)
-add_executable(<exe_name> <exe_source>)
-target_link_libraries(<exe_name> EL_FitsFile)
-\endverbatim
-
-The `find_package` command expects parent folder of the file `FindEL_FitsFile.cmake` to be in the `CMAKE_MODULE_PATH`.
-For now, it is located in the sources of `EL_FitsIO`, in `cmake/modules`.
-
-Here's an example to configure a project:
-
-\verbatim
-cd <root>/<project_name>
-mkdir build
-cd build
-cmake -DCMAKE_MODULE_PATH=<root>/EL_FitsIO/cmake/modules ..
-\endverbatim
-
+TODO!
 
 \section api End-user API overview (and tutorial)
 
@@ -157,16 +82,6 @@ To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validatio
 As shown in the \ref type_map, handling types right with CFitsIO can be very cumbersome.
 EL_FitsIO aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFitsIO implementation.
 Template functions and methods are provided to simply let the user set the desired type.
-
-As for the type of sizes and indices, there is no way to make everybody happy:
-
-- C uses signed integers;
-- The C++ standard library uses unsigned integers;
-- CFitsIO uses signed integers with varying type (e.g. `int` for column count and `long` or `LONGLONG` for row count).
-
-Following the <a href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Res-subscripts">C++ Core Guidelines</a>,
-we've opted for signed integers, and precisely for `long`'s, in order to distinguish from integer data values which are generally `int`'s.
-To reduce the noise, we did not create a custom type like "index", "length" or "size".
 
 */
 

@@ -139,6 +139,20 @@ public:
   template <typename... Ts>
   const BintableHdu &assignBintableExt(const std::string &name, const Column<Ts> &... columns);
 
+  /**
+   * @brief The index of the Primary HDU.
+   * @details
+   * The HDU indices are 1-based for now, but should be 0-based soon.
+   * Here is therefore the robust way to loop over HDUs:
+   * \code
+   * for (long i = MefFile::primaryIndex; i < MefFile::primaryIndex + f.hduCount(); ++i) {
+   *   const auto &ext = f.access<>(i);
+   *   // do something with ext
+   * }
+   * \endcode
+   */
+  static constexpr long primaryIndex = 1;
+
 protected:
   /**
    * @brief Append an extension.
