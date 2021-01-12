@@ -42,7 +42,7 @@ For a clear overview of what's there and what's missing, see \ref cfitsio-cov.
 
 \section build Install and depend on EL_FitsIO
 
-TODO!
+See the \ref install_guide.
 
 \section api End-user API overview (and tutorial)
 
@@ -74,14 +74,6 @@ For a gentle introduction to the library, head to this page: \ref handlers.
 Last but not least, we've implemented and documented a \ref tuto.
 
 To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validation modules (see below).
-
-
-\section types A word on types
-
-
-As shown in the \ref type_map, handling types right with CFitsIO can be very cumbersome.
-EL_FitsIO aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFitsIO implementation.
-Template functions and methods are provided to simply let the user set the desired type.
 
 */
 

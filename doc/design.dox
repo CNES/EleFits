@@ -4,6 +4,8 @@ namespace Euclid {
 
 \page design Software design
 
+\tableofcontents
+
 \section design-purpose Purpose and scope
 
 The purpose of this page is to describe the internal implementation of the library.

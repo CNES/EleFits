@@ -4,33 +4,34 @@
 
 ## Breaking changes
 
-* Update to `Elements` 5.12.0 and C++14
+* HDU indices are 0-based
+
+# 2.2
+
+## Dependency changes
+
+* Update to Elements 5.12.0 and C++14
 
 ## Bug fixes
 
-* Records of `any` are properly cast to records of `complex`
+* Records of `any` are properly cast to records of `complex` (when valid)
+
+## New features
+
+* Rasters with variable dimension (`n = -1`) can be read and written
+* Reaccessing an HDU doesn't prevent anymore using previous references to it
+* Program `EL_FitsIO_PrintStructure` lists HDU characteristics and keywords
+* File `FindEL_FitsIO.cmake` added to link against the library outside of EDEN
+* Class `FitsIOError` is used to throw all exceptions
+* Function `version()` returns the version of EL_FitsIO
 
 ## Cleaning
 
 * Internal optimizations
 
-## New features
+## Expected changes for 3.0
 
-* Class `FitsIOError` is used to throw all exceptions
-* Function `version()` returns the version of EL_FitsIO
-
-## Expected changes
-
-* HDU indices will be 0-based, like positions and other indices.
-
-# 2.2
-
-## New features
-
-* Raster with variable dimension (`n = -1`) can be read and written
-* Reaccessing an HDU doesn't prevent anymore using previous references to it
-* Program `EL_FitsIO_PrintStructure` lists HDU characteristics and keywords
-* File `FindEL_FitsIO.cmake` added to link against the library outside of EDEN
+* HDU indices will be 0-based, just like positions and other indices
 
 # 2.1 (breaking)
 

@@ -2,9 +2,12 @@ namespace Euclid {
 
 /**
 
-\page indices On indices
+\page types On types
+
+\section types-indices Indices
 
 Indices in the FitsIO namespace are 0-based `long`s.
+Here is why.
 
 There is no way to make everybody happy:
 
@@ -14,10 +17,32 @@ There is no way to make everybody happy:
 - CFitsIO uses 1-based signed integers with varying type (e.g. `int` for column count and `long` or `LONGLONG` for row count).
 
 Following the <a href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Res-subscripts">C++ Core Guidelines</a>,
-we've opted for signed integers, and precisely for `long`'s, in order to distinguish from integer data values which are generally `int`'s.
+we've opted for signed integers, and precisely for `long`'s.
 To reduce the noise, we did not create a custom type like "index", "length" or "size".
+We do not rely on `ptrdiff_t` as suggested in the Guidelines, because it would create issues when interfacing internally with CFitsIO.
+Using `long`s conveys the following message: trying to use something larger than the max of `long` won't work.
 
 Since indices in `std::vector`s (and therefore in Raster and Column) are 0-based, we had no other choice to provide a fully consistent API.
+This way, the user code can be fully consistent, with only 0-based indices.
+
+In contrast, as the name implies, the Cfitsio namespace is tightly bound to CFitsIO and follows its conventions.
+In this namespace, indices are 1-based.
+This is because people using functions from the Cfitsio namespace are probably also using CFitsIO functions.
+It would thus be very error-prone to have the user code half 0-based, half 1-based.
+
+\section types-data Data types
+
+As shown in the \ref type_map, handling data types right with CFitsIO can be very cumbersome.
+EL_FitsIO aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFitsIO implementation.
+Template functions and methods are provided to simply let the user set the desired type.
+
+In addition to CFitsIO data types, EL_FitsIO provides some of the services for `boost::any` (e.g., to read records).
+In this case, the underlying type is wrapped in a `boost::any` object, which can be cast later.
+Development efforts have been put to allow the user to get whatever compatible type from the `boost::any` object.
+
+For example, assume some `unsigned long` record value is read as a `boost::any`.
+The library will allow the user casting to `long long` because this is a mathematically valid conversion,
+where `boost::any_cast<long long>` would throw an exception.
 
 */
 
