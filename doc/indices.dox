@@ -4,7 +4,7 @@ namespace Euclid {
 
 \page indices On indices
 
-Indices in the FitsIO namespace are 0-based `long`s (or will be in the case of HDU indices which are 1-based).
+Indices in the FitsIO namespace are 0-based `long`s.
 
 There is no way to make everybody happy:
 

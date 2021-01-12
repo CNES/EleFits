@@ -75,7 +75,7 @@ public:
     logger.info() << "HDU count: " << hduCount;
 
     /* Loop over HDUs */
-    for (long i = 1; i <= hduCount; ++i) {
+    for (long i = 0; i < hduCount; ++i) {
       logger.info();
 
       /* Read name (if present) */

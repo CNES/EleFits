@@ -128,13 +128,13 @@ public:
 
     logger.info() << "Reading image.";
     //! [Find HDU by index]
-    const auto &ext3 = f.access<>(3);
+    const auto &ext2 = f.access<>(2);
     //! [Find HDU by index]
     //! [Get HDU name]
-    const auto extname = ext3.readName();
+    const auto extname = ext2.readName();
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
-    const auto records = ext3.parseRecords<std::string, int>({ "STRING", "INTEGER" });
+    const auto records = ext2.parseRecords<std::string, int>({ "STRING", "INTEGER" });
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     const auto &imageExt = f.accessFirst<ImageHdu>("SMALLIMG");

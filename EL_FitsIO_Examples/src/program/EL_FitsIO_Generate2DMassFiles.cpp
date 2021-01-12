@@ -140,7 +140,7 @@ public:
 
     logger.info("Reading bintable...");
     MefFile b(bintable, MefFile::Permission::Read);
-    const auto someColumn = b.access<BintableHdu>(2).readColumn<float>("SHE_LENSMC_G1");
+    const auto someColumn = b.access<BintableHdu>(1).readColumn<float>("SHE_LENSMC_G1");
     logger.info() << "First value of SHE_LENSMC_G1 = " << someColumn.vector()[0];
 
     logger.info("Reading image...");

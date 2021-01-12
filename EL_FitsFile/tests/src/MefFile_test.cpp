@@ -66,14 +66,14 @@ BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
 BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   Test::SmallRaster raster; // TODO RandomRaster
   const auto &ext1 = this->assignImageExt("IMG1", raster);
-  BOOST_CHECK_EQUAL(ext1.index(), 2);
+  BOOST_CHECK_EQUAL(ext1.index(), 1);
   BOOST_CHECK_EQUAL(this->hduCount(), 2);
   this->close();
   // Reopen as read-only
   this->open(this->filename(), MefFile::Permission::Edit);
   BOOST_CHECK_EQUAL(this->hduCount(), 2);
   const auto &ext2 = this->assignImageExt("IMG2", raster);
-  BOOST_CHECK_EQUAL(ext2.index(), 3);
+  BOOST_CHECK_EQUAL(ext2.index(), 2);
   BOOST_CHECK_EQUAL(this->hduCount(), 3);
   std::vector<std::string> inputNames { "", "IMG1", "IMG2" };
   const auto outputNames = this->readHduNames();

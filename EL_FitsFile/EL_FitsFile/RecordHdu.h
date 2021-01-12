@@ -74,7 +74,7 @@ public:
   virtual ~RecordHdu() = default;
 
   /**
-   * @brief Get the 1-based index of the HDU.
+   * @brief Get the 0-based index of the HDU.
    */
   long index() const;
 
@@ -316,9 +316,12 @@ protected:
   fitsfile *&m_fptr;
 
   /**
-   * @brief The HDU index.
+   * @brief The 1-based CFitsIO HDU index.
+   * @warning
+   * EL_FitsIO HDUs are 0-based here and 1-based in the CfitsioWrapper namespace
+   * because CFitsIO indices are 1-based.
    */
-  long m_index;
+  long m_cfitsioIndex;
 
   /**
    * @brief The HDU type.

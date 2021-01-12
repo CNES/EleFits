@@ -37,7 +37,7 @@ std::vector<std::string> MefFile::readHduNames() {
   const long count = hduCount();
   std::vector<std::string> names(count);
   for (long i = 0; i < count; ++i) {
-    names[i] = access<>(i + 1).readName();
+    names[i] = access<>(i).readName();
   }
   return names;
 }
@@ -45,7 +45,7 @@ std::vector<std::string> MefFile::readHduNames() {
 const RecordHdu &MefFile::initRecordExt(const std::string &name) {
   Cfitsio::Hdu::createMetadataExtension(m_fptr, name);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<RecordHdu>(m_fptr, size + 1));
+  m_hdus.push_back(std::make_unique<RecordHdu>(m_fptr, size));
   return *m_hdus[size].get();
 }
 

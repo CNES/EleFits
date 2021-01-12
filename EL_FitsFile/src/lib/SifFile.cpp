@@ -26,7 +26,7 @@ namespace FitsIO {
 
 SifFile::SifFile(const std::string &filename, SifFile::Permission permission) :
     FitsFile(filename, permission),
-    m_hdu(m_fptr, 1) {
+    m_hdu(m_fptr, 0) {
 }
 
 const RecordHdu &SifFile::header() const {

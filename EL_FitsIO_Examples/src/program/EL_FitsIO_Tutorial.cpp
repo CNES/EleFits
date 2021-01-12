@@ -253,7 +253,7 @@ public:
 
     //! [Access an HDU by index]
     logger.info() << "Accessing image HDU by index";
-    const auto &imageExt = f.access<ImageHdu>(3);
+    const auto &imageExt = f.access<ImageHdu>(2);
     logger.info() << "    Name: " << imageExt.readName();
     //! [Access an HDU by index]
 

@@ -66,13 +66,11 @@ public:
    * @brief Read the name of each HDU.
    * @details
    * Unnamed HDUs are taken into account: an empty string is returned for them.
-   * @warning
-   * readHduNames()[i] is the name of HDU i+1 because Fits index is 1-based.
    */
   std::vector<std::string> readHduNames();
 
   /**
-   * @brief Access the HDU at given 1-based index.
+   * @brief Access the HDU at given 0-based index.
    * @tparam T The type of HDU: ImageHdu, BintableHdu, or RecordHdu to just handle metadata.
    * @return A reference to the HDU reader-writer.
    * @details
@@ -142,8 +140,9 @@ public:
   /**
    * @brief The index of the Primary HDU.
    * @details
-   * The HDU indices are 1-based for now, but should be 0-based soon.
-   * Here is therefore the robust way to loop over HDUs:
+   * The HDU indices are now 0-based while they used to be 1-based.
+   * This constant makes migration smoother.
+   * It can be used to loop safely over the HDUs:
    * \code
    * for (long i = MefFile::primaryIndex; i < MefFile::primaryIndex + f.hduCount(); ++i) {
    *   const auto &ext = f.access<>(i);
@@ -151,7 +150,7 @@ public:
    * }
    * \endcode
    */
-  static constexpr long primaryIndex = 1;
+  static constexpr long primaryIndex = 0;
 
 protected:
   /**

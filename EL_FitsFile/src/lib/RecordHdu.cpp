@@ -25,11 +25,14 @@
 namespace Euclid {
 namespace FitsIO {
 
-RecordHdu::RecordHdu(fitsfile *&fptr, long index, HduType type) : m_fptr(fptr), m_index(index), m_type(type) {
+RecordHdu::RecordHdu(fitsfile *&fptr, long index, HduType type) :
+    m_fptr(fptr),
+    m_cfitsioIndex(index + 1),
+    m_type(type) {
 }
 
 long RecordHdu::index() const {
-  return m_index;
+  return m_cfitsioIndex - 1;
 }
 
 HduType RecordHdu::type() const {
@@ -73,7 +76,7 @@ void RecordHdu::deleteRecord(const std::string &keyword) const {
 }
 
 void RecordHdu::gotoThisHdu() const {
-  Cfitsio::Hdu::gotoIndex(m_fptr, m_index);
+  Cfitsio::Hdu::gotoIndex(m_fptr, m_cfitsioIndex);
 }
 
 #ifndef COMPILE_PARSE_RECORD
