@@ -42,6 +42,10 @@ elements_add_library(EL_FitsFile src/lib/*.cpp
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
+elements_add_executable(EL_FitsIO_PrintSupportedTypes src/program/EL_FitsIO_PrintSupportedTypes.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+elements_add_executable(EL_FitsIO_ReadStructure src/program/EL_FitsIO_ReadStructure.cpp
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
 
 #===============================================================================
 # Declare the Boost tests here
