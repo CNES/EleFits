@@ -41,7 +41,7 @@ class MinimalFile {
 
 protected:
   /**
-   * @brief The handler which generates the name and removes the file at desctruction.
+   * @brief The handler which generates the name and removes the file at destruction.
    */
   Elements::TempFile tmp;
 

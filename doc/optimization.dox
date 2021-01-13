@@ -7,7 +7,7 @@ namespace FitsIO {
 
 \section optim-intro Foreword
 
-The library focusses firstly on memory management, and secondly on performance.
+The library focuses firstly on memory management, and secondly on performance.
 Much of its complexity is imputable to performance, like the heavy use of tuples which are not that fun to manipulates.
 On user side, few operations would be very detrimental to performance.
 Yet, a few would be, and there are thus a few things to know if one wants to get the most out of EL_FitsIO.
@@ -66,7 +66,7 @@ or write all the columns you need to write in a table at once.
 Ultimate optimization when creating an HDU, is to complete the header unit first before writing the data unit:
 
 - Rely on the initialization services (as opposed to the assignment services);
-- Write all of the additionnal records;
+- Write all of the additional records;
 - Write the data unit at once.
 
 \code
@@ -144,7 +144,7 @@ That is, if scalar columns of 10,000 rows should be written, rather write 10,000
 This indeed allows storing the column values contiguously, and therefore speeds up the accesses.
 
 We think software optimization should not obfuscate the data, and the trick should be avoided as much as possible.
-Aforementionned multi-column reading and writing services of EL_FitsIO have no counterpart in CFitsIO,
+Aforementioned multi-column reading and writing services of EL_FitsIO have no counterpart in CFitsIO,
 which makes the trick more relevant to CFitsIO users than to EL_FitsIO users.
 
 To go further, CFitsIO "iterator" mechanism is the way to go for performance;

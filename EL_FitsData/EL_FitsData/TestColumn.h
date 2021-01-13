@@ -32,7 +32,7 @@ namespace FitsIO {
 namespace Test {
 
 /**
- * @brief A set of random columns whihch cover the whole set of supported types.
+ * @brief A set of random columns which cover the whole set of supported types.
  */
 struct RandomTable {
 
