@@ -309,7 +309,7 @@ const std::type_info &posIntRecordTypeidImpl(const std::string &value) {
 
 /**
  * @brief Get the a typeid compatible with an integer value given as a string.
- * @return The typeid of the smallest signed (resp. unsigned) int type which can accomodate the value
+ * @return The typeid of the smallest signed (resp. unsigned) int type which can accommodate the value
  * if the first character is (resp. is not) '-'.
  */
 const std::type_info &intRecordTypeidImpl(const std::string &value) {

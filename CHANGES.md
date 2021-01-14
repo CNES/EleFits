@@ -126,7 +126,7 @@
 ## Safety
 
 * Test CFitsIO bug in reading `unsigned long` records (see known bugs)
-* Explicitely cast every conversion
+* Explicitly cast every conversion
 
 ## Cleaning
 

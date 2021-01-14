@@ -63,7 +63,7 @@ DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
  *
  * Allowed types for ASCII tables:
  * TSTRING, TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG,
- * TULONG, TULONGLONG, TFLOAT, TDOUBLE Additionnal types for binary tables:
+ * TULONG, TULONGLONG, TFLOAT, TDOUBLE Additional types for binary tables:
  * TLOGICAL (internally mapped to the `char' data type), TCOMPLEX, TDBLCOMPLEX
  */
 #ifndef DEF_TABLE_TYPE_CODE
@@ -91,7 +91,7 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
 #endif
 
 /*
- * From Fits standart and CFitsIO documentation "Read and Write Column Data
+ * From Fits standard and CFitsIO documentation "Read and Write Column Data
  * Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
  *

@@ -30,7 +30,7 @@ namespace FitsIO {
 /**
  * @brief Image HDU reader-writer.
  * @details
- * The Fits format can accomodate images of any dimension.
+ * The Fits format can accommodate images of any dimension.
  * EL_FitsIO stores them in n-dimensional containers: Raster objects.
  * This is visible in the ImageHdu services as a template parameter `n`.
  *

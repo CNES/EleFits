@@ -65,7 +65,7 @@ public:
    * @brief Find and cast the first record with given keyword.
    * @tparam TValue The destination value type.
    * @details
-   * Althoug the method returns a Record, it can itself be sliced as its value,
+   * Although the method returns a Record, it can itself be sliced as its value,
    * so the following works:
    * \code
    * RecordVector<any> records;

@@ -36,7 +36,7 @@ there is still a template parameter, for the value type, a name and a unit.
 A repeat member stores the width of the column:
 it is 1 for scalar columns and >1 for vector columns.
 
-In order to accomodate whatever-you-want kind of data,
+In order to accommodate whatever-you-want kind of data,
 Column is an abstract class whose only assumption is that elements are contiguous in memory,
 so that you are able to provide a raw pointer to the first element of the column.
 
@@ -48,7 +48,7 @@ The library comes with several ready-to-use implementations:
 
 To write a column, any Column implementation works: you can even provide your own, e.g. EigenColumn.
 Columns are always read as VecColumn instances.
-If you want to give or steal the data to or from a VecColumn, you can eploit move semantics, as shown in the \ref tuto "":
+If you want to give or steal the data to or from a VecColumn, you can exploit move semantics, as shown in the \ref tuto "":
 
 \snippet EL_FitsIO_Tutorial.cpp Create and fill a column
 
