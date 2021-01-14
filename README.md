@@ -14,7 +14,7 @@ As compared to CFitsIO API, the main benefits are those of C++ over C:
 * no more raw pointers for a safe memory management
 * no more type codes but template classes which handle architecture specifics for you
 * no more error codes but a proper exception handling
-* structures dedicated to data storage instead of zillions of unorganized and redundent variables
+* structures dedicated to data storage instead of zillions of unorganized and redundant variables
 * a class hierarchy to represent the actual Fits organization (e.g. extensions, records, columns...) instead of the all-in-one `fitsfile` class
 * a concise and clear API instead of a cluttered and verbose one
 * a comprehensive testing and validation code

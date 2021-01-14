@@ -68,7 +68,7 @@ namespace FitsIO {
  * The "HIERARCH" convention for extended keywords is supported.
  * It occurs when the keyword is longer than 8 characters,
  * or contains non-standard characters like spaces or symbols.
- * Such records are read and writen transparently as:
+ * Such records are read and written transparently as:
  * \verbatim HIERARCH the_long_keyword = value / [unit] comment \endverbatim
  * The maximum length of such a keyword is 67 characters, which gives room for a 1-byte long value.
  *
@@ -96,7 +96,7 @@ struct Record {
   /**
    * @brief Create a Record from a Record of another type.
    * @details
-   * This constructor can be used to homogeneize types, for example to create a
+   * This constructor can be used to homogenize types, for example to create a
    * `vector<Record<any>>` from various `Record<T>`s with different `T`s.
    * @warning
    * Source type TOther must be castable to destination type T.
@@ -160,7 +160,7 @@ struct Record {
 
   /**
    * @brief Check whether the value of a record is a long string (more than 68 characters).
-   * @return True if the record value is a string (see details) and its lenght is greater than 68;
+   * @return True if the record value is a string (see details) and its length is greater than 68;
    * False otherwise.
    * @details
    * A long string value is written on several lines, using the CONTINUE special keyword.

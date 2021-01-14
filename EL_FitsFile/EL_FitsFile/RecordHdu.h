@@ -37,7 +37,7 @@ namespace FitsIO {
  * Methods to update records are analogous to methods to write records:
  * refer to the documentation of the latter for more details on the former.
  *
- * There are two approaches to read and write several records at onces:
+ * There are two approaches to read and write several records at once:
  * - As heterogeneous collections, through variadic methods or tuples;
  * - As homogeneous collections, using vectors of Records or RecordVector.
  *
@@ -160,7 +160,7 @@ public:
    * This method can be used to mimic a named tuple,
    * which is generally more convenient than a std::tuple,
    * because you chose how to to access the records in your own class
-   * insted of accessing them by their indices -- with `std::get<i>(tuple)`.
+   * instead of accessing them by their indices -- with `std::get<i>(tuple)`.
    *
    * Here's a dummy example to show the usage with a simple structure:
    * \code

@@ -137,7 +137,7 @@ Metadata (i.e., header-only) HDUs are image HDUs with empty data.
 
 There are two kinds of services in MefFile for creating extensions:
 They can be either initialized with header only or assigned directly with data.
-You should never instanciate an HDU handler yourself with its constructor;
+You should never instantiate an HDU handler yourself with its constructor;
 it has no sense if it is not owned by a MefFile.
 
 Here's an example of assigning a BintableHdu with columns:
@@ -161,8 +161,8 @@ They can be written and updated one-by-one this way:
 \snippet EL_FitsIO_Tutorial.cpp Write and update a record
 
 It is also possible to write several records at once.
-In this case, Record objects must be instanciated,
-or template parameters must be provided explicitely:
+In this case, Record objects must be instantiated,
+or template parameters must be provided explicitly:
 
 \snippet EL_FitsIO_Tutorial.cpp Write several records
 
@@ -203,7 +203,7 @@ Records are parsed using RecordHdu services:
 
 Like for writing, you can parse several records at once.
 The standalone way of doing so is to output a tuple of records.
-Yet, this is not the most straightforward way, as you have to acces (std::get or std::tie)
+Yet, this is not the most straightforward way, as you have to access (std::get or std::tie)
 the individual records afterwards.
 There is a cleaner way, which is probably closer to what you want to do with the values:
 You can provide your own return type, as a brace-constructible object, like a mere struct.
@@ -225,7 +225,7 @@ This will return a VecColumn:
 \subsection tuto-read-image Read image values
 
 
-For images, a VecRaster is instanciated, and you can access the pixel values with the subscript operator:
+For images, a VecRaster is instantiated, and you can access the pixel values with the subscript operator:
 
 \snippet EL_FitsIO_Tutorial.cpp Read image values
 
