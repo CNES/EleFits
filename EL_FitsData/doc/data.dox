@@ -23,6 +23,21 @@ double falcon_sp = 1.5 * light_sp;
 \endcode
 
 
+\section data-raster Rasters
+
+
+Rasters are the in-memory representation of the _n_-D images of Fits.
+A raster has a shape (of type Position, which is just an alias of std::array), a type as its template parameter, and some data.
+
+The design approach behind Raster is exactly the same a for Column, with several implementations proposed:
+PtrRaster, VecRefRaster and VecRaster.
+
+In any case, Raster ensures constant-time access to an element, whatever the dimension of the data, through subscipt operators.
+Again, refer to the \ref tuto for a concrete example usage:
+
+\snippet EL_FitsIO_Tutorial.cpp Create rasters
+
+
 \section data-column Columns
 
 
@@ -50,22 +65,7 @@ To write a column, any Column implementation works: you can even provide your ow
 Columns are always read as VecColumn instances.
 If you want to give or steal the data to or from a VecColumn, you can exploit move semantics, as shown in the \ref tuto "":
 
-\snippet EL_FitsIO_Tutorial.cpp Create and fill a column
-
-
-\section data-raster Rasters
-
-
-Rasters are the in-memory representation of the _n_-D images of Fits.
-A raster has a shape (of type Position, which is just an alias of std::array), a type as its template parameter, and some data.
-
-The design approach behind Raster is exactly the same a for Column, with several implementations proposed:
-PtrRaster, VecRefRaster and VecRaster.
-
-In any case, Raster ensures constant-time access to an element, whatever the dimension of the data, through subscipt operators.
-Again, refer to the \ref tuto for a concrete example usage:
-
-\snippet EL_FitsIO_Tutorial.cpp Create and fill a raster
+\snippet EL_FitsIO_Tutorial.cpp Create columns
 
 
 \section data-wrapup Wrap-up

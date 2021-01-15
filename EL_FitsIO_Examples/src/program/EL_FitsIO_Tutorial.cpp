@@ -23,20 +23,20 @@
 #include <boost/any.hpp>
 #include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
-#include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsData/TestUtils.h"
+//! [Include fixtures]
+#include "EL_FitsData/TestColumn.h"
+#include "EL_FitsData/TestRaster.h"
+#include "EL_FitsData/TestRecord.h"
+//! [Include fixtures]
 
 //! [Include]
 #include "EL_FitsFile/MefFile.h"
 
-using Euclid::FitsIO::Record;
-using Euclid::FitsIO::VecColumn;
-using Euclid::FitsIO::VecRaster;
-using Euclid::FitsIO::MefFile;
-using Euclid::FitsIO::BintableHdu;
-using Euclid::FitsIO::ImageHdu;
-using Euclid::FitsIO::RecordHdu;
+using namespace Euclid;
+// EL_FitsIO classes are in the Euclid::FitsIO namespace.
+// We could have be using namespace Euclid::FitsIO instead,
+// but things would have been less obvious in the snippets.
 //! [Include]
 
 using boost::program_options::options_description;
@@ -45,35 +45,347 @@ using boost::program_options::value;
 
 static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 
-VecRaster<float, 3> createRaster() {
-  //! [Create and fill a raster]
-  long width = 16, height = 9, depth = 3;
-  VecRaster<float, 3> raster({ width, height, depth });
-  for (long z = 0; z < depth; ++z) {
-    for (long y = 0; y < height; ++y) {
-      for (long x = 0; x < width; ++x) {
-        raster[{ x, y, z }] = float(x + y + z);
-      }
+///////////////////
+// DECLARATIONS //
+/////////////////
+
+//! [Tuto records]
+struct TutoRecords {
+  FitsIO::Record<std::string> stringRecord;
+  FitsIO::Record<int> intRecord;
+  FitsIO::Record<float> floatRecord;
+  FitsIO::Record<std::complex<double>> complexRecord;
+};
+//! [Tuto records]
+
+//! [Tuto rasters]
+struct TutoRasters {
+  FitsIO::VecRaster<std::int16_t, 2> int16Raster2D;
+  FitsIO::VecRaster<std::int32_t, 3> int32Raster3D;
+  FitsIO::VecRaster<std::int64_t, 4> int64Raster4D;
+};
+//! [Tuto rasters]
+
+//! [Tuto columns]
+struct TutoColumns {
+  FitsIO::VecColumn<std::string> stringColumn;
+  FitsIO::VecColumn<std::int32_t> int32Column;
+  FitsIO::VecColumn<float> float32Column;
+};
+//! [Tuto columns]
+
+TutoRecords createRecords();
+TutoRasters createRasters();
+TutoColumns createColumns();
+
+void writeMefFile(const std::string &filename);
+void readMefFile(const std::string &filename);
+void writeRecords(const FitsIO::RecordHdu &hdu);
+void readRecords(const FitsIO::RecordHdu &hdu);
+void readRaster(const FitsIO::ImageHdu &hdu);
+void readColumns(const FitsIO::BintableHdu &hdu);
+
+///////////////////
+// DATA CLASSES //
+/////////////////
+
+TutoRecords createRecords() {
+
+  //! [Create records]
+
+  logger.info("  Creating records...");
+
+  /* Create a record with unit and comment */
+
+  FitsIO::Record<std::string> stringRecord("STRING", "VALUE", "unit", "comment");
+
+  /* Create a record with keyword and value only */
+
+  FitsIO::Record<int> intRecord("INT", 0);
+
+  /* Create a record from an initialization list */
+
+  FitsIO::Record<float> floatRecord { "FLOAT", 3.14F, "", "A piece of Pi" };
+  // This is often used as a shortcut to create records as function parameters.
+
+  /* Generate a random record */
+
+  auto complexRecord = FitsIO::Test::generateRandomRecord<std::complex<double>>("COMPLEX");
+
+  //! [Create records]
+
+  return { stringRecord, intRecord, floatRecord, complexRecord };
+}
+
+TutoRasters createRasters() {
+
+  //! [Create rasters]
+
+  logger.info("  Creating rasters...");
+
+  /* Initialize and later fill a raster */
+
+  FitsIO::VecRaster<std::int16_t, 2> int16Raster2D({ 4, 3 });
+  for (long y = 0; y < int16Raster2D.length<1>(); ++y) {
+    for (long x = 0; x < int16Raster2D.length<0>(); ++x) {
+      int16Raster2D[{ x, y }] = x + y;
     }
   }
-  //! [Create and fill a raster]
-  return raster;
+
+  /* Create a raster from a vector */
+
+  std::vector<std::int32_t> int32Vec(16 * 9 * 3);
+  // ... do what you have to do with the vector, and then move it to the raster ...
+  FitsIO::VecRaster<std::int32_t, 3> int32Raster3D({ 16, 9, 3 }, std::move(int32Vec));
+  // Instead moving a vector, it's also possible to work with:
+  // - a vector reference with the VecRefRaster class, or
+  // - a raw pointer with the PtrRaster class.
+
+  /* Generate a random raster */
+
+  auto int64Raster4D = FitsIO::Test::RandomRaster<std::int64_t, 4>({ 17, 9, 3, 24 });
+
+  //! [Create rasters]
+
+  return { int16Raster2D, int32Raster3D, int64Raster4D };
 }
 
-struct TutoTable {
-  VecColumn<std::string> nameCol;
-  VecColumn<double> speed_col;
-};
+TutoColumns createColumns() {
 
-TutoTable createColumns() {
-  //! [Create and fill a column]
-  std::vector<std::string> nameData { "snail", "Antoine", "light", "Millennium Falcon" };
-  std::vector<double> speedData { 1.3e-2, 1.4, 3.0e8, 4.5e8 };
-  TutoTable table { VecColumn<std::string>({ "NAME", "", 42 }, std::move(nameData)),
-                    VecColumn<double>({ "SPEED", "m/s", 1 }, std::move(speedData)) };
-  //! [Create and fill a column]
-  return table;
+  //! [Create columns]
+
+  logger.info("  Creating columns...");
+
+  /* Initialize and later fill a raster */
+
+  FitsIO::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
+  // String columns must be wide-enough to hold each character.
+  for (long i = 0; i < stringColumn.rowCount(); ++i) {
+    stringColumn.vector()[i] = std::to_string(i);
+  }
+
+  /* Create a raster from a vector */
+
+  std::vector<std::int32_t> int32Vec(100);
+  // ... do what you have to do with the vector, and then move it to the column ...
+  FitsIO::VecColumn<std::int32_t> int32Column({ "INT32", "", 1 }, std::move(int32Vec));
+  // Analogously to rasters, columns can be managed with the VecRefColumn and PtrColumn classes.
+
+  /* Generate a random raster */
+
+  auto float32Column = FitsIO::Test::RandomVectorColumn<float>(8, 100);
+
+  //! [Create columns]
+
+  return { stringColumn, int32Column, float32Column };
 }
+
+//////////////
+// WRITING //
+////////////
+
+void writeMefFile(const std::string &filename) {
+
+  //! [Create a MEF file]
+
+  logger.info("Creating a MEF file...");
+
+  FitsIO::MefFile f(filename, FitsIO::MefFile::Permission::Create);
+
+  //! [Create a MEF file]
+
+  const auto rasters = createRasters();
+
+  //! [Create image extensions]
+
+  logger.info("  Writing image HDUs...");
+
+  /* Initialize HDU first and write raster later */
+
+  const auto &image1 = f.initImageExt<std::int16_t, 2>("IMAGE1", rasters.int16Raster2D.shape);
+  // ... do something with the extension ...
+  image1.writeRaster(rasters.int16Raster2D);
+
+  /* Assign at creation */
+
+  const auto &image2 = f.assignImageExt("IMAGE2", rasters.int32Raster3D);
+
+  //! [Create image extensions]
+
+  const auto columns = createColumns();
+
+  //! [Create bintable extensions]
+
+  logger.info("  Writing binary table HDUs...");
+
+  /* Initialize HDU first and write columns later */
+
+  const auto &table1 = f.initBintableExt<std::string, int, float>(
+      "TABLE1",
+      columns.stringColumn.info,
+      columns.int32Column.info,
+      columns.float32Column.info);
+  table1.writeColumns(columns.stringColumn, columns.int32Column, columns.float32Column);
+
+  /* Assign at creation */
+
+  const auto &table2 = f.assignBintableExt("TABLE2", columns.stringColumn, columns.int32Column, columns.float32Column);
+
+  //! [Create bintable extensions]
+
+  writeRecords(image2);
+  (void)table2; // Mute unused variable warning
+
+  // File is closed at destruction of f.
+}
+
+void writeRecords(const FitsIO::RecordHdu &hdu) {
+
+  const auto records = createRecords();
+
+  //! [Write records]
+
+  logger.info("  Writing records...");
+
+  /* Write a single record */
+
+  hdu.writeRecord(records.stringRecord);
+
+  /* Write several records */
+
+  hdu.writeRecords(records.intRecord, records.floatRecord, records.complexRecord);
+
+  /* Update using initialization lists */
+
+  hdu.updateRecords<int, float, std::complex<double>>(
+      { "INT", 1 },
+      { "FLOAT", 3.14159F, "", "A larger piece of Pi" },
+      { "COMPLEX", { 180., 90. } });
+  // With inititialization lists, template parameters must be explicit.
+  // Each "write" method has an "update" counterpart with the same signature.
+
+  //! [Write records]
+}
+
+//////////////
+// READING //
+////////////
+
+void readMefFile(const std::string &filename) {
+
+  //! [Open a MEF file]
+
+  logger.info("Reading the MEF file...");
+
+  FitsIO::MefFile f(filename, FitsIO::MefFile::Permission::Read);
+
+  //! [Open a MEF file]
+
+  //! [Access HDUs]
+
+  logger.info("  Accessing HDUs...");
+
+  /* Access the Primary HDU */
+
+  const auto &primary = f.accessPrimary<FitsIO::RecordHdu>();
+  // Our primary contains only metadata, which is why we request a RecordHdu.
+  logger.info() << "    Primary index: " << primary.index();
+  // Indices are 0-based in the FitsIO namespace.
+
+  /* Access an HDU by its index */
+
+  const auto &image2 = f.access<FitsIO::ImageHdu>(2);
+  logger.info() << "    Name of the second extension: " << image2.readName();
+
+  /* Access an HDU by its name */
+
+  const auto &table1 = f.accessFirst<FitsIO::BintableHdu>("TABLE1");
+  // If several HDUs have the same name, the first one is returned.
+  logger.info() << "    Index of the 'TABLE1' extension: " << table1.index();
+
+  //! [Access HDUs]
+
+  readRecords(image2);
+  readRaster(image2);
+  readColumns(table1);
+}
+
+void readRecords(const FitsIO::RecordHdu &hdu) {
+
+  //! [Read records]
+
+  logger.info("  Reading records...");
+
+  /* Read a single record */
+
+  auto intRecord = hdu.parseRecord<int>("INT");
+  logger.info() << "    " << intRecord.keyword << " = " << intRecord.value << " " << intRecord.unit;
+
+  // Records can be sliced as their value for immediate use:
+  int intValue = hdu.parseRecord<int>("INT");
+  logger.info() << "    INT value: " << intValue;
+
+  /* Read several records */
+
+  auto someRecords = hdu.parseRecords<std::string, float, std::complex<double>>({ "STRING", "FLOAT", "COMPLEX" });
+  auto secondRecord = std::get<1>(someRecords);
+  logger.info() << "    " << secondRecord.keyword << " = " << secondRecord.value << " " << secondRecord.unit;
+
+  /* Read as boost::any */
+
+  auto anyRecords = hdu.parseRecordVector<boost::any>({ "INT", "COMPLEX" });
+  auto complexRecord = anyRecords.as<std::complex<double>>("COMPLEX");
+  logger.info() << "    " << complexRecord.keyword << " = " << complexRecord.value.real() << " + "
+                << complexRecord.value.imag() << "j " << complexRecord.unit;
+
+  /* Read as a user-defined structure */
+
+  auto tutoRecords = hdu.parseRecordsAs<TutoRecords, std::string, int, float, std::complex<double>>(
+      { "STRING", "INT", "FLOAT", "COMPLEX" });
+  auto stringRecord = tutoRecords.stringRecord;
+  logger.info() << "    " << stringRecord.keyword << " = " << stringRecord.value << " " << stringRecord.unit;
+
+  //! [Read records]
+}
+
+void readRaster(const FitsIO::ImageHdu &hdu) {
+
+  //! [Read a raster]
+
+  logger.info("  Reading a raster...");
+
+  const auto image = hdu.readRaster<std::int32_t, 3>();
+
+  const auto &firstPixel = image[{ 0, 0, 0 }];
+  const auto width = image.length<0>();
+  const auto height = image.length<1>();
+  const auto depth = image.length<2>();
+  const auto &lastPixel = image[{ width - 1, height - 1, depth - 1 }];
+
+  logger.info() << "    First pixel: " << firstPixel;
+  logger.info() << "    Last pixel: " << lastPixel;
+
+  //! [Read a raster]
+}
+
+void readColumns(const FitsIO::BintableHdu &hdu) {
+
+  //! [Read columns]
+
+  logger.info("  Reading columns...");
+
+  const auto stringVec = hdu.readColumn<std::string>("STRING").vector();
+  const auto int32Vec = hdu.readColumn<double>("INT32").vector();
+
+  logger.info() << "    First string: " << stringVec[0];
+  logger.info() << "    Last int32: " << int32Vec[int32Vec.size() - 1];
+
+  //! [Read columns]
+}
+
+//////////////
+// PROGRAM //
+////////////
 
 class EL_FitsIO_Tutorial : public Elements::Program {
 
@@ -81,8 +393,7 @@ public:
   options_description defineSpecificProgramOptions() override {
     options_description options {};
     auto add = options.add_options();
-    const auto defaultOutputFile = m_tempDir.path() / "test.fits";
-    add("output", value<std::string>()->default_value(defaultOutputFile.string()), "Output file");
+    add("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
     return options;
   }
 
@@ -91,126 +402,14 @@ public:
     const std::string filename = args["output"].as<std::string>();
 
     logger.info() << "---";
-    logger.info() << "Hello, EL_FitsIO " << Euclid::FitsIO::version() << "!";
+    logger.info() << "Hello, EL_FitsIO " << FitsIO::version() << "!";
     logger.info() << "---";
 
-    //! [Open a MefFile]
-    logger.info() << "Opening file: " << filename;
-    MefFile f(filename, MefFile::Permission::Overwrite);
-    //! [Open a MefFile]
-
-    //! [Access primary HDU]
-    const auto &primary = f.accessPrimary<>();
-    //! [Access primary HDU]
-
-    //! [Write and update a record]
-    logger.info() << "Writing records to primary";
-    primary.writeRecord("VALUE", 1);
-    primary.updateRecord("VALUE", 2);
-    //! [Write and update a record]
-
-    //! [Create a complete record]
-    Record<float> completeRecord("SPEED", 2.5, "m/s", "Already fast!");
-    //! [Create a complete record]
-    primary.writeRecord(completeRecord);
-
-    const auto columns = createColumns();
-    //! [Assign a bintable extension]
-    logger.info() << "Assigning new Bintable HDU";
-    f.assignBintableExt("TABLE", columns.nameCol, columns.speed_col);
-    //! [Assign a bintable extension]
-
-    const auto raster = createRaster();
-    const auto shape = raster.shape;
-    //! [Initialize an image extension]
-    logger.info() << "Assigning new Image HDU";
-    const auto &ext = f.initImageExt<float, 3>("Image", shape);
-    ext.writeRaster(raster);
-    //! [Initialize an image extension]
-
-    //! [Write several records]
-    logger.info() << "Writing several records at once";
-
-    // Option 1: With concrete Record instances
-    const Record<std::string> strRecord("STRING", "string");
-    const Record<int> intRecord("INTEGER", 8);
-    ext.writeRecords<std::string, int>(strRecord, intRecord);
-
-    // Option 2: With temporary Record instances
-    ext.writeRecords<std::string, int>({ "STR", "string" }, { "INT", 8 });
-    //! [Write several records]
-
-    logger.info() << "Here's the list of keywords in the extension:";
-    const auto keywords = ext.readKeywords();
-    for (const auto &k : keywords) {
-      logger.info() << "    " << k;
-    }
+    writeMefFile(filename);
 
     logger.info() << "---";
 
-    logger.info() << "Closing and reopening file in read-only mode";
-    f.close();
-    f.open(filename, MefFile::Permission::Read);
-
-    logger.info() << "---";
-
-    //! [Read a record]
-    logger.info() << "Reading record in primary";
-    const auto record = f.accessPrimary<>().parseRecord<int>("VALUE");
-    logger.info() << "    VALUE = " << record.value;
-    //! [Read a record]
-
-    //! [Access an HDU by name]
-    logger.info() << "Accessing bintable HDU by name";
-    const auto &bintableExt = f.accessFirst<BintableHdu>("TABLE");
-    logger.info() << "    Index: " << bintableExt.index();
-    //! [Access an HDU by name]
-
-    //! [Read bintable values]
-    logger.info() << "Reading columns";
-    const auto names = bintableExt.readColumn<std::string>("NAME").vector();
-    const auto speeds = bintableExt.readColumn<double>("SPEED").vector();
-    const auto slowestGuy = names[0];
-    const auto maxSpeed = speeds[speeds.size() - 1];
-    logger.info() << "    Slowest guy: " << slowestGuy;
-    logger.info() << "    Max speed: " << maxSpeed;
-    //! [Read bintable values]
-
-    //! [Access an HDU by index]
-    logger.info() << "Accessing image HDU by index";
-    const auto &imageExt = f.access<ImageHdu>(2);
-    logger.info() << "    Name: " << imageExt.readName();
-    //! [Access an HDU by index]
-
-    //! [Read several records]
-    // Option 1. As a tuple
-    auto records = imageExt.parseRecords<std::string, int>({ "STRING", "INTEGER" });
-    const auto strValue = std::get<0>(records).value;
-    const auto intValue = std::get<1>(records).value;
-    logger.info() << "    String value from tuple: " << strValue;
-    logger.info() << "    Integer value from tuple: " << intValue;
-
-    // Option 2. As a user-defined struct
-    struct Header {
-      std::string strValue;
-      int intValue;
-    };
-
-    auto header = imageExt.parseRecordsAs<Header, std::string, int>({ "STRING", "INTEGER" });
-    logger.info() << "    String value from struct: " << header.strValue;
-    logger.info() << "    Integer value from struct: " << header.intValue;
-    //! [Read several records]
-
-    //! [Read image values]
-    const auto image = imageExt.readRaster<float, 3>();
-    const auto &firstPixel = image[{ 0, 0 }];
-    const auto width = image.length<0>();
-    const auto height = image.length<1>();
-    const auto depth = image.length<2>();
-    const auto &lastPixel = image[{ width - 1, height - 1, depth - 1 }];
-    logger.info() << "    First pixel: " << firstPixel;
-    logger.info() << "    Last pixel: " << lastPixel;
-    //! [Read image values]
+    readMefFile(filename);
 
     logger.info() << "---";
     logger.info() << "The end!";
@@ -218,9 +417,6 @@ public:
 
     return Elements::ExitCode::OK;
   }
-
-private:
-  Elements::TempDir m_tempDir;
 };
 
 MAIN_FOR(EL_FitsIO_Tutorial)
