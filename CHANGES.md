@@ -6,6 +6,10 @@
 
 * HDU indices are 0-based
 
+## Known bugs
+
+* HDU indices in error messages are 1-based while they should now be 0-based
+
 # 2.2
 
 ## Dependency changes
