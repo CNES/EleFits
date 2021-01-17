@@ -8,7 +8,7 @@ namespace Euclid {
 
 \section design-purpose Purpose and scope
 
-The purpose of this page is to describe the internal implementation of the library.
+The purpose of this page is to describe the internal implementation of EL_FitsIO.
 Usage of the API is described in the main pages of this documentation.
 When implementation and usage are titghly coupled, links are provided to get the user point-of-view.
 
@@ -16,7 +16,7 @@ When implementation and usage are titghly coupled, links are provided to get the
 
 \subsection design-layers Layers
 
-The library is split in two layers:
+The package is split in two layers:
 
 - A high-level object-oriented layer (namespace FitsIO, see below)
 which aims at handling Fits files and their contents with an as-simple-as-possible modern API:
@@ -47,7 +47,7 @@ The API is organized in namespaces as follows:
 This translates into the following set of modules:
 
 - **EL_FitsData** contains basic **data-storage structures**:
-Records, bintable columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
+Records, binary table columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
 See \ref data-classes for more details on their API and usage.
 - **EL_CfitsioWrapper** is the low-level layer:
 The set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
@@ -58,11 +58,11 @@ It provides set of **read-write services** in dedicated classes;
 See \ref handlers for more details.
 - **EL_FitsIO_Examples** provides **examples**!
 Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program (see \ref apis-comp),
-which demonstrates the reading and writing of records, images and bintables with the three APIs;
+which demonstrates the reading and writing of records, images and binary tables with the three APIs;
 Of course, this is also where the tutorial is implemented.
 - **EL_FitsIO_Validation** contains **validation executables**:
   - Generator programs allow creating dummy Fits files from scratch;
-  - The performances of the library are compared to those of CFitsIO;
+  - The performances of EL_FitsIO are compared to those of CFitsIO;
   - A validation script checks that all of the provided programs run smoothly.
 
 The organization of the free functions, data classes and service classes in modules is illustrated below in the form of a class diagram.
@@ -89,7 +89,7 @@ as recommended in the C++ core guidelines.
 - Strings are generally handled as std::string, except for a few shortcuts with const char *.
 In the latter case, a std::string version is still provided.
 
-As for the binary parts of Fits files (image and bintable data), the mapping is not straightforward.
+As for the binary parts of Fits files (image and binary table data), the mapping is not straightforward.
 CFitsIO functions are not consistent with this respect:
 half of them work with built-in types (e.g. CFitsIO type code TSHORT corresponds to short)
 and the other half with fixed types (e.g. CFitsIO type code SHORT_IMG corresponds to std::int16_t).
@@ -114,7 +114,7 @@ and avoid casting fixed types to built-ins and back.
 
 As stated above, strings are handled with std::string, while CFitsIO is using const char * or char *.
 Most of the template functions are therefore specialized for std::string.
-Moreover, strings are treated very differently from other types in bintable columns:
+Moreover, strings are treated very differently from other types in binary table columns:
 they are considered by CFitsIO like scalar columns with a repeat count greater than one.
 Therefore, FitsIO::Column methods are also specialized.
 

@@ -46,7 +46,7 @@ RecordHdu, BintableHdu or ImageHdu.
 
 - A RecordHdu has methods to read and write records (sometimes referred to as keywords).
 It is obviously associated to the Record data class.
-- A BintableHdu additionally reads and writes bintable columns as Column objects.
+- A BintableHdu additionally reads and writes binary table columns as Column objects.
 - Finally, an ImageHdu reads and writes images as Raster objects.
 
 
@@ -67,7 +67,7 @@ but this is more verbose, and does not enforce or guarantee that the file is a S
 The organization of the library classes matches that of a Fits file:
 
 - A Fits file can be either of type SIF or MEF.
-- A MEF file contains HDUs, which themeselves contain records in a header and data in the form of an image or bintable.
+- A MEF file contains HDUs, which themeselves contain records in a header and data in the form of an image or binary table.
 - As a specific case, a SIF file is made of a header and image.
 
 \image html doc/diagrams/out/FitsFile.png

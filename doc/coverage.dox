@@ -1,6 +1,6 @@
 /**
 
-\page cfitsio-cov CFitsIO routines covered by the library
+\page cfitsio-cov CFitsIO routines covered by EL_FitsIO
 
 Legend:
 
@@ -49,7 +49,7 @@ Legend:
   - Read image type
   - **Read image size**
   - **Create image extension**
-  - Copy image data to image or bintable extension
+  - Copy image data to image or binary table extension
   - Write image region
   - **Write image**
   - Read image region

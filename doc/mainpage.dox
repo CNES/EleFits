@@ -12,30 +12,29 @@ namespace FitsIO {
 \section purpose Purpose and scope
 
 
-The purpose of the library is to provide a user-friendly and efficient API to read and write Fits files.
+The purpose of the package is to provide a user-friendly and efficient API to read and write Fits files.
 
-The library merely consists in a thin CFitsIO wrapper:
+The package merely consists in a thin CFitsIO wrapper:
 There is no intelligence inside.
 The actual reading and writing are delegated to CFitsIO,
 with as few indirections as possible to minimize overhead.
 As compared to CFitsIO API, the main benefits are those of C++ over C:
 
 - No more raw pointers for a **safe memory management**;
-- No more type codes but **template classes** which handle architecture specifics for you;
-- No more error codes but proper **exception handling**;
-- Structures dedicated to **data storage** instead of zillions of unorganized and redundant variables;
-- A **lightweight class hierarchy** to represent the actual Fits organization (e.g. extensions, records, columns...)
+- No more type codes but **template traits classes** which handle architecture specifics;
+- No more error codes but a proper **exception** handling;
+- Structures dedicated to **data storage** instead of unstructured and redundant variables;
+- A **lightweight class hierarchy** to represent the actual Fits organization (e.g. HDUs, records, columns...)
 instead of the all-in-one and flat `fitsfile` structure;
-- A **concise and clear API** instead of the cluttered and verbose one of CFitsIO;
-- A **comprehensive testing** and validation code.
+- A concise and **clear API** instead of the cluttered and verbose one of CFITSIO.
 
 Simplicity comes at the cost of completeness,
 and EL_FitsIO misses:
-- CFitsIO features that we found less important or too complex,
-like ASCII table extensions, streaming or compression;
+- CFitsIO features that we found less important (like ASCII tables) or too complex,
+(like streaming);
 - Features already well implemented in other Euclid libraries,
 like iterators covered by EL_CatalogLib;
-- Features that we didn't have time to implement yet.
+- Features that we didn't have time to implement yet!
 
 For a clear overview of what's there and what's missing, see \ref cfitsio-cov.
 
@@ -52,7 +51,7 @@ The end-user API is made of two kinds of classes:
 - \ref data-classes "Data classes" store raw data;
 - \ref handlers "Service classes" allow reading and writing the data.
 
-Records, image rasters and bintable columns are implemented as light structures to abstract from CFitsIO raw pointers:
+Records, image rasters and binary table columns are implemented as light structures to abstract from CFitsIO raw pointers:
 
 - Record is made of a name, value, unit and comment;
 - Column stores metadata (name, unit, width) and values;
@@ -65,15 +64,26 @@ Service classes are organized according to the Fits format:
 
 - MefFile, the root object, provides file-level services (open, close, access HDUs);
 - RecordHdu only handles records;
-- BintableHdu and ImageHdy, respectively the bintable and image HDU reader-writers, additionally provide access to the raster and columns.
+- BintableHdu and ImageHdu, respectively the binary table and image HDU reader-writers, additionally provide access to the raster and columns.
 
 To make it simple, the end-user API consists of the Euclid::FitsIO namespace.
 
-For a gentle introduction to the library, head to this page: \ref handlers.
 
-Last but not least, we've implemented and documented a \ref tuto.
+\section pages Related pages
 
-To find more example codes, check the EL_FitsIO_Examples and EL_FitsIO_Validation modules (see below).
+
+To go further, the following pages focus on specific topics:
+
+- \ref install_guide
+- \ref tuto
+- \ref data-classes
+- \ref handlers
+- \ref types
+- \ref optim
+- \ref type_map
+- \ref cfitsio-cov
+- \ref apis-comp
+- \ref design
 
 */
 

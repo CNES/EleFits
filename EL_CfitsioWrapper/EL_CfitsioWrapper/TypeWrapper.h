@@ -32,35 +32,35 @@ namespace Cfitsio {
  * @brief Type traits to convert C++ types to CFitsIO type codes.
  * @details
  * Used to read and write:
- * * Record's,
- * * Image's,
- * * Bintable's (ASCII table not supported).
+ * * Records,
+ * * Images,
+ * * Binary tables (ASCII table not supported).
  */
 template <typename T>
 struct TypeCode {
 
   /**
-   * @brief Get the type code for a Record.
+   * @brief Get the type code for a record.
    */
   inline static int forRecord();
 
   /**
-   * @brief Get the type code for a Bintable.
+   * @brief Get the type code for a binary table.
    */
   inline static int forBintable();
 
   /**
-   * @brief Get the TFORM value to handle Bintable columns.
+   * @brief Get the TFORM value to handle binary table columns.
    */
   inline static std::string tform(long repeatCount);
 
   /**
-   * @brief Get the type code for an Image.
+   * @brief Get the type code for an image.
    */
   inline static int forImage();
 
   /**
-   * @brief Get the BITPIX value to handle Image HDUs.
+   * @brief Get the BITPIX value to handle images.
    */
   inline static int bitpix();
 };

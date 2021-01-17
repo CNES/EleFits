@@ -96,9 +96,9 @@ public:
 
     logger.info();
 
-    logger.info() << "Creating bintable extension: SMALLTBL";
+    logger.info() << "Creating binary table extension: SMALLTBL";
     SmallTable table;
-    //! [Create bintable ext]
+    //! [Create binary table ext]
     fits_create_tbl(
         fptr,
         BINARY_TBL,
@@ -109,13 +109,13 @@ public:
         table.colUnit.data(),
         "SMALLTBL",
         &status);
-    Euclid::Cfitsio::mayThrowCfitsioError(status, "while creating bintable extension");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while creating binary table extension");
     fits_write_col(fptr, TINT, 1, 1, 1, table.rows, table.ids, &status);
     fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.rows, table.radecs, &status);
     fits_write_col(fptr, TSTRING, 3, 1, 1, table.rows, table.names.data(), &status);
     fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.rows * 2, table.dist_mags, &status);
     Euclid::Cfitsio::mayThrowCfitsioError(status, "while writing columns");
-    //! [Create bintable ext]
+    //! [Create binary table ext]
 
     logger.info();
 
@@ -161,10 +161,10 @@ public:
 
     logger.info();
 
-    logger.info() << "Reading bintable.";
+    logger.info() << "Reading binary table.";
     //! [Find HDU by name]
     fits_movnam_hdu(fptr, ANY_HDU, const_cast<char *>("SMALLTBL"), 0, &status);
-    Euclid::Cfitsio::mayThrowCfitsioError(status, "while moving to bintable extension");
+    Euclid::Cfitsio::mayThrowCfitsioError(status, "while moving to binary table extension");
     //! [Find HDU by name]
     //! [Get HDU index]
     int index;

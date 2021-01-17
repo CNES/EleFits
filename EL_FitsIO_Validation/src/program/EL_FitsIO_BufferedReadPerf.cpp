@@ -51,7 +51,7 @@ public:
   options_description defineSpecificProgramOptions() override {
     options_description options {};
     auto add = options.add_options();
-    add("tables", value<int>()->default_value(1), "Number of bintable extensions");
+    add("tables", value<int>()->default_value(1), "Number of binary table extensions");
     add("rows", value<int>()->default_value(1), "Number of rows");
     add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
@@ -68,7 +68,7 @@ public:
 
     MefFile f(filename, FitsFile::Permission::Overwrite);
 
-    logger.info() << "Writing " << count << " bintable extension(s)"
+    logger.info() << "Writing " << count << " binary table extension(s)"
                   << " of " << cols << " columns and " << rows << " rows";
 
     {

@@ -55,7 +55,7 @@ namespace FitsIO {
  * @brief Column metadata, i.e. `{ name, unit, repeatCount }`
  * and the value type as the template parameter.
  * @details
- * Bintable columns are either scalar (`repeatCount` = 1) or vector (`repeatCount` > 1).
+ * Binary table columns are either scalar (`repeatCount` = 1) or vector (`repeatCount` > 1).
  * In the case of vector columns, each cell of the column contains `repeatCount` values.
  * Here is an example of a 4-row table with a scalar column and a vector column with a repeat count of 3:
  * \code
@@ -107,7 +107,7 @@ namespace FitsIO {
  * which is what CFitsIO recommends for performance.
  * Indeed, with CFitsIO, it is much faster to write 1 row with a repeat count of 10.000
  * than 10.000 rows with a repeat count of 1.
- * This is because bintables are written row-wise in the Fits file.
+ * This is because binary tables are written row-wise in the Fits file.
  * CFitsIO uses an internal buffer, which can be exploited to optimize reading and writing.
  * This is generally handled through the "iterator function" provided by CFitsIO.
  * @note
@@ -145,7 +145,7 @@ struct ColumnInfo {
 };
 
 /**
- * @brief Bintable column data and metadata.
+ * @brief Binary table column data and metadata.
  * @details
  * This is an interface to be implemented with a concrete data container (e.g. `std::vector`).
  * Some implementations are provided with the library,

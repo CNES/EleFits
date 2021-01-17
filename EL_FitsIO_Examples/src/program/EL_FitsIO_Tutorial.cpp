@@ -214,7 +214,7 @@ void writeMefFile(const std::string &filename) {
 
   const auto columns = createColumns();
 
-  //! [Create bintable extensions]
+  //! [Create binary table extensions]
 
   logger.info("  Writing binary table HDUs...");
 
@@ -231,7 +231,7 @@ void writeMefFile(const std::string &filename) {
 
   const auto &table2 = f.assignBintableExt("TABLE2", columns.stringColumn, columns.int32Column, columns.float32Column);
 
-  //! [Create bintable extensions]
+  //! [Create binary table extensions]
 
   writeRecords(image2);
   (void)table2; // Mute unused variable warning

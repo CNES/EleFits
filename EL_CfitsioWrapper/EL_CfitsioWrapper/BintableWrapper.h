@@ -32,7 +32,7 @@ namespace Euclid {
 namespace Cfitsio {
 
 /**
- * @brief Bintable-related functions.
+ * @brief Binary table-related functions.
  */
 namespace Bintable {
 
@@ -52,24 +52,24 @@ long rowCount(fitsfile *fptr);
 bool hasColumn(fitsfile *fptr, const std::string &name);
 
 /**
- * @brief Get the index of a Bintable column.
+ * @brief Get the index of a Binary table column.
  */
 long columnIndex(fitsfile *fptr, const std::string &name);
 
 /**
- * @brief Read the metadata of a bintable column with given index.
+ * @brief Read the metadata of a binary table column with given index.
  */
 template <typename T>
 FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index);
 
 /**
- * @brief Read a Bintable column with given name.
+ * @brief Read a Binary table column with given name.
  */
 template <typename T>
 FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name);
 
 /**
- * @brief Read several Bintable columns with given names.
+ * @brief Read several Binary table columns with given names.
  */
 template <typename... Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names);
@@ -81,31 +81,31 @@ template <typename T>
 void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column);
 
 /**
- * @brief Write several bintable columns.
+ * @brief Write several binary table columns.
  */
 template <typename... Ts>
 void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns);
 
 /**
- * @brief Insert a bintable column at given index.
+ * @brief Insert a binary table column at given index.
  */
 template <typename T>
 void insertColumn(fitsfile *fptr, long index, const FitsIO::Column<T> &column);
 
 /**
- * @brief Insert several bintable columns at given index.
+ * @brief Insert several binary table columns at given index.
  */
 template <typename... Ts>
 void insertColumns(fitsfile *fptr, long index, const FitsIO::Column<Ts> &... columns);
 
 /**
- * @brief Append a bintable column.
+ * @brief Append a binary table column.
  */
 template <typename T>
 void appendColumn(fitsfile *fptr, const FitsIO::Column<T> &column);
 
 /**
- * @brief Append several bintable columns.
+ * @brief Append several binary table columns.
  */
 template <typename... Ts>
 void appendColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns);

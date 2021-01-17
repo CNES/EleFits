@@ -68,11 +68,11 @@ public:
 
     logger.info();
 
-    logger.info() << "Creating bintable extension: SMALLTBL";
+    logger.info() << "Creating binary table extension: SMALLTBL";
     FitsIO::Test::SmallTable table; // Predefined table for testing purpose
-    //! [Create bintable ext]
+    //! [Create binary table ext]
     Hdu::createBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
-    //! [Create bintable ext]
+    //! [Create binary table ext]
 
     logger.info();
 
@@ -107,7 +107,7 @@ public:
 
     logger.info();
 
-    logger.info() << "Reading bintable.";
+    logger.info() << "Reading binary table.";
     //! [Find HDU by name]
     Hdu::gotoName(fptr, "SMALLTBL");
     //! [Find HDU by name]

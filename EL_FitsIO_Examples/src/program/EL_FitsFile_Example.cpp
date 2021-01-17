@@ -70,7 +70,7 @@ public:
     logger.info();
 
     Test::SmallTable table; // Predefined table for testing purpose
-    logger.info() << "Creating bintable extension: SMALLTBL";
+    logger.info() << "Creating binary table extension: SMALLTBL";
     //! [Create bintable ext]
     f.assignBintableExt("SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create bintable ext]
@@ -108,7 +108,7 @@ public:
 
     logger.info();
 
-    logger.info() << "Reading bintable.";
+    logger.info() << "Reading binary table.";
     //! [Find HDU by name]
     const auto &bintableExt = f.accessFirst<BintableHdu>("SMALLTBL");
     //! [Find HDU by name]

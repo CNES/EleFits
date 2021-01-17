@@ -52,7 +52,7 @@
 * Read the full header as a string
 * Check whether a record or column exists
 * Provide a fallback value when a record is not found
-* Read bintable or image dimensions
+* Read binary table or image dimensions
 * Write a COMMENT or HISTORY record
 * Check whether a SifFile or MefFile is open
 * Program `EL_FitsIO_PrintSupportedTypes` prints supported types for each data class!
@@ -196,14 +196,14 @@ Records:
 * Store records directly in user-defined structure when parsing
 * Write brace-initialized records
 
-Bintables:
+Binary tables:
 
-* Row-wise bintable reading and writing (huge performance improvement, not available in CFitsIO)
-* Append new columns in a bintable
+* Row-wise binary table reading and writing (huge performance improvement, not available in CFitsIO)
+* Append new columns in a binary table
 
 ## Considered features for 1.4
 
-* Insert columns in a bintable
+* Insert columns in a binary table
 * Changes made to the record IOs (return user-defined struct) could be ported to analogous column functions (TBC)
 * Functions which input parameter packs could have tuple counterparts in order to manipulate proper objects (TBC)
 
@@ -223,8 +223,8 @@ Bintables:
 
 ## Missing features which could be added
 
-* Bintables cannot be modified (e.g. add or remove columns or rows)
-* Bintables cannot be preprocessed (sorted or filtered)
+* Binary tables cannot be modified (e.g. add or remove columns or rows)
+* Binary tables cannot be preprocessed (sorted or filtered)
 * HDUs cannot be removed
 * Images cannot be (de)compressed
 * Tables cannot be read by rows

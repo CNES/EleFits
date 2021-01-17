@@ -48,7 +48,7 @@ namespace Cfitsio {
  * @brief HDU-related functions.
  *
  * @details
- * An HDU can be of three Types (ASCII tables are not supported):
+ * An HDU can be of two Types (ASCII tables are not supported):
  * * Image
  * * Bintable
  *
@@ -115,30 +115,30 @@ bool initPrimary(fitsfile *fptr);
 bool updateName(fitsfile *fptr, const std::string &name);
 
 /**
- * @brief Create a HDU of Type METADATA.
+ * @brief Create a RecordHdu (which is an ImageHdu with no data).
  */
 void createMetadataExtension(fitsfile *fptr, const std::string &name);
 
 /**
- * @brief Create a new Image HDU with given name, pixel type and shape.
+ * @brief Create a new ImageHdu with given name, pixel type and shape.
  */
 template <typename T, long n = 2>
 void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Position<n> &shape);
 
 /**
- * @brief Write a Raster in a new Image HDU.
+ * @brief Write a Raster in a new ImageHdu.
  */
 template <typename T, long n = 2>
 void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO::Raster<T, n> &raster);
 
 /**
- * @brief Create a new Bintable HDU with given name and column infos.
+ * @brief Create a new BintableHdu with given name and column infos.
  */
 template <typename... Ts>
 void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::ColumnInfo<Ts> &... header);
 
 /**
- * @brief Write a Table in a new Bintable HDU.
+ * @brief Write a Table in a new BintableHdu.
  */
 template <typename... Ts>
 void createBintableExtension(fitsfile *fptr, const std::string &name, const FitsIO::Column<Ts> &... table);

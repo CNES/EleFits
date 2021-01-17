@@ -46,7 +46,7 @@ VecColumn<T> randomColumn(const std::string &name, long rows) {
 }
 
 /**
- * @brief Append a 2D-MASS-like bintable extension to a file.
+ * @brief Append a 2D-MASS-like binary table extension to a file.
  * @details
  * Random columns of type double ('D') and float ('E') are generated and written.
  */
@@ -113,8 +113,8 @@ public:
 
     options_description options {};
     auto add = options.add_options();
-    add("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output bintable file");
-    add("rows", value<long>()->default_value(10), "Bintable row count");
+    add("binary table", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
+    add("rows", value<long>()->default_value(10), "Binary table row count");
     add("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
     add("width", value<long>()->default_value(10), "Image width");
     add("height", value<long>()->default_value(10), "Image height");
@@ -130,7 +130,7 @@ public:
     const std::string image = args["image"].as<std::string>();
     const Position<3> shape { args["width"].as<long>(), args["height"].as<long>(), 3 };
 
-    logger.info("Writing bintable...");
+    logger.info("Writing binary table...");
     writeBintable(bintable, rows);
     logger.info("Done.");
 
@@ -138,7 +138,7 @@ public:
     writeImage(image, shape);
     logger.info("Done.");
 
-    logger.info("Reading bintable...");
+    logger.info("Reading binary table...");
     MefFile b(bintable, MefFile::Permission::Read);
     const auto someColumn = b.access<BintableHdu>(1).readColumn<float>("SHE_LENSMC_G1");
     logger.info() << "First value of SHE_LENSMC_G1 = " << someColumn.vector()[0];

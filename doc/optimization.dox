@@ -7,7 +7,7 @@ namespace FitsIO {
 
 \section optim-intro Foreword
 
-The library focuses firstly on memory management, and secondly on performance.
+The implementation focuses firstly on memory management, and secondly on performance.
 Much of its complexity is imputable to performance, like the heavy use of tuples which are not that fun to manipulates.
 On user side, few operations would be very detrimental to performance.
 Yet, a few would be, and there are thus a few things to know if one wants to get the most out of EL_FitsIO.
@@ -16,7 +16,7 @@ we've tried to sort by orders of magnitude for classical use cases.
 
 \section optim-data-copy Avoid copies and implicit transforms
 
-This one is not specific to the Fits format or library at all,
+This one is not specific to the Fits format or EL_FitsIO at all,
 but is probably worth remembering when using a code devoted to dataset manipulation.
 
 In the frame of the library usage, avoiding such operations boils down to:
@@ -107,7 +107,7 @@ void doSomethingWithHdu(const std::string &name);
 EL_FitsIO provides services to read and write bunches of data through one single call.
 The reason is to skip steps (like bunny hopping in the file) and lower runtime and memory footprint.
 
-This is especially true for bintable writing.
+This is especially true for binary table writing.
 Without diving into the implementation details, let's give a brief overview of what's happening in CFitsIO.
 Fits tables are stored row-wise.
 When reading a single column, CFitsIO has to load each of the rows.

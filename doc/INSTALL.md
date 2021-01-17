@@ -47,7 +47,7 @@ sudo make install -j
 ```
 
 This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
-The end-user library is named `EL_FitsFile`, while the low-level API is named `EL_CfitsioWrapper`.
+The end-user library is named EL_FitsFile, while the low-level API is named EL_CfitsioWrapper.
 
 ## Configure a project to depend on EL_FitsIO
 
@@ -57,14 +57,14 @@ An Elements project is made of modules.
 The project contains a root `CMakeLists.txt`, and each module contains a `CMakeLists.txt`.
 For more information, please refer to the [Elements documentation](https://euclid.roe.ac.uk/projects/codeen-users/wiki/User_Bui_Too).
 
-Using the library means declaring the dependency to the EL_FitsIO project in the root `CMakeLists.txt`:
+Using the package means declaring the dependency to the EL_FitsIO project in the root `CMakeLists.txt`:
 
 ```xml
 elements_project(<project_name> <project_version>
     USE EL_FitsIO <EL_FitsIO_version>)
 ```
 
-and to the `EL_FitsFile` module (for the end-user API) or to the `EL_CfitsioWrapper` module (for the low-level API)
+and to the EL_FitsFile module (for the end-user API) or to the EL_CfitsioWrapper module (for the low-level API)
 in the `CMakeLists.txt` of each module which requires EL_FitsIO:
 
 ```xml
@@ -81,7 +81,7 @@ elements_add_library(<library_name> src/Lib/*.cpp
 
 ### CMake project
 
-Here's a minimal `CMakeLists.txt` file to use the `EL_FitsFile` library (end-user API):
+Here's a minimal `CMakeLists.txt` file to use the EL_FitsFile library (end-user API):
 
 ```xml
 CMAKE_MINIMUM_REQUIRED(VERSION <cmake_version>)
@@ -91,7 +91,7 @@ add_executable(<exe_name> <exe_source>)
 target_link_libraries(<exe_name> EL_FitsFile)
 ```
 
-To use the low-level API, replace `EL_FitsFile` with `EL_CfitsioWrapper`.
+To use the low-level API, replace EL_FitsFile with EL_CfitsioWrapper.
 
 The `find_package` command expects parent folder of the file `FindEL_FitsFile.cmake` to be in the `CMAKE_MODULE_PATH`.
 For now, it is located in the sources of EL_FitsIO, in `cmake/modules`

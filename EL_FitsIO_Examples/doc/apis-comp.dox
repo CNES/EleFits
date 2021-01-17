@@ -92,15 +92,15 @@ Several records can be read at once, as a tuple or custom structure.
 Refer to the \ref tuto for more details.
 </table>
 
-\section apis-table Bintable management
+\section apis-table Binary table management
 
 <table>
 <tr><th>Operation<th>CFitsIO<th>EL_CfitsioWrapper<th>EL_FitsFile
 <tr>
-<td>Create a bintable HDU
-<td>\snippet EL_Cfitsio_Example.cpp Create bintable ext
-<td>\snippet EL_CfitsioWrapper_Example.cpp Create bintable ext
-<td>\snippet EL_FitsFile_Example.cpp Create bintable ext
+<td>Create a binary table HDU
+<td>\snippet EL_Cfitsio_Example.cpp Create binary table ext
+<td>\snippet EL_CfitsioWrapper_Example.cpp Create binary table ext
+<td>\snippet EL_FitsFile_Example.cpp Create binary table ext
 <tr>
 <td>Read a column data
 <td>\snippet EL_Cfitsio_Example.cpp Read column
@@ -124,6 +124,10 @@ Refer to the \ref tuto for more details.
 <td>\snippet EL_CfitsioWrapper_Example.cpp Read raster
 <td>\snippet EL_FitsFile_Example.cpp Read raster
 </table>
+
+\example EL_Cfitsio_Example.cpp
+\example EL_CfitsioWrapper_Example.cpp
+\example EL_FitsFile_Example.cpp
 
 */
 

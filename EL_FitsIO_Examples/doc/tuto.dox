@@ -21,7 +21,7 @@ if you don't already know the format.
 At the end of the tutorial, you will be able to create a MEF file from scratch with unlimited number of various extensions,
 and to read the metadata and data back!
 
-The tutorial is built together with an example program: EL_FitsIO_Tutorial.
+The tutorial is built together with an example program: \ref EL_FitsIO_Tutorial.cpp.
 We've embedded the calls to the logger in the snippets below,
 so that you can easily map the execution log to the following explanations.
 You can already run the program and watch the resulting file:
@@ -186,7 +186,7 @@ Here's an example of creating image HDUs:
 
 And here's one of creating binary table HDUs:
 
-\snippet EL_FitsIO_Tutorial.cpp Create bintable extensions
+\snippet EL_FitsIO_Tutorial.cpp Create binary table extensions
 
 \see ImageHdu
 \see BintableHdu
@@ -213,7 +213,7 @@ There are many ways of doing so; here are a few examples:
 
 HDUs can be accessed with a set of methods, templated with the type of HDU: BintableHdu, ImageHdu, or RecordHdu.
 For metadata work, we don't need to know the type of HDU:
-whether this is an image or bintable HDU has no impact, and a RecordHdu will be returned by default.
+whether this is an image or binary table HDU has no impact, and a RecordHdu will be returned by default.
 
 HDUs are accessed either by their name (first HDU whose name matches argument is returned) or by their index,
 and a shortcut is provided for the primary HDU (which has index 0):
@@ -247,7 +247,7 @@ For images, a VecRaster is instantiated, and you can access the pixel values wit
 
 \see ImageHdu
 
-\subsection tuto-read-bintable Read binary table values
+\subsection tuto-read-binary table Read binary table values
 
 
 Once you have accessed a BintableHdu, you can read column-wise by giving the column name.
@@ -273,6 +273,8 @@ which provides ready-to-use functions and classes, such as random records, raste
 \image html doc/diagrams/out/FitsData.png
 
 \image html doc/diagrams/out/FitsFile.png
+
+\example EL_FitsIO_Tutorial.cpp
 
 */
 

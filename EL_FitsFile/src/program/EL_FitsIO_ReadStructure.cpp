@@ -99,7 +99,7 @@ public:
       } else {
         const auto columnCount = dynamic_cast<const BintableHdu *>(&hdu)->readColumnCount();
         const auto rowCount = dynamic_cast<const BintableHdu *>(&hdu)->readRowCount();
-        logger.info() << "  Bintable HDU:";
+        logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << columnCount << " columns x " << rowCount << " rows";
       }
 

@@ -117,7 +117,7 @@ public:
     options_description options {};
     auto add = options.add_options();
     add("images", value<int>()->default_value(0), "Number of image extensions");
-    add("tables", value<int>()->default_value(0), "Number of bintable extensions");
+    add("tables", value<int>()->default_value(0), "Number of binary table extensions");
     add("naxis1", value<int>()->default_value(1), "First axis size");
     add("naxis2", value<int>()->default_value(1), "Second axis size");
     add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
@@ -159,7 +159,7 @@ public:
 
     logger.info() << "\tElapsed: " << durationMilli << " ms";
 
-    logger.info() << "Generating " << tableCount << " bintable extension(s)"
+    logger.info() << "Generating " << tableCount << " binary table extension(s)"
                   << " of size " << 3 << " x " << naxis2;
 
     begin = std::chrono::steady_clock::now();
