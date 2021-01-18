@@ -30,7 +30,7 @@ FitsIO::Position<-1> readShape<-1>(fitsfile *fptr) {
   fits_get_img_dim(fptr, &naxis, &status);
   FitsIO::Position<-1> shape(naxis);
   fits_get_img_size(fptr, naxis, &shape[0], &status);
-  mayThrowCfitsioError(status, "Cannot read raster shape");
+  mayThrowCfitsioError(status, fptr, "Cannot read raster shape");
   return shape;
 }
 

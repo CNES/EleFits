@@ -31,7 +31,7 @@ void createImageExtension(fitsfile *fptr, const std::string &name, const FitsIO:
   int status = 0;
   auto nonconstShape = shape; // const-correctness issue
   fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconstShape[0], &status);
-  mayThrowCfitsioError(status, "Cannot create image extension");
+  mayThrowCfitsioError(status, fptr, "Cannot create image extension: " + name);
   updateName(fptr, name);
 }
 
@@ -50,7 +50,7 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
   CStrArray colUnit { header.unit... };
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
-  mayThrowCfitsioError(status, "Cannot create binary table extension " + name);
+  mayThrowCfitsioError(status, fptr, "Cannot create binary table extension: " + name);
 }
 
 template <typename... Ts>
@@ -61,7 +61,7 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
   CStrArray colUnit { table.info.unit... };
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
-  mayThrowCfitsioError(status, "Cannot create binary table extension " + name);
+  mayThrowCfitsioError(status, fptr, "Cannot create binary table extension: " + name);
   Bintable::writeColumns(fptr, table...);
 }
 
@@ -76,7 +76,7 @@ void createBintableExtension(fitsfile *fptr, const std::string &name, const Fits
   char *cUnit = &colUnit[0];
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, columnCount, &cName, &cFormat, &cUnit, name.c_str(), &status);
-  mayThrowCfitsioError(status, "Cannot create binary table extension " + name);
+  mayThrowCfitsioError(status, fptr, "Cannot create binary table extension: " + name);
   Bintable::writeColumn(fptr, column);
 }
 

@@ -18,6 +18,7 @@
  */
 
 #include "EL_CfitsioWrapper/FileWrapper.h"
+#include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 
 namespace Euclid {
@@ -26,9 +27,35 @@ namespace Cfitsio {
 CfitsioError::CfitsioError(int cfitsioStatus) : FitsIOError(cfitsioErrorMessage(cfitsioStatus)), status(cfitsioStatus) {
 }
 
-CfitsioError::CfitsioError(int cfitsioStatus, const std::string &context) :
-    FitsIOError(cfitsioErrorMessage(cfitsioStatus) + " (" + context + ")"),
+CfitsioError::CfitsioError(int cfitsioStatus, fitsfile *fptr, const std::string &context) :
+    FitsIOError(context),
     status(cfitsioStatus) {
+  append("");
+  if (not fptr) {
+    append("CFitsIO fitsfile pointer is null.");
+  } else {
+    try {
+      append("File name: " + File::name(fptr));
+    } catch (...) {
+      append("Unknown file name.");
+    }
+    try {
+      append("Current HDU index (0-based): " + std::to_string(Hdu::currentIndex(fptr) - 1));
+    } catch (...) {
+      append("Unknown current HDU index.");
+    }
+    try {
+      append("Current HDU name: " + Hdu::currentName(fptr));
+    } catch (...) {
+      append("Unknown current HDU name.");
+    }
+  }
+  append("");
+  append(cfitsioErrorMessage(status));
+  char message[80];
+  while (fits_read_errmsg(message) != 0) {
+    append(message, 1);
+  };
 }
 
 std::string cfitsioErrorMessage(int status) {
@@ -39,26 +66,27 @@ std::string cfitsioErrorMessage(int status) {
   return error_msg;
 }
 
-void mayThrowCfitsioError(int status, const std::string &context) {
-  if (status == 0) {
-    return;
-  }
-  if (context.empty()) {
+void mayThrowCfitsioError(int status) {
+  if (status != 0) {
     throw CfitsioError(status);
-  } else {
-    throw CfitsioError(status, context);
+  }
+}
+
+void mayThrowCfitsioError(int status, fitsfile *fptr, const std::string &message) {
+  if (status != 0) {
+    throw CfitsioError(status, fptr, message);
   }
 }
 
 void mayThrowReadonlyError(fitsfile *fptr) {
   if (not File::isWritable(fptr)) {
-    mayThrowCfitsioError(READONLY_FILE);
+    throw CfitsioError(READONLY_FILE);
   }
 }
 
 void mayThrowInvalidFileError(fitsfile *fptr) {
   if (not fptr) {
-    mayThrowCfitsioError(BAD_FILEPTR);
+    throw CfitsioError(BAD_FILEPTR);
   }
 }
 

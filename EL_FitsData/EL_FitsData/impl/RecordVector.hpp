@@ -42,7 +42,7 @@ const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
     return r.keyword == keyword;
   });
   if (it == vector.end()) {
-    throw FitsIOError("Cannot find keyword: " + keyword);
+    throw FitsIOError("Cannot find record: " + keyword);
   }
   return *it;
 }

@@ -48,6 +48,13 @@ public:
    */
   const char *what() const noexcept override;
 
+  /**
+   * @brief Append some line to the message.
+   * @param line The line to be appended
+   * @param indent Some indentation level
+   */
+  void append(const std::string &line, std::size_t indent = 0);
+
 private:
   static const std::string m_prefix;
   std::string m_message;

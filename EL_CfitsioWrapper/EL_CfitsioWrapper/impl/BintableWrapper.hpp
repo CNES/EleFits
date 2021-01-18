@@ -87,8 +87,9 @@ void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &colum
       &status);
   mayThrowCfitsioError(
       status,
-      "Cannot read column chunk: " + column.info.name + " (" + std::to_string(index) + "); " + "rows: [" +
-          std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "-");
+      fptr,
+      "Cannot read column chunk: " + column.info.name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
+          std::to_string(firstRow - 1) + "-" + std::to_string(firstRow - 1 + rowCount - 1) + "-");
 }
 
 /**
@@ -121,8 +122,9 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
   fits_write_col(fptr, TypeCode<T>::forBintable(), static_cast<int>(index), firstRow, 1, size, vec.data(), &status);
   mayThrowCfitsioError(
       status,
-      "Cannot write column chunk: " + column.info.name + " (" + std::to_string(index) + "); " + "rows: [" +
-          std::to_string(firstRow) + "-" + std::to_string(firstRow + rowCount - 1) + "-");
+      fptr,
+      "Cannot write column chunk: " + column.info.name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
+          std::to_string(firstRow - 1) + "-" + std::to_string(firstRow - 1 + rowCount - 1) + "-");
 }
 
 /**
@@ -242,7 +244,7 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index) {
       nullptr, // nulval
       nullptr, // tdisp
       &status);
-  mayThrowCfitsioError(status, "Cannot read column metadata: #" + std::to_string(index));
+  mayThrowCfitsioError(status, fptr, "Cannot read column metadata: #" + std::to_string(index - 1));
   return { name, unit, repeatCount };
 }
 
@@ -277,7 +279,7 @@ FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
       column.data(),
       nullptr, // anynul
       &status);
-  mayThrowCfitsioError(status, "Cannot read column data");
+  mayThrowCfitsioError(status, fptr, "Cannot read column data: " + name);
   return column;
 }
 
@@ -297,7 +299,7 @@ void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
       column.elementCount(), // nelements
       nonconstData.data(),
       &status);
-  mayThrowCfitsioError(status, "Cannot write column data");
+  mayThrowCfitsioError(status, fptr, "Cannot write column data: " + column.info.name);
 }
 
 template <typename... Ts>

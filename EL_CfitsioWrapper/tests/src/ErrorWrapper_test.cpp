@@ -30,18 +30,14 @@ BOOST_AUTO_TEST_SUITE(ErrorWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(noerror_test) {
-
   BOOST_CHECK_NO_THROW(mayThrowCfitsioError(0));
 }
 
 BOOST_AUTO_TEST_CASE(error_test) {
-
   BOOST_CHECK_THROW(mayThrowCfitsioError(1), CfitsioError);
-  BOOST_CHECK_THROW(mayThrowCfitsioError(1, "Unit test"), CfitsioError);
 }
 
 BOOST_AUTO_TEST_CASE(nullptr_test) {
-
   BOOST_CHECK_THROW(mayThrowInvalidFileError(nullptr), CfitsioError);
 }
 

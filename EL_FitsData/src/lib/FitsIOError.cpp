@@ -31,5 +31,13 @@ const char *FitsIOError::what() const noexcept {
   return m_message.c_str();
 }
 
+void FitsIOError::append(const std::string &text, std::size_t indent) {
+  m_message += "\n";
+  for (std::size_t i = 0; i < indent; ++i) {
+    m_message += "  ";
+  }
+  m_message += text;
+}
+
 } // namespace FitsIO
 } // namespace Euclid

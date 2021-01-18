@@ -1,14 +1,16 @@
 # Change log
 
+# 3.1
+
+## Cleaning
+
+* Error messages contain more informations
+
 # 3.0 (breaking)
 
 ## Breaking changes
 
 * HDU indices are 0-based
-
-## Known bugs
-
-* HDU indices in error messages are 1-based while they should now be 0-based
 
 # 2.2
 

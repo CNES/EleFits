@@ -69,6 +69,11 @@ void close(fitsfile *&fptr);
 void closeAndDelete(fitsfile *&fptr);
 
 /**
+ * @brief Get the file name.
+ */
+std::string name(fitsfile *fptr);
+
+/**
  * @brief Check whether a Fits file is open with write permission.
  */
 bool isWritable(fitsfile *fptr);

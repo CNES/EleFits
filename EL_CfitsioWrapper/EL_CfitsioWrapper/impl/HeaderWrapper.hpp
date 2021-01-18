@@ -137,8 +137,7 @@ FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword) {
   /* Read unit */
   char unit[FLEN_COMMENT];
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-  const std::string context = "Cannot parse '" + keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
-  mayThrowCfitsioError(status, context);
+  mayThrowCfitsioError(status, fptr, "Cannot parse record: " + keyword);
   /* Build Record */
   FitsIO::Record<T> record(keyword, value, std::string(unit), std::string(comment));
   /* Separate comment and unit */
@@ -184,9 +183,7 @@ void writeRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
       &nonconstValue,
       record.rawComment().c_str(),
       &status);
-  const std::string context =
-      "Cannot write '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
-  mayThrowCfitsioError(status, context);
+  mayThrowCfitsioError(status, fptr, "Cannot write record: " + record.keyword);
 }
 
 template <typename... Ts>
@@ -213,9 +210,7 @@ void updateRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
   std::string comment = record.comment;
   T value = record.value;
   fits_update_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
-  const std::string context =
-      "Cannot update '" + record.keyword + "' in HDU #" + std::to_string(Hdu::currentIndex(fptr));
-  mayThrowCfitsioError(status, context);
+  mayThrowCfitsioError(status, fptr, "Cannot update record: " + record.keyword);
 }
 
 template <typename... Ts>
