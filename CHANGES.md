@@ -5,6 +5,7 @@
 ## New features
 
 * New method `MefFile::access(string)` checks that extactly one HDU with given name exists
+* Binary table columns can be read by index
 
 ## Cleaning
 

@@ -108,6 +108,18 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   BOOST_CHECK(not presence[2]);
 }
 
+BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
+  const auto intColumn = Test::RandomTable::generateColumn<int>("INT");
+  const auto floatColumn = Test::RandomTable::generateColumn<float>("FLOAT");
+  const auto &ext = assignBintableExt("", intColumn, floatColumn);
+  const auto byName = ext.readColumns<int, float>({ intColumn.info.name, floatColumn.info.name });
+  Test::checkEqualVectors(std::get<0>(byName).vector(), intColumn.vector());
+  Test::checkEqualVectors(std::get<1>(byName).vector(), floatColumn.vector());
+  const auto byIndex = ext.readColumns<int, float>({ 0, 1 });
+  Test::checkEqualVectors(std::get<0>(byIndex).vector(), intColumn.vector());
+  Test::checkEqualVectors(std::get<1>(byIndex).vector(), floatColumn.vector());
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

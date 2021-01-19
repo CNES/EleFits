@@ -27,9 +27,25 @@ namespace Euclid {
 namespace FitsIO {
 
 template <typename T>
+VecColumn<T> BintableHdu::readColumn(long index) const {
+  gotoThisHdu();
+  return Cfitsio::Bintable::readColumn<T>(m_fptr, index + 1);
+}
+
+template <typename T>
 VecColumn<T> BintableHdu::readColumn(const std::string &name) const {
   gotoThisHdu();
   return Cfitsio::Bintable::readColumn<T>(m_fptr, name);
+}
+
+template <typename... Ts>
+std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<long> &indices) const {
+  gotoThisHdu();
+  std::vector<long> cfitsioIndices(indices.size());
+  std::transform(indices.begin(), indices.end(), cfitsioIndices.begin(), [](long i) {
+    return i + 1;
+  });
+  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, cfitsioIndices);
 }
 
 template <typename... Ts>

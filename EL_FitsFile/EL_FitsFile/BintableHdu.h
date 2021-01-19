@@ -72,10 +72,22 @@ public:
   std::vector<bool> hasColumns(const std::vector<std::string> &names) const;
 
   /**
+   * @brief Read a column with given index.
+   */
+  template <typename T>
+  VecColumn<T> readColumn(long index) const;
+
+  /**
    * @brief Read a column with given name.
    */
   template <typename T>
   VecColumn<T> readColumn(const std::string &name) const;
+
+  /**
+   * @brief Read several columns with given indices.
+   */
+  template <typename... Ts>
+  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<long> &indices) const;
 
   /**
    * @brief Read several columns with given names.

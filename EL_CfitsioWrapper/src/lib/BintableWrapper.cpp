@@ -140,8 +140,7 @@ void writeColumnChunkImpl<std::string>(
 } // namespace Internal
 
 template <>
-FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std::string &name) {
-  long index = columnIndex(fptr, name);
+FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, long index) {
   long rows = rowCount(fptr);
   FitsIO::VecColumn<std::string> column(readColumnInfo<std::string>(fptr, index), rows);
   std::vector<char *> data(rows);
@@ -160,7 +159,7 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std
       &data[0],
       nullptr, // anynul
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read string column: " + name);
+  mayThrowCfitsioError(status, fptr, "Cannot read string column: " + column.info.name);
   auto columnIt = column.vector().begin();
   for (auto dataIt = &data[0]; dataIt != &data[rows]; ++dataIt, ++columnIt) {
     *columnIt = std::string(*dataIt);

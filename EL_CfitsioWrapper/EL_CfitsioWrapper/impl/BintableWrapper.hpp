@@ -244,7 +244,7 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index) {
       nullptr, // nulval
       nullptr, // tdisp
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read column metadata: #" + std::to_string(index - 1));
+  mayThrowCfitsioError(status, fptr, "Cannot read column info: #" + std::to_string(index - 1));
   return { name, unit, repeatCount };
 }
 
@@ -252,22 +252,13 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index) {
  * @brief String specialization.
  */
 template <>
-FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, const std::string &name);
-
-/**
- * @brief String specialization.
- */
-template <>
-void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> &column);
+FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, long index);
 
 template <typename T>
-FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
-  /* Read metadata */
-  const long index = columnIndex(fptr, name);
+FitsIO::VecColumn<T> readColumn(fitsfile *fptr, long index) {
   const long rows = rowCount(fptr);
   FitsIO::VecColumn<T> column(readColumnInfo<T>(fptr, index), rows);
   int status = 0;
-  /* Read data */
   fits_read_col(
       fptr,
       TypeCode<T>::forBintable(), // datatype
@@ -279,9 +270,20 @@ FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
       column.data(),
       nullptr, // anynul
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read column data: " + name);
+  mayThrowCfitsioError(status, fptr, "Cannot read column data: #" + column.info.name);
   return column;
 }
+
+template <typename T>
+FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name) {
+  return readColumn<T>(fptr, columnIndex(fptr, name));
+}
+
+/**
+ * @brief String specialization.
+ */
+template <>
+void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> &column);
 
 template <typename T>
 void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
@@ -303,16 +305,12 @@ void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
 }
 
 template <typename... Ts>
-std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names) {
-  /* List column indices */
-  std::vector<long> indices(names.size());
-  std::transform(names.cbegin(), names.cend(), indices.begin(), [&](const std::string &n) {
-    return columnIndex(fptr, n);
-  });
+std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<long> &indices) {
   /* Read column metadata */
   const long rows = rowCount(fptr);
   std::tuple<FitsIO::VecColumn<Ts>...> columns;
   Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::readInfos(fptr, indices, columns, rows);
+  /* Get the buffer size */
   int status = 0;
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
@@ -328,6 +326,16 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vect
     Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::readChunks(fptr, indices, columns, first, chunkRows);
   }
   return columns;
+}
+
+template <typename... Ts>
+std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names) {
+  /* List column indices */
+  std::vector<long> indices(names.size());
+  std::transform(names.cbegin(), names.cend(), indices.begin(), [&](const std::string &n) {
+    return columnIndex(fptr, n);
+  });
+  return readColumns<Ts...>(fptr, indices);
 }
 
 template <typename... Ts>

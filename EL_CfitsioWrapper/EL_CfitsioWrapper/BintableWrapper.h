@@ -63,13 +63,25 @@ template <typename T>
 FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index);
 
 /**
- * @brief Read a Binary table column with given name.
+ * @brief Read the binary table column with given index.
+ */
+template <typename T>
+FitsIO::VecColumn<T> readColumn(fitsfile *fptr, long index);
+
+/**
+ * @brief Read a binary table column with given name.
  */
 template <typename T>
 FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name);
 
 /**
- * @brief Read several Binary table columns with given names.
+ * @brief Read several binary table columns with given indices.
+ */
+template <typename... Ts>
+std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<long> &indices);
+
+/**
+ * @brief Read several binary table columns with given names.
  */
 template <typename... Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names);
