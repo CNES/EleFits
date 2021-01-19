@@ -33,7 +33,7 @@ fitsfile *createAndOpen(const std::string &filename, CreatePolicy policy) {
   fitsfile *fptr;
   int status = 0;
   fits_create_file(&fptr, cfitsioName.c_str(), &status);
-  mayThrowCfitsioError(status, fptr, "Cannot create file: " + filename);
+  CfitsioError::mayThrow(status, fptr, "Cannot create file: " + filename);
   Hdu::initPrimary(fptr);
   return fptr;
 }
@@ -46,7 +46,7 @@ fitsfile *open(const std::string &filename, OpenPolicy policy) {
     permission = READWRITE;
   }
   fits_open_file(&fptr, filename.c_str(), permission, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot open file: " + filename);
+  CfitsioError::mayThrow(status, fptr, "Cannot open file: " + filename);
   return fptr;
 }
 
@@ -56,7 +56,7 @@ void close(fitsfile *&fptr) {
   }
   int status = 0;
   fits_close_file(fptr, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot close file");
+  CfitsioError::mayThrow(status, fptr, "Cannot close file");
   fptr = nullptr;
 }
 
@@ -67,7 +67,7 @@ void closeAndDelete(fitsfile *&fptr) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   fits_delete_file(fptr, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot close and delete file");
+  CfitsioError::mayThrow(status, fptr, "Cannot close and delete file");
   fptr = nullptr;
 }
 
@@ -75,7 +75,7 @@ std::string name(fitsfile *fptr) {
   int status = 0;
   char filename[FLEN_FILENAME];
   fits_file_name(fptr, filename, &status);
-  mayThrowCfitsioError(status, fptr, "Filename not found");
+  CfitsioError::mayThrow(status, fptr, "Filename not found");
   return filename;
 }
 

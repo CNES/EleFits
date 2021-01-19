@@ -64,7 +64,7 @@ public:
 /**
  * @brief A random Raster of given type and shape.
  */
-template <typename T, long n>
+template <typename T, long n = 2>
 class RandomRaster : public VecRaster<T, n> {
 
 public:

@@ -22,12 +22,13 @@
 
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief The error class which is thrown by the library.
+ * @brief The base exception which is thrown by the library.
  */
 class FitsIOError : public std::exception {
 
@@ -58,6 +59,24 @@ public:
 private:
   static const std::string m_prefix;
   std::string m_message;
+};
+
+/**
+ * @brief The exception which is thrown if a value lies out of given bounds.
+ */
+class OutOfBoundsError : public FitsIOError {
+public:
+  /**
+   * @brief Constructor.
+   * @details
+   * The error message is of the form "<prefix>: <value> not in (<min>, <max>)".
+   */
+  OutOfBoundsError(const std::string &prefix, long value, std::pair<long, long> bounds);
+
+  /**
+   * @brief Throw if a value lies out of given bounds, included.
+   */
+  static void mayThrow(const std::string &prefix, long value, std::pair<long, long> bounds);
 };
 
 } // namespace FitsIO

@@ -21,6 +21,8 @@
 
 #include "EL_FitsData/Column.h"
 
+#include "EL_FitsData/FitsIOError.h"
+
 namespace Euclid {
 namespace FitsIO {
 
@@ -51,7 +53,7 @@ long rowCountDispatchImpl(long elementCount, long repeatCount) {
 /// @endcond
 
 template <typename T>
-Column<T>::Column(ColumnInfo<T> info_) : info(info_) {
+Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
 }
 
 template <typename T>
@@ -60,8 +62,32 @@ long Column<T>::rowCount() const {
 }
 
 template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> info_, long elementCount, const T *data) :
-    Column<T>(info_),
+const T &Column<T>::operator()(long row, long repeat) const {
+  return data()[row * info.repeatCount + repeat];
+}
+
+template <typename T>
+T &Column<T>::operator()(long row, long repeat) {
+  return const_cast<T &>(const_cast<const Column *>(this)->operator()(row, repeat));
+}
+
+template <typename T>
+const T &Column<T>::at(long row, long repeat) const {
+  OutOfBoundsError::mayThrow("Cannot access row index", row, { -rowCount(), rowCount() - 1 });
+  OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, { -info.repeatCount, info.repeatCount - 1 });
+  const long boundedRow = row < 0 ? rowCount() + row : row;
+  const long boundedRepeat = repeat < 0 ? info.repeatCount + repeat : repeat;
+  return operator()(boundedRow, boundedRepeat);
+}
+
+template <typename T>
+T &Column<T>::at(long row, long repeat) {
+  return const_cast<T &>(const_cast<const Column *>(this)->at(row, repeat));
+}
+
+template <typename T>
+PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T *data) :
+    Column<T>(columnInfo),
     m_nelements(elementCount),
     m_data(data) {
 }
@@ -77,7 +103,9 @@ const T *PtrColumn<T>::data() const {
 }
 
 template <typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> info_, const std::vector<T> &vecRef) : Column<T>(info_), m_ref(vecRef) {
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vecRef) :
+    Column<T>(columnInfo),
+    m_ref(vecRef) {
 }
 
 template <typename T>
@@ -100,15 +128,17 @@ VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {
 }
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> info_, std::vector<T> vec) : Column<T>(info_), m_vec(vec) {
+VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vec) : Column<T>(columnInfo), m_vec(vec) {
 }
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> info_, long rowCount) : Column<T>(info_), m_vec(info_.repeatCount * rowCount) {
+VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, long rowCount) :
+    Column<T>(columnInfo),
+    m_vec(columnInfo.repeatCount * rowCount) {
 }
 
 template <>
-VecColumn<std::string>::VecColumn(ColumnInfo<std::string> info_, long rowCount);
+VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount);
 
 template <typename T>
 long VecColumn<T>::elementCount() const {

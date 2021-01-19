@@ -27,6 +27,18 @@ const std::string FitsIOError::m_prefix = "EL_FitsIO error: ";
 FitsIOError::FitsIOError(const std::string &message) : std::exception(), m_message(m_prefix + message) {
 }
 
+OutOfBoundsError::OutOfBoundsError(const std::string &prefix, long value, std::pair<long, long> bounds) :
+    FitsIOError(
+        prefix + ": " + std::to_string(value) + " not in (" + std::to_string(bounds.first) + ", " +
+        std::to_string(bounds.second) + ")") {
+}
+
+void OutOfBoundsError::mayThrow(const std::string &prefix, long value, std::pair<long, long> bounds) {
+  if (value < bounds.first || value > bounds.second) {
+    throw OutOfBoundsError(prefix, value, bounds);
+  }
+}
+
 const char *FitsIOError::what() const noexcept {
   return m_message.c_str();
 }

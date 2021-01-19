@@ -36,7 +36,7 @@ FitsIO::Position<n> readShape(fitsfile *fptr) {
   FitsIO::Position<n> shape;
   int status = 0;
   fits_get_img_size(fptr, n, &shape[0], &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read raster shape");
+  CfitsioError::mayThrow(status, fptr, "Cannot read raster shape");
   return shape;
 }
 
@@ -45,7 +45,7 @@ void updateShape(fitsfile *fptr, const FitsIO::Position<n> &shape) {
   int status = 0;
   auto nonconstShape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconstShape.data(), &status);
-  mayThrowCfitsioError(status, fptr, "Cannot reshape raster");
+  CfitsioError::mayThrow(status, fptr, "Cannot reshape raster");
 }
 
 template <typename T, long n>
@@ -55,7 +55,7 @@ FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr) {
   const auto size = raster.size();
   fits_read_img(fptr, TypeCode<T>::forImage(), 1, size, nullptr, raster.data(), nullptr, &status);
   // Number 1 is a 1-based index (so we read the whole raster here)
-  mayThrowCfitsioError(status, fptr, "Cannot read raster");
+  CfitsioError::mayThrow(status, fptr, "Cannot read raster");
   return raster;
 }
 
@@ -67,7 +67,7 @@ void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster) {
   const auto end = begin + raster.size();
   std::vector<T> nonconstData(begin, end); // const-correctness issue
   fits_write_img(fptr, TypeCode<T>::forImage(), 1, raster.size(), nonconstData.data(), &status);
-  mayThrowCfitsioError(status, fptr, "Cannot write raster");
+  CfitsioError::mayThrow(status, fptr, "Cannot write raster");
 }
 
 } // namespace Image

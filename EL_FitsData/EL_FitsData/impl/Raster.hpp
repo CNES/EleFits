@@ -125,6 +125,25 @@ inline T &Raster<T, n>::operator[](const Position<n> &pos) {
 }
 
 template <typename T, long n>
+inline const T &Raster<T, n>::at(const Position<n> &pos) const {
+  auto boundedPos = pos;
+  for (long i = 0; i < dimension(); ++i) {
+    auto &b = boundedPos[i];
+    const auto &s = shape[i];
+    OutOfBoundsError::mayThrow("pos[" + std::to_string(i) + "]", b, { -s, s - 1 });
+    if (b < 0) {
+      b += s;
+    }
+  }
+  return operator[](boundedPos);
+}
+
+template <typename T, long n>
+inline T &Raster<T, n>::at(const Position<n> &pos) {
+  return const_cast<T &>(const_cast<const Raster *>(this)->at(pos));
+}
+
+template <typename T, long n>
 PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T *data) : Raster<T, n>(shape_), m_data(data) {
 }
 

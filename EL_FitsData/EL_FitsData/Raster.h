@@ -126,6 +126,20 @@ public:
    */
   T &operator[](const Position<n> &pos);
 
+  /**
+   * @brief Access the value at given position.
+   * @details
+   * As opposed to operator[], negative indices are supported for backward indexing,
+   * and bounds are checked.
+   * @see operator[]
+   */
+  const T &at(const Position<n> &pos) const;
+
+  /**
+   * @copydoc at
+   */
+  T &at(const Position<n> &pos);
+
 public:
   /**
    * @brief Raster shape, i.e. length along each axis.

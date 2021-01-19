@@ -57,27 +57,26 @@ public:
   CfitsioError(int cfitsioStatus, fitsfile *fptr, const std::string &context);
 
   /**
+   * @brief Get the error message of an error code.
+   */
+  static std::string message(int cfitsioStatus);
+
+  /**
+   * @brief Throw a CfitsioError if `cfitsioStatus > 0`.
+   */
+  static void mayThrow(int cfitsioStatus);
+
+  /**
+   * @brief Throw a CfitsioError if `cfitsioStatus > 0`.
+   */
+  static void mayThrow(int cfitsioStatus, fitsfile *fptr, const std::string &context);
+
+public:
+  /**
    * @brief The CFitsIO error code.
    */
   int status;
 };
-
-/**
- * @brief Get the error message of an error code.
- */
-std::string cfitsioErrorMessage(int status);
-
-/**
- * @brief Check whether status is OK (=0) and throw an error if not.
- * @see CfitsioError
- */
-void mayThrowCfitsioError(int status);
-
-/**
- * @brief Check whether status is OK (=0) and throw an error if not.
- * @see CfitsioError
- */
-void mayThrowCfitsioError(int status, fitsfile *fptr, const std::string &context);
 
 /**
  * @brief Check whether the file is valid and throw an error if not.

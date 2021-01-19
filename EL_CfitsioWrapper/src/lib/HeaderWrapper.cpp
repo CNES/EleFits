@@ -41,7 +41,7 @@ std::string readHeader(fitsfile *fptr, bool incNonValued) {
       &status);
   std::string headerString { header };
   fits_free_memory(header, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read the complete header");
+  CfitsioError::mayThrow(status, fptr, "Cannot read the complete header");
   return headerString;
 }
 
@@ -69,7 +69,7 @@ bool hasKeyword(fitsfile *fptr, const std::string &keyword) {
   if (status == KEY_NO_EXIST) {
     return false;
   }
-  mayThrowCfitsioError(status, fptr, "Cannot check if record exists: " + keyword); // Other error codes
+  CfitsioError::mayThrow(status, fptr, "Cannot check if record exists: " + keyword); // Other error codes
   return true; // No error
 }
 
@@ -83,7 +83,7 @@ FitsIO::Record<bool> parseRecord<bool>(fitsfile *fptr, const std::string &keywor
   /* Read unit */
   char unit[FLEN_COMMENT];
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot parse Boolean record: " + keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot parse Boolean record: " + keyword);
   /* Build Record */
   FitsIO::Record<bool> record(keyword, nonconstIntValue, std::string(unit), std::string(comment));
   /* Separate comment and unit */
@@ -105,7 +105,7 @@ parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) { // TODO r
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot find string record: " + keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot find string record: " + keyword);
   if (length == 0) {
     return { keyword, "" };
   }
@@ -123,7 +123,7 @@ parseRecord<std::string>(fitsfile *fptr, const std::string &keyword) { // TODO r
   }
   FitsIO::Record<std::string> record(keyword, strValue, std::string(unit), std::string(comment));
   free(value);
-  mayThrowCfitsioError(status, fptr, "Cannot parse string record: " + keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot parse string record: " + keyword);
   if (record.comment == record.unit) {
     record.comment == "";
   } else if (record.unit != "") {
@@ -159,7 +159,7 @@ void writeRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record) {
       &nonconstIntValue,
       record.rawComment().c_str(),
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot write Boolean record: " + record.keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot write Boolean record: " + record.keyword);
 }
 
 template <>
@@ -169,7 +169,7 @@ void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> 
     fits_write_key_longwarn(fptr, &status);
   }
   fits_write_key_longstr(fptr, record.keyword.c_str(), record.value.c_str(), record.rawComment().c_str(), &status);
-  mayThrowCfitsioError(status, fptr, "Cannot write string record: " + record.keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot write string record: " + record.keyword);
 }
 
 template <>
@@ -179,7 +179,7 @@ void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *
     fits_write_key_longwarn(fptr, &status);
   }
   fits_write_key_longstr(fptr, record.keyword.c_str(), record.value, record.rawComment().c_str(), &status);
-  mayThrowCfitsioError(status, fptr, "Cannot write C string record: " + record.keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot write C string record: " + record.keyword);
 }
 
 template <typename T>
@@ -206,7 +206,7 @@ void updateRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record) {
   std::string comment = record.comment;
   int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
   fits_update_key(fptr, TypeCode<bool>::forRecord(), record.keyword.c_str(), &nonconstIntValue, &comment[0], &status);
-  mayThrowCfitsioError(status, fptr, "Cannot update Boolean record: " + record.keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot update Boolean record: " + record.keyword);
 }
 
 template <>
@@ -219,7 +219,7 @@ void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string>
       &std::string(record.value)[0],
       &record.comment[0],
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot update string record: " + record.keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot update string record: " + record.keyword);
 }
 
 template <>
@@ -232,7 +232,7 @@ void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char 
       &std::string(record.value)[0],
       &record.comment[0],
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot update C string record: " + record.keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot update C string record: " + record.keyword);
 }
 
 template <typename T>
@@ -256,7 +256,7 @@ void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &
 void deleteRecord(fitsfile *fptr, const std::string &keyword) {
   int status = 0;
   fits_delete_key(fptr, keyword.c_str(), &status);
-  mayThrowCfitsioError(status, fptr, "Cannot delete record: " + keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot delete record: " + keyword);
 }
 
 namespace Internal {
@@ -357,10 +357,10 @@ const std::type_info &recordTypeid(fitsfile *fptr, const std::string &keyword) {
   char value[FLEN_VALUE];
   auto nonconstKeyword = keyword;
   fits_read_keyword(fptr, &keyword[0], value, nullptr, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read record: " + keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot read record: " + keyword);
   char dtype = ' ';
   fits_get_keytype(value, &dtype, &status);
-  mayThrowCfitsioError(status, fptr, "Cannot deduce type code of record: " + keyword);
+  CfitsioError::mayThrow(status, fptr, "Cannot deduce type code of record: " + keyword);
   // 'C', 'L', 'I', 'F' or 'X', for character string, logical, integer, floating point, or complex
   switch (dtype) {
     case 'C':
@@ -382,14 +382,14 @@ void writeComment(fitsfile *fptr, const std::string &comment) {
   int status = 0;
   std::string nonconstComment = comment;
   fits_write_comment(fptr, &nonconstComment[0], &status);
-  mayThrowCfitsioError(status, fptr, "Cannot write COMMENT record");
+  CfitsioError::mayThrow(status, fptr, "Cannot write COMMENT record");
 }
 
 void writeHistory(fitsfile *fptr, const std::string &history) {
   int status = 0;
   std::string nonconstHistory = history;
   fits_write_history(fptr, &nonconstHistory[0], &status);
-  mayThrowCfitsioError(status, fptr, "Cannot write HISTORY record");
+  CfitsioError::mayThrow(status, fptr, "Cannot write HISTORY record");
 }
 
 } // namespace Header

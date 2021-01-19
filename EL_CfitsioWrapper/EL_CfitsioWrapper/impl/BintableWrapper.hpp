@@ -85,7 +85,7 @@ void readColumnChunkImpl(fitsfile *fptr, long index, FitsIO::VecColumn<T> &colum
       begin,
       nullptr,
       &status);
-  mayThrowCfitsioError(
+  CfitsioError::mayThrow(
       status,
       fptr,
       "Cannot read column chunk: " + column.info.name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
@@ -120,7 +120,7 @@ void writeColumnChunkImpl(fitsfile *fptr, long index, const FitsIO::Column<T> &c
   /* Write data */
   int status = 0;
   fits_write_col(fptr, TypeCode<T>::forBintable(), static_cast<int>(index), firstRow, 1, size, vec.data(), &status);
-  mayThrowCfitsioError(
+  CfitsioError::mayThrow(
       status,
       fptr,
       "Cannot write column chunk: " + column.info.name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
@@ -244,7 +244,7 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index) {
       nullptr, // nulval
       nullptr, // tdisp
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read column info: #" + std::to_string(index - 1));
+  CfitsioError::mayThrow(status, fptr, "Cannot read column info: #" + std::to_string(index - 1));
   return { name, unit, repeatCount };
 }
 
@@ -270,7 +270,7 @@ FitsIO::VecColumn<T> readColumn(fitsfile *fptr, long index) {
       column.data(),
       nullptr, // anynul
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot read column data: #" + column.info.name);
+  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + column.info.name);
   return column;
 }
 
@@ -301,7 +301,7 @@ void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column) {
       column.elementCount(), // nelements
       nonconstData.data(),
       &status);
-  mayThrowCfitsioError(status, fptr, "Cannot write column data: " + column.info.name);
+  CfitsioError::mayThrow(status, fptr, "Cannot write column data: " + column.info.name);
 }
 
 template <typename... Ts>

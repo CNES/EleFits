@@ -180,10 +180,36 @@ public:
   long rowCount() const;
 
   /**
+   * @brief Access the value at given row and repeat indices.
+   * @see at
+   */
+  const T &operator()(long row, long repeat = 0) const;
+
+  /**
+   * @copydoc operator()
+   */
+  T &operator()(long row, long repeat = 0);
+
+  /**
    * @brief Const pointer to the first data element.
    */
   virtual const T *data() const = 0;
 
+  /**
+   * @brief Access the value at given row and repeat indices.
+   * @details
+   * As opposed to operator(), negative indices are supported for backward indexing,
+   * and bounds are checked.
+   * @see operator()
+   */
+  const T &at(long row, long repeat = 0) const;
+
+  /**
+   * @copydoc at
+   */
+  T &at(long row, long repeat = 0);
+
+public:
   /**
    * @brief Column metadata.
    */

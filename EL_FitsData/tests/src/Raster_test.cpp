@@ -22,7 +22,7 @@
 #include "EL_FitsData/TestRaster.h"
 #include "EL_FitsData/Raster.h"
 
-using namespace Euclid;
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
@@ -33,27 +33,27 @@ BOOST_AUTO_TEST_SUITE(Raster_test)
 BOOST_AUTO_TEST_CASE(index_test) {
 
   /* Fixed dimension */
-  FitsIO::Position<4> fixedShape;
+  Position<4> fixedShape;
   for (auto &length : fixedShape) {
     length = std::rand();
   }
-  FitsIO::Position<4> fixedPos;
+  Position<4> fixedPos;
   for (auto &coord : fixedPos) {
     coord = std::rand();
   }
-  auto fixedIndex = FitsIO::Internal::IndexRecursionImpl<4>::index(fixedShape, fixedPos);
+  auto fixedIndex = Internal::IndexRecursionImpl<4>::index(fixedShape, fixedPos);
   BOOST_CHECK_EQUAL(
       fixedIndex,
       fixedPos[0] + fixedShape[0] * (fixedPos[1] + fixedShape[1] * (fixedPos[2] + fixedShape[2] * (fixedPos[3]))));
 
   /* Variable dimension */
-  FitsIO::Position<-1> variableShape(fixedShape.begin(), fixedShape.end());
-  FitsIO::Position<-1> variablePos(fixedPos.begin(), fixedPos.end());
-  auto variableIndex = FitsIO::Internal::IndexRecursionImpl<-1>::index(variableShape, variablePos);
+  Position<-1> variableShape(fixedShape.begin(), fixedShape.end());
+  Position<-1> variablePos(fixedPos.begin(), fixedPos.end());
+  auto variableIndex = Internal::IndexRecursionImpl<-1>::index(variableShape, variablePos);
   BOOST_CHECK_EQUAL(variableIndex, fixedIndex);
 }
 
-BOOST_FIXTURE_TEST_CASE(small_raster_size_test, FitsIO::Test::SmallRaster) {
+BOOST_FIXTURE_TEST_CASE(small_raster_size_test, Test::SmallRaster) {
   long size(this->width * this->height);
   BOOST_CHECK_EQUAL(this->dimension(), 2);
   BOOST_CHECK_EQUAL(this->size(), size);
@@ -64,10 +64,26 @@ BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test) {
   const long width = 4;
   const long height = 3;
   const long size = width * height;
-  FitsIO::Test::RandomRaster<int, -1> raster({ width, height });
+  Test::RandomRaster<int, -1> raster({ width, height });
   BOOST_CHECK_EQUAL(raster.dimension(), 2);
   BOOST_CHECK_EQUAL(raster.size(), size);
   BOOST_CHECK_EQUAL(raster.vector().size(), size);
+}
+
+BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
+  const long width = 4;
+  const long height = 3;
+  const Test::RandomRaster<int> raster({ width, height });
+  const auto &vec = raster.vector();
+  BOOST_CHECK_EQUAL(raster.at({ 0, 0 }), vec[0]);
+  BOOST_CHECK_EQUAL(raster.at({ -1, 0 }), vec[width - 1]);
+  BOOST_CHECK_EQUAL(raster.at({ -width, 0 }), vec[0]);
+  BOOST_CHECK_EQUAL(raster.at({ 0, -1 }), vec[(height - 1) * width]);
+  BOOST_CHECK_EQUAL(raster.at({ -1, -1 }), vec[height * width - 1]);
+  BOOST_CHECK_THROW(raster.at({ width, 0 }), OutOfBoundsError);
+  BOOST_CHECK_THROW(raster.at({ -1 - width, 0 }), OutOfBoundsError);
+  BOOST_CHECK_THROW(raster.at({ 0, height }), OutOfBoundsError);
+  BOOST_CHECK_THROW(raster.at({ 0, -1 - height }), OutOfBoundsError);
 }
 
 //-----------------------------------------------------------------------------
