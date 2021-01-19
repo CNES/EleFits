@@ -88,10 +88,20 @@ public:
    * @brief Access the first HDU with given name.
    * @details
    * In the case where several HDUs have the same name, method readHduNames can be used to get the indices.
-   * @see access
+   * @see access(long)
+   * @see access(const std::string &)
    */
   template <class T = RecordHdu>
   const T &accessFirst(const std::string &name);
+
+  /**
+   * @brief Access the only HDU with given name.
+   * @details
+   * Throws an exception if several HDUs with given name exists.
+   * @see accessFirst
+   */
+  template <class T = RecordHdu>
+  const T &access(const std::string &name);
 
   /**
    * @brief Access the Primary HDU.

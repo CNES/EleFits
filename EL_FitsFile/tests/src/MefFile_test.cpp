@@ -89,6 +89,15 @@ BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::Temp
   BOOST_CHECK_EQUAL(firstlyAccessedPrimary.readName(), secondlyAccessedPrimary.readName());
 }
 
+BOOST_FIXTURE_TEST_CASE(access_single_named_hdu, Test::TemporaryMefFile) {
+  const std::string extname = "EXT";
+  BOOST_CHECK_THROW(this->access<>(extname), FitsIOError);
+  this->initRecordExt(extname);
+  BOOST_CHECK_NO_THROW(this->access<>(extname));
+  this->initRecordExt(extname);
+  BOOST_CHECK_THROW(this->access<>(extname), FitsIOError);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

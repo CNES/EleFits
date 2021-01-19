@@ -2,6 +2,10 @@
 
 # 3.1
 
+## New features
+
+* New method `MefFile::access(string)` checks that extactly one HDU with given name exists
+
 ## Cleaning
 
 * Error messages contain more informations

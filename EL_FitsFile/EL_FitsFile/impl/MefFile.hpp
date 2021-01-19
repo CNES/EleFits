@@ -52,6 +52,26 @@ const T &MefFile::accessFirst(const std::string &name) {
 }
 
 template <class T>
+const T &MefFile::access(const std::string &name) {
+  const auto names = readHduNames();
+  long index = 0;
+  bool found = false;
+  for (long i = 0; i < static_cast<long>(names.size()); ++i) {
+    if (names[i] == name) {
+      if (found) {
+        throw FitsIOError("Several HDUs named: " + name);
+      }
+      index = i;
+      found = true;
+    }
+  }
+  if (not found) {
+    throw FitsIOError("No HDU named: " + name);
+  }
+  return access<T>(index);
+}
+
+template <class T>
 const T &MefFile::accessPrimary() {
   return access<T>(MefFile::primaryIndex);
 }
