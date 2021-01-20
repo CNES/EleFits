@@ -113,7 +113,7 @@ public:
 
     options_description options {};
     auto add = options.add_options();
-    add("binary table", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
+    add("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
     add("rows", value<long>()->default_value(10), "Binary table row count");
     add("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
     add("width", value<long>()->default_value(10), "Image width");

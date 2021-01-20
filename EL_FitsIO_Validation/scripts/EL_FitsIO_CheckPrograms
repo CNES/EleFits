@@ -24,43 +24,49 @@
 home_dir=${PWD}
 
 # Create unique directory
-tmploc=$(mktemp -dq -t temp.XXXXXX)
+tmp_dir=$(mktemp -dq -t temp.XXXXXX)
 
 # Clean and exit
 local_clean_exit() {
-  cd ${home_dir}
-  rm -rf ${tmploc}
-  exit ${1}
+  if [ $1 -gt 0 ]; then
+    cat $log_file
+  fi
+  cd $home_dir
+  rm -rf $tmp_dir
+  exit $1
 }
 
 status=0
-log_file="${tmploc}/EL_FitsIO_CheckPrograms.log"
+log_file="$tmp_dir/EL_FitsIO_CheckPrograms.log"
 
-test_function_with_options() {
-output="${tmploc}/$2"
-  cmd="$1 --output $output $3"
-  echo $cmd
+test_command() {
+  echo $1
   echo "
-$cmd
+$1
 " >>$log_file
-  $cmd >>$log_file 2>&1
+  $1 >>$log_file 2>&1
   cmd_exit=$?
   if [ $cmd_exit == 0 ];
   then
     echo -e "\e[1;32m    Passed \e[m"
-    rm $output
   else
     echo -e "\e[1;31m    Failed \e[m"
     status=`expr $status + 1`
   fi
 }
 
+test_function_with_options() {
+  output="$tmp_dir/$2"
+  cmd="$1 --output $output $3"
+  test_command "$cmd"
+}
+
 test_function() {
   test_function_with_options $1 $2 ""
 }
 
-if [ -f ${log_file} ]; then
-  rm ${log_file}
+if [ -f $log_file ]; then
+  rm $log_file
 fi
 
 
@@ -79,6 +85,9 @@ test_function \
 test_function \
   EL_FitsIO_GenerateAstroObj "astroobj.fits"
 
+test_command \
+  "EL_FitsIO_Generate2DMassFiles --bintable $tmp_dir/bintable.fits --image $tmp_dir/image.fits"
+
 test_function_with_options \
   EL_Cfitsio_WritePerf "cfitsio_perf.fits" "--images 1 --tables 1"
 
@@ -88,5 +97,10 @@ test_function_with_options \
 test_function_with_options \
   EL_FitsIO_BufferedReadPerf "buffer_perf.fits" "--tables 1 --rows 3"
 
-local_clean_exit ${status}
+test_command EL_FitsIO_PrintSupportedTypes
+
+dummy=$tmp_dir/astroobj.fits
+test_command "EL_FitsIO_ReadStructure --keywords --input $dummy"
+
+local_clean_exit $status
 
