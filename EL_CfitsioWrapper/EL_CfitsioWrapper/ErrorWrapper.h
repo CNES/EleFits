@@ -48,7 +48,7 @@ public:
 
   /**
    * @brief Create a CfitsioError.
-   * @param status The CFitsIO error status
+   * @param cfitsioStatus The CFitsIO error status
    * @param fptr The fitsfile pointer to provide informations on the file
    * @param context A more human-friendly message to explain the error context
    * @details

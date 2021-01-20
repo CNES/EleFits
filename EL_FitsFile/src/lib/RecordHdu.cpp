@@ -25,7 +25,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-RecordHdu::RecordHdu(fitsfile *&fptr, long index, HduType type) :
+RecordHdu::RecordHdu(Token, fitsfile *&fptr, long index, HduType type) :
     m_fptr(fptr),
     m_cfitsioIndex(index + 1),
     m_type(type) {

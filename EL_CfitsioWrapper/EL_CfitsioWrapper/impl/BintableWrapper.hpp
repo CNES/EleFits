@@ -172,7 +172,9 @@ struct ColumnLooperImpl {
     ColumnLooperImpl<i - 1, Ts...>::maxRowCount(columns, count);
   }
 
-  /** @brief Write a chunk of each column */
+  /**
+   * @brief Write a chunk of each column
+   */
   static void writeChunks(
       fitsfile *fptr,
       const std::vector<long> &indices,

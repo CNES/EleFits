@@ -105,6 +105,22 @@ public:
   bool isOpen() const;
 
   /**
+   * @brief Reopen the file.
+   */
+  void reopen();
+
+  /**
+   * @brief Close the file.
+   */
+  void close();
+
+  /**
+   * @brief Close and delete the file.
+   */
+  void closeAndDelete();
+
+protected:
+  /**
    * @brief Open a Fits file with given filename and permission.
    * @details
    * This method can only be used after having closed the file;
@@ -124,22 +140,6 @@ public:
    */
   void open(const std::string &filename, Permission permission);
 
-  /**
-   * @brief Reopen the file.
-   */
-  void reopen();
-
-  /**
-   * @brief Close the file.
-   */
-  void close();
-
-  /**
-   * @brief Close and delete the file.
-   */
-  void closeAndDelete();
-
-protected:
   /** @brief The CFitsIO file handler. */
   fitsfile *m_fptr;
   /** @brief The file name. */

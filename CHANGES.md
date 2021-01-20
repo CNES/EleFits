@@ -12,6 +12,8 @@
 
 ### Cleaning
 
+* `FitsFile::open` is protected again
+* HDU handlers cannot be created on their own
 * Error messages contain more informations
 * Major documentation update
 

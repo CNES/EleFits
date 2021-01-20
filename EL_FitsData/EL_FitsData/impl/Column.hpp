@@ -63,7 +63,8 @@ long Column<T>::rowCount() const {
 
 template <typename T>
 const T &Column<T>::operator()(long row, long repeat) const {
-  return data()[row * info.repeatCount + repeat];
+  const long index = row * info.repeatCount + repeat;
+  return data()[index];
 }
 
 template <typename T>
@@ -152,7 +153,7 @@ const T *VecColumn<T>::data() const {
 
 template <typename T>
 T *VecColumn<T>::data() {
-  return m_vec.data();
+  return const_cast<T *>(const_cast<const VecColumn *>(this)->data());
 }
 
 template <typename T>

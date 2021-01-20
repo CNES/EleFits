@@ -32,13 +32,13 @@ const T &MefFile::access(long index) {
   if (ptr == nullptr) {
     switch (hduType) {
       case HduType::Image:
-        ptr.reset(new ImageHdu(m_fptr, index));
+        ptr.reset(new ImageHdu(RecordHdu::Token {}, m_fptr, index));
         break;
       case HduType::Bintable:
-        ptr.reset(new BintableHdu(m_fptr, index));
+        ptr.reset(new BintableHdu(RecordHdu::Token {}, m_fptr, index));
         break;
       default:
-        ptr.reset(new RecordHdu(m_fptr, index));
+        ptr.reset(new RecordHdu(RecordHdu::Token {}, m_fptr, index));
         break;
     }
   }
@@ -80,7 +80,7 @@ template <typename T, long n>
 const ImageHdu &MefFile::initImageExt(const std::string &name, const Position<n> &shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(m_fptr, size));
+  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size));
   return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
 }
 
@@ -88,7 +88,7 @@ template <typename T, long n>
 const ImageHdu &MefFile::assignImageExt(const std::string &name, const Raster<T, n> &raster) {
   Cfitsio::Hdu::createImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(m_fptr, size));
+  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size));
   return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
 }
 
@@ -96,7 +96,7 @@ template <typename... Ts>
 const BintableHdu &MefFile::initBintableExt(const std::string &name, const ColumnInfo<Ts> &... header) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, header...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(m_fptr, size));
+  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
   return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
 }
 
@@ -104,7 +104,7 @@ template <typename... Ts>
 const BintableHdu &MefFile::assignBintableExt(const std::string &name, const Column<Ts> &... columns) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(m_fptr, size));
+  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
   return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
 }
 

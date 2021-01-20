@@ -52,7 +52,9 @@ BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test) {
 BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   const long rowCount = 10;
   const long repeatCount = 3;
-  const Test::RandomVectorColumn<int> column(repeatCount, rowCount);
+  Test::RandomVectorColumn<int> column(repeatCount, rowCount);
+  column.at(1, -1) = 1;
+  BOOST_CHECK_EQUAL(column.at(1, -1), 1);
   const auto &vec = column.vector();
   BOOST_CHECK_EQUAL(column.at(0), vec[0]);
   BOOST_CHECK_EQUAL(column.at(-1), vec[(rowCount - 1) * repeatCount]);

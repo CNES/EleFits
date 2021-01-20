@@ -58,15 +58,9 @@ class ImageHdu : public RecordHdu {
 
 public:
   /**
-   * @brief Constructor.
-   * @warning
-   * You should probably not instantiate ImageHdus yourself,
-   * but use the dedicated MefFile creation method
-   * MefFile::initImageExt or MefFile::assignImageExt.
-   * @todo
-   * The constructor should be protected, with MefFile a friend of the class.
+   * @copydoc RecordHdu::RecordHdu
    */
-  ImageHdu(fitsfile *&fptr, long index);
+  ImageHdu(Token, fitsfile *&fptr, long index);
 
   /**
    * @brief Destructor.

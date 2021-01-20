@@ -73,7 +73,9 @@ BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test) {
 BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   const long width = 4;
   const long height = 3;
-  const Test::RandomRaster<int> raster({ width, height });
+  Test::RandomRaster<int> raster({ width, height });
+  raster.at({ 1, -1 }) = 1;
+  BOOST_CHECK_EQUAL(raster.at({ 1, -1 }), 1);
   const auto &vec = raster.vector();
   BOOST_CHECK_EQUAL(raster.at({ 0, 0 }), vec[0]);
   BOOST_CHECK_EQUAL(raster.at({ -1, 0 }), vec[width - 1]);

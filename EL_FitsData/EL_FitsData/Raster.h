@@ -254,7 +254,9 @@ public:
    */
   VecRaster() = default;
 
-  /** @copydoc Raster::data */
+  /**
+   * @copydoc Raster::data
+   */
   const T *data() const override;
 
   /**
@@ -268,7 +270,7 @@ public:
   const std::vector<T> &vector() const;
 
   /**
-   * @brief Non-const reference to the vector, useful to take ownership through move semantics.
+   * @brief Non-const reference to the vector, e.g. useful to take ownership through move semantics.
    * \code
    * std::vector<T> v = std::move(raster.vector());
    * \endcode

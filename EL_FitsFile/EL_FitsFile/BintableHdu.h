@@ -35,15 +35,9 @@ class BintableHdu : public RecordHdu {
 
 public:
   /**
-   * @brief Constructor.
-   * @warning
-   * You should probably not instantiate BintableHdus yourself,
-   * but use the dedicated MefFile creation method
-   * MefFile::initBintableExt or MefFile::assignBintableExt.
-   * @todo
-   * The constructor should be protected, with MefFile a friend of the class.
+   * @copydoc RecordHdu::RecordHdu
    */
-  BintableHdu(fitsfile *&fptr, long index);
+  BintableHdu(Token, fitsfile *&fptr, long index);
 
   /**
    * @brief Destructor.

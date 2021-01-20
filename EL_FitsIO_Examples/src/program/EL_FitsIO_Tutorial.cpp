@@ -156,7 +156,7 @@ TutoColumns createColumns() {
 
   logger.info("  Creating columns...");
 
-  /* Initialize and later fill a raster */
+  /* Initialize and later fill a column */
 
   FitsIO::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
   // String columns must be wide-enough to hold each character.
@@ -164,14 +164,14 @@ TutoColumns createColumns() {
     stringColumn.vector()[i] = std::to_string(i);
   }
 
-  /* Create a raster from a vector */
+  /* Create a column from a vector */
 
   std::vector<std::int32_t> int32Vec(100);
   // ... do what you have to do with the vector, and then move it to the column ...
   FitsIO::VecColumn<std::int32_t> int32Column({ "INT32", "", 1 }, std::move(int32Vec));
   // Analogously to rasters, columns can be managed with the VecRefColumn and PtrColumn classes.
 
-  /* Generate a random raster */
+  /* Generate a random column */
 
   auto float32Column = FitsIO::Test::RandomVectorColumn<float>(8, 100);
 
@@ -357,10 +357,8 @@ void readRaster(const FitsIO::ImageHdu &hdu) {
   const auto image = hdu.readRaster<std::int32_t, 3>();
 
   const auto &firstPixel = image[{ 0, 0, 0 }];
-  const auto width = image.length<0>();
-  const auto height = image.length<1>();
-  const auto depth = image.length<2>();
-  const auto &lastPixel = image[{ width - 1, height - 1, depth - 1 }];
+  const auto &lastPixel = image.at({ -1, -1, -1 });
+  // `operator[]` performs no bound checking, while `at` does and enables backward indexing.
 
   logger.info() << "    First pixel: " << firstPixel;
   logger.info() << "    Last pixel: " << lastPixel;
@@ -374,11 +372,13 @@ void readColumns(const FitsIO::BintableHdu &hdu) {
 
   logger.info("  Reading columns...");
 
-  const auto stringVec = hdu.readColumn<std::string>("STRING").vector();
-  const auto int32Vec = hdu.readColumn<double>("INT32").vector();
+  const auto stringColumn = hdu.readColumn<std::string>("STRING");
+  const auto vectorColumn = hdu.readColumn<double>("VECTOR");
 
-  logger.info() << "    First string: " << stringVec[0];
-  logger.info() << "    Last int32: " << int32Vec[int32Vec.size() - 1];
+  logger.info() << "    First string: " << stringColumn(0);
+  logger.info() << "    Last float: " << vectorColumn.at(-1, -1);
+  // There is no `operator[]` for columns, because vector columns require 2 indices (row and repeat).
+  // `operator()` performs no bound checking, while `at` does and enables backward indexing.
 
   //! [Read columns]
 }

@@ -186,7 +186,7 @@ public:
   const T &operator()(long row, long repeat = 0) const;
 
   /**
-   * @copydoc operator()
+   * @copydoc operator()()
    */
   T &operator()(long row, long repeat = 0);
 

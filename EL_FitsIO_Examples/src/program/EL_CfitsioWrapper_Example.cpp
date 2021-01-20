@@ -140,9 +140,7 @@ public:
     //! [Read raster]
     const auto image = Image::readRaster<float>(fptr);
     const auto firstPixel = image[{ 0, 0 }];
-    const auto width = image.length<0>();
-    const auto height = image.length<1>();
-    const auto lastPixel = image[{ width - 1, height - 1 }];
+    const auto lastPixel = image.at({ -1, -1 }); // at() allows backward indexing
     //! [Read raster]
     logger.info() << "First pixel: " << firstPixel;
     logger.info() << "Last pixel: " << lastPixel;

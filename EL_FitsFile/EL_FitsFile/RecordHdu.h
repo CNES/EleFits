@@ -59,14 +59,36 @@ class RecordHdu {
 
 public:
   /**
+   * @brief A token for the passkey idiom.
+   * @details
+   * Only few classes should be able to create a RecordHdu.
+   * This is enforced by the private Token constructor with restricted set of friend classes.
+   */
+  class Token {
+    friend class MefFile;
+    friend class SifFile;
+    friend class RecordHdu;
+    friend class ImageHdu;
+    friend class BintableHdu;
+
+  private:
+    Token() {
+    }
+  };
+
+public:
+  /**
    * @brief Constructor.
    * @warning
-   * You should probably not instantiate `RecordHdu`s yourself,
-   * but use the dedicated MefFile creation method MefFile::initRecordExt.
-   * @todo
-   * The constructor should be protected, with MefFile a friend of the class.
+   * You should not try to instantiate a RecordHdu yourself,
+   * but use the dedicated MefFile creation methods.
+   * @details
+   * The constructor cannot be protected, because unique pointers are created with the make_unique function,
+   * and we definitely don't want make_unique to be a friend!
+   * We rely on the passkey idiom: Token is protected and therefore accessible only from MefFile (a fiend class)
+   * and classes derived from RecrodHdu.
    */
-  RecordHdu(fitsfile *&file, long index, HduType type = HduType::Image);
+  RecordHdu(Token, fitsfile *&file, long index, HduType type = HduType::Image);
 
   /**
    * @brief Destructor.
