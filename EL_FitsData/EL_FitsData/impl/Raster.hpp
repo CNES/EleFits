@@ -116,7 +116,7 @@ inline long Raster<T, n>::index(const Position<n> &pos) const {
 
 template <typename T, long n>
 inline const T &Raster<T, n>::operator[](const Position<n> &pos) const {
-  return data()[index(pos)];
+  return *(data() + index(pos));
 }
 
 template <typename T, long n>

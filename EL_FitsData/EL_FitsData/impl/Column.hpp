@@ -64,7 +64,7 @@ long Column<T>::rowCount() const {
 template <typename T>
 const T &Column<T>::operator()(long row, long repeat) const {
   const long index = row * info.repeatCount + repeat;
-  return data()[index];
+  return *(data() + index);
 }
 
 template <typename T>

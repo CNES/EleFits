@@ -17,4 +17,4 @@ set(USE_SPHINX OFF
 #===============================================================================
 
 elements_project(EL_FitsIO 3.1 USE Elements 5.12.0
-        DESCRIPTION "A clean, object-oriented, template API on top of CFitsIO")
+        DESCRIPTION "A clean C++ API on top of CFitsIO")

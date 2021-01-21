@@ -32,8 +32,8 @@ BOOST_AUTO_TEST_SUITE(DataUtils_test)
 BOOST_AUTO_TEST_CASE(slice_test) {
   const std::string name = "TOTOTATATITI";
   const long index = 707074747171;
-  BOOST_CHECK_EQUAL(name, Named<int> { name });
-  BOOST_CHECK_EQUAL(index, Indexed<int> { index });
+  BOOST_CHECK_EQUAL(Named<int>(name).name, name);
+  BOOST_CHECK_EQUAL(Indexed<int>(index).index, index);
 }
 
 //-----------------------------------------------------------------------------

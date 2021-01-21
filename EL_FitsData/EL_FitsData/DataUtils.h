@@ -20,6 +20,8 @@
 #ifndef _EL_FITSDATA_DATAUTILS_H
 #define _EL_FITSDATA_DATAUTILS_H
 
+#include <string>
+
 namespace Euclid {
 namespace FitsIO {
 
@@ -30,7 +32,7 @@ template <typename T>
 struct Named {
 
   /** @brief Constructor. */
-  Named(std::string value) : name(value) {};
+  Named(const std::string &value) : name(value) {};
 
   /**
    * @brief Slice as the name.
