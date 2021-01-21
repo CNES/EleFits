@@ -102,8 +102,8 @@ void readColumnChunkImpl<std::string>(
       nullptr,
       &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read column chunk: #" + std::to_string(index - 1));
-  auto columnIt = column.vector().begin() + firstRow;
-  for (auto dataIt = &data[0]; dataIt != &dataIt[rowCount]; ++dataIt, ++columnIt) {
+  auto columnIt = column.vector().begin() + firstRow - 1;
+  for (auto dataIt = data.begin(); dataIt != data.end(); ++dataIt, ++columnIt) {
     *columnIt = std::string(*dataIt);
     free(*dataIt);
   }
