@@ -348,7 +348,7 @@ void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns) {
   long rows = 0;
   Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::maxRowCount(table, rows);
   long chunkRows = 0;
-  fits_get_rowsize(fptr, &chunkRows, &status);
+  fits_get_rowsize(fptr, &chunkRows, &status); // FIXME test with other values, e.g. 1
   if (chunkRows == 0) {
     throw FitsIO::FitsIOError("Cannot compute the optimal number of rows to be read at once");
   }

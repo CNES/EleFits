@@ -69,6 +69,20 @@ void checkRecordWithFallbackIsReadBack<unsigned long>(const RecordHdu &h, const 
 
 EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_WITH_FALLBACK_IS_READ_BACK_TEST)
 
+BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::TemporarySifFile) {
+  Record<short> written("SHORT", 1);
+  Record<long> fallback("LONG", 10);
+  const auto &header = this->header();
+  BOOST_CHECK(not header.hasKeyword(written.keyword));
+  BOOST_CHECK(not header.hasKeyword(fallback.keyword));
+  header.writeRecord(written);
+  written.value++;
+  fallback.value++;
+  const auto output = header.parseRecordsOr(written, fallback);
+  BOOST_CHECK_EQUAL(std::get<0>(output).value, written.value - 1);
+  BOOST_CHECK_EQUAL(std::get<1>(output).value, fallback.value);
+}
+
 BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifFile) {
   const auto &h = this->header();
   const std::string shortStr = "S";
@@ -192,6 +206,31 @@ BOOST_FIXTURE_TEST_CASE(full_header_is_read_as_string_test, Test::TemporarySifFi
   BOOST_CHECK_GT(header.size(), 0);
   BOOST_CHECK_EQUAL(header.size() % 80, 0);
   // TODO check contents
+}
+
+BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFile) {
+  struct Header {
+    bool b;
+    int i;
+    float f;
+    std::string s;
+  };
+  const auto &header = this->header();
+  const Header input { false, 1, 3.14F, "VAL" };
+  header.writeRecords(
+      Record<bool>("BOOL", input.b),
+      Record<int>("INT", input.i),
+      Record<float>("FLOAT", input.f),
+      Record<std::string>("STRING", input.s));
+  const auto output = header.parseRecordsAs<Header>(
+      Named<bool>("BOOL"),
+      Named<int>("INT"),
+      Named<float>("FLOAT"),
+      Named<std::string>("STRING"));
+  BOOST_CHECK_EQUAL(output.b, input.b);
+  BOOST_CHECK_EQUAL(output.i, input.i);
+  BOOST_CHECK_EQUAL(output.f, input.f);
+  BOOST_CHECK_EQUAL(output.s, input.s);
 }
 
 //-----------------------------------------------------------------------------

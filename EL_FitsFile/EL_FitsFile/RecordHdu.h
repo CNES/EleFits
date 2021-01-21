@@ -21,6 +21,7 @@
 #define _EL_FITSFILE_HDU_H
 
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
+#include "EL_FitsData/DataUtils.h"
 #include "EL_FitsData/Record.h"
 
 namespace Euclid {
@@ -146,27 +147,25 @@ public:
   Record<T> parseRecord(const std::string &keyword) const;
 
   /**
-   * @brief Parse a record if it exists, return a fallback otherwise.
-   * @param fallback A record with the keyword to be looked for, the fallback value,
-   * a fallback unit (optional), and a fallback comment (optional).
-   * @details
-   * If a record with the given keyword exists, it is parsed and returned.
-   * Otherwise, a copy of the given fallback record is returned.
-   * For example, when calling:
-   * \code
-   * const auto record = hdu.parseRecordOr<int>({"KEY", 0});
-   * \endcode
-   * if KEY is found, the record is parsed;
-   * otherwise, the returned record has keyword "KEY", value 0, empty unit, and empty comment.
-   */
-  template <typename T>
-  Record<T> parseRecordOr(const Record<T> &fallback) const;
-
-  /**
    * @brief Parse several records.
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseRecords(const std::vector<std::string> &keywords) const;
+
+  /**
+   * @brief Same as parseRecords(const std::vector<std::string> &) with modified signature.
+   * @details
+   * This allows writing the types along the names, e.g.:
+   * \code
+   * auto records = parseRecords(Named<int>("INT"), Named<float>("FLOAT"));
+   * \endcode
+   * instead of:
+   * \code
+   * auto records = parseRecords<int, float>("INT", "FLOAT");
+   * \endcode
+   */
+  template <typename... Ts>
+  std::tuple<Record<Ts>...> parseRecords(const Named<Ts> &... keywords) const;
 
   /**
    * @brief Parse several records as a user-defined structure.
@@ -202,6 +201,54 @@ public:
    */
   template <class TReturn, typename... Ts>
   TReturn parseRecordsAs(const std::vector<std::string> &keywords) const;
+
+  /**
+   * @brief Same as parseRecordsAs(const std::vector<std::string> &) with modified signature.
+   * @details
+   * As opposed to parseRecordsAs(const std::vector<std::string> &),
+   * record types are given along with the names for more safety.
+   * For example, instead of:
+   * \code
+   * auto body = hdu.parseRecordsAs<Body, std::string, int, float, float>({ "NAME", "AGE", "HEIGHT", "MASS" });
+   * \endcode
+   * write:
+   * \code
+   * auto body = hdu.parseRecordsAs<Body>(
+   *     Named<std::string>("NAME"),
+   *     Named<int>("AGE"),
+   *     Named<float>("HEIGHT"),
+   *     Names<float>("MASS"));
+   * \endcode
+   */
+  template <class TReturn, typename... Ts>
+  TReturn parseRecordsAs(const Named<Ts> &... keywords) const;
+
+  /**
+   * @brief Parse a record if it exists, return a fallback otherwise.
+   * @param fallback A record with the keyword to be looked for, the fallback value,
+   * a fallback unit (optional), and a fallback comment (optional).
+   * @details
+   * If a record with the given keyword exists, it is parsed and returned.
+   * Otherwise, a copy of the given fallback record is returned.
+   * For example, when calling:
+   * \code
+   * const auto record = hdu.parseRecordOr<int>({"KEY", 0});
+   * \endcode
+   * if KEY is found, the record is parsed;
+   * otherwise, the returned record has keyword "KEY", value 0, empty unit, and empty comment.
+   */
+  template <typename T>
+  Record<T> parseRecordOr(const Record<T> &fallback) const;
+
+  /**
+   * @brief Parse several records with a fallback.
+   * @details
+   * For each keyword, if it exists, the record is parsed;
+   * otherwise the fallback record is returned.
+   * @see parseRecordOr
+   */
+  template <typename... Ts>
+  std::tuple<Record<Ts>...> parseRecordsOr(const Record<Ts> &... fallbacks) const;
 
   /**
    * @brief Parse several homogeneous records.

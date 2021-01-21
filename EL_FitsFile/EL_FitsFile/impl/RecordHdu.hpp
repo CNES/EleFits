@@ -30,6 +30,28 @@ Record<T> RecordHdu::parseRecord(const std::string &keyword) const {
   return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
 }
 
+template <typename... Ts>
+std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string> &keywords) const {
+  gotoThisHdu();
+  return Cfitsio::Header::parseRecords<Ts...>(m_fptr, keywords);
+}
+
+template <typename... Ts>
+std::tuple<Record<Ts>...> RecordHdu::parseRecords(const Named<Ts> &... keywords) const {
+  return parseRecords<Ts...>({ keywords.name... });
+}
+
+template <class TReturn, typename... Ts>
+TReturn RecordHdu::parseRecordsAs(const std::vector<std::string> &keywords) const {
+  gotoThisHdu();
+  return Cfitsio::Header::parseRecordsAs<TReturn, Ts...>(m_fptr, keywords);
+}
+
+template <class TReturn, typename... Ts>
+TReturn RecordHdu::parseRecordsAs(const Named<Ts> &... keywords) const {
+  return parseRecordsAs<TReturn, Ts...>({ keywords.name... });
+}
+
 template <typename T>
 Record<T> RecordHdu::parseRecordOr(const Record<T> &fallback) const {
   gotoThisHdu();
@@ -40,15 +62,8 @@ Record<T> RecordHdu::parseRecordOr(const Record<T> &fallback) const {
 }
 
 template <typename... Ts>
-std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string> &keywords) const {
-  gotoThisHdu();
-  return Cfitsio::Header::parseRecords<Ts...>(m_fptr, keywords);
-}
-
-template <class Return, typename... Ts>
-Return RecordHdu::parseRecordsAs(const std::vector<std::string> &keywords) const {
-  gotoThisHdu();
-  return Cfitsio::Header::parseRecordsAs<Return, Ts...>(m_fptr, keywords);
+std::tuple<Record<Ts>...> RecordHdu::parseRecordsOr(const Record<Ts> &... fallbacks) const {
+  return { parseRecordOr<Ts>(fallbacks)... }; // TODO avoid calling gotoThisHdu for each keyword
 }
 
 template <typename T>

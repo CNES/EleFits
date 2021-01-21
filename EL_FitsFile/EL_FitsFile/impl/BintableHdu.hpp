@@ -49,9 +49,19 @@ std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<long> &i
 }
 
 template <typename... Ts>
+std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Indexed<Ts> &... indices) const {
+  return readColumns<Ts...>({ indices.index... });
+}
+
+template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<std::string> &names) const {
   gotoThisHdu();
   return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, names);
+}
+
+template <typename... Ts>
+std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Named<Ts> &... names) const {
+  return readColumns<Ts...>({ names.name... });
 }
 
 template <typename T>

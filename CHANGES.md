@@ -2,12 +2,17 @@
 
 ## 3.1
 
+### Bug fixes
+
+* String columns are correctly read when reading multiple columns
+
 ### New features
 
 * New method `MefFile::access(string)` checks that extactly one HDU with given name exists
 * Binary table columns can be read by index
 * `Column` values can be accessed directly with `operator()`
 * `Raster` and `Column` values can be accessed with backward (negative) indices through `at` methods
+* Classes `Named` and `Indexed` improve readability and safety to read records and columns
 * Exceptions thrown all derive from `FitsIOError`
 
 ### Cleaning

@@ -84,10 +84,32 @@ public:
   std::tuple<VecColumn<Ts>...> readColumns(const std::vector<long> &indices) const;
 
   /**
+   * @brief Same as readColumns(const std::vector<long> &) with modified signature.
+   * @details
+   * This allows writing the type of each column next to its index, e.g.:
+   * \code
+   * auto columns = ext.readColumns(Indexed<int>(0), Indexed<float>(3), Indexed<std::string>(4));
+   * \endcode
+   */
+  template <typename... Ts>
+  std::tuple<VecColumn<Ts>...> readColumns(const Indexed<Ts> &... indices) const;
+
+  /**
    * @brief Read several columns with given names.
    */
   template <typename... Ts>
   std::tuple<VecColumn<Ts>...> readColumns(const std::vector<std::string> &names) const;
+
+  /**
+   * @brief Same as readColumns(const std::vector<std::string> &) with modified signature.
+   * @details
+   * This allows writing the type of each column next to its name, e.g.:
+   * \code
+   * auto columns = ext.readColumns(Named<int>("A"), Named<float>("B"), Named<std::string>("C"));
+   * \endcode
+   */
+  template <typename... Ts>
+  std::tuple<VecColumn<Ts>...> readColumns(const Named<Ts> &... names) const;
 
   /**
    * @brief Write a column.

@@ -327,9 +327,13 @@ void readRecords(const FitsIO::RecordHdu &hdu) {
 
   /* Read several records */
 
-  auto someRecords = hdu.parseRecords<std::string, float, std::complex<double>>({ "STRING", "FLOAT", "COMPLEX" });
-  auto secondRecord = std::get<1>(someRecords);
-  logger.info() << "    " << secondRecord.keyword << " = " << secondRecord.value << " " << secondRecord.unit;
+  auto someRecords = hdu.parseRecords(
+      FitsIO::Named<std::string>("STRING"),
+      FitsIO::Named<int>("INT"),
+      FitsIO::Named<float>("FLOAT"),
+      FitsIO::Named<std::complex<double>>("COMPLEX"));
+  auto thirdRecord = std::get<2>(someRecords);
+  logger.info() << "    " << thirdRecord.keyword << " = " << thirdRecord.value << " " << thirdRecord.unit;
 
   /* Read as boost::any */
 
@@ -340,8 +344,11 @@ void readRecords(const FitsIO::RecordHdu &hdu) {
 
   /* Read as a user-defined structure */
 
-  auto tutoRecords = hdu.parseRecordsAs<TutoRecords, std::string, int, float, std::complex<double>>(
-      { "STRING", "INT", "FLOAT", "COMPLEX" });
+  auto tutoRecords = hdu.parseRecordsAs<TutoRecords>(
+      FitsIO::Named<std::string>("STRING"),
+      FitsIO::Named<int>("INT"),
+      FitsIO::Named<float>("FLOAT"),
+      FitsIO::Named<std::complex<double>>("COMPLEX"));
   auto stringRecord = tutoRecords.stringRecord;
   logger.info() << "    " << stringRecord.keyword << " = " << stringRecord.value << " " << stringRecord.unit;
 
@@ -372,10 +379,24 @@ void readColumns(const FitsIO::BintableHdu &hdu) {
 
   logger.info("  Reading columns...");
 
-  const auto stringColumn = hdu.readColumn<std::string>("STRING");
+  /* Read a single column */
+
   const auto vectorColumn = hdu.readColumn<double>("VECTOR");
 
+  /* Read several columns by their name */
+
+  const auto byName = hdu.readColumns(FitsIO::Named<std::string>("STRING"), FitsIO::Named<std::int32_t>("INT32"));
+  const auto &stringColumn = std::get<0>(byName);
+
+  /* Read several columns by their index */
+
+  const auto byIndex = hdu.readColumns(FitsIO::Indexed<std::string>(0), FitsIO::Indexed<std::int32_t>(1));
+  const auto &intColumn = std::get<1>(byIndex);
+
+  /* Use values */
+
   logger.info() << "    First string: " << stringColumn(0);
+  logger.info() << "    First int: " << intColumn(0);
   logger.info() << "    Last float: " << vectorColumn.at(-1, -1);
   // There is no `operator[]` for columns, because vector columns require 2 indices (row and repeat).
   // `operator()` performs no bound checking, while `at` does and enables backward indexing.
