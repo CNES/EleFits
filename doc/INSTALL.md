@@ -7,7 +7,7 @@ As such, EL_FitsIO can be used either from an Elements project or from a CMake p
 Euclid developers benefit from the continuous delivery of EDEN (Euclid development environment) and have nothing to install.
 Others must install EL_FitsIO (and Elements) before they configure their project.
 
-## Install EL_FitsIO
+## Install and test EL_FitsIO
 
 ### EDEN users
 
@@ -43,6 +43,8 @@ cd <root>/EL_FitsIO
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
+make -j
+make test
 sudo make install -j
 ```
 

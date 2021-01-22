@@ -59,6 +59,8 @@ namespace FitsIO {
 class RecordHdu {
 
 public:
+  /// @cond INTERNAL
+
   /**
    * @brief A token for the passkey idiom.
    * @details
@@ -77,7 +79,6 @@ public:
     }
   };
 
-public:
   /**
    * @brief Constructor.
    * @warning
@@ -90,6 +91,8 @@ public:
    * and classes derived from RecrodHdu.
    */
   RecordHdu(Token, fitsfile *&file, long index, HduType type = HduType::Image);
+
+  /// @endcond
 
   /**
    * @brief Destructor.

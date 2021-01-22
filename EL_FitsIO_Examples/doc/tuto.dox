@@ -247,7 +247,7 @@ For images, a VecRaster is instantiated, and you can access the pixel values wit
 
 \see ImageHdu
 
-\subsection tuto-read-binary table Read binary table values
+\subsection tuto-read-bintable Read binary table values
 
 
 Once you have accessed a BintableHdu, you can read column-wise by giving the column name.
@@ -266,7 +266,7 @@ A picture is worth a thousand words; below is the class diagram of what we've ju
 
 To go further or out of curiosity, head to the other [documentation pages](pages.html).
 Specifically, data classes and service classes are described in more details in
-\ref data-classes and \ref handlers.
+\ref data_classes and \ref handlers.
 To practice or test your own code, you can also browse the Euclid::FitsIO::Test namespace,
 which provides ready-to-use functions and classes, such as random records, rasters and columns.
 

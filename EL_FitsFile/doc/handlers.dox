@@ -6,13 +6,16 @@ namespace FitsIO {
 \page handlers Service classes
 
 
+\tableofcontents
+
+
 \section handlers-intro General concepts
 
 
 File handlers (XxxFile classes) only store index and type of HDUs which have already been accessed.
 HDU handlers (XxxHdu classes) only provide read/write services.
 Records, images and tables are never stored by those classes
-(to know where they are, read the \ref data-classes page).
+(to know where they are, read the \ref data_classes page).
 When you access an HDU, you just access a set of services to read and write items in this HDU.
 
 FitsFile is mostly en empty shell for opening and closing operations.
@@ -34,14 +37,14 @@ This means:
 Multi-extension Fits (MEF) files are manipulated through the MefFile class.
 MefFile gives you access to the existing HDUs of a file, and provide creation methods of two kinds:
 
-- init_xxx methods just fill the header of a new HDU;
-- assign_xxx methods also write the data.
+- initXxx methods just fill the header of a new HDU;
+- assignXxx methods also write the data.
 
 
 \section handlers-hdus HDU handlers
 
 
-access_xxx, init_xxx and assign_xxx all return a reference to the desired type of HDU:
+accessXxx, initXxx and assignXxx all return a constant reference to the desired type of HDU:
 RecordHdu, BintableHdu or ImageHdu.
 
 - A RecordHdu has methods to read and write records (sometimes referred to as keywords).

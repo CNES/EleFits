@@ -57,10 +57,14 @@ namespace FitsIO {
 class ImageHdu : public RecordHdu {
 
 public:
+  /// @cond INTERNAL
+
   /**
    * @copydoc RecordHdu::RecordHdu
    */
   ImageHdu(Token, fitsfile *&fptr, long index);
+
+  /// @endcond
 
   /**
    * @brief Destructor.

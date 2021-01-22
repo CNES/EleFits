@@ -1,0 +1,51 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\page cfitsio_toc CFitsIO-like table of contents
+
+- Introduction: \ref index
+- Creating the EL_FitsIO package: \ref install_guide
+- A Fits primer: see the CFitsIO documentation ;)
+- Programming guidelines
+  - Definitions: *not relevant*
+  - Current Header Data Unit (CHDU): *not relevant*
+  - Function names and variable datatypes: \ref types
+  - Support for unsigned integers and signed bytes: \ref types
+  - Dealing with character strings: *not relevant*
+  - Implicit data type conversion: \ref types
+  - Data scaling: \ref types
+  - Support for IEEE special values: same as CFitsIO
+  - Error status values and the error message stack: *not relevant*
+  - Variable-length arrays in binary tables: *not supported*
+  - Multiple access to the same Fits file: same as CFitsIO
+  - When the final size of the Fits HDU is unknown: *not relevant*
+  - Size limitations: same as CFitsIO 
+- Basic and specialized services
+  - Exceptions: FitsIOError
+  - Fits file access: SifFile, MefFile
+  - HDU access and creation: MefFile
+  - Header keyword records read/write: Record, RecordHdu
+  - Primary array or image extension: Raster, ImageHdu
+  - Image Compression: *not supported*
+  - ASCII table extension: *not supported*
+  - Binary table extension: Column, BintableHdu
+- The iterator function: *not supported*
+- World Coordinates System: *not supported*
+- Hierarchical grouping: *not supported*
+- Extended file name syntax: *not supported*
+- Template Files: *not supported*
+- Local FITS Conventions
+  - 64-bit long integers: *not relevant*
+  - Long string keyword record values: RecordHdu
+  - Arrays of fixed-length strings in binary tables: Column
+  - Keyword record units strings: Record
+  - HIERARCH convention for extended keyword record names: Record
+  - Tile-compressed image format: *not supported*
+- Optimizing programs: \ref optim
+
+*/
+
+}
+}

@@ -48,7 +48,7 @@ This translates into the following set of modules:
 
 - **EL_FitsData** contains basic **data-storage structures**:
 Records, binary table columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
-See \ref data-classes for more details on their API and usage.
+See \ref data_classes for more details on their API and usage.
 - **EL_CfitsioWrapper** is the low-level layer:
 The set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
 ease type handling through templates, and throw exceptions instead of returning error codes;
@@ -57,7 +57,7 @@ Yet, this API is **not meant for end-users**: it exposes the fitsfile* type and 
 It provides set of **read-write services** in dedicated classes;
 See \ref handlers for more details.
 - **EL_FitsIO_Examples** provides **examples**!
-Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program (see \ref apis-comp),
+Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program (see \ref apis_comp),
 which demonstrates the reading and writing of records, images and binary tables with the three APIs;
 Of course, this is also where the tutorial is implemented.
 - **EL_FitsIO_Validation** contains **validation executables**:

@@ -3,7 +3,10 @@ namespace FitsIO {
 
 /**
 
-\page data-classes Data classes
+\page data_classes Data classes
+
+
+\tableofcontents
 
 
 \section data-record Records
@@ -33,7 +36,7 @@ The design approach behind Raster is exactly the same a for Column, with several
 PtrRaster, VecRefRaster and VecRaster.
 
 In any case, Raster ensures constant-time access to an element, whatever the dimension of the data, through subscipt operators.
-Again, refer to the \ref tuto for a concrete example usage:
+Refer to the \ref tuto for a concrete example usage:
 
 \snippet EL_FitsIO_Tutorial.cpp Create rasters
 

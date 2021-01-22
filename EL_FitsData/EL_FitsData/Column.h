@@ -117,7 +117,7 @@ namespace FitsIO {
  * Therefore, users are encouraged to consider the repeat count as a meaningful value,
  * rather than as an optimization trick.
  *
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T>
 struct ColumnInfo {
@@ -151,7 +151,7 @@ struct ColumnInfo {
  * Some implementations are provided with the library,
  * but others could be useful to interface with client code
  * (e.g. with other external libraries with custom containers).
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T>
 class Column {
@@ -220,7 +220,7 @@ public:
  * @brief Column which references some external pointer data.
  * @details
  * Use it for temporary columns.
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T>
 class PtrColumn : public Column<T> {
@@ -261,7 +261,7 @@ private:
  * @brief Column which references some external vector data.
  * @details
  * Use it for temporary columns.
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T>
 class VecRefColumn : public Column<T> {
@@ -302,7 +302,7 @@ private:
  * @brief Column which stores internally the data.
  * @details
  * Use it (via move semantics) if you don't need your data after the write operation.
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T>
 class VecColumn : public Column<T> {

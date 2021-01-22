@@ -1,10 +1,18 @@
 namespace Euclid {
+namespace FitsIO {
 
 /**
 
 \page types On types
 
+
+\tableofcontents
+
+
 \section types-indices Indices
+
+
+\subsection types-indices-fitsio In the FitsIO namespace
 
 Indices in the FitsIO namespace are 0-based `long`s.
 Here is why.
@@ -22,19 +30,54 @@ To reduce the noise, we did not create a custom type like "index", "length" or "
 We do not rely on `ptrdiff_t` as suggested in the Guidelines, because it would create issues when interfacing internally with CFitsIO.
 Using `long`s conveys the following message: trying to use something larger than the max of `long` won't work.
 
+Having signed indices also enables backard indexing, where -1 means the last index.
+This is supported, for example, by the Raster::at and Column::at methods.
+
 Since indices in `std::vector`s (and therefore in Raster and Column) are 0-based, we had no other choice to provide a fully consistent API.
 This way, the user code can be fully consistent, with only 0-based indices.
+
+\subsection types-indices-cfitsio In the Cfitsio namespace
 
 In contrast, as the name implies, the Cfitsio namespace is tightly bound to CFitsIO and follows its conventions.
 In this namespace, indices are 1-based.
 This is because people using functions from the Cfitsio namespace are probably also using CFitsIO functions.
 It would thus be very error-prone to have the user code half 0-based, half 1-based.
 
+
 \section types-data Data types
+
 
 As shown in the \ref type_map, handling data types right with CFitsIO can be very cumbersome.
 EL_FitsIO aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFitsIO implementation.
-Template functions and methods are provided to simply let the user set the desired type.
+Template functions and methods are provided to simply let the user set the desired type, e.g.:
+
+\code
+auto raster = ext.readRaster<float>();
+\endcode
+
+Conversions are performed internally when the template type does not correspond to the file type.
+
+\subsection types-data-int Integers
+
+Integer types are numerous.
+There are two main categories: fixed-size integers (e.g. `std::int32_t`) and C integers (e.g. `int`).
+It is strongly recommended to use fixed-size integers to avoid bad surprises when changing the system.
+Indeed, if an image of pixel type `int` is written on a system where it is encoded as a 64-bit integers,
+and read on a system where it is encoded as a 32-bit integer, values will be corrupted.
+This is avoided by using `std::int32_t` instead.
+
+The Fits format doesn't natively support unsigned integers or signed bytes.
+Yet, CFitsIO and EL_FitsIO rely on the scaling mechanism to support them:
+an unsigned integer value will be internally offset to get a signed integer in the file.
+The offset is written in the file as a `BZERO` (image HDU) or `TZERO` (binary table HDU) keyword record,
+used to correctly recover the value at reading.
+
+\subsection types-data-string String
+
+Strings are represented as `std::string` and not `const char *` in general.
+Yet, a few sevices are overloaded for `const char *` for convenience.
+
+\subsection types-data-any Any
 
 In addition to CFitsIO data types, EL_FitsIO provides some of the services for `boost::any` (e.g., to read records).
 In this case, the underlying type is wrapped in a `boost::any` object, which can be cast later.
@@ -46,4 +89,5 @@ where `boost::any_cast<long long>` would throw an exception.
 
 */
 
+}
 }

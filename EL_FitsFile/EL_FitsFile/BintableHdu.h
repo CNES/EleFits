@@ -34,10 +34,14 @@ namespace FitsIO {
 class BintableHdu : public RecordHdu {
 
 public:
+  /// @cond INTERNAL
+
   /**
    * @copydoc RecordHdu::RecordHdu
    */
   BintableHdu(Token, fitsfile *&fptr, long index);
+
+  /// @endcond
 
   /**
    * @brief Destructor.

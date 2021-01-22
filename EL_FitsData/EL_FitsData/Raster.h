@@ -70,7 +70,7 @@ using Position = typename std::conditional<(n == -1), std::vector<long>, std::ar
  *
  * The dimension can be 0, >0 for fixed dimension, or -1 for variable dimension.
  * @see Position for details on the fixed- and variable-dimension cases.
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T, long n = 2>
 class Raster {
@@ -149,7 +149,7 @@ public:
 
 /**
  * @brief Raster which references some external pointer data.
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T, long n = 2>
 class PtrRaster : public Raster<T, n> {
@@ -181,7 +181,7 @@ private:
 /**
  * @brief Raster which references some external vector data.
  * @details Use it for temporary rasters.
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T, long n = 2>
 class VecRefRaster : public Raster<T, n> {
@@ -217,7 +217,7 @@ private:
 
 /**
  * @brief Raster which stores internally the data as a vector.
- * @see \ref data-classes
+ * @see \ref data_classes
  */
 template <typename T, long n = 2>
 class VecRaster : public Raster<T, n> {

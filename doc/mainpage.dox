@@ -36,7 +36,7 @@ and EL_FitsIO misses:
 like iterators covered by EL_CatalogLib;
 - Features that we didn't have time to implement yet!
 
-For a clear overview of what's there and what's missing, see \ref cfitsio-cov.
+For a clear overview of what's there and what's missing, see \ref cfitsio_cov.
 
 
 \section build Install and depend on EL_FitsIO
@@ -48,7 +48,7 @@ See the \ref install_guide.
 
 The end-user API is made of two kinds of classes:
 
-- \ref data-classes "Data classes" store raw data;
+- \ref data_classes "Data classes" store raw data;
 - \ref handlers "Service classes" allow reading and writing the data.
 
 Records, image rasters and binary table columns are implemented as light structures to abstract from CFitsIO raw pointers:
@@ -58,16 +58,26 @@ Records, image rasters and binary table columns are implemented as light structu
 - Raster represents a _n_-dimensional array with constant-time pixel access.
 
 Columns and rasters each have variants, depending on who owns the data and on the data container type.
-Check out the \ref data-classes documentation for more details, or the API documentation for even more details.
+Check out the \ref data_classes documentation for more details, or the API documentation for even more details.
 
 Service classes are organized according to the Fits format:
 
-- MefFile, the root object, provides file-level services (open, close, access HDUs);
+- SifFile and MefFile, the root objects, provides file-level services (open, close, access HDUs);
 - RecordHdu only handles records;
 - BintableHdu and ImageHdu, respectively the binary table and image HDU reader-writers, additionally provide access to the raster and columns.
 
-To make it simple, the end-user API consists of the Euclid::FitsIO namespace.
+To make it simple, the end-user API consists of the Euclid::FitsIO namespace, main classes of which are:
 
+- MefFile to open and close a Fits file, and to create and access HDUs (SifFile is a simplified API for Single Image Fits files);
+  - RecordHdu to read and write records;
+    - Record to store keyword, value, unit and comment;
+  - ImageHdu to read and write Primary or image extension data;
+    - Raster and its derived classes to store, access and modify pixel values;
+  - BintableHdu to read and write binary table extension data;
+    - Column and its derived classes to store, access and modify cell values.
+
+General usage guidelines are given in the Euclid::FitsIO namespace,
+while detailed descriptions are in the class and member documentations.
 
 \section pages Related pages
 
@@ -76,13 +86,14 @@ To go further, the following pages focus on specific topics:
 
 - \ref install_guide
 - \ref tuto
-- \ref data-classes
+- \ref data_classes
 - \ref handlers
 - \ref types
 - \ref optim
 - \ref type_map
-- \ref cfitsio-cov
-- \ref apis-comp
+- \ref cfitsio_cov
+- \ref cfitsio_toc
+- \ref apis_comp
 - \ref design
 
 */

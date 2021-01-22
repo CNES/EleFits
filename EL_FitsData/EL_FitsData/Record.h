@@ -78,7 +78,7 @@ namespace FitsIO {
  * An additional "LONGSTRN" record is written to the file,
  * to warn the file user about the CFitsIO convention.
  *
- * @see \ref data-classes
+ * @see \ref data_classes
  * @see EL_FITSIO_FOREACH_RECORD_TYPE for the list of supported value types.
  */
 template <typename T>
