@@ -57,7 +57,8 @@ public:
     Reserved = 0b0010, ///< Reserved keywords are standard and optional (only valued keywords are put in this category).
     Comment = 0b0100, ///< COMMENT (and HISTORY) keywords are special non-valued reserved keywords.
     User = 0b1000, ///< User-defined keywords.
-    All = 0b1111 ///< All keywords
+    None = 0b0000, ///< No keyword.
+    All = 0b1111 ///< All keywords.
   };
 
   /**
@@ -134,6 +135,14 @@ private:
  */
 inline StandardKeyword::Category operator|(StandardKeyword::Category a, StandardKeyword::Category b) {
   return static_cast<StandardKeyword::Category>(static_cast<int>(a) | static_cast<int>(b));
+}
+
+/**
+ * @brief In-place bit-wise or operator for masking.
+ */
+inline StandardKeyword::Category &operator|=(StandardKeyword::Category &a, StandardKeyword::Category b) {
+  a = a | b;
+  return a;
 }
 
 /**

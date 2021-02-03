@@ -21,6 +21,7 @@
  *
  */
 
+#include <stdexcept>
 #include <map>
 #include <ostream>
 #include <string>
@@ -57,7 +58,12 @@ public:
     options_description options {};
     auto add = options.add_options();
     add("input", value<std::string>(), "Input file");
-    add("keywords", bool_switch(), "Print keywords");
+    add("keywords",
+        value<std::vector<bool>>()
+            ->default_value({ false, false, false, false }, "0 0 0 0")
+            ->multitoken()
+            ->zero_tokens(),
+        "Keyword mask: required, reserved, comment, user (e.g. --keywords 0 0 0 1 displays only user keywords)");
     return options;
   }
 
@@ -67,7 +73,28 @@ public:
 
     /* Read options */
     const auto filename = args["input"].as<std::string>();
-    const auto printKeywords = args["keywords"].as<bool>();
+    const auto keywordBits = args["keywords"].as<std::vector<bool>>();
+    const auto size = keywordBits.size();
+    if (size != 0 && size != 4) {
+      throw std::invalid_argument("keywords option takes 0 or 4 parameters");
+    }
+    RecordHdu::KeywordCategory keywordMask = RecordHdu::KeywordCategory::None;
+    if (size == 0) {
+      keywordMask = RecordHdu::KeywordCategory::All;
+    } else {
+      if (keywordBits[0]) {
+        keywordMask |= RecordHdu::KeywordCategory::Required;
+      }
+      if (keywordBits[1]) {
+        keywordMask |= RecordHdu::KeywordCategory::Reserved;
+      }
+      if (keywordBits[2]) {
+        keywordMask |= RecordHdu::KeywordCategory::Comment;
+      }
+      if (keywordBits[3]) {
+        keywordMask |= RecordHdu::KeywordCategory::User;
+      }
+    }
 
     /* Read file */
     MefFile f(filename, FitsFile::Permission::Read);
@@ -104,8 +131,8 @@ public:
       }
 
       /* Read keywords */
-      if (printKeywords) {
-        const auto keywords = hdu.readKeywords();
+      if (keywordMask) {
+        const auto keywords = hdu.readKeywords(keywordMask);
         logger.info() << "  Keywords:";
         for (const auto &k : keywords) {
           logger.info() << "    " << k;
