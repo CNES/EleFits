@@ -201,6 +201,17 @@ BOOST_FIXTURE_TEST_CASE(brackets_in_comment_are_read_back_test, Test::TemporaryM
   BOOST_CHECK_EQUAL(weirdRecord.comment, "[0:1] SOC Planning ID");
 }
 
+BOOST_FIXTURE_TEST_CASE(comment_and_history_are_written, Test::TemporarySifFile) {
+  const auto &header = this->header();
+  const std::string comment = "BLUE";
+  const std::string history = "BEAVER";
+  header.writeComment(comment);
+  header.writeHistory(history);
+  const auto contents = header.readHeader();
+  BOOST_CHECK_NE(contents.find(comment), std::string::npos);
+  BOOST_CHECK_NE(contents.find(history), std::string::npos);
+}
+
 BOOST_FIXTURE_TEST_CASE(full_header_is_read_as_string_test, Test::TemporarySifFile) {
   const auto header = this->header().readHeader(); // TODO check with false
   BOOST_CHECK_GT(header.size(), 0);

@@ -74,7 +74,7 @@ RecordVector<T> RecordHdu::parseRecordVector(const std::vector<std::string> &key
 
 template <typename T>
 RecordVector<T> RecordHdu::parseAllRecords() const {
-  return parseRecordVector<T>(readKeywords());
+  return parseRecordVector<T>(readKeywords(KeywordCategory::All & ~KeywordCategory::Comment));
 }
 
 template <typename T>

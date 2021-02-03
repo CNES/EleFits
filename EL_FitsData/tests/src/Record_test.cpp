@@ -93,20 +93,6 @@ void checkEqual(T value, T expected) {
   BOOST_CHECK_EQUAL(value, expected);
 }
 
-template <typename T>
-void checkRecordSlicing() {
-  T v = Test::generateRandomValue<T>();
-  Record<T> r("KEY", v);
-  checkEqual<T>(r, v);
-}
-
-#define RECORD_SLICING_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_record_slicing_test) { \
-    checkRecordSlicing<type>(); \
-  }
-
-EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_SLICING_TEST)
-
 template <typename TV, typename TE>
 void checkApprox(TV value, TE expected) {
   BOOST_CHECK(Test::approx(value, static_cast<TV>(expected)));
@@ -121,6 +107,35 @@ void checkApprox(std::complex<TV> value, std::complex<TE> expected) {
 template <>
 void checkApprox(std::string value, std::string expected) {
   BOOST_CHECK_EQUAL(value, expected);
+}
+
+template <typename T>
+void checkRecordSlicing() {
+  T v = Test::generateRandomValue<T>();
+  Record<T> r("KEY", v);
+  checkEqual<T>(r, v);
+}
+
+#define RECORD_SLICING_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_record_slicing_test) { \
+    checkRecordSlicing<type>(); \
+  }
+
+EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_SLICING_TEST)
+
+BOOST_AUTO_TEST_CASE(long_string_values_are_detected_test) {
+  const std::string shortString = "XS";
+  const std::string longString = std::string(99, 'X') + 'L';
+  BOOST_CHECK_LE(shortString.length(), 80);
+  BOOST_CHECK_GT(longString.length(), 80);
+  const Record<std::string> shortStringRecord("STRINGXS", shortString);
+  BOOST_CHECK(not shortStringRecord.hasLongStringValue());
+  const Record<std::string> longStringRecord("STRINGXL", longString);
+  BOOST_CHECK(longStringRecord.hasLongStringValue());
+  const Record<boost::any> shortAnyRecord("ANYXS", shortString);
+  BOOST_CHECK(not shortAnyRecord.hasLongStringValue());
+  const Record<boost::any> longAnyRecord("ANYXL", longString);
+  BOOST_CHECK(longAnyRecord.hasLongStringValue());
 }
 
 template <typename TFrom, typename TTo>

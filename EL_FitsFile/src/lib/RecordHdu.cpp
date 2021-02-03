@@ -54,8 +54,8 @@ std::string RecordHdu::readHeader(bool incNonValued) const {
   return Cfitsio::Header::readHeader(m_fptr, incNonValued);
 }
 
-std::vector<std::string> RecordHdu::readKeywords() const {
-  return Cfitsio::Header::listValuedKeywords(m_fptr);
+std::vector<std::string> RecordHdu::readKeywords(KeywordCategory filter) const {
+  return Cfitsio::Header::listKeywords(m_fptr, filter);
 }
 
 bool RecordHdu::hasKeyword(const std::string &keyword) const {

@@ -100,6 +100,11 @@ public:
   virtual ~RecordHdu() = default;
 
   /**
+   * @copydoc Cfitsio::Header::StandardKeyword::Category
+   */
+  using KeywordCategory = Cfitsio::Header::StandardKeyword::Category;
+
+  /**
    * @brief Get the 0-based index of the HDU.
    */
   long index() const;
@@ -132,11 +137,10 @@ public:
   std::string readHeader(bool incNonValued = true) const;
 
   /**
-   * @brief List the valued keywords.
-   * @warning
-   * Non-valued records, like COMMENT and HISTORY records, are bypassed.
+   * @brief List keywords.
+   * @param filter The set of categories to be kept, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
    */
-  std::vector<std::string> readKeywords() const;
+  std::vector<std::string> readKeywords(KeywordCategory filter = KeywordCategory::All) const;
 
   /**
    * @brief Check whether the HDU contains a given keyword.

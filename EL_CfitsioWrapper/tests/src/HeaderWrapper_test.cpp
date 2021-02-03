@@ -63,6 +63,95 @@ void checkClose(std::complex<double> value, std::complex<double> expected) {
   BOOST_CHECK_CLOSE(value.imag(), expected.imag(), atol);
 }
 
+BOOST_AUTO_TEST_CASE(standard_keyword_matching_test) {
+  BOOST_CHECK(Header::StandardKeyword::matches("KEY", "KEY"));
+  BOOST_CHECK(not Header::StandardKeyword::matches("KEY", "KEYn"));
+  BOOST_CHECK(Header::StandardKeyword::matches("KEYn", "KEYn"));
+  BOOST_CHECK(Header::StandardKeyword::matches("KEY123", "KEYn"));
+  BOOST_CHECK(not Header::StandardKeyword::matches("KEYn", "KEY123"));
+  BOOST_CHECK(not Header::StandardKeyword::matches("KEYWORD", "KEYn"));
+}
+
+BOOST_AUTO_TEST_CASE(standard_category_matching_test) {
+  using Category = Header::StandardKeyword::Category;
+
+  /* Required */
+
+  BOOST_CHECK(Category::Required & Category::Required);
+  BOOST_CHECK(Category::Required & Category::All);
+  BOOST_CHECK(not(Category::Required & (Category::Reserved | Category::Comment | Category::User)));
+  BOOST_CHECK(not(Category::Required & (Category::All & ~Category::Required)));
+
+  /* Reserved */
+
+  BOOST_CHECK(Category::Reserved & Category::Reserved);
+  BOOST_CHECK(Category::Reserved & Category::All);
+  BOOST_CHECK(not(Category::Reserved & (Category::Required | Category::Comment | Category::User)));
+  BOOST_CHECK(not(Category::Reserved & (Category::All & ~Category::Reserved)));
+
+  /* Comment */
+
+  BOOST_CHECK(Category::Comment & Category::Comment);
+  BOOST_CHECK(Category::Comment & Category::All);
+  BOOST_CHECK(not(Category::Comment & (Category::Required | Category::Reserved | Category::User)));
+  BOOST_CHECK(not(Category::Comment & (Category::All & ~Category::Comment)));
+
+  /* User */
+
+  BOOST_CHECK(Category::User & Category::User);
+  BOOST_CHECK(Category::User & Category::All);
+  BOOST_CHECK(not(Category::User & (Category::Required | Category::Reserved | Category::Comment)));
+  BOOST_CHECK(not(Category::User & (Category::All & ~Category::User)));
+}
+
+BOOST_AUTO_TEST_CASE(standard_keyword_categorization_test) {
+  using Category = Header::StandardKeyword::Category;
+
+  /* Required */
+
+  const std::string required = "SIMPLE";
+  BOOST_CHECK(Header::StandardKeyword::belongsCategory(required, Category::Required));
+  BOOST_CHECK(Header::StandardKeyword::belongsCategories(required, Category::Required | Category::User));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategory(required, Category::Reserved));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategory(required, Category::Comment));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategory(required, Category::User));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(
+      required,
+      Category::Reserved | Category::Comment | Category::User));
+
+  /* Reserved */
+
+  const std::string reserved = "TFORM1";
+  BOOST_CHECK(Header::StandardKeyword::belongsCategory(reserved, Category::Reserved));
+  BOOST_CHECK(Header::StandardKeyword::belongsCategories(reserved, Category::Reserved | Category::User));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(reserved, Category::Required));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(reserved, Category::Comment));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(reserved, Category::User));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(
+      reserved,
+      Category::Required | Category::Comment | Category::User));
+
+  /* Comment */
+
+  const std::string comment = "COMMENT";
+  BOOST_CHECK(Header::StandardKeyword::belongsCategory(comment, Category::Comment));
+  BOOST_CHECK(Header::StandardKeyword::belongsCategories(comment, Category::Comment | Category::User));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(comment, Category::Required));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(comment, Category::Reserved));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(comment, Category::User));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(
+      comment,
+      Category::Reserved | Category::Required | Category::User));
+
+  /* User */
+
+  const std::string user = "MINE";
+  BOOST_CHECK(Header::StandardKeyword::belongsCategory(user, Category::User));
+  BOOST_CHECK(not Header::StandardKeyword::belongsCategories(
+      user,
+      Category::Required | Category::Reserved | Category::Comment));
+}
+
 template <typename T>
 void checkRecordIsReadBack(const std::string &label) {
   FitsIO::Test::MinimalFile file;
@@ -132,7 +221,8 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, FitsIO::Test::MinimalFile) {
       { "DOUBLE", 3. },
       { "STRING", "four" });
   std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
-  const auto found = Header::listValuedKeywords(this->fptr);
+  const auto categories = Header::StandardKeyword::Category::All & ~Header::StandardKeyword::Category::Comment;
+  const auto found = Header::listKeywords(this->fptr, categories);
   checkContains(found, keywords);
   auto records = Header::parseRecordsAs<RecordList, bool, int, double, std::string>(this->fptr, keywords);
   BOOST_CHECK_EQUAL(records.b.value, input.b.value);
