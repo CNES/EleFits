@@ -59,7 +59,9 @@ public:
             ->default_value({ false, false, false, false }, "0 0 0 0")
             ->multitoken()
             ->zero_tokens(),
-        "Keyword mask: mandatory, reserved, comment, user (e.g. --keywords 0 0 0 1 displays only user keywords)");
+        "Keyword mask with the following 4 bits: mandatory, reserved, comment, user "
+        "(e.g. --keywords 0 0 0 1 displays only user keywords)."
+        "Omitting all values sets the 4 bits, so --keywords displays all keywords.");
     return options;
   }
 
@@ -74,21 +76,21 @@ public:
     if (size != 0 && size != 4) {
       throw std::invalid_argument("keywords option takes 0 or 4 parameters");
     }
-    RecordHdu::KeywordCategory keywordMask = RecordHdu::KeywordCategory::None;
+    KeywordCategory keywordMask = KeywordCategory::None;
     if (size == 0) {
-      keywordMask = RecordHdu::KeywordCategory::All;
+      keywordMask = KeywordCategory::All;
     } else {
       if (keywordBits[0]) {
-        keywordMask |= RecordHdu::KeywordCategory::Mandatory;
+        keywordMask |= KeywordCategory::Mandatory;
       }
       if (keywordBits[1]) {
-        keywordMask |= RecordHdu::KeywordCategory::Reserved;
+        keywordMask |= KeywordCategory::Reserved;
       }
       if (keywordBits[2]) {
-        keywordMask |= RecordHdu::KeywordCategory::Comment;
+        keywordMask |= KeywordCategory::Comment;
       }
       if (keywordBits[3]) {
-        keywordMask |= RecordHdu::KeywordCategory::User;
+        keywordMask |= KeywordCategory::User;
       }
     }
 

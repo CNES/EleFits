@@ -45,7 +45,7 @@ std::string readHeader(fitsfile *fptr, bool incNonValued) {
   return headerString;
 }
 
-std::vector<std::string> listKeywords(fitsfile *fptr, StandardKeyword::Category categories) {
+std::vector<std::string> listKeywords(fitsfile *fptr, FitsIO::KeywordCategory categories) {
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
@@ -54,7 +54,7 @@ std::vector<std::string> listKeywords(fitsfile *fptr, StandardKeyword::Category 
   char value[FLEN_KEYWORD];
   for (int i = 0; i < count; ++i) {
     fits_read_keyn(fptr, i + 1, keyword, value, nullptr, &status);
-    if (StandardKeyword::belongsCategories(keyword, categories)) {
+    if (FitsIO::StandardKeyword::belongsCategories(keyword, categories)) {
       keywords.emplace_back(keyword);
     }
   }

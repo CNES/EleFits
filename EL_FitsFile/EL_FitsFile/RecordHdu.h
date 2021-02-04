@@ -100,11 +100,6 @@ public:
   virtual ~RecordHdu() = default;
 
   /**
-   * @copydoc Cfitsio::Header::StandardKeyword::Category
-   */
-  using KeywordCategory = Cfitsio::Header::StandardKeyword::Category;
-
-  /**
    * @brief Get the 0-based index of the HDU.
    */
   long index() const;
@@ -138,7 +133,7 @@ public:
 
   /**
    * @brief List keywords.
-   * @param filter The set of categories to be kept, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
+   * @param filter The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
    */
   std::vector<std::string> readKeywords(KeywordCategory filter = KeywordCategory::All) const;
 

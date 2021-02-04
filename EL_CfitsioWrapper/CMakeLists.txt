@@ -93,10 +93,6 @@ elements_add_unit_test(CfitsioWrapper tests/src/CfitsioWrapper_test.cpp
                      EXECUTABLE EL_CfitsioWrapper_CfitsioWrapper_test
                      LINK_LIBRARIES EL_CfitsioWrapper
                      TYPE Boost)
-elements_add_unit_test(StandardKeyword tests/src/StandardKeyword_test.cpp 
-                     EXECUTABLE EL_CfitsioWrapper_StandardKeyword_test
-                     LINK_LIBRARIES EL_CfitsioWrapper
-                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

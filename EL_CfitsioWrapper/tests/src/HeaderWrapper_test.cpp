@@ -132,7 +132,7 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, FitsIO::Test::MinimalFile) {
       { "DOUBLE", 3. },
       { "STRING", "four" });
   std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
-  const auto categories = Header::StandardKeyword::Category::All & ~Header::StandardKeyword::Category::Comment;
+  const auto categories = Euclid::FitsIO::KeywordCategory::All & ~Euclid::FitsIO::KeywordCategory::Comment;
   const auto found = Header::listKeywords(this->fptr, categories);
   checkContains(found, keywords);
   auto records = Header::parseRecordsAs<RecordList, bool, int, double, std::string>(this->fptr, keywords);

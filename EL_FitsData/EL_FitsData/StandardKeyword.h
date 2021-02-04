@@ -25,12 +25,25 @@
 #include <vector>
 
 namespace Euclid {
-namespace Cfitsio {
+namespace FitsIO {
 
 /**
- * @brief Header-related functions.
+ * @brief Keyword categories.
+ * @details
+ * Can be used as a mask to combine different categories, e.g.:
+ * \code
+ * auto reservedOrUser = KeywordCategory::Reserved | KeywordCategory::User;
+ * auto allButComments = KeywordCategory::All & ~KeywordCategory::Comment;
+ * \endcode
  */
-namespace Header {
+enum KeywordCategory {
+  Mandatory = 0b0001, ///< Mandatory standard keyword.
+  Reserved = 0b0010, ///< Optional standard keywords (only valued keywords are put in this category).
+  Comment = 0b0100, ///< COMMENT (and HISTORY) keywords (non-valued reserved keywords).
+  User = 0b1000, ///< User-defined keywords.
+  None = 0b0000, ///< No keyword.
+  All = 0b1111 ///< All keywords.
+};
 
 /**
  * @brief Standard Fits keywords and related utils.
@@ -39,38 +52,21 @@ class StandardKeyword {
 
 public:
   /**
-   * @brief Keyword categories.
-   * @details
-   * Can be used as a mask to combine different categories, e.g.:
-   * \code
-   * auto reservedOrUser = Category::Reserved | Category::User;
-   * auto allButComments = Category::All & ~Category::Comment;
-   * \endcode
-   */
-  enum Category {
-    Mandatory = 0b0001, ///< Mandatory standard keyword.
-    Reserved = 0b0010, ///< Optional standard keywords (only valued keywords are put in this category).
-    Comment = 0b0100, ///< COMMENT (and HISTORY) keywords (non-valued reserved keywords).
-    User = 0b1000, ///< User-defined keywords.
-    None = 0b0000, ///< No keyword.
-    All = 0b1111 ///< All keywords.
-  };
-
-  /**
    * @brief Keep only keywords of given categories.
    * @param keywords The keyword vector to be filtered
-   * @param categories The categories to be kept, e.g. `Category::Reserved | Category::User`.
-   * @see Category
+   * @param categories The categories to be kept, e.g. `KeywordCategory::Reserved | KeywordCategory::User`.
+   * @see KeywordCategory
    */
-  static std::vector<std::string> filterCategories(const std::vector<std::string> &keywords, Category categories);
+  static std::vector<std::string>
+  filterCategories(const std::vector<std::string> &keywords, KeywordCategory categories);
 
   /**
    * @brief Check whether a keyword is of given categories.
    * @param keywords The keyword vector to be tested
-   * @param categories The categories to be tested, e.g. `Category::Reserved | Category::User`.
-   * @see Category
+   * @param categories The categories to be tested, e.g. `KeywordCategory::Reserved | KeywordCategory::User`.
+   * @see KeywordCategory
    */
-  static bool belongsCategories(const std::string &keyword, Category categories);
+  static bool belongsCategories(const std::string &keyword, KeywordCategory categories);
 
   /**
    * @brief Check whether a test keyword matches a reference keyword.
@@ -104,7 +100,7 @@ private:
   /**
    * @brief The map between standard categories and standard keywords.
    */
-  static const std::map<Category, const std::vector<std::string> &> byCategory();
+  static const std::map<KeywordCategory, const std::vector<std::string> &> byCategory();
 
   /**
    * @brief The list of mandatory keywords.
@@ -124,48 +120,47 @@ private:
 
 /**
  * @brief Bit-wise OR operator for masking.
- * @see Category
+ * @see KeywordCategory
  */
-inline StandardKeyword::Category operator|(StandardKeyword::Category a, StandardKeyword::Category b) {
-  return static_cast<StandardKeyword::Category>(static_cast<int>(a) | static_cast<int>(b));
+inline KeywordCategory operator|(KeywordCategory a, KeywordCategory b) {
+  return static_cast<KeywordCategory>(static_cast<int>(a) | static_cast<int>(b));
 }
 
 /**
  * @brief In-place bit-wise OR operator for masking.
- * @see Category
+ * @see KeywordCategory
  */
-inline StandardKeyword::Category &operator|=(StandardKeyword::Category &a, StandardKeyword::Category b) {
+inline KeywordCategory &operator|=(KeywordCategory &a, KeywordCategory b) {
   a = a | b;
   return a;
 }
 
 /**
  * @brief Bit-wise AND operator for masking.
- * @see Category
+ * @see KeywordCategory
  */
-inline StandardKeyword::Category operator&(StandardKeyword::Category a, StandardKeyword::Category b) {
-  return static_cast<StandardKeyword::Category>(static_cast<int>(a) & static_cast<int>(b));
+inline KeywordCategory operator&(KeywordCategory a, KeywordCategory b) {
+  return static_cast<KeywordCategory>(static_cast<int>(a) & static_cast<int>(b));
 }
 
 /**
  * @brief In-place bit-wise AND operator for masking.
- * @see Category
+ * @see KeywordCategory
  */
-inline StandardKeyword::Category &operator&=(StandardKeyword::Category &a, StandardKeyword::Category b) {
+inline KeywordCategory &operator&=(KeywordCategory &a, KeywordCategory b) {
   a = a & b;
   return a;
 }
 
 /**
  * @brief Bit-wise binary NOT operator for masking.
- * @see Category
+ * @see KeywordCategory
  */
-inline StandardKeyword::Category operator~(StandardKeyword::Category a) {
-  return static_cast<StandardKeyword::Category>(~static_cast<int>(a));
+inline KeywordCategory operator~(KeywordCategory a) {
+  return static_cast<KeywordCategory>(~static_cast<int>(a));
 }
 
-} // namespace Header
-} // namespace Cfitsio
+} // namespace FitsIO
 } // namespace Euclid
 
 #endif

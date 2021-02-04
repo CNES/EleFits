@@ -14,6 +14,7 @@
 * `Raster` and `Column` values can be accessed with backward (negative) indices through `at` methods
 * Classes `Named` and `Indexed` improve readability and safety to read records and columns
 * Exceptions thrown all derive from `FitsIOError`
+* Keywords can be filtered in `RecordHdu::readKeywords()` using new enum `KeywordCategory`
 
 ### Cleaning
 

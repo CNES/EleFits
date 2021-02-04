@@ -30,10 +30,10 @@
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
-#include "EL_CfitsioWrapper/StandardKeyword.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/StandardKeyword.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -53,8 +53,7 @@ std::string readHeader(fitsfile *fptr, bool incNonValued = true);
 /**
  * @brief List the keywords of selected categories.
  */
-std::vector<std::string>
-listKeywords(fitsfile *fptr, StandardKeyword::Category filter = StandardKeyword::Category::All);
+std::vector<std::string> listKeywords(fitsfile *fptr, FitsIO::KeywordCategory filter = FitsIO::KeywordCategory::All);
 
 /**
  * @brief Check whether the current HDU contains a given keyword.
