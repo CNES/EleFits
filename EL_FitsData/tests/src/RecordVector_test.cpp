@@ -1,8 +1,4 @@
 /**
- * @file tests/src/RecordVector_test.cpp
- * @date 09/15/20
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under

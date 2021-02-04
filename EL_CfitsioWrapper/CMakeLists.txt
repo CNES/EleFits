@@ -33,8 +33,8 @@ find_package(Cfitsio REQUIRED)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EL_CfitsioWrapper src/lib/*.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsData Cfitsio
                      INCLUDE_DIRS ElementsKernel EL_FitsData Cfitsio
+                     LINK_LIBRARIES ElementsKernel EL_FitsData Cfitsio
                      PUBLIC_HEADERS EL_CfitsioWrapper)
 
 #===============================================================================
@@ -91,6 +91,10 @@ elements_add_unit_test(CfitsioFixture tests/src/CfitsioFixture_test.cpp
                      TYPE Boost)
 elements_add_unit_test(CfitsioWrapper tests/src/CfitsioWrapper_test.cpp 
                      EXECUTABLE EL_CfitsioWrapper_CfitsioWrapper_test
+                     LINK_LIBRARIES EL_CfitsioWrapper
+                     TYPE Boost)
+elements_add_unit_test(StandardKeyword tests/src/StandardKeyword_test.cpp 
+                     EXECUTABLE EL_CfitsioWrapper_StandardKeyword_test
                      LINK_LIBRARIES EL_CfitsioWrapper
                      TYPE Boost)
 

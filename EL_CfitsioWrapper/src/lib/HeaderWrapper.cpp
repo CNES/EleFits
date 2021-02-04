@@ -17,7 +17,6 @@
  *
  */
 
-#include <algorithm> // copy_if
 #include <limits>
 
 #include "EL_FitsData/FitsIOError.h"
@@ -27,96 +26,6 @@
 namespace Euclid {
 namespace Cfitsio {
 namespace Header {
-
-const std::vector<std::string> StandardKeyword::m_requireds = { "SIMPLE",   "BITPIX", "NAXIS",  "NAXISn", "END",
-                                                                "XTENSION", "PCOUNT", "GCOUNT", "EXTEND" };
-
-const std::vector<std::string> StandardKeyword::m_reserveds = {
-  "AUTHOR",  "BLANK",    "BLOCKED", "BSCALE",   "BUNIT",  "BZERO",    "CDELTn",  "CROTAn",  "CRPIXn",
-  "CRVALn",  "CTYPEn",   "DATAMAX", "DATAMIN",  "DATE",   "DATE-OBS", "EPOCH",   "EQUINOX", "EXTLEVEL",
-  "EXTNAME", "EXTVER",   "GROUPS",  "INSTRUME", "OBJECT", "OBSERVER", "ORIGIN",  "PSCALn",  "PTYPEn",
-  "PZEROn",  "REFERENC", "TBCOLn",  "TDIMn",    "TDISPn", "TELESCOP", "TFIELDS", "TFORMn",  "THEAP",
-  "TNULLn",  "TSCALn",   "TTYPEn",  "TUNITn",   "TZEROn"
-};
-
-const std::vector<std::string> StandardKeyword::m_comments = { "COMMENT", "HISTORY" };
-
-const std::map<StandardKeyword::Category, const std::vector<std::string> &> StandardKeyword::byCategory() {
-  return { { StandardKeyword::Category::Required, m_requireds },
-           { StandardKeyword::Category::Reserved, m_reserveds },
-           { StandardKeyword::Category::Comment, m_comments } };
-}
-
-std::vector<std::string>
-StandardKeyword::filterCategories(const std::vector<std::string> &keywords, Category categories) {
-  std::vector<std::string> res;
-  const auto it = std::copy_if(keywords.begin(), keywords.end(), res.begin(), [&](const std::string &k) {
-    return belongsCategories(k, categories);
-  });
-  res.resize(std::distance(res.begin(), it));
-  return res;
-}
-
-bool StandardKeyword::belongsCategories(const std::string &keyword, Category categories) {
-  const auto standards = byCategory();
-  for (const auto &s : standards) {
-    if (categories & s.first) {
-      if (matchesOneOf(keyword, s.second)) {
-        return true;
-      }
-    }
-  }
-  // At that point, we know the keyword is not in the selected standard categories.
-  if (categories & Category::User) {
-    for (const auto &s : standards) {
-      if (matchesOneOf(keyword, s.second)) { // TODO could smarter and not redo matching
-        return false;
-      }
-    }
-    return true;
-  }
-  // At this point, we know the keyword is not in the selected categories.
-  return false;
-}
-
-bool StandardKeyword::belongsCategory(const std::string &keyword, Category category) {
-  return belongsCategories(keyword, category);
-}
-
-bool StandardKeyword::matches(const std::string &test, const std::string &ref) {
-  if (test == ref) {
-    return true;
-  }
-  return matchesIndexed(test, ref);
-}
-
-bool StandardKeyword::matchesIndexed(const std::string &test, const std::string &ref) {
-  const auto split = ref.length() - 1;
-  if (test.length() <= split) {
-    return false;
-  }
-  const auto name = test.substr(0, split);
-  const auto index = test.substr(split);
-  if (name != ref.substr(0, split)) {
-    return false;
-  }
-  if (index.length() == 0) {
-    return false;
-  }
-  for (const auto c : index) {
-    if (not std::isdigit(c)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool StandardKeyword::matchesOneOf(const std::string &keyword, const std::vector<std::string> &refs) {
-  const auto pos = std::find_if(refs.begin(), refs.end(), [&](const std::string &test) {
-    return matches(keyword, test);
-  });
-  return pos != refs.end();
-}
 
 std::string readHeader(fitsfile *fptr, bool incNonValued) {
   int status = 0;

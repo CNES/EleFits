@@ -1,8 +1,4 @@
 /**
- * @file src/program/EL_FitsIO_ReadStructure.cpp
- * @date 11/25/20
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -63,7 +59,7 @@ public:
             ->default_value({ false, false, false, false }, "0 0 0 0")
             ->multitoken()
             ->zero_tokens(),
-        "Keyword mask: required, reserved, comment, user (e.g. --keywords 0 0 0 1 displays only user keywords)");
+        "Keyword mask: mandatory, reserved, comment, user (e.g. --keywords 0 0 0 1 displays only user keywords)");
     return options;
   }
 
@@ -83,7 +79,7 @@ public:
       keywordMask = RecordHdu::KeywordCategory::All;
     } else {
       if (keywordBits[0]) {
-        keywordMask |= RecordHdu::KeywordCategory::Required;
+        keywordMask |= RecordHdu::KeywordCategory::Mandatory;
       }
       if (keywordBits[1]) {
         keywordMask |= RecordHdu::KeywordCategory::Reserved;
@@ -133,9 +129,13 @@ public:
       /* Read keywords */
       if (keywordMask) {
         const auto keywords = hdu.readKeywords(keywordMask);
-        logger.info() << "  Keywords:";
-        for (const auto &k : keywords) {
-          logger.info() << "    " << k;
+        if (keywords.size() == 0) {
+          logger.info() << "  No keywords";
+        } else {
+          logger.info() << "  Keywords:";
+          for (const auto &k : keywords) {
+            logger.info() << "    " << k;
+          }
         }
       }
     }
