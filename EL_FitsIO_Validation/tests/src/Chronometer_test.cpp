@@ -1,4 +1,8 @@
 /**
+ * @file tests/src/Chronometer_test.cpp
+ * @date 02/05/21
+ * @author user
+ *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -17,56 +21,24 @@
  *
  */
 
-#ifndef _EL_FITSDATA_DATAUTILS_H
-#define _EL_FITSDATA_DATAUTILS_H
+#include <boost/test/unit_test.hpp>
 
-#include <string>
+#include "EL_FitsIO_Validation//Chronometer.h"
 
-namespace Euclid {
-namespace FitsIO {
+//-----------------------------------------------------------------------------
 
-/**
- * @brief A name and type.
- */
-template <typename T>
-struct Named {
+BOOST_AUTO_TEST_SUITE (Chronometer_test)
 
-  /** @brief Constructor. */
-  explicit Named(const std::string &value) : name(value) {};
+//-----------------------------------------------------------------------------
 
-  /**
-   * @brief Slice as the name.
-   */
-  operator std::string() const {
-    return name;
-  }
+BOOST_AUTO_TEST_CASE( example_test ) {
 
-  /** @brief The name */
-  std::string name;
-};
+  BOOST_FAIL("!!!! Please implement your tests !!!!");
 
-/**
- * @brief An index and type.
- */
-template <typename T>
-struct Indexed {
+}
 
-  /** @brief Constructor. */
-  explicit Indexed(long value) : index(value) {};
+//-----------------------------------------------------------------------------
 
-  /**
-   * @brief Slice as the index.
-   */
-  operator long() const {
-    return index;
-  }
+BOOST_AUTO_TEST_SUITE_END ()
 
-  /** @brief The index */
-  long index;
-};
 
-} // namespace FitsIO
-
-} // namespace Euclid
-
-#endif

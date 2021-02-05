@@ -34,6 +34,10 @@ find_package(Cfitsio REQUIRED)
 #                     INCLUDE_DIRS Boost ElementsKernel
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
+elements_add_library(EL_FitsIO_Validation src/lib/*.cpp
+                     INCLUDE_DIRS ElementsKernel
+                     LINK_LIBRARIES ElementsKernel
+                     PUBLIC_HEADERS EL_FitsIO_Validation)
 
 #===============================================================================
 # Declare the executables here
@@ -57,6 +61,10 @@ elements_add_executable(EL_FitsIO_BufferedReadPerf src/program/EL_FitsIO_Buffere
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
+elements_add_unit_test(Chronometer tests/src/Chronometer_test.cpp 
+                     EXECUTABLE EL_FitsIO_Validation_Chronometer_test
+                     LINK_LIBRARIES EL_FitsIO_Validation
+                     TYPE Boost)
 elements_add_test(CheckPrograms COMMAND EL_FitsIO_CheckPrograms)
 
 #===============================================================================

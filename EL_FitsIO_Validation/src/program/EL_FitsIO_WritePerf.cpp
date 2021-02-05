@@ -22,51 +22,116 @@
 #include <string>
 
 #include <boost/program_options.hpp>
+#include <fitsio.h>
 
 #include "ElementsKernel/ProgramHeaders.h"
 
+#include "EL_FitsData/TestRaster.h"
+#include "EL_FitsData/TestColumn.h"
 #include "EL_FitsFile/MefFile.h"
+#include "EL_FitsIO_Validation/Chronometer.h"
 
 using boost::program_options::options_description;
 using boost::program_options::variable_value;
 using boost::program_options::value;
 
-using namespace Euclid::FitsIO;
+using namespace Euclid;
+using Raster = FitsIO::Raster<std::int64_t, 1>;
+using Columns = std::tuple<
+    FitsIO::VecColumn<char>,
+    FitsIO::VecColumn<std::int32_t>,
+    FitsIO::VecColumn<float>,
+    FitsIO::VecColumn<std::complex<double>>,
+    FitsIO::VecColumn<std::string>>;
+using Chronometer = FitsIO::Test::Chronometer<std::chrono::milliseconds>;
 
-VecRaster<float> generateRaster(long naxis1, long naxis2) {
-  long order = 10;
-  while (order < naxis2) {
-    order *= 10;
+class Benchmark {
+public:
+  virtual ~Benchmark() = default;
+
+  Benchmark() : m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {
   }
-  VecRaster<float, 2> raster({ naxis1, naxis2 });
-  for (long j = 0; j < naxis2; ++j) {
-    for (long i = 0; i < naxis1; ++i) {
-      raster[{ i, j }] = float(i + j) / float(order);
+
+  std::vector<Chronometer::Unit> writeImages(int count, const Raster &raster) {
+    m_chrono.reset();
+    std::vector<Chronometer::Unit> results(count + 1);
+    for (int i = 0; i < count; ++i) {
+      const auto inc = writeImage(raster);
+      m_logger.info() << i + 1 << "/" << count << ": " << inc.count() << "ms";
+      results[i] = inc;
     }
+    const auto total = m_chrono.elapsed();
+    m_logger.info() << "TOTAL: " << total.count() << "ms";
+    results[count] = total;
+    return results;
   }
-  return raster;
-}
 
-struct Table {
-  VecColumn<std::string> stringCol;
-  VecColumn<float> floatCol;
-  VecColumn<int> intCol;
+  std::vector<Chronometer::Unit> writeBintables(int count, const Columns &columns) {
+    m_chrono.reset();
+    std::vector<Chronometer::Unit> results(count + 1);
+    for (int i = 0; i < count; ++i) {
+      // FIXME
+    }
+    results[count] = m_chrono.elapsed();
+    return results;
+  }
+
+  virtual Chronometer::Unit writeImage(const Raster &raster) = 0;
+
+  virtual Chronometer::Unit writeBintable(const Columns &columns) = 0;
+
+protected:
+  Chronometer m_chrono;
+  Elements::Logging m_logger;
 };
 
-Table generateColumns(long naxis2) {
-  std::vector<std::string> strings(naxis2);
-  std::vector<float> floats(naxis2);
-  std::vector<int> ints(naxis2);
-  for (long i = 0; i < naxis2; ++i) {
-    strings[i] = "Text";
-    floats[i] = float(i) / float(naxis2);
-    ints[i] = int(i * naxis2);
+class ElfitsioBenchmark : public Benchmark {
+public:
+  virtual ~ElfitsioBenchmark() = default;
+
+  ElfitsioBenchmark(const std::string &filename) : Benchmark(), m_f(filename, FitsIO::MefFile::Permission::Overwrite) {
   }
-  Table table { VecColumn<std::string>({ "STRINGS", "", 8 }, std::move(strings)),
-                VecColumn<float>({ "FLOATS", "", 1 }, std::move(floats)),
-                VecColumn<int>({ "INTS", "", 1 }, std::move(ints)) };
-  return table;
-}
+
+  virtual Chronometer::Unit writeImage(const Raster &raster) override {
+    m_chrono.start();
+    m_f.assignImageExt("", raster);
+    return m_chrono.stop();
+  }
+
+  virtual Chronometer::Unit writeBintable(const Columns &columns) override {
+    m_chrono.start();
+    // FIXME
+    return m_chrono.stop();
+  }
+
+private:
+  FitsIO::MefFile m_f;
+};
+
+class CfitsioBenchmark : public Benchmark {
+public:
+  virtual ~CfitsioBenchmark() = default;
+
+  CfitsioBenchmark(const std::string &filename) : Benchmark(), m_fptr(nullptr), m_status(0) {
+    fits_create_file(&m_fptr, filename.c_str(), &m_status);
+  }
+
+  virtual Chronometer::Unit writeImage(const Raster &raster) override {
+    m_chrono.start();
+    // FIXME
+    return m_chrono.stop();
+  }
+
+  virtual Chronometer::Unit writeBintable(const Columns &columns) override {
+    m_chrono.start();
+    // FIXME
+    return m_chrono.stop();
+  }
+
+private:
+  fitsfile *m_fptr;
+  int m_status;
+};
 
 class EL_FitsIO_WritePerf : public Elements::Program {
 
@@ -74,10 +139,11 @@ public:
   options_description defineSpecificProgramOptions() override {
     options_description options {};
     auto add = options.add_options();
+    add("lib", value<std::string>()->default_value("EL_FitsIO"), "Library to be benchmarked (CFitsIO or EL_FitsIO)");
     add("images", value<int>()->default_value(0), "Number of image extensions");
+    add("pixels", value<int>()->default_value(1), "Number of pixels");
     add("tables", value<int>()->default_value(0), "Number of binary table extensions");
-    add("naxis1", value<int>()->default_value(1), "First axis size");
-    add("naxis2", value<int>()->default_value(1), "Second axis size");
+    add("rows", value<int>()->default_value(1), "Number of rows");
     add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options;
   }
@@ -86,41 +152,25 @@ public:
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
 
+    const auto lib = args["lib"].as<std::string>();
     const auto imageCount = args["images"].as<int>();
+    const auto pixels = args["pixels"].as<int>();
     const auto tableCount = args["tables"].as<int>();
-    const auto naxis1 = args["naxis1"].as<int>();
-    const auto naxis2 = args["naxis2"].as<int>();
+    const auto rows = args["rows"].as<int>();
     const auto filename = args["output"].as<std::string>();
 
-    const auto raster = generateRaster(naxis1, naxis2);
-    const auto table = generateColumns(naxis2);
+    const auto raster = FitsIO::Test::RandomRaster<std::int64_t, 1>({ pixels });
+    const auto table = FitsIO::Test::RandomTable(rows);
 
-    MefFile f(filename, FitsFile::Permission::Overwrite);
-
-    logger.info() << "Generating " << imageCount << " image extension(s)"
-                  << " of size " << naxis1 << " x " << naxis2;
-
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    for (int i = 0; i < imageCount; ++i) {
-      f.assignImageExt("I_" + std::to_string(i), raster);
+    Benchmark *benchmark = nullptr;
+    if (lib == "EL_FitsIO") {
+      benchmark = new ElfitsioBenchmark(filename);
+    } else if (lib == "CFitsIO") {
+      benchmark = new CfitsioBenchmark(filename);
     }
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    auto durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-
-    logger.info() << "\tElapsed: " << durationMilli << " ms";
-
-    logger.info() << "Generating " << tableCount << " binary table extension(s)"
-                  << " of size " << 3 << " x " << naxis2;
-
-    begin = std::chrono::steady_clock::now();
-    for (int i = 0; i < tableCount; ++i) {
-      f.assignBintableExt("T_" + std::to_string(i), table.stringCol, table.floatCol, table.intCol);
-    }
-    end = std::chrono::steady_clock::now();
-    durationMilli = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-
-    logger.info() << "\tElapsed: " << durationMilli << " ms";
-
+    benchmark->writeImages(imageCount, raster);
+    // benchmark->writeBintables(tableCount, table.columns);
+    delete benchmark;
     return Elements::ExitCode::OK;
   }
 };

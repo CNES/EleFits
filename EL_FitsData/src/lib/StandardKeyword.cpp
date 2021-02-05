@@ -55,7 +55,7 @@ StandardKeyword::filterCategories(const std::vector<std::string> &keywords, Keyw
 
 bool StandardKeyword::belongsCategories(const std::string &keyword, KeywordCategory categories) {
   const auto standards = byCategory();
-  for (const auto &s : standards) {
+  for (const auto &s : standards) { // TODO Could be std::any_of but would it be readable?
     if (categories & s.first) {
       if (matchesOneOf(keyword, s.second)) {
         return true;
@@ -64,8 +64,8 @@ bool StandardKeyword::belongsCategories(const std::string &keyword, KeywordCateg
   }
   // At that point, we know the keyword is not in the selected standard categories.
   if (categories & KeywordCategory::User) {
-    for (const auto &s : standards) {
-      if (matchesOneOf(keyword, s.second)) { // TODO could smarter and not redo matching
+    for (const auto &s : standards) { // TODO Could be std::none_of but would it be readable?
+      if (matchesOneOf(keyword, s.second)) { // TODO could smarter and not redo matching (e.g. store category vs. match)
         return false;
       }
     }
