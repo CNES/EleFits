@@ -25,6 +25,11 @@ namespace FitsIO {
 ImageHdu::ImageHdu(Token token, fitsfile *&fptr, long index) : RecordHdu(token, fptr, index, HduType::Image) {
 }
 
+const std::type_info &ImageHdu::readTypeid() const {
+  gotoThisHdu();
+  return Cfitsio::Image::readTypeid(m_fptr);
+}
+
 #ifndef COMPILE_READ_RASTER
 #define COMPILE_READ_RASTER(type, unused) \
   template VecRaster<type, -1> ImageHdu::readRaster() const; \

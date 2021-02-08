@@ -37,12 +37,12 @@ using boost::program_options::value;
 using namespace Euclid::FitsIO;
 
 #define RETURN_TYPENAME_IF_MATCH(type, name) \
-  if (Euclid::Cfitsio::TypeCode<type>::bitpix() == bitpix) { \
+  if (typeid(type) == id) { \
     return #name; \
   }
 
-std::string readBitpixName(const RecordHdu &hdu) {
-  const int bitpix = hdu.parseRecord<int>("BITPIX");
+std::string readBitpixName(const ImageHdu &hdu) {
+  const auto &id = hdu.readTypeid();
   EL_FITSIO_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
   return "UNKNOWN TYPE";
 }
@@ -116,7 +116,7 @@ public:
           std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
           oss << shape.back();
           logger.info() << "  Image HDU:";
-          logger.info() << "    Type: " << readBitpixName(hdu);
+          logger.info() << "    Type: " << readBitpixName(*dynamic_cast<const ImageHdu *>(&hdu));
           logger.info() << "    Shape: " << oss.str() << " px";
         } else {
           logger.info() << "  Metadata HDU";

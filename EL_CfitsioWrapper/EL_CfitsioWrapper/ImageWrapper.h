@@ -38,25 +38,30 @@ namespace Cfitsio {
 namespace Image {
 
 /**
- * @brief Read the shape of the current Image HDU.
+ * @brief Read the value type of the current image HDU.
+ */
+const std::type_info &readTypeid(fitsfile *fptr);
+
+/**
+ * @brief Read the shape of the current image HDU.
  */
 template <long n = 2>
 FitsIO::Position<n> readShape(fitsfile *fptr);
 
 /**
- * @brief Reshape the Raster of the current Image HDU.
+ * @brief Reshape the Raster of the current image HDU.
  */
 template <typename T, long n = 2>
 void updateShape(fitsfile *fptr, const FitsIO::Position<n> &shape);
 
 /**
- * @brief Read a Raster in current Image HDU.
+ * @brief Read a Raster in current image HDU.
  */
 template <typename T, long n = 2>
 FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr);
 
 /**
- * @brief Write a Raster in current Image HDU.
+ * @brief Write a Raster in current image HDU.
  */
 template <typename T, long n = 2>
 void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster);

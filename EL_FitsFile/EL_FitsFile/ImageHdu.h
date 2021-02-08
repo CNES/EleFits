@@ -72,6 +72,11 @@ public:
   virtual ~ImageHdu() = default;
 
   /**
+   * @brief Read the image pixel value type.
+   */
+  const std::type_info &readTypeid() const;
+
+  /**
    * @brief Read the image shape.
    */
   template <long n = 2>
