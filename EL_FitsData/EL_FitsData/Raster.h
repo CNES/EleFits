@@ -76,6 +76,11 @@ template <typename T, long n = 2>
 class Raster {
 
 public:
+  /**
+   * @brief The pixel value type.
+   */
+  using Value = T;
+
   /** @brief Destructor. */
   virtual ~Raster() = default;
 

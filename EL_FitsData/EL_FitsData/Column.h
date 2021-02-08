@@ -158,6 +158,11 @@ class Column {
 
 public:
   /**
+   * @brief The element value type.
+   */
+  using Value = T;
+
+  /**
    * @brief Destructor.
    */
   virtual ~Column() = default;

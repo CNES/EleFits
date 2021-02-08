@@ -118,7 +118,22 @@ public:
 
   virtual Chronometer::Unit writeImage(const Raster &raster) override {
     m_chrono.start();
-    // FIXME
+    auto nonconstShape = raster.shape;
+    fits_create_img(
+        m_fptr,
+        Cfitsio::TypeCode<Raster::Value>::bitpix(),
+        raster.shape.size(),
+        nonconstShape.data(),
+        &m_status);
+    std::vector<Raster::Value> nonconstData(raster.data(), raster.data() + raster.size());
+    fits_write_img(
+        m_fptr,
+        Cfitsio::TypeCode<Raster::Value>::forImage(),
+        1,
+        raster.size(),
+        nonconstData.data(),
+        &m_status);
+    Cfitsio::CfitsioError::mayThrow(m_status);
     return m_chrono.stop();
   }
 
@@ -139,7 +154,7 @@ public:
   options_description defineSpecificProgramOptions() override {
     options_description options {};
     auto add = options.add_options();
-    add("lib", value<std::string>()->default_value("EL_FitsIO"), "Library to be benchmarked (CFitsIO or EL_FitsIO)");
+    add("test", value<std::string>()->default_value("EL_FitsIO"), "Test case to be benchmarked (CFitsIO or EL_FitsIO)");
     add("images", value<int>()->default_value(0), "Number of image extensions");
     add("pixels", value<int>()->default_value(1), "Number of pixels");
     add("tables", value<int>()->default_value(0), "Number of binary table extensions");
@@ -152,7 +167,7 @@ public:
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
 
-    const auto lib = args["lib"].as<std::string>();
+    const auto testCase = args["test"].as<std::string>();
     const auto imageCount = args["images"].as<int>();
     const auto pixels = args["pixels"].as<int>();
     const auto tableCount = args["tables"].as<int>();
@@ -163,9 +178,9 @@ public:
     const auto table = FitsIO::Test::RandomTable(rows);
 
     Benchmark *benchmark = nullptr;
-    if (lib == "EL_FitsIO") {
+    if (testCase == "EL_FitsIO") {
       benchmark = new ElfitsioBenchmark(filename);
-    } else if (lib == "CFitsIO") {
+    } else if (testCase == "CFitsIO") {
       benchmark = new CfitsioBenchmark(filename);
     }
     benchmark->writeImages(imageCount, raster);
