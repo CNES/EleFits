@@ -43,8 +43,9 @@ using Columns = std::tuple<
     const FitsIO::VecColumn<std::int64_t>&,
     const FitsIO::VecColumn<float>&,
     const FitsIO::VecColumn<double>&,
+    const FitsIO::VecColumn<std::complex<float>>&,
     const FitsIO::VecColumn<std::complex<double>>&,
-    const FitsIO::VecColumn<std::string>&,
+    // const FitsIO::VecColumn<std::string>&, //TODO to be handled specially
     const FitsIO::VecColumn<char>&,
     const FitsIO::VecColumn<std::uint32_t>&,
     const FitsIO::VecColumn<std::uint64_t>&>;
@@ -237,6 +238,7 @@ public:
         unitArray.data(),
         "",
         &m_status);
+    Cfitsio::CfitsioError::mayThrow(m_status);
     writeColumn<0>(columns, rowCount);
     writeColumn<1>(columns, rowCount);
     writeColumn<2>(columns, rowCount);
@@ -264,16 +266,18 @@ public:
 
   template <std::size_t i>
   void writeColumn(const Columns& columns, long rowCount) {
-    auto nonconstCol = std::get<i>(columns);
+    const auto& col = std::get<i>(columns);
+    auto nonconstVec = col.vector();
     fits_write_col(
         m_fptr,
-        Cfitsio::TypeCode<typename std::decay_t<decltype(nonconstCol)>::Value>::forBintable(),
-        1,
+        Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::forBintable(),
+        i + 1,
         1,
         1,
         rowCount,
-        nonconstCol.data(),
+        nonconstVec.data(),
         &m_status);
+    Cfitsio::CfitsioError::mayThrow(m_status);
   }
 
 private:
@@ -317,8 +321,8 @@ public:
         std::cref(table.getColumn<std::int64_t>()),
         std::cref(table.getColumn<float>()),
         std::cref(table.getColumn<double>()),
+        std::cref(table.getColumn<std::complex<float>>()),
         std::cref(table.getColumn<std::complex<double>>()),
-        std::cref(table.getColumn<std::string>()),
         std::cref(table.getColumn<char>()),
         std::cref(table.getColumn<std::uint32_t>()),
         std::cref(table.getColumn<std::uint64_t>()));
