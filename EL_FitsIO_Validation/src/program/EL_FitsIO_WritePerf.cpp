@@ -52,7 +52,7 @@ public:
   Benchmark() : m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {
   }
 
-  std::vector<Chronometer::Unit> writeImages(int count, const Raster &raster) {
+  std::vector<Chronometer::Unit> writeImages(int count, const Raster& raster) {
     m_chrono.reset();
     std::vector<Chronometer::Unit> results(count + 1);
     for (int i = 0; i < count; ++i) {
@@ -66,19 +66,23 @@ public:
     return results;
   }
 
-  std::vector<Chronometer::Unit> writeBintables(int count, const Columns &columns) {
+  std::vector<Chronometer::Unit> writeBintables(int count, const Columns& columns) { // TODO avoid duplication
     m_chrono.reset();
     std::vector<Chronometer::Unit> results(count + 1);
     for (int i = 0; i < count; ++i) {
-      // FIXME
+      const auto inc = writeBintable(columns);
+      m_logger.info() << i + 1 << "/" << count << ": " << inc.count() << "ms";
+      results[i] = inc;
     }
-    results[count] = m_chrono.elapsed();
+    const auto total = m_chrono.elapsed();
+    m_logger.info() << "TOTAL: " << total.count() << "ms";
+    results[count] = total;
     return results;
   }
 
-  virtual Chronometer::Unit writeImage(const Raster &raster) = 0;
+  virtual Chronometer::Unit writeImage(const Raster& raster) = 0;
 
-  virtual Chronometer::Unit writeBintable(const Columns &columns) = 0;
+  virtual Chronometer::Unit writeBintable(const Columns& columns) = 0;
 
 protected:
   Chronometer m_chrono;
@@ -89,18 +93,18 @@ class ElfitsioBenchmark : public Benchmark {
 public:
   virtual ~ElfitsioBenchmark() = default;
 
-  ElfitsioBenchmark(const std::string &filename) : Benchmark(), m_f(filename, FitsIO::MefFile::Permission::Overwrite) {
+  ElfitsioBenchmark(const std::string& filename) : Benchmark(), m_f(filename, FitsIO::MefFile::Permission::Overwrite) {
   }
 
-  virtual Chronometer::Unit writeImage(const Raster &raster) override {
+  virtual Chronometer::Unit writeImage(const Raster& raster) override {
     m_chrono.start();
     m_f.assignImageExt("", raster);
     return m_chrono.stop();
   }
 
-  virtual Chronometer::Unit writeBintable(const Columns &columns) override {
+  virtual Chronometer::Unit writeBintable(const Columns& columns) override {
     m_chrono.start();
-    // FIXME
+    m_f.assignBintableExt("", columns);
     return m_chrono.stop();
   }
 
@@ -112,11 +116,11 @@ class CfitsioBenchmark : public Benchmark {
 public:
   virtual ~CfitsioBenchmark() = default;
 
-  CfitsioBenchmark(const std::string &filename) : Benchmark(), m_fptr(nullptr), m_status(0) {
+  CfitsioBenchmark(const std::string& filename) : Benchmark(), m_fptr(nullptr), m_status(0) {
     fits_create_file(&m_fptr, filename.c_str(), &m_status);
   }
 
-  virtual Chronometer::Unit writeImage(const Raster &raster) override {
+  virtual Chronometer::Unit writeImage(const Raster& raster) override {
     m_chrono.start();
     auto nonconstShape = raster.shape;
     fits_create_img(
@@ -137,14 +141,14 @@ public:
     return m_chrono.stop();
   }
 
-  virtual Chronometer::Unit writeBintable(const Columns &columns) override {
+  virtual Chronometer::Unit writeBintable(const Columns& columns) override {
     m_chrono.start();
     // FIXME
     return m_chrono.stop();
   }
 
 private:
-  fitsfile *m_fptr;
+  fitsfile* m_fptr;
   int m_status;
 };
 
@@ -163,7 +167,7 @@ public:
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
 
@@ -176,15 +180,21 @@ public:
 
     const auto raster = FitsIO::Test::RandomRaster<std::int64_t, 1>({ pixels });
     const auto table = FitsIO::Test::RandomTable(rows);
+    const auto columns = std::make_tuple(
+        table.getColumn<char>(),
+        table.getColumn<std::int32_t>(),
+        table.getColumn<float>(),
+        table.getColumn<std::complex<double>>(),
+        table.getColumn<std::string>());
 
-    Benchmark *benchmark = nullptr;
+    Benchmark* benchmark = nullptr;
     if (testCase == "EL_FitsIO") {
       benchmark = new ElfitsioBenchmark(filename);
     } else if (testCase == "CFitsIO") {
       benchmark = new CfitsioBenchmark(filename);
     }
     benchmark->writeImages(imageCount, raster);
-    // benchmark->writeBintables(tableCount, table.columns);
+    benchmark->writeBintables(tableCount, columns);
     delete benchmark;
     return Elements::ExitCode::OK;
   }

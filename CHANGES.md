@@ -5,6 +5,7 @@
 ### Bug fixes
 
 * String columns are correctly read when reading multiple columns
+* Bitpix of compressed images is correctly parsed by `EL_FitsIO_ReadStructure`
 
 ### New features
 
@@ -13,6 +14,7 @@
 * `Column` values can be accessed directly with `operator()`
 * `Raster` and `Column` values can be accessed with backward (negative) indices through `at` methods
 * Classes `Named` and `Indexed` improve readability and safety to read records and columns
+* `Raster` and `Column` define a `Value` type
 * Exceptions thrown all derive from `FitsIOError`
 * Keywords can be filtered in `RecordHdu::readKeywords()` using new enum `KeywordCategory`
 
@@ -21,6 +23,7 @@
 * `FitsFile::open` is protected again
 * HDU handlers cannot be created on their own
 * Error messages contain more informations
+* Benchmark is made extensible
 * Major documentation update
 
 ## 3.0 (breaking)

@@ -50,7 +50,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  MefFile(const std::string &filename, Permission permission);
+  MefFile(const std::string& filename, Permission permission);
 
   /**
    * @brief Get the number of HDUs.
@@ -82,7 +82,7 @@ public:
    * \endcode
    */
   template <class T = RecordHdu>
-  const T &access(long index);
+  const T& access(long index);
 
   /**
    * @brief Access the first HDU with given name.
@@ -92,7 +92,7 @@ public:
    * @see access(const std::string &)
    */
   template <class T = RecordHdu>
-  const T &accessFirst(const std::string &name);
+  const T& accessFirst(const std::string& name);
 
   /**
    * @brief Access the only HDU with given name.
@@ -101,34 +101,34 @@ public:
    * @see accessFirst
    */
   template <class T = RecordHdu>
-  const T &access(const std::string &name);
+  const T& access(const std::string& name);
 
   /**
    * @brief Access the Primary HDU.
    * @see access
    */
   template <class T = RecordHdu>
-  const T &accessPrimary();
+  const T& accessPrimary();
 
   /**
    * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.
    * @return A reference to the new RecordHdu.
    */
-  const RecordHdu &initRecordExt(const std::string &name);
+  const RecordHdu& initRecordExt(const std::string& name);
   /**
    * @brief Append a new ImageHdu with given name and shape.
    * @details
    * To not only initialize the HDU but also write data, use assignImageExt instead.
    */
   template <typename T, long n>
-  const ImageHdu &initImageExt(const std::string &name, const Position<n> &shape);
+  const ImageHdu& initImageExt(const std::string& name, const Position<n>& shape);
 
   /**
    * @brief Append an ImageHdu with given name and data.
    * @return A reference to the new ImageHdu.
    */
   template <typename T, long n>
-  const ImageHdu &assignImageExt(const std::string &name, const Raster<T, n> &raster);
+  const ImageHdu& assignImageExt(const std::string& name, const Raster<T, n>& raster);
 
   /**
    * @brief Append a BintableHdu with given name and columns info.
@@ -136,7 +136,7 @@ public:
    * To not only initialize the HDU but also write data, use assignBintableExt instead.
    */
   template <typename... Ts>
-  const BintableHdu &initBintableExt(const std::string &name, const ColumnInfo<Ts> &... header);
+  const BintableHdu& initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header);
 
   /**
    * @brief Append a BintableHdu with given name and data.
@@ -145,7 +145,18 @@ public:
    * All columns should have the same number of rows.
    */
   template <typename... Ts>
-  const BintableHdu &assignBintableExt(const std::string &name, const Column<Ts> &... columns);
+  const BintableHdu& assignBintableExt(const std::string& name, const Column<Ts>&... columns);
+
+  /**
+   * @brief Append a BintableHdu with given name and data.
+   * @return A reference to the new BintableHdu.
+   * @tparam Tuple // TODO
+   * @tparam count // TODO
+   * @warning
+   * All columns should have the same number of rows.
+   */
+  template <typename Tuple, std::size_t count = std::tuple_size<Tuple>::value>
+  const BintableHdu& assignBintableExt(const std::string& name, const Tuple& columns);
 
   /**
    * @brief The index of the Primary HDU.
@@ -168,7 +179,7 @@ protected:
    * @return A reference to the new HDU of type T.
    */
   template <class T = RecordHdu>
-  const T &appendExt(T extension);
+  const T& appendExt(T extension);
 
   /**
    * @brief Vector of RecordHdus (castable to ImageHdu or BintableHdu).

@@ -25,10 +25,10 @@ namespace Euclid {
 namespace FitsIO {
 
 template <class T>
-const T &MefFile::access(long index) {
+const T& MefFile::access(long index) {
   Cfitsio::Hdu::gotoIndex(m_fptr, index + 1); // CFitsIO index is 1-based
   auto hduType = Cfitsio::Hdu::currentType(m_fptr);
-  auto &ptr = m_hdus[index];
+  auto& ptr = m_hdus[index];
   if (ptr == nullptr) {
     switch (hduType) {
       case HduType::Image:
@@ -42,17 +42,17 @@ const T &MefFile::access(long index) {
         break;
     }
   }
-  return dynamic_cast<T &>(*ptr.get());
+  return dynamic_cast<T&>(*ptr.get());
 }
 
 template <class T>
-const T &MefFile::accessFirst(const std::string &name) {
+const T& MefFile::accessFirst(const std::string& name) {
   Cfitsio::Hdu::gotoName(m_fptr, name);
   return access<T>(Cfitsio::Hdu::currentIndex(m_fptr) - 1); // -1 because CFitsIO index is 1-based
 }
 
 template <class T>
-const T &MefFile::access(const std::string &name) {
+const T& MefFile::access(const std::string& name) {
   const auto names = readHduNames();
   long index = 0;
   bool found = false;
@@ -72,47 +72,55 @@ const T &MefFile::access(const std::string &name) {
 }
 
 template <class T>
-const T &MefFile::accessPrimary() {
+const T& MefFile::accessPrimary() {
   return access<T>(MefFile::primaryIndex);
 }
 
 template <typename T, long n>
-const ImageHdu &MefFile::initImageExt(const std::string &name, const Position<n> &shape) {
+const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size));
-  return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
+  return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
 
 template <typename T, long n>
-const ImageHdu &MefFile::assignImageExt(const std::string &name, const Raster<T, n> &raster) {
+const ImageHdu& MefFile::assignImageExt(const std::string& name, const Raster<T, n>& raster) {
   Cfitsio::Hdu::createImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size));
-  return dynamic_cast<ImageHdu &>(*m_hdus[size].get());
+  return dynamic_cast<ImageHdu&>(*m_hdus[size].get());
 }
 
 template <typename... Ts>
-const BintableHdu &MefFile::initBintableExt(const std::string &name, const ColumnInfo<Ts> &... header) {
+const BintableHdu& MefFile::initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, header...);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
-  return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
+  return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
 }
 
 template <typename... Ts>
-const BintableHdu &MefFile::assignBintableExt(const std::string &name, const Column<Ts> &... columns) {
+const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Column<Ts>&... columns) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
-  return dynamic_cast<BintableHdu &>(*m_hdus[size].get());
+  return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
+}
+
+template <typename Tuple, std::size_t count = std::tuple_size<Tuple>::value>
+const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Tuple& columns) {
+  Cfitsio::Hdu::createBintableExtension<Tuple, count>(m_fptr, name, columns);
+  const auto size = m_hdus.size();
+  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
+  return dynamic_cast<BintableHdu&>(*m_hdus[size].get());
 }
 
 #ifndef DECLARE_ASSIGN_IMAGE_EXT
 #define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
-  extern template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, -1> &); \
-  extern template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, 2> &); \
-  extern template const ImageHdu &MefFile::assignImageExt(const std::string &, const Raster<type, 3> &);
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
 EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
 #undef DECLARE_ASSIGN_IMAGE_EXT
 #endif
