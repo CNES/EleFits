@@ -157,11 +157,11 @@ protected:
   Elements::Logging m_logger;
 };
 
-class ElfitsioBenchmark : public Benchmark {
+class ElBenchmark : public Benchmark {
 public:
-  virtual ~ElfitsioBenchmark() = default;
+  virtual ~ElBenchmark() = default;
 
-  ElfitsioBenchmark(const std::string& filename) : Benchmark(), m_f(filename, FitsIO::MefFile::Permission::Overwrite) {
+  ElBenchmark(const std::string& filename) : Benchmark(), m_f(filename, FitsIO::MefFile::Permission::Overwrite) {
   }
 
   virtual Chronometer::Unit writeImage(const Raster& raster) override {
@@ -176,8 +176,43 @@ public:
     return m_chrono.stop();
   }
 
-private:
+protected:
   FitsIO::MefFile m_f;
+};
+
+class ElUnbufferedBenchmark : public ElBenchmark {
+public:
+  virtual ~ElUnbufferedBenchmark() = default;
+
+  ElUnbufferedBenchmark(const std::string& filename) : ElBenchmark(filename) {
+  }
+
+  virtual Chronometer::Unit writeBintable(const Columns& columns) override {
+    m_chrono.start();
+    const auto& ext = m_f.initBintableExt(
+        "",
+        std::get<0>(columns).info,
+        std::get<1>(columns).info,
+        std::get<2>(columns).info,
+        std::get<3>(columns).info,
+        std::get<4>(columns).info,
+        std::get<5>(columns).info,
+        std::get<6>(columns).info,
+        std::get<7>(columns).info,
+        std::get<8>(columns).info,
+        std::get<9>(columns).info);
+    ext.writeColumn(std::get<0>(columns));
+    ext.writeColumn(std::get<1>(columns));
+    ext.writeColumn(std::get<2>(columns));
+    ext.writeColumn(std::get<3>(columns));
+    ext.writeColumn(std::get<4>(columns));
+    ext.writeColumn(std::get<5>(columns));
+    ext.writeColumn(std::get<6>(columns));
+    ext.writeColumn(std::get<7>(columns));
+    ext.writeColumn(std::get<8>(columns));
+    ext.writeColumn(std::get<9>(columns));
+    return m_chrono.stop();
+  }
 };
 
 class CfitsioBenchmark : public Benchmark {
@@ -329,13 +364,17 @@ public:
 
     Benchmark* benchmark = nullptr;
     if (testCase == "EL_FitsIO") {
-      benchmark = new ElfitsioBenchmark(filename);
+      benchmark = new ElBenchmark(filename);
+    } else if (testCase == "EL_FitsIO_v1") {
+      benchmark = new ElUnbufferedBenchmark(filename);
     } else if (testCase == "CFitsIO") {
       benchmark = new CfitsioBenchmark(filename);
     }
     CsvAppender writer(
         results,
-        { "Test case",
+        { "Date",
+          "Test case",
+          "Mode",
           "HDU type",
           "HDU count",
           "Value count / HDU",
@@ -346,7 +385,9 @@ public:
     if (imageCount) {
       const auto imageChrono = benchmark->writeImages(imageCount, raster);
       writer.writeRow(
+          "TODO",
           testCase,
+          "Write",
           "Image",
           imageCount,
           pixelCount,
@@ -354,11 +395,14 @@ public:
           imageChrono.elapsed().count(),
           imageChrono.mean(),
           imageChrono.stdev());
+      // TODO read
     }
     if (tableCount) {
       const auto tableChrono = benchmark->writeBintables(tableCount, columns);
       writer.writeRow(
+          "TODO",
           testCase,
+          "Write",
           "Binary table",
           tableCount,
           rowCount * columnCount,
@@ -366,6 +410,7 @@ public:
           tableChrono.elapsed().count(),
           tableChrono.mean(),
           tableChrono.stdev());
+      // TODO read
     }
     delete benchmark;
     return Elements::ExitCode::OK;
