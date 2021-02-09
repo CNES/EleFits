@@ -48,15 +48,33 @@ using Columns = std::tuple<
     const FitsIO::VecColumn<char>&,
     const FitsIO::VecColumn<std::uint32_t>&,
     const FitsIO::VecColumn<std::uint64_t>&>;
+constexpr std::size_t columnCount = std::tuple_size<Columns>::value;
 using Chronometer = FitsIO::Test::Chronometer<std::chrono::milliseconds>;
 
-class CsvWriter {
+/**
+ * @brief A CSV writer which creates a new file or appends rows to an existing file.
+ */
+class CsvAppender {
 public:
-  CsvWriter(const std::string& filename, const std::vector<std::string>& header = {}, const std::string& sep = "\t") :
+  /**
+   * @brief Constructor.
+   * @param header The file header
+   * @param sep The column separator
+   * @details
+   * If the file exists and the header is provided, it should match the first row of the file.
+   * If the file does not exist, the header is written.
+   */
+  CsvAppender(const std::string& filename, const std::vector<std::string>& header = {}, const std::string& sep = "\t") :
       m_file(filename, std::ios::out | std::ios::app),
       m_sep(sep) {
+    if (header.empty()) {
+      return;
+    }
     std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
-    if (not header.empty() && not in.tellg()) {
+    const bool append = in.tellg();
+    if (append) {
+      // TODO check header consistency
+    } else {
       for (const auto h : header) {
         (*this) << h;
       }
@@ -64,26 +82,39 @@ public:
     }
   };
 
+  /**
+   * @brief Write a value.
+   */
   template <typename T>
-  CsvWriter& operator<<(const T& value) {
+  CsvAppender& operator<<(const T& value) {
     m_file << value << m_sep;
     return *this;
   }
 
-  CsvWriter& operator<<(std::ostream& (*pf)(std::ostream&)) {
+  /**
+   * @brief Apply a manipulator, e.g. `std::endl`.
+   */
+  CsvAppender& operator<<(std::ostream& (*pf)(std::ostream&)) {
     m_file << pf;
     return *this;
   }
 
+  /**
+   * @brief Write a row.
+   */
   template <typename... Ts>
-  CsvWriter& writeLine(const Ts&... values) {
+  CsvAppender& writeRow(const Ts&... values) {
+    // TODO check size
     using mockUnpack = int[];
     (void)mockUnpack { (operator<<(values), 0)... };
     return operator<<(std::endl);
   }
 
 private:
+  /** @brief The output stream. */
   std::ofstream m_file;
+
+  /** @brief The column separator. */
   std::string m_sep;
 };
 
@@ -178,9 +209,71 @@ public:
   }
 
   virtual Chronometer::Unit writeBintable(const Columns& columns) override {
+    long rowCount = std::get<0>(columns).rowCount();
+    std::vector<std::string> names(rowCount);
+    std::vector<std::string> formats(rowCount);
+    std::vector<std::string> units(rowCount);
+    setupColumnInfo<0>(columns, names, formats, units);
+    setupColumnInfo<1>(columns, names, formats, units);
+    setupColumnInfo<2>(columns, names, formats, units);
+    setupColumnInfo<3>(columns, names, formats, units);
+    setupColumnInfo<4>(columns, names, formats, units);
+    setupColumnInfo<5>(columns, names, formats, units);
+    setupColumnInfo<6>(columns, names, formats, units);
+    setupColumnInfo<7>(columns, names, formats, units);
+    setupColumnInfo<8>(columns, names, formats, units);
+    setupColumnInfo<9>(columns, names, formats, units); // TODO index_sequence
+    Cfitsio::CStrArray nameArray(names);
+    Cfitsio::CStrArray formatArray(formats);
+    Cfitsio::CStrArray unitArray(units);
     m_chrono.start();
-    // FIXME
+    fits_create_tbl(
+        m_fptr,
+        BINARY_TBL,
+        0,
+        columnCount,
+        nameArray.data(),
+        formatArray.data(),
+        unitArray.data(),
+        "",
+        &m_status);
+    writeColumn<0>(columns, rowCount);
+    writeColumn<1>(columns, rowCount);
+    writeColumn<2>(columns, rowCount);
+    writeColumn<3>(columns, rowCount);
+    writeColumn<4>(columns, rowCount);
+    writeColumn<5>(columns, rowCount);
+    writeColumn<6>(columns, rowCount);
+    writeColumn<7>(columns, rowCount);
+    writeColumn<8>(columns, rowCount);
+    writeColumn<9>(columns, rowCount); // TODO index_sequence
     return m_chrono.stop();
+  }
+
+  template <std::size_t i>
+  void setupColumnInfo(
+      const Columns& columns,
+      std::vector<std::string>& names,
+      std::vector<std::string>& formats,
+      std::vector<std::string> units) {
+    const auto& col = std::get<i>(columns);
+    names[i] = col.info.name;
+    formats[i] = Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::tform(col.info.repeatCount);
+    units[i] = col.info.unit;
+  }
+
+  template <std::size_t i>
+  void writeColumn(const Columns& columns, long rowCount) {
+    auto nonconstCol = std::get<i>(columns);
+    fits_write_col(
+        m_fptr,
+        Cfitsio::TypeCode<typename std::decay_t<decltype(nonconstCol)>::Value>::forBintable(),
+        1,
+        1,
+        1,
+        rowCount,
+        nonconstCol.data(),
+        &m_status);
   }
 
 private:
@@ -210,19 +303,25 @@ public:
 
     const auto testCase = args["test"].as<std::string>();
     const auto imageCount = args["images"].as<int>();
-    const auto pixels = args["pixels"].as<int>();
+    const auto pixelCount = args["pixels"].as<int>();
     const auto tableCount = args["tables"].as<int>();
-    const auto rows = args["rows"].as<int>();
+    const auto rowCount = args["rows"].as<int>();
     const auto filename = args["output"].as<std::string>();
-    const auto result = args["res"].as<std::string>();
+    const auto results = args["res"].as<std::string>();
 
-    const auto raster = FitsIO::Test::RandomRaster<std::int64_t, 1>({ pixels });
-    const auto table = FitsIO::Test::RandomTable(1, rows);
-    const Columns columns { table.getColumn<unsigned char>(), table.getColumn<std::int32_t>(),
-                            table.getColumn<std::int64_t>(),  table.getColumn<float>(),
-                            table.getColumn<double>(),        table.getColumn<std::complex<double>>(),
-                            table.getColumn<std::string>(),   table.getColumn<char>(),
-                            table.getColumn<std::uint32_t>(), table.getColumn<std::uint64_t>() };
+    const auto raster = FitsIO::Test::RandomRaster<std::int64_t, 1>({ pixelCount });
+    const auto table = FitsIO::Test::RandomTable(1, rowCount);
+    const Columns columns = std::make_tuple(
+        std::cref(table.getColumn<unsigned char>()),
+        std::cref(table.getColumn<std::int32_t>()),
+        std::cref(table.getColumn<std::int64_t>()),
+        std::cref(table.getColumn<float>()),
+        std::cref(table.getColumn<double>()),
+        std::cref(table.getColumn<std::complex<double>>()),
+        std::cref(table.getColumn<std::string>()),
+        std::cref(table.getColumn<char>()),
+        std::cref(table.getColumn<std::uint32_t>()),
+        std::cref(table.getColumn<std::uint64_t>()));
 
     Benchmark* benchmark = nullptr;
     if (testCase == "EL_FitsIO") {
@@ -230,8 +329,8 @@ public:
     } else if (testCase == "CFitsIO") {
       benchmark = new CfitsioBenchmark(filename);
     }
-    CsvWriter writer(
-        result,
+    CsvAppender writer(
+        results,
         { "Test case",
           "HDU type",
           "HDU count",
@@ -242,24 +341,24 @@ public:
           "Standard deviation (ms)" });
     if (imageCount) {
       const auto imageChrono = benchmark->writeImages(imageCount, raster);
-      writer.writeLine(
+      writer.writeRow(
           testCase,
           "Image",
           imageCount,
-          pixels,
-          imageCount * pixels,
+          pixelCount,
+          imageCount * pixelCount,
           imageChrono.elapsed().count(),
           imageChrono.mean(),
           imageChrono.stdev());
     }
     if (tableCount) {
       const auto tableChrono = benchmark->writeBintables(tableCount, columns);
-      writer.writeLine(
+      writer.writeRow(
           testCase,
           "Binary table",
           tableCount,
-          rows * std::tuple_size<Columns>::value,
-          tableCount * rows * std::tuple_size<Columns>::value,
+          rowCount * columnCount,
+          tableCount * rowCount * columnCount,
           tableChrono.elapsed().count(),
           tableChrono.mean(),
           tableChrono.stdev());
