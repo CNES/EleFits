@@ -38,12 +38,54 @@ using boost::program_options::value;
 using namespace Euclid;
 using Raster = FitsIO::Raster<std::int64_t, 1>;
 using Columns = std::tuple<
-    FitsIO::VecColumn<char>,
-    FitsIO::VecColumn<std::int32_t>,
-    FitsIO::VecColumn<float>,
-    FitsIO::VecColumn<std::complex<double>>,
-    FitsIO::VecColumn<std::string>>;
+    const FitsIO::VecColumn<unsigned char>&,
+    const FitsIO::VecColumn<std::int32_t>&,
+    const FitsIO::VecColumn<std::int64_t>&,
+    const FitsIO::VecColumn<float>&,
+    const FitsIO::VecColumn<double>&,
+    const FitsIO::VecColumn<std::complex<double>>&,
+    const FitsIO::VecColumn<std::string>&,
+    const FitsIO::VecColumn<char>&,
+    const FitsIO::VecColumn<std::uint32_t>&,
+    const FitsIO::VecColumn<std::uint64_t>&>;
 using Chronometer = FitsIO::Test::Chronometer<std::chrono::milliseconds>;
+
+class CsvWriter {
+public:
+  CsvWriter(const std::string& filename, const std::vector<std::string>& header = {}, const std::string& sep = "\t") :
+      m_file(filename, std::ios::out | std::ios::app),
+      m_sep(sep) {
+    std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
+    if (not header.empty() && not in.tellg()) {
+      for (const auto h : header) {
+        (*this) << h;
+      }
+      (*this) << std::endl;
+    }
+  };
+
+  template <typename T>
+  CsvWriter& operator<<(const T& value) {
+    m_file << value << m_sep;
+    return *this;
+  }
+
+  CsvWriter& operator<<(std::ostream& (*pf)(std::ostream&)) {
+    m_file << pf;
+    return *this;
+  }
+
+  template <typename... Ts>
+  CsvWriter& writeLine(const Ts&... values) {
+    using mockUnpack = int[];
+    (void)mockUnpack { (operator<<(values), 0)... };
+    return operator<<(std::endl);
+  }
+
+private:
+  std::ofstream m_file;
+  std::string m_sep;
+};
 
 class Benchmark {
 public:
@@ -52,32 +94,26 @@ public:
   Benchmark() : m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {
   }
 
-  std::vector<Chronometer::Unit> writeImages(int count, const Raster& raster) {
+  const Chronometer& writeImages(int count, const Raster& raster) {
     m_chrono.reset();
-    std::vector<Chronometer::Unit> results(count + 1);
     for (int i = 0; i < count; ++i) {
       const auto inc = writeImage(raster);
-      m_logger.info() << i + 1 << "/" << count << ": " << inc.count() << "ms";
-      results[i] = inc;
+      m_logger.debug() << i + 1 << "/" << count << ": " << inc.count() << "ms";
     }
     const auto total = m_chrono.elapsed();
-    m_logger.info() << "TOTAL: " << total.count() << "ms";
-    results[count] = total;
-    return results;
+    m_logger.debug() << "TOTAL: " << total.count() << "ms";
+    return m_chrono;
   }
 
-  std::vector<Chronometer::Unit> writeBintables(int count, const Columns& columns) { // TODO avoid duplication
+  const Chronometer& writeBintables(int count, const Columns& columns) { // TODO avoid duplication
     m_chrono.reset();
-    std::vector<Chronometer::Unit> results(count + 1);
     for (int i = 0; i < count; ++i) {
       const auto inc = writeBintable(columns);
-      m_logger.info() << i + 1 << "/" << count << ": " << inc.count() << "ms";
-      results[i] = inc;
+      m_logger.debug() << i + 1 << "/" << count << ": " << inc.count() << "ms";
     }
     const auto total = m_chrono.elapsed();
-    m_logger.info() << "TOTAL: " << total.count() << "ms";
-    results[count] = total;
-    return results;
+    m_logger.debug() << "TOTAL: " << total.count() << "ms";
+    return m_chrono;
   }
 
   virtual Chronometer::Unit writeImage(const Raster& raster) = 0;
@@ -163,7 +199,8 @@ public:
     add("pixels", value<int>()->default_value(1), "Number of pixels");
     add("tables", value<int>()->default_value(0), "Number of binary table extensions");
     add("rows", value<int>()->default_value(1), "Number of rows");
-    add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output Fits file");
+    add("res", value<std::string>()->default_value("/tmp/benchmark.csv"), "Output result file");
     return options;
   }
 
@@ -177,15 +214,15 @@ public:
     const auto tableCount = args["tables"].as<int>();
     const auto rows = args["rows"].as<int>();
     const auto filename = args["output"].as<std::string>();
+    const auto result = args["res"].as<std::string>();
 
     const auto raster = FitsIO::Test::RandomRaster<std::int64_t, 1>({ pixels });
-    const auto table = FitsIO::Test::RandomTable(rows);
-    const auto columns = std::make_tuple(
-        table.getColumn<char>(),
-        table.getColumn<std::int32_t>(),
-        table.getColumn<float>(),
-        table.getColumn<std::complex<double>>(),
-        table.getColumn<std::string>());
+    const auto table = FitsIO::Test::RandomTable(1, rows);
+    const Columns columns { table.getColumn<unsigned char>(), table.getColumn<std::int32_t>(),
+                            table.getColumn<std::int64_t>(),  table.getColumn<float>(),
+                            table.getColumn<double>(),        table.getColumn<std::complex<double>>(),
+                            table.getColumn<std::string>(),   table.getColumn<char>(),
+                            table.getColumn<std::uint32_t>(), table.getColumn<std::uint64_t>() };
 
     Benchmark* benchmark = nullptr;
     if (testCase == "EL_FitsIO") {
@@ -193,8 +230,40 @@ public:
     } else if (testCase == "CFitsIO") {
       benchmark = new CfitsioBenchmark(filename);
     }
-    benchmark->writeImages(imageCount, raster);
-    benchmark->writeBintables(tableCount, columns);
+    CsvWriter writer(
+        result,
+        { "Test case",
+          "HDU type",
+          "HDU count",
+          "Value count / HDU",
+          "Total value count",
+          "Elapsed (ms)",
+          "Mean (ms)",
+          "Standard deviation (ms)" });
+    if (imageCount) {
+      const auto imageChrono = benchmark->writeImages(imageCount, raster);
+      writer.writeLine(
+          testCase,
+          "Image",
+          imageCount,
+          pixels,
+          imageCount * pixels,
+          imageChrono.elapsed().count(),
+          imageChrono.mean(),
+          imageChrono.stdev());
+    }
+    if (tableCount) {
+      const auto tableChrono = benchmark->writeBintables(tableCount, columns);
+      writer.writeLine(
+          testCase,
+          "Binary table",
+          tableCount,
+          rows * std::tuple_size<Columns>::value,
+          tableCount * rows * std::tuple_size<Columns>::value,
+          tableChrono.elapsed().count(),
+          tableChrono.mean(),
+          tableChrono.stdev());
+    }
     delete benchmark;
     return Elements::ExitCode::OK;
   }

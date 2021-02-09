@@ -18,6 +18,9 @@
  */
 
 #include <chrono>
+#include <cmath> // sqrt
+#include <numeric> // inner_product
+#include <vector>
 
 #ifndef _EL_FITSIO_VALIDATION_CHRONOMETER_H
 #define _EL_FITSIO_VALIDATION_CHRONOMETER_H
@@ -38,7 +41,7 @@ public:
   /**
    * @brief Create a chronometer with optional offset.
    */
-  Chronometer(TUnit offset = TUnit()) : m_tic(), m_toc(), m_elapsed(offset) {
+  Chronometer(TUnit offset = TUnit()) : m_tic(), m_toc(), m_incs(), m_elapsed(offset) {
     reset();
   }
 
@@ -47,6 +50,7 @@ public:
    */
   void reset() {
     m_toc = m_tic;
+    m_incs.empty();
     m_elapsed = TUnit();
   }
 
@@ -64,11 +68,45 @@ public:
     m_toc = std::chrono::steady_clock::now();
     const auto inc = std::chrono::duration_cast<TUnit>(m_toc - m_tic);
     m_elapsed += inc;
+    m_incs.push_back(inc.count());
     return inc;
   }
 
+  /**
+   * @brief The last increment.
+   */
+  TUnit lastIncrement() const {
+    return m_incs[m_incs.size() - 1];
+  }
+
+  /**
+   * @brief The elapsed time.
+   */
   TUnit elapsed() const {
     return m_elapsed;
+  }
+
+  /**
+   * @brief The number of increments.
+   */
+  std::size_t count() const {
+    return m_incs.size();
+  }
+
+  /**
+   * @brief The mean of the increments.
+   */
+  double mean() const {
+    return std::accumulate(m_incs.begin(), m_incs.end(), 0.) / count();
+  }
+
+  /**
+   * @brief The standard deviation of the increments.
+   */
+  double stdev() const {
+    const auto m = mean();
+    const auto s2 = std::inner_product(m_incs.begin(), m_incs.end(), m_incs.begin(), 0.);
+    return std::sqrt(s2 / count() - m * m);
   }
 
 private:
@@ -81,6 +119,11 @@ private:
    * @brief The time at which stop() was called.
    */
   std::chrono::steady_clock::time_point m_toc;
+
+  /**
+   * @brief The list of increments.
+   */
+  std::vector<double> m_incs;
 
   /**
    * @brief The total m_elapsed time.
