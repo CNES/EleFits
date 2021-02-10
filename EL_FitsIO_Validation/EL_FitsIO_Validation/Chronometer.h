@@ -17,13 +17,13 @@
  *
  */
 
+#ifndef _EL_FITSIO_VALIDATION_CHRONOMETER_H
+#define _EL_FITSIO_VALIDATION_CHRONOMETER_H
+
 #include <chrono>
 #include <cmath> // sqrt
 #include <numeric> // inner_product
 #include <vector>
-
-#ifndef _EL_FITSIO_VALIDATION_CHRONOMETER_H
-#define _EL_FITSIO_VALIDATION_CHRONOMETER_H
 
 namespace Euclid {
 namespace FitsIO {
@@ -134,4 +134,5 @@ private:
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid
+
 #endif

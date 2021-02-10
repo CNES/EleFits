@@ -65,6 +65,22 @@ elements_add_unit_test(Chronometer tests/src/Chronometer_test.cpp
                      EXECUTABLE EL_FitsIO_Validation_Chronometer_test
                      LINK_LIBRARIES EL_FitsIO_Validation
                      TYPE Boost)
+elements_add_unit_test(Benchmark tests/src/Benchmark_test.cpp 
+                     EXECUTABLE EL_FitsIO_Validation_Benchmark_test
+                     LINK_LIBRARIES EL_FitsIO_Validation
+                     TYPE Boost)
+elements_add_unit_test(CfitsioBenchmark tests/src/CfitsioBenchmark_test.cpp 
+                     EXECUTABLE EL_FitsIO_Validation_CfitsioBenchmark_test
+                     LINK_LIBRARIES EL_FitsIO_Validation
+                     TYPE Boost)
+elements_add_unit_test(ElBenchmark tests/src/ElBenchmark_test.cpp 
+                     EXECUTABLE EL_FitsIO_Validation_ElBenchmark_test
+                     LINK_LIBRARIES EL_FitsIO_Validation
+                     TYPE Boost)
+elements_add_unit_test(CsvAppender tests/src/CsvAppender_test.cpp 
+                     EXECUTABLE EL_FitsIO_Validation_CsvAppender_test
+                     LINK_LIBRARIES EL_FitsIO_Validation
+                     TYPE Boost)
 elements_add_test(CheckPrograms COMMAND EL_FitsIO_CheckPrograms)
 
 #===============================================================================
