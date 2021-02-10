@@ -31,17 +31,29 @@ namespace Test {
 /**
  * @brief EL_FitsIO without column I/O buffering.
  * @details
- * Tests on image HDUs are not supported (see ElBenchmark).
+ * Tests on image HDUs are not supported (use ElBenchmark instead).
  */
 class ElUnbufferedBenchmark : public Benchmark {
 public:
+  /**
+   * @brief Destructor.
+   */
   virtual ~ElUnbufferedBenchmark() = default;
 
+  /**
+   * @brief Constructor.
+   */
   ElUnbufferedBenchmark(const std::string& filename);
 
+  /**
+   * @copybrief Benchmark::writeBintable
+   * @details
+   * Write the columns one-by-one to disable buffering.
+   */
   virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
 
 protected:
+  /** @brief The MEF file handler. */
   MefFile m_f;
 };
 
@@ -50,12 +62,24 @@ protected:
  */
 class ElBenchmark : public ElUnbufferedBenchmark {
 public:
+  /**
+   * @brief Destructor.
+   */
   virtual ~ElBenchmark() = default;
 
+  /**
+   * @brief Constructor.
+   */
   ElBenchmark(const std::string& filename);
 
+  /**
+   * @copybrief Benchmark::writeImage
+   */
   virtual BChronometer::Unit writeImage(const BRaster& raster) override;
 
+  /**
+   * @copybrief Benchmark::writeBintable
+   */
   virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
 };
 
