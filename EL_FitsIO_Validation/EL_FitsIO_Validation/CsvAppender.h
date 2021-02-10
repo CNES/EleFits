@@ -41,51 +41,24 @@ public:
    * If the file exists and the header is provided, it should match the first row of the file.
    * If the file does not exist, the header is written.
    */
-  CsvAppender(const std::string& filename, const std::vector<std::string>& header = {}, const std::string& sep = "\t") :
-      m_file(filename, std::ios::out | std::ios::app),
-      m_sep(sep) {
-    if (header.empty()) {
-      return;
-    }
-    std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
-    const bool append = in.tellg();
-    if (append) {
-      // TODO check header consistency
-    } else {
-      for (const auto h : header) {
-        (*this) << h;
-      }
-      (*this) << std::endl;
-    }
-  };
+  CsvAppender(const std::string& filename, const std::vector<std::string>& header = {}, const std::string& sep = "\t");
 
   /**
    * @brief Write a value.
    */
   template <typename T>
-  CsvAppender& operator<<(const T& value) {
-    m_file << value << m_sep;
-    return *this;
-  }
+  CsvAppender& operator<<(const T& value);
 
   /**
    * @brief Apply a manipulator, e.g. `std::endl`.
    */
-  CsvAppender& operator<<(std::ostream& (*pf)(std::ostream&)) {
-    m_file << pf;
-    return *this;
-  }
+  CsvAppender& operator<<(std::ostream& (*pf)(std::ostream&));
 
   /**
    * @brief Write a row.
    */
   template <typename... Ts>
-  CsvAppender& writeRow(const Ts&... values) {
-    // TODO check size
-    using mockUnpack = int[];
-    (void)mockUnpack { (operator<<(values), 0)... };
-    return operator<<(std::endl);
-  }
+  CsvAppender& writeRow(const Ts&... values);
 
 private:
   /** @brief The output stream. */
@@ -98,5 +71,11 @@ private:
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid
+
+/// @cond INTERNAL
+#define _EL_FITSIO_VALIDATION_CSVAPPENDER_IMPL
+#include "EL_FitsIO_Validation/impl/CsvAppender.hpp"
+#undef _EL_FITSIO_VALIDATION_CSVAPPENDER_IMPL
+/// @endcond
 
 #endif

@@ -15,8 +15,6 @@ elements_subdir(EL_FitsIO_Validation)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
 elements_depends_on_subdirs(EL_FitsFile)
-elements_depends_on_subdirs(EL_FitsIO_Examples)
-elements_depends_on_subdirs(EL_CfitsioWrapper)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -24,7 +22,6 @@ elements_depends_on_subdirs(EL_CfitsioWrapper)
 # Examples:
 #          find_package(CppUnit)
 #===============================================================================
-find_package(Cfitsio REQUIRED)
 
 #===============================================================================
 # Declare the library dependencies here
@@ -35,8 +32,8 @@ find_package(Cfitsio REQUIRED)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EL_FitsIO_Validation src/lib/*.cpp
-                     INCLUDE_DIRS ElementsKernel
-                     LINK_LIBRARIES ElementsKernel
+                     INCLUDE_DIRS ElementsKernel EL_FitsFile
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile
                      PUBLIC_HEADERS EL_FitsIO_Validation)
 
 #===============================================================================
@@ -47,7 +44,7 @@ elements_add_library(EL_FitsIO_Validation src/lib/*.cpp
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
 elements_add_executable(EL_FitsIO_Benchmark src/program/EL_FitsIO_Benchmark.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+                     LINK_LIBRARIES EL_FitsIO_Validation)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -61,6 +58,10 @@ elements_add_unit_test(Chronometer tests/src/Chronometer_test.cpp
                      EXECUTABLE EL_FitsIO_Validation_Chronometer_test
                      LINK_LIBRARIES EL_FitsIO_Validation
                      TYPE Boost)
+elements_add_unit_test(CsvAppender tests/src/CsvAppender_test.cpp 
+                     EXECUTABLE EL_FitsIO_Validation_CsvAppender_test
+                     LINK_LIBRARIES EL_FitsIO_Validation
+                     TYPE Boost)
 elements_add_unit_test(Benchmark tests/src/Benchmark_test.cpp 
                      EXECUTABLE EL_FitsIO_Validation_Benchmark_test
                      LINK_LIBRARIES EL_FitsIO_Validation
@@ -71,10 +72,6 @@ elements_add_unit_test(CfitsioBenchmark tests/src/CfitsioBenchmark_test.cpp
                      TYPE Boost)
 elements_add_unit_test(ElBenchmark tests/src/ElBenchmark_test.cpp 
                      EXECUTABLE EL_FitsIO_Validation_ElBenchmark_test
-                     LINK_LIBRARIES EL_FitsIO_Validation
-                     TYPE Boost)
-elements_add_unit_test(CsvAppender tests/src/CsvAppender_test.cpp 
-                     EXECUTABLE EL_FitsIO_Validation_CsvAppender_test
                      LINK_LIBRARIES EL_FitsIO_Validation
                      TYPE Boost)
 elements_add_test(CheckPrograms COMMAND EL_FitsIO_CheckPrograms)

@@ -19,33 +19,28 @@
 
 #include "EL_FitsIO_Validation/CsvAppender.h"
 
+#ifdef _EL_FITSIO_VALIDATION_CSVAPPENDER_IMPL
+
 namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-CsvAppender::CsvAppender(const std::string& filename, const std::vector<std::string>& header, const std::string& sep) :
-    m_file(filename, std::ios::out | std::ios::app),
-    m_sep(sep) {
-  if (header.empty()) {
-    return;
-  }
-  std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
-  const bool append = in.tellg(); // position is 0 if file was just created
-  if (append) {
-    // TODO check header consistency
-  } else {
-    for (const auto h : header) {
-      (*this) << h;
-    }
-    (*this) << std::endl;
-  }
+template <typename T>
+CsvAppender& CsvAppender::operator<<(const T& value) {
+  m_file << value << m_sep;
+  return *this;
 }
 
-CsvAppender& CsvAppender::operator<<(std::ostream& (*pf)(std::ostream&)) {
-  m_file << pf;
-  return *this;
+template <typename... Ts>
+CsvAppender& CsvAppender::writeRow(const Ts&... values) {
+  // TODO check size
+  using mockUnpack = int[];
+  (void)mockUnpack { (operator<<(values), 0)... };
+  return operator<<(std::endl);
 }
 
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid
+
+#endif

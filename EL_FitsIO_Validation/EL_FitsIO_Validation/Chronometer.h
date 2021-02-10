@@ -41,73 +41,47 @@ public:
   /**
    * @brief Create a chronometer with optional offset.
    */
-  Chronometer(TUnit offset = TUnit()) : m_tic(), m_toc(), m_incs(), m_elapsed(offset) {
-    reset();
-  }
+  Chronometer(TUnit offset = TUnit());
 
   /**
    * @brief Reset the chronometer (elapsed = 0).
    */
-  void reset() {
-    m_toc = m_tic;
-    m_incs.empty();
-    m_elapsed = TUnit();
-  }
+  void reset();
 
   /**
    * @brief Start or restart the chronometer.
    */
-  void start() {
-    m_tic = std::chrono::steady_clock::now();
-  }
+  void start();
 
   /**
    * @brief Stop the chronometer and get the last time increment.
    */
-  TUnit stop() {
-    m_toc = std::chrono::steady_clock::now();
-    const auto inc = std::chrono::duration_cast<TUnit>(m_toc - m_tic);
-    m_elapsed += inc;
-    m_incs.push_back(inc.count());
-    return inc;
-  }
+  TUnit stop();
 
   /**
    * @brief The last increment.
    */
-  TUnit lastIncrement() const {
-    return m_incs[m_incs.size() - 1];
-  }
+  TUnit last() const;
 
   /**
    * @brief The elapsed time.
    */
-  TUnit elapsed() const {
-    return m_elapsed;
-  }
+  TUnit elapsed() const;
 
   /**
    * @brief The number of increments.
    */
-  std::size_t count() const {
-    return m_incs.size();
-  }
+  std::size_t count() const;
 
   /**
    * @brief The mean of the increments.
    */
-  double mean() const {
-    return std::accumulate(m_incs.begin(), m_incs.end(), 0.) / count();
-  }
+  double mean() const;
 
   /**
    * @brief The standard deviation of the increments.
    */
-  double stdev() const {
-    const auto m = mean();
-    const auto s2 = std::inner_product(m_incs.begin(), m_incs.end(), m_incs.begin(), 0.);
-    return std::sqrt(s2 / count() - m * m);
-  }
+  double stdev() const;
 
 private:
   /**
@@ -134,5 +108,11 @@ private:
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid
+
+/// @cond INTERNAL
+#define _EL_FITSIO_VALIDATION_CHRONOMETER_IMPL
+#include "EL_FitsIO_Validation/impl/Chronometer.hpp"
+#undef _EL_FITSIO_VALIDATION_CHRONOMETER_IMPL
+/// @endcond
 
 #endif

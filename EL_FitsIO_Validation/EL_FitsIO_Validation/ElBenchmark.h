@@ -37,35 +37,9 @@ class ElUnbufferedBenchmark : public Benchmark {
 public:
   virtual ~ElUnbufferedBenchmark() = default;
 
-  ElUnbufferedBenchmark(const std::string& filename) : Benchmark(), m_f(filename, MefFile::Permission::Overwrite) {
-  }
+  ElUnbufferedBenchmark(const std::string& filename);
 
-  virtual BChronometer::Unit writeBintable(const BColumns& columns) override {
-    m_chrono.start();
-    const auto& ext = m_f.initBintableExt(
-        "",
-        std::get<0>(columns).info,
-        std::get<1>(columns).info,
-        std::get<2>(columns).info,
-        std::get<3>(columns).info,
-        std::get<4>(columns).info,
-        std::get<5>(columns).info,
-        std::get<6>(columns).info,
-        std::get<7>(columns).info,
-        std::get<8>(columns).info,
-        std::get<9>(columns).info);
-    ext.writeColumn(std::get<0>(columns));
-    ext.writeColumn(std::get<1>(columns));
-    ext.writeColumn(std::get<2>(columns));
-    ext.writeColumn(std::get<3>(columns));
-    ext.writeColumn(std::get<4>(columns));
-    ext.writeColumn(std::get<5>(columns));
-    ext.writeColumn(std::get<6>(columns));
-    ext.writeColumn(std::get<7>(columns));
-    ext.writeColumn(std::get<8>(columns));
-    ext.writeColumn(std::get<9>(columns));
-    return m_chrono.stop();
-  }
+  virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
 
 protected:
   MefFile m_f;
@@ -78,20 +52,11 @@ class ElBenchmark : public ElUnbufferedBenchmark {
 public:
   virtual ~ElBenchmark() = default;
 
-  ElBenchmark(const std::string& filename) : ElUnbufferedBenchmark(filename) {
-  }
+  ElBenchmark(const std::string& filename);
 
-  virtual BChronometer::Unit writeImage(const BRaster& raster) override {
-    m_chrono.start();
-    m_f.assignImageExt("", raster);
-    return m_chrono.stop();
-  }
+  virtual BChronometer::Unit writeImage(const BRaster& raster) override;
 
-  virtual BChronometer::Unit writeBintable(const BColumns& columns) override {
-    m_chrono.start();
-    m_f.assignBintableExt("", columns);
-    return m_chrono.stop();
-  }
+  virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
 };
 
 } // namespace Test

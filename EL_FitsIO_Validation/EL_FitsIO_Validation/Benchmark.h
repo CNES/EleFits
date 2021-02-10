@@ -68,11 +68,23 @@ using BChronometer = Chronometer<std::chrono::milliseconds>;
  * @brief The exception which is thrown when a test case is not implemented.
  */
 struct TestCaseNotImplemented : public std::exception {
+
+  /**
+   * @brief Constructor.
+   */
   TestCaseNotImplemented(const std::string& testCaseName) : message("Test case not implemented: " + testCaseName) {
   }
+
+  /**
+   * @brief Get the error message.
+   */
   virtual const char* what() const noexcept override {
     return message.c_str();
   }
+
+  /**
+   * @brief The error message.
+   */
   std::string message;
 };
 
@@ -81,43 +93,54 @@ struct TestCaseNotImplemented : public std::exception {
  */
 class Benchmark {
 public:
+  /**
+   * @brief Destructor.
+   */
   virtual ~Benchmark() = default;
 
-  Benchmark() : m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {
-  }
+  /**
+   * @brief Constructor.
+   */
+  Benchmark();
 
-  const BChronometer& writeImages(int count, const BRaster& raster) {
-    m_chrono.reset();
-    for (int i = 0; i < count; ++i) {
-      const auto inc = writeImage(raster);
-      m_logger.debug() << i + 1 << "/" << count << ": " << inc.count() << "ms";
-    }
-    const auto total = m_chrono.elapsed();
-    m_logger.debug() << "TOTAL: " << total.count() << "ms";
-    return m_chrono;
-  }
+  /**
+   * @brief Write the given raster in new image extensions.
+   * @param count The number of HDUs
+   * @param raster The raster to be written in each HDU
+   */
+  const BChronometer& writeImages(int count, const BRaster& raster);
 
-  const BChronometer& writeBintables(int count, const BColumns& columns) { // TODO avoid duplication
-    m_chrono.reset();
-    for (int i = 0; i < count; ++i) {
-      const auto inc = writeBintable(columns);
-      m_logger.debug() << i + 1 << "/" << count << ": " << inc.count() << "ms";
-    }
-    const auto total = m_chrono.elapsed();
-    m_logger.debug() << "TOTAL: " << total.count() << "ms";
-    return m_chrono;
-  }
+  /**
+   * @brief Write the given columns in new binary table extensions.
+   * @param count The number of HDUs
+   * @param raster The columns to be written in each HDU
+   */
+  const BChronometer& writeBintables(int count, const BColumns& columns);
 
+  /**
+   * @brief Write the given raster in a new image extension.
+   * @details
+   * This method is implemented by the child classes when part of the test case.
+   * They have to manage the internal chronometer by calling start() and stop() at the right place.
+   */
   virtual BChronometer::Unit writeImage(const BRaster& raster) {
     throw TestCaseNotImplemented("Write image");
   }
 
+  /**
+   * @brief Write the given columns in a new binary table extension.
+   * @details
+   * This method is implemented by the child classes when part of the test case.
+   * They have to manage the internal chronometer by calling start() and stop() at the right place.
+   */
   virtual BChronometer::Unit writeBintable(const BColumns& columns) {
     throw TestCaseNotImplemented("Write bintable");
   }
 
 protected:
+  /** @brief The chronometer. */
   BChronometer m_chrono;
+  /** @brief The logger. */
   Elements::Logging m_logger;
 };
 
