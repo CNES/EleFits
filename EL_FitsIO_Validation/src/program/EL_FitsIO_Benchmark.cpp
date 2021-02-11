@@ -21,6 +21,7 @@
 #include <map>
 #include <string>
 
+#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include "ElementsKernel/ProgramHeaders.h"
@@ -39,15 +40,19 @@ using boost::program_options::value;
 using namespace Euclid::FitsIO;
 
 struct BenchmarkFactory {
-  enum Setup { Cfitsio = 0, ElUnbuffered, El };
+  enum Setup { CfitsioColwise, CfitsioBuffered, CfitsioRowwise, ElColwise, ElBuffered };
   static const std::vector<std::string> names;
   static Test::Benchmark* create(Setup setup, const std::string& filename) {
     switch (setup) {
-      case Cfitsio:
-        return new Test::CfitsioBenchmark(filename);
-      case ElUnbuffered:
+      case CfitsioColwise:
+        return new Test::CfitsioBenchmark(filename, -1);
+      case CfitsioBuffered:
+        return new Test::CfitsioBenchmark(filename, 0);
+      case CfitsioRowwise:
+        return new Test::CfitsioBenchmark(filename, 1);
+      case ElColwise:
         return new Test::ElUnbufferedBenchmark(filename);
-      case El:
+      case ElBuffered:
         return new Test::ElBenchmark(filename);
       default:
         return nullptr;
@@ -62,7 +67,11 @@ struct BenchmarkFactory {
   }
 };
 
-const std::vector<std::string> BenchmarkFactory::names = { "CFitsIO", "EL_FitsIO_v1", "EL_FitsIO" };
+const std::vector<std::string> BenchmarkFactory::names = { "CFitsIO",
+                                                           "CFitsIO_buffered",
+                                                           "CFitsIO_rowwise",
+                                                           "EL_FitsIO_colwise",
+                                                           "EL_FitsIO" };
 
 class EL_FitsIO_WritePerf : public Elements::Program {
 
@@ -95,6 +104,9 @@ public:
     logger.info("Setting up the benchmark...");
 
     Test::Benchmark* benchmark = BenchmarkFactory::create(testSetup, filename);
+    if (not benchmark) {
+      throw Test::TestCaseNotImplemented(std::string("No test case with setup: ") + testSetup);
+    }
     Test::CsvAppender writer(
         results,
         { "Date",
@@ -104,6 +116,7 @@ public:
           "HDU count",
           "Value count / HDU",
           "Total value count",
+          "File size (bytes)",
           "Elapsed (ms)",
           "Mean (ms)",
           "Standard deviation (ms)" });
@@ -125,6 +138,7 @@ public:
           imageCount,
           pixelCount,
           imageCount * pixelCount,
+          boost::filesystem::file_size(filename),
           imageChrono.elapsed().count(),
           imageChrono.mean(),
           imageChrono.stdev());
@@ -159,6 +173,7 @@ public:
           tableCount,
           rowCount * Test::columnCount,
           tableCount * rowCount * Test::columnCount,
+          boost::filesystem::file_size(filename),
           tableChrono.elapsed().count(),
           tableChrono.mean(),
           tableChrono.stdev());

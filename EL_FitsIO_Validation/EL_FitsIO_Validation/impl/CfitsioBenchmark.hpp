@@ -30,7 +30,7 @@ void CfitsioBenchmark::setupColumnInfo(
     const BColumns& columns,
     std::vector<std::string>& names,
     std::vector<std::string>& formats,
-    std::vector<std::string> units) {
+    std::vector<std::string>& units) {
   const auto& col = std::get<i>(columns);
   names[i] = col.info.name;
   formats[i] = Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::tform(col.info.repeatCount);
@@ -38,14 +38,17 @@ void CfitsioBenchmark::setupColumnInfo(
 }
 
 template <std::size_t i>
-void CfitsioBenchmark::writeColumn(const BColumns& columns, long rowCount) {
+void CfitsioBenchmark::writeColumn(const BColumns& columns, long firstRow, long rowCount) {
   const auto& col = std::get<i>(columns);
-  auto nonconstVec = col.vector();
+  const auto begin = col.vector().begin() + firstRow;
+  const auto end = begin + rowCount;
+  using Value = typename std::decay_t<decltype(col)>::Value;
+  std::vector<Value> nonconstVec(begin, end);
   fits_write_col(
       m_fptr,
-      Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::forBintable(),
+      Cfitsio::TypeCode<Value>::forBintable(),
       i + 1,
-      1,
+      firstRow + 1,
       1,
       rowCount,
       nonconstVec.data(),

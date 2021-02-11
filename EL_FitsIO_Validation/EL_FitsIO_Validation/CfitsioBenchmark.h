@@ -44,8 +44,12 @@ public:
 
   /**
    * @brief Constructor.
+   * @param filename The file to be written
+   * @param rowChunkSize The number of rows written at once if >0,
+   * or -1 to write all rows at once,
+   * or 0 for the buffer size.
    */
-  CfitsioBenchmark(const std::string& filename);
+  CfitsioBenchmark(const std::string& filename, long rowChunkSize = -1);
 
   /**
    * @copybrief Benchmark::writeImage
@@ -66,19 +70,21 @@ private:
       const BColumns& columns,
       std::vector<std::string>& names,
       std::vector<std::string>& formats,
-      std::vector<std::string> units);
+      std::vector<std::string>& units);
 
   /**
    * @brief Write the i-th column.
    */
   template <std::size_t i>
-  void writeColumn(const BColumns& columns, long rowCount);
+  void writeColumn(const BColumns& columns, long firstRow, long rowCount);
 
 private:
   /** @brief The Fits file. */
   fitsfile* m_fptr;
   /** @brief The CFitsIO status code. */
   int m_status;
+  /** @brief The number of rows to write at once. */
+  long m_rowChunkSize;
 };
 
 } // namespace Test

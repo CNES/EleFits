@@ -21,7 +21,8 @@ import csv
 import subprocess
 import ElementsKernel.Logging as log
 
-def runTestCase(testCase, output, results):
+
+def makeCommand(testCase, output, results):
     """Run a test case specified as a dictionary with following keys:
     "Test setup", "HDU type", "HDU count", "Value count / HDU"
     """
@@ -32,7 +33,6 @@ def runTestCase(testCase, output, results):
         # int(float(value)) allows value to be an integer in scientific notation
     if testCase["HDU type"] == 'Binary table':
         cmd += f' --tables {int(float(testCase["HDU count"]))} --rows {int(float(testCase["Value count / HDU"]))//10}'
-    subprocess.call(cmd, shell=True)
     return cmd
 
 
@@ -54,8 +54,9 @@ def mainMethod(args):
     with open(args.tests, 'r') as f:
       for testCase in csv.DictReader(f, delimiter='\t'):
         logger.debug(testCase)
-        cmd = runTestCase(testCase, args.output, args.res)
+        cmd = makeCommand(testCase, args.output, args.res)
         logger.info(cmd)
+        subprocess.call(cmd, shell=True)
 
     if args.plot is not None:
         pass #TODO read results and compare setups, e.g. through whisker plots

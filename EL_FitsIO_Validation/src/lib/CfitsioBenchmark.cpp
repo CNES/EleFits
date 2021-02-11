@@ -23,7 +23,11 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-CfitsioBenchmark::CfitsioBenchmark(const std::string& filename) : Benchmark(), m_fptr(nullptr), m_status(0) {
+CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long rowChunkSize) :
+    Benchmark(),
+    m_fptr(nullptr),
+    m_status(0),
+    m_rowChunkSize(rowChunkSize) {
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
 }
 
@@ -78,16 +82,27 @@ BChronometer::Unit CfitsioBenchmark::writeBintable(const BColumns& columns) {
       "",
       &m_status);
   Cfitsio::CfitsioError::mayThrow(m_status);
-  writeColumn<0>(columns, rowCount);
-  writeColumn<1>(columns, rowCount);
-  writeColumn<2>(columns, rowCount);
-  writeColumn<3>(columns, rowCount);
-  writeColumn<4>(columns, rowCount);
-  writeColumn<5>(columns, rowCount);
-  writeColumn<6>(columns, rowCount);
-  writeColumn<7>(columns, rowCount);
-  writeColumn<8>(columns, rowCount);
-  writeColumn<9>(columns, rowCount); // TODO index_sequence
+  long rowChunkSize = m_rowChunkSize;
+  if (rowChunkSize == -1) {
+    rowChunkSize = rowCount;
+  } else if (rowChunkSize == 0) {
+    fits_get_rowsize(m_fptr, &rowChunkSize, &m_status);
+    Cfitsio::CfitsioError::mayThrow(m_status);
+  }
+  for (long firstRow = 0; firstRow < rowCount;) {
+    const long pastLastRow = std::min(firstRow + rowChunkSize, rowCount);
+    writeColumn<0>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<1>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<2>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<3>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<4>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<5>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<6>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<7>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<8>(columns, firstRow, pastLastRow - firstRow);
+    writeColumn<9>(columns, firstRow, pastLastRow - firstRow); // TODO index_sequence
+    firstRow = pastLastRow;
+  }
   return m_chrono.stop();
 }
 
