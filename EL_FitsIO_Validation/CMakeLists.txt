@@ -81,6 +81,7 @@ elements_add_test(CheckPrograms COMMAND EL_FitsIO_CheckPrograms)
 #  elements_install_python_modules()
 #  elements_install_scripts()
 #===============================================================================
+elements_install_python_modules()
 elements_install_scripts()
 
 #===============================================================================
@@ -89,6 +90,7 @@ elements_install_scripts()
 # elements_add_python_program(PythonProgramExample
 #                             ElementsExamples.PythonProgramExample)
 #===============================================================================
+elements_add_python_program(EL_FitsIO_BatchBenchmark EL_FitsIO_Validation.EL_FitsIO_BatchBenchmark)
 
 #===============================================================================
 # Add the elements_install_conf_files macro

@@ -123,7 +123,7 @@ public:
    * This method is implemented by the child classes when part of the test case.
    * They have to manage the internal chronometer by calling start() and stop() at the right place.
    */
-  virtual BChronometer::Unit writeImage(const BRaster& raster) {
+  virtual BChronometer::Unit writeImage(const BRaster&) {
     throw TestCaseNotImplemented("Write image");
   }
 
@@ -133,7 +133,7 @@ public:
    * This method is implemented by the child classes when part of the test case.
    * They have to manage the internal chronometer by calling start() and stop() at the right place.
    */
-  virtual BChronometer::Unit writeBintable(const BColumns& columns) {
+  virtual BChronometer::Unit writeBintable(const BColumns&) {
     throw TestCaseNotImplemented("Write bintable");
   }
 

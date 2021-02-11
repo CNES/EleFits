@@ -30,8 +30,18 @@ namespace FitsIO {
 namespace Test {
 
 /**
- * @brief A simple chronometer with m_elapsed time caching.
+ * @brief A simple chronometer with increment times and elapsed time caching.
  * @tparam TUnit The time unit, e.g. `std::chrono::milliseconds`
+ * @details
+ * Each time the chronometer is started and stoped, an increment is computed,
+ * and the total elapsed time is incremented.
+ * An offset can be provided, which is the initial value of the elapsed time,
+ * but has no effect on the increments.
+ *
+ * Simple statistics on the increments can be computed (e.g. mean increment).
+ *
+ * The chronometer can be reset, which means that the list of increments is emptied,
+ * and the elapsed time is set to 0 or the offset.
  */
 template <typename TUnit>
 class Chronometer {
@@ -44,9 +54,9 @@ public:
   Chronometer(TUnit offset = TUnit());
 
   /**
-   * @brief Reset the chronometer (elapsed = 0).
+   * @brief Reset the chronometer with optional offset.
    */
-  void reset();
+  void reset(TUnit offset = TUnit());
 
   /**
    * @brief Start or restart the chronometer.
@@ -82,6 +92,16 @@ public:
    * @brief The standard deviation of the increments.
    */
   double stdev() const;
+
+  /**
+   * @brief The minimum increment.
+   */
+  double min() const;
+
+  /**
+   * @brief The maximum increment.
+   */
+  double max() const;
 
 private:
   /**

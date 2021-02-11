@@ -19,6 +19,7 @@
 
 #ifdef _EL_FITSIO_VALIDATION_CHRONOMETER_IMPL
 
+#include <algorithm> // min_element, max_element
 #include <cmath> // sqrt
 #include <numeric> // inner_product
 
@@ -28,14 +29,14 @@ namespace Test {
 
 template <typename TUnit>
 Chronometer<TUnit>::Chronometer(TUnit offset) : m_tic(), m_toc(), m_incs(), m_elapsed(offset) {
-  reset();
+  reset(offset);
 }
 
 template <typename TUnit>
-void Chronometer<TUnit>::reset() {
+void Chronometer<TUnit>::reset(TUnit offset) {
   m_toc = m_tic;
   m_incs.empty();
-  m_elapsed = TUnit();
+  m_elapsed = offset;
 }
 
 template <typename TUnit>
@@ -77,6 +78,16 @@ double Chronometer<TUnit>::stdev() const {
   const auto m = mean();
   const auto s2 = std::inner_product(m_incs.begin(), m_incs.end(), m_incs.begin(), 0.);
   return std::sqrt(s2 / count() - m * m);
+}
+
+template <typename TUnit>
+double Chronometer<TUnit>::min() const {
+  return *std::min_element(m_incs.begin(), m_incs.end());
+}
+
+template <typename TUnit>
+double Chronometer<TUnit>::max() const {
+  return *std::max_element(m_incs.begin(), m_incs.end());
 }
 
 } // namespace Test
