@@ -40,7 +40,7 @@ public:
   /**
    * @brief Destructor.
    */
-  virtual ~CfitsioBenchmark() = default;
+  virtual ~CfitsioBenchmark();
 
   /**
    * @brief Constructor.

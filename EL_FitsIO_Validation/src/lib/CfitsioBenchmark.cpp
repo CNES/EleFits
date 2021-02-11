@@ -23,12 +23,17 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
+CfitsioBenchmark::~CfitsioBenchmark() {
+  fits_close_file(m_fptr, &m_status);
+}
+
 CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long rowChunkSize) :
     Benchmark(),
     m_fptr(nullptr),
     m_status(0),
     m_rowChunkSize(rowChunkSize) {
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
+  Cfitsio::CfitsioError::mayThrow(m_status);
 }
 
 BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {

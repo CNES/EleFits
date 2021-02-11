@@ -55,7 +55,9 @@ def mainMethod(args):
       for testCase in csv.DictReader(f, delimiter='\t'):
         logger.debug(testCase)
         cmd = makeCommand(testCase, args.output, args.res)
+        logger.info('')
         logger.info(cmd)
+        logger.info('')
         subprocess.call(cmd, shell=True)
 
     if args.plot is not None:

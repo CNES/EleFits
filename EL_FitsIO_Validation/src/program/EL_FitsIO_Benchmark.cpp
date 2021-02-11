@@ -130,6 +130,9 @@ public:
       logger.info("Writing image HDUs...");
 
       const auto imageChrono = benchmark->writeImages(imageCount, raster);
+
+      delete benchmark;
+
       writer.writeRow(
           "TODO",
           testSetup,
@@ -145,7 +148,7 @@ public:
       // TODO read
     }
 
-    if (tableCount) {
+    else if (tableCount) {
 
       logger.info("Generating columns...");
 
@@ -165,6 +168,9 @@ public:
       logger.info("Writing binary table HDUs...");
 
       const auto tableChrono = benchmark->writeBintables(tableCount, columns);
+
+      delete benchmark;
+
       writer.writeRow(
           "TODO",
           testSetup,
@@ -180,9 +186,13 @@ public:
       // TODO read
     }
 
+    else {
+      throw Test::TestCaseNotImplemented(
+          "There should be either a positive number of image HDUs or a positive number of binary table HDUs");
+    }
+
     logger.info("Done.");
 
-    delete benchmark;
     return Elements::ExitCode::OK;
   }
 };
