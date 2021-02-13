@@ -41,10 +41,22 @@ using namespace Euclid::FitsIO;
     return #name; \
   }
 
-std::string readBitpixName(const ImageHdu &hdu) {
-  const auto &id = hdu.readTypeid();
+std::string readBitpixName(const ImageHdu& hdu) {
+  const auto& id = hdu.readTypeid();
   EL_FITSIO_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
   return "UNKNOWN TYPE";
+}
+
+KeywordCategory parseKeywordCategories(const std::string& filter) {
+  auto categories = KeywordCategory::None;
+  static const std::map<char, KeywordCategory> mapping { { 'm', KeywordCategory::Mandatory },
+                                                         { 'r', KeywordCategory::Reserved },
+                                                         { 'c', KeywordCategory::Comment },
+                                                         { 'u', KeywordCategory::User } };
+  for (const auto& f : filter) {
+    categories |= mapping.find(f)->second;
+  }
+  return categories;
 }
 
 class EL_FitsIO_ReadStructure : public Elements::Program {
@@ -55,44 +67,23 @@ public:
     auto add = options.add_options();
     add("input", value<std::string>(), "Input file");
     add("keywords",
-        value<std::vector<bool>>()
-            ->default_value({ false, false, false, false }, "0 0 0 0")
-            ->multitoken()
-            ->zero_tokens(),
-        "Keyword mask with the following 4 bits: mandatory, reserved, comment, user "
-        "(e.g. --keywords 0 0 0 1 displays only user keywords)."
-        "Omitting all values sets the 4 bits, so --keywords displays all keywords.");
+        value<std::string>()->default_value("")->implicit_value("mrcu"),
+        "Keyword filter with the following 4 flags: "
+        "m for mandatory, r for reserved, c for comment, u for user keywords "
+        "(e.g. --keywords ru displays only reserved and user keywords). "
+        "By default, no keyword is displayed. "
+        "Using the option with no values sets the 4 flags, so --keywords displays all keywords.");
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_ReadStructure");
 
     /* Read options */
     const auto filename = args["input"].as<std::string>();
-    const auto keywordBits = args["keywords"].as<std::vector<bool>>();
-    const auto size = keywordBits.size();
-    if (size != 0 && size != 4) {
-      throw std::invalid_argument("keywords option takes 0 or 4 parameters");
-    }
-    KeywordCategory keywordMask = KeywordCategory::None;
-    if (size == 0) {
-      keywordMask = KeywordCategory::All;
-    } else {
-      if (keywordBits[0]) {
-        keywordMask |= KeywordCategory::Mandatory;
-      }
-      if (keywordBits[1]) {
-        keywordMask |= KeywordCategory::Reserved;
-      }
-      if (keywordBits[2]) {
-        keywordMask |= KeywordCategory::Comment;
-      }
-      if (keywordBits[3]) {
-        keywordMask |= KeywordCategory::User;
-      }
-    }
+    const auto keywordFilter = args["keywords"].as<std::string>();
+    KeywordCategory categories = parseKeywordCategories(keywordFilter);
 
     /* Read file */
     MefFile f(filename, FitsFile::Permission::Read);
@@ -104,38 +95,38 @@ public:
       logger.info();
 
       /* Read name (if present) */
-      const auto &hdu = f.access<>(i);
+      const auto& hdu = f.access<>(i);
       logger.info() << "HDU #" << i << ": " << hdu.readName();
 
       /* Read type */
       const auto hduType = hdu.type();
       if (hduType == HduType::Image) {
-        const auto shape = dynamic_cast<const ImageHdu *>(&hdu)->readShape<-1>();
+        const auto shape = dynamic_cast<const ImageHdu*>(&hdu)->readShape<-1>();
         if (shape.size() > 0) {
           std::ostringstream oss;
           std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
           oss << shape.back();
           logger.info() << "  Image HDU:";
-          logger.info() << "    Type: " << readBitpixName(*dynamic_cast<const ImageHdu *>(&hdu));
+          logger.info() << "    Type: " << readBitpixName(*dynamic_cast<const ImageHdu*>(&hdu));
           logger.info() << "    Shape: " << oss.str() << " px";
         } else {
           logger.info() << "  Metadata HDU";
         }
       } else {
-        const auto columnCount = dynamic_cast<const BintableHdu *>(&hdu)->readColumnCount();
-        const auto rowCount = dynamic_cast<const BintableHdu *>(&hdu)->readRowCount();
+        const auto columnCount = dynamic_cast<const BintableHdu*>(&hdu)->readColumnCount();
+        const auto rowCount = dynamic_cast<const BintableHdu*>(&hdu)->readRowCount();
         logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << columnCount << " columns x " << rowCount << " rows";
       }
 
       /* Read keywords */
-      if (keywordMask) {
-        const auto keywords = hdu.readKeywords(keywordMask);
+      if (categories) {
+        const auto keywords = hdu.readKeywords(categories);
         if (keywords.size() == 0) {
           logger.info() << "  No keywords";
         } else {
           logger.info() << "  Keywords:";
-          for (const auto &k : keywords) {
+          for (const auto& k : keywords) {
             logger.info() << "    " << k;
           }
         }
