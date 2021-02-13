@@ -26,9 +26,11 @@ namespace Test {
 Benchmark::Benchmark() : m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {
 }
 
-const BChronometer& Benchmark::writeImages(int count, const BRaster& raster) {
+const BChronometer& Benchmark::writeImages(long count, const BRaster& raster) {
   m_chrono.reset();
-  for (int i = 0; i < count; ++i) {
+  m_logger.debug() << "First pixel: " << raster.at({ 0 });
+  m_logger.debug() << "Last pixel: " << raster.at({ -1 });
+  for (long i = 0; i < count; ++i) {
     const auto inc = writeImage(raster);
     m_logger.debug() << i + 1 << "/" << count << ": " << inc.count() << "ms";
   }
@@ -37,11 +39,39 @@ const BChronometer& Benchmark::writeImages(int count, const BRaster& raster) {
   return m_chrono;
 }
 
-const BChronometer& Benchmark::writeBintables(int count, const BColumns& columns) { // TODO avoid duplication
+const BChronometer& Benchmark::writeBintables(long count, const BColumns& columns) { // TODO avoid duplication
   m_chrono.reset();
-  for (int i = 0; i < count; ++i) {
+  m_logger.debug() << "First column, first row: " << std::get<0>(columns).at(0, 0);
+  m_logger.debug() << "Last column, last row: " << std::get<columnCount - 1>(columns).at(-1, -1);
+  for (long i = 0; i < count; ++i) {
     const auto inc = writeBintable(columns);
     m_logger.debug() << i + 1 << "/" << count << ": " << inc.count() << "ms";
+  }
+  const auto total = m_chrono.elapsed();
+  m_logger.debug() << "TOTAL: " << total.count() << "ms";
+  return m_chrono;
+}
+
+const BChronometer& Benchmark::readImages(long first, long count) {
+  m_chrono.reset();
+  for (long i = 0; i < count; ++i) {
+    const auto raster = readImage(first + i);
+    m_logger.debug() << i + 1 << "/" << count << ": " << m_chrono.last().count() << "ms";
+    m_logger.debug() << "\tFirst pixel: " << raster.at({ 0 });
+    m_logger.debug() << "\tLast pixel: " << raster.at({ -1 });
+  }
+  const auto total = m_chrono.elapsed();
+  m_logger.debug() << "TOTAL: " << total.count() << "ms";
+  return m_chrono;
+}
+
+const BChronometer& Benchmark::readBintables(long first, long count) {
+  m_chrono.reset();
+  for (long i = 0; i < count; ++i) {
+    const auto columns = readBintable(i + first);
+    m_logger.debug() << i + 1 << "/" << count << ": " << m_chrono.last().count() << "ms";
+    m_logger.debug() << "\tFirst column, first row: " << std::get<0>(columns).at(0, 0);
+    m_logger.debug() << "\tLast column, last row: " << std::get<columnCount - 1>(columns).at(-1, -1);
   }
   const auto total = m_chrono.elapsed();
   m_logger.debug() << "TOTAL: " << total.count() << "ms";

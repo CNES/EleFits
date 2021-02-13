@@ -81,6 +81,14 @@ public:
    */
   using Value = T;
 
+  /**
+   * @brief The dimension template parameter.
+   * @details
+   * The value of `Raster<T, n>::Dim` is always `n`, irrespective of its sign.
+   * In contrast, dimension() provides the actual dimension of the Raster, even in the case of a variable dimension.
+   */
+  static constexpr long Dim = n;
+
   /** @brief Destructor. */
   virtual ~Raster() = default;
 
@@ -95,7 +103,7 @@ public:
   /**
    * @brief Const pointer to the first data element.
    */
-  virtual const T *data() const = 0;
+  virtual const T* data() const = 0;
 
   /**
    * @brief Dimension.
@@ -119,17 +127,17 @@ public:
   /**
    * @brief Raw index of a position.
    */
-  long index(const Position<n> &pos) const;
+  long index(const Position<n>& pos) const;
 
   /**
    * @brief Pixel at given position.
    */
-  const T &operator[](const Position<n> &pos) const;
+  const T& operator[](const Position<n>& pos) const;
 
   /**
    * @brief Pixel at given position.
    */
-  T &operator[](const Position<n> &pos);
+  T& operator[](const Position<n>& pos);
 
   /**
    * @brief Access the value at given position.
@@ -138,12 +146,12 @@ public:
    * and bounds are checked.
    * @see operator[]
    */
-  const T &at(const Position<n> &pos) const;
+  const T& at(const Position<n>& pos) const;
 
   /**
    * @copydoc at
    */
-  T &at(const Position<n> &pos);
+  T& at(const Position<n>& pos);
 
 public:
   /**
@@ -163,24 +171,24 @@ public:
   /** @brief Destructor. */
   virtual ~PtrRaster() = default;
   /** @brief Copy constructor. */
-  PtrRaster(const PtrRaster &) = default;
+  PtrRaster(const PtrRaster&) = default;
   /** @brief Move constructor. */
-  PtrRaster(PtrRaster &&) = default;
+  PtrRaster(PtrRaster&&) = default;
   /** @brief Copy assignment. */
-  PtrRaster &operator=(const PtrRaster &) = default;
+  PtrRaster& operator=(const PtrRaster&) = default;
   /** @brief Move assignment. */
-  PtrRaster &operator=(PtrRaster &&) = default;
+  PtrRaster& operator=(PtrRaster&&) = default;
 
   /**
    * @brief Create a Raster with given shape and values.
    */
-  PtrRaster(Position<n> shape, const T *data);
+  PtrRaster(Position<n> shape, const T* data);
 
   /** @copydoc Raster::data */
-  const T *data() const override;
+  const T* data() const override;
 
 private:
-  const T *m_data;
+  const T* m_data;
 };
 
 /**
@@ -195,29 +203,29 @@ public:
   /** @brief Destructor. */
   virtual ~VecRefRaster() = default;
   /** @brief Copy constructor. */
-  VecRefRaster(const VecRefRaster &) = default;
+  VecRefRaster(const VecRefRaster&) = default;
   /** @brief Move constructor. */
-  VecRefRaster(VecRefRaster &&) = default;
+  VecRefRaster(VecRefRaster&&) = default;
   /** @brief Copy assignment. */
-  VecRefRaster &operator=(const VecRefRaster &) = default;
+  VecRefRaster& operator=(const VecRefRaster&) = default;
   /** @brief Move assignment. */
-  VecRefRaster &operator=(VecRefRaster &&) = default;
+  VecRefRaster& operator=(VecRefRaster&&) = default;
 
   /**
    * @brief Create a Raster with given shape and values.
    */
-  VecRefRaster(Position<n> shape, const std::vector<T> &vecRef);
+  VecRefRaster(Position<n> shape, const std::vector<T>& vecRef);
 
   /** @copydoc Raster::data */
-  const T *data() const override;
+  const T* data() const override;
 
   /**
    * @brief Const reference to the vector.
    */
-  const std::vector<T> &vector() const;
+  const std::vector<T>& vector() const;
 
 private:
-  const std::vector<T> &m_ref;
+  const std::vector<T>& m_ref;
 };
 
 /**
@@ -231,13 +239,13 @@ public:
   /** @brief Destructor. */
   virtual ~VecRaster() = default;
   /** @brief Copy constructor. */
-  VecRaster(const VecRaster &) = default;
+  VecRaster(const VecRaster&) = default;
   /** @brief Move constructor. */
-  VecRaster(VecRaster &&) = default;
+  VecRaster(VecRaster&&) = default;
   /** @brief Copy assignment. */
-  VecRaster &operator=(const VecRaster &) = default;
+  VecRaster& operator=(const VecRaster&) = default;
   /** @brief Move assignment. */
-  VecRaster &operator=(VecRaster &&) = default;
+  VecRaster& operator=(VecRaster&&) = default;
 
   /**
    * @brief Create a VecRaster with given shape and values.
@@ -262,17 +270,17 @@ public:
   /**
    * @copydoc Raster::data
    */
-  const T *data() const override;
+  const T* data() const override;
 
   /**
    * @brief Non-const pointer to the first data element.
    */
-  T *data();
+  T* data();
 
   /**
    * @brief Const reference to the vector.
    */
-  const std::vector<T> &vector() const;
+  const std::vector<T>& vector() const;
 
   /**
    * @brief Non-const reference to the vector, e.g. useful to take ownership through move semantics.
@@ -280,7 +288,7 @@ public:
    * std::vector<T> v = std::move(raster.vector());
    * \endcode
    */
-  std::vector<T> &vector();
+  std::vector<T>& vector();
 
 private:
   std::vector<T> m_vec;

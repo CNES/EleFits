@@ -55,7 +55,7 @@ TUnit Chronometer<TUnit>::stop() {
 
 template <typename TUnit>
 TUnit Chronometer<TUnit>::last() const {
-  return m_incs[m_incs.size() - 1];
+  return TUnit { typename TUnit::rep(m_incs[m_incs.size() - 1]) };
 }
 
 template <typename TUnit>

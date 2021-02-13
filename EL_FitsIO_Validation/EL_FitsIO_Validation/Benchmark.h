@@ -42,17 +42,17 @@ using BRaster = VecRaster<std::int64_t, 1>;
  * @brief The column types used for benchmarking.
  */
 using BColumns = std::tuple<
-    const VecColumn<unsigned char>&,
-    const VecColumn<std::int32_t>&,
-    const VecColumn<std::int64_t>&,
-    const VecColumn<float>&,
-    const VecColumn<double>&,
-    const VecColumn<std::complex<float>>&,
-    const VecColumn<std::complex<double>>&,
-    // const VecColumn<std::string>&, //TODO to be handled specially
-    const VecColumn<char>&,
-    const VecColumn<std::uint32_t>&,
-    const VecColumn<std::uint64_t>&>;
+    VecColumn<unsigned char>,
+    VecColumn<std::int32_t>,
+    VecColumn<std::int64_t>,
+    VecColumn<float>,
+    VecColumn<double>,
+    VecColumn<std::complex<float>>,
+    VecColumn<std::complex<double>>,
+    // VecColumn<std::string>, //TODO to be handled specially
+    VecColumn<char>,
+    VecColumn<std::uint32_t>,
+    VecColumn<std::uint64_t>>;
 
 /**
  * @brief The number of columns.
@@ -108,14 +108,28 @@ public:
    * @param count The number of HDUs
    * @param raster The raster to be written in each HDU
    */
-  const BChronometer& writeImages(int count, const BRaster& raster);
+  const BChronometer& writeImages(long count, const BRaster& raster);
 
   /**
    * @brief Write the given columns in new binary table extensions.
    * @param count The number of HDUs
    * @param raster The columns to be written in each HDU
    */
-  const BChronometer& writeBintables(int count, const BColumns& columns);
+  const BChronometer& writeBintables(long count, const BColumns& columns);
+
+  /**
+   * @brief Read the rasters in the given image extensions.
+   * @param first The first (0-based) HDU index
+   * @param count The number of HDUs
+   */
+  const BChronometer& readImages(long first, long count);
+
+  /**
+   * @brief Read the columns in the given binary table extensions.
+   * @param first The first (0-based) HDU index
+   * @param count The number of HDUs
+   */
+  const BChronometer& readBintables(long first, long count);
 
   /**
    * @brief Write the given raster in a new image extension.
@@ -129,12 +143,26 @@ public:
 
   /**
    * @brief Write the given columns in a new binary table extension.
-   * @details
-   * This method is implemented by the child classes when part of the test case.
-   * They have to manage the internal chronometer by calling start() and stop() at the right place.
+   * @copydetail writeImage
    */
   virtual BChronometer::Unit writeBintable(const BColumns&) {
-    throw TestCaseNotImplemented("Write bintable");
+    throw TestCaseNotImplemented("Write binary table");
+  }
+
+  /**
+   * @brief Read the image raster in the given image extension.
+   * @copydetail writeImage
+   */
+  virtual BRaster readImage(long) {
+    throw TestCaseNotImplemented("Read image");
+  }
+
+  /**
+   * @brief Read the columns in the given binary table extension.
+   * @copydetail writeImage
+   */
+  virtual BColumns readBintable(long) {
+    throw TestCaseNotImplemented("Read binary table");
   }
 
 protected:

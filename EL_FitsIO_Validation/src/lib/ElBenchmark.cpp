@@ -23,12 +23,12 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-ElUnbufferedBenchmark::ElUnbufferedBenchmark(const std::string& filename) :
+ElColwiseBenchmark::ElColwiseBenchmark(const std::string& filename) :
     Benchmark(),
     m_f(filename, MefFile::Permission::Overwrite) {
 }
 
-BChronometer::Unit ElUnbufferedBenchmark::writeBintable(const BColumns& columns) {
+BChronometer::Unit ElColwiseBenchmark::writeBintable(const BColumns& columns) {
   m_chrono.start();
   const auto& ext = m_f.initBintableExt(
       "",
@@ -55,7 +55,7 @@ BChronometer::Unit ElUnbufferedBenchmark::writeBintable(const BColumns& columns)
   return m_chrono.stop();
 }
 
-ElBenchmark::ElBenchmark(const std::string& filename) : ElUnbufferedBenchmark(filename) {
+ElBenchmark::ElBenchmark(const std::string& filename) : ElColwiseBenchmark(filename) {
 }
 
 BChronometer::Unit ElBenchmark::writeImage(const BRaster& raster) {
@@ -68,6 +68,30 @@ BChronometer::Unit ElBenchmark::writeBintable(const BColumns& columns) {
   m_chrono.start();
   m_f.assignBintableExt("", columns);
   return m_chrono.stop();
+}
+
+BRaster ElBenchmark::readImage(long index) {
+  m_chrono.start();
+  const auto raster = m_f.access<ImageHdu>(index).readRaster<BRaster::Value, BRaster::Dim>();
+  m_chrono.stop();
+  return raster;
+}
+
+BColumns ElBenchmark::readBintable(long index) {
+  m_chrono.start();
+  const auto columns = m_f.access<BintableHdu>(index).readColumns(
+      colIndexed<0>(),
+      colIndexed<1>(),
+      colIndexed<2>(),
+      colIndexed<3>(),
+      colIndexed<4>(),
+      colIndexed<5>(),
+      colIndexed<6>(),
+      colIndexed<7>(),
+      colIndexed<8>(),
+      colIndexed<9>());
+  m_chrono.stop();
+  return columns;
 }
 
 } // namespace Test

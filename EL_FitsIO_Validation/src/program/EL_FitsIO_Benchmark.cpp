@@ -51,7 +51,7 @@ struct BenchmarkFactory {
       case CfitsioRowwise:
         return new Test::CfitsioBenchmark(filename, 1);
       case ElColwise:
-        return new Test::ElUnbufferedBenchmark(filename);
+        return new Test::ElColwiseBenchmark(filename);
       case ElBuffered:
         return new Test::ElBenchmark(filename);
       default:
@@ -118,6 +118,8 @@ public:
           "Total value count",
           "File size (bytes)",
           "Elapsed (ms)",
+          "Min (ms)",
+          "Max (ms)",
           "Mean (ms)",
           "Standard deviation (ms)" });
 
@@ -129,8 +131,8 @@ public:
 
       logger.info("Writing image HDUs...");
 
-      const auto imageChrono = benchmark->writeImages(imageCount, raster);
-
+      const auto writeChrono = benchmark->writeImages(imageCount, raster);
+      const auto readChrono = benchmark->readImages(1, imageCount);
       delete benchmark;
 
       writer.writeRow(
@@ -142,10 +144,25 @@ public:
           pixelCount,
           imageCount * pixelCount,
           boost::filesystem::file_size(filename),
-          imageChrono.elapsed().count(),
-          imageChrono.mean(),
-          imageChrono.stdev());
-      // TODO read
+          writeChrono.elapsed().count(),
+          writeChrono.min(),
+          writeChrono.max(),
+          writeChrono.mean(),
+          writeChrono.stdev());
+      writer.writeRow(
+          "TODO",
+          testSetup,
+          "Read",
+          "Image",
+          imageCount,
+          pixelCount,
+          imageCount * pixelCount,
+          boost::filesystem::file_size(filename),
+          readChrono.elapsed().count(),
+          readChrono.min(),
+          readChrono.max(),
+          readChrono.mean(),
+          readChrono.stdev());
     }
 
     else if (tableCount) {
@@ -154,21 +171,21 @@ public:
 
       const auto table = Test::RandomTable(1, rowCount);
       const Test::BColumns columns = std::make_tuple(
-          std::cref(table.getColumn<unsigned char>()),
-          std::cref(table.getColumn<std::int32_t>()),
-          std::cref(table.getColumn<std::int64_t>()),
-          std::cref(table.getColumn<float>()),
-          std::cref(table.getColumn<double>()),
-          std::cref(table.getColumn<std::complex<float>>()),
-          std::cref(table.getColumn<std::complex<double>>()),
-          std::cref(table.getColumn<char>()),
-          std::cref(table.getColumn<std::uint32_t>()),
-          std::cref(table.getColumn<std::uint64_t>()));
+          std::move(table.getColumn<unsigned char>()),
+          std::move(table.getColumn<std::int32_t>()),
+          std::move(table.getColumn<std::int64_t>()),
+          std::move(table.getColumn<float>()),
+          std::move(table.getColumn<double>()),
+          std::move(table.getColumn<std::complex<float>>()),
+          std::move(table.getColumn<std::complex<double>>()),
+          std::move(table.getColumn<char>()),
+          std::move(table.getColumn<std::uint32_t>()),
+          std::move(table.getColumn<std::uint64_t>()));
 
       logger.info("Writing binary table HDUs...");
 
-      const auto tableChrono = benchmark->writeBintables(tableCount, columns);
-
+      const auto writeChrono = benchmark->writeBintables(tableCount, columns);
+      const auto readChrono = benchmark->readBintables(1 + imageCount, tableCount);
       delete benchmark;
 
       writer.writeRow(
@@ -180,10 +197,25 @@ public:
           rowCount * Test::columnCount,
           tableCount * rowCount * Test::columnCount,
           boost::filesystem::file_size(filename),
-          tableChrono.elapsed().count(),
-          tableChrono.mean(),
-          tableChrono.stdev());
-      // TODO read
+          writeChrono.elapsed().count(),
+          writeChrono.min(),
+          writeChrono.max(),
+          writeChrono.mean(),
+          writeChrono.stdev());
+      writer.writeRow(
+          "TODO",
+          testSetup,
+          "Read",
+          "Binary table",
+          tableCount,
+          rowCount * Test::columnCount,
+          tableCount * rowCount * Test::columnCount,
+          boost::filesystem::file_size(filename),
+          readChrono.elapsed().count(),
+          readChrono.min(),
+          readChrono.max(),
+          readChrono.mean(),
+          readChrono.stdev());
     }
 
     else {

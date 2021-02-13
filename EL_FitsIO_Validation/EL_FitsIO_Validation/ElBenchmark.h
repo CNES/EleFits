@@ -33,17 +33,17 @@ namespace Test {
  * @details
  * Tests on image HDUs are not supported (use ElBenchmark instead).
  */
-class ElUnbufferedBenchmark : public Benchmark {
+class ElColwiseBenchmark : public Benchmark {
 public:
   /**
    * @brief Destructor.
    */
-  virtual ~ElUnbufferedBenchmark() = default;
+  virtual ~ElColwiseBenchmark() = default;
 
   /**
    * @brief Constructor.
    */
-  ElUnbufferedBenchmark(const std::string& filename);
+  ElColwiseBenchmark(const std::string& filename);
 
   /**
    * @copybrief Benchmark::writeBintable
@@ -53,6 +53,10 @@ public:
   virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
 
 protected:
+  template <long i>
+  Indexed<typename std::tuple_element<i, BColumns>::type::Value> colIndexed() const;
+
+protected:
   /** @brief The MEF file handler. */
   MefFile m_f;
 };
@@ -60,7 +64,7 @@ protected:
 /**
  * @brief Standard EL_FitsIO.
  */
-class ElBenchmark : public ElUnbufferedBenchmark {
+class ElBenchmark : public ElColwiseBenchmark {
 public:
   /**
    * @brief Destructor.
@@ -81,10 +85,24 @@ public:
    * @copybrief Benchmark::writeBintable
    */
   virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
+
+  /**
+   * @copybrief Benchmark::readImage
+   */
+  virtual BRaster readImage(long index) override;
+
+  /**
+   * @copybrief Benchmark::readBintable
+   */
+  virtual BColumns readBintable(long index) override;
 };
 
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid
+
+#define _EL_FITSIO_VALIDATION_ELBENCHMARK_IMPL
+#include "EL_FitsIO_Validation/impl/ElBenchmark.hpp"
+#undef _EL_FITSIO_VALIDATION_ELBENCHMARK_IMPL
 
 #endif

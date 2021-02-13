@@ -14,7 +14,7 @@
 * `Column` values can be accessed directly with `operator()`
 * `Raster` and `Column` values can be accessed with backward (negative) indices through `at` methods
 * Classes `Named` and `Indexed` improve readability and safety to read records and columns
-* `Raster` and `Column` define a `Value` type
+* `Raster` and `Column` define a `Value` type, `Raster` define a `Dim` constant
 * Exceptions thrown all derive from `FitsIOError`
 * Keywords can be filtered in `RecordHdu::readKeywords()` using new enum `KeywordCategory`
 
