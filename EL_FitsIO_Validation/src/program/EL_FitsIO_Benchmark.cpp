@@ -132,7 +132,11 @@ public:
       logger.info("Writing image HDUs...");
 
       const auto writeChrono = benchmark->writeImages(imageCount, raster);
+
+      logger.info("Reading image HDUs...");
+
       const auto readChrono = benchmark->readImages(1, imageCount);
+
       delete benchmark;
 
       writer.writeRow(
@@ -185,7 +189,11 @@ public:
       logger.info("Writing binary table HDUs...");
 
       const auto writeChrono = benchmark->writeBintables(tableCount, columns);
+
+      logger.info("Reading binary table HDUs...");
+
       const auto readChrono = benchmark->readBintables(1 + imageCount, tableCount);
+
       delete benchmark;
 
       writer.writeRow(

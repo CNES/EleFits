@@ -52,6 +52,13 @@ public:
    */
   virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
 
+  /**
+   * @copybrief Benchmark::readBintable
+   * @details
+   * Read the columns one-by-one to disable buffering.
+   */
+  virtual BColumns readBintable(long index) override;
+
 protected:
   template <long i>
   Indexed<typename std::tuple_element<i, BColumns>::type::Value> colIndexed() const;

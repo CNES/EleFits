@@ -55,6 +55,24 @@ BChronometer::Unit ElColwiseBenchmark::writeBintable(const BColumns& columns) {
   return m_chrono.stop();
 }
 
+BColumns ElColwiseBenchmark::readBintable(long index) {
+  m_chrono.start();
+  const auto& ext = m_f.access<BintableHdu>(index);
+  const auto columns = std::make_tuple(
+      ext.readColumn<std::tuple_element<0, BColumns>::type::Value>(0),
+      ext.readColumn<std::tuple_element<1, BColumns>::type::Value>(1),
+      ext.readColumn<std::tuple_element<2, BColumns>::type::Value>(2),
+      ext.readColumn<std::tuple_element<3, BColumns>::type::Value>(3),
+      ext.readColumn<std::tuple_element<4, BColumns>::type::Value>(4),
+      ext.readColumn<std::tuple_element<5, BColumns>::type::Value>(5),
+      ext.readColumn<std::tuple_element<6, BColumns>::type::Value>(6),
+      ext.readColumn<std::tuple_element<7, BColumns>::type::Value>(7),
+      ext.readColumn<std::tuple_element<8, BColumns>::type::Value>(8),
+      ext.readColumn<std::tuple_element<9, BColumns>::type::Value>(9));
+  m_chrono.stop();
+  return columns;
+}
+
 ElBenchmark::ElBenchmark(const std::string& filename) : ElColwiseBenchmark(filename) {
 }
 
