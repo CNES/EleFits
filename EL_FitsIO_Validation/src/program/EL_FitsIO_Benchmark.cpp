@@ -131,45 +131,50 @@ public:
 
       logger.info("Writing image HDUs...");
 
-      const auto writeChrono = benchmark->writeImages(imageCount, raster);
+      try {
+        const auto writeChrono = benchmark->writeImages(imageCount, raster);
+        writer.writeRow(
+            "TODO",
+            testSetup,
+            "Write",
+            "Image",
+            imageCount,
+            pixelCount,
+            imageCount * pixelCount,
+            boost::filesystem::file_size(filename),
+            writeChrono.elapsed().count(),
+            writeChrono.min(),
+            writeChrono.max(),
+            writeChrono.mean(),
+            writeChrono.stdev());
+      } catch (const std::exception& e) {
+        logger.warn() << e.what();
+      }
 
       logger.info("Reading image HDUs...");
 
-      const auto readChrono = benchmark->readImages(1, imageCount);
+      try {
+        const auto readChrono = benchmark->readImages(1, imageCount);
 
-      delete benchmark;
+        writer.writeRow(
+            "TODO",
+            testSetup,
+            "Read",
+            "Image",
+            imageCount,
+            pixelCount,
+            imageCount * pixelCount,
+            boost::filesystem::file_size(filename),
+            readChrono.elapsed().count(),
+            readChrono.min(),
+            readChrono.max(),
+            readChrono.mean(),
+            readChrono.stdev());
+      } catch (const std::exception& e) {
+        logger.warn() << e.what();
+      }
 
-      writer.writeRow(
-          "TODO",
-          testSetup,
-          "Write",
-          "Image",
-          imageCount,
-          pixelCount,
-          imageCount * pixelCount,
-          boost::filesystem::file_size(filename),
-          writeChrono.elapsed().count(),
-          writeChrono.min(),
-          writeChrono.max(),
-          writeChrono.mean(),
-          writeChrono.stdev());
-      writer.writeRow(
-          "TODO",
-          testSetup,
-          "Read",
-          "Image",
-          imageCount,
-          pixelCount,
-          imageCount * pixelCount,
-          boost::filesystem::file_size(filename),
-          readChrono.elapsed().count(),
-          readChrono.min(),
-          readChrono.max(),
-          readChrono.mean(),
-          readChrono.stdev());
-    }
-
-    else if (tableCount) {
+    } else if (tableCount) {
 
       logger.info("Generating columns...");
 
@@ -188,50 +193,57 @@ public:
 
       logger.info("Writing binary table HDUs...");
 
-      const auto writeChrono = benchmark->writeBintables(tableCount, columns);
+      try {
+        const auto writeChrono = benchmark->writeBintables(tableCount, columns);
+        writer.writeRow(
+            "TODO",
+            testSetup,
+            "Write",
+            "Binary table",
+            tableCount,
+            rowCount * Test::columnCount,
+            tableCount * rowCount * Test::columnCount,
+            boost::filesystem::file_size(filename),
+            writeChrono.elapsed().count(),
+            writeChrono.min(),
+            writeChrono.max(),
+            writeChrono.mean(),
+            writeChrono.stdev());
+      } catch (const std::exception& e) {
+        logger.warn() << e.what();
+      }
 
       logger.info("Reading binary table HDUs...");
 
-      const auto readChrono = benchmark->readBintables(1 + imageCount, tableCount);
+      try {
+        const auto readChrono = benchmark->readBintables(1 + imageCount, tableCount);
 
-      delete benchmark;
+        writer.writeRow(
+            "TODO",
+            testSetup,
+            "Read",
+            "Binary table",
+            tableCount,
+            rowCount * Test::columnCount,
+            tableCount * rowCount * Test::columnCount,
+            boost::filesystem::file_size(filename),
+            readChrono.elapsed().count(),
+            readChrono.min(),
+            readChrono.max(),
+            readChrono.mean(),
+            readChrono.stdev());
+      } catch (const std::exception& e) {
+        logger.warn() << e.what();
+      }
 
-      writer.writeRow(
-          "TODO",
-          testSetup,
-          "Write",
-          "Binary table",
-          tableCount,
-          rowCount * Test::columnCount,
-          tableCount * rowCount * Test::columnCount,
-          boost::filesystem::file_size(filename),
-          writeChrono.elapsed().count(),
-          writeChrono.min(),
-          writeChrono.max(),
-          writeChrono.mean(),
-          writeChrono.stdev());
-      writer.writeRow(
-          "TODO",
-          testSetup,
-          "Read",
-          "Binary table",
-          tableCount,
-          rowCount * Test::columnCount,
-          tableCount * rowCount * Test::columnCount,
-          boost::filesystem::file_size(filename),
-          readChrono.elapsed().count(),
-          readChrono.min(),
-          readChrono.max(),
-          readChrono.mean(),
-          readChrono.stdev());
-    }
-
-    else {
+    } else {
       throw Test::TestCaseNotImplemented(
           "There should be either a positive number of image HDUs or a positive number of binary table HDUs");
     }
 
     logger.info("Done.");
+
+    delete benchmark;
 
     return Elements::ExitCode::OK;
   }

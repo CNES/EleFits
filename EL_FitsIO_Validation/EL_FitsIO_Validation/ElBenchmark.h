@@ -46,6 +46,16 @@ public:
   ElColwiseBenchmark(const std::string& filename);
 
   /**
+   * @brief Open file.
+   */
+  virtual void open() override;
+
+  /**
+   * @brief Close file.
+   */
+  virtual void close() override;
+
+  /**
    * @copybrief Benchmark::writeBintable
    * @details
    * Write the columns one-by-one to disable buffering.

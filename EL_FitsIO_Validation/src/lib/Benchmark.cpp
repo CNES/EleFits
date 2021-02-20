@@ -23,10 +23,14 @@ namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
-Benchmark::Benchmark() : m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {
+Benchmark::Benchmark(const std::string& filename) :
+    m_filename(filename),
+    m_chrono(),
+    m_logger(Elements::Logging::getLogger("Benchmark")) {
 }
 
 const BChronometer& Benchmark::writeImages(long count, const BRaster& raster) {
+  open();
   m_chrono.reset();
   m_logger.debug() << "First pixel: " << raster.at({ 0 });
   m_logger.debug() << "Last pixel: " << raster.at({ -1 });
@@ -36,10 +40,12 @@ const BChronometer& Benchmark::writeImages(long count, const BRaster& raster) {
   }
   const auto total = m_chrono.elapsed();
   m_logger.debug() << "TOTAL: " << total.count() << "ms";
+  close();
   return m_chrono;
 }
 
 const BChronometer& Benchmark::writeBintables(long count, const BColumns& columns) { // TODO avoid duplication
+  open();
   m_chrono.reset();
   m_logger.debug() << "First column, first row: " << std::get<0>(columns).at(0, 0);
   m_logger.debug() << "Last column, last row: " << std::get<columnCount - 1>(columns).at(-1, -1);
@@ -49,10 +55,12 @@ const BChronometer& Benchmark::writeBintables(long count, const BColumns& column
   }
   const auto total = m_chrono.elapsed();
   m_logger.debug() << "TOTAL: " << total.count() << "ms";
+  close();
   return m_chrono;
 }
 
 const BChronometer& Benchmark::readImages(long first, long count) {
+  open();
   m_chrono.reset();
   for (long i = 0; i < count; ++i) {
     const auto raster = readImage(first + i);
@@ -62,10 +70,12 @@ const BChronometer& Benchmark::readImages(long first, long count) {
   }
   const auto total = m_chrono.elapsed();
   m_logger.debug() << "TOTAL: " << total.count() << "ms";
+  close();
   return m_chrono;
 }
 
 const BChronometer& Benchmark::readBintables(long first, long count) {
+  open();
   m_chrono.reset();
   for (long i = 0; i < count; ++i) {
     const auto columns = readBintable(i + first);
@@ -75,6 +85,7 @@ const BChronometer& Benchmark::readBintables(long first, long count) {
   }
   const auto total = m_chrono.elapsed();
   m_logger.debug() << "TOTAL: " << total.count() << "ms";
+  close();
   return m_chrono;
 }
 

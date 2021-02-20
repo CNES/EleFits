@@ -20,10 +20,10 @@
 
 ### Cleaning
 
-* `FitsFile::open` is protected again
+* `FitsFile::open` is protected again, `FitsFile::reopen` is more robust
 * HDU handlers cannot be created on their own
 * Error messages contain more informations
-* Benchmark is made extensible
+* Benchmark is made more complete, extensible and more automated
 * Major documentation update
 
 ## 3.0 (breaking)

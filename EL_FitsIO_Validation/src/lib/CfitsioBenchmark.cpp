@@ -28,13 +28,21 @@ CfitsioBenchmark::~CfitsioBenchmark() {
 }
 
 CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long rowChunkSize) :
-    Benchmark(),
+    Benchmark(filename),
     m_fptr(nullptr),
     m_status(0),
     m_rowChunkSize(rowChunkSize) {
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
   fits_create_img(m_fptr, BYTE_IMG, 0, nullptr, &m_status); // Create empty Primary
   Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot create file");
+}
+
+void CfitsioBenchmark::open() {
+  fits_open_file(&m_fptr, m_filename.c_str(), READWRITE, &m_status);
+}
+
+void CfitsioBenchmark::close() {
+  fits_close_file(m_fptr, &m_status);
 }
 
 BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {

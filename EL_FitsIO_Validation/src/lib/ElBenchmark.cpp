@@ -24,8 +24,16 @@ namespace FitsIO {
 namespace Test {
 
 ElColwiseBenchmark::ElColwiseBenchmark(const std::string& filename) :
-    Benchmark(),
+    Benchmark(filename),
     m_f(filename, MefFile::Permission::Overwrite) {
+}
+
+void ElColwiseBenchmark::open() {
+  m_f.reopen();
+}
+
+void ElColwiseBenchmark::close() {
+  m_f.close();
 }
 
 BChronometer::Unit ElColwiseBenchmark::writeBintable(const BColumns& columns) {

@@ -85,7 +85,7 @@ public:
   /**
    * @brief Create a new Fits file handler with given filename and permission.
    */
-  FitsFile(const std::string &filename, Permission permission);
+  FitsFile(const std::string& filename, Permission permission);
 
   /**
    * @brief Destroy the object and close the file.
@@ -106,11 +106,17 @@ public:
 
   /**
    * @brief Reopen the file.
+   * @details
+   * Specific behaviors apply to the following permissions:
+   * - Permission::Create and Permission::Overwrite: The file is reopened with Permission::Edit;
+   * - Permission::Temporary: The file cannot be reopened.
    */
   void reopen();
 
   /**
    * @brief Close the file.
+   * @details
+   * Files opened with Permission::Temporary are deleted after closing by this method.
    */
   void close();
 
@@ -138,10 +144,10 @@ protected:
    * @warning
    * In any case, relying on the constructors and destructors by managing the object lifetime is preferable.
    */
-  void open(const std::string &filename, Permission permission);
+  void open(const std::string& filename, Permission permission);
 
   /** @brief The CFitsIO file handler. */
-  fitsfile *m_fptr;
+  fitsfile* m_fptr;
   /** @brief The file name. */
   std::string m_filename;
   /** @brief The file permission. */

@@ -101,7 +101,17 @@ public:
   /**
    * @brief Constructor.
    */
-  Benchmark();
+  Benchmark(const std::string& filename);
+
+  /**
+   * @brief Open file.
+   */
+  virtual void open() = 0;
+
+  /**
+   * @brief Close file.
+   */
+  virtual void close() = 0;
 
   /**
    * @brief Write the given raster in new image extensions.
@@ -113,7 +123,7 @@ public:
   /**
    * @brief Write the given columns in new binary table extensions.
    * @param count The number of HDUs
-   * @param raster The columns to be written in each HDU
+   * @param columns The columns to be written in each HDU
    */
   const BChronometer& writeBintables(long count, const BColumns& columns);
 
@@ -143,7 +153,7 @@ public:
 
   /**
    * @brief Write the given columns in a new binary table extension.
-   * @copydetail writeImage
+   * @copydetails writeImage
    */
   virtual BChronometer::Unit writeBintable(const BColumns&) {
     throw TestCaseNotImplemented("Write binary table");
@@ -151,7 +161,7 @@ public:
 
   /**
    * @brief Read the image raster in the given image extension.
-   * @copydetail writeImage
+   * @copydetails writeImage
    */
   virtual BRaster readImage(long) {
     throw TestCaseNotImplemented("Read image");
@@ -159,13 +169,15 @@ public:
 
   /**
    * @brief Read the columns in the given binary table extension.
-   * @copydetail writeImage
+   * @copydetails writeImage
    */
   virtual BColumns readBintable(long) {
     throw TestCaseNotImplemented("Read binary table");
   }
 
 protected:
+  /** @brief The file name. */
+  std::string m_filename;
   /** @brief The chronometer. */
   BChronometer m_chrono;
   /** @brief The logger. */

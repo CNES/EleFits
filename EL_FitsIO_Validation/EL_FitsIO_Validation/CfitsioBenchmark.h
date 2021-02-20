@@ -52,6 +52,16 @@ public:
   CfitsioBenchmark(const std::string& filename, long rowChunkSize = -1);
 
   /**
+   * @brief Open file.
+   */
+  virtual void open() override;
+
+  /**
+   * @brief Close file.
+   */
+  virtual void close() override;
+
+  /**
    * @copybrief Benchmark::writeImage
    */
   virtual BChronometer::Unit writeImage(const BRaster& raster) override;

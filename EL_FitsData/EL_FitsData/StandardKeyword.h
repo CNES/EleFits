@@ -58,15 +58,15 @@ public:
    * @see KeywordCategory
    */
   static std::vector<std::string>
-  filterCategories(const std::vector<std::string> &keywords, KeywordCategory categories);
+  filterCategories(const std::vector<std::string>& keywords, KeywordCategory categories);
 
   /**
    * @brief Check whether a keyword is of given categories.
-   * @param keywords The keyword vector to be tested
+   * @param keyword The keyword to be tested
    * @param categories The categories to be tested, e.g. `KeywordCategory::Reserved | KeywordCategory::User`.
    * @see KeywordCategory
    */
-  static bool belongsCategories(const std::string &keyword, KeywordCategory categories);
+  static bool belongsCategories(const std::string& keyword, KeywordCategory categories);
 
   /**
    * @brief Check whether a test keyword matches a reference keyword.
@@ -81,7 +81,7 @@ public:
    * - `matches("KEYn", "KEY123")` is false;
    * - `matches("KEYWORD", "KEYn")` is false.
    */
-  static bool matches(const std::string &test, const std::string &ref);
+  static bool matches(const std::string& test, const std::string& ref);
 
 private:
   /**
@@ -90,17 +90,17 @@ private:
    * The reference keyword is expected to end with an 'n' character,
    * which represents any positive integer.
    */
-  static bool matchesIndexed(const std::string &test, const std::string &ref);
+  static bool matchesIndexed(const std::string& test, const std::string& ref);
 
   /**
    * @brief Check whether a test keyword matches one of reference keywords.
    */
-  static bool matchesOneOf(const std::string &test, const std::vector<std::string> &refs);
+  static bool matchesOneOf(const std::string& test, const std::vector<std::string>& refs);
 
   /**
    * @brief The map between standard categories and standard keywords.
    */
-  static const std::map<KeywordCategory, const std::vector<std::string> &> byCategory();
+  static const std::map<KeywordCategory, const std::vector<std::string>&> byCategory();
 
   /**
    * @brief The list of mandatory keywords.
@@ -130,7 +130,7 @@ inline KeywordCategory operator|(KeywordCategory a, KeywordCategory b) {
  * @brief In-place bit-wise OR operator for masking.
  * @see KeywordCategory
  */
-inline KeywordCategory &operator|=(KeywordCategory &a, KeywordCategory b) {
+inline KeywordCategory& operator|=(KeywordCategory& a, KeywordCategory b) {
   a = a | b;
   return a;
 }
@@ -147,7 +147,7 @@ inline KeywordCategory operator&(KeywordCategory a, KeywordCategory b) {
  * @brief In-place bit-wise AND operator for masking.
  * @see KeywordCategory
  */
-inline KeywordCategory &operator&=(KeywordCategory &a, KeywordCategory b) {
+inline KeywordCategory& operator&=(KeywordCategory& a, KeywordCategory b) {
   a = a & b;
   return a;
 }

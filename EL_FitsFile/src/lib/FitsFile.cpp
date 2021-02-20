@@ -31,7 +31,7 @@ std::string version() {
   return Elements::Project::versionString();
 }
 
-FitsFile::FitsFile(const std::string &filename, Permission permission) :
+FitsFile::FitsFile(const std::string& filename, Permission permission) :
     m_fptr(nullptr),
     m_filename(filename),
     m_permission(permission),
@@ -53,11 +53,22 @@ bool FitsFile::isOpen() const {
 
 void FitsFile::reopen() {
   if (not m_open) {
-    open(m_filename, m_permission);
+    switch (m_permission) {
+      case Permission::Create:
+      case Permission::Overwrite:
+        open(m_filename, Permission::Edit);
+        break;
+      case Permission::Temporary:
+        throw FitsIOError("Cannot reopen closed temporary file.");
+        break;
+      default:
+        open(m_filename, m_permission);
+        break;
+    }
   }
 }
 
-void FitsFile::open(const std::string &filename, Permission permission) {
+void FitsFile::open(const std::string& filename, Permission permission) {
   if (m_open) {
     throw FitsIOError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
   }
