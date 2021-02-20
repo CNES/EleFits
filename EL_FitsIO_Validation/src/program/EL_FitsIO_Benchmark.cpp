@@ -105,7 +105,7 @@ public:
 
     Test::Benchmark* benchmark = BenchmarkFactory::create(testSetup, filename);
     if (not benchmark) {
-      throw Test::TestCaseNotImplemented(std::string("No test case with setup: ") + testSetup);
+      throw Test::TestCaseNotImplemented(std::string("No setup named: ") + testSetup);
     }
     Test::CsvAppender writer(
         results,

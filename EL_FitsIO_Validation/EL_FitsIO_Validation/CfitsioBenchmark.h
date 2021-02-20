@@ -61,6 +61,16 @@ public:
    */
   virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
 
+  /**
+   * @copybrief Benchmark::readImage
+   */
+  virtual BRaster readImage(long index) override;
+
+  /**
+   * @copybrief Benchmark::readBintable
+   */
+  virtual BColumns readBintable(long index) override;
+
 private:
   /**
    * @brief Setup the i-th column info (name, format, unit).

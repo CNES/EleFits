@@ -33,7 +33,8 @@ CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long rowChunkSiz
     m_status(0),
     m_rowChunkSize(rowChunkSize) {
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status);
+  fits_create_img(m_fptr, BYTE_IMG, 0, nullptr, &m_status); // Create empty Primary
+  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot create file");
 }
 
 BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {
@@ -45,6 +46,7 @@ BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {
       raster.shape.size(),
       nonconstShape.data(),
       &m_status);
+  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot create image HDU");
   std::vector<BRaster::Value> nonconstData(raster.data(), raster.data() + raster.size());
   fits_write_img(
       m_fptr,
@@ -53,8 +55,29 @@ BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {
       raster.size(),
       nonconstData.data(),
       &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status);
+  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot write image");
   return m_chrono.stop();
+}
+
+BRaster CfitsioBenchmark::readImage(long index) {
+  m_chrono.start();
+  int hduType = 0;
+  fits_movabs_hdu(m_fptr, index + 1, &hduType, &m_status);
+  Position<BRaster::Dim> shape;
+  fits_get_img_size(m_fptr, BRaster::Dim, shape.data(), &m_status);
+  BRaster raster(shape);
+  fits_read_img(
+      m_fptr,
+      Cfitsio::TypeCode<BRaster::Value>::forImage(),
+      1,
+      raster.size(),
+      nullptr,
+      raster.data(),
+      nullptr,
+      &m_status);
+  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot read image");
+  m_chrono.stop();
+  return raster;
 }
 
 BChronometer::Unit CfitsioBenchmark::writeBintable(const BColumns& columns) {
@@ -86,13 +109,13 @@ BChronometer::Unit CfitsioBenchmark::writeBintable(const BColumns& columns) {
       unitArray.data(),
       "",
       &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status);
+  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot create binary table HDU");
   long rowChunkSize = m_rowChunkSize;
   if (rowChunkSize == -1) {
     rowChunkSize = rowCount;
   } else if (rowChunkSize == 0) {
     fits_get_rowsize(m_fptr, &rowChunkSize, &m_status);
-    Cfitsio::CfitsioError::mayThrow(m_status);
+    Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot write binary table");
   }
   for (long firstRow = 0; firstRow < rowCount;) {
     const long pastLastRow = std::min(firstRow + rowChunkSize, rowCount);
@@ -109,6 +132,10 @@ BChronometer::Unit CfitsioBenchmark::writeBintable(const BColumns& columns) {
     firstRow = pastLastRow;
   }
   return m_chrono.stop();
+}
+
+BColumns CfitsioBenchmark::readBintable(long index) {
+  return Benchmark::readBintable(index); // FIXME
 }
 
 } // namespace Test
