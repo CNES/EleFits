@@ -34,7 +34,7 @@ CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long rowChunkSiz
     m_rowChunkSize(rowChunkSize) {
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
   fits_create_img(m_fptr, BYTE_IMG, 0, nullptr, &m_status); // Create empty Primary
-  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot create file");
+  mayThrow("Cannot create file");
 }
 
 void CfitsioBenchmark::open() {
@@ -54,7 +54,7 @@ BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {
       raster.shape.size(),
       nonconstShape.data(),
       &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot create image HDU");
+  mayThrow("Cannot create image HDU");
   std::vector<BRaster::Value> nonconstData(raster.data(), raster.data() + raster.size());
   fits_write_img(
       m_fptr,
@@ -63,7 +63,7 @@ BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {
       raster.size(),
       nonconstData.data(),
       &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot write image");
+  mayThrow("Cannot write image");
   return m_chrono.stop();
 }
 
@@ -83,7 +83,7 @@ BRaster CfitsioBenchmark::readImage(long index) {
       raster.data(),
       nullptr,
       &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot read image");
+  mayThrow("Cannot read image");
   m_chrono.stop();
   return raster;
 }
@@ -117,14 +117,8 @@ BChronometer::Unit CfitsioBenchmark::writeBintable(const BColumns& columns) {
       unitArray.data(),
       "",
       &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot create binary table HDU");
-  long rowChunkSize = m_rowChunkSize;
-  if (rowChunkSize == -1) {
-    rowChunkSize = rowCount;
-  } else if (rowChunkSize == 0) {
-    fits_get_rowsize(m_fptr, &rowChunkSize, &m_status);
-    Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, "Cannot write binary table");
-  }
+  mayThrow("Cannot create binary table HDU");
+  long rowChunkSize = computeRowChunkSize(rowCount);
   for (long firstRow = 0; firstRow < rowCount;) {
     const long pastLastRow = std::min(firstRow + rowChunkSize, rowCount);
     writeColumn<0>(columns, firstRow, pastLastRow - firstRow);
@@ -143,7 +137,58 @@ BChronometer::Unit CfitsioBenchmark::writeBintable(const BColumns& columns) {
 }
 
 BColumns CfitsioBenchmark::readBintable(long index) {
-  return Benchmark::readBintable(index); // FIXME
+  int hduType = 0;
+  fits_movabs_hdu(m_fptr, index + 1, &hduType, &m_status);
+  mayThrow("Cannot access HDU");
+  BColumns columns;
+  m_chrono.start();
+  long rowCount = 0;
+  fits_get_num_rows(m_fptr, &rowCount, &m_status);
+  mayThrow("Cannot read number of rows");
+  initColumn<0>(columns, rowCount);
+  initColumn<1>(columns, rowCount);
+  initColumn<2>(columns, rowCount);
+  initColumn<3>(columns, rowCount);
+  initColumn<4>(columns, rowCount);
+  initColumn<5>(columns, rowCount);
+  initColumn<6>(columns, rowCount);
+  initColumn<7>(columns, rowCount);
+  initColumn<8>(columns, rowCount);
+  initColumn<9>(columns, rowCount);
+  long rowChunkSize = computeRowChunkSize(rowCount);
+  for (long firstRow = 0; firstRow < rowCount;) {
+    const long pastLastRow = std::min(firstRow + rowChunkSize, rowCount);
+    readColumn<0>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<1>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<2>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<3>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<4>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<5>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<6>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<7>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<8>(columns, firstRow, pastLastRow - firstRow);
+    readColumn<9>(columns, firstRow, pastLastRow - firstRow); // TODO index_sequence
+    firstRow = pastLastRow;
+  }
+  m_chrono.stop();
+  return columns;
+}
+
+long CfitsioBenchmark::computeRowChunkSize(long rowCount) {
+  if (m_rowChunkSize == -1) {
+    return rowCount;
+  }
+  if (m_rowChunkSize == 0) {
+    long size = 0;
+    fits_get_rowsize(m_fptr, &size, &m_status);
+    mayThrow("Cannot compute buffer size");
+    return size;
+  }
+  return m_rowChunkSize;
+}
+
+void CfitsioBenchmark::mayThrow(const std::string& context) const {
+  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, context);
 }
 
 } // namespace Test

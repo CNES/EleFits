@@ -53,7 +53,41 @@ void CfitsioBenchmark::writeColumn(const BColumns& columns, long firstRow, long 
       rowCount,
       nonconstVec.data(),
       &m_status);
-  Cfitsio::CfitsioError::mayThrow(m_status);
+  mayThrow("Cannot write column");
+}
+
+template <std::size_t i>
+void CfitsioBenchmark::initColumn(BColumns& columns, long rowCount) {
+  auto& col = std::get<i>(columns);
+  int colnum = i + 1;
+  long repeat = 0;
+  char ttype[FLEN_VALUE];
+  char tunit[FLEN_VALUE];
+  fits_get_bcolparms(m_fptr, colnum, ttype, tunit, nullptr, &repeat, nullptr, nullptr, nullptr, nullptr, &m_status);
+  col.info.name.assign(ttype);
+  col.info.unit.assign(tunit);
+  col.info.repeatCount = repeat;
+  col.vector().resize(rowCount * repeat);
+  mayThrow("Cannot initialize column");
+}
+
+template <std::size_t i>
+void CfitsioBenchmark::readColumn(BColumns& columns, long firstRow, long rowCount) {
+  auto& col = std::get<i>(columns);
+  auto begin = &col.vector()[firstRow];
+  using Value = typename std::decay_t<decltype(col)>::Value;
+  fits_read_col(
+      m_fptr,
+      Cfitsio::TypeCode<Value>::forBintable(),
+      i + 1,
+      firstRow + 1,
+      1,
+      rowCount,
+      nullptr,
+      begin,
+      nullptr,
+      &m_status);
+  mayThrow("Cannot read column");
 }
 
 } // namespace Test

@@ -83,6 +83,21 @@ public:
 
 private:
   /**
+   * @brief Get or compute the row chunk size.
+   * @details
+   * Depending on the value m_rowChunkSize:
+   * - -1: All rows;
+   * - >0: Use given value;
+   * - 0: Compute size according to buffer size.
+   */
+  long computeRowChunkSize(long rowCount);
+
+  /**
+   * @brief Throw a CfitsioError if m_status != 0.
+   */
+  void mayThrow(const std::string& context) const;
+
+  /**
    * @brief Setup the i-th column info (name, format, unit).
    */
   template <std::size_t i>
@@ -93,10 +108,22 @@ private:
       std::vector<std::string>& units);
 
   /**
-   * @brief Write the i-th column.
+   * @brief Write a chunk of the i-th column.
    */
   template <std::size_t i>
   void writeColumn(const BColumns& columns, long firstRow, long rowCount);
+
+  /**
+   * @brief Read the size and metadata of the i-th column.
+   */
+  template <std::size_t i>
+  void initColumn(BColumns& columns, long rowCount);
+
+  /**
+   * @brief Read a chunk of the i-th column.
+   */
+  template <std::size_t i>
+  void readColumn(BColumns& columns, long firstRow, long rowCount);
 
 private:
   /** @brief The Fits file. */

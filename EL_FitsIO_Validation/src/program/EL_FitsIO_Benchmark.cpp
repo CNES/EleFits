@@ -67,8 +67,8 @@ struct BenchmarkFactory {
   }
 };
 
-const std::vector<std::string> BenchmarkFactory::names = { "CFitsIO",
-                                                           "CFitsIO_buffered",
+const std::vector<std::string> BenchmarkFactory::names = { "CFitsIO_colwise",
+                                                           "CFitsIO",
                                                            "CFitsIO_rowwise",
                                                            "EL_FitsIO_colwise",
                                                            "EL_FitsIO" };
