@@ -84,6 +84,11 @@ public:
   std::size_t count() const;
 
   /**
+   * @brief Get the increments.
+   */
+  const std::vector<double>& increments() const;
+
+  /**
    * @brief The mean of the increments.
    */
   double mean() const;

@@ -73,6 +73,16 @@ const std::vector<std::string> BenchmarkFactory::names = { "CFitsIO_colwise",
                                                            "EL_FitsIO_colwise",
                                                            "EL_FitsIO" };
 
+template <typename T>
+std::string join(const std::vector<T>& values, const std::string& sep = ",") {
+  const auto begin = values.begin() + 1; // values[0] is used as initial value of accumulator
+  const auto end = values.end();
+  const auto init = std::to_string(values[0]);
+  return std::accumulate(begin, end, init, [&](const std::string& a, T b) {
+    return a + sep + std::to_string(b);
+  });
+}
+
 class EL_FitsIO_WritePerf : public Elements::Program {
 
 public:
@@ -121,7 +131,8 @@ public:
           "Min (ms)",
           "Max (ms)",
           "Mean (ms)",
-          "Standard deviation (ms)" });
+          "Standard deviation (ms)",
+          "Samples (ms)" });
 
     if (imageCount) {
 
@@ -132,7 +143,7 @@ public:
       logger.info("Writing image HDUs...");
 
       try {
-        const auto writeChrono = benchmark->writeImages(imageCount, raster);
+        const auto chrono = benchmark->writeImages(imageCount, raster);
         writer.writeRow(
             "TODO",
             testSetup,
@@ -142,11 +153,12 @@ public:
             pixelCount,
             imageCount * pixelCount,
             boost::filesystem::file_size(filename),
-            writeChrono.elapsed().count(),
-            writeChrono.min(),
-            writeChrono.max(),
-            writeChrono.mean(),
-            writeChrono.stdev());
+            chrono.elapsed().count(),
+            chrono.min(),
+            chrono.max(),
+            chrono.mean(),
+            chrono.stdev(),
+            join(chrono.increments()));
       } catch (const std::exception& e) {
         logger.warn() << e.what();
       }
@@ -154,8 +166,7 @@ public:
       logger.info("Reading image HDUs...");
 
       try {
-        const auto readChrono = benchmark->readImages(1, imageCount);
-
+        const auto chrono = benchmark->readImages(1, imageCount);
         writer.writeRow(
             "TODO",
             testSetup,
@@ -165,11 +176,12 @@ public:
             pixelCount,
             imageCount * pixelCount,
             boost::filesystem::file_size(filename),
-            readChrono.elapsed().count(),
-            readChrono.min(),
-            readChrono.max(),
-            readChrono.mean(),
-            readChrono.stdev());
+            chrono.elapsed().count(),
+            chrono.min(),
+            chrono.max(),
+            chrono.mean(),
+            chrono.stdev(),
+            join(chrono.increments()));
       } catch (const std::exception& e) {
         logger.warn() << e.what();
       }
@@ -194,7 +206,7 @@ public:
       logger.info("Writing binary table HDUs...");
 
       try {
-        const auto writeChrono = benchmark->writeBintables(tableCount, columns);
+        const auto chrono = benchmark->writeBintables(tableCount, columns);
         writer.writeRow(
             "TODO",
             testSetup,
@@ -204,11 +216,12 @@ public:
             rowCount * Test::columnCount,
             tableCount * rowCount * Test::columnCount,
             boost::filesystem::file_size(filename),
-            writeChrono.elapsed().count(),
-            writeChrono.min(),
-            writeChrono.max(),
-            writeChrono.mean(),
-            writeChrono.stdev());
+            chrono.elapsed().count(),
+            chrono.min(),
+            chrono.max(),
+            chrono.mean(),
+            chrono.stdev(),
+            join(chrono.increments()));
       } catch (const std::exception& e) {
         logger.warn() << e.what();
       }
@@ -216,8 +229,7 @@ public:
       logger.info("Reading binary table HDUs...");
 
       try {
-        const auto readChrono = benchmark->readBintables(1 + imageCount, tableCount);
-
+        const auto chrono = benchmark->readBintables(1 + imageCount, tableCount);
         writer.writeRow(
             "TODO",
             testSetup,
@@ -227,11 +239,12 @@ public:
             rowCount * Test::columnCount,
             tableCount * rowCount * Test::columnCount,
             boost::filesystem::file_size(filename),
-            readChrono.elapsed().count(),
-            readChrono.min(),
-            readChrono.max(),
-            readChrono.mean(),
-            readChrono.stdev());
+            chrono.elapsed().count(),
+            chrono.min(),
+            chrono.max(),
+            chrono.mean(),
+            chrono.stdev(),
+            join(chrono.increments()));
       } catch (const std::exception& e) {
         logger.warn() << e.what();
       }
