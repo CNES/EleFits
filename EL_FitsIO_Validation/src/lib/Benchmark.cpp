@@ -89,7 +89,7 @@ const BChronometer& Benchmark::readBintables(long first, long count) {
   return m_chrono;
 }
 
-void BenchmarkFactory::registerBenchmark(const std::string& key, FactoryFunction factory) {
+void BenchmarkFactory::registerBenchmarkMaker(const std::string& key, BenchmarkMaker factory) {
   m_register[key] = factory;
 }
 

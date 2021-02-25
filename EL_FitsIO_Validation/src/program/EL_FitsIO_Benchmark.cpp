@@ -42,21 +42,11 @@ using namespace Euclid::FitsIO;
 
 Test::BenchmarkFactory initFactory() {
   Test::BenchmarkFactory factory;
-  factory.registerBenchmark("CFitsIO_rowwise", [](const std::string& filename) {
-    return std::make_unique<Test::CfitsioBenchmark>(filename, 1);
-  });
-  factory.registerBenchmark("CFitsIO_colwise", [](const std::string& filename) {
-    return std::make_unique<Test::CfitsioBenchmark>(filename, -1);
-  });
-  factory.registerBenchmark("CFitsIO", [](const std::string& filename) {
-    return std::make_unique<Test::CfitsioBenchmark>(filename, 0);
-  });
-  factory.registerBenchmark("EL_FitsIO_colwise", [](const std::string& filename) {
-    return std::make_unique<Test::ElColwiseBenchmark>(filename);
-  });
-  factory.registerBenchmark("EL_FitsIO", [](const std::string& filename) {
-    return std::make_unique<Test::ElBenchmark>(filename);
-  });
+  factory.registerBenchmark<Test::CfitsioBenchmark>("CFitsIO_rowwise", 1);
+  factory.registerBenchmark<Test::CfitsioBenchmark>("CFitsIO_colwise", -1);
+  factory.registerBenchmark<Test::CfitsioBenchmark>("CFitsIO", 0);
+  factory.registerBenchmark<Test::ElColwiseBenchmark>("EL_FitsIO_colwise");
+  factory.registerBenchmark<Test::ElBenchmark>("EL_FitsIO");
   return factory;
 }
 

@@ -192,16 +192,32 @@ protected:
 class BenchmarkFactory {
 public:
   /**
-   * @brief The type of the factory function.
+   * @brief The type of the benchmark factory function.
    * @details
-   * The factory function takes a filename as input, and returns an instance of the benchmark child class.
+   * The factory function takes a filename as input,
+   * and returns a pointer to an instance of the benchmark child class.
    */
-  using FactoryFunction = std::function<std::unique_ptr<Benchmark>(const std::string&)>;
+  using BenchmarkMaker = std::function<std::unique_ptr<Benchmark>(const std::string&)>;
 
   /**
    * @brief Register a new benchmark with given key and factory function.
    */
-  void registerBenchmark(const std::string& key, FactoryFunction factory);
+  void registerBenchmarkMaker(const std::string& key, BenchmarkMaker factory);
+
+  /**
+   * @brief Register a new benchmark with given key and constructor arguments.
+   * @details
+   * The benchmark will be created as:
+   * \code
+   * TBenchmark(filename, args...);
+   * \endcode
+   */
+  template <typename TBenchmark, typename... Ts>
+  void registerBenchmark(const std::string& key, Ts... args) {
+    registerBenchmarkMaker(key, [&](const std::string& filename) {
+      return std::make_unique<TBenchmark>(filename, args...);
+    });
+  }
 
   /**
    * @brief Create a new benchmark from its name and filename.
@@ -209,7 +225,7 @@ public:
   std::unique_ptr<Benchmark> createBenchmark(const std::string& key, const std::string& filename) const;
 
 private:
-  std::unordered_map<std::string, FactoryFunction> m_register;
+  std::unordered_map<std::string, BenchmarkMaker> m_register;
 };
 
 } // namespace Test
