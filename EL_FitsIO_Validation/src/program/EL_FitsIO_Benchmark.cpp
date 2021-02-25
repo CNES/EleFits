@@ -29,6 +29,7 @@
 #include "EL_FitsData/TestRaster.h"
 #include "EL_FitsData/TestColumn.h"
 
+#include "EL_FitsIO_Validation/Benchmark.h"
 #include "EL_FitsIO_Validation/CfitsioBenchmark.h"
 #include "EL_FitsIO_Validation/CsvAppender.h"
 #include "EL_FitsIO_Validation/ElBenchmark.h"
@@ -39,39 +40,25 @@ using boost::program_options::value;
 
 using namespace Euclid::FitsIO;
 
-struct BenchmarkFactory {
-  enum Setup { CfitsioColwise, CfitsioBuffered, CfitsioRowwise, ElColwise, ElBuffered };
-  static const std::vector<std::string> names;
-  static Test::Benchmark* create(Setup setup, const std::string& filename) {
-    switch (setup) {
-      case CfitsioColwise:
-        return new Test::CfitsioBenchmark(filename, -1);
-      case CfitsioBuffered:
-        return new Test::CfitsioBenchmark(filename, 0);
-      case CfitsioRowwise:
-        return new Test::CfitsioBenchmark(filename, 1);
-      case ElColwise:
-        return new Test::ElColwiseBenchmark(filename);
-      case ElBuffered:
-        return new Test::ElBenchmark(filename);
-      default:
-        return nullptr;
-    }
-  }
-  static Test::Benchmark* create(const std::string& name, const std::string& filename) {
-    const auto begin = names.begin();
-    const auto end = names.end();
-    const auto it = std::find(begin, end, name);
-    const auto setup = static_cast<Setup>(std::distance(begin, it));
-    return create(setup, filename);
-  }
-};
-
-const std::vector<std::string> BenchmarkFactory::names = { "CFitsIO_colwise",
-                                                           "CFitsIO",
-                                                           "CFitsIO_rowwise",
-                                                           "EL_FitsIO_colwise",
-                                                           "EL_FitsIO" };
+Test::BenchmarkFactory initFactory() {
+  Test::BenchmarkFactory factory;
+  factory.registerBenchmark("CFitsIO_rowwise", [](const std::string& filename) {
+    return std::make_unique<Test::CfitsioBenchmark>(filename, 1);
+  });
+  factory.registerBenchmark("CFitsIO_colwise", [](const std::string& filename) {
+    return std::make_unique<Test::CfitsioBenchmark>(filename, -1);
+  });
+  factory.registerBenchmark("CFitsIO", [](const std::string& filename) {
+    return std::make_unique<Test::CfitsioBenchmark>(filename, 0);
+  });
+  factory.registerBenchmark("EL_FitsIO_colwise", [](const std::string& filename) {
+    return std::make_unique<Test::ElColwiseBenchmark>(filename);
+  });
+  factory.registerBenchmark("EL_FitsIO", [](const std::string& filename) {
+    return std::make_unique<Test::ElBenchmark>(filename);
+  });
+  return factory;
+}
 
 template <typename T>
 std::string join(const std::vector<T>& values, const std::string& sep = ",") {
@@ -113,7 +100,8 @@ public:
 
     logger.info("Setting up the benchmark...");
 
-    Test::Benchmark* benchmark = BenchmarkFactory::create(testSetup, filename);
+    auto benchmark = initFactory() // TODO pass factory to CTor of the program, with initFactory() as default
+                         .createBenchmark(testSetup, filename);
     if (not benchmark) {
       throw Test::TestCaseNotImplemented(std::string("No setup named: ") + testSetup);
     }
@@ -255,8 +243,6 @@ public:
     }
 
     logger.info("Done.");
-
-    delete benchmark;
 
     return Elements::ExitCode::OK;
   }

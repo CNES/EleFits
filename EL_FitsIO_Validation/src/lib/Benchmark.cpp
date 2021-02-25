@@ -89,6 +89,19 @@ const BChronometer& Benchmark::readBintables(long first, long count) {
   return m_chrono;
 }
 
+void BenchmarkFactory::registerBenchmark(const std::string& key, FactoryFunction factory) {
+  m_register[key] = factory;
+}
+
+std::unique_ptr<Benchmark>
+BenchmarkFactory::createBenchmark(const std::string& key, const std::string& filename) const {
+  const auto it = m_register.find(key);
+  if (it == m_register.end()) {
+    throw TestCaseNotImplemented(key);
+  }
+  return it->second(filename);
+}
+
 } // namespace Test
 } // namespace FitsIO
 } // namespace Euclid

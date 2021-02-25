@@ -20,7 +20,9 @@
 #ifndef _EL_FITSIO_VALIDATION_BENCHMARK_H
 #define _EL_FITSIO_VALIDATION_BENCHMARK_H
 
+#include <memory>
 #include <tuple>
+#include <unordered_map>
 
 #include "ElementsKernel/Logging.h"
 
@@ -145,7 +147,7 @@ public:
    * @brief Write the given raster in a new image extension.
    * @details
    * This method is implemented by the child classes when part of the test case.
-   * They have to manage the internal chronometer by calling start() and stop() at the right place.
+   * They have to manage the internal chronometer by calling m_chrono.start() and m_chrono.stop() at the right place.
    */
   virtual BChronometer::Unit writeImage(const BRaster&) {
     throw TestCaseNotImplemented("Write image");
@@ -182,6 +184,32 @@ protected:
   BChronometer m_chrono;
   /** @brief The logger. */
   Elements::Logging m_logger;
+};
+
+/**
+ * @brief Abstract factory for the Benchmark child classes.
+ */
+class BenchmarkFactory {
+public:
+  /**
+   * @brief The type of the factory function.
+   * @details
+   * The factory function takes a filename as input, and returns an instance of the benchmark child class.
+   */
+  using FactoryFunction = std::function<std::unique_ptr<Benchmark>(const std::string&)>;
+
+  /**
+   * @brief Register a new benchmark with given key and factory function.
+   */
+  void registerBenchmark(const std::string& key, FactoryFunction factory);
+
+  /**
+   * @brief Create a new benchmark from its name and filename.
+   */
+  std::unique_ptr<Benchmark> createBenchmark(const std::string& key, const std::string& filename) const;
+
+private:
+  std::unordered_map<std::string, FactoryFunction> m_register;
 };
 
 } // namespace Test
