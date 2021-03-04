@@ -47,7 +47,7 @@ def defineSpecificProgramOptions():
             'The result file can be used to rerun the same benchmark.')
     parser.add_argument('--output', default='/tmp/test.fits', help='The filename of the Fits files to be generated.')
     parser.add_argument('--res', default='/tmp/benchmark.csv', help='The filename of the benchmark results TSV.')
-    parser.add_argument('--plot', default=None, help='The filename of the benchmark results plotting file.')
+    parser.add_argument('--plot', default='/tmp/plot.eps', help='The filename of the benchmark results plotting file.')
     return parser
 
 
@@ -77,13 +77,18 @@ def mainMethod(args):
         cols = 2
         rows = (len(results) + cols - 1) // cols # Equivalent to ceil(len(results)/2) for ints
         fig, axes = plt.subplots(ncols=cols, nrows=rows, figsize=(5 * cols, 3 * rows))
-        i = False # left column
+        i = False # left column, since cols = 2
         j = 0
         for k, v in results.items():
             logger.debug(v.info())
-            ax = axes[int(i), j]
+            if cols == 1:
+                ax = axes[j]
+            elif rows == 1:
+                ax = axes[int(i)]
+            else:
+                ax = axes[j, int(i)]
             ax.set_title(k)
-            v.boxplot(vert=False, ax=ax)
+            v.boxplot(vert=False, ax=ax, whis=(5, 95)) # plots 5th, 25th, 50th, 75th, 95th percentiles + outliers
             j += int(i)
             i = not i
         plt.tight_layout() # Avoids overlapping texts
