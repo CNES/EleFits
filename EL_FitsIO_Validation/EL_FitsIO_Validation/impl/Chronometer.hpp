@@ -30,13 +30,14 @@ namespace FitsIO {
 namespace Test {
 
 template <typename TUnit>
-Chronometer<TUnit>::Chronometer(TUnit offset) : m_tic(), m_toc(), m_incs(), m_elapsed(offset) {
+Chronometer<TUnit>::Chronometer(TUnit offset) : m_tic(), m_toc(), m_running(false), m_incs(), m_elapsed(offset) {
   reset(offset);
 }
 
 template <typename TUnit>
 void Chronometer<TUnit>::reset(TUnit offset) {
   m_toc = m_tic;
+  m_running = false;
   m_incs.resize(0);
   m_elapsed = offset;
 }
@@ -44,15 +45,22 @@ void Chronometer<TUnit>::reset(TUnit offset) {
 template <typename TUnit>
 void Chronometer<TUnit>::start() {
   m_tic = std::chrono::steady_clock::now();
+  m_running = true;
 }
 
 template <typename TUnit>
 TUnit Chronometer<TUnit>::stop() {
   m_toc = std::chrono::steady_clock::now();
+  m_running = false;
   const auto inc = std::chrono::duration_cast<TUnit>(m_toc - m_tic);
   m_elapsed += inc;
   m_incs.push_back(inc.count());
   return inc;
+}
+
+template <typename TUnit>
+bool Chronometer<TUnit>::isRunning() const {
+  return m_running; // TODO m_running could be removed by comparing m_toc to m_tic, but is it relevant?
 }
 
 template <typename TUnit>

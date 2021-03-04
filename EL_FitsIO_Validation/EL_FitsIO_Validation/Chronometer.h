@@ -69,6 +69,11 @@ public:
   TUnit stop();
 
   /**
+   * @brief Test whether the chronometer is running.
+   */
+  bool isRunning() const;
+
+  /**
    * @brief The last increment.
    */
   TUnit last() const;
@@ -118,6 +123,11 @@ private:
    * @brief The time at which stop() was called.
    */
   std::chrono::steady_clock::time_point m_toc;
+
+  /**
+   * @brief Flag the chronometer as running (started and not stopped).
+   */
+  bool m_running;
 
   /**
    * @brief The list of increments.
