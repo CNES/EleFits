@@ -25,7 +25,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-RecordHdu::RecordHdu(Token, fitsfile *&fptr, long index, HduType type) :
+RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduType type) :
     m_fptr(fptr),
     m_cfitsioIndex(index + 1),
     m_type(type) {
@@ -44,7 +44,7 @@ std::string RecordHdu::readName() const {
   return Cfitsio::Hdu::currentName(m_fptr);
 }
 
-void RecordHdu::updateName(const std::string &name) const {
+void RecordHdu::updateName(const std::string& name) const {
   gotoThisHdu();
   Cfitsio::Hdu::updateName(m_fptr, name);
 }
@@ -54,23 +54,27 @@ std::string RecordHdu::readHeader(bool incNonValued) const {
   return Cfitsio::Header::readHeader(m_fptr, incNonValued);
 }
 
-std::vector<std::string> RecordHdu::readKeywords(KeywordCategory filter) const {
-  return Cfitsio::Header::listKeywords(m_fptr, filter);
+std::vector<std::string> RecordHdu::readKeywords(KeywordCategory categories) const {
+  return Cfitsio::Header::listKeywords(m_fptr, categories);
 }
 
-bool RecordHdu::hasKeyword(const std::string &keyword) const {
+std::map<std::string, std::string> RecordHdu::readKeywordsValues(KeywordCategory categories) const {
+  return Cfitsio::Header::listKeywordsValues(m_fptr, categories);
+}
+
+bool RecordHdu::hasKeyword(const std::string& keyword) const {
   return Cfitsio::Header::hasKeyword(m_fptr, keyword);
 }
 
-void RecordHdu::writeComment(const std::string &comment) const {
+void RecordHdu::writeComment(const std::string& comment) const {
   return Cfitsio::Header::writeComment(m_fptr, comment);
 }
 
-void RecordHdu::writeHistory(const std::string &history) const {
+void RecordHdu::writeHistory(const std::string& history) const {
   return Cfitsio::Header::writeHistory(m_fptr, history);
 }
 
-void RecordHdu::deleteRecord(const std::string &keyword) const {
+void RecordHdu::deleteRecord(const std::string& keyword) const {
   gotoThisHdu();
   Cfitsio::Header::deleteRecord(m_fptr, keyword);
 }
@@ -80,23 +84,23 @@ void RecordHdu::gotoThisHdu() const {
 }
 
 #ifndef COMPILE_PARSE_RECORD
-#define COMPILE_PARSE_RECORD(type, unused) template Record<type> RecordHdu::parseRecord(const std::string &) const;
+#define COMPILE_PARSE_RECORD(type, unused) template Record<type> RecordHdu::parseRecord(const std::string&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
 #undef COMPILE_PARSE_RECORD
 #endif
 
-template RecordVector<boost::any> RecordHdu::parseRecordVector(const std::vector<std::string> &) const;
+template RecordVector<boost::any> RecordHdu::parseRecordVector(const std::vector<std::string>&) const;
 
 #ifndef COMPILE_WRITE_RECORD
 #define COMPILE_WRITE_RECORD(type, unused) \
-  template void RecordHdu::writeRecord(const Record<type> &) const; \
-  template void RecordHdu::updateRecord(const Record<type> &) const;
+  template void RecordHdu::writeRecord(const Record<type>&) const; \
+  template void RecordHdu::updateRecord(const Record<type>&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
 #undef COMPILE_WRITE_RECORD
 #endif
 
-template void RecordHdu::writeRecords(const std::vector<Record<boost::any>> &) const;
-template void RecordHdu::updateRecords(const std::vector<Record<boost::any>> &) const;
+template void RecordHdu::writeRecords(const std::vector<Record<boost::any>>&) const;
+template void RecordHdu::updateRecords(const std::vector<Record<boost::any>>&) const;
 
 } // namespace FitsIO
 } // namespace Euclid

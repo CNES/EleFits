@@ -48,110 +48,117 @@ namespace Header {
  * @param fptr A pointer to the fitsfile object.
  * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank).
  */
-std::string readHeader(fitsfile *fptr, bool incNonValued = true);
+std::string readHeader(fitsfile* fptr, bool incNonValued = true);
 
 /**
  * @brief List the keywords of selected categories.
  */
-std::vector<std::string> listKeywords(fitsfile *fptr, FitsIO::KeywordCategory filter = FitsIO::KeywordCategory::All);
+std::vector<std::string>
+listKeywords(fitsfile* fptr, FitsIO::KeywordCategory categories = FitsIO::KeywordCategory::All);
+
+/**
+ * @brief List the keywords of selected categories, as well as their values.
+ */
+std::map<std::string, std::string>
+listKeywordsValues(fitsfile* fptr, FitsIO::KeywordCategory categories = FitsIO::KeywordCategory::All);
 
 /**
  * @brief Check whether the current HDU contains a given keyword.
  */
-bool hasKeyword(fitsfile *fptr, const std::string &keyword);
+bool hasKeyword(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @brief Parse a record.
  */
 template <typename T>
-FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword);
+FitsIO::Record<T> parseRecord(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @brief Parse records.
  */
 template <typename... Ts>
-std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector<std::string> &keywords);
+std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
  * @brief Parse records and store them in a user-defined structure.
  * @tparam TReturn A class which can be brace-initialized with a pack of records or values.
  */
 template <class TReturn, typename... Ts>
-TReturn parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords);
+TReturn parseRecordsAs(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
  * @brief Parse homogeneous records and store them in a vector.
  */
 template <typename T>
-FitsIO::RecordVector<T> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords);
+FitsIO::RecordVector<T> parseRecordVector(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
  * @brief Write a new record.
  */
 template <typename T>
-void writeRecord(fitsfile *fptr, const FitsIO::Record<T> &record);
+void writeRecord(fitsfile* fptr, const FitsIO::Record<T>& record);
 
 /**
  * @brief Write new records.
  */
 template <typename... Ts>
-void writeRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records);
+void writeRecords(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
 
 /**
  * @brief Write new records.
  */
 template <typename... Ts>
-void writeRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records);
+void writeRecords(fitsfile* fptr, const std::tuple<FitsIO::Record<Ts>...>& records);
 
 /**
  * @brief Write homogeneous records.
  */
 template <typename T>
-void writeRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records);
+void writeRecords(fitsfile* fptr, const std::vector<FitsIO::Record<T>>& records);
 
 /**
  * @brief Update an existing record or write a new one.
  */
 template <typename T>
-void updateRecord(fitsfile *fptr, const FitsIO::Record<T> &record);
+void updateRecord(fitsfile* fptr, const FitsIO::Record<T>& record);
 
 /**
  * @brief Update existing records or write new ones.
  */
 template <typename... Ts>
-void updateRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records);
+void updateRecords(fitsfile* fptr, const FitsIO::Record<Ts>&... records);
 
 /**
  * @brief Update existing records or write new ones.
  */
 template <typename... Ts>
-void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records);
+void updateRecords(fitsfile* fptr, const std::tuple<FitsIO::Record<Ts>...>& records);
 
 /**
  * @brief Update existing homogeneous records or write new ones.
  */
 template <typename T>
-void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records);
+void updateRecords(fitsfile* fptr, const std::vector<FitsIO::Record<T>>& records);
 
 /**
  * @brief Delete an existing record.
  */
-void deleteRecord(fitsfile *fptr, const std::string &keyword);
+void deleteRecord(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @brief Get the typeid of a record value.
  */
-const std::type_info &recordTypeid(fitsfile *fptr, const std::string &keyword);
+const std::type_info& recordTypeid(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @brief Write COMMENT record.
  */
-void writeComment(fitsfile *fptr, const std::string &comment);
+void writeComment(fitsfile* fptr, const std::string& comment);
 
 /**
  * @brief Write HISTORY record.
  */
-void writeHistory(fitsfile *fptr, const std::string &history);
+void writeHistory(fitsfile* fptr, const std::string& history);
 
 } // namespace Header
 } // namespace Cfitsio

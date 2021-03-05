@@ -17,9 +17,10 @@
  *
  */
 
-#include <stdexcept>
+#include <iomanip> // setw, setfill
 #include <map>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <sstream>
 
@@ -120,13 +121,17 @@ public:
 
       /* Read keywords */
       if (categories) {
-        const auto keywords = hdu.readKeywords(categories);
-        if (keywords.size() == 0) {
+        const auto records = hdu.readKeywordsValues(categories);
+        if (records.size() == 0) {
           logger.info() << "  No keywords";
         } else {
           logger.info() << "  Keywords:";
-          for (const auto& k : keywords) {
-            logger.info() << "    " << k;
+          for (const auto& r : records) {
+            if (r.second.empty()) {
+              logger.info() << "    " << r.first;
+            } else {
+              logger.info() << "    " << std::left << std::setw(8) << std::setfill(' ') << r.first << " = " << r.second;
+            }
           }
         }
       }

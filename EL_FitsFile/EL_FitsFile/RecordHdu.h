@@ -90,7 +90,7 @@ public:
    * We rely on the passkey idiom: Token is protected and therefore accessible only from MefFile (a fiend class)
    * and classes derived from RecrodHdu.
    */
-  RecordHdu(Token, fitsfile *&file, long index, HduType type = HduType::Image);
+  RecordHdu(Token, fitsfile*& file, long index, HduType type = HduType::Image);
 
   /// @endcond
 
@@ -117,7 +117,7 @@ public:
   /**
    * @brief Write or update the extension name.
    */
-  void updateName(const std::string &name) const;
+  void updateName(const std::string& name) const;
 
   /**
    * @brief Read the header as a string.
@@ -133,26 +133,32 @@ public:
 
   /**
    * @brief List keywords.
-   * @param filter The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
+   * @param categories The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
    */
-  std::vector<std::string> readKeywords(KeywordCategory filter = KeywordCategory::All) const;
+  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const;
+
+  /**
+   * @brief List keywords and their values.
+   * @copydetails readKeywords
+   */
+  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief Check whether the HDU contains a given keyword.
    */
-  bool hasKeyword(const std::string &keyword) const;
+  bool hasKeyword(const std::string& keyword) const;
 
   /**
    * @brief Parse a record.
    */
   template <typename T>
-  Record<T> parseRecord(const std::string &keyword) const;
+  Record<T> parseRecord(const std::string& keyword) const;
 
   /**
    * @brief Parse several records.
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parseRecords(const std::vector<std::string> &keywords) const;
+  std::tuple<Record<Ts>...> parseRecords(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Same as parseRecords(const std::vector<std::string> &) with modified signature.
@@ -167,7 +173,7 @@ public:
    * \endcode
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parseRecords(const Named<Ts> &... keywords) const;
+  std::tuple<Record<Ts>...> parseRecords(const Named<Ts>&... keywords) const;
 
   /**
    * @brief Parse several records as a user-defined structure.
@@ -202,7 +208,7 @@ public:
    * \endcode
    */
   template <class TReturn, typename... Ts>
-  TReturn parseRecordsAs(const std::vector<std::string> &keywords) const;
+  TReturn parseRecordsAs(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Same as parseRecordsAs(const std::vector<std::string> &) with modified signature.
@@ -223,7 +229,7 @@ public:
    * \endcode
    */
   template <class TReturn, typename... Ts>
-  TReturn parseRecordsAs(const Named<Ts> &... keywords) const;
+  TReturn parseRecordsAs(const Named<Ts>&... keywords) const;
 
   /**
    * @brief Parse a record if it exists, return a fallback otherwise.
@@ -240,7 +246,7 @@ public:
    * otherwise, the returned record has keyword "KEY", value 0, empty unit, and empty comment.
    */
   template <typename T>
-  Record<T> parseRecordOr(const Record<T> &fallback) const;
+  Record<T> parseRecordOr(const Record<T>& fallback) const;
 
   /**
    * @brief Parse several records with a fallback.
@@ -250,7 +256,7 @@ public:
    * @see parseRecordOr
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parseRecordsOr(const Record<Ts> &... fallbacks) const;
+  std::tuple<Record<Ts>...> parseRecordsOr(const Record<Ts>&... fallbacks) const;
 
   /**
    * @brief Parse several homogeneous records.
@@ -265,7 +271,7 @@ public:
    * In this case, the underlying type of each record is deduced from the value in the Fits file.
    */
   template <typename T>
-  RecordVector<T> parseRecordVector(const std::vector<std::string> &keywords) const;
+  RecordVector<T> parseRecordVector(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse all the records as a RecordVector.
@@ -279,7 +285,7 @@ public:
    * @brief Write a record.
    */
   template <typename T>
-  void writeRecord(const Record<T> &record) const;
+  void writeRecord(const Record<T>& record) const;
 
   /**
    * @brief Write a record.
@@ -289,19 +295,19 @@ public:
    * @param c The comment.
    */
   template <typename T>
-  void writeRecord(const std::string &k, T v, const std::string &u = "", const std::string &c = "") const;
+  void writeRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Write several records.
    */
   template <typename... Ts>
-  void writeRecords(const Record<Ts> &... records) const;
+  void writeRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Write several records.
    */
   template <typename... Ts>
-  void writeRecords(const std::tuple<Record<Ts>...> &records) const;
+  void writeRecords(const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Write several homogeneous records.
@@ -309,29 +315,29 @@ public:
    * Similarly to the reading counterpart parseRecordVector, `T` can also be `boost::any`.
    */
   template <typename T>
-  void writeRecords(const std::vector<Record<T>> &records) const;
+  void writeRecords(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Write a subset of a RecordVector.
    */
   template <typename T>
-  void writeRecords(const RecordVector<T> &records, const std::vector<std::string> &keywords) const;
+  void writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Write a COMMENT record.
    */
-  void writeComment(const std::string &comment) const;
+  void writeComment(const std::string& comment) const;
 
   /**
    * @brief Write a HISTORY record.
    */
-  void writeHistory(const std::string &history) const;
+  void writeHistory(const std::string& history) const;
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
    */
   template <typename T>
-  void updateRecord(const Record<T> &record) const;
+  void updateRecord(const Record<T>& record) const;
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
@@ -341,36 +347,36 @@ public:
    * @param c The comment.
    */
   template <typename T>
-  void updateRecord(const std::string &k, T v, const std::string &u = "", const std::string &c = "") const;
+  void updateRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
    */
   template <typename... Ts>
-  void updateRecords(const Record<Ts> &... records) const;
+  void updateRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
    */
   template <typename... Ts>
-  void updateRecords(const std::tuple<Record<Ts>...> &records) const;
+  void updateRecords(const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Update several homogeneous records if they exist; write new records otherwise.
    */
   template <typename T>
-  void updateRecords(const std::vector<Record<T>> &records) const;
+  void updateRecords(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Update a subset of a RecordVector.
    */
   template <typename T>
-  void updateRecords(const RecordVector<T> &records, const std::vector<std::string> &keywords) const;
+  void updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Delete a record.
    */
-  void deleteRecord(const std::string &keyword) const;
+  void deleteRecord(const std::string& keyword) const;
 
 protected:
   /**
@@ -384,7 +390,7 @@ protected:
    * This is a reference to a pointer because we want the pointer to be valid
    * even if file is closed and reopened.
    */
-  fitsfile *&m_fptr;
+  fitsfile*& m_fptr;
 
   /**
    * @brief The 1-based CFitsIO HDU index.
