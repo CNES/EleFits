@@ -1,4 +1,4 @@
 #!groovy
-@Library('integration-library@release-8') _
+@Library('integration-library@integrate-8') _
 pipelineElements(artifactId:"EL_FitsIO", component:'eden.2.1', repository:'eden.2.1')
 
