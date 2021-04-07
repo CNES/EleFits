@@ -110,6 +110,12 @@ public:
   HduType type() const;
 
   /**
+   * @brief Cast to an ImageHdu or BintableHdu (if possible).
+   */
+  template <typename T>
+  const T& as() const;
+
+  /**
    * @brief Read the extension name.
    */
   std::string readName() const;

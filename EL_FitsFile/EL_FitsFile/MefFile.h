@@ -78,7 +78,7 @@ public:
    * In the latter case, if needs be, the returned HDU can still be cast to an ImageHdu or BintableHdu:
    * \code
    * const auto &ext = f.access<>(1);
-   * dynamic_cast<ImageHdu&>(ext).readRaster...
+   * ext.as<ImageHdu>().readRaster<float>();
    * \endcode
    */
   template <class T = RecordHdu>

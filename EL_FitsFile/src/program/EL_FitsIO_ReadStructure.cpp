@@ -101,20 +101,20 @@ public:
       /* Read type */
       const auto hduType = hdu.type();
       if (hduType == HduType::Image) {
-        const auto shape = dynamic_cast<const ImageHdu*>(&hdu)->readShape<-1>();
+        const auto shape = hdu.as<ImageHdu>().readShape<-1>();
         if (shape.size() > 0) {
           std::ostringstream oss;
           std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
           oss << shape.back();
           logger.info() << "  Image HDU:";
-          logger.info() << "    Type: " << readBitpixName(*dynamic_cast<const ImageHdu*>(&hdu));
+          logger.info() << "    Type: " << readBitpixName(hdu.as<ImageHdu>());
           logger.info() << "    Shape: " << oss.str() << " px";
         } else {
           logger.info() << "  Metadata HDU";
         }
       } else {
-        const auto columnCount = dynamic_cast<const BintableHdu*>(&hdu)->readColumnCount();
-        const auto rowCount = dynamic_cast<const BintableHdu*>(&hdu)->readRowCount();
+        const auto columnCount = hdu.as<BintableHdu>().readColumnCount();
+        const auto rowCount = hdu.as<BintableHdu>().readRowCount();
         logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << columnCount << " columns x " << rowCount << " rows";
       }
