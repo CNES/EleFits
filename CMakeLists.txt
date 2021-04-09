@@ -10,8 +10,6 @@ set(USE_SPHINX OFF
     CACHE STRING "Sphinx API documentation" 
     FORCE)
 
-set(CMAKE_CXX_STANDARD 14)
-
 #===============================================================================
 # Declare project name and version
 # Example with dependency:

@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSDATA_RECORD_IMPL
+#if defined(_EL_FITSDATA_RECORD_IMPL) || defined(CHECK_QUALITY)
 
 #include <type_traits> // enable_if & co
 

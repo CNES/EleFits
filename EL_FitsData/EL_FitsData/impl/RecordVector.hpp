@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSDATA_RECORDVECTOR_IMPL
+#if defined(_EL_FITSDATA_RECORDVECTOR_IMPL) || defined(CHECK_QUALITY)
 
 #include <algorithm> // find_if
 

@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_CFITSIOWRAPPER_TYPEWRAPPER_IMPL
+#if defined(_EL_CFITSIOWRAPPER_TYPEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 

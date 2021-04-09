@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSFILE_HDU_IMPL
+#if defined(_EL_FITSFILE_HDU_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_FitsFile/RecordHdu.h"
 

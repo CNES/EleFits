@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSFILE_MEFFILE_IMPL
+#if defined(_EL_FITSFILE_MEFFILE_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_FitsFile/MefFile.h"
 

@@ -19,7 +19,7 @@
 
 #include "EL_FitsIO_Validation/CfitsioBenchmark.h"
 
-#ifdef _EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_IMPL
+#if defined(_EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_IMPL) || defined(CHECK_QUALITY)
 
 namespace Euclid {
 namespace FitsIO {

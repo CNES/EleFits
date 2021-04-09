@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSDATA_RASTER_IMPL
+#if defined(_EL_FITSDATA_RASTER_IMPL) || defined(CHECK_QUALITY)
 
 #include <functional> // multiplies
 #include <numeric> // accumulate

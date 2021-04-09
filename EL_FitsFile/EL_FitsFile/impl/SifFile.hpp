@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSFILE_SIFFILE_IMPL
+#if defined(_EL_FITSFILE_SIFFILE_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_FitsFile/SifFile.h"
 

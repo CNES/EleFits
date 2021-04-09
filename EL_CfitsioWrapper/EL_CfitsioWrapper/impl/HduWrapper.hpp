@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
+#if defined(_EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
 #include <utility> // index_sequence, make_index_sequence
 

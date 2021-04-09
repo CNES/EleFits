@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_CFITSIOWRAPPER_IMAGEWRAPPER_IMPL
+#if defined(_EL_CFITSIOWRAPPER_IMAGEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_CfitsioWrapper/ImageWrapper.h"
 

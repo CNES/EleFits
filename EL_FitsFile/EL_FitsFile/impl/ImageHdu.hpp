@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSFILE_IMAGEHDU_IMPL
+#if defined(_EL_FITSFILE_IMAGEHDU_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_FitsFile/ImageHdu.h"
 

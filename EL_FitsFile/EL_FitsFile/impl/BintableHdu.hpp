@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSFILE_BINTABLEHDU_IMPL
+#if defined(_EL_FITSFILE_BINTABLEHDU_IMPL) || defined(CHECK_QUALITY)
 
 #include <algorithm>
 

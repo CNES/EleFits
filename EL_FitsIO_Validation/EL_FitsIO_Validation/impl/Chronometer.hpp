@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSIO_VALIDATION_CHRONOMETER_IMPL
+#if defined(_EL_FITSIO_VALIDATION_CHRONOMETER_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_FitsIO_Validation/Chronometer.h"
 

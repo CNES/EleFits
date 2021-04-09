@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
+#if defined(_EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
 #include <algorithm> // transform
 

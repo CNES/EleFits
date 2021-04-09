@@ -17,7 +17,7 @@
  *
  */
 
-#ifdef _EL_FITSDATA_COLUMN_IMPL
+#if defined(_EL_FITSDATA_COLUMN_IMPL) || defined(CHECK_QUALITY)
 
 #include "EL_FitsData/Column.h"
 
