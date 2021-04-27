@@ -33,12 +33,12 @@ RecordVector<T>::RecordVector(std::size_t size) : vector(size) {
 
 template <typename T>
 template <typename... Ts>
-RecordVector<T>::RecordVector(const Record<Ts> &... records) : vector { Record<T>(records)... } {
+RecordVector<T>::RecordVector(const Record<Ts>&... records) : vector { Record<T>(records)... } {
 }
 
 template <typename T>
-const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
-  const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T> &r) {
+const Record<T>& RecordVector<T>::operator[](const std::string& keyword) const {
+  const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T>& r) {
     return r.keyword == keyword;
   });
   if (it == vector.end()) {
@@ -48,13 +48,13 @@ const Record<T> &RecordVector<T>::operator[](const std::string &keyword) const {
 }
 
 template <typename T>
-Record<T> &RecordVector<T>::operator[](const std::string &keyword) {
-  return const_cast<Record<T> &>(const_cast<const RecordVector<T> *>(this)->operator[](keyword));
+Record<T>& RecordVector<T>::operator[](const std::string& keyword) {
+  return const_cast<Record<T>&>(const_cast<const RecordVector<T>*>(this)->operator[](keyword));
 }
 
 template <typename T>
 template <typename TValue>
-Record<TValue> RecordVector<T>::as(const std::string &keyword) const {
+Record<TValue> RecordVector<T>::as(const std::string& keyword) const {
   return Record<TValue>(operator[](keyword));
 }
 

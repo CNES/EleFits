@@ -50,9 +50,9 @@ void checkScalarColumnIsReadBack() {
     BOOST_CHECK_EQUAL(info.repeatCount, input.info.repeatCount);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     checkEqualVectors(output.vector(), input.vector());
-  } catch (const CfitsioError &e) {
+  } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
-    for (const auto &v : input.vector()) {
+    for (const auto& v : input.vector()) {
       std::cerr << v << ' ';
     }
     std::cerr << std::endl;
@@ -83,9 +83,9 @@ void checkVectorColumnIsReadBack() {
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     BOOST_CHECK_EQUAL(output.info.repeatCount, repeatCount);
     checkEqualVectors(output.vector(), input.vector());
-  } catch (const CfitsioError &e) {
+  } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
-    for (const auto &v : input.vector()) {
+    for (const auto& v : input.vector()) {
       std::cerr << v << ' ';
     }
     std::cerr << std::endl;

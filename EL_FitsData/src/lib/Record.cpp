@@ -33,18 +33,18 @@ bool Record<std::string>::hasLongStringValue() const {
 }
 
 template <>
-bool Record<const char *>::hasLongStringValue() const {
+bool Record<const char*>::hasLongStringValue() const {
   return std::strlen(value) > maxShortValueLength;
 }
 
 template <>
 bool Record<boost::any>::hasLongStringValue() const {
-  const auto &id = value.type();
+  const auto& id = value.type();
   if (id == typeid(std::string)) {
     return boost::any_cast<std::string>(value).length() > maxShortValueLength;
   }
-  if (id == typeid(const char *)) {
-    return std::strlen(boost::any_cast<const char *>(value)) > maxShortValueLength;
+  if (id == typeid(const char*)) {
+    return std::strlen(boost::any_cast<const char*>(value)) > maxShortValueLength;
   }
   return false;
 }

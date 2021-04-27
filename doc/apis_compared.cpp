@@ -20,7 +20,7 @@ short data[width * height]; // TODO
 void cfitsioExample() {
   long shape[] = { width, height };
   int status = 0;
-  fitsfile *fptr = nullptr;
+  fitsfile* fptr = nullptr;
   fits_create_file(&fptr, filename.c_str(), &status);
   fits_create_img(fptr, SHORT_IMG, 2, shape, &status);
   fits_write_key(fptr, TDOUBLE, name.c_str(), &value, comment.c_str(), &status);
@@ -32,7 +32,7 @@ void cfitsioExample() {
 void ccfitsExample() {
   long shape[] = { width, height };
   auto pFits = std::make_unique<FITS>(filename, SHORT_IMG, 2, shape);
-  PHDU &primary = pFits->pHDU();
+  PHDU& primary = pFits->pHDU();
   primary.addKey(name, value, comment);
   primary.write(1, width * height, data);
 }
@@ -42,7 +42,7 @@ void ccfitsExample() {
 void sfitsioExample() {
   fitscc fits;
   fits.append_image("Primary", 0, FITS::SHORT_T, width, height);
-  fits_image &primary = fits.image("Primary");
+  fits_image& primary = fits.image("Primary");
   primary.header(name).assign(value).assign_comment(comment);
   primary.put_data(data, width * height);
   fits.write_stream(filename);

@@ -45,7 +45,7 @@ public:
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsFile_Example");
 
@@ -57,7 +57,7 @@ public:
       //! [Create Fits]
       MefFile f(filename, MefFile::Permission::Overwrite);
       //! [Create Fits]
-      const auto &primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
+      const auto& primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
       logger.info() << "Writing new record: VALUE = 1";
       //! [Write record]
       primary.writeRecord("VALUE", 1);
@@ -80,7 +80,7 @@ public:
       Test::SmallRaster raster; // Predefined image raster for testing purpose
       logger.info() << "Creating image extension: SMALLIMG";
       //! [Create image ext]
-      const auto &ext = f.assignImageExt("SMALLIMG", raster);
+      const auto& ext = f.assignImageExt("SMALLIMG", raster);
       //! [Create image ext]
       logger.info() << "Writing record: STRING = string";
       Record<std::string> strRecord("STRING", "string");
@@ -111,7 +111,7 @@ public:
 
       logger.info() << "Reading binary table.";
       //! [Find HDU by name]
-      const auto &bintableExt = f.accessFirst<BintableHdu>("SMALLTBL");
+      const auto& bintableExt = f.accessFirst<BintableHdu>("SMALLTBL");
       //! [Find HDU by name]
       //! [Get HDU index]
       const auto index = bintableExt.index();
@@ -129,7 +129,7 @@ public:
 
       logger.info() << "Reading image.";
       //! [Find HDU by index]
-      const auto &ext2 = f.access<>(2);
+      const auto& ext2 = f.access<>(2);
       //! [Find HDU by index]
       //! [Get HDU name]
       const auto extname = ext2.readName();
@@ -138,7 +138,7 @@ public:
       const auto records = ext2.parseRecords<std::string, int>({ "STRING", "INTEGER" });
       logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
       logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-      const auto &imageExt = f.accessFirst<ImageHdu>("SMALLIMG");
+      const auto& imageExt = f.accessFirst<ImageHdu>("SMALLIMG");
       //! [Read raster]
       const auto image = imageExt.readRaster<float>();
       const auto firstPixel = image[{ 0, 0 }];

@@ -33,67 +33,67 @@ namespace Header {
  * @copydoc parseRecord
  */
 template <>
-FitsIO::Record<bool> parseRecord<bool>(fitsfile *fptr, const std::string &keyword);
+FitsIO::Record<bool> parseRecord<bool>(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @copydoc parseRecord
  */
 template <>
-FitsIO::Record<std::string> parseRecord<std::string>(fitsfile *fptr, const std::string &keyword);
+FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @copydoc parseRecord
  */
 template <>
-FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile *fptr, const std::string &keyword);
+FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @copydoc writeRecord
  */
 template <>
-void writeRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record);
+void writeRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record);
 
 /**
  * @copydoc writeRecord
  */
 template <>
-void writeRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
+void writeRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
 
 /**
  * @copydoc writeRecord
  */
 template <>
-void writeRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
+void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
 
 /**
  * @copydoc writeRecord
  */
 template <>
-void writeRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
+void writeRecord<boost::any>(fitsfile* fptr, const FitsIO::Record<boost::any>& record);
 
 /**
  * @copydoc updateRecord
  */
 template <>
-void updateRecord<bool>(fitsfile *fptr, const FitsIO::Record<bool> &record);
+void updateRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record);
 
 /**
  * @copydoc updateRecord
  */
 template <>
-void updateRecord<std::string>(fitsfile *fptr, const FitsIO::Record<std::string> &record);
+void updateRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record);
 
 /**
  * @copydoc updateRecord
  */
 template <>
-void updateRecord<const char *>(fitsfile *fptr, const FitsIO::Record<const char *> &record);
+void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record);
 
 /**
  * @copydoc updateRecord
  */
 template <>
-void updateRecord<boost::any>(fitsfile *fptr, const FitsIO::Record<boost::any> &record);
+void updateRecord<boost::any>(fitsfile* fptr, const FitsIO::Record<boost::any>& record);
 
 /// @cond INTERNAL
 namespace Internal {
@@ -102,7 +102,7 @@ namespace Internal {
  * @brief Use index_sequence to loop on keywords.
  */
 template <class TReturn, typename... Ts, std::size_t... Is>
-TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywords, std::index_sequence<Is...>) {
+TReturn parseRecordsAsImpl(fitsfile* fptr, const std::vector<std::string>& keywords, std::index_sequence<Is...>) {
   return { parseRecord<Ts>(fptr, keywords[Is])... };
 }
 
@@ -110,7 +110,7 @@ TReturn parseRecordsAsImpl(fitsfile *fptr, const std::vector<std::string> &keywo
  * @brief Use index_sequence to loop on records.
  */
 template <typename... Ts, std::size_t... Is>
-void writeRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std::index_sequence<Is...>) {
+void writeRecordsImpl(fitsfile* fptr, const std::tuple<FitsIO::Record<Ts>...>& records, std::index_sequence<Is...>) {
   using mockUnpack = int[];
   (void)mockUnpack { (writeRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
 }
@@ -119,7 +119,7 @@ void writeRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &r
  * @brief Use index_sequence to loop on records.
  */
 template <typename... Ts, std::size_t... Is>
-void updateRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records, std::index_sequence<Is...>) {
+void updateRecordsImpl(fitsfile* fptr, const std::tuple<FitsIO::Record<Ts>...>& records, std::index_sequence<Is...>) {
   using mockUnpack = int[];
   (void)mockUnpack { (updateRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
 }
@@ -128,7 +128,7 @@ void updateRecordsImpl(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &
 /// @endcond
 
 template <typename T>
-FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword) {
+FitsIO::Record<T> parseRecord(fitsfile* fptr, const std::string& keyword) {
   int status = 0;
   /* Read value and comment */
   T value;
@@ -154,26 +154,26 @@ FitsIO::Record<T> parseRecord(fitsfile *fptr, const std::string &keyword) {
 }
 
 template <typename... Ts>
-std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile *fptr, const std::vector<std::string> &keywords) {
+std::tuple<FitsIO::Record<Ts>...> parseRecords(fitsfile* fptr, const std::vector<std::string>& keywords) {
   return parseRecordsAs<std::tuple<FitsIO::Record<Ts>...>, Ts...>(fptr, keywords);
 }
 
 template <class Return, typename... Ts>
-Return parseRecordsAs(fitsfile *fptr, const std::vector<std::string> &keywords) {
+Return parseRecordsAs(fitsfile* fptr, const std::vector<std::string>& keywords) {
   return Internal::parseRecordsAsImpl<Return, Ts...>(fptr, keywords, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
-FitsIO::RecordVector<T> parseRecordVector(fitsfile *fptr, const std::vector<std::string> &keywords) {
+FitsIO::RecordVector<T> parseRecordVector(fitsfile* fptr, const std::vector<std::string>& keywords) {
   FitsIO::RecordVector<T> records(keywords.size());
-  std::transform(keywords.begin(), keywords.end(), records.vector.begin(), [&](const std::string &k) {
+  std::transform(keywords.begin(), keywords.end(), records.vector.begin(), [&](const std::string& k) {
     return parseRecord<T>(fptr, k);
   });
   return records;
 }
 
 template <typename T>
-void writeRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
+void writeRecord(fitsfile* fptr, const FitsIO::Record<T>& record) {
   int status = 0;
   T nonconstValue = record.value;
   fits_write_key(
@@ -187,25 +187,25 @@ void writeRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
 }
 
 template <typename... Ts>
-void writeRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
+void writeRecords(fitsfile* fptr, const FitsIO::Record<Ts>&... records) {
   using mockUnpack = int[];
   (void)mockUnpack { (writeRecord(fptr, records), 0)... };
 }
 
 template <typename... Ts>
-void writeRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
+void writeRecords(fitsfile* fptr, const std::tuple<FitsIO::Record<Ts>...>& records) {
   Internal::writeRecordsImpl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
-void writeRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records) {
-  for (const auto &r : records) {
+void writeRecords(fitsfile* fptr, const std::vector<FitsIO::Record<T>>& records) {
+  for (const auto& r : records) {
     writeRecord(fptr, r);
   }
 }
 
 template <typename T>
-void updateRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
+void updateRecord(fitsfile* fptr, const FitsIO::Record<T>& record) {
   int status = 0;
   std::string comment = record.comment;
   T value = record.value;
@@ -214,19 +214,19 @@ void updateRecord(fitsfile *fptr, const FitsIO::Record<T> &record) {
 }
 
 template <typename... Ts>
-void updateRecords(fitsfile *fptr, const FitsIO::Record<Ts> &... records) {
+void updateRecords(fitsfile* fptr, const FitsIO::Record<Ts>&... records) {
   using mockUnpack = int[];
   (void)mockUnpack { (updateRecord(fptr, records), 0)... };
 }
 
 template <typename... Ts>
-void updateRecords(fitsfile *fptr, const std::tuple<FitsIO::Record<Ts>...> &records) {
+void updateRecords(fitsfile* fptr, const std::tuple<FitsIO::Record<Ts>...>& records) {
   Internal::updateRecordsImpl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
-void updateRecords(fitsfile *fptr, const std::vector<FitsIO::Record<T>> &records) {
-  for (const auto &r : records) {
+void updateRecords(fitsfile* fptr, const std::vector<FitsIO::Record<T>>& records) {
+  for (const auto& r : records) {
     updateRecord(fptr, r);
   }
 }

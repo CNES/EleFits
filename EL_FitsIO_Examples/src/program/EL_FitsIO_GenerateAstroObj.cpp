@@ -33,9 +33,9 @@ using boost::program_options::value;
 using namespace Euclid;
 using namespace FitsIO;
 
-void writeMeta(MefFile &f, int objIndex) {
+void writeMeta(MefFile& f, int objIndex) {
   std::string extname = std::to_string(objIndex) + "_META";
-  const auto &ext = f.initImageExt<unsigned char, 1>(extname, { 0 });
+  const auto& ext = f.initImageExt<unsigned char, 1>(extname, { 0 });
   ext.writeRecords<int, int, float, float>(
       { "DITH_NUM", 0 }, // TODO
       { "SOURC_ID", objIndex },
@@ -43,7 +43,7 @@ void writeMeta(MefFile &f, int objIndex) {
       { "DEC_OBJ", float(3 * objIndex) });
 }
 
-void writeCombinedSignal(MefFile &f, int objIndex, int bins) {
+void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
   auto wminData = Test::generateRandomVector<float>(bins);
   auto signalData = Test::generateRandomVector<float>(bins);
   auto qualityData = Test::generateRandomVector<char>(bins);
@@ -54,7 +54,7 @@ void writeCombinedSignal(MefFile &f, int objIndex, int bins) {
   VecRefColumn<char> qualityCol({ "QUALITY", "", repeatCount }, qualityData);
   VecRefColumn<float> varCol({ "VAR", "erg^2", repeatCount }, varData);
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_SIGNAL";
-  const auto &ext = f.assignBintableExt(extname, wminCol, signalCol);
+  const auto& ext = f.assignBintableExt(extname, wminCol, signalCol);
   ext.appendColumn(qualityCol);
   ext.appendColumn(varCol);
   ext.writeRecords<float, float, int, float>(
@@ -64,19 +64,19 @@ void writeCombinedSignal(MefFile &f, int objIndex, int bins) {
       { "EXPTIME", 3600.F });
 }
 
-void writeCombinedCov(MefFile &f, int objIndex, int bins) {
+void writeCombinedCov(MefFile& f, int objIndex, int bins) {
   Test::RandomRaster<float, 2> cov_raster({ bins, bins });
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_COV";
-  const auto &ext = f.assignImageExt(extname, cov_raster);
+  const auto& ext = f.assignImageExt(extname, cov_raster);
   ext.writeRecords<int, std::string>({ "COV_SIDE", bins }, { "CODEC", "IDENTITY" });
 }
 
-void writeCombined(MefFile &f, int objIndex, int bins) {
+void writeCombined(MefFile& f, int objIndex, int bins) {
   writeCombinedSignal(f, objIndex, bins);
   writeCombinedCov(f, objIndex, bins);
 }
 
-void writeAstroObj(MefFile &f, int objIndex, int bins) {
+void writeAstroObj(MefFile& f, int objIndex, int bins) {
   writeMeta(f, objIndex);
   writeCombined(f, objIndex, bins);
 }
@@ -94,7 +94,7 @@ public:
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_GenerateAstroObj");
 
@@ -105,7 +105,7 @@ public:
     logger.info() << "Creating Fits file: " << filename;
     MefFile f(filename, MefFile::Permission::Overwrite);
     logger.info() << "Writing metadata";
-    const auto &primary = f.accessPrimary<>();
+    const auto& primary = f.accessPrimary<>();
     primary.writeRecord("N_OBJ", nobj);
 
     for (int i = 0; i < nobj; ++i) {

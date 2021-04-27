@@ -54,7 +54,7 @@ public:
    * @details
    * Prints the context, then some file metadata, and then the CFitsIO error stack.
    */
-  CfitsioError(int cfitsioStatus, fitsfile *fptr, const std::string &context);
+  CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string& context);
 
   /**
    * @brief Get the error message of an error code.
@@ -69,7 +69,7 @@ public:
   /**
    * @brief Throw a CfitsioError if `cfitsioStatus > 0`.
    */
-  static void mayThrow(int cfitsioStatus, fitsfile *fptr, const std::string &context);
+  static void mayThrow(int cfitsioStatus, fitsfile* fptr, const std::string& context);
 
 public:
   /**
@@ -81,12 +81,12 @@ public:
 /**
  * @brief Check whether the file is valid and throw an error if not.
  */
-void mayThrowInvalidFileError(fitsfile *fptr);
+void mayThrowInvalidFileError(fitsfile* fptr);
 
 /**
  * @brief Check whether the file is writable and throw an error if not.
  */
-void mayThrowReadonlyError(fitsfile *fptr);
+void mayThrowReadonlyError(fitsfile* fptr);
 
 } // namespace Cfitsio
 } // namespace Euclid

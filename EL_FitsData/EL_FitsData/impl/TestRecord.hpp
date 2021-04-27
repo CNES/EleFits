@@ -30,7 +30,7 @@ namespace FitsIO {
 namespace Test {
 
 template <typename T>
-Record<T> generateRandomRecord(const std::string &typeName) {
+Record<T> generateRandomRecord(const std::string& typeName) {
   std::vector<std::string> typeChunks;
   std::string chunk;
   std::istringstream chunkStream(typeName);
@@ -52,64 +52,64 @@ Record<T> generateRandomRecord(const std::string &typeName) {
 }
 
 template <typename T>
-Record<T> generateRandomRecord(const std::string &k, const std::string &u, const std::string &c) {
+Record<T> generateRandomRecord(const std::string& k, const std::string& u, const std::string& c) {
   return Record<T>(k, generateRandomValue<T>(), u, c);
 }
 
 template <>
-const Record<bool> &RandomHeader::getRecord<bool>() const;
+const Record<bool>& RandomHeader::getRecord<bool>() const;
 
 template <>
-const Record<char> &RandomHeader::getRecord<char>() const;
+const Record<char>& RandomHeader::getRecord<char>() const;
 
 template <>
-const Record<short> &RandomHeader::getRecord<short>() const;
+const Record<short>& RandomHeader::getRecord<short>() const;
 
 template <>
-const Record<int> &RandomHeader::getRecord<int>() const;
+const Record<int>& RandomHeader::getRecord<int>() const;
 
 template <>
-const Record<long> &RandomHeader::getRecord<long>() const;
+const Record<long>& RandomHeader::getRecord<long>() const;
 
 template <>
-const Record<long long> &RandomHeader::getRecord<long long>() const;
+const Record<long long>& RandomHeader::getRecord<long long>() const;
 
 template <>
-const Record<unsigned char> &RandomHeader::getRecord<unsigned char>() const;
+const Record<unsigned char>& RandomHeader::getRecord<unsigned char>() const;
 
 template <>
-const Record<unsigned short> &RandomHeader::getRecord<unsigned short>() const;
+const Record<unsigned short>& RandomHeader::getRecord<unsigned short>() const;
 
 template <>
-const Record<unsigned int> &RandomHeader::getRecord<unsigned int>() const;
+const Record<unsigned int>& RandomHeader::getRecord<unsigned int>() const;
 
 template <>
-const Record<unsigned long> &RandomHeader::getRecord<unsigned long>() const;
+const Record<unsigned long>& RandomHeader::getRecord<unsigned long>() const;
 
 template <>
-const Record<unsigned long long> &RandomHeader::getRecord<unsigned long long>() const;
+const Record<unsigned long long>& RandomHeader::getRecord<unsigned long long>() const;
 
 template <>
-const Record<float> &RandomHeader::getRecord<float>() const;
+const Record<float>& RandomHeader::getRecord<float>() const;
 
 template <>
-const Record<double> &RandomHeader::getRecord<double>() const;
+const Record<double>& RandomHeader::getRecord<double>() const;
 
 template <>
-const Record<std::complex<float>> &RandomHeader::getRecord<std::complex<float>>() const;
+const Record<std::complex<float>>& RandomHeader::getRecord<std::complex<float>>() const;
 
 template <>
-const Record<std::complex<double>> &RandomHeader::getRecord<std::complex<double>>() const;
+const Record<std::complex<double>>& RandomHeader::getRecord<std::complex<double>>() const;
 
 template <>
-const Record<std::string> &RandomHeader::getRecord<std::string>() const;
+const Record<std::string>& RandomHeader::getRecord<std::string>() const;
 
 template <>
-const Record<const char *> &RandomHeader::getRecord<const char *>() const;
+const Record<const char*>& RandomHeader::getRecord<const char*>() const;
 
 template <typename T>
-Record<T> &RandomHeader::getRecord() {
-  return const_cast<Record<T> &>(const_cast<const RandomHeader *>(this)->getRecord<T>());
+Record<T>& RandomHeader::getRecord() {
+  return const_cast<Record<T>&>(const_cast<const RandomHeader*>(this)->getRecord<T>());
 }
 
 } // namespace Test

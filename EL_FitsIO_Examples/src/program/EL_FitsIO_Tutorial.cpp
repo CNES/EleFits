@@ -78,12 +78,12 @@ TutoRecords createRecords();
 TutoRasters createRasters();
 TutoColumns createColumns();
 
-void writeMefFile(const std::string &filename);
-void readMefFile(const std::string &filename);
-void writeRecords(const FitsIO::RecordHdu &hdu);
-void readRecords(const FitsIO::RecordHdu &hdu);
-void readRaster(const FitsIO::ImageHdu &hdu);
-void readColumns(const FitsIO::BintableHdu &hdu);
+void writeMefFile(const std::string& filename);
+void readMefFile(const std::string& filename);
+void writeRecords(const FitsIO::RecordHdu& hdu);
+void readRecords(const FitsIO::RecordHdu& hdu);
+void readRaster(const FitsIO::ImageHdu& hdu);
+void readColumns(const FitsIO::BintableHdu& hdu);
 
 ///////////////////
 // DATA CLASSES //
@@ -184,7 +184,7 @@ TutoColumns createColumns() {
 // WRITING //
 ////////////
 
-void writeMefFile(const std::string &filename) {
+void writeMefFile(const std::string& filename) {
 
   //! [Create a MEF file]
 
@@ -202,13 +202,13 @@ void writeMefFile(const std::string &filename) {
 
   /* Initialize HDU first and write raster later */
 
-  const auto &image1 = f.initImageExt<std::int16_t, 2>("IMAGE1", rasters.int16Raster2D.shape);
+  const auto& image1 = f.initImageExt<std::int16_t, 2>("IMAGE1", rasters.int16Raster2D.shape);
   // ... do something with the extension ...
   image1.writeRaster(rasters.int16Raster2D);
 
   /* Assign at creation */
 
-  const auto &image2 = f.assignImageExt("IMAGE2", rasters.int32Raster3D);
+  const auto& image2 = f.assignImageExt("IMAGE2", rasters.int32Raster3D);
 
   //! [Create image extensions]
 
@@ -220,7 +220,7 @@ void writeMefFile(const std::string &filename) {
 
   /* Initialize HDU first and write columns later */
 
-  const auto &table1 = f.initBintableExt<std::string, int, float>(
+  const auto& table1 = f.initBintableExt<std::string, int, float>(
       "TABLE1",
       columns.stringColumn.info,
       columns.int32Column.info,
@@ -229,7 +229,7 @@ void writeMefFile(const std::string &filename) {
 
   /* Assign at creation */
 
-  const auto &table2 = f.assignBintableExt("TABLE2", columns.stringColumn, columns.int32Column, columns.float32Column);
+  const auto& table2 = f.assignBintableExt("TABLE2", columns.stringColumn, columns.int32Column, columns.float32Column);
 
   //! [Create binary table extensions]
 
@@ -239,7 +239,7 @@ void writeMefFile(const std::string &filename) {
   // File is closed at destruction of f.
 }
 
-void writeRecords(const FitsIO::RecordHdu &hdu) {
+void writeRecords(const FitsIO::RecordHdu& hdu) {
 
   const auto records = createRecords();
 
@@ -271,7 +271,7 @@ void writeRecords(const FitsIO::RecordHdu &hdu) {
 // READING //
 ////////////
 
-void readMefFile(const std::string &filename) {
+void readMefFile(const std::string& filename) {
 
   //! [Open a MEF file]
 
@@ -287,19 +287,19 @@ void readMefFile(const std::string &filename) {
 
   /* Access the Primary HDU */
 
-  const auto &primary = f.accessPrimary<FitsIO::RecordHdu>();
+  const auto& primary = f.accessPrimary<FitsIO::RecordHdu>();
   // Our primary contains only metadata, which is why we request a RecordHdu.
   logger.info() << "    Primary index: " << primary.index();
   // Indices are 0-based in the FitsIO namespace.
 
   /* Access an HDU by its index */
 
-  const auto &image2 = f.access<FitsIO::ImageHdu>(2);
+  const auto& image2 = f.access<FitsIO::ImageHdu>(2);
   logger.info() << "    Name of the second extension: " << image2.readName();
 
   /* Access an HDU by its name */
 
-  const auto &table1 = f.accessFirst<FitsIO::BintableHdu>("TABLE1");
+  const auto& table1 = f.accessFirst<FitsIO::BintableHdu>("TABLE1");
   // If several HDUs have the same name, the first one is returned.
   logger.info() << "    Index of the 'TABLE1' extension: " << table1.index();
 
@@ -310,7 +310,7 @@ void readMefFile(const std::string &filename) {
   readColumns(table1);
 }
 
-void readRecords(const FitsIO::RecordHdu &hdu) {
+void readRecords(const FitsIO::RecordHdu& hdu) {
 
   //! [Read records]
 
@@ -355,7 +355,7 @@ void readRecords(const FitsIO::RecordHdu &hdu) {
   //! [Read records]
 }
 
-void readRaster(const FitsIO::ImageHdu &hdu) {
+void readRaster(const FitsIO::ImageHdu& hdu) {
 
   //! [Read a raster]
 
@@ -363,8 +363,8 @@ void readRaster(const FitsIO::ImageHdu &hdu) {
 
   const auto image = hdu.readRaster<std::int32_t, 3>();
 
-  const auto &firstPixel = image[{ 0, 0, 0 }];
-  const auto &lastPixel = image.at({ -1, -1, -1 });
+  const auto& firstPixel = image[{ 0, 0, 0 }];
+  const auto& lastPixel = image.at({ -1, -1, -1 });
   // `operator[]` performs no bound checking, while `at` does and enables backward indexing.
 
   logger.info() << "    First pixel: " << firstPixel;
@@ -373,7 +373,7 @@ void readRaster(const FitsIO::ImageHdu &hdu) {
   //! [Read a raster]
 }
 
-void readColumns(const FitsIO::BintableHdu &hdu) {
+void readColumns(const FitsIO::BintableHdu& hdu) {
 
   //! [Read columns]
 
@@ -386,12 +386,12 @@ void readColumns(const FitsIO::BintableHdu &hdu) {
   /* Read several columns by their name */
 
   const auto byName = hdu.readColumns(FitsIO::Named<std::string>("STRING"), FitsIO::Named<std::int32_t>("INT32"));
-  const auto &stringColumn = std::get<0>(byName);
+  const auto& stringColumn = std::get<0>(byName);
 
   /* Read several columns by their index */
 
   const auto byIndex = hdu.readColumns(FitsIO::Indexed<std::string>(0), FitsIO::Indexed<std::int32_t>(1));
-  const auto &intColumn = std::get<1>(byIndex);
+  const auto& intColumn = std::get<1>(byIndex);
 
   /* Use values */
 
@@ -418,7 +418,7 @@ public:
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     const std::string filename = args["output"].as<std::string>();
 

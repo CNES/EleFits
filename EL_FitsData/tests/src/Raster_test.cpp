@@ -34,11 +34,11 @@ BOOST_AUTO_TEST_CASE(index_test) {
 
   /* Fixed dimension */
   Position<4> fixedShape;
-  for (auto &length : fixedShape) {
+  for (auto& length : fixedShape) {
     length = std::rand();
   }
   Position<4> fixedPos;
-  for (auto &coord : fixedPos) {
+  for (auto& coord : fixedPos) {
     coord = std::rand();
   }
   auto fixedIndex = Internal::IndexRecursionImpl<4>::index(fixedShape, fixedPos);
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   Test::RandomRaster<int> raster({ width, height });
   raster.at({ 1, -1 }) = 1;
   BOOST_CHECK_EQUAL(raster.at({ 1, -1 }), 1);
-  const auto &vec = raster.vector();
+  const auto& vec = raster.vector();
   BOOST_CHECK_EQUAL(raster.at({ 0, 0 }), vec[0]);
   BOOST_CHECK_EQUAL(raster.at({ -1, 0 }), vec[width - 1]);
   BOOST_CHECK_EQUAL(raster.at({ -width, 0 }), vec[0]);

@@ -32,7 +32,7 @@ template <typename T>
 struct Named {
 
   /** @brief Constructor. */
-  explicit Named(const std::string &value) : name(value) {};
+  explicit Named(const std::string& value) : name(value) {};
 
   /**
    * @brief Slice as the name.

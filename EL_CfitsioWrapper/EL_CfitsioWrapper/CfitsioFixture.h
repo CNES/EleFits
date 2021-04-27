@@ -64,7 +64,7 @@ public:
   /**
    * @brief Pointer to the fitsfile for use with CFitsIO routines.
    */
-  fitsfile *fptr;
+  fitsfile* fptr;
 };
 
 } // namespace Test

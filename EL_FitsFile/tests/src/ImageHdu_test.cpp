@@ -29,7 +29,7 @@
 using namespace Euclid::FitsIO;
 
 template <typename T>
-void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
+void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
 }
 

@@ -42,7 +42,7 @@ struct IndexRecursionImpl {
   /**
    * @brief Index of given position in given shape for Raster::index.
    */
-  static long index(const Position<n> &shape, const Position<n> &pos) {
+  static long index(const Position<n>& shape, const Position<n>& pos) {
     return std::get<n - 1 - i>(pos) + std::get<n - 1 - i>(shape) * IndexRecursionImpl<n, i - 1>::index(shape, pos);
   }
 };
@@ -56,7 +56,7 @@ struct IndexRecursionImpl<n, 0> {
   /**
    * @brief pos[n - 1]
    */
-  static long index(const Position<n> &shape, const Position<n> &pos) {
+  static long index(const Position<n>& shape, const Position<n>& pos) {
     (void)(shape);
     return std::get<n - 1>(pos);
   }
@@ -71,7 +71,7 @@ struct IndexRecursionImpl<-1, i> {
   /**
    * @brief pos[0] + shape[1] * (pos[1] + shape[2] * (pos[2] + shape[3] * (...)))
    */
-  static long index(const Position<-1> &shape, const Position<-1> &pos) {
+  static long index(const Position<-1>& shape, const Position<-1>& pos) {
     const auto n = shape.size();
     if (pos.size() != n) {
       throw FitsIOError(
@@ -110,26 +110,26 @@ inline long Raster<T, n>::size() const {
 }
 
 template <typename T, long n>
-inline long Raster<T, n>::index(const Position<n> &pos) const {
+inline long Raster<T, n>::index(const Position<n>& pos) const {
   return Internal::IndexRecursionImpl<n>::index(shape, pos);
 }
 
 template <typename T, long n>
-inline const T &Raster<T, n>::operator[](const Position<n> &pos) const {
+inline const T& Raster<T, n>::operator[](const Position<n>& pos) const {
   return *(data() + index(pos));
 }
 
 template <typename T, long n>
-inline T &Raster<T, n>::operator[](const Position<n> &pos) {
-  return const_cast<T &>(const_cast<const Raster *>(this)->operator[](pos));
+inline T& Raster<T, n>::operator[](const Position<n>& pos) {
+  return const_cast<T&>(const_cast<const Raster*>(this)->operator[](pos));
 }
 
 template <typename T, long n>
-inline const T &Raster<T, n>::at(const Position<n> &pos) const {
+inline const T& Raster<T, n>::at(const Position<n>& pos) const {
   auto boundedPos = pos;
   for (long i = 0; i < dimension(); ++i) {
-    auto &b = boundedPos[i];
-    const auto &s = shape[i];
+    auto& b = boundedPos[i];
+    const auto& s = shape[i];
     OutOfBoundsError::mayThrow("pos[" + std::to_string(i) + "]", b, { -s, s - 1 });
     if (b < 0) {
       b += s;
@@ -139,32 +139,32 @@ inline const T &Raster<T, n>::at(const Position<n> &pos) const {
 }
 
 template <typename T, long n>
-inline T &Raster<T, n>::at(const Position<n> &pos) {
-  return const_cast<T &>(const_cast<const Raster *>(this)->at(pos));
+inline T& Raster<T, n>::at(const Position<n>& pos) {
+  return const_cast<T&>(const_cast<const Raster*>(this)->at(pos));
 }
 
 template <typename T, long n>
-PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T *data) : Raster<T, n>(shape_), m_data(data) {
+PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T* data) : Raster<T, n>(shape_), m_data(data) {
 }
 
 template <typename T, long n>
-const T *PtrRaster<T, n>::data() const {
+const T* PtrRaster<T, n>::data() const {
   return m_data;
 }
 
 template <typename T, long n>
-VecRefRaster<T, n>::VecRefRaster(Position<n> shape_, const std::vector<T> &vecRef) :
+VecRefRaster<T, n>::VecRefRaster(Position<n> shape_, const std::vector<T>& vecRef) :
     Raster<T, n>(shape_),
     m_ref(vecRef) {
 }
 
 template <typename T, long n>
-const T *VecRefRaster<T, n>::data() const {
+const T* VecRefRaster<T, n>::data() const {
   return m_ref.data();
 }
 
 template <typename T, long n>
-const std::vector<T> &VecRefRaster<T, n>::vector() const {
+const std::vector<T>& VecRefRaster<T, n>::vector() const {
   return m_ref;
 }
 
@@ -177,22 +177,22 @@ VecRaster<T, n>::VecRaster(Position<n> shape_) : Raster<T, n>(shape_), m_vec(thi
 }
 
 template <typename T, long n>
-const T *VecRaster<T, n>::data() const {
+const T* VecRaster<T, n>::data() const {
   return m_vec.data();
 }
 
 template <typename T, long n>
-T *VecRaster<T, n>::data() {
-  return const_cast<T *>(const_cast<const VecRaster *>(this)->data());
+T* VecRaster<T, n>::data() {
+  return const_cast<T*>(const_cast<const VecRaster*>(this)->data());
 }
 
 template <typename T, long n>
-const std::vector<T> &VecRaster<T, n>::vector() const {
+const std::vector<T>& VecRaster<T, n>::vector() const {
   return m_vec;
 }
 
 template <typename T, long n>
-std::vector<T> &VecRaster<T, n>::vector() {
+std::vector<T>& VecRaster<T, n>::vector() {
   return m_vec;
 }
 

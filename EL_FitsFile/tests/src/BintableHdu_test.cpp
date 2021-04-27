@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   const std::string name2 = "COL2";
   Test::RandomScalarColumn<double> column2;
   column2.info.name = name2;
-  const auto &ext = assignBintableExt("", column1, column2);
+  const auto& ext = assignBintableExt("", column1, column2);
   BOOST_CHECK_EQUAL(ext.readColumnCount(), 2);
   BOOST_CHECK_EQUAL(ext.readRowCount(), column1.rowCount());
   BOOST_CHECK(ext.hasColumn(name1));
@@ -111,7 +111,7 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
 BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto intColumn = Test::RandomTable::generateColumn<int>("INT");
   const auto floatColumn = Test::RandomTable::generateColumn<float>("FLOAT");
-  const auto &ext = assignBintableExt("", intColumn, floatColumn);
+  const auto& ext = assignBintableExt("", intColumn, floatColumn);
   const auto byName = ext.readColumns(Named<int>(intColumn.info.name), Named<float>(floatColumn.info.name));
   Test::checkEqualVectors(std::get<0>(byName).vector(), intColumn.vector());
   Test::checkEqualVectors(std::get<1>(byName).vector(), floatColumn.vector());

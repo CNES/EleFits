@@ -31,7 +31,7 @@ Position<n> ImageHdu::readShape() const {
 }
 
 template <typename T, long n>
-void ImageHdu::updateShape(const Position<n> &shape) const {
+void ImageHdu::updateShape(const Position<n>& shape) const {
   gotoThisHdu();
   Cfitsio::Image::updateShape<T, n>(m_fptr, shape);
 }
@@ -43,7 +43,7 @@ VecRaster<T, n> ImageHdu::readRaster() const {
 }
 
 template <typename T, long n>
-void ImageHdu::writeRaster(const Raster<T, n> &raster) const {
+void ImageHdu::writeRaster(const Raster<T, n>& raster) const {
   gotoThisHdu();
   Cfitsio::Image::writeRaster(m_fptr, raster);
 }
@@ -59,9 +59,9 @@ EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
 
 #ifndef DECLARE_WRITE_RASTER
 #define DECLARE_WRITE_RASTER(type, unused) \
-  extern template void ImageHdu::writeRaster(const Raster<type, -1> &) const; \
-  extern template void ImageHdu::writeRaster(const Raster<type, 2> &) const; \
-  extern template void ImageHdu::writeRaster(const Raster<type, 3> &) const;
+  extern template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
+  extern template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
+  extern template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
 EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
 #undef DECLARE_WRITE_RASTER
 #endif

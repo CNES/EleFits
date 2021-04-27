@@ -39,7 +39,7 @@ public:
   /**
    * @copydoc RecordHdu::RecordHdu
    */
-  BintableHdu(Token, fitsfile *&fptr, long index);
+  BintableHdu(Token, fitsfile*& fptr, long index);
 
   /// @endcond
 
@@ -61,13 +61,13 @@ public:
   /**
    * @brief Check whether the HDU contains a given column.
    */
-  bool hasColumn(const std::string &name) const;
+  bool hasColumn(const std::string& name) const;
 
   /**
    * @brief Check whether the HDU contains a given set of columns.
    * @see hasColumn
    */
-  std::vector<bool> hasColumns(const std::vector<std::string> &names) const;
+  std::vector<bool> hasColumns(const std::vector<std::string>& names) const;
 
   /**
    * @brief Read a column with given index.
@@ -79,13 +79,13 @@ public:
    * @brief Read a column with given name.
    */
   template <typename T>
-  VecColumn<T> readColumn(const std::string &name) const;
+  VecColumn<T> readColumn(const std::string& name) const;
 
   /**
    * @brief Read several columns with given indices.
    */
   template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<long> &indices) const;
+  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<long>& indices) const;
 
   /**
    * @brief Same as readColumns(const std::vector<long> &) with modified signature.
@@ -96,13 +96,13 @@ public:
    * \endcode
    */
   template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const Indexed<Ts> &... indices) const;
+  std::tuple<VecColumn<Ts>...> readColumns(const Indexed<Ts>&... indices) const;
 
   /**
    * @brief Read several columns with given names.
    */
   template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<std::string> &names) const;
+  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<std::string>& names) const;
 
   /**
    * @brief Same as readColumns(const std::vector<std::string> &) with modified signature.
@@ -113,13 +113,13 @@ public:
    * \endcode
    */
   template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const Named<Ts> &... names) const;
+  std::tuple<VecColumn<Ts>...> readColumns(const Named<Ts>&... names) const;
 
   /**
    * @brief Write a column.
    */
   template <typename T>
-  void writeColumn(const Column<T> &column) const;
+  void writeColumn(const Column<T>& column) const;
 
   /**
    * @brief Write several columns.
@@ -127,7 +127,7 @@ public:
    * All columns should have the same number of rows.
    */
   template <typename... Ts>
-  void writeColumns(const Column<Ts> &... columns) const;
+  void writeColumns(const Column<Ts>&... columns) const;
 
   /**
    * @brief Append a column.
@@ -135,7 +135,7 @@ public:
    * The column should have the same number of rows as the existing columns.
    */
   template <typename T>
-  void appendColumn(const Column<T> &column) const;
+  void appendColumn(const Column<T>& column) const;
 
   /**
    * @brief Append several columns.
@@ -143,7 +143,7 @@ public:
    * All new columns should have the same number of rows as the existing columns.
    */
   template <typename... Ts>
-  void appendColumns(const Column<Ts> &... columns) const;
+  void appendColumns(const Column<Ts>&... columns) const;
 };
 
 } // namespace FitsIO

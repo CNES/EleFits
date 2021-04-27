@@ -39,88 +39,88 @@ namespace Bintable {
 /**
  * @brief Get the number of columns.
  */
-long columnCount(fitsfile *fptr);
+long columnCount(fitsfile* fptr);
 
 /**
  * @brief Get the number of rows.
  */
-long rowCount(fitsfile *fptr);
+long rowCount(fitsfile* fptr);
 
 /**
  * @brief Check whether a given column exists.
  */
-bool hasColumn(fitsfile *fptr, const std::string &name);
+bool hasColumn(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Get the index of a Binary table column.
  */
-long columnIndex(fitsfile *fptr, const std::string &name);
+long columnIndex(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Read the metadata of a binary table column with given index.
  */
 template <typename T>
-FitsIO::ColumnInfo<T> readColumnInfo(fitsfile *fptr, long index);
+FitsIO::ColumnInfo<T> readColumnInfo(fitsfile* fptr, long index);
 
 /**
  * @brief Read the binary table column with given index.
  */
 template <typename T>
-FitsIO::VecColumn<T> readColumn(fitsfile *fptr, long index);
+FitsIO::VecColumn<T> readColumn(fitsfile* fptr, long index);
 
 /**
  * @brief Read a binary table column with given name.
  */
 template <typename T>
-FitsIO::VecColumn<T> readColumn(fitsfile *fptr, const std::string &name);
+FitsIO::VecColumn<T> readColumn(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Read several binary table columns with given indices.
  */
 template <typename... Ts>
-std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<long> &indices);
+std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vector<long>& indices);
 
 /**
  * @brief Read several binary table columns with given names.
  */
 template <typename... Ts>
-std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile *fptr, const std::vector<std::string> &names);
+std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vector<std::string>& names);
 
 /**
  * @brief Write a binary table column.
  */
 template <typename T>
-void writeColumn(fitsfile *fptr, const FitsIO::Column<T> &column);
+void writeColumn(fitsfile* fptr, const FitsIO::Column<T>& column);
 
 /**
  * @brief Write several binary table columns.
  */
 template <typename... Ts>
-void writeColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns);
+void writeColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
 /**
  * @brief Insert a binary table column at given index.
  */
 template <typename T>
-void insertColumn(fitsfile *fptr, long index, const FitsIO::Column<T> &column);
+void insertColumn(fitsfile* fptr, long index, const FitsIO::Column<T>& column);
 
 /**
  * @brief Insert several binary table columns at given index.
  */
 template <typename... Ts>
-void insertColumns(fitsfile *fptr, long index, const FitsIO::Column<Ts> &... columns);
+void insertColumns(fitsfile* fptr, long index, const FitsIO::Column<Ts>&... columns);
 
 /**
  * @brief Append a binary table column.
  */
 template <typename T>
-void appendColumn(fitsfile *fptr, const FitsIO::Column<T> &column);
+void appendColumn(fitsfile* fptr, const FitsIO::Column<T>& column);
 
 /**
  * @brief Append several binary table columns.
  */
 template <typename... Ts>
-void appendColumns(fitsfile *fptr, const FitsIO::Column<Ts> &... columns);
+void appendColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
 } // namespace Bintable
 } // namespace Cfitsio

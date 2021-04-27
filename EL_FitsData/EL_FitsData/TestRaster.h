@@ -48,7 +48,7 @@ public:
   /**
    * @brief Shortcut for rasterApprox
    */
-  bool approx(const Raster<float> &other, double tol = 0.01) const;
+  bool approx(const Raster<float>& other, double tol = 0.01) const;
 
   /**
    * @brief Raster width.
@@ -79,7 +79,7 @@ public:
   /**
    * @brief Shortcut for rasterApprox
    */
-  bool approx(const Raster<T, n> &other, double tol = 0.01) const;
+  bool approx(const Raster<T, n>& other, double tol = 0.01) const;
 };
 
 /**
@@ -88,7 +88,7 @@ public:
  * Test each pixel as: |ref - test| / test < tol
  */
 template <typename T, long n>
-bool rasterApprox(const Raster<T, n> &test, const Raster<T, n> &ref, double tol = 0.01);
+bool rasterApprox(const Raster<T, n>& test, const Raster<T, n>& ref, double tol = 0.01);
 
 } // namespace Test
 } // namespace FitsIO

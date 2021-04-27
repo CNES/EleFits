@@ -27,7 +27,7 @@ namespace Cfitsio {
 CfitsioError::CfitsioError(int cfitsioStatus) : FitsIOError(message(cfitsioStatus)), status(cfitsioStatus) {
 }
 
-CfitsioError::CfitsioError(int cfitsioStatus, fitsfile *fptr, const std::string &context) :
+CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string& context) :
     FitsIOError(context),
     status(cfitsioStatus) {
   append("");
@@ -72,19 +72,19 @@ void CfitsioError::mayThrow(int cfitsioStatus) {
   }
 }
 
-void CfitsioError::mayThrow(int cfitsioStatus, fitsfile *fptr, const std::string &message) {
+void CfitsioError::mayThrow(int cfitsioStatus, fitsfile* fptr, const std::string& message) {
   if (cfitsioStatus != 0) {
     throw CfitsioError(cfitsioStatus, fptr, message);
   }
 }
 
-void mayThrowReadonlyError(fitsfile *fptr) {
+void mayThrowReadonlyError(fitsfile* fptr) {
   if (not File::isWritable(fptr)) {
     throw CfitsioError(READONLY_FILE);
   }
 }
 
-void mayThrowInvalidFileError(fitsfile *fptr) {
+void mayThrowInvalidFileError(fitsfile* fptr) {
   if (not fptr) {
     throw CfitsioError(BAD_FILEPTR);
   }

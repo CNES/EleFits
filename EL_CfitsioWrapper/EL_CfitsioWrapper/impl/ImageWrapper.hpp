@@ -29,10 +29,10 @@ namespace Image {
  * @brief Variable dimension case.
  */
 template <>
-FitsIO::Position<-1> readShape<-1>(fitsfile *fptr);
+FitsIO::Position<-1> readShape<-1>(fitsfile* fptr);
 
 template <long n = 2>
-FitsIO::Position<n> readShape(fitsfile *fptr) {
+FitsIO::Position<n> readShape(fitsfile* fptr) {
   FitsIO::Position<n> shape;
   int status = 0;
   fits_get_img_size(fptr, n, &shape[0], &status);
@@ -41,7 +41,7 @@ FitsIO::Position<n> readShape(fitsfile *fptr) {
 }
 
 template <typename T, long n>
-void updateShape(fitsfile *fptr, const FitsIO::Position<n> &shape) {
+void updateShape(fitsfile* fptr, const FitsIO::Position<n>& shape) {
   int status = 0;
   auto nonconstShape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconstShape.data(), &status);
@@ -49,7 +49,7 @@ void updateShape(fitsfile *fptr, const FitsIO::Position<n> &shape) {
 }
 
 template <typename T, long n>
-FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr) {
+FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) {
   int status = 0;
   FitsIO::VecRaster<T, n> raster(readShape<n>(fptr));
   const auto size = raster.size();
@@ -60,7 +60,7 @@ FitsIO::VecRaster<T, n> readRaster(fitsfile *fptr) {
 }
 
 template <typename T, long n>
-void writeRaster(fitsfile *fptr, const FitsIO::Raster<T, n> &raster) {
+void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   const auto begin = raster.data();

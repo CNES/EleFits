@@ -41,7 +41,7 @@ public:
     return options;
   }
 
-  Elements::ExitCode mainMethod(ELEMENTS_UNUSED std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(ELEMENTS_UNUSED std::map<std::string, variable_value>& args) override {
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_PrintSupportedTypes");
     logger.info("----------------------------");
     logger.info("Supported Record value types");

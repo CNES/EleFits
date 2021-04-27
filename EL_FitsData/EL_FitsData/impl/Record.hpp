@@ -135,7 +135,7 @@ CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cas
  */
 template <typename TTo>
 TTo CasterImpl<boost::any, TTo, ifScalar<TTo>>::cast(boost::any value) {
-  const auto &id = value.type();
+  const auto& id = value.type();
   if (id == typeid(TTo)) {
     return boost::any_cast<TTo>(value);
   } else if (id == typeid(bool)) {
@@ -171,7 +171,7 @@ TTo CasterImpl<boost::any, TTo, ifScalar<TTo>>::cast(boost::any value) {
 
 template <typename TTo>
 std::complex<TTo> CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>>::cast(boost::any value) {
-  const auto &id = value.type();
+  const auto& id = value.type();
   if (id == typeid(std::complex<TTo>)) {
     return boost::any_cast<std::complex<TTo>>(value);
   } else if (id == typeid(std::complex<float>)) {
@@ -196,7 +196,7 @@ boost::any CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>>::cast(T
 /// @endcond
 
 template <typename T>
-Record<T>::Record(const std::string &k, T v, const std::string &u, const std::string &c) :
+Record<T>::Record(const std::string& k, T v, const std::string& u, const std::string& c) :
     keyword(k),
     value(v),
     unit(u),
@@ -205,7 +205,7 @@ Record<T>::Record(const std::string &k, T v, const std::string &u, const std::st
 
 template <typename T>
 template <typename TOther>
-Record<T>::Record(const Record<TOther> &other) :
+Record<T>::Record(const Record<TOther>& other) :
     keyword(other.keyword),
     value(Internal::CasterImpl<TOther, T>::cast(other.value)),
     unit(other.unit),
@@ -214,7 +214,7 @@ Record<T>::Record(const Record<TOther> &other) :
 
 template <typename T>
 template <typename TOther>
-Record<T> &Record<T>::assign(const Record<TOther> &other) {
+Record<T>& Record<T>::assign(const Record<TOther>& other) {
   keyword = other.keyword;
   value = Internal::CasterImpl<TOther, T>::cast(other.value);
   unit = other.unit;
@@ -255,7 +255,7 @@ template <>
 bool Record<std::string>::hasLongStringValue() const;
 
 template <>
-bool Record<const char *>::hasLongStringValue() const;
+bool Record<const char*>::hasLongStringValue() const;
 
 template <>
 bool Record<boost::any>::hasLongStringValue() const;

@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_SUITE(RecordHdu_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkRecordWithFallbackIsReadBack(const RecordHdu &h, const std::string &keyword) {
+void checkRecordWithFallbackIsReadBack(const RecordHdu& h, const std::string& keyword) {
   BOOST_CHECK(not h.hasKeyword(keyword));
   BOOST_CHECK_THROW(h.parseRecord<T>(keyword), std::exception);
   const Record<T> fallback { keyword, Test::generateRandomValue<T>(), "", "FALLBACK" };
@@ -56,7 +56,7 @@ void checkRecordWithFallbackIsReadBack(const RecordHdu &h, const std::string &ke
 }
 
 template <>
-void checkRecordWithFallbackIsReadBack<unsigned long>(const RecordHdu &h, const std::string &keyword) {
+void checkRecordWithFallbackIsReadBack<unsigned long>(const RecordHdu& h, const std::string& keyword) {
   // Wait for CFitsIO bug to be fixed
   (void)h;
   (void)keyword;
@@ -72,7 +72,7 @@ EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_WITH_FALLBACK_IS_READ_BACK_TEST)
 BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::TemporarySifFile) {
   Record<short> written("SHORT", 1);
   Record<long> fallback("LONG", 10);
-  const auto &header = this->header();
+  const auto& header = this->header();
   BOOST_CHECK(not header.hasKeyword(written.keyword));
   BOOST_CHECK(not header.hasKeyword(fallback.keyword));
   header.writeRecord(written);
@@ -84,7 +84,7 @@ BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::Temporar
 }
 
 BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifFile) {
-  const auto &h = this->header();
+  const auto& h = this->header();
   const std::string shortStr = "S";
   const std::string longStr = "This is probably one of the longest strings "
                               "that I have ever written in a serious code.";
@@ -98,7 +98,7 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
   BOOST_CHECK(output.hasLongStringValue());
 }
 
-void checkHierarchKeywordIsReadBack(const RecordHdu &h, const std::string &keyword) {
+void checkHierarchKeywordIsReadBack(const RecordHdu& h, const std::string& keyword) {
   BOOST_CHECK_EQUAL(h.readHeader(false).find("HIERARCH"), std::string::npos); // Not found
   const Record<int> record(keyword, 10);
   BOOST_CHECK_EQUAL(record.hasLongKeyword(), keyword.length() > 8);
@@ -121,7 +121,7 @@ BOOST_FIXTURE_TEST_CASE(keyword_with_symbol_is_read_back_test, Test::TemporarySi
 }
 
 BOOST_FIXTURE_TEST_CASE(hdu_is_renamed_test, Test::TemporaryMefFile) {
-  const auto &h = this->initRecordExt("A");
+  const auto& h = this->initRecordExt("A");
   BOOST_CHECK_EQUAL(h.index(), 1);
   BOOST_CHECK_EQUAL(h.readName(), "A");
   h.updateName("B");
@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(hdu_is_renamed_test, Test::TemporaryMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(c_str_record_is_read_back_as_string_record_test, Test::TemporarySifFile) {
-  const auto &h = this->header();
+  const auto& h = this->header();
   h.writeRecord("C_STR", "1");
   const auto output1 = h.parseRecord<std::string>("C_STR");
   BOOST_CHECK_EQUAL(output1.value, "1");
@@ -141,7 +141,7 @@ BOOST_FIXTURE_TEST_CASE(c_str_record_is_read_back_as_string_record_test, Test::T
 }
 
 BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::TemporarySifFile) {
-  const auto &h = this->header();
+  const auto& h = this->header();
   const Record<short> short_record { "SHORT", 1 };
   const Record<long> long_record { "LONG", 1000 };
   auto records = std::make_tuple(short_record, long_record);
@@ -156,7 +156,7 @@ BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::Tempor
 }
 
 BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
-  const auto &h = this->header();
+  const auto& h = this->header();
   std::vector<Record<boost::any>> records;
   records.push_back({ "STRING", std::string("WIDE") });
   records.push_back({ "FLOAT", 3.14F });
@@ -169,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::Temporary
 }
 
 BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
-  const auto &h = this->header();
+  const auto& h = this->header();
   RecordVector<boost::any> records(3);
   records.vector[0].assign(Record<std::string>("STRING", "WIDE"));
   records.vector[1].assign(Record<float>("FLOAT", 3.14F));
@@ -182,7 +182,7 @@ BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test:
 }
 
 BOOST_FIXTURE_TEST_CASE(brackets_in_comment_are_read_back_test, Test::TemporaryMefFile) {
-  const auto &primary = this->accessPrimary<>();
+  const auto& primary = this->accessPrimary<>();
   primary.writeRecord("PLAN_ID", 1, "", "[0:1] SOC Planning ID");
   const auto intRecord = primary.parseRecord<int>("PLAN_ID");
   BOOST_CHECK_EQUAL(intRecord.unit, "0:1");
@@ -202,7 +202,7 @@ BOOST_FIXTURE_TEST_CASE(brackets_in_comment_are_read_back_test, Test::TemporaryM
 }
 
 BOOST_FIXTURE_TEST_CASE(comment_and_history_are_written, Test::TemporarySifFile) {
-  const auto &header = this->header();
+  const auto& header = this->header();
   const std::string comment = "BLUE";
   const std::string history = "BEAVER";
   header.writeComment(comment);
@@ -226,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFil
     float f;
     std::string s;
   };
-  const auto &header = this->header();
+  const auto& header = this->header();
   const Header input { false, 1, 3.14F, "VAL" };
   header.writeRecords(
       Record<bool>("BOOL", input.b),

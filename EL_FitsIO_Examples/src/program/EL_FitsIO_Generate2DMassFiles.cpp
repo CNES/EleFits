@@ -37,7 +37,7 @@ using namespace FitsIO;
  * @brief Generate a random scalar column without unit.
  */
 template <typename T>
-VecColumn<T> randomColumn(const std::string &name, long rows) {
+VecColumn<T> randomColumn(const std::string& name, long rows) {
   return VecColumn<T>({ name, "", 1 }, Test::generateRandomVector<T>(rows, T(0), T(1)));
 }
 
@@ -46,7 +46,7 @@ VecColumn<T> randomColumn(const std::string &name, long rows) {
  * @details
  * Random columns of type double ('D') and float ('E') are generated and written.
  */
-void writeBintable(const std::string &filename, long rows) {
+void writeBintable(const std::string& filename, long rows) {
   MefFile f(filename, MefFile::Permission::Overwrite);
   const auto col1 = randomColumn<double>("SHE_LENSMC_UPDATED_RA", rows);
   const auto col2 = randomColumn<double>("SHE_LENSMC_UPDATED_DEC", rows);
@@ -65,7 +65,7 @@ void writeBintable(const std::string &filename, long rows) {
  * We rely on boost::any, but it would be possible to skip this abstraction and go with raw types
  * using a tuple instead of a vector.
  */
-void writeSomeRecords(const RecordHdu &hdu) {
+void writeSomeRecords(const RecordHdu& hdu) {
   std::vector<Record<boost::any>> records = {
     { "WCSAXES", 2, "", "Number of axes in World Coordinate System" },
     { "CRPIX1", "", "", "Pixel coordinate of reference point" },
@@ -95,10 +95,10 @@ void writeSomeRecords(const RecordHdu &hdu) {
  * @details
  * A random 3D raster is generated and written.
  */
-void writeImage(const std::string &filename, const Position<3> &shape) {
+void writeImage(const std::string& filename, const Position<3>& shape) {
   MefFile f(filename, MefFile::Permission::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
-  const auto &ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
+  const auto& ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
   writeSomeRecords(ext);
 }
 
@@ -117,7 +117,7 @@ public:
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Generate2DMassFiles");
 
@@ -141,7 +141,7 @@ public:
 
     logger.info("Reading image...");
     MefFile i(image, MefFile::Permission::Read);
-    const auto &ext = i.accessFirst<ImageHdu>("KAPPA_PATCH");
+    const auto& ext = i.accessFirst<ImageHdu>("KAPPA_PATCH");
     const auto raster = ext.readRaster<float, 3>();
     const Position<3> center { raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2 };
     logger.info() << "Central pixel = " << raster[center];

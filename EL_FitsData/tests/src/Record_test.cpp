@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(mini_init_test) {
 }
 
 template <typename T>
-void checkRecordCopy(const std::string &keyword) {
+void checkRecordCopy(const std::string& keyword) {
   Record<T> original { keyword, Test::generateRandomValue<T>() };
   Record<T> copy(original);
   Record<T> assigned;

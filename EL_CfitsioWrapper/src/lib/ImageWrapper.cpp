@@ -29,7 +29,7 @@ namespace Image {
     return typeid(type); \
   }
 
-const std::type_info &readTypeid(fitsfile *fptr) {
+const std::type_info& readTypeid(fitsfile* fptr) {
   int status = 0;
   int bitpix = 0;
   fits_get_img_equivtype(fptr, &bitpix, &status);
@@ -39,7 +39,7 @@ const std::type_info &readTypeid(fitsfile *fptr) {
 }
 
 template <>
-FitsIO::Position<-1> readShape<-1>(fitsfile *fptr) {
+FitsIO::Position<-1> readShape<-1>(fitsfile* fptr) {
   int status = 0;
   int naxis = 0;
   fits_get_img_dim(fptr, &naxis, &status);

@@ -25,7 +25,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Hdu {
 
-long count(fitsfile *fptr) {
+long count(fitsfile* fptr) {
   int count = 0;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
@@ -33,13 +33,13 @@ long count(fitsfile *fptr) {
   return count;
 }
 
-long currentIndex(fitsfile *fptr) {
+long currentIndex(fitsfile* fptr) {
   int index = 0;
   fits_get_hdu_num(fptr, &index);
   return index;
 }
 
-std::string currentName(fitsfile *fptr) {
+std::string currentName(fitsfile* fptr) {
   if (Header::hasKeyword(fptr, "EXTNAME")) {
     return Header::parseRecord<std::string>(fptr, "EXTNAME");
   }
@@ -49,7 +49,7 @@ std::string currentName(fitsfile *fptr) {
   return "";
 }
 
-FitsIO::HduType currentType(fitsfile *fptr) {
+FitsIO::HduType currentType(fitsfile* fptr) {
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
@@ -59,11 +59,11 @@ FitsIO::HduType currentType(fitsfile *fptr) {
   return FitsIO::HduType::Image;
 }
 
-bool currentIsPrimary(fitsfile *fptr) {
+bool currentIsPrimary(fitsfile* fptr) {
   return currentIndex(fptr) == 1;
 }
 
-bool gotoIndex(fitsfile *fptr, long index) {
+bool gotoIndex(fitsfile* fptr, long index) {
   if (index == currentIndex(fptr)) {
     return false;
   }
@@ -74,7 +74,7 @@ bool gotoIndex(fitsfile *fptr, long index) {
   return true;
 }
 
-bool gotoName(fitsfile *fptr, const std::string &name) {
+bool gotoName(fitsfile* fptr, const std::string& name) {
   if (name == "") {
     return false;
   }
@@ -90,7 +90,7 @@ bool gotoName(fitsfile *fptr, const std::string &name) {
   return true;
 }
 
-bool gotoNext(fitsfile *fptr, long step) {
+bool gotoNext(fitsfile* fptr, long step) {
   if (step == 0) {
     return false;
   }
@@ -101,11 +101,11 @@ bool gotoNext(fitsfile *fptr, long step) {
   return true;
 }
 
-bool gotoPrimary(fitsfile *fptr) {
+bool gotoPrimary(fitsfile* fptr) {
   return gotoIndex(fptr, 1);
 }
 
-bool initPrimary(fitsfile *fptr) {
+bool initPrimary(fitsfile* fptr) {
   if (count(fptr) > 0) {
     return false;
   }
@@ -113,7 +113,7 @@ bool initPrimary(fitsfile *fptr) {
   return true;
 }
 
-bool updateName(fitsfile *fptr, const std::string &name) {
+bool updateName(fitsfile* fptr, const std::string& name) {
   if (name == "") {
     return false;
   }
@@ -121,11 +121,11 @@ bool updateName(fitsfile *fptr, const std::string &name) {
   return true;
 }
 
-void createMetadataExtension(fitsfile *fptr, const std::string &name) {
+void createMetadataExtension(fitsfile* fptr, const std::string& name) {
   createImageExtension<unsigned char, 0>(fptr, name, FitsIO::Position<0>());
 }
 
-void deleteHdu(fitsfile *fptr, long index) {
+void deleteHdu(fitsfile* fptr, long index) {
   gotoIndex(fptr, index);
   int status = 0;
   fits_delete_hdu(fptr, nullptr, &status);

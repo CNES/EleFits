@@ -74,7 +74,7 @@ std::vector<T> generateRandomVector(long size, T min = halfMin<T>(), T max = hal
  * This is using BOOST_CHECK_EQUAL_COLLECTIONS.
  */
 template <typename T>
-void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &ref);
+void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& ref);
 
 /**
  * @brief Check whether a test value is approximately equal to a reference value.

@@ -64,7 +64,7 @@ void checkClose(std::complex<double> value, std::complex<double> expected) {
 }
 
 template <typename T>
-void checkRecordIsReadBack(const std::string &label) {
+void checkRecordIsReadBack(const std::string& label) {
   FitsIO::Test::MinimalFile file;
   T value = FitsIO::Test::generateRandomValue<T>();
   std::string keyword = label.substr(0, 8);
@@ -78,7 +78,7 @@ void checkRecordIsReadBack(const std::string &label) {
 }
 
 template <>
-void checkRecordIsReadBack<unsigned long>(const std::string &label) {
+void checkRecordIsReadBack<unsigned long>(const std::string& label) {
   // Known CFitsIO bug: error if value is > max(long)
   (void)(label); // Silent "unused parameter" warning
 }
@@ -117,8 +117,8 @@ struct ValueList {
   std::string s;
 };
 
-void checkContains(const std::vector<std::string> &list, const std::vector<std::string> &values) {
-  for (const auto &v : values) {
+void checkContains(const std::vector<std::string>& list, const std::vector<std::string>& values) {
+  for (const auto& v : values) {
     BOOST_CHECK(std::find(list.begin(), list.end(), v) != list.end());
   }
 }
@@ -172,22 +172,22 @@ BOOST_FIXTURE_TEST_CASE(several_records_test, FitsIO::Test::MinimalFile) {
 }
 
 template <typename T>
-void checkRecordTypeid(T value, const std::vector<std::size_t> &validTypeCodes) {
+void checkRecordTypeid(T value, const std::vector<std::size_t>& validTypeCodes) {
   FitsIO::Test::MinimalFile f;
   FitsIO::Record<T> record { "KEYWORD", value };
   Header::writeRecord(f.fptr, record);
-  const auto &id = Header::recordTypeid(f.fptr, "KEYWORD").hash_code();
-  const auto &it = std::find(validTypeCodes.begin(), validTypeCodes.end(), id);
+  const auto& id = Header::recordTypeid(f.fptr, "KEYWORD").hash_code();
+  const auto& it = std::find(validTypeCodes.begin(), validTypeCodes.end(), id);
   BOOST_CHECK(it != validTypeCodes.end());
 }
 
 template <typename T>
-void checkRecordTypeidMin(const std::vector<std::size_t> &validTypeCodes) {
+void checkRecordTypeidMin(const std::vector<std::size_t>& validTypeCodes) {
   checkRecordTypeid(FitsIO::Test::almostMin<T>(), validTypeCodes);
 }
 
 template <typename T>
-void checkRecordTypeidMax(const std::vector<std::size_t> &validTypeCodes) {
+void checkRecordTypeidMax(const std::vector<std::size_t>& validTypeCodes) {
   checkRecordTypeid(FitsIO::Test::almostMax<T>(), validTypeCodes);
 }
 

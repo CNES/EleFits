@@ -25,12 +25,12 @@ namespace Euclid {
 namespace Cfitsio {
 namespace File {
 
-fitsfile *createAndOpen(const std::string &filename, CreatePolicy policy) {
+fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
   std::string cfitsioName = filename;
   if (policy == CreatePolicy::OverWrite) {
     cfitsioName.insert(0, 1, '!'); // CFitsIO convention
   }
-  fitsfile *fptr;
+  fitsfile* fptr;
   int status = 0;
   fits_create_file(&fptr, cfitsioName.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create file: " + filename);
@@ -38,8 +38,8 @@ fitsfile *createAndOpen(const std::string &filename, CreatePolicy policy) {
   return fptr;
 }
 
-fitsfile *open(const std::string &filename, OpenPolicy policy) {
-  fitsfile *fptr;
+fitsfile* open(const std::string& filename, OpenPolicy policy) {
+  fitsfile* fptr;
   int status = 0;
   int permission = READONLY;
   if (policy == OpenPolicy::ReadWrite) {
@@ -50,7 +50,7 @@ fitsfile *open(const std::string &filename, OpenPolicy policy) {
   return fptr;
 }
 
-void close(fitsfile *&fptr) {
+void close(fitsfile*& fptr) {
   if (not fptr) {
     return;
   }
@@ -60,7 +60,7 @@ void close(fitsfile *&fptr) {
   fptr = nullptr;
 }
 
-void closeAndDelete(fitsfile *&fptr) {
+void closeAndDelete(fitsfile*& fptr) {
   if (not fptr) {
     return;
   }
@@ -71,7 +71,7 @@ void closeAndDelete(fitsfile *&fptr) {
   fptr = nullptr;
 }
 
-std::string name(fitsfile *fptr) {
+std::string name(fitsfile* fptr) {
   int status = 0;
   char filename[FLEN_FILENAME];
   fits_file_name(fptr, filename, &status);
@@ -79,7 +79,7 @@ std::string name(fitsfile *fptr) {
   return filename;
 }
 
-bool isWritable(fitsfile *fptr) {
+bool isWritable(fitsfile* fptr) {
   int status = 0;
   int filemode;
   fits_file_mode(fptr, &filemode, &status);

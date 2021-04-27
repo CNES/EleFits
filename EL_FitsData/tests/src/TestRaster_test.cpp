@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE(TestRaster_test)
 //-----------------------------------------------------------------------------
 
 template <typename T, long n>
-void checkRasterEqualsItself(const Raster<T, n> &raster) {
+void checkRasterEqualsItself(const Raster<T, n>& raster) {
   BOOST_CHECK(Test::rasterApprox(raster, raster));
 }
 
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(small_raster_equals_itself_test) {
 EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
 
 template <typename T, long n>
-void checkRastersWithDifferentShapesDiffer(const Raster<T, n> &raster) {
+void checkRastersWithDifferentShapesDiffer(const Raster<T, n>& raster) {
   auto shape = raster.shape;
   shape[0]++;
   VecRaster<T, n> other(shape);
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(small_rasters_with_different_shapes_differ_test) {
 EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 
 template <typename T, long n>
-void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n> &raster) {
+void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n>& raster) {
   VecRaster<T, n> other(raster.shape);
   BOOST_CHECK(not Test::rasterApprox(other, raster));
   BOOST_CHECK(not Test::rasterApprox(raster, other));

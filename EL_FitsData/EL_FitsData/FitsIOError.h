@@ -42,19 +42,19 @@ public:
    * @brief Constructor.
    * @param message Input message
    */
-  explicit FitsIOError(const std::string &message);
+  explicit FitsIOError(const std::string& message);
 
   /**
    * @brief Output message.
    */
-  const char *what() const noexcept override;
+  const char* what() const noexcept override;
 
   /**
    * @brief Append some line to the message.
    * @param line The line to be appended
    * @param indent Some indentation level
    */
-  void append(const std::string &line, std::size_t indent = 0);
+  void append(const std::string& line, std::size_t indent = 0);
 
 private:
   static const std::string m_prefix;
@@ -71,12 +71,12 @@ public:
    * @details
    * The error message is of the form "<prefix>: <value> not in (<min>, <max>)".
    */
-  OutOfBoundsError(const std::string &prefix, long value, std::pair<long, long> bounds);
+  OutOfBoundsError(const std::string& prefix, long value, std::pair<long, long> bounds);
 
   /**
    * @brief Throw if a value lies out of given bounds, included.
    */
-  static void mayThrow(const std::string &prefix, long value, std::pair<long, long> bounds);
+  static void mayThrow(const std::string& prefix, long value, std::pair<long, long> bounds);
 };
 
 } // namespace FitsIO

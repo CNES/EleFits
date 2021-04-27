@@ -30,7 +30,7 @@ namespace FitsIO {
 namespace Test {
 
 template <typename T>
-VecColumn<T> RandomTable::generateColumn(const std::string &typeName, long repeatCount, long rowCount) {
+VecColumn<T> RandomTable::generateColumn(const std::string& typeName, long repeatCount, long rowCount) {
   std::vector<std::string> typeChunks;
   std::string chunk;
   std::istringstream chunkStream(typeName);
@@ -51,13 +51,13 @@ VecColumn<T> RandomTable::generateColumn(const std::string &typeName, long repea
 }
 
 template <typename T>
-const VecColumn<T> &RandomTable::getColumn() const {
+const VecColumn<T>& RandomTable::getColumn() const {
   return std::get<VecColumn<T>>(columns);
 }
 
 template <typename T>
-VecColumn<T> &RandomTable::getColumn() {
-  return const_cast<VecColumn<T> &>(const_cast<const RandomTable *>(this)->getColumn<T>());
+VecColumn<T>& RandomTable::getColumn() {
+  return const_cast<VecColumn<T>&>(const_cast<const RandomTable*>(this)->getColumn<T>());
 }
 
 template <typename T>
@@ -68,7 +68,7 @@ RandomScalarColumn<T>::RandomScalarColumn(long size, T min, T max) :
 template <>
 RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, std::string max) :
     VecColumn<std::string>({ "SCALAR", "m", 1 }, generateRandomVector<std::string>(size, min, max)) {
-  for (const auto &v : vector()) {
+  for (const auto& v : vector()) {
     long currentSize = static_cast<long>(v.length() + 1); // +1 for '\0'
     if (currentSize > info.repeatCount) {
       info.repeatCount = currentSize;

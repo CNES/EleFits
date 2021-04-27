@@ -37,25 +37,25 @@ const std::vector<std::string> StandardKeyword::m_reserveds = {
 
 const std::vector<std::string> StandardKeyword::m_comments = { "COMMENT", "HISTORY" };
 
-const std::map<KeywordCategory, const std::vector<std::string> &> StandardKeyword::byCategory() {
+const std::map<KeywordCategory, const std::vector<std::string>&> StandardKeyword::byCategory() {
   return { { KeywordCategory::Mandatory, m_mandatories },
            { KeywordCategory::Reserved, m_reserveds },
            { KeywordCategory::Comment, m_comments } };
 }
 
 std::vector<std::string>
-StandardKeyword::filterCategories(const std::vector<std::string> &keywords, KeywordCategory categories) {
+StandardKeyword::filterCategories(const std::vector<std::string>& keywords, KeywordCategory categories) {
   std::vector<std::string> res;
-  const auto it = std::copy_if(keywords.begin(), keywords.end(), res.begin(), [&](const std::string &k) {
+  const auto it = std::copy_if(keywords.begin(), keywords.end(), res.begin(), [&](const std::string& k) {
     return belongsCategories(k, categories);
   });
   res.resize(std::distance(res.begin(), it));
   return res;
 }
 
-bool StandardKeyword::belongsCategories(const std::string &keyword, KeywordCategory categories) {
+bool StandardKeyword::belongsCategories(const std::string& keyword, KeywordCategory categories) {
   const auto standards = byCategory();
-  for (const auto &s : standards) { // TODO Could be std::any_of but would it be readable?
+  for (const auto& s : standards) { // TODO Could be std::any_of but would it be readable?
     if (categories & s.first) {
       if (matchesOneOf(keyword, s.second)) {
         return true;
@@ -64,7 +64,7 @@ bool StandardKeyword::belongsCategories(const std::string &keyword, KeywordCateg
   }
   // At that point, we know the keyword is not in the selected standard categories.
   if (categories & KeywordCategory::User) {
-    for (const auto &s : standards) { // TODO Could be std::none_of but would it be readable?
+    for (const auto& s : standards) { // TODO Could be std::none_of but would it be readable?
       if (matchesOneOf(keyword, s.second)) { // TODO could smarter and not redo matching (e.g. store category vs. match)
         return false;
       }
@@ -75,14 +75,14 @@ bool StandardKeyword::belongsCategories(const std::string &keyword, KeywordCateg
   return false;
 }
 
-bool StandardKeyword::matches(const std::string &test, const std::string &ref) {
+bool StandardKeyword::matches(const std::string& test, const std::string& ref) {
   if (test == ref) {
     return true;
   }
   return matchesIndexed(test, ref);
 }
 
-bool StandardKeyword::matchesIndexed(const std::string &test, const std::string &ref) {
+bool StandardKeyword::matchesIndexed(const std::string& test, const std::string& ref) {
   const auto split = ref.length() - 1;
   if (test.length() <= split) {
     return false;
@@ -103,8 +103,8 @@ bool StandardKeyword::matchesIndexed(const std::string &test, const std::string 
   return true;
 }
 
-bool StandardKeyword::matchesOneOf(const std::string &keyword, const std::vector<std::string> &refs) {
-  const auto pos = std::find_if(refs.begin(), refs.end(), [&](const std::string &test) {
+bool StandardKeyword::matchesOneOf(const std::string& keyword, const std::vector<std::string>& refs) {
+  const auto pos = std::find_if(refs.begin(), refs.end(), [&](const std::string& test) {
     return matches(keyword, test);
   });
   return pos != refs.end();

@@ -124,7 +124,7 @@ template <>
 std::vector<std::string> generateRandomVector<std::string>(long size, std::string min, std::string max);
 
 template <typename T>
-void checkEqualVectors(const std::vector<T> &test, const std::vector<T> &expected) {
+void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
   // BOOST_CHECK_EQUAL_COLLECTIONS needs some values to be set from the test suite
   // so the header for it is included in the unit test sources only
   BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());

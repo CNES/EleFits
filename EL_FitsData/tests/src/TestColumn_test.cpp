@@ -44,9 +44,9 @@ BOOST_AUTO_TEST_CASE(names_are_all_different_test) {
   EL_FITSIO_FOREACH_COLUMN_TYPE(PUSH_BACK_NAME)
   BOOST_CHECK_EQUAL(names.size(), columnCount);
   for (long lhs = 0; lhs < columnCount; ++lhs) {
-    const auto &vlhs = names[lhs];
+    const auto& vlhs = names[lhs];
     for (long rhs = 0; rhs < lhs; ++rhs) {
-      const auto &vrhs = names[rhs];
+      const auto& vrhs = names[rhs];
       BOOST_CHECK_NE(vlhs, vrhs);
     }
   }

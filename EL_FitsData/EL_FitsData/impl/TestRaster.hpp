@@ -33,12 +33,12 @@ RandomRaster<T, n>::RandomRaster(Position<n> rasterShape, T min, T max) : VecRas
 }
 
 template <typename T, long n>
-bool RandomRaster<T, n>::approx(const Raster<T, n> &other, double tol) const {
+bool RandomRaster<T, n>::approx(const Raster<T, n>& other, double tol) const {
   return rasterApprox(*this, other, tol);
 }
 
 template <typename T, long n>
-bool rasterApprox(const Raster<T, n> &test, const Raster<T, n> &ref, double tol) {
+bool rasterApprox(const Raster<T, n>& test, const Raster<T, n>& ref, double tol) {
   if (test.shape != ref.shape) {
     return false;
   }

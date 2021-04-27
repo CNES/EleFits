@@ -48,12 +48,12 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  SifFile(const std::string &filename, Permission permission);
+  SifFile(const std::string& filename, Permission permission);
 
   /**
    * @brief Access the header.
    */
-  const RecordHdu &header() const;
+  const RecordHdu& header() const;
 
   /**
    * @brief Read the raster.
@@ -65,7 +65,7 @@ public:
    * @brief Write the raster (initialize primary HDU if not done).
    */
   template <typename T, long n>
-  void writeRaster(const Raster<T, n> &raster) const;
+  void writeRaster(const Raster<T, n>& raster) const;
 
 private:
   /** @brief The Primary (and only) HDU */

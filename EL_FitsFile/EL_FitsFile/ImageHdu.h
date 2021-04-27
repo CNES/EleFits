@@ -62,7 +62,7 @@ public:
   /**
    * @copydoc RecordHdu::RecordHdu
    */
-  ImageHdu(Token, fitsfile *&fptr, long index);
+  ImageHdu(Token, fitsfile*& fptr, long index);
 
   /// @endcond
 
@@ -74,7 +74,7 @@ public:
   /**
    * @brief Read the image pixel value type.
    */
-  const std::type_info &readTypeid() const;
+  const std::type_info& readTypeid() const;
 
   /**
    * @brief Read the image shape.
@@ -86,7 +86,7 @@ public:
    * @brief Redefine the image shape and type.
    */
   template <typename T, long n = 2>
-  void updateShape(const Position<n> &shape) const;
+  void updateShape(const Position<n>& shape) const;
 
   /**
    * @brief Read the Raster.
@@ -98,7 +98,7 @@ public:
    * @brief Write the Raster.
    */
   template <typename T, long n = 2>
-  void writeRaster(const Raster<T, n> &raster) const;
+  void writeRaster(const Raster<T, n>& raster) const;
 };
 
 } // namespace FitsIO

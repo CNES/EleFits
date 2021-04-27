@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_SUITE(CfitsioWrapper_test)
 BOOST_AUTO_TEST_CASE(smoke_test) {
   using namespace Euclid;
   using namespace Cfitsio;
-  fitsfile *fptr;
+  fitsfile* fptr;
   (void)fptr;
   using FitsIO::Record;
   using FitsIO::Column;

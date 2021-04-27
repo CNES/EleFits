@@ -26,7 +26,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Bintable {
 
-long columnCount(fitsfile *fptr) {
+long columnCount(fitsfile* fptr) {
   int status = 0;
   int ncols = 0;
   fits_get_num_cols(fptr, &ncols, &status);
@@ -34,7 +34,7 @@ long columnCount(fitsfile *fptr) {
   return ncols;
 }
 
-long rowCount(fitsfile *fptr) {
+long rowCount(fitsfile* fptr) {
   int status = 0;
   long nrows = 0;
   fits_get_num_rows(fptr, &nrows, &status);
@@ -42,14 +42,14 @@ long rowCount(fitsfile *fptr) {
   return nrows;
 }
 
-bool hasColumn(fitsfile *fptr, const std::string &name) {
+bool hasColumn(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
   return (status == 0) || (status == COL_NOT_UNIQUE);
 }
 
-long columnIndex(fitsfile *fptr, const std::string &name) {
+long columnIndex(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
@@ -61,9 +61,9 @@ namespace Internal {
 
 template <> // TODO clean
 void readColumnInfoImpl<std::string>(
-    fitsfile *fptr,
+    fitsfile* fptr,
     long index,
-    FitsIO::VecColumn<std::string> &column,
+    FitsIO::VecColumn<std::string>& column,
     long rowCount) {
   column.info = readColumnInfo<std::string>(fptr, index);
   column.vector() = std::vector<std::string>(rowCount);
@@ -71,9 +71,9 @@ void readColumnInfoImpl<std::string>(
 
 template <> // TODO clean
 void readColumnChunkImpl<std::string>(
-    fitsfile *fptr,
+    fitsfile* fptr,
     long index,
-    FitsIO::VecColumn<std::string> &column,
+    FitsIO::VecColumn<std::string>& column,
     long firstRow,
     long rowCount) {
   int status = 0;
@@ -86,9 +86,9 @@ void readColumnChunkImpl<std::string>(
       nullptr,
       &status); // TODO wrap?
   CfitsioError::mayThrow(status, fptr, "Cannot read type of column: #" + std::to_string(index - 1));
-  std::vector<char *> data(rowCount);
+  std::vector<char*> data(rowCount);
   std::generate(data.begin(), data.end(), [&]() {
-    return (char *)malloc(repeatCount);
+    return (char*)malloc(repeatCount);
   });
   fits_read_col(
       fptr,
@@ -111,9 +111,9 @@ void readColumnChunkImpl<std::string>(
 
 template <>
 void writeColumnChunkImpl<std::string>(
-    fitsfile *fptr,
+    fitsfile* fptr,
     long index,
-    const FitsIO::Column<std::string> &column,
+    const FitsIO::Column<std::string>& column,
     long firstRow,
     long rowCount) {
   int status = 0;
@@ -140,12 +140,12 @@ void writeColumnChunkImpl<std::string>(
 } // namespace Internal
 
 template <>
-FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, long index) {
+FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile* fptr, long index) {
   long rows = rowCount(fptr);
   FitsIO::VecColumn<std::string> column(readColumnInfo<std::string>(fptr, index), rows);
-  std::vector<char *> data(rows);
+  std::vector<char*> data(rows);
   std::generate(data.begin(), data.end(), [&]() {
-    return (char *)malloc(column.info.repeatCount);
+    return (char*)malloc(column.info.repeatCount);
   });
   int status = 0;
   fits_read_col(
@@ -169,7 +169,7 @@ FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile *fptr, long inde
 }
 
 template <>
-void writeColumn<std::string>(fitsfile *fptr, const FitsIO::Column<std::string> &column) {
+void writeColumn<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
   CStrArray array(begin, end);

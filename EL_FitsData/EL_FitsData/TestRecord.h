@@ -45,13 +45,13 @@ namespace Test {
  * - The comment is made of the first letter of the prefixes, a space, and the suffix, e.g. `"ul int"`.
  */
 template <typename T>
-static Record<T> generateRandomRecord(const std::string &typeName);
+static Record<T> generateRandomRecord(const std::string& typeName);
 
 /**
  * @brief Generate a random record.
  */
 template <typename T>
-static Record<T> generateRandomRecord(const std::string &k, const std::string &u, const std::string &c);
+static Record<T> generateRandomRecord(const std::string& k, const std::string& u, const std::string& c);
 
 /**
  * @brief A random set of Records.
@@ -102,13 +102,13 @@ struct RandomHeader {
    * @brief Get the record with given type.
    */
   template <typename T>
-  const Record<T> &getRecord() const;
+  const Record<T>& getRecord() const;
 
   /**
    * @brief Get the record with given type.
    */
   template <typename T>
-  Record<T> &getRecord();
+  Record<T>& getRecord();
 
   /**
    * @brief Get all the records.

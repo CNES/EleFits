@@ -62,18 +62,18 @@ long Column<T>::rowCount() const {
 }
 
 template <typename T>
-const T &Column<T>::operator()(long row, long repeat) const {
+const T& Column<T>::operator()(long row, long repeat) const {
   const long index = row * info.repeatCount + repeat;
   return *(data() + index);
 }
 
 template <typename T>
-T &Column<T>::operator()(long row, long repeat) {
-  return const_cast<T &>(const_cast<const Column *>(this)->operator()(row, repeat));
+T& Column<T>::operator()(long row, long repeat) {
+  return const_cast<T&>(const_cast<const Column*>(this)->operator()(row, repeat));
 }
 
 template <typename T>
-const T &Column<T>::at(long row, long repeat) const {
+const T& Column<T>::at(long row, long repeat) const {
   OutOfBoundsError::mayThrow("Cannot access row index", row, { -rowCount(), rowCount() - 1 });
   OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, { -info.repeatCount, info.repeatCount - 1 });
   const long boundedRow = row < 0 ? rowCount() + row : row;
@@ -82,12 +82,12 @@ const T &Column<T>::at(long row, long repeat) const {
 }
 
 template <typename T>
-T &Column<T>::at(long row, long repeat) {
-  return const_cast<T &>(const_cast<const Column *>(this)->at(row, repeat));
+T& Column<T>::at(long row, long repeat) {
+  return const_cast<T&>(const_cast<const Column*>(this)->at(row, repeat));
 }
 
 template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T *data) :
+PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T* data) :
     Column<T>(columnInfo),
     m_nelements(elementCount),
     m_data(data) {
@@ -99,12 +99,12 @@ long PtrColumn<T>::elementCount() const {
 }
 
 template <typename T>
-const T *PtrColumn<T>::data() const {
+const T* PtrColumn<T>::data() const {
   return m_data;
 }
 
 template <typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T> &vecRef) :
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vecRef) :
     Column<T>(columnInfo),
     m_ref(vecRef) {
 }
@@ -115,12 +115,12 @@ long VecRefColumn<T>::elementCount() const {
 }
 
 template <typename T>
-const T *VecRefColumn<T>::data() const {
+const T* VecRefColumn<T>::data() const {
   return m_ref.data();
 }
 
 template <typename T>
-const std::vector<T> &VecRefColumn<T>::vector() const {
+const std::vector<T>& VecRefColumn<T>::vector() const {
   return m_ref;
 }
 
@@ -147,22 +147,22 @@ long VecColumn<T>::elementCount() const {
 }
 
 template <typename T>
-const T *VecColumn<T>::data() const {
+const T* VecColumn<T>::data() const {
   return m_vec.data();
 }
 
 template <typename T>
-T *VecColumn<T>::data() {
-  return const_cast<T *>(const_cast<const VecColumn *>(this)->data());
+T* VecColumn<T>::data() {
+  return const_cast<T*>(const_cast<const VecColumn*>(this)->data());
 }
 
 template <typename T>
-const std::vector<T> &VecColumn<T>::vector() const {
+const std::vector<T>& VecColumn<T>::vector() const {
   return m_vec;
 }
 
 template <typename T>
-std::vector<T> &VecColumn<T>::vector() {
+std::vector<T>& VecColumn<T>::vector() {
   return m_vec;
 }
 

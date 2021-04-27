@@ -22,20 +22,20 @@
 namespace Euclid {
 namespace Cfitsio {
 
-std::unique_ptr<char[]> toCharPtr(const std::string &str) {
+std::unique_ptr<char[]> toCharPtr(const std::string& str) {
   const long size = str.length();
   auto c_str = std::make_unique<char[]>(size + 1);
   strcpy(c_str.get(), str.c_str());
   return c_str;
 }
 
-CStrArray::CStrArray(const std::vector<std::string> &data) : CStrArray(data.begin(), data.end()) {
+CStrArray::CStrArray(const std::vector<std::string>& data) : CStrArray(data.begin(), data.end()) {
 }
 
-CStrArray::CStrArray(const std::initializer_list<std::string> &data) : CStrArray(data.begin(), data.end()) {
+CStrArray::CStrArray(const std::initializer_list<std::string>& data) : CStrArray(data.begin(), data.end()) {
 }
 
-char **CStrArray::data() {
+char** CStrArray::data() {
   return cStrVector.data();
 }
 

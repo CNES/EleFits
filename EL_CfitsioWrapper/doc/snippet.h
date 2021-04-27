@@ -10,29 +10,29 @@
 #include <vector>
 
 template <typename T>
-T parseRecord(const std::string &keyword) {
+T parseRecord(const std::string& keyword) {
   T val(1.5);
   std::cout << keyword << '\t' << val << std::endl;
   return val;
 }
 
 template <typename... Ts, long... Is>
-std::tuple<Ts...> RecordLooperImpl(const std::vector<std::string> &keywords, std::index_sequence<Is...>) {
+std::tuple<Ts...> RecordLooperImpl(const std::vector<std::string>& keywords, std::index_sequence<Is...>) {
   return std::tuple<Ts...> { parseRecord<Ts>(keywords[Is])... };
 }
 
 template <class Return, typename... Ts, long... Is>
-Return parseRecordsAsImpl(const std::vector<std::string> &keywords, std::index_sequence<Is...>) {
+Return parseRecordsAsImpl(const std::vector<std::string>& keywords, std::index_sequence<Is...>) {
   return { parseRecord<Ts>(keywords[Is])... };
 }
 
 template <typename... Ts>
-std::tuple<Ts...> parseRecords(const std::vector<std::string> &keywords) {
+std::tuple<Ts...> parseRecords(const std::vector<std::string>& keywords) {
   return RecordLooperImpl<Ts...>(keywords, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <class Return, typename... Ts>
-Return parseRecordsAs(const std::vector<std::string> &keywords) {
+Return parseRecordsAs(const std::vector<std::string>& keywords) {
   return parseRecordsAsImpl<Return, Ts...>(keywords, std::make_index_sequence<sizeof...(Ts)>());
 }
 

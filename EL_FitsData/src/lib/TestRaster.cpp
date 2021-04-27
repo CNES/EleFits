@@ -34,7 +34,7 @@ SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
   }
 }
 
-bool SmallRaster::approx(const Raster<float> &other, double tol) const {
+bool SmallRaster::approx(const Raster<float>& other, double tol) const {
   return rasterApprox(*this, other, tol);
 }
 

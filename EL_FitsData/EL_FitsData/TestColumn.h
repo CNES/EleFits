@@ -50,19 +50,19 @@ struct RandomTable {
    * @param rowCount The row count.
    */
   template <typename T>
-  static VecColumn<T> generateColumn(const std::string &typeName, long repeatCount = 1, long rowCount = 3);
+  static VecColumn<T> generateColumn(const std::string& typeName, long repeatCount = 1, long rowCount = 3);
 
   /**
    * @brief Get the column with given value type.
    */
   template <typename T>
-  const VecColumn<T> &getColumn() const;
+  const VecColumn<T>& getColumn() const;
 
   /**
    * @brief Get the column with given value type.
    */
   template <typename T>
-  VecColumn<T> &getColumn();
+  VecColumn<T>& getColumn();
 
   /**
    * @brief The columns.

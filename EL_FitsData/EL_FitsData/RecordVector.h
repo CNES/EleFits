@@ -44,7 +44,7 @@ public:
    * @brief Create a RecordVector from a list of records.
    */
   template <typename... Ts>
-  explicit RecordVector(const Record<Ts> &... records);
+  explicit RecordVector(const Record<Ts>&... records);
 
   /**
    * @brief The records.
@@ -54,12 +54,12 @@ public:
   /**
    * @brief Find the first record with given keyword.
    */
-  const Record<T> &operator[](const std::string &keyword) const;
+  const Record<T>& operator[](const std::string& keyword) const;
 
   /**
    * @brief Find the first record with given keyword.
    */
-  Record<T> &operator[](const std::string &keyword);
+  Record<T>& operator[](const std::string& keyword);
 
   /**
    * @brief Find and cast the first record with given keyword.
@@ -74,7 +74,7 @@ public:
    * \endcode
    */
   template <typename TValue>
-  Record<TValue> as(const std::string &keyword) const;
+  Record<TValue> as(const std::string& keyword) const;
 };
 
 } // namespace FitsIO

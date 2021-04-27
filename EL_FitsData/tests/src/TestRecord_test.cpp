@@ -30,16 +30,16 @@ BOOST_FIXTURE_TEST_SUITE(TestRecord_test, Test::RandomHeader)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkFieldsAreAllSet(const Test::RandomHeader &header) {
-  const auto &record = header.getRecord<T>();
+void checkFieldsAreAllSet(const Test::RandomHeader& header) {
+  const auto& record = header.getRecord<T>();
   BOOST_CHECK(not record.keyword.empty());
   BOOST_CHECK(not record.unit.empty());
   BOOST_CHECK(not record.comment.empty());
 }
 
 template <typename T>
-void checkFieldsAreAllDifferent(const Test::RandomHeader &header) {
-  const auto &record = header.getRecord<T>();
+void checkFieldsAreAllDifferent(const Test::RandomHeader& header) {
+  const auto& record = header.getRecord<T>();
   BOOST_CHECK_NE(record.keyword, record.unit);
   BOOST_CHECK_NE(record.unit, record.comment);
   BOOST_CHECK_NE(record.comment, record.keyword);
@@ -63,9 +63,9 @@ BOOST_AUTO_TEST_CASE(keywords_are_all_different_test) {
   const auto v = allRecords().vector;
   BOOST_CHECK_EQUAL(v.size(), recordCount);
   for (long lhs = 0; lhs < recordCount; ++lhs) {
-    const auto &vlhs = v[lhs];
+    const auto& vlhs = v[lhs];
     for (long rhs = 0; rhs < lhs; ++rhs) {
-      const auto &vrhs = v[rhs];
+      const auto& vrhs = v[rhs];
       BOOST_CHECK_NE(vlhs.keyword, vrhs.keyword);
     }
   }

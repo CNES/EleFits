@@ -40,7 +40,7 @@ namespace Cfitsio {
  * f(toCharPtr(s).get());
  * \endcode
  */
-std::unique_ptr<char[]> toCharPtr(const std::string &str);
+std::unique_ptr<char[]> toCharPtr(const std::string& str);
 
 /**
  * @brief A helper structure to safely convert `vector<string>` to `char **`.
@@ -64,12 +64,12 @@ struct CStrArray {
   /**
    * @brief Create from a vector.
    */
-  explicit CStrArray(const std::vector<std::string> &data);
+  explicit CStrArray(const std::vector<std::string>& data);
 
   /**
    * @brief Create from an initializer_list.
    */
-  explicit CStrArray(const std::initializer_list<std::string> &data);
+  explicit CStrArray(const std::initializer_list<std::string>& data);
 
   /**
    * @brief A vector of smart pointers to `char[]`.
@@ -83,12 +83,12 @@ struct CStrArray {
    * @warning
    * Modification makes CStrArray object invalid.
    */
-  std::vector<char *> cStrVector;
+  std::vector<char*> cStrVector;
 
   /**
    * @brief Get the data as a non-const `char **`.
    */
-  char **data();
+  char** data();
 };
 
 } // namespace Cfitsio

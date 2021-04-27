@@ -64,7 +64,7 @@ public:
     return options;
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value> &args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_Cfitsio_Example");
 
@@ -75,7 +75,7 @@ public:
     logger.info() << "Creating Fits file: " << filename;
     int status = 0;
     //! [Create Fits]
-    fitsfile *fptr;
+    fitsfile* fptr;
     fits_create_file(&fptr, (std::string("!") + filename).c_str(), &status);
     long naxis0 = 0;
     fits_create_img(fptr, BYTE_IMG, 1, &naxis0, &status);
@@ -123,13 +123,13 @@ public:
     //! [Create image ext]
     SmallImage image;
     fits_create_img(fptr, FLOAT_IMG, 2, image.naxes, &status);
-    char *extname = const_cast<char *>("SMALLIMG");
+    char* extname = const_cast<char*>("SMALLIMG");
     fits_write_key(fptr, TSTRING, "EXTNAME", extname, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create image extension");
     fits_write_img(fptr, TFLOAT, 1, 6, image.data, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot write raster");
     //! [Create image ext]
-    char *recordString = const_cast<char *>("string");
+    char* recordString = const_cast<char*>("string");
     int recordInteger = 8;
     logger.info() << "Writing record: STRING = string";
     fits_write_key(fptr, TSTRING, "STRING", recordString, nullptr, &status);
@@ -163,7 +163,7 @@ public:
 
     logger.info() << "Reading binary table.";
     //! [Find HDU by name]
-    fits_movnam_hdu(fptr, ANY_HDU, const_cast<char *>("SMALLTBL"), 0, &status);
+    fits_movnam_hdu(fptr, ANY_HDU, const_cast<char*>("SMALLTBL"), 0, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot move to binary table extension");
     //! [Find HDU by name]
     //! [Get HDU index]
@@ -173,7 +173,7 @@ public:
     logger.info() << "HDU index: " << index;
     //! [Read column]
     int colnum;
-    fits_get_colnum(fptr, CASESEN, const_cast<char *>("ID"), &colnum, &status);
+    fits_get_colnum(fptr, CASESEN, const_cast<char*>("ID"), &colnum, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot find column ID");
     int ids[table.rows];
     fits_read_col(fptr, TINT, colnum, 1, 1, table.rows, nullptr, ids, nullptr, &status);
@@ -181,11 +181,11 @@ public:
     const auto firstCell = ids[0];
     //! [Read column]
     logger.info() << "First id: " << firstCell;
-    fits_get_colnum(fptr, CASESEN, const_cast<char *>("NAME"), &colnum, &status);
+    fits_get_colnum(fptr, CASESEN, const_cast<char*>("NAME"), &colnum, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot find column NAME");
-    char *names[table.rows];
+    char* names[table.rows];
     for (int i = 0; i < table.rows; ++i) {
-      names[i] = (char *)malloc(68);
+      names[i] = (char*)malloc(68);
     }
     fits_read_col(fptr, TSTRING, colnum, 1, 1, table.rows, nullptr, names, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read column NAME");
@@ -202,13 +202,13 @@ public:
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot move to image extension");
     //! [Find HDU by index]
     //! [Get HDU name]
-    char *extnameRead = (char *)malloc(69);
+    char* extnameRead = (char*)malloc(69);
     fits_read_key(fptr, TSTRING, "EXTNAME", extnameRead, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read extension name");
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extnameRead;
     free(extnameRead);
-    char *stringRead = (char *)malloc(69);
+    char* stringRead = (char*)malloc(69);
     fits_read_key(fptr, TSTRING, "STRING", stringRead, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read STRING record");
     logger.info() << "Reading record: STRING = " << stringRead;

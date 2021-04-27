@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   Test::RandomVectorColumn<int> column(repeatCount, rowCount);
   column.at(1, -1) = 1;
   BOOST_CHECK_EQUAL(column.at(1, -1), 1);
-  const auto &vec = column.vector();
+  const auto& vec = column.vector();
   BOOST_CHECK_EQUAL(column.at(0), vec[0]);
   BOOST_CHECK_EQUAL(column.at(-1), vec[(rowCount - 1) * repeatCount]);
   BOOST_CHECK_EQUAL(column.at(-rowCount), vec[0]);

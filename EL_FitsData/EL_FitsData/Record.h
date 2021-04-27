@@ -91,7 +91,7 @@ struct Record {
    * @param u The unit.
    * @param c The comment.
    */
-  Record(const std::string &k = "", T v = T(), const std::string &u = "", const std::string &c = "");
+  Record(const std::string& k = "", T v = T(), const std::string& u = "", const std::string& c = "");
 
   /**
    * @brief Create a Record from a Record of another type.
@@ -103,13 +103,13 @@ struct Record {
    * @see cast
    */
   template <typename TOther>
-  explicit Record(const Record<TOther> &other);
+  explicit Record(const Record<TOther>& other);
 
   /**
    * @brief Copy a Record of another type.
    */
   template <typename TOther>
-  Record<T> &assign(const Record<TOther> &other);
+  Record<T>& assign(const Record<TOther>& other);
 
   /**
    * @brief Helper function to cast Record value types.
@@ -200,7 +200,7 @@ struct Record {
  * Equality of keyword, value, unit and comment is tested.
  */
 template <typename T>
-bool operator==(const Record<T> &lhs, const Record<T> &rhs) {
+bool operator==(const Record<T>& lhs, const Record<T>& rhs) {
   if (lhs.keyword != rhs.keyword) {
     return false;
   }
@@ -220,7 +220,7 @@ bool operator==(const Record<T> &lhs, const Record<T> &rhs) {
  * @brief Check whether two records are different.
  */
 template <typename T>
-bool operator!=(const Record<T> &lhs, const Record<T> &rhs) {
+bool operator!=(const Record<T>& lhs, const Record<T>& rhs) {
   return not(lhs == rhs);
 }
 
