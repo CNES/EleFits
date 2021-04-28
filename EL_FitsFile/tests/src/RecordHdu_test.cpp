@@ -86,8 +86,9 @@ BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::Temporar
 BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifFile) {
   const auto& h = this->header();
   const std::string shortStr = "S";
-  const std::string longStr = "This is probably one of the longest strings "
-                              "that I have ever written in a serious code.";
+  const std::string longStr =
+      "This is probably one of the longest strings "
+      "that I have ever written in a serious code.";
   BOOST_CHECK_GT(longStr.length(), FLEN_VALUE);
   h.writeRecord<std::string>("SHORT", shortStr);
   BOOST_CHECK_THROW(h.parseRecord<std::string>("LONGSTRN"), std::exception); // TODO replace with not h.hasKeyword()

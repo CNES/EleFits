@@ -115,8 +115,8 @@ FitsIO::Record<bool> parseRecord<bool>(fitsfile* fptr, const std::string& keywor
 }
 
 template <>
-FitsIO::Record<std::string>
-parseRecord<std::string>(fitsfile* fptr, const std::string& keyword) { // TODO rm duplication
+FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::string& keyword) {
+  // TODO rm duplication
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
