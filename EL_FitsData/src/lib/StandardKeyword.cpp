@@ -65,7 +65,8 @@ bool StandardKeyword::belongsCategories(const std::string& keyword, KeywordCateg
   // At that point, we know the keyword is not in the selected standard categories.
   if (categories & KeywordCategory::User) {
     for (const auto& s : standards) { // TODO Could be std::none_of but would it be readable?
-      if (matchesOneOf(keyword, s.second)) { // TODO could smarter and not redo matching (e.g. store category vs. match)
+      if (matchesOneOf(keyword, s.second)) {
+        // TODO could smarter and not redo matching (e.g. store category vs. match)
         return false;
       }
     }

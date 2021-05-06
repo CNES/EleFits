@@ -17,8 +17,8 @@
  *
  */
 
-#include "ElementsKernel/Unused.h"
 #include "EL_FitsData/Column.h"
+#include "ElementsKernel/Unused.h"
 
 namespace Euclid {
 namespace FitsIO {

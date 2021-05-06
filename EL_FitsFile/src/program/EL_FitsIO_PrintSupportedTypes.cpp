@@ -20,9 +20,9 @@
 #include <map>
 #include <string>
 
-#include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
 #include "ElementsKernel/Unused.h"
+#include <boost/program_options.hpp>
 
 #include "EL_FitsData/TestColumn.h"
 #include "EL_FitsData/TestRaster.h"

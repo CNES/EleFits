@@ -20,15 +20,15 @@
 #include <map>
 #include <string>
 
-#include <boost/program_options.hpp>
 #include "ElementsKernel/ProgramHeaders.h"
+#include <boost/program_options.hpp>
 
 #include "EL_FitsData/TestRaster.h"
 #include "EL_FitsFile/MefFile.h"
 
 using boost::program_options::options_description;
-using boost::program_options::variable_value;
 using boost::program_options::value;
+using boost::program_options::variable_value;
 
 using namespace Euclid;
 using namespace FitsIO;

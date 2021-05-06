@@ -21,9 +21,9 @@
 
 #include "EL_FitsData/TestRaster.h"
 
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/ImageWrapper.h"
-#include "EL_CfitsioWrapper/CfitsioFixture.h"
 
 using namespace Euclid;
 using namespace Cfitsio;

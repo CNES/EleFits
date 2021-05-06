@@ -24,8 +24,8 @@
 #include <complex>
 #include <string>
 
-#include "EL_FitsData/TestUtils.h"
 #include "EL_FitsData/Raster.h"
+#include "EL_FitsData/TestUtils.h"
 
 namespace Euclid {
 namespace FitsIO {

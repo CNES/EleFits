@@ -21,6 +21,7 @@
 
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
+#include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -47,6 +48,34 @@ bool hasColumn(fitsfile* fptr, const std::string& name) {
   int status = 0;
   fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
   return (status == 0) || (status == COL_NOT_UNIQUE);
+}
+
+std::string columnName(fitsfile* fptr, long index) {
+  int status = 0;
+  char ttype[FLEN_VALUE];
+  fits_get_bcolparms(
+      fptr,
+      index, // 1-based here
+      ttype,
+      nullptr, // tunit
+      nullptr, // dtype
+      nullptr, // repeat
+      nullptr, // tscal
+      nullptr, // tzero
+      nullptr, // tnull
+      nullptr, // tdisp
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot find name of column: " + std::to_string(index - 1));
+  return ttype;
+}
+
+void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
+  const std::string keyword = "TTYPE" + std::to_string(index);
+  Cfitsio::Header::updateRecord<std::string>(fptr, { keyword, newName });
+  int status = 0;
+  fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
+  // FIXME fits_set_hdustruc is DEPRECATED
+  CfitsioError::mayThrow(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
 }
 
 long columnIndex(fitsfile* fptr, const std::string& name) {

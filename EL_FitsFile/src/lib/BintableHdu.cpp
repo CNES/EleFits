@@ -50,6 +50,34 @@ std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string>& names)
   return counts;
 }
 
+long BintableHdu::readColumnIndex(const std::string& name) const {
+  gotoThisHdu();
+  return Cfitsio::Bintable::columnIndex(m_fptr, name) - 1;
+}
+
+std::string BintableHdu::readColumnName(long index) const {
+  gotoThisHdu();
+  return Cfitsio::Bintable::columnName(m_fptr, index + 1);
+}
+
+std::vector<std::string> BintableHdu::readColumnNames() const {
+  const auto size = readColumnCount(); // calls gotoThisHdu
+  std::vector<std::string> names(size);
+  for (long i = 0; i < size; ++i) {
+    names[i] = Cfitsio::Bintable::columnName(m_fptr, i + 1);
+  }
+  return names;
+}
+
+void BintableHdu::renameColumn(const std::string& name, const std::string& newName) const {
+  renameColumn(readColumnIndex(name), newName);
+}
+
+void BintableHdu::renameColumn(long index, const std::string& newName) const {
+  gotoThisHdu();
+  Cfitsio::Bintable::updateColumnName(m_fptr, index + 1, newName);
+}
+
 #ifndef COMPILE_READ_COLUMN
 #define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
 EL_FITSIO_FOREACH_COLUMN_TYPE(COMPILE_READ_COLUMN)

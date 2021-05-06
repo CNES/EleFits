@@ -21,9 +21,9 @@
 
 #include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsFile/MefFile.h"
-#include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsData/TestColumn.h"
+#include "EL_FitsFile/FitsFileFixture.h"
+#include "EL_FitsFile/MefFile.h"
 
 #include "EL_FitsFile/BintableHdu.h"
 
@@ -118,6 +118,25 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto byIndex = ext.readColumns(Indexed<int>(0), Indexed<float>(1));
   Test::checkEqualVectors(std::get<0>(byIndex).vector(), intColumn.vector());
   Test::checkEqualVectors(std::get<1>(byIndex).vector(), floatColumn.vector());
+}
+
+BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
+  std::vector<ColumnInfo<int>> header { { "A" }, { "B" }, { "C" } };
+  const auto& ext = initBintableExt("TABLE", header[0], header[1], header[2]);
+  auto names = ext.readColumnNames();
+  for (long i = 0; i < header.size(); ++i) {
+    BOOST_CHECK_EQUAL(ext.readColumnName(i), header[i].name);
+    BOOST_CHECK_EQUAL(names[i], header[i].name);
+  }
+  header[0].name = "A2";
+  header[2].name = "C2";
+  ext.renameColumn(0, header[0].name);
+  ext.renameColumn("C", header[2].name);
+  names = ext.readColumnNames();
+  for (long i = 0; i < header.size(); ++i) {
+    BOOST_CHECK_EQUAL(ext.readColumnName(i), header[i].name);
+    BOOST_CHECK_EQUAL(names[i], header[i].name);
+  }
 }
 
 //-----------------------------------------------------------------------------

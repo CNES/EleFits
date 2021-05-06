@@ -26,8 +26,8 @@
 
 #include "ElementsKernel/Logging.h"
 
-#include "EL_FitsData/Raster.h"
 #include "EL_FitsData/Column.h"
+#include "EL_FitsData/Raster.h"
 
 #include "EL_FitsIO_Validation/Chronometer.h"
 

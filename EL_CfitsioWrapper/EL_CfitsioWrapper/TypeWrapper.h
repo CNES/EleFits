@@ -20,8 +20,8 @@
 #ifndef _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
 #define _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
 
-#include <fitsio.h>
 #include <complex>
+#include <fitsio.h>
 #include <string>
 #include <vector>
 

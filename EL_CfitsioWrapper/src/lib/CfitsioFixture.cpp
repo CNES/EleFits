@@ -17,8 +17,8 @@
  *
  */
 
-#include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
+#include "EL_CfitsioWrapper/FileWrapper.h"
 
 namespace Euclid {
 namespace FitsIO {

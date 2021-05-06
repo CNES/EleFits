@@ -20,14 +20,14 @@
 #ifndef _EL_CFITSIOWRAPPER_CFITSIOWRAPPER_H
 #define _EL_CFITSIOWRAPPER_CFITSIOWRAPPER_H
 
+#include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
-#include "EL_CfitsioWrapper/TypeWrapper.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 #include "EL_CfitsioWrapper/ImageWrapper.h"
-#include "EL_CfitsioWrapper/BintableWrapper.h"
+#include "EL_CfitsioWrapper/TypeWrapper.h"
 
 /**
  * @brief Euclid SGS namespace.

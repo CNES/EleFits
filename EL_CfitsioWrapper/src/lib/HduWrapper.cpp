@@ -17,8 +17,8 @@
  *
  */
 
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
+#include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {

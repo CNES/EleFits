@@ -23,9 +23,9 @@
 
 #include "EL_FitsData/TestRecord.h"
 
+#include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsFile/MefFile.h"
 #include "EL_FitsFile/SifFile.h"
-#include "EL_FitsFile/FitsFileFixture.h"
 
 #include "EL_FitsFile/RecordHdu.h"
 

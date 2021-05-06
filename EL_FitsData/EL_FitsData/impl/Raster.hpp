@@ -22,8 +22,8 @@
 #include <functional> // multiplies
 #include <numeric> // accumulate
 
-#include "EL_FitsData/Raster.h"
 #include "EL_FitsData/FitsIOError.h"
+#include "EL_FitsData/Raster.h"
 
 namespace Euclid {
 namespace FitsIO {

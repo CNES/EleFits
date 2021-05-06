@@ -20,9 +20,9 @@
 #include <map>
 #include <string>
 
+#include "ElementsKernel/ProgramHeaders.h"
 #include <boost/any.hpp>
 #include <boost/program_options.hpp>
-#include "ElementsKernel/ProgramHeaders.h"
 
 //! [Include fixtures]
 #include "EL_FitsData/TestColumn.h"
@@ -40,8 +40,8 @@ using namespace Euclid;
 //! [Include]
 
 using boost::program_options::options_description;
-using boost::program_options::variable_value;
 using boost::program_options::value;
+using boost::program_options::variable_value;
 
 static Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Tutorial");
 

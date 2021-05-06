@@ -22,8 +22,8 @@
 #include <algorithm> // transform
 #include <cctype> // toupper
 
-#include "EL_FitsData/TestUtils.h"
 #include "EL_FitsData/TestRecord.h"
+#include "EL_FitsData/TestUtils.h"
 
 namespace Euclid {
 namespace FitsIO {

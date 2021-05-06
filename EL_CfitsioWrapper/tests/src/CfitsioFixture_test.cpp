@@ -20,8 +20,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
+#include "EL_CfitsioWrapper/FileWrapper.h"
 
 using namespace Euclid::Cfitsio;
 using namespace Euclid::FitsIO::Test;

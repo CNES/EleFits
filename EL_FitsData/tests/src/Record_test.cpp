@@ -19,8 +19,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData/TestRecord.h"
 #include "EL_FitsData/Record.h"
+#include "EL_FitsData/TestRecord.h"
 
 using namespace Euclid::FitsIO;
 

@@ -60,14 +60,41 @@ public:
 
   /**
    * @brief Check whether the HDU contains a given column.
+   * @warning This is a read operation.
    */
   bool hasColumn(const std::string& name) const;
 
   /**
    * @brief Check whether the HDU contains a given set of columns.
+   * @warning This is a read operation.
    * @see hasColumn
    */
   std::vector<bool> hasColumns(const std::vector<std::string>& names) const;
+
+  /**
+   * @brief Get the index of the column with given name.
+   */
+  long readColumnIndex(const std::string& name) const;
+
+  /**
+   * @brief Get the name of the column with given index.
+   */
+  std::string readColumnName(long index) const;
+
+  /**
+   * @brief Get the names of all the columns.
+   */
+  std::vector<std::string> readColumnNames() const;
+
+  /**
+   * @brief Rename the column with given name.
+   */
+  void renameColumn(const std::string& name, const std::string& newName) const;
+
+  /**
+   * @brief Rename the column with given index.
+   */
+  void renameColumn(long index, const std::string& newName) const;
 
   /**
    * @brief Read a column with given index.

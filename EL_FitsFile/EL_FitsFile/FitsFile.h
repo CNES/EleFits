@@ -23,9 +23,9 @@
 #include <fitsio.h>
 #include <string>
 
-#include "EL_FitsFile/RecordHdu.h"
-#include "EL_FitsFile/ImageHdu.h"
 #include "EL_FitsFile/BintableHdu.h"
+#include "EL_FitsFile/ImageHdu.h"
+#include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
 

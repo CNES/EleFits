@@ -52,7 +52,17 @@ long rowCount(fitsfile* fptr);
 bool hasColumn(fitsfile* fptr, const std::string& name);
 
 /**
- * @brief Get the index of a Binary table column.
+ * @brief Get the name of a given column.
+ */
+std::string columnName(fitsfile* fptr, long index);
+
+/**
+ * @brief Update the name of a given column.
+ */
+void updateColumnName(fitsfile* fptr, long index, const std::string& newName);
+
+/**
+ * @brief Get the index of a binary table column.
  */
 long columnIndex(fitsfile* fptr, const std::string& name);
 

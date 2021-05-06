@@ -26,12 +26,12 @@
 
 #include "ElementsKernel/ProgramHeaders.h"
 
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
+#include "EL_CfitsioWrapper/ErrorWrapper.h"
 
 using boost::program_options::options_description;
-using boost::program_options::variable_value;
 using boost::program_options::value;
+using boost::program_options::variable_value;
 using Euclid::Cfitsio::CStrArray;
 
 struct SmallTable {

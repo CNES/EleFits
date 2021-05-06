@@ -26,8 +26,8 @@
 
 #include "ElementsKernel/ProgramHeaders.h"
 
-#include "EL_FitsData/TestRaster.h"
 #include "EL_FitsData/TestColumn.h"
+#include "EL_FitsData/TestRaster.h"
 
 #include "EL_FitsIO_Validation/Benchmark.h"
 #include "EL_FitsIO_Validation/CfitsioBenchmark.h"
@@ -35,8 +35,8 @@
 #include "EL_FitsIO_Validation/ElBenchmark.h"
 
 using boost::program_options::options_description;
-using boost::program_options::variable_value;
 using boost::program_options::value;
+using boost::program_options::variable_value;
 
 using namespace Euclid::FitsIO;
 

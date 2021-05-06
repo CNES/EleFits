@@ -21,8 +21,8 @@
 #define _EL_FITSDATA_TESTCOLUMN_H
 
 #include <complex>
-#include <tuple>
 #include <string>
+#include <tuple>
 
 #include "EL_FitsData/Column.h"
 #include "EL_FitsData/TestUtils.h"

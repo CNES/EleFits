@@ -22,9 +22,9 @@
 #include "EL_FitsData/TestColumn.h"
 
 #include "EL_CfitsioWrapper/BintableWrapper.h"
-#include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
+#include "EL_CfitsioWrapper/HduWrapper.h"
 
 using namespace Euclid;
 using namespace Cfitsio;

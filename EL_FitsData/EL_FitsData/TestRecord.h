@@ -24,9 +24,9 @@
 #include <complex>
 #include <string>
 
-#include "EL_FitsData/TestUtils.h"
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/TestUtils.h"
 
 namespace Euclid {
 namespace FitsIO {

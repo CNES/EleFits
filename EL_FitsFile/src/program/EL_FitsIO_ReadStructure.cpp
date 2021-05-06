@@ -20,9 +20,9 @@
 #include <iomanip> // setw, setfill
 #include <map>
 #include <ostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <sstream>
 
 #include <boost/program_options.hpp>
 
@@ -31,8 +31,8 @@
 #include "EL_FitsFile/MefFile.h"
 
 using boost::program_options::options_description;
-using boost::program_options::variable_value;
 using boost::program_options::value;
+using boost::program_options::variable_value;
 
 using namespace Euclid::FitsIO;
 
@@ -117,6 +117,11 @@ public:
         const auto rowCount = hdu.as<BintableHdu>().readRowCount();
         logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << columnCount << " columns x " << rowCount << " rows";
+        const auto columnNames = hdu.as<BintableHdu>().readColumnNames();
+        logger.info() << "    Columns:";
+        for (const auto& n : columnNames) {
+          logger.info() << "      " << n;
+        }
       }
 
       /* Read keywords */

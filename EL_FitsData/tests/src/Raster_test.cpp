@@ -19,8 +19,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsData/TestRaster.h"
 #include "EL_FitsData/Raster.h"
+#include "EL_FitsData/TestRaster.h"
 
 using namespace Euclid::FitsIO;
 

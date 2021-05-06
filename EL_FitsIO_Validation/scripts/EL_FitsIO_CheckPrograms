@@ -88,15 +88,6 @@ test_function \
 test_command \
   "EL_FitsIO_Generate2DMassFiles --bintable $tmp_dir/bintable.fits --image $tmp_dir/image.fits"
 
-test_function_with_options \
-  EL_Cfitsio_WritePerf "cfitsio_perf.fits" "--images 1 --tables 1"
-
-test_function_with_options \
-  EL_FitsIO_WritePerf "fitsio_perf.fits" "--images 1 --tables 1"
-
-test_function_with_options \
-  EL_FitsIO_BufferedReadPerf "buffer_perf.fits" "--tables 1 --rows 3"
-
 test_command EL_FitsIO_PrintSupportedTypes
 
 dummy=$tmp_dir/astroobj.fits

@@ -17,12 +17,12 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/test/unit_test.hpp>
 
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/FileWrapper.h"
-#include "EL_CfitsioWrapper/CfitsioFixture.h"
 
 using namespace Euclid;
 using namespace Cfitsio;

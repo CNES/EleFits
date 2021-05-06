@@ -17,9 +17,9 @@
  *
  */
 
+#include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
