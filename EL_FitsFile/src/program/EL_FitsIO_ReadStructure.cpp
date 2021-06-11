@@ -17,16 +17,17 @@
  *
  */
 
+#include "EL_FitsFile/MefFile.h"
+#include "EL_FitsUtils/ProgramOptions.h"
+#include "ElementsKernel/ProgramHeaders.h"
+
 #include <boost/program_options.hpp>
 #include <iomanip> // setw, setfill
 #include <ostream>
 #include <sstream>
 #include <string>
-using boost::program_options::value;
 
-#include "EL_FitsFile/MefFile.h"
-#include "EL_FitsUtils/ProgramOptions.h"
-#include "ElementsKernel/ProgramHeaders.h"
+using boost::program_options::value;
 using namespace Euclid::FitsIO;
 
 #define RETURN_TYPENAME_IF_MATCH(type, name) \

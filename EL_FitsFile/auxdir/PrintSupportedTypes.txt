@@ -1,0 +1,10 @@
+For each data structure (Record, Raster, Column), this program
+print the list of types supported by EL_FitsIO.
+
+Record values are stored as ASCII strings in the Fits file.
+Machine types (short, int, long...) are therefore adequate.
+
+In contrast, Raster and Column data are stored in binary format.
+It is therefore preferrable to stick to fixed-length integers instead
+(std::int16_t, std::int32_t, std::int64_t...) to ensure that no useless
+and possibly lossy conversions and copies are performed.

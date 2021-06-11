@@ -26,9 +26,7 @@ ProgramOptions::ProgramOptions(const std::string& helpMessage) :
     m_namedDesc { helpMessage + "\n\nSpecific options" }, m_add { m_namedDesc.add_options() }, m_positionalDesc {} {}
 
 ProgramOptions ProgramOptions::fromAuxdir(const std::string& helpFile) {
-  std::ifstream ifs(Elements::getAuxiliaryPath(helpFile).string());
-  std::string helpMessage((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-  return ProgramOptions(helpMessage);
+  return ProgramOptions(readAuxdirFile(helpFile));
 }
 
 void ProgramOptions::named(const char* name, const ProgramOptions::ValueSemantics* value, const char* description) {

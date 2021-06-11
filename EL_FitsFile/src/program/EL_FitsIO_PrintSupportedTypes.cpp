@@ -16,33 +16,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
  */
+#include "EL_FitsData/Column.h"
+#include "EL_FitsData/Raster.h"
+#include "EL_FitsData/Record.h"
+#include "EL_FitsUtils/ProgramOptions.h"
+#include "ElementsKernel/ProgramHeaders.h"
+#include "ElementsKernel/Unused.h"
 
+#include <boost/program_options.hpp>
 #include <map>
 #include <string>
 
-#include "ElementsKernel/ProgramHeaders.h"
-#include "ElementsKernel/Unused.h"
-#include <boost/program_options.hpp>
-
-#include "EL_FitsData/TestColumn.h"
-#include "EL_FitsData/TestRaster.h"
-#include "EL_FitsData/TestRecord.h"
-
-using boost::program_options::options_description;
-using boost::program_options::variable_value;
+using namespace Euclid::FitsIO;
 
 #define PRINT_SUPPORTED_TYPES(type, name) logger.info() << "  " << #type;
 
 class EL_FitsIO_PrintSupportedTypes : public Elements::Program {
 
 public:
-  options_description defineSpecificProgramOptions() override {
-    options_description options {};
-    return options;
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+    auto options = ProgramOptions::fromAuxdir("PrintSupportedTypes.txt");
+    return options.asPair();
   }
 
-  Elements::ExitCode mainMethod(ELEMENTS_UNUSED std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>&) override {
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_PrintSupportedTypes");
+    for (const auto& line : split(readAuxdirFile("PrintSupportedTypes.txt"))) {
+      logger.info(line);
+    }
+    logger.info();
     logger.info("----------------------------");
     logger.info("Supported Record value types");
     logger.info("----------------------------");

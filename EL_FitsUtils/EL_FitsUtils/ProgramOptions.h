@@ -28,6 +28,30 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @brief Read a file in the auxiliary directory.
+ * @param filename The path to the file, relative to the auxiliary directory
+ * @todo TODO move to dedicated utils file.
+ */
+std::string readAuxdirFile(const std::string& filename) {
+  std::ifstream ifs(Elements::getAuxiliaryPath(filename).string());
+  return { std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>() };
+}
+
+/**
+ * @brief Split a string.
+ * @todo TODO Use library.
+ */
+std::vector<std::string> split(const std::string& input, char delimiter = '\n') {
+  std::vector<std::string> output;
+  std::stringstream ss(input);
+  std::string line;
+  while (std::getline(ss, line, delimiter)) {
+    output.push_back(line);
+  }
+  return output;
+}
+
+/**
  * @brief Helper class to declare several named options and zero or one positional option.
  * @details
  * Here is an example use case for the following command line:
