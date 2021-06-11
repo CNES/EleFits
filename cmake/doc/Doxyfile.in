@@ -829,6 +829,7 @@ WARN_LOGFILE           =
 
 INPUT                  = @PROJECT_SOURCE_DIR@/doc \
                          @PROJECT_SOURCE_DIR@/EL_CfitsioWrapper \
+                         @PROJECT_SOURCE_DIR@/EL_FitsUtils \
                          @PROJECT_SOURCE_DIR@/EL_FitsData \
                          @PROJECT_SOURCE_DIR@/EL_FitsFile \
                          @PROJECT_SOURCE_DIR@/EL_FitsIO_Examples \
