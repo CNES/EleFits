@@ -31,19 +31,17 @@ namespace FitsIO {
  * @brief Helper class to declare several named options and zero or one positional option.
  * @details
  * Here is an example use case for the following command line:
- * \verbatim
- * Program <positional> --named1 <value1> --named2 <value2>
- * \endverbatim
+ * \verbatim Program <positional> --named1 <value1> --named2 <value2> \endverbatim
  * 
  * Let's assume that the help message is provided in a file help.txt in the auxiliary directory.
  * 
  * In the associated Elements::Program, override defineProgramArguments() as follows:
  * \code
  * std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
- *   auto options = ProgramOptions::fromAuxdir("help.txt", "input");
- *   options.add(options.positional(), value<std::string>(), "Input file");
- *   options.add("named1", value<int>(), "Named option 1");
- *   options.add("named2", value<int>(), "Named option 2");
+ *   auto options = ProgramOptions::fromAuxdir("help.txt");
+ *   options.positional("positional", value<std::string>(), "Positional option");
+ *   options.named("named1", value<int>(), "Named option 1");
+ *   options.named("named2", value<int>(), "Named option 2");
  *   return options.asPair();
  * }
  * \endcode
@@ -62,6 +60,11 @@ public:
   using PositionalOptionsDescription = boost::program_options::positional_options_description;
 
   /**
+   * @brief Shortcut to Boost's class.
+   */
+  using ValueSemantics = boost::program_options::value_semantic;
+
+  /**
    * @brief Destructor.
    */
   ~ProgramOptions() = default;
@@ -71,45 +74,43 @@ public:
    * @param helpMessage The help message
    * @param positional The name of the positional option, if any
    */
-  ProgramOptions(const std::string& helpMessage, const std::string& positional = "") :
-      m_namedDesc { helpMessage + "\n\nSpecific options" }, m_add { m_namedDesc.add_options() },
-      m_positionalName { positional }, m_positionalDesc {} {
-    if (positional.length() > 0) {
-      m_positionalDesc.add(positional.c_str(), -1);
-    }
-  }
+  ProgramOptions(const std::string& helpMessage);
 
   /**
    * @brief Create option descriptions from help file and optional positional option.
    * @param helpFile The path to the help file relative to the auxiliary directory
-   * @param positional The name of the positional option, if any
+   * @details
+   * The help file is a file which contains the text to be used as the help message.
    */
-  static ProgramOptions fromAuxdir(const std::string& helpFile, const std::string& positional = "") {
-    std::ifstream ifs(Elements::getAuxiliaryPath(helpFile).string());
-    std::string helpMessage((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-    return ProgramOptions(helpMessage, positional);
-  }
-
-  /**
-   * @brief Get the name of the positional option.
-   */
-  const char* positional() const {
-    return m_positionalName.c_str();
-  }
+  static ProgramOptions fromAuxdir(const std::string& helpFile);
 
   /**
    * @brief Add a named option.
+   * @param name The option name
+   * @param value The option value semantics
+   * @param description The option description
    */
-  void add(const char* name, const boost::program_options::value_semantic* value, const char* description) {
-    m_add(name, value, description);
-  }
+  void named(const char* name, const ValueSemantics* value, const char* description);
+
+  /**
+   * @brief Add a positional option.
+   * @param name The option name
+   * @param value The option value semantics
+   * @param description The option description
+   * @param maxArgs The maximum number of option values, or -1 for unlimited
+   * @details
+   * A positional option is also a named option (thus the name parameter).
+   * For example, a positional option `input` can be used either as:
+   * \verbatim Program <value> \endverbatim
+   * or
+   * \verbatim Program --input <value> \endverbatim
+   */
+  void positional(const char* name, const ValueSemantics* value, const char* description);
 
   /**
    * @brief Get the named and positional option descriptions.
    */
-  std::pair<OptionsDescription, PositionalOptionsDescription> asPair() const {
-    return std::make_pair(m_namedDesc, m_positionalDesc);
-  }
+  std::pair<OptionsDescription, PositionalOptionsDescription> asPair() const;
 
 private:
   /**
@@ -118,14 +119,9 @@ private:
   OptionsDescription m_namedDesc;
 
   /**
-   * @brief Functor to add options.
+   * @brief Functor to add named options.
    */
   boost::program_options::options_description_easy_init m_add;
-
-  /**
-   * @brief Positional option name.
-   */
-  std::string m_positionalName;
 
   /**
    * @brief Positional option description.
