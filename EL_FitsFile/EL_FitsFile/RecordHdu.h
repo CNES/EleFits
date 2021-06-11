@@ -35,8 +35,10 @@ namespace FitsIO {
  * When reading or writing several records, it is recommended to use the plural form of the methods
  * (e.g. one call to writeRecords() instead of several calls to writeRecord()),
  * which are optimized.
- * Methods to update records are analogous to methods to write records:
- * refer to the documentation of the latter for more details on the former.
+ * Methods to update records are analogous to methods to write records;
+ * The difference is that, when a record with given keyword already exists,
+ * update methods will change its value while write methods will create a new record with same keyword.
+ * In general, refer to the documentation of write methods for more details.
  *
  * There are two approaches to read and write several records at once:
  * - As heterogeneous collections, through variadic methods or tuples;

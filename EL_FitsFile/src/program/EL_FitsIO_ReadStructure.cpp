@@ -17,23 +17,16 @@
  *
  */
 
+#include <boost/program_options.hpp>
 #include <iomanip> // setw, setfill
-#include <map>
 #include <ostream>
 #include <sstream>
-#include <stdexcept>
 #include <string>
-
-#include <boost/program_options.hpp>
-
-#include "ElementsKernel/ProgramHeaders.h"
+using boost::program_options::value;
 
 #include "EL_FitsFile/MefFile.h"
-
-using boost::program_options::options_description;
-using boost::program_options::value;
-using boost::program_options::variable_value;
-
+#include "EL_FitsUtils/ProgramOptions.h"
+#include "ElementsKernel/ProgramHeaders.h"
 using namespace Euclid::FitsIO;
 
 #define RETURN_TYPENAME_IF_MATCH(type, name) \
@@ -62,21 +55,14 @@ KeywordCategory parseKeywordCategories(const std::string& filter) {
 class EL_FitsIO_ReadStructure : public Elements::Program {
 
 public:
-  options_description defineSpecificProgramOptions() override {
-    options_description options {};
-    auto add = options.add_options();
-    add("input", value<std::string>(), "Input file");
-    add("keywords",
-        value<std::string>()->default_value("")->implicit_value("mrcu"),
-        "Keyword filter with the following 4 flags: "
-        "m for mandatory, r for reserved, c for comment, u for user keywords "
-        "(e.g. --keywords ru displays only reserved and user keywords). "
-        "By default, no keyword is displayed. "
-        "Using the option with no values sets the 4 flags, so --keywords displays all keywords.");
-    return options;
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+    auto options = ProgramOptions::fromAuxdir("ReadStructure.txt", "input");
+    options.add("input", value<std::string>(), "Input file");
+    options.add("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter.");
+    return options.asPair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_ReadStructure");
 

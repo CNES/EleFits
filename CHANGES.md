@@ -11,6 +11,7 @@
 
 * New method `MefFile::access(string)` checks that extactly one HDU with given name exists
 * Binary table columns can be read by index
+* Binary table column names can be read and updated
 * `Column` values can be accessed directly with `operator()`
 * `Raster` and `Column` values can be accessed with backward (negative) indices through `at` methods
 * Classes `Named` and `Indexed` improve readability and safety to read records and columns

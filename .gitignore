@@ -6,6 +6,7 @@
 /InstallArea
 /PAQA
 /.scannerwork
+/.coverage
 
 #--------------------- 
 # C++

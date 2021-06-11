@@ -11,14 +11,27 @@ namespace FitsIO {
 
 \section purpose Purpose and scope
 
+The Fits format and C++ language are extremely popular among astronomers, and are at the heart of the Euclid ground segment.
+In this context, a library to read and write Fits files in C++ was needed.
+Several options existed already, but they did not completely fulfill our needs.
+Two C++ libraries are listed  by the <a href=https://fits.gsfc.nasa.gov/fits_libraries.html>Fits support office</a>:
+<a href=https://heasarc.gsfc.nasa.gov/fitsio/CCfits/>CCfits</a>
+and <a href=https://www.cv.nrao.edu/fits/src>AIPS++</a> (apparently not supported anymore).
+Not listed in this page are a library developed by the Jaxa:
+<a href=https://www.ir.isas.jaxa.jp/~cyamauch/sli/>SFitsIO</a>,
+and one developed for the Rubin Observatory: <a href=https://github.com/lsst/afw>AFW</a>.
+Fits++ has been briefly described previously but is not publicly available.
+In addition, many C++ developers rely on the historical C library <a href=https://heasarc.gsfc.nasa.gov/fitsio/>CFitsIO</a>.
 
-The purpose of the package is to provide a user-friendly and efficient API to read and write Fits files.
+The main motivation to develop EL_FitsIO (Euclid libraries and executables for Fits) was that none of these alternatives provided a fully consistent type management.
+In the worst cases, users needed to know the underlying architecture to ensure integer data can be read or written using given C++ types.
+In the best cases, silent casts and copies were performed, which would be too costly for large data sets.
 
+The purpose of EL_FitsIO is to provide a -- sorted by priority -- (1) safe, (2) user-friendly, and (3) efficient library.
 The package merely consists in a thin CFitsIO wrapper:
 There is no intelligence inside.
-The actual reading and writing are delegated to CFitsIO,
-with as few indirections as possible to minimize overhead.
-As compared to CFitsIO API, the main benefits are those of C++ over C:
+The actual reading and writing are delegated to CFitsIO, with as few indirections as possible to minimize overhead.
+As compared to CFitsIO, the benefits are mainly those of C++ over C:
 
 - No more raw pointers for a **safe memory management**;
 - No more type codes but **template traits classes** which handle architecture specifics;
@@ -30,10 +43,8 @@ instead of the all-in-one and flat `fitsfile` structure;
 
 Simplicity comes at the cost of completeness,
 and EL_FitsIO misses:
-- CFitsIO features that we found less important (like ASCII tables) or too complex,
-(like streaming);
-- Features already well implemented in other Euclid libraries,
-like iterators covered by EL_CatalogLib;
+- CFitsIO features that we found less important (like ASCII tables) or too complex (like streaming);
+- Features already well implemented in other Euclid libraries like iterators covered by EL_CatalogLib;
 - Features that we didn't have time to implement yet!
 
 For a clear overview of what's there and what's missing, see \ref cfitsio_cov.

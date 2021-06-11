@@ -65,6 +65,7 @@ std::string columnName(fitsfile* fptr, long index) {
       nullptr, // tnull
       nullptr, // tdisp
       &status);
+  // TODO Should we just read TTYPEn instead ?
   CfitsioError::mayThrow(status, fptr, "Cannot find name of column: " + std::to_string(index - 1));
   return ttype;
 }
