@@ -55,6 +55,10 @@ elements_add_unit_test(ProgramOptions tests/src/ProgramOptions_test.cpp
                      EXECUTABLE EL_FitsUtils_ProgramOptions_test
                      LINK_LIBRARIES EL_FitsUtils
                      TYPE Boost)
+elements_add_unit_test(StringUtils tests/src/StringUtils_test.cpp 
+                     EXECUTABLE EL_FitsUtils_StringUtils_test
+                     LINK_LIBRARIES EL_FitsUtils
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

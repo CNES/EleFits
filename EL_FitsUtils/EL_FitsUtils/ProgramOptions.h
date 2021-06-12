@@ -20,39 +20,13 @@
 #ifndef _EL_FITSIO_UTILS_PROGRAM_H
 #define _EL_FITSIO_UTILS_PROGRAM_H
 
-#include "ElementsKernel/Auxiliary.h"
-
 #include <boost/program_options.hpp>
 
 namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Read a file in the auxiliary directory.
- * @param filename The path to the file, relative to the auxiliary directory
- * @todo TODO move to dedicated utils file.
- */
-std::string readAuxdirFile(const std::string& filename) {
-  std::ifstream ifs(Elements::getAuxiliaryPath(filename).string());
-  return { std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>() };
-}
-
-/**
- * @brief Split a string.
- * @todo TODO Use library.
- */
-std::vector<std::string> split(const std::string& input, char delimiter = '\n') {
-  std::vector<std::string> output;
-  std::stringstream ss(input);
-  std::string line;
-  while (std::getline(ss, line, delimiter)) {
-    output.push_back(line);
-  }
-  return output;
-}
-
-/**
- * @brief Helper class to declare several named options and zero or one positional option.
+ * @brief Helper class to declare positional and named options, and help message.
  * @details
  * Here is an example use case for the following command line:
  * \verbatim Program <positional> --named1 <value1> --named2 <value2> \endverbatim
@@ -94,19 +68,18 @@ public:
   ~ProgramOptions() = default;
 
   /**
-   * @brief Create option descriptions with help message and optional positional option.
+   * @brief Create option descriptions with help message.
    * @param helpMessage The help message
-   * @param positional The name of the positional option, if any
    */
   ProgramOptions(const std::string& helpMessage);
 
   /**
-   * @brief Create option descriptions from help file and optional positional option.
+   * @brief Create option descriptions from help file.
    * @param helpFile The path to the help file relative to the auxiliary directory
    * @details
    * The help file is a file which contains the text to be used as the help message.
    */
-  static ProgramOptions fromAuxdir(const std::string& helpFile);
+  static ProgramOptions fromAuxFile(const std::string& helpFile);
 
   /**
    * @brief Add a named option.
@@ -121,18 +94,22 @@ public:
    * @param name The option name
    * @param value The option value semantics
    * @param description The option description
-   * @param maxArgs The maximum number of option values, or -1 for unlimited
    * @details
    * A positional option is also a named option (thus the name parameter).
    * For example, a positional option `input` can be used either as:
    * \verbatim Program <value> \endverbatim
    * or
    * \verbatim Program --input <value> \endverbatim
+   * 
+   * Positional options should be added in the expected order of the command line.
    */
   void positional(const char* name, const ValueSemantics* value, const char* description);
 
   /**
    * @brief Get the named and positional option descriptions.
+   * @details
+   * This methods is primarily intended as the return of the override
+   * of Elements::Program::defineProgramArguments().
    */
   std::pair<OptionsDescription, PositionalOptionsDescription> asPair() const;
 
@@ -140,7 +117,7 @@ private:
   /**
    * @brief Named options description.
    */
-  OptionsDescription m_namedDesc;
+  OptionsDescription m_named;
 
   /**
    * @brief Functor to add named options.
@@ -150,7 +127,7 @@ private:
   /**
    * @brief Positional option description.
    */
-  PositionalOptionsDescription m_positionalDesc;
+  PositionalOptionsDescription m_positional;
 
 }; // End of Program class
 

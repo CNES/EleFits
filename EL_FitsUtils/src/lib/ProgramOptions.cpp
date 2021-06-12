@@ -19,14 +19,16 @@
 
 #include "EL_FitsUtils/ProgramOptions.h"
 
+#include "EL_FitsUtils/StringUtils.h"
+
 namespace Euclid {
 namespace FitsIO {
 
 ProgramOptions::ProgramOptions(const std::string& helpMessage) :
-    m_namedDesc { helpMessage + "\n\nSpecific options" }, m_add { m_namedDesc.add_options() }, m_positionalDesc {} {}
+    m_named { helpMessage + "\n\nSpecific options" }, m_add { m_named.add_options() }, m_positional {} {}
 
-ProgramOptions ProgramOptions::fromAuxdir(const std::string& helpFile) {
-  return ProgramOptions(readAuxdirFile(helpFile));
+ProgramOptions ProgramOptions::fromAuxFile(const std::string& helpFile) {
+  return ProgramOptions(String::readAuxFile(helpFile));
 }
 
 void ProgramOptions::named(const char* name, const ProgramOptions::ValueSemantics* value, const char* description) {
@@ -39,12 +41,12 @@ void ProgramOptions::positional(
     const char* description) {
   m_add(name, value, description);
   const int maxArgs = value->max_tokens();
-  m_positionalDesc.add(name, maxArgs);
+  m_positional.add(name, maxArgs);
 }
 
 std::pair<ProgramOptions::OptionsDescription, ProgramOptions::PositionalOptionsDescription>
 ProgramOptions::asPair() const {
-  return std::make_pair(m_namedDesc, m_positionalDesc);
+  return std::make_pair(m_named, m_positional);
 }
 } // namespace FitsIO
 } // namespace Euclid

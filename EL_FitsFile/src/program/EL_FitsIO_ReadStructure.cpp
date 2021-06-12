@@ -57,7 +57,7 @@ class EL_FitsIO_ReadStructure : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = ProgramOptions::fromAuxdir("ReadStructure.txt");
+    auto options = ProgramOptions::fromAuxFile("ReadStructure.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.named("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter");
     return options.asPair();

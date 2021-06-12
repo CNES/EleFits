@@ -20,9 +20,11 @@
 #include "EL_FitsData/Raster.h"
 #include "EL_FitsData/Record.h"
 #include "EL_FitsUtils/ProgramOptions.h"
+#include "EL_FitsUtils/StringUtils.h"
 #include "ElementsKernel/ProgramHeaders.h"
 #include "ElementsKernel/Unused.h"
 
+#include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 #include <map>
 #include <string>
@@ -35,13 +37,15 @@ class EL_FitsIO_PrintSupportedTypes : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = ProgramOptions::fromAuxdir("PrintSupportedTypes.txt");
+    auto options = ProgramOptions::fromAuxFile("PrintSupportedTypes.txt");
     return options.asPair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>&) override {
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_PrintSupportedTypes");
-    for (const auto& line : split(readAuxdirFile("PrintSupportedTypes.txt"))) {
+    std::string contents = String::readAuxFile("PrintSupportedTypes.txt");
+    std::vector<std::string> lines;
+    for (const auto& line : boost::split(lines, contents, boost::is_any_of("\n"))) {
       logger.info(line);
     }
     logger.info();
