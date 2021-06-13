@@ -37,6 +37,13 @@ namespace String {
 std::vector<std::string> split(const std::string& input, const std::string& delimiters = "\n");
 
 /**
+ * @brief Trim a string given a set of characters.
+ * @param input The input string
+ * @param characters The characters to be trimmed, or "" for all white spaces
+ */
+std::string trim(const std::string& input, const std::string& characters = "");
+
+/**
  * @brief Read a text file.
  * @param filename The path to the file
  */

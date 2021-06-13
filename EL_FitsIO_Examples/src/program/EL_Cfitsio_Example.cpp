@@ -17,21 +17,18 @@
  *
  */
 
+#include "EL_CfitsioWrapper/CfitsioUtils.h"
+#include "EL_CfitsioWrapper/ErrorWrapper.h"
+#include "EL_FitsUtils/ProgramOptions.h"
+#include "ElementsKernel/ProgramHeaders.h"
+
+#include <boost/program_options.hpp>
 #include <complex>
+#include <fitsio.h>
 #include <map>
 #include <string>
 
-#include <boost/program_options.hpp>
-#include <fitsio.h>
-
-#include "ElementsKernel/ProgramHeaders.h"
-
-#include "EL_CfitsioWrapper/CfitsioUtils.h"
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
-
-using boost::program_options::options_description;
 using boost::program_options::value;
-using boost::program_options::variable_value;
 using Euclid::Cfitsio::CStrArray;
 
 struct SmallTable {
@@ -57,14 +54,13 @@ struct SmallImage {
 class EL_Cfitsio_Example : public Elements::Program {
 
 public:
-  options_description defineSpecificProgramOptions() override {
-    options_description options {};
-    auto add = options.add_options();
-    add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
-    return options;
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+    Euclid::FitsIO::ProgramOptions options;
+    options.positional("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
+    return options.asPair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_Cfitsio_Example");
 

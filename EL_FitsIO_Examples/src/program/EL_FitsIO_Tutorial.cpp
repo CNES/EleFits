@@ -17,12 +17,13 @@
  *
  */
 
-#include <map>
-#include <string>
-
+#include "EL_FitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
+
 #include <boost/any.hpp>
 #include <boost/program_options.hpp>
+#include <map>
+#include <string>
 
 //! [Include fixtures]
 #include "EL_FitsData/TestColumn.h"
@@ -233,8 +234,14 @@ void writeMefFile(const std::string& filename) {
 
   //! [Create binary table extensions]
 
-  writeRecords(image2);
-  (void)table2; // Mute unused variable warning
+  /* Write records */
+
+  writeRecords(f.accessPrimary<>());
+
+  /* Mute "unused variable" warnings */
+
+  (void)image2;
+  (void)table2;
 
   // File is closed at destruction of f.
 }
@@ -305,7 +312,7 @@ void readMefFile(const std::string& filename) {
 
   //! [Access HDUs]
 
-  readRecords(image2);
+  readRecords(primary);
   readRaster(image2);
   readColumns(table1);
 }
@@ -411,11 +418,10 @@ void readColumns(const FitsIO::BintableHdu& hdu) {
 class EL_FitsIO_Tutorial : public Elements::Program {
 
 public:
-  options_description defineSpecificProgramOptions() override {
-    options_description options {};
-    auto add = options.add_options();
-    add("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
-    return options;
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+    auto options = FitsIO::ProgramOptions::fromAuxFile("Tutorial.txt");
+    options.positional("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
+    return options.asPair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {

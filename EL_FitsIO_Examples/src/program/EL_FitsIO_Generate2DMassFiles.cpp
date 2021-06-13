@@ -17,18 +17,16 @@
  *
  */
 
+#include "EL_FitsData/TestRaster.h"
+#include "EL_FitsFile/MefFile.h"
+#include "EL_FitsUtils/ProgramOptions.h"
+#include "ElementsKernel/ProgramHeaders.h"
+
+#include <boost/program_options.hpp>
 #include <map>
 #include <string>
 
-#include "ElementsKernel/ProgramHeaders.h"
-#include <boost/program_options.hpp>
-
-#include "EL_FitsData/TestRaster.h"
-#include "EL_FitsFile/MefFile.h"
-
-using boost::program_options::options_description;
 using boost::program_options::value;
-using boost::program_options::variable_value;
 
 using namespace Euclid;
 using namespace FitsIO;
@@ -105,19 +103,17 @@ void writeImage(const std::string& filename, const Position<3>& shape) {
 class EL_FitsIO_Generate2DMassFiles : public Elements::Program {
 
 public:
-  options_description defineSpecificProgramOptions() override {
-
-    options_description options {};
-    auto add = options.add_options();
-    add("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
-    add("rows", value<long>()->default_value(10), "Binary table row count");
-    add("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
-    add("width", value<long>()->default_value(10), "Image width");
-    add("height", value<long>()->default_value(10), "Image height");
-    return options;
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+    Euclid::FitsIO::ProgramOptions options("Generate random 2DMASS-like outputs.");
+    options.named("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
+    options.named("rows", value<long>()->default_value(10), "Binary table row count");
+    options.named("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
+    options.named("width", value<long>()->default_value(10), "Image width");
+    options.named("height", value<long>()->default_value(10), "Image height");
+    return options.asPair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Generate2DMassFiles");
 

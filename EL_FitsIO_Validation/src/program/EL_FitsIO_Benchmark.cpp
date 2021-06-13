@@ -17,26 +17,22 @@
  *
  */
 
-#include <chrono>
-#include <map>
-#include <string>
-
-#include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
-
-#include "ElementsKernel/ProgramHeaders.h"
-
 #include "EL_FitsData/TestColumn.h"
 #include "EL_FitsData/TestRaster.h"
-
 #include "EL_FitsIO_Validation/Benchmark.h"
 #include "EL_FitsIO_Validation/CfitsioBenchmark.h"
 #include "EL_FitsIO_Validation/CsvAppender.h"
 #include "EL_FitsIO_Validation/ElBenchmark.h"
+#include "EL_FitsUtils/ProgramOptions.h"
+#include "ElementsKernel/ProgramHeaders.h"
 
-using boost::program_options::options_description;
+#include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
+#include <chrono>
+#include <map>
+#include <string>
+
 using boost::program_options::value;
-using boost::program_options::variable_value;
 
 using namespace Euclid::FitsIO;
 
@@ -60,25 +56,24 @@ std::string join(const std::vector<T>& values, const std::string& sep = ",") {
   });
 }
 
-class EL_FitsIO_WritePerf : public Elements::Program {
+class EL_FitsIO_Benchmark : public Elements::Program {
 
 public:
-  options_description defineSpecificProgramOptions() override {
-    options_description options {};
-    auto add = options.add_options();
-    add("setup", value<std::string>()->default_value("EL_FitsIO"), "Test setup to be benchmarked");
-    add("images", value<int>()->default_value(0), "Number of image extensions");
-    add("pixels", value<int>()->default_value(1), "Number of pixels");
-    add("tables", value<int>()->default_value(0), "Number of binary table extensions");
-    add("rows", value<int>()->default_value(1), "Number of rows");
-    add("output", value<std::string>()->default_value("/tmp/test.fits"), "Output Fits file");
-    add("res", value<std::string>()->default_value("/tmp/benchmark.csv"), "Output result file");
-    return options;
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+    ProgramOptions options;
+    options.named("setup", value<std::string>()->default_value("EL_FitsIO"), "Test setup to be benchmarked");
+    options.named("images", value<int>()->default_value(0), "Number of image extensions");
+    options.named("pixels", value<int>()->default_value(1), "Number of pixels");
+    options.named("tables", value<int>()->default_value(0), "Number of binary table extensions");
+    options.named("rows", value<int>()->default_value(1), "Number of rows");
+    options.named("output", value<std::string>()->default_value("/tmp/test.fits"), "Output Fits file");
+    options.named("res", value<std::string>()->default_value("/tmp/benchmark.csv"), "Output result file");
+    return options.asPair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
-    Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_WritePerf");
+    Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_Benchmark");
 
     const auto testSetup = args["setup"].as<std::string>();
     const auto imageCount = args["images"].as<int>();
@@ -238,4 +233,4 @@ public:
   }
 };
 
-MAIN_FOR(EL_FitsIO_WritePerf)
+MAIN_FOR(EL_FitsIO_Benchmark)

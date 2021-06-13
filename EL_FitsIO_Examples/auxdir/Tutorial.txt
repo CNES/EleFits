@@ -1,0 +1,9 @@
+This tutorial program demonstrates the usage
+of some basic functionalities of EL_FitsIO.
+
+It contists in creating a Fits file made of:
+- A Primary HDU with some custom records,
+- An image Extenion with random values,
+- A binary table Extension with random values.
+
+And then reading back some of the values.

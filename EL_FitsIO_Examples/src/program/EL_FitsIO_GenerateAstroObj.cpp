@@ -17,18 +17,16 @@
  *
  */
 
+#include "EL_FitsData/TestRaster.h"
+#include "EL_FitsFile/MefFile.h"
+#include "EL_FitsUtils/ProgramOptions.h"
+#include "ElementsKernel/ProgramHeaders.h"
+
+#include <boost/program_options.hpp>
 #include <map>
 #include <string>
 
-#include "ElementsKernel/ProgramHeaders.h"
-#include <boost/program_options.hpp>
-
-#include "EL_FitsData/TestRaster.h"
-#include "EL_FitsFile/MefFile.h"
-
-using boost::program_options::options_description;
 using boost::program_options::value;
-using boost::program_options::variable_value;
 
 using namespace Euclid;
 using namespace FitsIO;
@@ -84,17 +82,15 @@ void writeAstroObj(MefFile& f, int objIndex, int bins) {
 class EL_FitsIO_GenerateAstroObj : public Elements::Program {
 
 public:
-  options_description defineSpecificProgramOptions() override {
-
-    options_description options {};
-    auto add = options.add_options();
-    add("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file");
-    add("nobj", value<int>()->default_value(1), "AstroObj count");
-    add("nbin", value<int>()->default_value(1000), "Wavelength bin count");
-    return options;
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+    Euclid::FitsIO::ProgramOptions options("Generate a random AstroObj file, as specified in the SpectrumLib.");
+    options.positional("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file");
+    options.named("nobj", value<int>()->default_value(1), "AstroObj count");
+    options.named("nbin", value<int>()->default_value(1000), "Wavelength bin count");
+    return options.asPair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
     Elements::Logging logger = Elements::Logging::getLogger("EL_FitsIO_GenerateAstroObj");
 

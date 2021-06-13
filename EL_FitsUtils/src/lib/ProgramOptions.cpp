@@ -25,7 +25,7 @@ namespace Euclid {
 namespace FitsIO {
 
 ProgramOptions::ProgramOptions(const std::string& helpMessage) :
-    m_named { helpMessage + "\n\nSpecific options" }, m_add { m_named.add_options() }, m_positional {} {}
+    m_named { makeDesc(helpMessage) }, m_add { m_named.add_options() }, m_positional {} {}
 
 ProgramOptions ProgramOptions::fromAuxFile(const std::string& helpFile) {
   return ProgramOptions(String::readAuxFile(helpFile));
@@ -48,5 +48,14 @@ std::pair<ProgramOptions::OptionsDescription, ProgramOptions::PositionalOptionsD
 ProgramOptions::asPair() const {
   return std::make_pair(m_named, m_positional);
 }
+
+std::string ProgramOptions::makeDesc(const std::string& helpMessage) {
+  const std::string optionsGroup = "Specific options";
+  if (helpMessage.length() > 0) {
+    return String::trim(helpMessage, "\n") + "\n\n" + optionsGroup;
+  }
+  return optionsGroup;
+}
+
 } // namespace FitsIO
 } // namespace Euclid

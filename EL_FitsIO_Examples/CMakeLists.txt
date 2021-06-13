@@ -15,6 +15,7 @@ elements_subdir(EL_FitsIO_Examples)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
 elements_depends_on_subdirs(EL_FitsFile)
+elements_depends_on_subdirs(EL_FitsUtils)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -40,17 +41,17 @@ elements_depends_on_subdirs(EL_FitsFile)
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
 elements_add_executable(EL_CfitsioWrapper_Example src/program/EL_CfitsioWrapper_Example.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile EL_FitsUtils)
 elements_add_executable(EL_FitsFile_Example src/program/EL_FitsFile_Example.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile EL_FitsUtils)
 elements_add_executable(EL_Cfitsio_Example src/program/EL_Cfitsio_Example.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile EL_FitsUtils)
 elements_add_executable(EL_FitsIO_GenerateAstroObj src/program/EL_FitsIO_GenerateAstroObj.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile EL_FitsUtils)
 elements_add_executable(EL_FitsIO_Tutorial src/program/EL_FitsIO_Tutorial.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile EL_FitsUtils)
 elements_add_executable(EL_FitsIO_Generate2DMassFiles src/program/EL_FitsIO_Generate2DMassFiles.cpp
-                     LINK_LIBRARIES ElementsKernel EL_FitsFile)
+                     LINK_LIBRARIES ElementsKernel EL_FitsFile EL_FitsUtils)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -79,4 +80,5 @@ elements_add_executable(EL_FitsIO_Generate2DMassFiles src/program/EL_FitsIO_Gene
 # Examples:
 #          elements_install_conf_files()
 #===============================================================================
+elements_install_aux_files()
 elements_install_conf_files()

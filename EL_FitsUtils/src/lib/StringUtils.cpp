@@ -31,6 +31,13 @@ std::vector<std::string> split(const std::string& input, const std::string& deli
   return res;
 }
 
+std::string trim(const std::string& input, const std::string& characters) {
+  if (characters.length() > 0) {
+    return boost::trim_copy_if(input, boost::is_any_of(characters));
+  }
+  return boost::trim_copy(input);
+}
+
 std::string readFile(const std::string& filename) {
   std::ifstream ifs(filename);
   return { std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>() };

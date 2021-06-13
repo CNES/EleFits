@@ -71,7 +71,7 @@ public:
    * @brief Create option descriptions with help message.
    * @param helpMessage The help message
    */
-  ProgramOptions(const std::string& helpMessage);
+  ProgramOptions(const std::string& helpMessage = "");
 
   /**
    * @brief Create option descriptions from help file.
@@ -114,6 +114,11 @@ public:
   std::pair<OptionsDescription, PositionalOptionsDescription> asPair() const;
 
 private:
+  /**
+   * @build the options description from a possibly empty help message.
+   */
+  static std::string makeDesc(const std::string& helpMessage);
+
   /**
    * @brief Named options description.
    */
