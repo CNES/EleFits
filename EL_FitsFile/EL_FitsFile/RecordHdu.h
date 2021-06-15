@@ -145,6 +145,16 @@ public:
   HduCategory category() const;
 
   /**
+   * @brief Check whether the HDU is of given categories.
+   * @tparam TCategories The list of categories to be tested
+   * @return True if the HDU is of all given categories, false otherwise.
+   */
+  template <HduCategory TCategories>
+  bool isInstance() const {
+    return Euclid::FitsIO::isInstance<TCategories>(category());
+  }
+
+  /**
    * @brief Cast to an ImageHdu or BintableHdu (if possible).
    */
   template <typename T>

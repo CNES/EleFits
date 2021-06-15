@@ -54,13 +54,14 @@ BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, FitsIO::Test::Mi
 }
 
 BOOST_AUTO_TEST_CASE(category_ordering_test) {
-  using FitsIO::HduCategory;
-  BOOST_TEST((HduCategory::MetadataPrimary <= HduCategory::Primary));
-  BOOST_TEST(not(HduCategory::Primary <= HduCategory::MetadataPrimary));
-  BOOST_TEST((HduCategory::Primary <= HduCategory::Image));
-  BOOST_TEST(not(HduCategory::Image <= HduCategory::Primary));
-  BOOST_TEST(not(HduCategory::Primary & HduCategory::ImageExt));
-  BOOST_TEST(not(HduCategory::Primary & HduCategory::Bintable));
+  using namespace FitsIO;
+  BOOST_TEST(isInstance<HduCategory::Primary>(HduCategory::MetadataPrimary));
+  BOOST_TEST(not isInstance<HduCategory::MetadataPrimary>(HduCategory::Primary));
+  BOOST_TEST(not isInstance<HduCategory::Primary>(HduCategory::Image));
+  BOOST_TEST(isInstance<HduCategory::Any>(HduCategory::Image));
+  BOOST_TEST(isInstance<HduCategory::Any>(HduCategory::Bintable));
+  BOOST_TEST(isInstance<HduCategory::Image>(HduCategory::FloatImage));
+  BOOST_TEST(isInstance<HduCategory::ImageExt>(HduCategory::FloatImage | HduCategory::Ext));
 }
 
 //-----------------------------------------------------------------------------

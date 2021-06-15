@@ -73,7 +73,7 @@ enum HduCategory
   MetadataImageExt = Metadata | ImageExt, ///< Image extension without data
   DataImageExt = Data | ImageExt, ///< Image extension with data
   Bintable = 0b0100'0000, ///< Binary table HDU
-  Any = 0b1111'1111 ///< Any HDU
+  Any = 0 ///< Any HDU
 };
 
 /**
@@ -120,17 +120,10 @@ inline HduCategory operator~(HduCategory a) {
 
 /**
  * @brief Check whether an input bitmask contains at least the bits of given categories.
- * @details
- * For example:
- * \code
- * Primary <= Primary | Meta = true
- * Meta <= Meta | Primary = true
- * Primary | Meta <= Primary = false
- * Image <= Primary = true
- * \endcode
  */
-inline bool operator<=(HduCategory input, HduCategory categories) {
-  return (input & categories) == categories;
+template <HduCategory TCategories>
+inline bool isInstance(HduCategory input) {
+  return (input & TCategories) == TCategories;
 }
 
 } // namespace FitsIO

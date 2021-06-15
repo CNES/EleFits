@@ -26,6 +26,25 @@
 namespace Euclid {
 namespace FitsIO {
 
+template <HduCategory TCategories, typename = void>
+struct HduCategoryTraits {
+  using HduClass = RecordHdu;
+};
+
+// template <
+//     HduCategory TCategories,
+//     std::enable_if_t<TCategories & HduCategory::Image && not(TCategories & HduCategory::Bintable), bool> = true>
+// struct HduCategoryTraits {
+//   using HduClass = ImageHdu;
+// };
+
+// template <
+//     HduCategory TCategories,
+//     std::enable_if_t<TCategories & HduCategory::Bintable && not(TCategories & HduCategory::Image), bool> = true>
+// struct HduCategoryTraits {
+//   using HduClass = BintableHdu;
+// };
+
 /**
  * @brief Multi-Extension Fits file reader-writer.
  * @details
@@ -42,55 +61,9 @@ public:
    */
   using FitsFile::Permission;
 
-  /**
-   * @brief Const iterator for the RecordHdu's.
-   */
-  class ConstIterator : public std::iterator<std::output_iterator_tag, const RecordHdu> {
-  public:
-    /**
-     * @brief Constructor.
-     */
-    ConstIterator(std::vector<std::unique_ptr<RecordHdu>>::const_iterator it) : m_it(it) {}
-
-    /**
-     * @brief Dereference operator.
-     */
-    const RecordHdu& operator*() const {
-      return *m_it->get();
-    }
-
-    const RecordHdu* operator->() const {
-      return m_it->get();
-    }
-
-    /**
-     * @brief Increment operator.
-     */
-    const RecordHdu& operator++() {
-      m_it++;
-      return *m_it->get();
-    }
-
-    /**
-     * @brief Increment operator.
-     */
-    const RecordHdu* operator++(int) {
-      m_it++;
-      return m_it->get();
-    }
-
-    /**
-     * @brief Non-equality operator.
-     */
-    bool operator!=(const ConstIterator& rhs) const {
-      return m_it != rhs.m_it;
-    }
-
-  private:
-    /**
-     * @brief The iterator of the internal vector.
-     */
-    std::vector<std::unique_ptr<RecordHdu>>::const_iterator m_it;
+  template <HduCategory TCategories, typename THdu>
+  struct Selector {
+    MefFile& mef;
   };
 
   /**
@@ -142,20 +115,6 @@ public:
   const RecordHdu& operator[](long index);
 
   /**
-   * @brief Beginning of an iterator to loop over HDUs as RecordHdus.
-   */
-  ConstIterator begin() const {
-    return ConstIterator(m_hdus.begin());
-  }
-
-  /**
-   * @brief End of an iterator to loop over HDUs as RecordHdus.
-   */
-  ConstIterator end() const {
-    return ConstIterator(m_hdus.end());
-  }
-
-  /**
    * @brief Access the first HDU with given name.
    * @details
    * In the case where several HDUs have the same name, method readHduNames can be used to get the indices.
@@ -183,6 +142,13 @@ public:
    */
   template <class T = RecordHdu>
   const T& accessPrimary();
+
+  template <
+      HduCategory TCategories = HduCategory::Any,
+      typename THdu = typename HduCategoryTraits<TCategories>::HduClass>
+  Selector<TCategories, THdu> select() {
+    return { *this };
+  }
 
   /**
    * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.

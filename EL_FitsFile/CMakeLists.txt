@@ -33,6 +33,7 @@ elements_depends_on_subdirs(EL_FitsUtils)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EL_FitsFile src/lib/*.cpp
+                     INCLUDE_DIRS ElementsKernel
                      LINK_LIBRARIES ElementsKernel EL_CfitsioWrapper EL_FitsUtils
                      PUBLIC_HEADERS EL_FitsFile)
 
@@ -78,6 +79,10 @@ elements_add_unit_test(ImageHdu tests/src/ImageHdu_test.cpp
                      TYPE Boost)
 elements_add_unit_test(BintableHdu tests/src/BintableHdu_test.cpp 
                      EXECUTABLE EL_FitsFile_BintableHdu_test
+                     LINK_LIBRARIES EL_FitsFile
+                     TYPE Boost)
+elements_add_unit_test(HduIterator tests/src/HduIterator_test.cpp 
+                     EXECUTABLE EL_FitsFile_HduIterator_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
 

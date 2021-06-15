@@ -36,6 +36,10 @@ HduCategory RecordHdu::type() const {
   return m_type;
 }
 
+HduCategory RecordHdu::category() const {
+  return m_type; // FIXME
+}
+
 std::string RecordHdu::readName() const {
   gotoThisHdu();
   return Cfitsio::Hdu::currentName(m_fptr);

@@ -97,19 +97,6 @@ BOOST_FIXTURE_TEST_CASE(access_single_named_hdu, Test::TemporaryMefFile) {
   BOOST_CHECK_THROW(this->access<>(extname), FitsIOError);
 }
 
-BOOST_FIXTURE_TEST_CASE(range_loop_over_hdus, Test::TemporaryMefFile) {
-  this->initRecordExt("1");
-  this->initRecordExt("2");
-  int i = 0;
-  (*this)[0];
-  (*this)[1];
-  (*this)[2];
-  for (auto it = begin(); it != end(); it++) {
-    printf("%d\n", i++);
-    BOOST_TEST(it->type() == HduCategory::Image);
-  }
-}
-
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
