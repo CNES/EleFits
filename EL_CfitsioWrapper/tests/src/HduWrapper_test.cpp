@@ -17,13 +17,12 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
+#include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_FitsData/TestColumn.h"
 #include "EL_FitsData/TestRaster.h"
 
-#include "EL_CfitsioWrapper/CfitsioFixture.h"
-#include "EL_CfitsioWrapper/HduWrapper.h"
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -36,22 +35,32 @@ BOOST_AUTO_TEST_SUITE(HduWrapper_test)
 
 BOOST_FIXTURE_TEST_CASE(minimal_file_has_accessible_primary_test, FitsIO::Test::MinimalFile) {
   Hdu::gotoPrimary(this->fptr);
-  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 1);
-  BOOST_CHECK(Hdu::currentIsPrimary(this->fptr));
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == 1);
+  BOOST_TEST(Hdu::currentIsPrimary(this->fptr));
 }
 
 BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
   SmallRaster input;
   Hdu::createImageExtension(this->fptr, "IMGEXT", input);
-  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 2);
-  BOOST_CHECK(Hdu::currentType(this->fptr) == FitsIO::HduType::Image);
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == 2);
+  BOOST_TEST(Hdu::currentType(this->fptr) == FitsIO::HduCategory::Image);
   Hdu::gotoNext(this->fptr, -1);
-  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 1);
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == 1);
   Hdu::gotoName(this->fptr, "IMGEXT");
-  BOOST_CHECK_EQUAL(Hdu::currentIndex(this->fptr), 2);
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == 2);
   const auto output = Image::readRaster<float, 2>(fptr);
-  checkEqualVectors(output.vector(), input.vector());
+  BOOST_TEST(output.vector() == input.vector());
+}
+
+BOOST_AUTO_TEST_CASE(category_ordering_test) {
+  using FitsIO::HduCategory;
+  BOOST_TEST((HduCategory::MetadataPrimary <= HduCategory::Primary));
+  BOOST_TEST(not(HduCategory::Primary <= HduCategory::MetadataPrimary));
+  BOOST_TEST((HduCategory::Primary <= HduCategory::Image));
+  BOOST_TEST(not(HduCategory::Image <= HduCategory::Primary));
+  BOOST_TEST(not(HduCategory::Primary & HduCategory::ImageExt));
+  BOOST_TEST(not(HduCategory::Primary & HduCategory::Bintable));
 }
 
 //-----------------------------------------------------------------------------

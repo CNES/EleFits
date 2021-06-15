@@ -18,6 +18,7 @@
  */
 
 #include "EL_CfitsioWrapper/HduWrapper.h"
+
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 
@@ -49,14 +50,14 @@ std::string currentName(fitsfile* fptr) {
   return "";
 }
 
-FitsIO::HduType currentType(fitsfile* fptr) {
+FitsIO::HduCategory currentType(fitsfile* fptr) {
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
   if (type == BINARY_TBL) {
-    return FitsIO::HduType::Bintable;
+    return FitsIO::HduCategory::Bintable;
   }
-  return FitsIO::HduType::Image;
+  return FitsIO::HduCategory::Image;
 }
 
 bool currentIsPrimary(fitsfile* fptr) {

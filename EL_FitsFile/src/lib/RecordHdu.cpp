@@ -25,17 +25,14 @@
 namespace Euclid {
 namespace FitsIO {
 
-RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduType type) :
-    m_fptr(fptr),
-    m_cfitsioIndex(index + 1),
-    m_type(type) {
-}
+RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type) :
+    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type) {}
 
 long RecordHdu::index() const {
   return m_cfitsioIndex - 1;
 }
 
-HduType RecordHdu::type() const {
+HduCategory RecordHdu::type() const {
   return m_type;
 }
 
@@ -84,19 +81,19 @@ void RecordHdu::gotoThisHdu() const {
 }
 
 #ifndef COMPILE_PARSE_RECORD
-#define COMPILE_PARSE_RECORD(type, unused) template Record<type> RecordHdu::parseRecord(const std::string&) const;
+  #define COMPILE_PARSE_RECORD(type, unused) template Record<type> RecordHdu::parseRecord(const std::string&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
-#undef COMPILE_PARSE_RECORD
+  #undef COMPILE_PARSE_RECORD
 #endif
 
 template RecordVector<boost::any> RecordHdu::parseRecordVector(const std::vector<std::string>&) const;
 
 #ifndef COMPILE_WRITE_RECORD
-#define COMPILE_WRITE_RECORD(type, unused) \
-  template void RecordHdu::writeRecord(const Record<type>&) const; \
-  template void RecordHdu::updateRecord(const Record<type>&) const;
+  #define COMPILE_WRITE_RECORD(type, unused) \
+    template void RecordHdu::writeRecord(const Record<type>&) const; \
+    template void RecordHdu::updateRecord(const Record<type>&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
-#undef COMPILE_WRITE_RECORD
+  #undef COMPILE_WRITE_RECORD
 #endif
 
 template void RecordHdu::writeRecords(const std::vector<Record<boost::any>>&) const;

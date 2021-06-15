@@ -17,14 +17,13 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-#include <cstdio>
-
-#include "ElementsKernel/Temporary.h"
-
 #include "EL_FitsData/TestRaster.h"
 #include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsFile/MefFile.h"
+#include "ElementsKernel/Temporary.h"
+
+#include <boost/test/unit_test.hpp>
+#include <cstdio>
 
 using namespace Euclid::FitsIO;
 
@@ -96,6 +95,19 @@ BOOST_FIXTURE_TEST_CASE(access_single_named_hdu, Test::TemporaryMefFile) {
   BOOST_CHECK_NO_THROW(this->access<>(extname));
   this->initRecordExt(extname);
   BOOST_CHECK_THROW(this->access<>(extname), FitsIOError);
+}
+
+BOOST_FIXTURE_TEST_CASE(range_loop_over_hdus, Test::TemporaryMefFile) {
+  this->initRecordExt("1");
+  this->initRecordExt("2");
+  int i = 0;
+  (*this)[0];
+  (*this)[1];
+  (*this)[2];
+  for (auto it = begin(); it != end(); it++) {
+    printf("%d\n", i++);
+    BOOST_TEST(it->type() == HduCategory::Image);
+  }
 }
 
 //-----------------------------------------------------------------------------

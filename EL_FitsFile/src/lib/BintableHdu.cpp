@@ -22,8 +22,8 @@
 namespace Euclid {
 namespace FitsIO {
 
-BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index) : RecordHdu(token, fptr, index, HduType::Bintable) {
-}
+BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index) :
+    RecordHdu(token, fptr, index, HduCategory::Bintable) {}
 
 long BintableHdu::readColumnCount() const {
   gotoThisHdu();
@@ -79,15 +79,15 @@ void BintableHdu::renameColumn(long index, const std::string& newName) const {
 }
 
 #ifndef COMPILE_READ_COLUMN
-#define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
+  #define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
 EL_FITSIO_FOREACH_COLUMN_TYPE(COMPILE_READ_COLUMN)
-#undef COMPILE_READ_COLUMN
+  #undef COMPILE_READ_COLUMN
 #endif
 
 #ifndef COMPILE_WRITE_COLUMN
-#define COMPILE_WRITE_COLUMN(type, unused) template void BintableHdu::writeColumn(const Column<type>&) const;
+  #define COMPILE_WRITE_COLUMN(type, unused) template void BintableHdu::writeColumn(const Column<type>&) const;
 EL_FITSIO_FOREACH_COLUMN_TYPE(COMPILE_WRITE_COLUMN)
-#undef COMPILE_WRITE_COLUMN
+  #undef COMPILE_WRITE_COLUMN
 #endif
 
 } // namespace FitsIO

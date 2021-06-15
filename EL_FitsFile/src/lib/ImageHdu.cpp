@@ -22,8 +22,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index) : RecordHdu(token, fptr, index, HduType::Image) {
-}
+ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index) : RecordHdu(token, fptr, index, HduCategory::Image) {}
 
 const std::type_info& ImageHdu::readTypeid() const {
   gotoThisHdu();
@@ -31,21 +30,21 @@ const std::type_info& ImageHdu::readTypeid() const {
 }
 
 #ifndef COMPILE_READ_RASTER
-#define COMPILE_READ_RASTER(type, unused) \
-  template VecRaster<type, -1> ImageHdu::readRaster() const; \
-  template VecRaster<type, 2> ImageHdu::readRaster() const; \
-  template VecRaster<type, 3> ImageHdu::readRaster() const;
+  #define COMPILE_READ_RASTER(type, unused) \
+    template VecRaster<type, -1> ImageHdu::readRaster() const; \
+    template VecRaster<type, 2> ImageHdu::readRaster() const; \
+    template VecRaster<type, 3> ImageHdu::readRaster() const;
 EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_READ_RASTER)
-#undef COMPILE_READ_RASTER
+  #undef COMPILE_READ_RASTER
 #endif
 
 #ifndef COMPILE_WRITE_RASTER
-#define COMPILE_WRITE_RASTER(type, unused) \
-  template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
-  template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
-  template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
+  #define COMPILE_WRITE_RASTER(type, unused) \
+    template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
+    template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
+    template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
 EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_WRITE_RASTER)
-#undef COMPILE_WRITE_RASTER
+  #undef COMPILE_WRITE_RASTER
 #endif
 
 } // namespace FitsIO

@@ -43,6 +43,57 @@ public:
   using FitsFile::Permission;
 
   /**
+   * @brief Const iterator for the RecordHdu's.
+   */
+  class ConstIterator : public std::iterator<std::output_iterator_tag, const RecordHdu> {
+  public:
+    /**
+     * @brief Constructor.
+     */
+    ConstIterator(std::vector<std::unique_ptr<RecordHdu>>::const_iterator it) : m_it(it) {}
+
+    /**
+     * @brief Dereference operator.
+     */
+    const RecordHdu& operator*() const {
+      return *m_it->get();
+    }
+
+    const RecordHdu* operator->() const {
+      return m_it->get();
+    }
+
+    /**
+     * @brief Increment operator.
+     */
+    const RecordHdu& operator++() {
+      m_it++;
+      return *m_it->get();
+    }
+
+    /**
+     * @brief Increment operator.
+     */
+    const RecordHdu* operator++(int) {
+      m_it++;
+      return m_it->get();
+    }
+
+    /**
+     * @brief Non-equality operator.
+     */
+    bool operator!=(const ConstIterator& rhs) const {
+      return m_it != rhs.m_it;
+    }
+
+  private:
+    /**
+     * @brief The iterator of the internal vector.
+     */
+    std::vector<std::unique_ptr<RecordHdu>>::const_iterator m_it;
+  };
+
+  /**
    * @copydoc FitsFile::~FitsFile
    */
   virtual ~MefFile() = default;
@@ -80,9 +131,29 @@ public:
    * const auto &ext = f.access<>(1);
    * ext.as<ImageHdu>().readRaster<float>();
    * \endcode
+   * @see operator[]
    */
   template <class T = RecordHdu>
   const T& access(long index);
+
+  /**
+   * @brief Shortcut for access<RecordHdu>(long)
+   */
+  const RecordHdu& operator[](long index);
+
+  /**
+   * @brief Beginning of an iterator to loop over HDUs as RecordHdus.
+   */
+  ConstIterator begin() const {
+    return ConstIterator(m_hdus.begin());
+  }
+
+  /**
+   * @brief End of an iterator to loop over HDUs as RecordHdus.
+   */
+  ConstIterator end() const {
+    return ConstIterator(m_hdus.end());
+  }
 
   /**
    * @brief Access the first HDU with given name.
@@ -98,6 +169,9 @@ public:
    * @brief Access the only HDU with given name.
    * @details
    * Throws an exception if several HDUs with given name exists.
+   * @warning
+   * In order to ensure uniqueness of the name, all HDUs are visited,
+   * which may have a non-negligible I/O cost.
    * @see accessFirst
    */
   template <class T = RecordHdu>
@@ -114,7 +188,8 @@ public:
    * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.
    * @return A reference to the new RecordHdu.
    */
-  const RecordHdu& initRecordExt(const std::string& name);
+  const RecordHdu& initRecordExt(const std::string& name); // FIXME rename as initMetadataExt
+
   /**
    * @brief Append a new ImageHdu with given name and shape.
    * @details

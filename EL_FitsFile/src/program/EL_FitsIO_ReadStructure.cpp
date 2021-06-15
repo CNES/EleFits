@@ -86,8 +86,8 @@ public:
       logger.info() << "HDU #" << i << ": " << hdu.readName();
 
       /* Read type */
-      const auto hduType = hdu.type();
-      if (hduType == HduType::Image) {
+      const auto hduType = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
+      if (hduType == HduCategory::Image) {
         const auto shape = hdu.as<ImageHdu>().readShape<-1>();
         if (shape.size() > 0) {
           std::ostringstream oss;

@@ -77,8 +77,7 @@ public:
     friend class BintableHdu;
 
   private:
-    Token() {
-    }
+    Token() {}
   };
 
   /**
@@ -92,7 +91,7 @@ public:
    * We rely on the passkey idiom: Token is protected and therefore accessible only from MefFile (a fiend class)
    * and classes derived from RecrodHdu.
    */
-  RecordHdu(Token, fitsfile*& file, long index, HduType type = HduType::Image);
+  RecordHdu(Token, fitsfile*& file, long index, HduCategory type = HduCategory::Image);
 
   /// @endcond
 
@@ -108,8 +107,42 @@ public:
 
   /**
    * @brief Get the type of the HDU.
+   * @return Either HduCategory::Image or HduCategory::Bintable
+   * @details
+   * As opposed to category(), the return value of this method can be tested for equality, e.g.:
+   * \code
+   * if (ext.type() == HduCategory::Image) {
+   *   processImage(ext);
+   * }
+   * \endcode
    */
-  HduType type() const;
+  HduCategory type() const;
+
+  /**
+   * @brief Get the category of the HDU.
+   * @details
+   * This is more specific than the type of the HDU;
+   * The category is a bitmask which encodes more properties,
+   * e.g. Primary is more specific than Image, and MetadataPrimary is even more specific.
+   * @warning
+   * As opposed to the output of type(), operator <= should be used to test the output of this method, e.g.:
+   * \code
+   * for (const auto& hdu : f) {
+   *   const auto cat = hdu.category();
+   *   if (cat <= HduCategory::Primary) {
+   *     processPrimary(hdu.as<ImageHdu>());
+   *   } else if (cat <= HduCategory::Metadata) { // Both image without data and binary tables without data
+   *     processMetadata(hdu);
+   *   } else if (cat <= HduCategory::Image) {
+   *     processImage(hdu.as<ImageHdu>());
+   *   } else if (cat <= HduCategory::Bintable) {
+   *     processBintable(hdu.as<BintableHdu>());
+   *   }
+   * }
+   * \endcode
+   * @see HduCategory
+   */
+  HduCategory category() const;
 
   /**
    * @brief Cast to an ImageHdu or BintableHdu (if possible).
@@ -411,7 +444,7 @@ protected:
   /**
    * @brief The HDU type.
    */
-  HduType m_type;
+  HduCategory m_type;
 };
 
 } // namespace FitsIO

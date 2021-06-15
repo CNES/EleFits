@@ -19,7 +19,7 @@
 
 #if defined(_EL_FITSFILE_MEFFILE_IMPL) || defined(CHECK_QUALITY)
 
-#include "EL_FitsFile/MefFile.h"
+  #include "EL_FitsFile/MefFile.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -27,14 +27,14 @@ namespace FitsIO {
 template <class T>
 const T& MefFile::access(long index) {
   Cfitsio::Hdu::gotoIndex(m_fptr, index + 1); // CFitsIO index is 1-based
-  auto hduType = Cfitsio::Hdu::currentType(m_fptr);
+  const auto hduType = Cfitsio::Hdu::currentType(m_fptr);
   auto& ptr = m_hdus[index];
   if (ptr == nullptr) {
     switch (hduType) {
-      case HduType::Image:
+      case HduCategory::Image:
         ptr.reset(new ImageHdu(RecordHdu::Token {}, m_fptr, index));
         break;
-      case HduType::Bintable:
+      case HduCategory::Bintable:
         ptr.reset(new BintableHdu(RecordHdu::Token {}, m_fptr, index));
         break;
       default:
@@ -116,14 +116,14 @@ const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Tup
   return m_hdus[size]->as<BintableHdu>();
 }
 
-#ifndef DECLARE_ASSIGN_IMAGE_EXT
-#define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
+  #ifndef DECLARE_ASSIGN_IMAGE_EXT
+    #define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
+      extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
+      extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
+      extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
 EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
-#undef DECLARE_ASSIGN_IMAGE_EXT
-#endif
+    #undef DECLARE_ASSIGN_IMAGE_EXT
+  #endif
 
 } // namespace FitsIO
 } // namespace Euclid

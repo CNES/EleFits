@@ -36,7 +36,8 @@ namespace FitsIO {
  * auto allButComments = KeywordCategory::All & ~KeywordCategory::Comment;
  * \endcode
  */
-enum KeywordCategory {
+enum KeywordCategory
+{
   Mandatory = 0b0001, ///< Mandatory standard keyword.
   Reserved = 0b0010, ///< Optional standard keywords (only valued keywords are put in this category).
   Comment = 0b0100, ///< COMMENT (and HISTORY) keywords (non-valued reserved keywords).
@@ -61,7 +62,7 @@ public:
   filterCategories(const std::vector<std::string>& keywords, KeywordCategory categories);
 
   /**
-   * @brief Check whether a keyword is of given categories.
+   * @brief Check whether a keyword is of any of the given categories.
    * @param keyword The keyword to be tested
    * @param categories The categories to be tested, e.g. `KeywordCategory::Reserved | KeywordCategory::User`.
    * @see KeywordCategory
