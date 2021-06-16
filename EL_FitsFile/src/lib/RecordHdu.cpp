@@ -28,6 +28,8 @@ namespace FitsIO {
 RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type) :
     m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type) {}
 
+RecordHdu::RecordHdu() : m_fptr(m_dummyFptr), m_cfitsioIndex(0), m_type(HduCategory::Image) {}
+
 long RecordHdu::index() const {
   return m_cfitsioIndex - 1;
 }
@@ -36,8 +38,18 @@ HduCategory RecordHdu::type() const {
   return m_type;
 }
 
-HduCategory RecordHdu::category() const {
-  return m_type; // FIXME
+HduCategory RecordHdu::readCategory() const {
+  HduCategory cat = m_type;
+  if (m_cfitsioIndex == 1) {
+    cat &= HduCategory::Primary;
+  } else {
+    cat &= HduCategory::Ext;
+  }
+  return cat;
+}
+
+bool RecordHdu::matches(HduFilter filter) const {
+  return filter.accepts(readCategory());
 }
 
 std::string RecordHdu::readName() const {

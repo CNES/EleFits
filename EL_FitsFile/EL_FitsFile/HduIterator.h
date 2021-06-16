@@ -40,13 +40,14 @@ namespace FitsIO {
  * 
  * If this default value is not adequate, THdu can be specified.
  */
-template <HduCategory TCategories = HduCategory::Any, typename THdu = typename HduCategoryTraits<TCategories>::HduClass>
-class HduIterator : public std::iterator<std::output_iterator_tag, const THdu> {
+template <typename THdu = RecordHdu>
+class HduIterator : public std::iterator<std::input_iterator_tag, const THdu> {
 public:
   /**
    * @brief Constructor.
    */
-  HduIterator(MefFile& f, long index) : m_f(f), m_index(index - 1), m_hdu(nullptr) {
+  HduIterator(MefFile& f, long index, HduFilter filter = HduCategory::Any) :
+      m_f(f), m_index(index - 1), m_hdu(nullptr), m_filter(filter), m_dummyHdu() {
     next();
   }
 
@@ -57,7 +58,13 @@ public:
     return m_hdu->as<THdu>();
   }
 
+  /**
+   * @brief Arrow operator.
+   */
   const THdu* operator->() const {
+    if (not m_hdu) {
+      return nullptr;
+    }
     return &m_hdu->as<THdu>();
   }
 
@@ -74,7 +81,17 @@ public:
    */
   const THdu* operator++(int) {
     next();
+    if (not m_hdu) {
+      return nullptr;
+    }
     return &m_hdu->as<THdu>();
+  }
+
+  /**
+   * @brief Equality operator.
+   */
+  bool operator==(const HduIterator& rhs) const {
+    return m_index == rhs.m_index; // TODO Should we test m_f, too?
   }
 
   /**
@@ -91,11 +108,13 @@ private:
   void next() {
     do {
       m_index++;
-      if (m_index == m_f.hduCount()) {
+      if (m_index >= m_f.hduCount()) {
+        m_index = m_f.hduCount();
+        m_hdu = &m_dummyHdu;
         return;
       }
       m_hdu = &m_f[m_index];
-    } while (not(m_hdu->isInstance<TCategories>()));
+    } while (not(m_hdu->matches(m_filter)));
   }
 
   /**
@@ -112,30 +131,54 @@ private:
    * @brief The current HDU.
    */
   const RecordHdu* m_hdu;
+
+  /**
+   * @brief The HDU filter.
+   */
+  HduFilter m_filter;
+
+  /**
+   * @brief Dummy HDU for past-the-last element access.
+   */
+  const THdu m_dummyHdu;
 };
 
 /**
- * @brief Beginning of an iterator to loop over HDUs as RecordHdus.
+ * @brief Beginning of an iterator to loop over all HDUs as RecordHdus.
+ * @details
+ * Especially useful for range loops:
+ * \code
+ * MefFile f(filename, MefFile::Permission::Read);
+ * for (const auto& hdu : f) {
+ *   if (hdu.isInstance(HduCategory::Primary)) {
+ *     processPrimary(hdu);
+ *   } else if (hdu.isInstance(Hdu::Category::Image)) {
+ *     processImage(hdu.as<ImageHdu>());
+ *   } else if (hdu.isInstance(Hdu::Category::Bintable)) {
+ *     processBintable(hdu.as<BintableHdu>());
+ *   }
+ * }
+ * \endcode
  */
 HduIterator<> begin(MefFile& f) {
   return { f, 0 };
 }
 
 /**
- * @brief End of an iterator to loop over HDUs as RecordHdus.
+ * @brief End of an iterator to loop over all HDUs as RecordHdus.
  */
 HduIterator<> end(MefFile& f) {
   return { f, f.hduCount() };
 }
 
-template <HduCategory TCategories = HduCategory::Any, typename THdu = typename HduCategoryTraits<TCategories>::HduClass>
-HduIterator<TCategories, THdu> begin(MefFile::Selector<TCategories, THdu>& selector) {
-  return { selector.mef, 0 };
+template <typename THdu = RecordHdu>
+HduIterator<THdu> begin(MefFile::Selector<THdu>& selector) {
+  return { selector.mef, 0, selector.filter };
 }
 
-template <HduCategory TCategories = HduCategory::Any, typename THdu = typename HduCategoryTraits<TCategories>::HduClass>
-HduIterator<TCategories, THdu> end(MefFile::Selector<TCategories, THdu>& selector) {
-  return { selector.mef, selector.mef.hduCount() };
+template <typename THdu = RecordHdu>
+HduIterator<THdu> end(MefFile::Selector<THdu>& selector) {
+  return { selector.mef, selector.mef.hduCount(), selector.filter };
 }
 
 } // namespace FitsIO

@@ -22,6 +22,7 @@
 
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
 #include "EL_FitsData/DataUtils.h"
+#include "EL_FitsData/HduCategory.h"
 #include "EL_FitsData/Record.h"
 
 namespace Euclid {
@@ -93,6 +94,11 @@ public:
    */
   RecordHdu(Token, fitsfile*& file, long index, HduCategory type = HduCategory::Image);
 
+  /**
+   * @brief Dummy constructor, dedicated to iterators.
+   */
+  RecordHdu();
+
   /// @endcond
 
   /**
@@ -109,7 +115,7 @@ public:
    * @brief Get the type of the HDU.
    * @return Either HduCategory::Image or HduCategory::Bintable
    * @details
-   * As opposed to category(), the return value of this method can be tested for equality, e.g.:
+   * As opposed to readCategory(), the return value of this method can be tested for equality, e.g.:
    * \code
    * if (ext.type() == HduCategory::Image) {
    *   processImage(ext);
@@ -119,40 +125,28 @@ public:
   HduCategory type() const;
 
   /**
-   * @brief Get the category of the HDU.
+   * @brief Read the category of the HDU.
    * @details
-   * This is more specific than the type of the HDU;
+   * This is more specific than the type of the HDU.
    * The category is a bitmask which encodes more properties,
    * e.g. Primary is more specific than Image, and MetadataPrimary is even more specific.
-   * @warning
-   * As opposed to the output of type(), operator <= should be used to test the output of this method, e.g.:
-   * \code
-   * for (const auto& hdu : f) {
-   *   const auto cat = hdu.category();
-   *   if (cat <= HduCategory::Primary) {
-   *     processPrimary(hdu.as<ImageHdu>());
-   *   } else if (cat <= HduCategory::Metadata) { // Both image without data and binary tables without data
-   *     processMetadata(hdu);
-   *   } else if (cat <= HduCategory::Image) {
-   *     processImage(hdu.as<ImageHdu>());
-   *   } else if (cat <= HduCategory::Bintable) {
-   *     processBintable(hdu.as<BintableHdu>());
-   *   }
-   * }
-   * \endcode
+   * The result of this function should not be tested with operator ==, but rather with HduFilter::accepts().
+   * Often, the method matches can be used directly.
+   * 
+   * This is indeed a read operation, because the header should be parsed,
+   * e.g. to know whether the data unit is empty or not.
    * @see HduCategory
+   * @see matches
    */
-  HduCategory category() const;
+  virtual HduCategory readCategory() const;
 
   /**
-   * @brief Check whether the HDU is of given categories.
-   * @tparam TCategories The list of categories to be tested
-   * @return True if the HDU is of all given categories, false otherwise.
+   * @brief Check whether the HDU matches a given filter.
+   * @param filter The list of categories to be tested
+   * @warning
+   * Like readCategory, this is a read operation.
    */
-  template <HduCategory TCategories>
-  bool isInstance() const {
-    return Euclid::FitsIO::isInstance<TCategories>(category());
-  }
+  bool matches(HduFilter filter) const;
 
   /**
    * @brief Cast to an ImageHdu or BintableHdu (if possible).
@@ -455,6 +449,11 @@ protected:
    * @brief The HDU type.
    */
   HduCategory m_type;
+
+  /**
+   * @brief Dummy file handler dedicated to dummy constructor.
+   */
+  fitsfile* m_dummyFptr = nullptr;
 };
 
 } // namespace FitsIO

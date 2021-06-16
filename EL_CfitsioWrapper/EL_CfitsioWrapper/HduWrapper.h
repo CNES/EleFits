@@ -24,110 +24,14 @@
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/ImageWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
+#include "EL_FitsData/HduCategory.h"
 
+#include <array>
 #include <fitsio.h>
 #include <string>
+#include <utility> // index_sequence
 
 namespace Euclid {
-namespace FitsIO {
-
-/**
- * @brief HDU category.
- * @details
- * The enumerators are designed to be used as bitmasks to filter on some properties.
- * For example, an HDU of category Primary is also of category ImageHdu and Hdu, but not of category Ext.
- * 
- * For image HDUs, two categories are defined, which mainly aims at simplifying compression-related features:
- * - Integer-valued for values of integral type;
- * - Real-valued for values of type float or double.
- * 
- * For any HDU, the data unit may be empty (i.e. `NAXIS = 0` or `NAXISn = 0` for at least one axis).
- * This is modeled as category Metadata, as opposed to category Data, which means there are values in the data unit.
- * 
- * They can be combined, e.g. to filter on integer-valued image extensions with non-empty data:
- * \code
- * HduCategory intImageExtWithData = HduCategory::IntImageExt & ~HduCategory::Metadata;
- * \endcode
- * 
- * Shortcuts are provided for common combinations, e.g. `ImageExt = Image | Ext`.
- * 
- * To test categories, bitwise boolean operators (`&`, `|`, `~`) are defined.
- * Additionally, operator <= allows checking whether an HDU category matches a set of categories.
- */
-enum HduCategory
-{
-  Metadata = 0b000'0001, ///< HDU without data
-  Data = 0b0000'0010, ///< HDU with data
-  Primary = 0b0000'0100, ///< Primary HDU
-  MetadataPrimary = Metadata | Primary, ///< Primary HDU without data
-  DataPrimary = Data | Primary, ///< Primary HDU with data
-  Ext = 0b0000'1000, ///< Extension
-  MetadataExt = Metadata | Ext, ///< Extension without data
-  DataExt = Data | Ext, ///< Extension with data
-  IntImage = 0b0001'0000, ///< Integer-valued image HDU
-  FloatImage = 0b0010'0000, ///< Real-valued image HDU
-  Image = IntImage | FloatImage, ///< Image HDU
-  MetadataImage = Metadata | Image, ///< Image HDU without data
-  DataImage = Data | Image, ///< Image HDU with data
-  ImageExt = Image | Ext, ///< Image extension
-  MetadataImageExt = Metadata | ImageExt, ///< Image extension without data
-  DataImageExt = Data | ImageExt, ///< Image extension with data
-  Bintable = 0b0100'0000, ///< Binary table HDU
-  Any = 0 ///< Any HDU
-};
-
-/**
- * @brief Bit-wise OR operator for masking.
- * @see HduCategory
- */
-inline HduCategory operator|(HduCategory a, HduCategory b) {
-  return static_cast<HduCategory>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-/**
- * @brief In-place bit-wise OR operator for masking.
- * @see HduCategory
- */
-inline HduCategory& operator|=(HduCategory& a, HduCategory b) {
-  a = a | b;
-  return a;
-}
-
-/**
- * @brief Bit-wise AND operator for masking.
- * @see HduCategory
- */
-inline HduCategory operator&(HduCategory a, HduCategory b) {
-  return static_cast<HduCategory>(static_cast<int>(a) & static_cast<int>(b));
-}
-
-/**
- * @brief In-place bit-wise AND operator for masking.
- * @see HduCategory
- */
-inline HduCategory& operator&=(HduCategory& a, HduCategory b) {
-  a = a & b;
-  return a;
-}
-
-/**
- * @brief Bit-wise binary NOT operator for masking.
- * @see HduCategory
- */
-inline HduCategory operator~(HduCategory a) {
-  return static_cast<HduCategory>(~static_cast<int>(a));
-}
-
-/**
- * @brief Check whether an input bitmask contains at least the bits of given categories.
- */
-template <HduCategory TCategories>
-inline bool isInstance(HduCategory input) {
-  return (input & TCategories) == TCategories;
-}
-
-} // namespace FitsIO
-
 namespace Cfitsio {
 
 /**
@@ -162,7 +66,7 @@ std::string currentName(fitsfile* fptr);
 
 /**
  * @brief Get the type of the current HDU (either Image or Bintable).
- * @return HduCategory::Image or HduCategory::Bintable
+ * @return Either HduCategory::Image or HduCategory::Bintable.
  * @details
  * The output of this function can be tested for equality, e.g.:
  * \code
@@ -170,23 +74,8 @@ std::string currentName(fitsfile* fptr);
  *   ... // An image HDU
  * }
  * \endcode
- * @see For a finer output, see currentCategories.
  */
 FitsIO::HduCategory currentType(fitsfile* fptr);
-
-/**
- * @brief Get the set of categories of the current HDU.
- * @return A combination of HduCategory's
- * @details
- * The output of this function should be tested with Boolean bitwise operators, e.g.:
- * \code
- * const auto cat = currentCategories(fptr);
- * if (cat & HduCategory::Image && cat & HduCategory::Data) {
- *   ... // An image HDU with non-empty data unit
- * }
- * \endcode
- */
-FitsIO::HduCategory currentCategories(fitsfile* fptr);
 
 /**
  * @brief Check whether current HDU is the Primary HDU.

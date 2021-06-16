@@ -24,6 +24,8 @@ namespace FitsIO {
 
 ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index) : RecordHdu(token, fptr, index, HduCategory::Image) {}
 
+ImageHdu::ImageHdu() : RecordHdu() {}
+
 const std::type_info& ImageHdu::readTypeid() const {
   gotoThisHdu();
   return Cfitsio::Image::readTypeid(m_fptr);

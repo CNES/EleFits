@@ -26,25 +26,6 @@
 namespace Euclid {
 namespace FitsIO {
 
-template <HduCategory TCategories, typename = void>
-struct HduCategoryTraits {
-  using HduClass = RecordHdu;
-};
-
-// template <
-//     HduCategory TCategories,
-//     std::enable_if_t<TCategories & HduCategory::Image && not(TCategories & HduCategory::Bintable), bool> = true>
-// struct HduCategoryTraits {
-//   using HduClass = ImageHdu;
-// };
-
-// template <
-//     HduCategory TCategories,
-//     std::enable_if_t<TCategories & HduCategory::Bintable && not(TCategories & HduCategory::Image), bool> = true>
-// struct HduCategoryTraits {
-//   using HduClass = BintableHdu;
-// };
-
 /**
  * @brief Multi-Extension Fits file reader-writer.
  * @details
@@ -61,9 +42,27 @@ public:
    */
   using FitsFile::Permission;
 
-  template <HduCategory TCategories, typename THdu>
+  /**
+   * @brief Helper class to provide filtered iterators.
+   * @details
+   * Functions begin(Selector) and end(Selector) are provided, so that it is possible to loop over HDUs as follows:
+   * \code
+   * MefFile f(...);
+   * for (const auto& hdu : f.selectAs<ImageHdu>(HduCategory::ImageExt)) {
+   *   ... // hdu is an image extension of type ImageHdu
+   * }
+   * \endcode
+   */
+  template <typename THdu>
   struct Selector {
+    /**
+     * @brief The MefFile to apply the selector on.
+     */
     MefFile& mef;
+    /**
+     * @brief The HDU filter to be applied.
+     */
+    HduFilter filter;
   };
 
   /**
@@ -143,12 +142,12 @@ public:
   template <class T = RecordHdu>
   const T& accessPrimary();
 
-  template <
-      HduCategory TCategories = HduCategory::Any,
-      typename THdu = typename HduCategoryTraits<TCategories>::HduClass>
-  Selector<TCategories, THdu> select() {
-    return { *this };
-  }
+  /**
+   * @brief Select a filtered set of HDUs.
+   * @return An iterable object, i.e. one for which begin and end functions are provided.
+   */
+  template <typename THdu = RecordHdu>
+  Selector<THdu> select(const HduFilter& filter);
 
   /**
    * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.

@@ -20,10 +20,10 @@
 #ifndef _EL_FITSFILE_BINTABLEHDU_H
 #define _EL_FITSFILE_BINTABLEHDU_H
 
-#include <string>
-
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_FitsFile/RecordHdu.h"
+
+#include <string>
 
 namespace Euclid {
 namespace FitsIO {
@@ -37,9 +37,14 @@ public:
   /// @cond INTERNAL
 
   /**
-   * @copydoc RecordHdu::RecordHdu
+   * @see RecordHdu
    */
   BintableHdu(Token, fitsfile*& fptr, long index);
+
+  /**
+   * @see RecordHdu
+   */
+  BintableHdu();
 
   /// @endcond
 

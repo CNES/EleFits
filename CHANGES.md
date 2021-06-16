@@ -2,6 +2,10 @@
 
 ## 3.1
 
+### Breaking changes (minor)
+
+* Enum `HduType` renamed as `HduCategory`
+
 ### Bug fixes
 
 * String columns are correctly read when reading multiple columns
@@ -10,6 +14,8 @@
 ### New features
 
 * New method `MefFile::access(string)` checks that extactly one HDU with given name exists
+* Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
+* HDU are categorized more precisely than with only their type (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`)
 * Binary table columns can be read by index
 * Binary table column names can be read and updated
 * `Column` values can be accessed directly with `operator()`

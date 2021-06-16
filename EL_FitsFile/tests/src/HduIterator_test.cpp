@@ -35,27 +35,46 @@ BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
   this->initRecordExt("2");
   int count = 0;
   for (const auto& hdu : *this) {
-    BOOST_TEST(hdu.isInstance<Image>());
+    BOOST_TEST(hdu.matches(Image));
     count++;
   }
   BOOST_TEST(count == this->hduCount());
 }
 
 BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile) {
-  ColumnInfo<float> info { "NAME", "", 1 };
-  this->initBintableExt("1", info);
-  this->initBintableExt("2", info);
+  ColumnInfo<float> info { "COL", "", 1 };
+  std::vector<std::string> names { "", "BINTABLE1", "BINTABLE2", "IMAGE" };
+  this->initBintableExt(names[1], info);
+  this->initBintableExt(names[2], info);
+  this->initImageExt<float, 2>(names[3], { 1, 1 });
+
   int count = 0;
-  for (const auto& hdu : this->select<HduCategory::Image>()) {
-    BOOST_TEST(hdu.isInstance<HduCategory::Image>());
+  std::vector<std::string> readNames;
+
+  for (const auto& hdu : this->select<ImageHdu>(HduCategory::Primary)) {
+    const std::string name = hdu.readName();
+    BOOST_TEST(name == names[0]);
+    readNames.push_back(name);
+    BOOST_TEST(hdu.matches(HduCategory::Image));
     count++;
   }
   BOOST_TEST(count == 1);
-  for (const auto& hdu : this->select<HduCategory::Bintable>()) {
-    BOOST_TEST(hdu.isInstance<HduCategory::Bintable>());
+
+  for (const auto& hdu : this->select<BintableHdu>(HduCategory::Bintable)) {
+    readNames.push_back(hdu.readName());
+    BOOST_TEST(hdu.matches(HduCategory::Bintable & HduCategory::Ext));
     count++;
   }
-  BOOST_TEST(count == this->hduCount());
+  BOOST_TEST(count == 3);
+
+  for (const auto& hdu : this->select<ImageHdu>(HduCategory::ImageExt)) {
+    readNames.push_back(hdu.readName());
+    BOOST_TEST(hdu.matches(HduCategory::Image - HduCategory::Primary));
+    count++;
+  }
+  BOOST_TEST(count == 4);
+
+  BOOST_TEST(readNames == names);
 }
 
 //-----------------------------------------------------------------------------

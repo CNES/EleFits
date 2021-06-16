@@ -60,9 +60,14 @@ public:
   /// @cond INTERNAL
 
   /**
-   * @copydoc RecordHdu::RecordHdu
+   * @see RecordHdu
    */
   ImageHdu(Token, fitsfile*& fptr, long index);
+
+  /**
+   * @see RecordHdu
+   */
+  ImageHdu();
 
   /// @endcond
 

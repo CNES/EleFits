@@ -25,6 +25,8 @@ namespace FitsIO {
 BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index) :
     RecordHdu(token, fptr, index, HduCategory::Bintable) {}
 
+BintableHdu::BintableHdu() : RecordHdu() {}
+
 long BintableHdu::readColumnCount() const {
   gotoThisHdu();
   return Cfitsio::Bintable::columnCount(m_fptr);

@@ -76,6 +76,11 @@ const T& MefFile::accessPrimary() {
   return access<T>(MefFile::primaryIndex);
 }
 
+template <typename THdu>
+MefFile::Selector<THdu> MefFile::select(const HduFilter& filter) {
+  return { *this, filter };
+}
+
 template <typename T, long n>
 const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
