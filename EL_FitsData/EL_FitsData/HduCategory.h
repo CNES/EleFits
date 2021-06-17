@@ -63,7 +63,11 @@ namespace FitsIO {
  *   - Floating point pixels
  *   - Raw image
  *   - Compressed image
- * - 6 padding bits, which could later be used for states like Accessed or Edited.
+ * - 6 spare bits, which could later be used for states like:
+ *   - Untouched
+ *   - Accessed
+ *   - Created
+ *   - Edited
  */
 enum HduCategory
 {

@@ -37,6 +37,16 @@ long BintableHdu::readRowCount() const {
   return Cfitsio::Bintable::rowCount(m_fptr);
 }
 
+HduCategory BintableHdu::readCategory() const {
+  auto cat = RecordHdu::readCategory();
+  if (readColumnCount() == 0 || readRowCount() == 0) {
+    cat &= HduCategory::Metadata;
+  } else {
+    cat &= HduCategory::Data;
+  }
+  return cat;
+}
+
 bool BintableHdu::hasColumn(const std::string& name) const {
   gotoThisHdu();
   return Cfitsio::Bintable::hasColumn(m_fptr, name);

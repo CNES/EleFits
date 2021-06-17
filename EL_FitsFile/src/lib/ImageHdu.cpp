@@ -19,6 +19,9 @@
 
 #include "EL_FitsFile/ImageHdu.h"
 
+#include <functional> // multiplies
+#include <numeric> // accumulate
+
 namespace Euclid {
 namespace FitsIO {
 
@@ -29,6 +32,28 @@ ImageHdu::ImageHdu() : RecordHdu() {}
 const std::type_info& ImageHdu::readTypeid() const {
   gotoThisHdu();
   return Cfitsio::Image::readTypeid(m_fptr);
+}
+
+long ImageHdu::readSize() const {
+  const auto shape = readShape<-1>();
+  return std::accumulate(shape.begin(), shape.end(), 1L, std::multiplies<long>());
+}
+
+HduCategory ImageHdu::readCategory() const {
+  auto cat = RecordHdu::readCategory();
+  if (readSize() == 0) {
+    cat &= HduCategory::Metadata;
+  } else {
+    cat &= HduCategory::Data;
+  }
+  const auto& id = readTypeid();
+  if (id == typeid(float) || id == typeid(double)) {
+    cat &= HduCategory::FloatImage;
+  } else {
+    cat &= HduCategory::IntImage;
+  }
+  // FIXME check compression
+  return cat;
 }
 
 #ifndef COMPILE_READ_RASTER

@@ -64,6 +64,11 @@ public:
   long readRowCount() const;
 
   /**
+   * @copydoc RecordHdu::readCategory
+   */
+  HduCategory readCategory() const override;
+
+  /**
    * @brief Check whether the HDU contains a given column.
    * @warning This is a read operation.
    */

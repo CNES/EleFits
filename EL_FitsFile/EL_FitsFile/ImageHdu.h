@@ -82,10 +82,20 @@ public:
   const std::type_info& readTypeid() const;
 
   /**
+   * @brief Read the number of pixels in the image.
+   */
+  long readSize() const;
+
+  /**
    * @brief Read the image shape.
    */
   template <long n = 2>
   Position<n> readShape() const;
+
+  /**
+   * @copydoc RecordHdu::readCategory
+   */
+  HduCategory readCategory() const override;
 
   /**
    * @brief Redefine the image shape and type.
