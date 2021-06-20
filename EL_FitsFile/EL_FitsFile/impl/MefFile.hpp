@@ -30,16 +30,12 @@ const T& MefFile::access(long index) {
   const auto hduType = Cfitsio::Hdu::currentType(m_fptr);
   auto& ptr = m_hdus[index];
   if (ptr == nullptr) {
-    switch (hduType) {
-      case HduCategory::Image:
-        ptr.reset(new ImageHdu(RecordHdu::Token {}, m_fptr, index));
-        break;
-      case HduCategory::Bintable:
-        ptr.reset(new BintableHdu(RecordHdu::Token {}, m_fptr, index));
-        break;
-      default:
-        ptr.reset(new RecordHdu(RecordHdu::Token {}, m_fptr, index));
-        break;
+    if (hduType == HduCategory::Image) {
+      ptr.reset(new ImageHdu(RecordHdu::Token {}, m_fptr, index));
+    } else if (hduType == HduCategory::Bintable) {
+      ptr.reset(new BintableHdu(RecordHdu::Token {}, m_fptr, index));
+    } else {
+      ptr.reset(new RecordHdu(RecordHdu::Token {}, m_fptr, index));
     }
   }
   return ptr->as<T>();

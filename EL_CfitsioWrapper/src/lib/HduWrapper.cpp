@@ -54,10 +54,13 @@ FitsIO::HduCategory currentType(fitsfile* fptr) {
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
+  if (type == IMAGE_HDU) {
+    return FitsIO::HduCategory::Image;
+  }
   if (type == BINARY_TBL) {
     return FitsIO::HduCategory::Bintable;
   }
-  return FitsIO::HduCategory::Image;
+  throw std::runtime_error("Unknown HDU type (code " + std::to_string(type) + ")."); // FIXME Exception class
 }
 
 bool currentIsPrimary(fitsfile* fptr) {

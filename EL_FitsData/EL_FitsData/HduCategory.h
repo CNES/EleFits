@@ -20,12 +20,14 @@
 #ifndef _EL_FITSDATA_HDUCATEGORY_H
 #define _EL_FITSDATA_HDUCATEGORY_H
 
+#include <boost/logic/tribool.hpp>
+#include <functional>
 #include <vector>
 
 namespace Euclid {
 namespace FitsIO {
 
-/**
+/*
  * @brief HDU category.
  * @details
  * The enumerators are designed to be used as bitmasks to filter on some properties.
@@ -69,71 +71,115 @@ namespace FitsIO {
  *   - Created
  *   - Edited
  */
-enum HduCategory
-{
-  Metadata = 0b10'11'11'1111'111111, ///< HDU without data
-  Data = 0b0111'11'1111'111111, ///< HDU with data
-  Primary = 0b11'10'10'1111'111111, ///< Primary HDU
-  MetadataPrimary = Metadata & Primary, ///< Primary HDU without data
-  DataPrimary = Data & Primary, ///< Primary HDU with data
-  Ext = 0b11'01'11'1111'111111, ///< Extension
-  MetadataExt = Metadata & Ext, ///< Extension without data
-  DataExt = Data & Ext, ///< Extension with data
-  Image = 0b11'11'10'1111'111111, ///< Image HDU
-  MetadataImage = Metadata & Image, ///< Image HDU without data
-  DataImage = Data & Image, ///< Image HDU with data
-  IntImage = 0b11'11'10'1011'111111, ///< Integer-valued image HDU
-  FloatImage = 0b11'11'10'0111'111111, ///< Real-valued image HDU
-  ImageExt = Image & Ext, ///< Image extension
-  MetadataImageExt = Metadata & ImageExt, ///< Image extension without data
-  DataImageExt = Data & ImageExt, ///< Image extension with data
-  IntImageExt = IntImage & Ext, ///< Integer-valued image extension
-  FloatImageExt = FloatImage & Ext, ///< Real-valued image extension
-  Bintable = 0b11'01'01'1111'111111, ///< Binary table HDU
-  Any = 0b11'11'11'1111'111111 ///< Any HDU
+class HduCategory;
+/**
+ * @brief An extensible HDU categorization for filtering and iteration.
+ * @details FIXME
+ */
+class HduCategory {
+protected:
+  /**
+   * @brief The positions of the trinary flags.
+   */
+  enum class TritPosition
+  {
+    PrimaryExt, ///< Primary/extension flag
+    MetadataData, ///< Metadata/data flag
+    ImageBinary, ///< Image/binary table flag
+    IntFloatImage, ///< Integer-/real-valued image flag
+    RawCompressedImage ///< Raw/compressed image flag
+  };
+
+  /**
+   * @brief Shortcut for a trinary flag.
+   */
+  using Trit = boost::logic::tribool;
+
+  /**
+   * @brief Create an unconstrained category.
+   */
+  HduCategory();
+
+  /**
+   * @brief Create a category with a single flag constrained.
+   */
+  HduCategory(TritPosition position, Trit value);
+
+public:
+  /**
+   * @brief Toggle flags.
+   */
+  HduCategory operator~() const;
+
+  /**
+   * @brief Restrict category (constrain flags).
+   */
+  HduCategory& operator&=(const HduCategory& rhs);
+
+  /**
+   * @copydoc operator&=
+   */
+  HduCategory operator&(const HduCategory& rhs) const;
+
+  /**
+   * @brief Extend category (release flags).
+   */
+  HduCategory& operator|=(const HduCategory& rhs);
+
+  /**
+   * @copydoc operator|=
+   */
+  HduCategory operator|(const HduCategory& rhs) const;
+
+  /**
+   * @brief Compare to category.
+   */
+  bool operator==(const HduCategory& rhs) const;
+
+protected:
+  /**
+   * @brief the trinary flag mask.
+   * @details
+   * Each flag of the mask is either set to true, false, or indeterminate.
+   * The trit positions are given by the TritPosition enumerators
+   */
+  std::vector<Trit> m_mask;
+
+private:
+  static Trit toggleFlag(Trit rhs);
+  static Trit restrictFlag(Trit lhs, Trit rhs);
+  static Trit extendFlag(Trit lhs, Trit rhs);
+  HduCategory& transform(std::function<Trit(Trit)> op);
+  HduCategory& transform(const HduCategory& rhs, std::function<Trit(Trit, Trit)> op);
+
+public:
+  /* Basic categories */
+  static const HduCategory Any; //< Any HDU
+  static const HduCategory Primary; ///< Primary HDU
+  static const HduCategory Metadata; ///< HDU without data
+  static const HduCategory Image; ///< Image HDU
+  static const HduCategory IntImage; ///< Integer-valued image HDU
+  static const HduCategory RawImage; ///< Raw (non-compressed) image HDU
+
+  /* Opposite categories */
+  static const HduCategory Ext; ///< Extension
+  static const HduCategory Data; ///< HDU with data
+  static const HduCategory Bintable; ///< Binary table HDU (necessarily an extension)
+  static const HduCategory FloatImage; ///< Real-valued image HDU
+  static const HduCategory
+      CompressedImageExt; ///< Compressed image HDU (effectively written as a binary table extension)
+
+  /* Compound categories */
+  static const HduCategory MetadataPrimary; ///< Primary HDU without data
+  static const HduCategory DataPrimary; ///< Primary HDU with data
+  static const HduCategory IntPrimary; ///< Integer-valued Primary HDU
+  static const HduCategory FloatPrimary; ///< Real-valued Primary HDU
+  static const HduCategory ImageExt; ///< Image extension
+  static const HduCategory MetadataExt; ///< Extension without data
+  static const HduCategory DataExt; ///< Extension with data
+  static const HduCategory IntImageExt; ///< Image extension with data
+  static const HduCategory FloatImageExt; ///< Image extension without data
 };
-
-/**
- * @brief Bit-wise OR operator for masking.
- * @see HduCategory
- */
-inline HduCategory operator|(HduCategory a, HduCategory b) {
-  return static_cast<HduCategory>(static_cast<int>(a) | static_cast<int>(b));
-}
-
-/**
- * @brief In-place bit-wise OR operator for masking.
- * @see HduCategory
- */
-inline HduCategory& operator|=(HduCategory& a, HduCategory b) {
-  a = a | b;
-  return a;
-}
-
-/**
- * @brief Bit-wise AND operator for masking.
- * @see HduCategory
- */
-inline HduCategory operator&(HduCategory a, HduCategory b) {
-  return static_cast<HduCategory>(static_cast<int>(a) & static_cast<int>(b));
-}
-
-/**
- * @brief In-place bit-wise AND operator for masking.
- * @see HduCategory
- */
-inline HduCategory& operator&=(HduCategory& a, HduCategory b) {
-  a = a & b;
-  return a;
-}
-
-/**
- * @brief Bit-wise binary NOT operator for masking.
- * @see HduCategory
- */
-inline HduCategory operator~(HduCategory a) {
-  return static_cast<HduCategory>(~static_cast<int>(a));
-}
 
 /**
  * @brief Check whether an input is an instance of (i.e. is more specific than) a given category.

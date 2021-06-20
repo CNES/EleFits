@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, FitsIO::Test::Mi
   SmallRaster input;
   Hdu::createImageExtension(this->fptr, "IMGEXT", input);
   BOOST_TEST(Hdu::currentIndex(this->fptr) == 2);
-  BOOST_TEST(Hdu::currentType(this->fptr) == FitsIO::HduCategory::Image);
+  BOOST_TEST((Hdu::currentType(this->fptr) == FitsIO::HduCategory::Image));
   Hdu::gotoNext(this->fptr, -1);
   BOOST_TEST(Hdu::currentIndex(this->fptr) == 1);
   Hdu::gotoName(this->fptr, "IMGEXT");

@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
   this->initRecordExt("2");
   int count = 0;
   for (const auto& hdu : *this) {
-    BOOST_TEST(hdu.matches(Image));
+    BOOST_TEST(hdu.matches(HduCategory::Image));
     count++;
   }
   BOOST_TEST(count == this->hduCount());
