@@ -20,64 +20,58 @@
 #ifndef _EL_FITSDATA_HDUCATEGORY_H
 #define _EL_FITSDATA_HDUCATEGORY_H
 
-#include <boost/logic/tribool.hpp>
-#include <functional>
+#include <functional> // function
 #include <vector>
 
 namespace Euclid {
 namespace FitsIO {
 
-/*
- * @brief HDU category.
- * @details
- * The enumerators are designed to be used as bitmasks to filter on some properties.
- * For example, an HDU of category Primary is also of category ImageHdu and Hdu, but not of category Ext.
- * 
- * For image HDUs, two categories are defined, which mainly aims at simplifying compression-related features:
- * - Integer-valued for values of integral type;
- * - Real-valued for values of type float or double.
- * 
- * For any HDU, the data unit may be empty (i.e. `NAXIS = 0` or `NAXISn = 0` for at least one axis).
- * This is modeled as category Metadata, as opposed to category Data, which means there are values in the data unit.
- * 
- * They can be combined, e.g. to filter on integer-valued image extensions with non-empty data:
- * \code
- * HduCategory intImageExtWithData = HduCategory::IntImageExt & ~HduCategory::Metadata;
- * \endcode
- * 
- * Shortcuts are provided for common combinations, e.g. `ImageExt = Image | Ext`.
- * 
- * To test categories, bitwise boolean operators (`&`, `|`, `~`) are defined.
- * Additionally, operator <= allows checking whether an HDU category matches a set of categories.
- * 
- * Bits are ordered as follows:
- * - Data emptyness
- *   - Metadata
- *   - Data
- * - HDU index
- *   - Primary
- *   - Extension
- * - HDU type
- *   - Image
- *   - Binary table
- * - Image attributes
- *   - Integer pixels
- *   - Floating point pixels
- *   - Raw image
- *   - Compressed image
- * - 6 spare bits, which could later be used for states like:
- *   - Untouched
- *   - Accessed
- *   - Created
- *   - Edited
- */
-class HduCategory;
 /**
  * @brief An extensible HDU categorization for filtering and iteration.
- * @details FIXME
+ * @details
+ * A category is defined as a sequence of trits (trinary bits).
+ * For example, the type of an HDU can be image, binary table or unconstrained.
+ * The following trits are defined:
+ * - Primary HDU / extension,
+ * - Metadata HDU (empty data unit) / HDU with data,
+ * - Image / binary table HDU,
+ * - Integer- / real-valued image HDU,
+ * - Raw / compressed image HDU.
+ * 
+ * Other trits should be added in the future, e.g. to characterized the HDU state:
+ * - Untouched / accessed,
+ * - Opened / created,
+ * - Read / edited...
+ * 
+ * User trits can also be added by extending the class.
+ * 
+ * Predefined categories are provided as static members, e.g. HduCategory::Primary or HduCategory::RawImage.
+ * An HduCategory should not be created with a constructor, but rather by combining those categories with (trinary) bitwise operators.
+ * For example, an integer-valued, non-empty image extension can be created using one of the following formulae:
+ * \code
+ * HduCategory intDataImageExt = HduCategory::IntImage & HduCategory::DataHdu & HduCategory::Ext;
+ * HduCategory intDataImageExt = HduCategory::IntImage & HduCategory::DataExt;
+ * HduCategory intDataImageExt = HduCategory::ImageExt & ~HduCategory::FloatPrimary;
+ * \endcode
+ * 
+ * Method isInstance is provided to test whether a category validates a model.
+ * Yet, in general, RecordHdu::matches is an adequate shortcut.
+ * 
+ * More complex, multi-category filters can be created with as HduFilter objects.
  */
 class HduCategory {
+
 protected:
+  /**
+   * @brief Trinary values.
+   */
+  enum class Trit
+  {
+    First, ///< First constrained option
+    Second, ///< Second constrained option
+    Unconstrained ///< Unconstrained
+  };
+
   /**
    * @brief The positions of the trinary flags.
    */
@@ -85,15 +79,10 @@ protected:
   {
     PrimaryExt, ///< Primary/extension flag
     MetadataData, ///< Metadata/data flag
-    ImageBinary, ///< Image/binary table flag
+    ImageBintable, ///< Image/binary table flag
     IntFloatImage, ///< Integer-/real-valued image flag
     RawCompressedImage ///< Raw/compressed image flag
   };
-
-  /**
-   * @brief Shortcut for a trinary flag.
-   */
-  using Trit = boost::logic::tribool;
 
   /**
    * @brief Create an unconstrained category.
@@ -132,32 +121,78 @@ public:
   HduCategory operator|(const HduCategory& rhs) const;
 
   /**
-   * @brief Compare to category.
+   * @brief Equality operator.
    */
   bool operator==(const HduCategory& rhs) const;
 
+  /**
+   * @brief Non-equality operator.
+   */
+  bool operator!=(const HduCategory& rhs) const;
+
+  /**
+   * @brief Check whether the category validates (i.e. is more specific than) a given model.
+   */
+  bool isInstance(const HduCategory& model) const;
+
 protected:
   /**
-   * @brief the trinary flag mask.
+   * @brief The trinary flag mask.
    * @details
-   * Each flag of the mask is either set to true, false, or indeterminate.
    * The trit positions are given by the TritPosition enumerators
    */
   std::vector<Trit> m_mask;
 
 private:
+  /**
+   * @brief Toggle if flag is constrained, do nothing otherwise.
+   * @details
+   * This is a trinary not:
+   * - ~First = Second,
+   * - ~Second = First,
+   * - ~Unconstrained = Unconstrained.
+   */
   static Trit toggleFlag(Trit rhs);
+
+  /**
+   * @brief Restrict a flag.
+   * @details
+   * This is a symetric trinary and:
+   * - Constrained & Unconstrained = Constrained,
+   * - Unconstrained & Unconstrained = Unconstrained,
+   * - First & First = First,
+   * - Second & Second = Second,
+   * - First & Second raises an exception.
+   */
   static Trit restrictFlag(Trit lhs, Trit rhs);
+
+  /**
+   * @brief Extend a flag.
+   * @details
+   * This is a symetric trinary or:
+   * - Constrained | Unconstrained = Unconstrained,
+   * - Unconstraied | Unconstrained = Unconstrained,
+   * - First | First = First,
+   * - Second | Second = Second,
+   * - First | Second = Unconstrained.
   static Trit extendFlag(Trit lhs, Trit rhs);
+
+  /**
+   * @brief Apply an unary operator to the flag mask.
+   */
   HduCategory& transform(std::function<Trit(Trit)> op);
+
+  /**
+   * @brief Apply a binary operator to the flag mask.
+   */
   HduCategory& transform(const HduCategory& rhs, std::function<Trit(Trit, Trit)> op);
 
 public:
   /* Basic categories */
   static const HduCategory Any; //< Any HDU
-  static const HduCategory Primary; ///< Primary HDU
-  static const HduCategory Metadata; ///< HDU without data
   static const HduCategory Image; ///< Image HDU
+  static const HduCategory Primary; ///< Primary image HDU
+  static const HduCategory Metadata; ///< HDU without data
   static const HduCategory IntImage; ///< Integer-valued image HDU
   static const HduCategory RawImage; ///< Raw (non-compressed) image HDU
 
@@ -180,14 +215,6 @@ public:
   static const HduCategory IntImageExt; ///< Image extension with data
   static const HduCategory FloatImageExt; ///< Image extension without data
 };
-
-/**
- * @brief Check whether an input is an instance of (i.e. is more specific than) a given category.
- * @return True if all bits of input are set in category; False otherwise.
- */
-inline bool isInstance(HduCategory input, HduCategory category) {
-  return (input & category) == input;
-}
 
 /**
  * @brief HDU filter built from HDU categories.
@@ -220,7 +247,7 @@ public:
   HduFilter operator+(HduCategory accept) const;
 
   /**
-   * @brief Identity: provided from completeness only.
+   * @brief Identity: provided for completeness only.
    */
   HduFilter& operator+();
 

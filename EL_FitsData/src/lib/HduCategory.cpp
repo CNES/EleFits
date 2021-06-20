@@ -24,14 +24,15 @@
 namespace Euclid {
 namespace FitsIO {
 
-HduCategory::HduCategory() : m_mask(5, Trit {}) {}
-HduCategory::HduCategory(HduCategory::TritPosition position, HduCategory::Trit value) : HduCategory {} {
+HduCategory::HduCategory() : m_mask(5, HduCategory::Trit::Unconstrained) {}
+HduCategory::HduCategory(HduCategory::TritPosition position, HduCategory::Trit value) :
+    m_mask(5, HduCategory::Trit::Unconstrained) {
   m_mask[static_cast<int>(position)] = value;
 }
 
 HduCategory HduCategory::operator~() const {
   HduCategory res(*this);
-  return res.transform(boost::logic::operator!);
+  return res.transform(toggleFlag);
 }
 
 HduCategory& HduCategory::operator&=(const HduCategory& rhs) {
@@ -58,25 +59,44 @@ bool HduCategory::operator==(const HduCategory& rhs) const {
   return m_mask == rhs.m_mask;
 }
 
+bool HduCategory::operator!=(const HduCategory& rhs) const {
+  return not operator==(rhs);
+}
+
+bool HduCategory::isInstance(const HduCategory& model) const {
+  try {
+    return (*this & model) == *this;
+  } catch (std::runtime_error&) { // FIXME Use IncompatibleFlags error
+    return false;
+  }
+}
+
 HduCategory::Trit HduCategory::toggleFlag(HduCategory::Trit rhs) {
-  return !rhs;
+  switch (rhs) {
+    case Trit::First:
+      return Trit::Second;
+    case Trit::Second:
+      return Trit::First;
+    default:
+      return Trit::Unconstrained;
+  }
 }
 
 HduCategory::Trit HduCategory::restrictFlag(HduCategory::Trit lhs, HduCategory::Trit rhs) {
   if (lhs == rhs) {
     return lhs;
   }
-  if (lhs == HduCategory::Trit {}) {
+  if (lhs == Trit::Unconstrained) {
     return rhs;
   }
-  if (rhs == HduCategory::Trit {}) {
+  if (rhs == Trit::Unconstrained) {
     return lhs;
   }
-  throw std::runtime_error("Cannot restrict incompatible flags."); // FIXME Exception class
+  throw std::runtime_error("Cannot restrict incompatible flags."); // FIXME Implement IncompatibleFlags class
 }
 
 HduCategory::Trit HduCategory::extendFlag(HduCategory::Trit lhs, HduCategory::Trit rhs) {
-  return lhs == rhs ? lhs : HduCategory::Trit {};
+  return lhs == rhs ? lhs : Trit::Unconstrained;
 }
 
 HduCategory& HduCategory::transform(std::function<Trit(Trit)> op) {
@@ -90,21 +110,26 @@ HduCategory& HduCategory::transform(const HduCategory& rhs, std::function<Trit(T
 }
 
 const HduCategory HduCategory::Any {};
-const HduCategory HduCategory::Primary { HduCategory::TritPosition::PrimaryExt, false };
-const HduCategory HduCategory::Metadata { HduCategory::TritPosition::MetadataData, false };
-const HduCategory HduCategory::Image { HduCategory::TritPosition::ImageBinary, false };
-const HduCategory HduCategory::IntImage { HduCategory::Image &
-                                          HduCategory { HduCategory::TritPosition::IntFloatImage, false } };
-const HduCategory HduCategory::RawImage { HduCategory::Image &
-                                          HduCategory { HduCategory::TritPosition::RawCompressedImage, false } };
+const HduCategory HduCategory::Image { HduCategory::TritPosition::ImageBintable, HduCategory::Trit::First };
+const HduCategory HduCategory::Primary {
+  HduCategory::Image & HduCategory { HduCategory::TritPosition::PrimaryExt, HduCategory::Trit::First }
+};
+const HduCategory HduCategory::Metadata { HduCategory::TritPosition::MetadataData, HduCategory::Trit::First };
+const HduCategory HduCategory::IntImage {
+  HduCategory::Image & HduCategory { HduCategory::TritPosition::IntFloatImage, HduCategory::Trit::First }
+};
+const HduCategory HduCategory::RawImage {
+  HduCategory::Image & HduCategory { HduCategory::TritPosition::RawCompressedImage, HduCategory::Trit::First }
+};
 
-const HduCategory HduCategory::Ext { ~HduCategory::Primary };
+const HduCategory HduCategory::Ext { HduCategory::TritPosition::PrimaryExt, HduCategory::Trit::Second };
 const HduCategory HduCategory::Data { ~HduCategory::Metadata };
 const HduCategory HduCategory::Bintable { HduCategory::Ext & ~HduCategory::Image };
-const HduCategory HduCategory::FloatImage { HduCategory::Image &
-                                            HduCategory { HduCategory::TritPosition::IntFloatImage, true } };
+const HduCategory HduCategory::FloatImage {
+  HduCategory::Image & HduCategory { HduCategory::TritPosition::IntFloatImage, HduCategory::Trit::Second }
+};
 const HduCategory HduCategory::CompressedImageExt {
-  HduCategory::Image & HduCategory { HduCategory::TritPosition::RawCompressedImage, true }
+  HduCategory::Image & HduCategory { HduCategory::TritPosition::RawCompressedImage, HduCategory::Trit::Second }
 };
 
 const HduCategory HduCategory::MetadataPrimary { HduCategory::Metadata & HduCategory::Primary };
@@ -155,7 +180,7 @@ HduFilter& HduFilter::operator-() {
 
 bool HduFilter::accepts(HduCategory input) const {
   for (auto r : m_reject) {
-    if (isInstance(input, r)) {
+    if (input.isInstance(r)) {
       return false;
     }
   }
@@ -163,7 +188,7 @@ bool HduFilter::accepts(HduCategory input) const {
     return true;
   }
   for (auto a : m_accept) {
-    if (isInstance(input, a)) {
+    if (input.isInstance(a)) {
       return true;
     }
   }

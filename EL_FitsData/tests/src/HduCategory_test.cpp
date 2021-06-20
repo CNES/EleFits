@@ -29,16 +29,27 @@ BOOST_AUTO_TEST_SUITE(HduCategory_test)
 
 //-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE(operators_test) {
+  BOOST_TEST((HduCategory::Primary == HduCategory::Primary));
+  BOOST_TEST((HduCategory::Bintable == ~HduCategory::Primary));
+  BOOST_TEST(((HduCategory::Image & HduCategory::Ext) == HduCategory::ImageExt));
+  BOOST_TEST(((HduCategory::Image & ~HduCategory::Ext) == HduCategory::Primary));
+  BOOST_TEST(((HduCategory::Primary | HduCategory::ImageExt) == HduCategory::Image));
+  BOOST_TEST(((HduCategory::MetadataPrimary & HduCategory::Primary) == HduCategory::MetadataPrimary));
+  BOOST_TEST(((HduCategory::Primary & HduCategory::MetadataPrimary) == HduCategory::MetadataPrimary));
+  BOOST_TEST((HduCategory::MetadataPrimary != HduCategory::Primary));
+}
+
 BOOST_AUTO_TEST_CASE(category_ordering_test) {
-  BOOST_TEST(isInstance(HduCategory::MetadataPrimary, HduCategory::Primary));
-  BOOST_TEST(not isInstance(HduCategory::Primary, HduCategory::MetadataPrimary));
-  BOOST_TEST(isInstance(HduCategory::Primary, HduCategory::Image));
-  BOOST_TEST(not isInstance(HduCategory::Primary, HduCategory::ImageExt));
-  BOOST_TEST(not isInstance(HduCategory::Image, HduCategory::Primary));
-  BOOST_TEST(isInstance(HduCategory::Image, HduCategory::Any));
-  BOOST_TEST(isInstance(HduCategory::Bintable, HduCategory::Any));
-  BOOST_TEST(isInstance(HduCategory::FloatImage, HduCategory::Image));
-  BOOST_TEST(isInstance(HduCategory::FloatImage & HduCategory::Ext, HduCategory::ImageExt));
+  BOOST_TEST(HduCategory::MetadataPrimary.isInstance(HduCategory::Primary));
+  BOOST_TEST(not HduCategory::Primary.isInstance(HduCategory::MetadataPrimary));
+  BOOST_TEST(HduCategory::Primary.isInstance(HduCategory::Image));
+  BOOST_TEST(not HduCategory::Primary.isInstance(HduCategory::ImageExt));
+  BOOST_TEST(not HduCategory::Image.isInstance(HduCategory::Primary));
+  BOOST_TEST(HduCategory::Image.isInstance(HduCategory::Any));
+  BOOST_TEST(HduCategory::Bintable.isInstance(HduCategory::Any));
+  BOOST_TEST(HduCategory::FloatImage.isInstance(HduCategory::Image));
+  BOOST_TEST((HduCategory::FloatImage & HduCategory::Ext).isInstance(HduCategory::ImageExt));
 }
 
 BOOST_AUTO_TEST_CASE(filtering_test) {
