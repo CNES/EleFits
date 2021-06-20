@@ -21,24 +21,21 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsUtils//StringUtils.h"
 
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_SUITE (StringUtils_test)
+#include <boost/test/unit_test.hpp>
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
+BOOST_AUTO_TEST_SUITE(StringUtils_test)
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+//-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE(example_test) {
+
+  BOOST_TEST(true); // FIXME implement tests
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
-
-
+BOOST_AUTO_TEST_SUITE_END()

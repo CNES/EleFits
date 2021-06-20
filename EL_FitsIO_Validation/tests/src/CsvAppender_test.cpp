@@ -21,9 +21,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsIO_Validation//CsvAppender.h"
+
+#include <boost/test/unit_test.hpp>
 
 //-----------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_SUITE(CsvAppender_test)
 
 BOOST_AUTO_TEST_CASE(example_test) {
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+  BOOST_TEST(true); // FIXME implement tests
 }
 
 //-----------------------------------------------------------------------------
