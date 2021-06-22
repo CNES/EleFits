@@ -20,13 +20,13 @@
 #ifndef _EL_FITSDATA_TESTRECORD_H
 #define _EL_FITSDATA_TESTRECORD_H
 
-#include <algorithm>
-#include <complex>
-#include <string>
-
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/RecordVector.h"
 #include "EL_FitsData/TestUtils.h"
+
+#include <algorithm>
+#include <complex>
+#include <string>
 
 namespace Euclid {
 namespace FitsIO {
@@ -56,7 +56,7 @@ static Record<T> generateRandomRecord(const std::string& k, const std::string& u
 /**
  * @brief A random set of Records.
  * @details
- * All compatible types of Records are generated, but `boost::any`.
+ * All compatible types of Records are generated, but `VariantValue`.
  */
 struct RandomHeader {
 
@@ -113,7 +113,7 @@ struct RandomHeader {
   /**
    * @brief Get all the records.
    */
-  RecordVector<boost::any> allRecords() const;
+  RecordCollection allRecords() const;
 
   /** @brief The number of records. */
   static constexpr long recordCount = 16;

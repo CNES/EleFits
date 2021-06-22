@@ -20,21 +20,27 @@
 #ifndef _EL_FITSDATA_RECORDVECTOR_H
 #define _EL_FITSDATA_RECORDVECTOR_H
 
-#include <vector>
-
 #include "EL_FitsData/Record.h"
+
+#include <vector>
 
 namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief A collection of records of homogeneous value types.
- * @tparam T The value type of the records.
+ * @brief A vector of records with find and conversion services.
+ * @tparam T The value type of the records; can be VariantValue.
+ * @see RecordCollection
  */
 template <typename T>
 class RecordVector {
 
 public:
+  /**
+   * @brief Destructor.
+   */
+  ~RecordVector() = default;
+
   /**
    * @brief Create a RecordVector with given number of records.
    */
@@ -68,7 +74,7 @@ public:
    * Although the method returns a Record, it can itself be sliced as its value,
    * so the following works:
    * \code
-   * RecordVector<any> records;
+   * RecordVector<VariantValue> records;
    * // ...
    * int i = records.as<int>("KEYWORD"); // Get the value as int
    * \endcode
@@ -76,6 +82,11 @@ public:
   template <typename TValue>
   Record<TValue> as(const std::string& keyword) const;
 };
+
+/**
+ * @brief A heterogeneous collection of records.
+ */
+using RecordCollection = RecordVector<VariantValue>;
 
 } // namespace FitsIO
 } // namespace Euclid

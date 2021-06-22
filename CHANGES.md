@@ -1,10 +1,18 @@
 # Change log
 
-## 3.1
+## 3.2
 
 ### Breaking changes (minor)
 
-* Enum `HduType` renamed as `HduCategory`
+* Enum `HduType` refactored as class `HduCategory` (from a user point of view, only the name changes)
+
+### New features
+
+* Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
+* HDUs are categorized more precisely than with only their type with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`)
+* Introduction of classes `VariantValue` and `RecordCollection` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
+
+## 3.1
 
 ### Bug fixes
 
@@ -14,8 +22,6 @@
 ### New features
 
 * New method `MefFile::access(string)` checks that extactly one HDU with given name exists
-* Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
-* HDU are categorized more precisely than with only their type (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`)
 * Binary table columns can be read by index
 * Binary table column names can be read and updated
 * `Column` values can be accessed directly with `operator()`

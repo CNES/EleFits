@@ -118,15 +118,15 @@ Moreover, strings are treated very differently from other types in binary table 
 they are considered by CFitsIO like scalar columns with a repeat count greater than one.
 Therefore, FitsIO::Column methods are also specialized.
 
-\subsection design-types-any Specific types: boost::any
+\subsection design-types-any Specific types: VariantValue
 
-Another specific type is boost::any.
+Another specific type is VariantValue.
 It was added to the library to handle large sets of heterogeneous records.
 It is obviously necessary to provide read and write functions for this type,
 and they have to work with any underlying value type.
 This is implemented as runtime switches in read and write functions.
 
-In addition, Record<boost::any> can be cast to Record<T> if T is compatible with the boost::any value type.
+In addition, Record<VariantValue> can be cast to Record<T> if T is compatible with the VariantValue value type.
 This cast is more complex than a mere boost::any_cast because the size of an integer record cannot be known at compile time.
 For example, 666 is read a short, while 1,000,000 is read as an int or long.
 Since there is no way for the user to know the type of a record,
@@ -136,7 +136,7 @@ This is the role of FitsIO::Record::cast.
 \section design-variadic Variadic templates
 
 Reading and writing collections of heterogeneous objects, like columns of different types, requires using variadic templates
-(or abstraction classes like boost::any which cost too much for thousands of values).
+(or abstraction classes like VariantValue which cost too much for thousands of values).
 
 \todo
 Variatic template design patterns:

@@ -60,11 +60,11 @@ void writeBintable(const std::string& filename, long rows) {
  * @brief Write some records to given HDU.
  * @details
  * WCS shows examples of records of different types (int and string), with and without units.
- * We rely on boost::any, but it would be possible to skip this abstraction and go with raw types
+ * We rely on VariantValue, but it would be possible to skip this abstraction and go with raw types
  * using a tuple instead of a vector.
  */
 void writeSomeRecords(const RecordHdu& hdu) {
-  std::vector<Record<boost::any>> records = {
+  std::vector<Record<VariantValue>> records = {
     { "WCSAXES", 2, "", "Number of axes in World Coordinate System" },
     { "CRPIX1", "", "", "Pixel coordinate of reference point" },
     { "CRPIX2", "", "", "Pixel coordinate of reference point" },
@@ -143,7 +143,7 @@ public:
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");
-    const auto records = ext.parseAllRecords<boost::any>();
+    const auto records = ext.parseAllRecords<VariantValue>();
     const auto intRecord = records.as<int>("CRVAL1");
     logger.info() << intRecord.comment << " = " << intRecord.value << " " << intRecord.unit;
     const auto strRecord = records.as<std::string>("CUNIT1");

@@ -19,7 +19,7 @@
 
 #if defined(_EL_FITSFILE_HDU_IMPL) || defined(CHECK_QUALITY)
 
-#include "EL_FitsFile/RecordHdu.h"
+  #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -156,25 +156,25 @@ void RecordHdu::updateRecords(const RecordVector<T>& records, const std::vector<
   }
 }
 
-#ifndef DECLARE_PARSE_RECORD
-#define DECLARE_PARSE_RECORD(type, unused) \
-  extern template Record<type> RecordHdu::parseRecord(const std::string&) const;
+  #ifndef DECLARE_PARSE_RECORD
+    #define DECLARE_PARSE_RECORD(type, unused) \
+      extern template Record<type> RecordHdu::parseRecord(const std::string&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_PARSE_RECORD)
-#undef DECLARE_PARSE_RECORD
-#endif
+    #undef DECLARE_PARSE_RECORD
+  #endif
 
-extern template RecordVector<boost::any> RecordHdu::parseRecordVector(const std::vector<std::string>&) const;
+extern template RecordVector<VariantValue> RecordHdu::parseRecordVector(const std::vector<std::string>&) const;
 
-#ifndef DECLARE_WRITE_RECORD
-#define DECLARE_WRITE_RECORD(type, unused) \
-  extern template void RecordHdu::writeRecord(const Record<type>&) const; \
-  extern template void RecordHdu::updateRecord(const Record<type>&) const;
+  #ifndef DECLARE_WRITE_RECORD
+    #define DECLARE_WRITE_RECORD(type, unused) \
+      extern template void RecordHdu::writeRecord(const Record<type>&) const; \
+      extern template void RecordHdu::updateRecord(const Record<type>&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
-#undef DECLARE_WRITE_RECORD
-#endif
+    #undef DECLARE_WRITE_RECORD
+  #endif
 
-extern template void RecordHdu::writeRecords(const std::vector<Record<boost::any>>&) const;
-extern template void RecordHdu::updateRecords(const std::vector<Record<boost::any>>&) const;
+extern template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
+extern template void RecordHdu::updateRecords(const std::vector<Record<VariantValue>>&) const;
 
 } // namespace FitsIO
 } // namespace Euclid

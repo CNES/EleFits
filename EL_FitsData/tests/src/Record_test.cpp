@@ -17,10 +17,10 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/TestRecord.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -132,9 +132,9 @@ BOOST_AUTO_TEST_CASE(long_string_values_are_detected_test) {
   BOOST_CHECK(not shortStringRecord.hasLongStringValue());
   const Record<std::string> longStringRecord("STRINGXL", longString);
   BOOST_CHECK(longStringRecord.hasLongStringValue());
-  const Record<boost::any> shortAnyRecord("ANYXS", shortString);
+  const Record<VariantValue> shortAnyRecord("ANYXS", shortString);
   BOOST_CHECK(not shortAnyRecord.hasLongStringValue());
-  const Record<boost::any> longAnyRecord("ANYXL", longString);
+  const Record<VariantValue> longAnyRecord("ANYXL", longString);
   BOOST_CHECK(longAnyRecord.hasLongStringValue());
 }
 
@@ -148,7 +148,7 @@ void checkRecordCasting() {
 template <typename TFrom, typename TTo>
 void checkRecordCastingFromAny() {
   TFrom value = Test::generateRandomValue<TFrom>();
-  boost::any input(value);
+  VariantValue input(value);
   TTo output = Record<TTo>::cast(input);
   checkApprox(output, value);
 }
@@ -180,7 +180,7 @@ BOOST_AUTO_TEST_CASE(any_record_casting_test) {
 }
 
 template <typename T>
-void checkAnyEqual(boost::any value, T expected) {
+void checkAnyEqual(VariantValue value, T expected) {
   BOOST_CHECK_EQUAL(boost::any_cast<T>(value), expected);
 }
 
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(vector_of_any_is_built_and_cast_back_test) {
   Record<std::string> str_record("STRING", "HEY!");
   Record<bool> boo_record("BOOL", false);
   Record<std::complex<float>> com_record("COMPLEX", { 1.F, 2.F });
-  std::vector<Record<boost::any>> vec;
+  std::vector<Record<VariantValue>> vec;
   vec.emplace_back(str_record);
   vec.emplace_back(boo_record);
   vec.emplace_back(com_record);

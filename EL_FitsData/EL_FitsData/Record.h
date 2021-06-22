@@ -24,6 +24,14 @@
 #include <complex>
 #include <string>
 
+/**
+ * @brief The variant value type for records.
+ * @warning
+ * This is a boost::any today, which should be replaced with a boost::variant at some point,
+ * thus the need for this alias.
+ */
+using VariantValue = boost::any;
+
 namespace Euclid {
 namespace FitsIO {
 
@@ -55,7 +63,7 @@ namespace FitsIO {
 /**
  * @brief Keyword-value pair with optional unit and comment.
  * @tparam T The value type;
- * Can be an integer, floating point, complex, `std::string`, `const char *` or `boost::any`.
+ * Can be an integer, floating point, complex, `std::string`, `const char *` or `VariantValue`.
  *
  * @details
  * A record is meant to be used to read and write Fits headers.
@@ -83,6 +91,11 @@ namespace FitsIO {
  */
 template <typename T>
 struct Record {
+
+  /**
+   * @brief The value type.
+   */
+  using Value = T;
 
   /**
    * @brief Assign a record.
@@ -168,7 +181,7 @@ struct Record {
    * Are considered string types:
    * * `std::string`,
    * * `const char *`,
-   * * `boost::any` if the underlying value is one of the previous types.
+   * * `VariantValue` if the underlying value is one of the previous types.
    * @see Record documentation for more details on the long string value convention.
    */
   bool hasLongStringValue() const;

@@ -38,7 +38,7 @@ bool Record<const char*>::hasLongStringValue() const {
 }
 
 template <>
-bool Record<boost::any>::hasLongStringValue() const {
+bool Record<VariantValue>::hasLongStringValue() const {
   const auto& id = value.type();
   if (id == typeid(std::string)) {
     return boost::any_cast<std::string>(value).length() > maxShortValueLength;
@@ -50,9 +50,9 @@ bool Record<boost::any>::hasLongStringValue() const {
 }
 
 #ifndef COMPILE_RECORD_CLASS
-#define COMPILE_RECORD_CLASS(type, unused) template struct Record<type>;
+  #define COMPILE_RECORD_CLASS(type, unused) template struct Record<type>;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_RECORD_CLASS)
-#undef COMPILE_RECORD_CLASS
+  #undef COMPILE_RECORD_CLASS
 #endif
 
 } // namespace FitsIO

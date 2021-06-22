@@ -20,7 +20,6 @@
 #include "EL_FitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
 
-#include <boost/any.hpp>
 #include <boost/program_options.hpp>
 #include <map>
 #include <string>
@@ -342,9 +341,9 @@ void readRecords(const FitsIO::RecordHdu& hdu) {
   auto thirdRecord = std::get<2>(someRecords);
   logger.info() << "    " << thirdRecord.keyword << " = " << thirdRecord.value << " " << thirdRecord.unit;
 
-  /* Read as boost::any */
+  /* Read as VariantValue */
 
-  auto anyRecords = hdu.parseRecordVector<boost::any>({ "INT", "COMPLEX" });
+  auto anyRecords = hdu.parseRecordCollection({ "INT", "COMPLEX" });
   auto complexRecord = anyRecords.as<std::complex<double>>("COMPLEX");
   logger.info() << "    " << complexRecord.keyword << " = " << complexRecord.value.real() << " + "
                 << complexRecord.value.imag() << "j " << complexRecord.unit;

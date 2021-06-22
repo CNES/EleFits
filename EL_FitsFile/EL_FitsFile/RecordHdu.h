@@ -45,11 +45,11 @@ namespace FitsIO {
  * - As heterogeneous collections, through variadic methods or tuples;
  * - As homogeneous collections, using vectors of Records or RecordVector.
  *
- * Heterogeneous collections can also be wrapped in vectors using boost::any.
+ * Heterogeneous collections can also be wrapped in vectors using VariantValue.
  * This is the mandatory option when types are not all known at compile time,
  * and can be a more comfortable option in other cases.
  * Indeed, working with a tuple might become a nightmare with many values,
- * and std::vector<boost::any> can provide valuable help.
+ * and std::vector<VariantValue> can provide valuable help.
  *
  * @note
  * RecordHdus are written as Image HDUs with NAXIS=0.
@@ -306,17 +306,23 @@ public:
   /**
    * @brief Parse several homogeneous records.
    * @tparam T The common value type.
-   * @details
-   * In addition to parsing homogeneous records, like a set of integer records,
-   * this method can be used with `boost::any` records to allow for runtime type deduction:
-   * \code
-   * auto records = f.parseRecordVector<boost::any>({ "INT", "FLOAT", "DOUBLE", "BOOL" });
-   * int value = records.as<int>("INT");
-   * \endcode
-   * In this case, the underlying type of each record is deduced from the value in the Fits file.
    */
   template <typename T>
   RecordVector<T> parseRecordVector(const std::vector<std::string>& keywords) const;
+
+  /**
+   * @brief Parse several heterogeneous records.
+   * @details
+   * The underlying type of each record is deduced from the value in the Fits file.
+   * Each record in the collection can later be cast with method RecordCollection::as<T>(),
+   * which returns a Record<T>, which can itself be sliced as its value.
+   * For example:
+   * \code
+   * auto records = f.parseRecordCollection({ "INT", "FLOAT", "DOUBLE", "BOOL" });
+   * int value = records.as<int>("INT");
+   * \endcode
+   */
+  RecordCollection parseRecordCollection(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse all the records as a RecordVector.
@@ -357,7 +363,7 @@ public:
   /**
    * @brief Write several homogeneous records.
    * @details
-   * Similarly to the reading counterpart parseRecordVector, `T` can also be `boost::any`.
+   * Similarly to the reading counterpart parseRecordVector, `T` can also be `VariantValue`.
    */
   template <typename T>
   void writeRecords(const std::vector<Record<T>>& records) const;

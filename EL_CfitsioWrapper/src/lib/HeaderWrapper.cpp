@@ -17,11 +17,11 @@
  *
  */
 
-#include <limits>
+#include "EL_CfitsioWrapper/HeaderWrapper.h"
 
 #include "EL_FitsData/FitsIOError.h"
 
-#include "EL_CfitsioWrapper/HeaderWrapper.h"
+#include <limits>
 
 namespace Euclid {
 namespace Cfitsio {
@@ -153,11 +153,11 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::
 
 #define PARSE_RECORD_ANY_FOR_TYPE(type, unused) \
   if (id == typeid(type)) { \
-    return FitsIO::Record<boost::any>(parseRecord<type>(fptr, keyword)); \
+    return FitsIO::Record<VariantValue>(parseRecord<type>(fptr, keyword)); \
   }
 
 template <>
-FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile* fptr, const std::string& keyword) {
+FitsIO::Record<VariantValue> parseRecord<VariantValue>(fitsfile* fptr, const std::string& keyword) {
   const auto& id = recordTypeid(fptr, keyword);
   EL_FITSIO_FOREACH_RECORD_TYPE(PARSE_RECORD_ANY_FOR_TYPE)
   throw FitsIO::FitsIOError("Cannot deduce type for record: " + keyword);
@@ -198,7 +198,7 @@ void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>&
 }
 
 template <typename T>
-void writeRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<boost::any>& record) {
+void writeRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<VariantValue>& record) {
   writeRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
 }
 
@@ -208,7 +208,7 @@ void writeRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<boost::any>& record
   }
 
 template <>
-void writeRecord<boost::any>(fitsfile* fptr, const FitsIO::Record<boost::any>& record) {
+void writeRecord<VariantValue>(fitsfile* fptr, const FitsIO::Record<VariantValue>& record) {
   const auto& id = record.value.type();
   EL_FITSIO_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
   WRITE_RECORD_ANY_FOR_TYPE(const char*, C_str)
@@ -251,7 +251,7 @@ void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>
 }
 
 template <typename T>
-void updateRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<boost::any>& record) {
+void updateRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<VariantValue>& record) {
   updateRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
 }
 
@@ -261,7 +261,7 @@ void updateRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<boost::any>& recor
   }
 
 template <>
-void updateRecord<boost::any>(fitsfile* fptr, const FitsIO::Record<boost::any>& record) {
+void updateRecord<VariantValue>(fitsfile* fptr, const FitsIO::Record<VariantValue>& record) {
   const auto& id = record.value.type();
   EL_FITSIO_FOREACH_RECORD_TYPE(UPDATE_RECORD_ANY_FOR_TYPE)
   UPDATE_RECORD_ANY_FOR_TYPE(const char*, C_str)

@@ -19,9 +19,9 @@
 
 #if defined(_EL_FITSDATA_RECORD_IMPL) || defined(CHECK_QUALITY)
 
-#include <type_traits> // enable_if & co
+  #include "EL_FitsData/Record.h"
 
-#include "EL_FitsData/Record.h"
+  #include <type_traits> // enable_if & co
 
 namespace Euclid {
 namespace FitsIO {
@@ -78,36 +78,36 @@ struct CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo
  * @brief Cast any to number.
  */
 template <typename TTo>
-struct CasterImpl<boost::any, TTo, ifScalar<TTo>> {
+struct CasterImpl<VariantValue, TTo, ifScalar<TTo>> {
   /** @brief Cast. */
-  inline static TTo cast(boost::any value);
+  inline static TTo cast(VariantValue value);
 };
 
 /**
  * @brief Cast any to complex.
  */
 template <typename TTo>
-struct CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>> {
+struct CasterImpl<VariantValue, std::complex<TTo>, ifScalar<TTo>> {
   /** @brief Cast. */
-  inline static std::complex<TTo> cast(boost::any value);
+  inline static std::complex<TTo> cast(VariantValue value);
 };
 
 /**
  * @brief Cast any to string.
  */
 template <>
-struct CasterImpl<boost::any, std::string, void> {
+struct CasterImpl<VariantValue, std::string, void> {
   /** @brief Cast. */
-  inline static std::string cast(boost::any value);
+  inline static std::string cast(VariantValue value);
 };
 
 /**
  * @brief Cast all to any.
  */
 template <typename TFrom>
-struct CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>> {
+struct CasterImpl<TFrom, VariantValue, ifDifferent<TFrom, VariantValue>> {
   /** @brief Cast. */
-  inline static boost::any cast(TFrom value);
+  inline static VariantValue cast(TFrom value);
 };
 
 template <typename TFrom, typename TTo, class TValid>
@@ -134,7 +134,7 @@ CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cas
  * Another option is to rely on a map<typeid, function>
  */
 template <typename TTo>
-TTo CasterImpl<boost::any, TTo, ifScalar<TTo>>::cast(boost::any value) {
+TTo CasterImpl<VariantValue, TTo, ifScalar<TTo>>::cast(VariantValue value) {
   const auto& id = value.type();
   if (id == typeid(TTo)) {
     return boost::any_cast<TTo>(value);
@@ -170,7 +170,7 @@ TTo CasterImpl<boost::any, TTo, ifScalar<TTo>>::cast(boost::any value) {
 }
 
 template <typename TTo>
-std::complex<TTo> CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>>::cast(boost::any value) {
+std::complex<TTo> CasterImpl<VariantValue, std::complex<TTo>, ifScalar<TTo>>::cast(VariantValue value) {
   const auto& id = value.type();
   if (id == typeid(std::complex<TTo>)) {
     return boost::any_cast<std::complex<TTo>>(value);
@@ -183,13 +183,13 @@ std::complex<TTo> CasterImpl<boost::any, std::complex<TTo>, ifScalar<TTo>>::cast
   }
 }
 
-std::string CasterImpl<boost::any, std::string, void>::cast(boost::any value) {
+std::string CasterImpl<VariantValue, std::string, void>::cast(VariantValue value) {
   return boost::any_cast<std::string>(value);
 }
 
 template <typename TFrom>
-boost::any CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>>::cast(TFrom value) {
-  return boost::any(value);
+VariantValue CasterImpl<TFrom, VariantValue, ifDifferent<TFrom, VariantValue>>::cast(TFrom value) {
+  return VariantValue(value);
 }
 
 } // namespace Internal
@@ -197,20 +197,13 @@ boost::any CasterImpl<TFrom, boost::any, ifDifferent<TFrom, boost::any>>::cast(T
 
 template <typename T>
 Record<T>::Record(const std::string& k, T v, const std::string& u, const std::string& c) :
-    keyword(k),
-    value(v),
-    unit(u),
-    comment(c) {
-}
+    keyword(k), value(v), unit(u), comment(c) {}
 
 template <typename T>
 template <typename TOther>
 Record<T>::Record(const Record<TOther>& other) :
-    keyword(other.keyword),
-    value(Internal::CasterImpl<TOther, T>::cast(other.value)),
-    unit(other.unit),
-    comment(other.comment) {
-}
+    keyword(other.keyword), value(Internal::CasterImpl<TOther, T>::cast(other.value)), unit(other.unit),
+    comment(other.comment) {}
 
 template <typename T>
 template <typename TOther>
@@ -258,13 +251,13 @@ template <>
 bool Record<const char*>::hasLongStringValue() const;
 
 template <>
-bool Record<boost::any>::hasLongStringValue() const;
+bool Record<VariantValue>::hasLongStringValue() const;
 
-#ifndef DECLARE_RECORD_CLASS
-#define DECLARE_RECORD_CLASS(type, unused) extern template struct Record<type>;
+  #ifndef DECLARE_RECORD_CLASS
+    #define DECLARE_RECORD_CLASS(type, unused) extern template struct Record<type>;
 EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_RECORD_CLASS)
-#undef DECLARE_RECORD_CLASS
-#endif
+    #undef DECLARE_RECORD_CLASS
+  #endif
 
 } // namespace FitsIO
 } // namespace Euclid

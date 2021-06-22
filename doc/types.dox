@@ -79,11 +79,11 @@ Yet, a few sevices are overloaded for `const char *` for convenience.
 
 \subsection types-data-any Any
 
-In addition to CFitsIO data types, EL_FitsIO provides some of the services for `boost::any` (e.g., to read records).
-In this case, the underlying type is wrapped in a `boost::any` object, which can be cast later.
-Development efforts have been put to allow the user to get whatever compatible type from the `boost::any` object.
+In addition to CFitsIO data types, EL_FitsIO provides some of the services for `VariantValue` (e.g., to read records).
+In this case, the underlying type is wrapped in a `VariantValue` object, which can be cast later.
+Development efforts have been put to allow the user to get whatever compatible type from the `VariantValue` object.
 
-For example, assume some `unsigned long` record value is read as a `boost::any`.
+For example, assume some `unsigned long` record value is read as a `VariantValue`.
 The library will allow the user casting to `long long` because this is a mathematically valid conversion,
 where `boost::any_cast<long long>` would throw an exception.
 

@@ -17,17 +17,14 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
-#include "ElementsKernel/Temporary.h"
-
 #include "EL_FitsData/TestRecord.h"
-
 #include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsFile/MefFile.h"
-#include "EL_FitsFile/SifFile.h"
-
 #include "EL_FitsFile/RecordHdu.h"
+#include "EL_FitsFile/SifFile.h"
+#include "ElementsKernel/Temporary.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -158,12 +155,12 @@ BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::Tempor
 
 BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
   const auto& h = this->header();
-  std::vector<Record<boost::any>> records;
+  std::vector<Record<VariantValue>> records;
   records.push_back({ "STRING", std::string("WIDE") });
   records.push_back({ "FLOAT", 3.14F });
   records.push_back({ "INT", 666 });
   h.writeRecords(records);
-  auto parsed = h.parseAllRecords<boost::any>();
+  auto parsed = h.parseAllRecords<VariantValue>();
   BOOST_CHECK_EQUAL(parsed.as<std::string>("STRING").value, "WIDE");
   BOOST_CHECK_EQUAL(parsed.as<int>("INT").value, 666);
   BOOST_CHECK_THROW(parsed.as<std::string>("INT"), std::exception);
@@ -171,13 +168,13 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::Temporary
 
 BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
   const auto& h = this->header();
-  RecordVector<boost::any> records(3);
+  RecordCollection records(3);
   records.vector[0].assign(Record<std::string>("STRING", "WIDE"));
   records.vector[1].assign(Record<float>("FLOAT", 3.14F));
   records.vector[2].assign(Record<int>("INT", 666));
   h.writeRecords(records, { "FLOAT", "INT" });
-  BOOST_CHECK_THROW(h.parseRecord<boost::any>("STRING"), std::exception);
-  auto parsed = h.parseRecordVector<boost::any>({ "INT" });
+  BOOST_CHECK_THROW(h.parseRecord<VariantValue>("STRING"), std::exception);
+  auto parsed = h.parseRecordCollection({ "INT" });
   BOOST_CHECK_EQUAL(parsed.as<int>("INT").value, 666);
   BOOST_CHECK_THROW(parsed.as<float>("FLOAT"), std::exception);
 }

@@ -19,11 +19,9 @@
 
 #if defined(_EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-#include <utility> // index_sequence, make_index_sequence
+  #include "EL_CfitsioWrapper/HeaderWrapper.h"
 
-#include "EL_CfitsioWrapper/HeaderWrapper.h"
-
-#include <boost/any.hpp>
+  #include <utility> // index_sequence, make_index_sequence
 
 namespace Euclid {
 namespace Cfitsio {
@@ -45,7 +43,7 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::
  * @copydoc parseRecord
  */
 template <>
-FitsIO::Record<boost::any> parseRecord<boost::any>(fitsfile* fptr, const std::string& keyword);
+FitsIO::Record<VariantValue> parseRecord<VariantValue>(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @copydoc writeRecord
@@ -69,7 +67,7 @@ void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>&
  * @copydoc writeRecord
  */
 template <>
-void writeRecord<boost::any>(fitsfile* fptr, const FitsIO::Record<boost::any>& record);
+void writeRecord<VariantValue>(fitsfile* fptr, const FitsIO::Record<VariantValue>& record);
 
 /**
  * @copydoc updateRecord
@@ -93,7 +91,7 @@ void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>
  * @copydoc updateRecord
  */
 template <>
-void updateRecord<boost::any>(fitsfile* fptr, const FitsIO::Record<boost::any>& record);
+void updateRecord<VariantValue>(fitsfile* fptr, const FitsIO::Record<VariantValue>& record);
 
 /// @cond INTERNAL
 namespace Internal {

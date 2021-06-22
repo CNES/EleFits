@@ -26,23 +26,17 @@ namespace Test {
 constexpr long RandomHeader::recordCount;
 
 RandomHeader::RandomHeader() :
-    b { generateRandomRecord<bool>("bool") },
-    c { generateRandomRecord<char>("char") },
-    s { generateRandomRecord<short>("short") },
-    i { generateRandomRecord<int>("int") },
-    l { generateRandomRecord<short>("long") },
-    ll { generateRandomRecord<long long>("long long") },
-    uc { generateRandomRecord<unsigned char>("unsigned char") },
-    us { generateRandomRecord<unsigned short>("unsigned short") },
-    ui { generateRandomRecord<unsigned int>("unsigned int") },
-    ul { generateRandomRecord<unsigned short>("unsigned long") },
-    ull { generateRandomRecord<unsigned long long>("unsigned long long") },
-    f { generateRandomRecord<float>("float") },
-    d { generateRandomRecord<double>("double") },
-    cf { generateRandomRecord<std::complex<float>>("complex float") },
-    cd { generateRandomRecord<std::complex<double>>("complex double") },
-    str { generateRandomRecord<std::string>("string") } {
-}
+    b { generateRandomRecord<bool>("bool") }, c { generateRandomRecord<char>("char") },
+    s { generateRandomRecord<short>("short") }, i { generateRandomRecord<int>("int") },
+    l { generateRandomRecord<short>("long") }, ll { generateRandomRecord<long long>("long long") },
+    uc { generateRandomRecord<unsigned char>("unsigned char") }, us { generateRandomRecord<unsigned short>(
+                                                                     "unsigned short") },
+    ui { generateRandomRecord<unsigned int>("unsigned int") }, ul { generateRandomRecord<unsigned short>(
+                                                                   "unsigned long") },
+    ull { generateRandomRecord<unsigned long long>("unsigned long long") }, f { generateRandomRecord<float>("float") },
+    d { generateRandomRecord<double>("double") }, cf { generateRandomRecord<std::complex<float>>("complex float") },
+    cd { generateRandomRecord<std::complex<double>>("complex double") }, str { generateRandomRecord<std::string>(
+                                                                             "string") } {}
 
 template <>
 const Record<bool>& RandomHeader::getRecord<bool>() const {
@@ -124,8 +118,8 @@ const Record<std::string>& RandomHeader::getRecord<std::string>() const {
   return str;
 }
 
-RecordVector<boost::any> RandomHeader::allRecords() const {
-  return RecordVector<boost::any>(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str);
+RecordCollection RandomHeader::allRecords() const {
+  return RecordVector<VariantValue>(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str);
 }
 
 } // namespace Test
