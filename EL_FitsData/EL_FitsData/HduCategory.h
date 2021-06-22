@@ -175,6 +175,7 @@ private:
    * - First | First = First,
    * - Second | Second = Second,
    * - First | Second = Unconstrained.
+   */
   static Trit extendFlag(Trit lhs, Trit rhs);
 
   /**
