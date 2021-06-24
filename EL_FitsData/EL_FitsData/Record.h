@@ -24,14 +24,6 @@
 #include <complex>
 #include <string>
 
-/**
- * @brief The variant value type for records.
- * @warning
- * This is a boost::any today, which should be replaced with a boost::variant at some point,
- * thus the need for this alias.
- */
-using VariantValue = boost::any;
-
 namespace Euclid {
 namespace FitsIO {
 
@@ -61,6 +53,16 @@ namespace FitsIO {
   MACRO(unsigned long long, ulonglong)
 
 /**
+ * @ingroup data_classes
+ * @brief The variant value type for records.
+ * @warning
+ * This is a boost::any today, which should be replaced with a boost::variant at some point,
+ * thus the need for this alias.
+ */
+using VariantValue = boost::any;
+
+/**
+ * @ingroup data_classes
  * @brief Keyword-value pair with optional unit and comment.
  * @tparam T The value type;
  * Can be an integer, floating point, complex, `std::string`, `const char *` or `VariantValue`.

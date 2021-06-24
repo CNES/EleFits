@@ -20,6 +20,8 @@
 #ifndef _EL_FITSDATA_HDUCATEGORY_H
 #define _EL_FITSDATA_HDUCATEGORY_H
 
+#include "EL_FitsData/FitsIOError.h"
+
 #include <functional> // function
 #include <vector>
 
@@ -27,6 +29,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup iterators
  * @brief An extensible HDU categorization for filtering and iteration.
  * @details
  * A category is defined as a sequence of trits (trinary bits).
@@ -36,18 +39,18 @@ namespace FitsIO {
  * - Metadata HDU (empty data unit) / HDU with data,
  * - Image / binary table HDU,
  * - Integer- / real-valued image HDU,
- * - Raw / compressed image HDU.
- * 
- * Other trits should be added in the future, e.g. to characterized the HDU state:
- * - Untouched / accessed,
- * - Opened / created,
- * - Read / edited...
+ * - Raw / compressed image HDU,
+ * - Opened / created HDU,
+ * - Read / edited HDU.
  * 
  * User trits can also be added by extending the class.
  * 
- * Predefined categories are provided as static members, e.g. HduCategory::Primary or HduCategory::RawImage.
- * An HduCategory should not be created with a constructor, but rather by combining those categories with (trinary) bitwise operators.
- * For example, an integer-valued, non-empty image extension can be created using one of the following formulae:
+ * Predefined categories are provided as static members,
+ * e.g. HduCategory::Primary or HduCategory::RawImage.
+ * An HduCategory should not be created with a constructor,
+ * but rather by combining those categories with (trinary) bitwise operators.
+ * For example, an integer-valued, non-empty image extension
+ * can be created using one of the following formulae:
  * \code
  * HduCategory intDataImageExt = HduCategory::IntImage & HduCategory::DataHdu & HduCategory::Ext;
  * HduCategory intDataImageExt = HduCategory::IntImage & HduCategory::DataExt;
@@ -57,9 +60,14 @@ namespace FitsIO {
  * Method isInstance is provided to test whether a category validates a model.
  * Yet, in general, RecordHdu::matches is an adequate shortcut.
  * 
- * More complex, multi-category filters can be created with as HduFilter objects.
+ * More complex, multi-category filters can be created as HduFilter objects.
  */
 class HduCategory {
+
+public:
+  struct IncompatibleTrits : public FitsIOError {
+    IncompatibleTrits() : FitsIOError("Cannot combine incompatible trits.") {}
+  };
 
 protected:
   /**
@@ -77,11 +85,15 @@ protected:
    */
   enum class TritPosition
   {
-    PrimaryExt, ///< Primary/extension flag
-    MetadataData, ///< Metadata/data flag
-    ImageBintable, ///< Image/binary table flag
-    IntFloatImage, ///< Integer-/real-valued image flag
-    RawCompressedImage ///< Raw/compressed image flag
+    PrimaryExt, ///< Primary/extension HDU
+    MetadataData, ///< Metadata/data HDU
+    ImageBintable, ///< Image/binary table HDU
+    IntFloatImage, ///< Integer-/real-valued image
+    RawCompressedImage, ///< Raw/compressed image
+    UntouchedOpened, ///< Untouched/opened HDU
+    ExisitedCreated, ///< Pre-existing/created HDU
+    ReadEdited, ///< Read/edited
+    TritCount ///< The number of Trits
   };
 
   /**
@@ -215,9 +227,18 @@ public:
   static const HduCategory DataExt; ///< Extension with data
   static const HduCategory IntImageExt; ///< Image extension with data
   static const HduCategory FloatImageExt; ///< Image extension without data
+
+  /* Status categories */
+  static const HduCategory Untouched; ///< HDU was not even read
+  static const HduCategory Opened; ///< HDU was at least read
+  static const HduCategory Existed; ///< Pre-existing HDU was opened
+  static const HduCategory Created; ///< HDU was created
+  static const HduCategory OnlyRead; ///< Metadata or data was only read
+  static const HduCategory Edited; ///< Metadata or data was written
 };
 
 /**
+ * @ingroup iterators
  * @brief HDU filter built from HDU categories.
  * @details
  * The class defines two lists of categories: accepted and rejected categories.

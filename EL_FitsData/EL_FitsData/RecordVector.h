@@ -28,6 +28,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup data_classes
  * @brief A vector of records with find and conversion services.
  * @tparam T The value type of the records; can be VariantValue.
  * @see RecordCollection
@@ -84,6 +85,7 @@ public:
 };
 
 /**
+ * @ingroup data_classes
  * @brief A heterogeneous collection of records.
  */
 using RecordCollection = RecordVector<VariantValue>;

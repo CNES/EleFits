@@ -28,6 +28,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup iterators
  * @brief Keyword categories.
  * @details
  * Can be used as a mask to combine different categories, e.g.:

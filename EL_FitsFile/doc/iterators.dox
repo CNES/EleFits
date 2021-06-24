@@ -1,0 +1,80 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\defgroup iterators 3. HDU selectors and iterators
+\brief Tools to iterate over HDUs with selected categories and/or states.
+
+
+\section iterators-all Iterate over all HDUs of a MefFile
+
+
+An iterator class and begin/end functions are defined to enable loops over all the HDUs of a MefFile.
+Usage is straightforward:
+
+\code
+MefFile f(filename, MefFile::Permission::Read);
+for (const auto& hdu : f) {
+    // Do something with hdu
+}
+\endcode
+
+
+\section iterators-categories HDU categories and filters
+
+
+HDUs can be selected using a pair of dedicated classes: HduCategory and HduFilter.
+
+An HduCategory object positions flags like: Primary or extension HDU, image or binary table HDU...
+HDU categories can be composed with binary operators `&` (and), `|` (or) and `~` (not).
+For example, to get the list of image extensions with integer values:
+
+\code
+const auto category = HduCategory::IntImage & HduCategory::Ext;
+\endcode
+
+An HduFilter is a list of acceptable HDU categories and unacceptable HDU categories.
+They are buit with operators `+` (accept) and `-` (reject).
+For example, to accept all real-valued images and Primary, excluding the HDUs which were just created:
+
+\code
+const auto filter = HduCategory::IntImage + HduCategory::Primary - HduCategory::Created;
+\endcode
+
+It is possible to check if an HDU is of given category or matches a given filter with method RecordHdu::matches, as follows:
+
+\code
+MefFile f(filename, MefFile::Permission::Read);
+for (const auto& hdu : f) {
+  if (hdu.matches(HduCategory::Primary)) {
+    processPrimary(hdu);
+  } else if (hdu.matches(HduCategory::Image)) {
+    processImageExt(hdu.as<ImageHdu>());
+  } else if (hdu.matches(HduCategory::Bintable)) {
+    processBintableExt(hdu.as<BintableHdu>());
+  }
+}
+\endcode
+
+
+\section iterators-slected Iterate over selected HDUs of a MefFile
+
+
+Similarly to the range loop presented at the beginning of this page, it is possible to loop over a subset of the HDUs of a MefFile.
+This is done by creating the adequate iterator using method MefFile::select():
+
+\code
+MefFile f(filename, MefFile::Permission::Read);
+for (const auto& hdu : f.select<ImageHdu>(HduCategory::ImageExt)) {
+  processImageExt(hdu);
+}
+\endcode
+
+The template parameter specifies the class to be returned: RecordHdu, ImageHdu, or BintableHdu.
+It is not used to filter, and calls like `f.select<ImageHdu>(HduCategory::Bintable)` will result in runtime errors.
+
+*/
+
+}
+}

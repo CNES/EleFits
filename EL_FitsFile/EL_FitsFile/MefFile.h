@@ -27,6 +27,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup handlers
  * @brief Multi-Extension Fits file reader-writer.
  * @details
  * Provide HDU access/create services.
@@ -143,6 +144,7 @@ public:
   const T& accessPrimary();
 
   /**
+   * @ingroup iterators
    * @brief Select a filtered set of HDUs.
    * @return An iterable object, i.e. one for which begin and end functions are provided.
    */

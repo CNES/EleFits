@@ -3,7 +3,8 @@ namespace FitsIO {
 
 /**
 
-\page data_classes Data classes
+\defgroup data_classes 1. Data classes
+\brief Classes to represent the data stored in a Fits file
 
 
 \tableofcontents
@@ -75,7 +76,7 @@ If you want to give or steal the data to or from a VecColumn, you can exploit mo
 
 We have just learnt the basics of the library data classes.
 They are as-light-as-possible classes which store or reference data.
-They are the inputs and outputs of the library read/write services described in \ref handlers.
+They are the inputs and outputs of the library read/write services described in \ref handlers "a dedicated page".
 
 To see the library in action, follow the \ref tuto.
 

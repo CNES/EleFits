@@ -52,6 +52,7 @@ namespace FitsIO {
   MACRO(std::uint64_t, uint64)
 
 /**
+ * @ingroup data_classes
  * @brief Column metadata, i.e. `{ name, unit, repeatCount }`
  * and the value type as the template parameter.
  * @details
@@ -145,6 +146,7 @@ struct ColumnInfo {
 };
 
 /**
+ * @ingroup data_classes
  * @brief Binary table column data and metadata.
  * @details
  * This is an interface to be implemented with a concrete data container (e.g. `std::vector`).
@@ -222,6 +224,7 @@ public:
 };
 
 /**
+ * @ingroup data_classes
  * @brief Column which references some external pointer data.
  * @details
  * Use it for temporary columns.
@@ -263,6 +266,7 @@ private:
 };
 
 /**
+ * @ingroup data_classes
  * @brief Column which references some external vector data.
  * @details
  * Use it for temporary columns.
@@ -304,6 +308,7 @@ private:
 };
 
 /**
+ * @ingroup data_classes
  * @brief Column which stores internally the data.
  * @details
  * Use it (via move semantics) if you don't need your data after the write operation.

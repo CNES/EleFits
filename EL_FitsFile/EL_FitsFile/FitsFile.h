@@ -20,12 +20,12 @@
 #ifndef _EL_FITSFILE_FITSFILE_H
 #define _EL_FITSFILE_FITSFILE_H
 
-#include <fitsio.h>
-#include <string>
-
 #include "EL_FitsFile/BintableHdu.h"
 #include "EL_FitsFile/ImageHdu.h"
 #include "EL_FitsFile/RecordHdu.h"
+
+#include <fitsio.h>
+#include <string>
 
 namespace Euclid {
 
@@ -74,7 +74,8 @@ public:
   /**
    * @brief Fits file read/write permissions.
    */
-  enum class Permission {
+  enum class Permission
+  {
     Read, ///< Open as read-only
     Edit, ///< Open with write permission
     Create, ///< Create a new file (overwrite forbidden)

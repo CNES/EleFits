@@ -50,6 +50,7 @@ namespace FitsIO {
   MACRO(std::uint64_t, uint64)
 
 /**
+ * @ingroup data_classes
  * @brief n-dimensional pixel position or image shape, i.e. set of integer coordinates.
  * @tparam n A non-negative dimension (0 is allowed), or -1 for variable dimension.
  * @details
@@ -61,6 +62,7 @@ template <long n = 2>
 using Position = typename std::conditional<(n == -1), std::vector<long>, std::array<long, (std::size_t)n>>::type;
 
 /**
+ * @ingroup data_classes
  * @brief Raster of a n-dimensional image (2D by default).
  * @details
  * This is an interface to be implemented with a concrete data container (e.g. std::vector).
@@ -161,6 +163,7 @@ public:
 };
 
 /**
+ * @ingroup data_classes
  * @brief Raster which references some external pointer data.
  * @see \ref data_classes
  */
@@ -192,6 +195,7 @@ private:
 };
 
 /**
+ * @ingroup data_classes
  * @brief Raster which references some external vector data.
  * @details Use it for temporary rasters.
  * @see \ref data_classes
@@ -229,6 +233,7 @@ private:
 };
 
 /**
+ * @ingroup data_classes
  * @brief Raster which stores internally the data as a vector.
  * @see \ref data_classes
  */

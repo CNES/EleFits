@@ -3,7 +3,8 @@ namespace FitsIO {
 
 /**
 
-\page handlers Service classes
+\defgroup handlers 2. File and HDU handlers
+\brief Classes and functions to manipulate Fits files
 
 
 \tableofcontents
@@ -15,7 +16,7 @@ namespace FitsIO {
 File handlers (XxxFile classes) only store index and type of HDUs which have already been accessed.
 HDU handlers (XxxHdu classes) only provide read/write services.
 Records, images and tables are never stored by those classes
-(to know where they are, read the \ref data_classes page).
+(to know where they are, read the \ref data_classes "data classes documentation page").
 When you access an HDU, you just access a set of services to read and write items in this HDU.
 
 FitsFile is mostly en empty shell for opening and closing operations.

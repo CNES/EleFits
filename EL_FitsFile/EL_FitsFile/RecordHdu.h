@@ -29,6 +29,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup handlers
  * @brief Header reader-writer.
  * @details
  * This class provides services common to all HDUs for reading and writing records.
@@ -125,6 +126,7 @@ public:
   HduCategory type() const;
 
   /**
+   * @ingroup iterators
    * @brief Read the category of the HDU.
    * @details
    * This is more specific than the type of the HDU.
@@ -141,6 +143,7 @@ public:
   virtual HduCategory readCategory() const;
 
   /**
+   * @ingroup iterators
    * @brief Check whether the HDU matches a given filter.
    * @param filter The list of categories to be tested
    * @warning

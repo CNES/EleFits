@@ -144,38 +144,36 @@ private:
 };
 
 /**
+ * @ingroup iterators
  * @brief Beginning of an iterator to loop over all HDUs as RecordHdus.
- * @details
- * Especially useful for range loops:
- * \code
- * MefFile f(filename, MefFile::Permission::Read);
- * for (const auto& hdu : f) {
- *   if (hdu.isInstance(HduCategory::Primary)) {
- *     processPrimary(hdu);
- *   } else if (hdu.isInstance(Hdu::Category::Image)) {
- *     processImage(hdu.as<ImageHdu>());
- *   } else if (hdu.isInstance(Hdu::Category::Bintable)) {
- *     processBintable(hdu.as<BintableHdu>());
- *   }
- * }
- * \endcode
  */
 HduIterator<> begin(MefFile& f) {
   return { f, 0 };
 }
 
 /**
+ * @ingroup iterators
  * @brief End of an iterator to loop over all HDUs as RecordHdus.
  */
 HduIterator<> end(MefFile& f) {
   return { f, f.hduCount() };
 }
 
+/**
+ * @ingroup iterators
+ * @brief Beginning of an iterator to loop over selected HDUs.
+ * @tparam THdu The desired HDU type
+ * @param selector The HDU selector
+ */
 template <typename THdu = RecordHdu>
 HduIterator<THdu> begin(MefFile::Selector<THdu>& selector) {
   return { selector.mef, 0, selector.filter };
 }
 
+/**
+ * @ingroup iterators
+ * @brief End of an iterator to loop over selected HDUs.
+ */
 template <typename THdu = RecordHdu>
 HduIterator<THdu> end(MefFile::Selector<THdu>& selector) {
   return { selector.mef, selector.mef.hduCount(), selector.filter };

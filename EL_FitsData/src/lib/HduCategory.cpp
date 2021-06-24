@@ -24,9 +24,10 @@
 namespace Euclid {
 namespace FitsIO {
 
-HduCategory::HduCategory() : m_mask(5, HduCategory::Trit::Unconstrained) {}
-HduCategory::HduCategory(HduCategory::TritPosition position, HduCategory::Trit value) :
-    m_mask(5, HduCategory::Trit::Unconstrained) {
+HduCategory::HduCategory() :
+    m_mask(static_cast<std::size_t>(HduCategory::TritPosition::TritCount), HduCategory::Trit::Unconstrained) {}
+
+HduCategory::HduCategory(HduCategory::TritPosition position, HduCategory::Trit value) : HduCategory() {
   m_mask[static_cast<int>(position)] = value;
 }
 
@@ -66,7 +67,7 @@ bool HduCategory::operator!=(const HduCategory& rhs) const {
 bool HduCategory::isInstance(const HduCategory& model) const {
   try {
     return (*this & model) == *this;
-  } catch (std::runtime_error&) { // FIXME Use IncompatibleFlags error
+  } catch (IncompatibleTrits) {
     return false;
   }
 }
@@ -92,7 +93,7 @@ HduCategory::Trit HduCategory::restrictFlag(HduCategory::Trit lhs, HduCategory::
   if (rhs == Trit::Unconstrained) {
     return lhs;
   }
-  throw std::runtime_error("Cannot restrict incompatible flags."); // FIXME Implement IncompatibleFlags class
+  throw HduCategory::IncompatibleTrits();
 }
 
 HduCategory::Trit HduCategory::extendFlag(HduCategory::Trit lhs, HduCategory::Trit rhs) {
@@ -141,6 +142,15 @@ const HduCategory HduCategory::MetadataExt { HduCategory::Metadata & HduCategory
 const HduCategory HduCategory::DataExt { HduCategory::Data & HduCategory::Ext };
 const HduCategory HduCategory::IntImageExt { HduCategory::IntImage & HduCategory::Ext };
 const HduCategory HduCategory::FloatImageExt { HduCategory::FloatImage & HduCategory::Ext };
+
+const HduCategory HduCategory::Untouched { HduCategory::TritPosition::UntouchedOpened, HduCategory::Trit::First };
+const HduCategory HduCategory::Opened { ~HduCategory::Untouched };
+const HduCategory HduCategory::Existed { HduCategory::TritPosition::ExisitedCreated, HduCategory::Trit::First };
+const HduCategory HduCategory::OnlyRead {
+  HduCategory::Opened & HduCategory { HduCategory::TritPosition::ReadEdited, HduCategory::Trit::First }
+};
+const HduCategory HduCategory::Edited { HduCategory::TritPosition::ReadEdited, HduCategory::Trit::Second };
+const HduCategory HduCategory::Created { ~HduCategory::Existed & HduCategory::Edited };
 
 HduFilter::HduFilter(HduCategory category) : m_accept { category }, m_reject {} {}
 

@@ -43,7 +43,7 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::
  * @copydoc parseRecord
  */
 template <>
-FitsIO::Record<VariantValue> parseRecord<VariantValue>(fitsfile* fptr, const std::string& keyword);
+FitsIO::Record<FitsIO::VariantValue> parseRecord<FitsIO::VariantValue>(fitsfile* fptr, const std::string& keyword);
 
 /**
  * @copydoc writeRecord
@@ -67,7 +67,7 @@ void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>&
  * @copydoc writeRecord
  */
 template <>
-void writeRecord<VariantValue>(fitsfile* fptr, const FitsIO::Record<VariantValue>& record);
+void writeRecord<FitsIO::VariantValue>(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record);
 
 /**
  * @copydoc updateRecord
@@ -91,7 +91,7 @@ void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>
  * @copydoc updateRecord
  */
 template <>
-void updateRecord<VariantValue>(fitsfile* fptr, const FitsIO::Record<VariantValue>& record);
+void updateRecord<FitsIO::VariantValue>(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record);
 
 /// @cond INTERNAL
 namespace Internal {

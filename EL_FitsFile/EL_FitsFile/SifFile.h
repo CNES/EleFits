@@ -27,6 +27,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup handlers
  * @brief Single image Fits file handler.
  * @details
  * Provide read/write access to the header and image raster.
