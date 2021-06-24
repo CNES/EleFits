@@ -152,35 +152,48 @@ const HduCategory HduCategory::OnlyRead {
 const HduCategory HduCategory::Edited { HduCategory::TritPosition::ReadEdited, HduCategory::Trit::Second };
 const HduCategory HduCategory::Created { ~HduCategory::Existed & HduCategory::Edited };
 
-HduFilter::HduFilter(HduCategory category) : m_accept { category }, m_reject {} {}
+HduFilter::HduFilter(const HduCategory& category) : m_accept { category }, m_reject {} {}
 
 HduFilter::HduFilter(const std::vector<HduCategory>& accept, const std::vector<HduCategory>& reject) :
     m_accept { accept }, m_reject { reject } {}
 
-HduFilter& HduFilter::operator+=(HduCategory accept) {
+HduFilter& HduFilter::operator+=(const HduCategory& accept) {
   m_accept.push_back(accept);
   return *this;
 }
 
-HduFilter HduFilter::operator+(HduCategory accept) const {
-  HduFilter group(*this);
-  group += accept;
-  return group;
+HduFilter HduFilter::operator+(const HduCategory& accept) const {
+  HduFilter filter(*this);
+  filter += accept;
+  return filter;
 }
 
 HduFilter& HduFilter::operator+() {
   return *this;
 }
 
-HduFilter& HduFilter::operator-=(HduCategory reject) {
+HduFilter& HduFilter::operator*=(const HduCategory& constraint) {
+  for (auto& a : m_accept) {
+    a &= constraint;
+  }
+  return *this;
+}
+
+HduFilter HduFilter::operator*(const HduCategory& constraint) const {
+  HduFilter filter(*this);
+  filter *= constraint;
+  return filter;
+}
+
+HduFilter& HduFilter::operator-=(const HduCategory& reject) {
   m_reject.push_back(reject);
   return *this;
 }
 
-HduFilter HduFilter::operator-(HduCategory reject) const {
-  HduFilter group(*this);
-  group -= reject;
-  return group;
+HduFilter HduFilter::operator-(const HduCategory& reject) const {
+  HduFilter filter(*this);
+  filter -= reject;
+  return filter;
 }
 
 HduFilter& HduFilter::operator-() {
@@ -188,7 +201,20 @@ HduFilter& HduFilter::operator-() {
   return *this;
 }
 
-bool HduFilter::accepts(HduCategory input) const {
+HduFilter& HduFilter::operator/=(const HduCategory& constraint) {
+  for (auto& r : m_reject) {
+    r &= constraint;
+  }
+  return *this;
+}
+
+HduFilter HduFilter::operator/(const HduCategory& constraint) const {
+  HduFilter filter(*this);
+  filter /= constraint;
+  return filter;
+}
+
+bool HduFilter::accepts(const HduCategory& input) const {
   for (auto r : m_reject) {
     if (input.isInstance(r)) {
       return false;

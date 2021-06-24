@@ -245,7 +245,7 @@ public:
   /**
    * @brief Casting constructor to make a HduFilter from a HduCategory.
    */
-  HduFilter(HduCategory category);
+  HduFilter(const HduCategory& category);
 
   /**
    * @brief Constructor.
@@ -253,14 +253,26 @@ public:
   HduFilter(const std::vector<HduCategory>& accept, const std::vector<HduCategory>& reject);
 
   /**
-   * @brief Add an accepted category in place.
-   */
-  HduFilter& operator+=(HduCategory accept);
-
-  /**
    * @brief Add an accepted category.
    */
-  HduFilter operator+(HduCategory accept) const;
+  HduFilter& operator+=(const HduCategory& accept);
+
+  /**
+   * @copydoc operator+=
+   */
+  HduFilter operator+(const HduCategory& accept) const;
+
+  /**
+   * @brief Add a constraint to all accepted categories.
+   * @details
+   * For each accepted category, applies operator &.
+   */
+  HduFilter& operator*=(const HduCategory& constraint);
+
+  /**
+   * @copydoc operator*=
+   */
+  HduFilter operator*(const HduCategory& constraint) const;
 
   /**
    * @brief Identity: provided for completeness only.
@@ -270,12 +282,12 @@ public:
   /**
    * @brief Add a rejected category in place.
    */
-  HduFilter& operator-=(HduCategory reject);
+  HduFilter& operator-=(const HduCategory& reject);
 
   /**
    * @brief Add a rejected category.
    */
-  HduFilter operator-(HduCategory reject) const;
+  HduFilter operator-(const HduCategory& reject) const;
 
   /**
    * @brief Negation operator: swap accepted and rejected categories.
@@ -283,11 +295,23 @@ public:
   HduFilter& operator-();
 
   /**
+   * @brief Add a constraint to all rejected categories.
+   * @details
+   * For each rejected category, applies operator &.
+   */
+  HduFilter& operator/=(const HduCategory& constraint);
+
+  /**
+   * @copydoc operator/=
+   */
+  HduFilter operator/(const HduCategory& constraint) const;
+
+  /**
    * @brief Check whether the filter accepts a given input.
    * @return True if the input is an instance of *one of* the accepted categories
    * *and* is *not* an instance of *any of* the rejected categories.
    */
-  bool accepts(HduCategory input) const;
+  bool accepts(const HduCategory& input) const;
 
 private:
   /**

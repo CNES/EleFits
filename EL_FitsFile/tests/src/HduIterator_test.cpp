@@ -60,14 +60,14 @@ BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile) {
   }
   BOOST_TEST(count == 1);
 
-  for (const auto& hdu : this->select<BintableHdu>(HduCategory::Bintable)) {
+  for (const auto& hdu : this->select<BintableHdu>(HduCategory::Any)) {
     readNames.push_back(hdu.readName());
     BOOST_TEST(hdu.matches(HduCategory::Bintable & HduCategory::Ext));
     count++;
   }
   BOOST_TEST(count == 3);
 
-  for (const auto& hdu : this->select<ImageHdu>(HduCategory::ImageExt)) {
+  for (const auto& hdu : this->select<ImageHdu>(HduCategory::Ext)) {
     readNames.push_back(hdu.readName());
     BOOST_TEST(hdu.matches(HduCategory::Image - HduCategory::Primary));
     count++;

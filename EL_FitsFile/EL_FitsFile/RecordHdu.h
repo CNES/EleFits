@@ -440,11 +440,15 @@ public:
 protected:
   /**
    * @brief Set the current HDU to this one.
+   * @details
+   * The status of the HDU is modified to Touched if it was initially Untouched.
    */
   void touchThisHdu() const;
 
   /**
    * @brief Set the current HDU to this one for writing.
+   * @details
+   * Edited is added to the status of the HDU.
    */
   void editThisHdu() const;
 

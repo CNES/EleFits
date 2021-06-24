@@ -72,7 +72,16 @@ for (const auto& hdu : f.select<ImageHdu>(HduCategory::ImageExt)) {
 \endcode
 
 The template parameter specifies the class to be returned: RecordHdu, ImageHdu, or BintableHdu.
-It is not used to filter, and calls like `f.select<ImageHdu>(HduCategory::Bintable)` will result in runtime errors.
+It is used to constrain the filter:
+for ImageHdu (resp. BintableHdu), HduCategory::Image (resp. HduCategory::Bintable) is added to the filter.
+The above example can be rewritten more straightforwardly:
+
+\code
+MefFile f(filename, MefFile::Permission::Read);
+for (const auto& hdu : f.select<ImageHdu>(HduCategory::Ext)) { // Don't repeat Image
+  processImageExt(hdu);
+}
+\endcode
 
 */
 
