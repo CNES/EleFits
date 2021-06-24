@@ -93,7 +93,12 @@ public:
    * We rely on the passkey idiom: Token is protected and therefore accessible only from MefFile (a fiend class)
    * and classes derived from RecrodHdu.
    */
-  RecordHdu(Token, fitsfile*& file, long index, HduCategory type = HduCategory::Image);
+  RecordHdu(
+      Token,
+      fitsfile*& file,
+      long index,
+      HduCategory type = HduCategory::Image,
+      HduCategory status = HduCategory::Untouched);
 
   /**
    * @brief Dummy constructor, dedicated to iterators.
@@ -436,7 +441,12 @@ protected:
   /**
    * @brief Set the current HDU to this one.
    */
-  void gotoThisHdu() const;
+  void touchThisHdu() const;
+
+  /**
+   * @brief Set the current HDU to this one for writing.
+   */
+  void editThisHdu() const;
 
   /**
    * @brief The parent file handler.
@@ -458,6 +468,11 @@ protected:
    * @brief The HDU type.
    */
   HduCategory m_type;
+
+  /**
+   * @brief The HDU status.
+   */
+  mutable HduCategory m_status;
 
   /**
    * @brief Dummy file handler dedicated to dummy constructor.

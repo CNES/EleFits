@@ -143,11 +143,11 @@ const HduCategory HduCategory::DataExt { HduCategory::Data & HduCategory::Ext };
 const HduCategory HduCategory::IntImageExt { HduCategory::IntImage & HduCategory::Ext };
 const HduCategory HduCategory::FloatImageExt { HduCategory::FloatImage & HduCategory::Ext };
 
-const HduCategory HduCategory::Untouched { HduCategory::TritPosition::UntouchedOpened, HduCategory::Trit::First };
-const HduCategory HduCategory::Opened { ~HduCategory::Untouched };
+const HduCategory HduCategory::Untouched { HduCategory::TritPosition::UntouchedTouched, HduCategory::Trit::First };
+const HduCategory HduCategory::Touched { ~HduCategory::Untouched };
 const HduCategory HduCategory::Existed { HduCategory::TritPosition::ExisitedCreated, HduCategory::Trit::First };
 const HduCategory HduCategory::OnlyRead {
-  HduCategory::Opened & HduCategory { HduCategory::TritPosition::ReadEdited, HduCategory::Trit::First }
+  HduCategory::Touched & HduCategory { HduCategory::TritPosition::ReadEdited, HduCategory::Trit::First }
 };
 const HduCategory HduCategory::Edited { HduCategory::TritPosition::ReadEdited, HduCategory::Trit::Second };
 const HduCategory HduCategory::Created { ~HduCategory::Existed & HduCategory::Edited };

@@ -40,7 +40,7 @@ public:
   /**
    * @see RecordHdu
    */
-  BintableHdu(Token, fitsfile*& fptr, long index);
+  BintableHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
 
   /**
    * @see RecordHdu

@@ -32,18 +32,11 @@ namespace FitsIO {
  * @ingroup iterators
  * @brief An extensible HDU categorization for filtering and iteration.
  * @details
- * A category is defined as a sequence of trits (trinary bits).
+ * A category is defined as a sequence of trits (trinary bits),
+ * which can take one of two specified values, or be unconstrained.
  * For example, the type of an HDU can be image, binary table or unconstrained.
- * The following trits are defined:
- * - Primary HDU / extension,
- * - Metadata HDU (empty data unit) / HDU with data,
- * - Image / binary table HDU,
- * - Integer- / real-valued image HDU,
- * - Raw / compressed image HDU,
- * - Opened / created HDU,
- * - Read / edited HDU.
  * 
- * User trits can also be added by extending the class.
+ * Predefined trits are provided; user trits can also be added by extending the class.
  * 
  * Predefined categories are provided as static members,
  * e.g. HduCategory::Primary or HduCategory::RawImage.
@@ -64,11 +57,6 @@ namespace FitsIO {
  */
 class HduCategory {
 
-public:
-  struct IncompatibleTrits : public FitsIOError {
-    IncompatibleTrits() : FitsIOError("Cannot combine incompatible trits.") {}
-  };
-
 protected:
   /**
    * @brief Trinary values.
@@ -85,17 +73,23 @@ protected:
    */
   enum class TritPosition
   {
-    PrimaryExt, ///< Primary/extension HDU
-    MetadataData, ///< Metadata/data HDU
-    ImageBintable, ///< Image/binary table HDU
-    IntFloatImage, ///< Integer-/real-valued image
-    RawCompressedImage, ///< Raw/compressed image
-    UntouchedOpened, ///< Untouched/opened HDU
-    ExisitedCreated, ///< Pre-existing/created HDU
-    ReadEdited, ///< Read/edited
+    PrimaryExt, ///< Primary / extension HDU
+    MetadataData, ///< Metadata / data HDU
+    ImageBintable, ///< Image / binary table HDU
+    IntFloatImage, ///< Integer- / real-valued image
+    RawCompressedImage, ///< Raw / compressed image
+    UntouchedTouched, ///< Untouched / accessed HDU
+    ExisitedCreated, ///< Pre-existing / created HDU
+    ReadEdited, ///< Read / edited HDU
     TritCount ///< The number of Trits
   };
 
+public:
+  struct IncompatibleTrits : public FitsIOError {
+    IncompatibleTrits() : FitsIOError("Cannot combine incompatible trits.") {}
+  };
+
+protected:
   /**
    * @brief Create an unconstrained category.
    */
@@ -230,7 +224,7 @@ public:
 
   /* Status categories */
   static const HduCategory Untouched; ///< HDU was not even read
-  static const HduCategory Opened; ///< HDU was at least read
+  static const HduCategory Touched; ///< HDU was at least read
   static const HduCategory Existed; ///< Pre-existing HDU was opened
   static const HduCategory Created; ///< HDU was created
   static const HduCategory OnlyRead; ///< Metadata or data was only read

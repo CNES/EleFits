@@ -81,7 +81,7 @@ template <typename T, long n>
 const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size));
+  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<ImageHdu>();
 }
 
@@ -89,7 +89,7 @@ template <typename T, long n>
 const ImageHdu& MefFile::assignImageExt(const std::string& name, const Raster<T, n>& raster) {
   Cfitsio::Hdu::createImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size));
+  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<ImageHdu>();
 }
 
@@ -97,7 +97,7 @@ template <typename... Ts>
 const BintableHdu& MefFile::initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, header...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
+  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<BintableHdu>();
 }
 
@@ -105,15 +105,15 @@ template <typename... Ts>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Column<Ts>&... columns) {
   Cfitsio::Hdu::createBintableExtension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
+  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<BintableHdu>();
 }
 
-template <typename Tuple, std::size_t count = std::tuple_size<Tuple>::value>
+template <typename Tuple, std::size_t count>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Tuple& columns) {
   Cfitsio::Hdu::createBintableExtension<Tuple, count>(m_fptr, name, columns);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size));
+  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<BintableHdu>();
 }
 

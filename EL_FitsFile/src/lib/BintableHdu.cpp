@@ -22,18 +22,18 @@
 namespace Euclid {
 namespace FitsIO {
 
-BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index) :
-    RecordHdu(token, fptr, index, HduCategory::Bintable) {}
+BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
+    RecordHdu(token, fptr, index, HduCategory::Bintable, status) {}
 
 BintableHdu::BintableHdu() : RecordHdu() {}
 
 long BintableHdu::readColumnCount() const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::columnCount(m_fptr);
 }
 
 long BintableHdu::readRowCount() const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::rowCount(m_fptr);
 }
 
@@ -48,12 +48,12 @@ HduCategory BintableHdu::readCategory() const {
 }
 
 bool BintableHdu::hasColumn(const std::string& name) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::hasColumn(m_fptr, name);
 }
 
 std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string>& names) const {
-  gotoThisHdu();
+  touchThisHdu();
   const auto size = names.size();
   std::vector<bool> counts(size);
   std::transform(names.begin(), names.end(), counts.begin(), [&](const std::string& n) {
@@ -63,17 +63,17 @@ std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string>& names)
 }
 
 long BintableHdu::readColumnIndex(const std::string& name) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::columnIndex(m_fptr, name) - 1;
 }
 
 std::string BintableHdu::readColumnName(long index) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::columnName(m_fptr, index + 1);
 }
 
 std::vector<std::string> BintableHdu::readColumnNames() const {
-  const auto size = readColumnCount(); // calls gotoThisHdu
+  const auto size = readColumnCount(); // calls touchThisHdu
   std::vector<std::string> names(size);
   for (long i = 0; i < size; ++i) {
     names[i] = Cfitsio::Bintable::columnName(m_fptr, i + 1);
@@ -86,7 +86,7 @@ void BintableHdu::renameColumn(const std::string& name, const std::string& newNa
 }
 
 void BintableHdu::renameColumn(long index, const std::string& newName) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Bintable::updateColumnName(m_fptr, index + 1, newName);
 }
 

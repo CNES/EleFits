@@ -31,13 +31,13 @@ const T& RecordHdu::as() const {
 
 template <typename T>
 Record<T> RecordHdu::parseRecord(const std::string& keyword) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
 }
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string>& keywords) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Header::parseRecords<Ts...>(m_fptr, keywords);
 }
 
@@ -48,7 +48,7 @@ std::tuple<Record<Ts>...> RecordHdu::parseRecords(const Named<Ts>&... keywords) 
 
 template <class TReturn, typename... Ts>
 TReturn RecordHdu::parseRecordsAs(const std::vector<std::string>& keywords) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Header::parseRecordsAs<TReturn, Ts...>(m_fptr, keywords);
 }
 
@@ -59,7 +59,7 @@ TReturn RecordHdu::parseRecordsAs(const Named<Ts>&... keywords) const {
 
 template <typename T>
 Record<T> RecordHdu::parseRecordOr(const Record<T>& fallback) const {
-  gotoThisHdu();
+  touchThisHdu();
   if (hasKeyword(fallback.keyword)) {
     return parseRecord<T>(fallback.keyword);
   }
@@ -68,12 +68,12 @@ Record<T> RecordHdu::parseRecordOr(const Record<T>& fallback) const {
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecordsOr(const Record<Ts>&... fallbacks) const {
-  return { parseRecordOr<Ts>(fallbacks)... }; // TODO avoid calling gotoThisHdu for each keyword
+  return { parseRecordOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
 }
 
 template <typename T>
 RecordVector<T> RecordHdu::parseRecordVector(const std::vector<std::string>& keywords) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Header::parseRecordVector<T>(m_fptr, keywords);
 }
 
@@ -84,7 +84,7 @@ RecordVector<T> RecordHdu::parseAllRecords() const {
 
 template <typename T>
 void RecordHdu::writeRecord(const Record<T>& record) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::writeRecord(m_fptr, record);
 }
 
@@ -95,25 +95,25 @@ void RecordHdu::writeRecord(const std::string& k, T v, const std::string& u, con
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const Record<Ts>&... records) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::writeRecords(m_fptr, records...);
 }
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const std::tuple<Record<Ts>...>& records) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::writeRecords(m_fptr, records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const std::vector<Record<T>>& records) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::writeRecords(m_fptr, records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  gotoThisHdu();
+  editThisHdu();
   for (const auto& k : keywords) {
     Cfitsio::Header::writeRecord(m_fptr, records[k]);
   }
@@ -121,7 +121,7 @@ void RecordHdu::writeRecords(const RecordVector<T>& records, const std::vector<s
 
 template <typename T>
 void RecordHdu::updateRecord(const Record<T>& record) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::updateRecord(m_fptr, record);
 }
 
@@ -132,25 +132,25 @@ void RecordHdu::updateRecord(const std::string& k, T v, const std::string& u, co
 
 template <typename... Ts>
 void RecordHdu::updateRecords(const Record<Ts>&... records) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::updateRecords(m_fptr, records...);
 }
 
 template <typename... Ts>
 void RecordHdu::updateRecords(const std::tuple<Record<Ts>...>& records) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::updateRecords(m_fptr, records);
 }
 
 template <typename T>
 void RecordHdu::updateRecords(const std::vector<Record<T>>& records) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Header::updateRecords(m_fptr, records);
 }
 
 template <typename T>
 void RecordHdu::updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  gotoThisHdu();
+  editThisHdu();
   for (const auto& k : keywords) {
     Cfitsio::Header::updateRecord(m_fptr, records[k]);
   }

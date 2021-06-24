@@ -63,7 +63,7 @@ public:
   /**
    * @see RecordHdu
    */
-  ImageHdu(Token, fitsfile*& fptr, long index);
+  ImageHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
 
   /**
    * @see RecordHdu

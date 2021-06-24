@@ -19,28 +19,28 @@
 
 #if defined(_EL_FITSFILE_BINTABLEHDU_IMPL) || defined(CHECK_QUALITY)
 
-#include <algorithm>
+  #include "EL_FitsFile/BintableHdu.h"
 
-#include "EL_FitsFile/BintableHdu.h"
+  #include <algorithm>
 
 namespace Euclid {
 namespace FitsIO {
 
 template <typename T>
 VecColumn<T> BintableHdu::readColumn(long index) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::readColumn<T>(m_fptr, index + 1);
 }
 
 template <typename T>
 VecColumn<T> BintableHdu::readColumn(const std::string& name) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::readColumn<T>(m_fptr, name);
 }
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<long>& indices) const {
-  gotoThisHdu();
+  touchThisHdu();
   std::vector<long> cfitsioIndices(indices.size());
   std::transform(indices.begin(), indices.end(), cfitsioIndices.begin(), [](long i) {
     return i + 1;
@@ -55,7 +55,7 @@ std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Indexed<Ts>&... indi
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<std::string>& names) const {
-  gotoThisHdu();
+  touchThisHdu();
   return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, names);
 }
 
@@ -66,40 +66,40 @@ std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Named<Ts>&... names)
 
 template <typename T>
 void BintableHdu::writeColumn(const Column<T>& column) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Bintable::writeColumn(m_fptr, column);
 }
 
 template <typename... Ts>
 void BintableHdu::writeColumns(const Column<Ts>&... columns) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Bintable::writeColumns(m_fptr, columns...);
 }
 
 template <typename T>
 void BintableHdu::appendColumn(const Column<T>& column) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Bintable::appendColumn(m_fptr, column);
 }
 
 template <typename... Ts>
 void BintableHdu::appendColumns(const Column<Ts>&... columns) const {
-  gotoThisHdu();
+  editThisHdu();
   Cfitsio::Bintable::appendColumns(m_fptr, columns...);
 }
 
-#ifndef DECLARE_READ_COLUMN
-#define DECLARE_READ_COLUMN(type, unused) \
-  extern template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
+  #ifndef DECLARE_READ_COLUMN
+    #define DECLARE_READ_COLUMN(type, unused) \
+      extern template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
 EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_READ_COLUMN)
-#undef DECLARE_READ_COLUMN
-#endif
+    #undef DECLARE_READ_COLUMN
+  #endif
 
-#ifndef DECLARE_WRITE_COLUMN
-#define DECLARE_WRITE_COLUMN(type, unused) extern template void BintableHdu::writeColumn(const Column<type>&) const;
+  #ifndef DECLARE_WRITE_COLUMN
+    #define DECLARE_WRITE_COLUMN(type, unused) extern template void BintableHdu::writeColumn(const Column<type>&) const;
 EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_WRITE_COLUMN)
-#undef DECLARE_WRITE_COLUMN
-#endif
+    #undef DECLARE_WRITE_COLUMN
+  #endif
 
 } // namespace FitsIO
 } // namespace Euclid
