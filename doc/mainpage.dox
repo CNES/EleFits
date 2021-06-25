@@ -98,8 +98,9 @@ To go further, the following pages focus on specific topics:
 - \ref install_guide
 - \ref tuto
 - \ref data_classes
-- \ref handlers
 - \ref types
+- \ref handlers
+- \ref iterators
 - \ref optim
 - \ref type_map
 - \ref cfitsio_cov

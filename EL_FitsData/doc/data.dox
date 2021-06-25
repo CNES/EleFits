@@ -4,7 +4,7 @@ namespace FitsIO {
 /**
 
 \defgroup data_classes 1. Data classes
-\brief Classes to represent the data stored in a Fits file
+\brief Classes to represent the data stored in a Fits file.
 
 
 \tableofcontents

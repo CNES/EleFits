@@ -3,9 +3,12 @@ namespace FitsIO {
 
 /**
 
-\page optim Optimization good practices
+\defgroup optim 5. Optimization good practices
+\brief What to do, what not to, and why!
+
 
 \section optim-intro Foreword
+
 
 The implementation focuses firstly on memory management, and secondly on performance.
 Much of its complexity is imputable to performance, like the heavy use of tuples which are not that fun to manipulates.
@@ -14,7 +17,9 @@ Yet, a few would be, and there are thus a few things to know if one wants to get
 Although it's not possible to statically sort the following items w.r.t. performance gain,
 we've tried to sort by orders of magnitude for classical use cases.
 
+
 \section optim-data-copy Avoid copies and implicit transforms
+
 
 This one is not specific to the Fits format or EL_FitsIO at all,
 but is probably worth remembering when using a code devoted to dataset manipulation.
@@ -48,7 +53,11 @@ To this end, it offsets the value to be written, writes it, and writes the offse
 This obviously has a non-negligible cost when applied to many values, like for table columns.
 In order to avoid scaling, users should stick to native Fits types (e.g. `std::int16_t` but not `std::uint16_t`).
 
+\see types
+
+
 \section optim-hdu-jumping Avoid jumping from one HDU to another
+
 
 Fits files are made of consecutive HDUs, themeselves made of an ASCII header unit followed by a binary data unit.
 Reading or writing data to or from an HDU consists in:
@@ -59,7 +68,7 @@ Reading or writing data to or from an HDU consists in:
 
 In order to limit as much as possible the time spent in the first two operations,
 it is recommended to exploit each HDU as much as possible before moving to another one,
-and to group operations in the header or data unit.
+to follow the HDU ordering, and to group operations in the header and then in the data unit.
 For example, read all the records you need to read from an HDU at once,
 or write all the columns you need to write in a table at once.
 
@@ -82,7 +91,11 @@ ext.writeRaster(raster);
 
 For very large files, following the file ordering (HDU sequence and record sequence in the HDUs) can also make a difference.
 
+\see iterators
+
+
 \section optim-hdu-as-parameters Use HDU handlers as function parameters
+
 
 EL_FitsIO is providing HDU handlers as light objects designed to be passed by reference.
 The other options are to specify the HDU index or name instead of passing the handler itself.
@@ -93,13 +106,13 @@ until its value matches the name.
 
 \code
 // Good :)
-void doSomethingWithHdu(const RecordHdu &hdu);
+void doSomethingWithHdu(const RecordHdu& hdu);
 
 // Bad :(
 void doSomethingWithHdu(long index);
 
 // Very bad ;(
-void doSomethingWithHdu(const std::string &name);
+void doSomethingWithHdu(const std::string& name);
 \endcode
 
 \section optim-multiple-read-write Read and write multiple values at once
@@ -118,11 +131,17 @@ to avoid passing through the data unit several times.
 
 \code
 // Good :)
-auto columns = hdu.readColumns<int, float>({ "INT", "FLOAT" });
+const auto &ext = f.access<BintableHdu>(index);
+const auto columns = ext.readColumns(
+    Named<std::string>("A"),
+    Named<float>("B"),
+    Named<std::int16_t>("C")); // Reads the whole data unit once
 
-// Very bad ;(
-auto column1 = hdu.readColumn<int>("INT");
-auto column2 = hdu.readColumn<float>("FLOAT");
+// Bad :(
+const auto &ext = f.access<BintableHdu>(index);
+const auto columnA = ext.readColumn<std::string>("A"); // Reads the whole data unit
+const auto columnB = ext.readColumn<float>("B"); // Reads the whole data unit again!
+const auto columnC = ext.readColumn<std::int16_t>("C"); // Reads the whole data unit again and again...
 \endcode
 
 The strategy holds for record IOs too, yet with smaller improvements to be expected.
@@ -136,7 +155,9 @@ auto record1 = hdu.parseRecord<int>("INT");
 auto record2 = hdu.parseRecord<float>("FLOAT");
 \endcode
 
-\section optim-vector-column-trick On the CFitsIO vector column trick
+
+\section optim-vector-column-trick Don't use the CFitsIO vector column trick
+
 
 In order to lower the impact of reading table data colomn-wise,
 CFitsIO documentation recommends writing vector columns even for scalar concepts.

@@ -3,7 +3,7 @@ namespace FitsIO {
 
 /**
 
-\defgroup iterators 3. HDU selectors and iterators
+\defgroup iterators 4. HDU selectors and iterators
 \brief Tools to iterate over HDUs with selected categories and/or states.
 
 

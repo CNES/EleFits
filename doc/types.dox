@@ -3,7 +3,8 @@ namespace FitsIO {
 
 /**
 
-\page types On types
+\defgroup types 2. On types
+\brief Which types to use?
 
 
 \tableofcontents

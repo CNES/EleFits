@@ -4,12 +4,12 @@
 
 ### Breaking changes (minor)
 
-* Enum `HduType` refactored as class `HduCategory` (from a user point of view, only the name changes)
+* Enum `HduType` refactored as class `HduCategory` (from a user point of view, only the name changes, see new features)
 
 ### New features
 
 * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
-* HDUs are categorized more precisely than with only their type with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`)
+* HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
 * Introduction of classes `VariantValue` and `RecordCollection` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
 
 ## 3.1
