@@ -72,30 +72,22 @@ const T& MefFile::accessPrimary() {
   return access<T>(MefFile::primaryIndex);
 }
 
-/// @cond INTERNAL
-namespace Internal {
-template <typename THdu>
-HduFilter constrainFilter(const HduFilter& filter) {
-  return filter;
-}
-
-template <>
-HduFilter constrainFilter<ImageHdu>(const HduFilter& filter) {
-  return filter * HduCategory::Image;
-}
-
-template <>
-HduFilter constrainFilter<BintableHdu>(const HduFilter& filter) {
-  return filter * HduCategory::Bintable;
-}
-
-} // namespace Internal
-/// @endcond
-
 template <typename THdu>
 MefFile::Selector<THdu> MefFile::select(const HduFilter& filter) {
-  return { *this, Internal::constrainFilter<THdu>(filter) };
+  return { *this, filter };
 }
+
+/**
+ * @brief Add HduCategory::Image constraint to the filter.
+ */
+template <>
+MefFile::Selector<ImageHdu> MefFile::select<ImageHdu>(const HduFilter& filter);
+
+/**
+ * @brief Add HduCategory::Bintable constraint to the filter.
+ */
+template <>
+MefFile::Selector<BintableHdu> MefFile::select<BintableHdu>(const HduFilter& filter);
 
 template <typename T, long n>
 const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {

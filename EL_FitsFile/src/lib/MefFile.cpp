@@ -45,6 +45,16 @@ const RecordHdu& MefFile::operator[](long index) {
   return access<RecordHdu>(index);
 }
 
+template <>
+MefFile::Selector<ImageHdu> MefFile::select<ImageHdu>(const HduFilter& filter) {
+  return { *this, filter * HduCategory::Image };
+}
+
+template <>
+MefFile::Selector<BintableHdu> MefFile::select<BintableHdu>(const HduFilter& filter) {
+  return { *this, filter * HduCategory::Bintable };
+}
+
 const RecordHdu& MefFile::initRecordExt(const std::string& name) {
   Cfitsio::Hdu::createMetadataExtension(m_fptr, name);
   const auto size = m_hdus.size();

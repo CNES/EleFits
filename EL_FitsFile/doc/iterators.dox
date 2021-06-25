@@ -14,9 +14,10 @@ An iterator class and begin/end functions are defined to enable loops over all t
 Usage is straightforward:
 
 \code
-MefFile f(filename, MefFile::Permission::Read);
+MefFile f(filename, MefFile::Permission::Edit);
+// ...
 for (const auto& hdu : f) {
-    // Do something with hdu
+    processHdu(hdu); // Do something with each HDU
 }
 \endcode
 
@@ -24,7 +25,7 @@ for (const auto& hdu : f) {
 \section iterators-categories HDU categories and filters
 
 
-HDUs can be selected using a pair of dedicated classes: HduCategory and HduFilter.
+HDUs can be selected using one of two dedicated classes: HduCategory or HduFilter.
 
 An HduCategory object positions flags like: Primary or extension HDU, image or binary table HDU...
 HDU categories can be composed with binary operators `&` (and), `|` (or) and `~` (not).
@@ -45,7 +46,6 @@ const auto filter = HduCategory::IntImage + HduCategory::Primary - HduCategory::
 It is possible to check if an HDU is of given category or matches a given filter with method RecordHdu::matches, as follows:
 
 \code
-MefFile f(filename, MefFile::Permission::Read);
 for (const auto& hdu : f) {
   if (hdu.matches(HduCategory::Primary)) {
     processPrimary(hdu);
@@ -65,21 +65,43 @@ Similarly to the range loop presented at the beginning of this page, it is possi
 This is done by creating the adequate iterator using method MefFile::select():
 
 \code
-MefFile f(filename, MefFile::Permission::Read);
-for (const auto& hdu : f.select<ImageHdu>(HduCategory::ImageExt)) {
-  processImageExt(hdu);
+for (const auto& hdu : f.select<ImageHdu>(HduCategory::Image & HduCategory::Created)) {
+  processNewImage(hdu);
 }
 \endcode
 
 The template parameter specifies the class to be returned: RecordHdu, ImageHdu, or BintableHdu.
-It is used to constrain the filter:
+It is used to constrain the given filter:
 for ImageHdu (resp. BintableHdu), HduCategory::Image (resp. HduCategory::Bintable) is added to the filter.
-The above example can be rewritten more straightforwardly:
+Therefore, `f.select<ImageHdu>()` is strictly equivalent to `f.select<ImageHdu>(HduCategory::Image)`,
+and the above example can be rewritten more straightforwardly:
 
 \code
-MefFile f(filename, MefFile::Permission::Read);
-for (const auto& hdu : f.select<ImageHdu>(HduCategory::Ext)) { // Don't repeat Image
-  processImageExt(hdu);
+for (const auto& hdu : f.select<ImageHdu>(HduCategory::Created)) { // Don't repeat Image
+  processNewImage(hdu);
+}
+\endcode
+
+\warning
+Even when using filters, the whole MefFile is scanned.
+It is therefore very inefficient to write several loops when one would be enough.
+For example, instead of:
+\code
+for (const auto& hdu : f.select<ImageHdu>()) { // Scans all HDUs
+  processImage(hdu);
+}
+for (const auto& hdu : f.select<BintableHdu>()) { // Scans all HDUs again
+  processBintable(hdu);
+}
+\endcode
+write:
+\code
+for (const auto& hdu : f) {
+  if (hdu.matches(HduCategory::Image)) {
+    processImage(hdu.as<ImageHdu>());
+  } else {
+    processBintable(hdu.as<BintableHdu>());
+  }
 }
 \endcode
 

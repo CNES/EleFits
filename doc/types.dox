@@ -77,7 +77,7 @@ used to correctly recover the value at reading.
 Strings are represented as `std::string` and not `const char *` in general.
 Yet, a few sevices are overloaded for `const char *` for convenience.
 
-\subsection types-data-any Any
+\subsection types-data-variant VariantValue
 
 In addition to CFitsIO data types, EL_FitsIO provides some of the services for `VariantValue` (e.g., to read records).
 In this case, the underlying type is wrapped in a `VariantValue` object, which can be cast later.
@@ -85,7 +85,7 @@ Development efforts have been put to allow the user to get whatever compatible t
 
 For example, assume some `unsigned long` record value is read as a `VariantValue`.
 The library will allow the user casting to `long long` because this is a mathematically valid conversion,
-where `boost::any_cast<long long>` would throw an exception.
+where `boost::any_cast<long long>` and the likes would throw an exception.
 
 */
 

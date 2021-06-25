@@ -149,7 +149,7 @@ public:
    * @return An iterable object, i.e. one for which begin and end functions are provided.
    */
   template <typename THdu = RecordHdu>
-  Selector<THdu> select(const HduFilter& filter);
+  Selector<THdu> select(const HduFilter& filter = HduCategory::Any);
 
   /**
    * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.
