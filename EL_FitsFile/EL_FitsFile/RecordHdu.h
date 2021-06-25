@@ -28,6 +28,50 @@
 namespace Euclid {
 namespace FitsIO {
 
+class RecordHdu;
+
+/**
+ * @brief Exception thrown when a keyword already exists.
+ */
+struct KeywordExistsError : public FitsIOError {
+
+  /**
+   * @brief Constructor.
+   */
+  KeywordExistsError(const std::string& keyword);
+
+  /**
+   * @brief Throw if an HDU already contains a given keyword.
+   */
+  static void mayThrow(const std::string& keyword, const RecordHdu& hdu);
+
+  /**
+   * @brief Throw if an HDU already contains any of given keywords.
+   */
+  static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
+};
+
+/**
+ * @brief Exception thrown when a keyword is not found.
+ */
+struct KeywordNotFoundError : public FitsIOError {
+
+  /**
+   * @brief Constructor.
+   */
+  KeywordNotFoundError(const std::string& keyword);
+
+  /**
+   * @brief Throw if an HDU misses a given keyword.
+   */
+  static void mayThrow(const std::string& keyword, const RecordHdu& hdu);
+
+  /**
+   * @brief Throw if an HDU misses any of given keywords.
+   */
+  static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
+};
+
 /**
  * @ingroup handlers
  * @brief Header reader-writer.
@@ -63,6 +107,17 @@ namespace FitsIO {
 class RecordHdu {
 
 public:
+  /**
+ * @brief Records writing modes.
+ */
+  enum WriteMode
+  {
+    CreateUnique, ///< Create a record, throw if keyword already exists
+    CreateNew, ///< Create a record, even if keyword already exists
+    Update, ///< Modify a record, throw if keyword doesn't exist
+    CreateOrUpdate ///< Modify a record if keyword already exists, create a record otherwise
+  };
+
   /// @cond INTERNAL
 
   /**
@@ -209,6 +264,7 @@ public:
 
   /**
    * @brief Parse several records.
+   * @deprecated
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseRecords(const std::vector<std::string>& keywords) const;
@@ -259,6 +315,7 @@ public:
    * std::cout << "Hello, " << body.name << "!" << std::endl;
    * std::cout << "Your BMI is: " << body.bmi() << std::endl;
    * \endcode
+   * @deprecated
    */
   template <class TReturn, typename... Ts>
   TReturn parseRecordsAs(const std::vector<std::string>& keywords) const;
@@ -344,7 +401,7 @@ public:
    * @brief Write a record.
    */
   template <typename T>
-  void writeRecord(const Record<T>& record) const;
+  void writeRecord(const Record<T>& record, WriteMode policy = WriteMode::CreateUnique) const;
 
   /**
    * @brief Write a record.
@@ -352,21 +409,28 @@ public:
    * @param v The value.
    * @param u The unit.
    * @param c The comment.
+   * @deprecated
    */
   template <typename T>
-  void writeRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
+  void writeRecord(
+      const std::string& k,
+      T v,
+      const std::string& u = "",
+      const std::string& c = "",
+      WriteMode policy = WriteMode::CreateUnique) const;
+
+  /**
+   * @brief Write several records.
+   * @deprecated
+   */
+  template <typename... Ts>
+  void writeRecords(const Record<Ts>&... records) const; // FIXME cannot specify WriteMode
 
   /**
    * @brief Write several records.
    */
   template <typename... Ts>
-  void writeRecords(const Record<Ts>&... records) const;
-
-  /**
-   * @brief Write several records.
-   */
-  template <typename... Ts>
-  void writeRecords(const std::tuple<Record<Ts>...>& records) const;
+  void writeRecords(const std::tuple<Record<Ts>...>& records, WriteMode policy = WriteMode::CreateUnique) const;
 
   /**
    * @brief Write several homogeneous records.
@@ -374,13 +438,16 @@ public:
    * Similarly to the reading counterpart parseRecordVector, `T` can also be `VariantValue`.
    */
   template <typename T>
-  void writeRecords(const std::vector<Record<T>>& records) const;
+  void writeRecords(const std::vector<Record<T>>& records, WriteMode policy = WriteMode::CreateUnique) const;
 
   /**
    * @brief Write a subset of a RecordVector.
    */
   template <typename T>
-  void writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
+  void writeRecords(
+      const RecordVector<T>& records,
+      const std::vector<std::string>& keywords,
+      WriteMode policy = WriteMode::CreateUnique) const;
 
   /**
    * @brief Write a COMMENT record.
@@ -394,6 +461,7 @@ public:
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
+   * @deprecated
    */
   template <typename T>
   void updateRecord(const Record<T>& record) const;
@@ -404,30 +472,35 @@ public:
    * @param v The value.
    * @param u The unit.
    * @param c The comment.
+   * @deprecated
    */
   template <typename T>
   void updateRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
+   * @deprecated
    */
   template <typename... Ts>
   void updateRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
+   * @deprecated
    */
   template <typename... Ts>
   void updateRecords(const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Update several homogeneous records if they exist; write new records otherwise.
+   * @deprecated
    */
   template <typename T>
   void updateRecords(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Update a subset of a RecordVector.
+   * @deprecated
    */
   template <typename T>
   void updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;

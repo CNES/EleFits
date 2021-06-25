@@ -83,14 +83,34 @@ RecordVector<T> RecordHdu::parseAllRecords() const {
 }
 
 template <typename T>
-void RecordHdu::writeRecord(const Record<T>& record) const {
+void RecordHdu::writeRecord(const Record<T>& record, WriteMode mode) const {
   editThisHdu();
-  Cfitsio::Header::writeRecord(m_fptr, record);
+  switch (mode) {
+    case WriteMode::CreateUnique:
+      KeywordExistsError::mayThrow(record.keyword, *this);
+      Cfitsio::Header::writeRecord(m_fptr, record);
+      break;
+    case WriteMode::CreateNew:
+      Cfitsio::Header::writeRecord(m_fptr, record);
+      break;
+    case WriteMode::Update:
+      KeywordNotFoundError::mayThrow(record.keyword, *this);
+      Cfitsio::Header::updateRecord(m_fptr, record);
+      break;
+    case WriteMode::CreateOrUpdate:
+      Cfitsio::Header::updateRecord(m_fptr, record);
+      break;
+  }
 }
 
 template <typename T>
-void RecordHdu::writeRecord(const std::string& k, T v, const std::string& u, const std::string& c) const {
-  writeRecord(Record<T>(k, v, u, c));
+void RecordHdu::writeRecord(
+    const std::string& k,
+    T v,
+    const std::string& u,
+    const std::string& c,
+    RecordHdu::WriteMode mode) const {
+  writeRecord(Record<T>(k, v, u, c), mode);
 }
 
 template <typename... Ts>
@@ -100,22 +120,60 @@ void RecordHdu::writeRecords(const Record<Ts>&... records) const {
 }
 
 template <typename... Ts>
-void RecordHdu::writeRecords(const std::tuple<Record<Ts>...>& records) const {
+void RecordHdu::writeRecords(const std::tuple<Record<Ts>...>& records, RecordHdu::WriteMode mode) const {
   editThisHdu();
-  Cfitsio::Header::writeRecords(m_fptr, records);
+  std::vector<std::string> keywords(std::tuple_size<std::tuple<Record<Ts>...>>::value);
+  // FIXME fill keywords
+  switch (mode) {
+    case WriteMode::CreateUnique:
+      KeywordExistsError::mayThrow(keywords, *this);
+      Cfitsio::Header::writeRecords(m_fptr, records);
+      break;
+    case WriteMode::CreateNew:
+      Cfitsio::Header::writeRecords(m_fptr, records);
+      break;
+    case WriteMode::Update:
+      KeywordNotFoundError::mayThrow(keywords, *this);
+      Cfitsio::Header::updateRecords(m_fptr, records);
+      break;
+    case WriteMode::CreateOrUpdate:
+      Cfitsio::Header::updateRecords(m_fptr, records);
+      break;
+  }
 }
 
 template <typename T>
-void RecordHdu::writeRecords(const std::vector<Record<T>>& records) const {
+void RecordHdu::writeRecords(const std::vector<Record<T>>& records, RecordHdu::WriteMode mode) const {
   editThisHdu();
-  Cfitsio::Header::writeRecords(m_fptr, records);
+  std::vector<std::string> keywords(records.size());
+  std::transform(records.begin(), records.end(), keywords.begin(), [&](const Record<T>& r) {
+    return r.keyword;
+  });
+  switch (mode) {
+    case WriteMode::CreateUnique:
+      KeywordExistsError::mayThrow(keywords, *this);
+      Cfitsio::Header::writeRecords(m_fptr, records);
+      break;
+    case WriteMode::CreateNew:
+      Cfitsio::Header::writeRecords(m_fptr, records);
+      break;
+    case WriteMode::Update:
+      KeywordNotFoundError::mayThrow(keywords, *this);
+      Cfitsio::Header::updateRecords(m_fptr, records);
+      break;
+    case WriteMode::CreateOrUpdate:
+      Cfitsio::Header::updateRecords(m_fptr, records);
+      break;
+  }
 }
 
 template <typename T>
-void RecordHdu::writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  editThisHdu();
+void RecordHdu::writeRecords(
+    const RecordVector<T>& records,
+    const std::vector<std::string>& keywords,
+    RecordHdu::WriteMode mode) const {
   for (const auto& k : keywords) {
-    Cfitsio::Header::writeRecord(m_fptr, records[k]);
+    writeRecord(records[k], mode);
   }
 }
 
@@ -167,14 +225,12 @@ extern template RecordVector<VariantValue> RecordHdu::parseRecordVector(const st
 
   #ifndef DECLARE_WRITE_RECORD
     #define DECLARE_WRITE_RECORD(type, unused) \
-      extern template void RecordHdu::writeRecord(const Record<type>&) const; \
-      extern template void RecordHdu::updateRecord(const Record<type>&) const;
+      extern template void RecordHdu::writeRecord(const Record<type>&, RecordHdu::WriteMode) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
     #undef DECLARE_WRITE_RECORD
   #endif
 
-extern template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
-extern template void RecordHdu::updateRecords(const std::vector<Record<VariantValue>>&) const;
+extern template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&, RecordHdu::WriteMode mode) const;
 
 } // namespace FitsIO
 } // namespace Euclid

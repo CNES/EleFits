@@ -11,6 +11,11 @@
 * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
 * HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
 * Introduction of classes `VariantValue` and `RecordCollection` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
+* `RecordHdu` methods to write records throw by default if keyword already exists (optional argument allows changing the behavior)
+
+### Deprecated
+
+* Redundant methods of `RecordHdu`
 
 ## 3.1
 

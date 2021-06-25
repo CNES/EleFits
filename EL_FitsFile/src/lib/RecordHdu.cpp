@@ -25,6 +25,42 @@
 namespace Euclid {
 namespace FitsIO {
 
+KeywordExistsError::KeywordExistsError(const std::string& keyword) :
+    FitsIOError(std::string("Keyword already exists: ") + keyword) {}
+
+void KeywordExistsError::mayThrow(const std::string& keyword, const RecordHdu& hdu) {
+  if (hdu.hasKeyword(keyword)) {
+    throw KeywordExistsError(keyword);
+  }
+}
+
+void KeywordExistsError::mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu) {
+  const auto found = hdu.readKeywords();
+  for (const auto& k : keywords) {
+    if (std::find(found.begin(), found.end(), k) != found.end()) {
+      throw KeywordExistsError(k);
+    }
+  }
+}
+
+KeywordNotFoundError::KeywordNotFoundError(const std::string& keyword) :
+    FitsIOError(std::string("Keyword not found: ") + keyword) {}
+
+void KeywordNotFoundError::mayThrow(const std::string& keyword, const RecordHdu& hdu) {
+  if (not hdu.hasKeyword(keyword)) {
+    throw KeywordNotFoundError(keyword);
+  }
+}
+
+void KeywordNotFoundError::mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu) {
+  const auto found = hdu.readKeywords();
+  for (const auto& k : keywords) {
+    if (std::find(found.begin(), found.end(), k) == found.end()) {
+      throw KeywordNotFoundError(k);
+    }
+  }
+}
+
 RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
     m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_status(status) {}
 
@@ -99,6 +135,7 @@ void RecordHdu::writeHistory(const std::string& history) const {
 
 void RecordHdu::deleteRecord(const std::string& keyword) const {
   editThisHdu();
+  KeywordNotFoundError::mayThrow(keyword, *this);
   Cfitsio::Header::deleteRecord(m_fptr, keyword);
 }
 
@@ -124,14 +161,12 @@ template RecordVector<VariantValue> RecordHdu::parseRecordVector(const std::vect
 
 #ifndef COMPILE_WRITE_RECORD
   #define COMPILE_WRITE_RECORD(type, unused) \
-    template void RecordHdu::writeRecord(const Record<type>&) const; \
-    template void RecordHdu::updateRecord(const Record<type>&) const;
+    template void RecordHdu::writeRecord(const Record<type>&, RecordHdu::WriteMode) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
   #undef COMPILE_WRITE_RECORD
 #endif
 
-template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
-template void RecordHdu::updateRecords(const std::vector<Record<VariantValue>>&) const;
+template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&, RecordHdu::WriteMode) const;
 
 } // namespace FitsIO
 } // namespace Euclid
