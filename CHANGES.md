@@ -1,6 +1,6 @@
 # Change log
 
-## 3.1
+## 3.1.0
 
 ### Bug fixes
 
