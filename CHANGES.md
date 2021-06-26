@@ -2,10 +2,6 @@
 
 ## 3.2
 
-### Breaking changes (minor)
-
-* Enum `HduType` refactored as class `HduCategory` (from a user point of view, only the name changes, see new features)
-
 ### New features
 
 * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
@@ -15,7 +11,8 @@
 
 ### Deprecated
 
-* Redundant methods of `RecordHdu`
+* Update methods of `RecordHdu` are deprecated, and should be replaced with write analogous methods
+* Enum `HduType` refactored as class `HduCategory`; alias `HduType` created for backqard compatiility is deprecated
 
 ## 3.1
 

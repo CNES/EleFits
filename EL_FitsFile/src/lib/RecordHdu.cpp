@@ -62,10 +62,12 @@ void KeywordNotFoundError::mayThrow(const std::vector<std::string>& keywords, co
 }
 
 RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
-    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_status(status) {}
+    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_status(status),
+    m_mode(RecordHdu::WriteMode::CreateUnique) {}
 
 RecordHdu::RecordHdu() :
-    m_fptr(m_dummyFptr), m_cfitsioIndex(0), m_type(HduCategory::Image), m_status(HduCategory::Untouched) {}
+    m_fptr(m_dummyFptr), m_cfitsioIndex(0), m_type(HduCategory::Image), m_status(HduCategory::Untouched),
+    m_mode(RecordHdu::WriteMode::CreateUnique) {}
 
 long RecordHdu::index() const {
   return m_cfitsioIndex - 1;
@@ -161,12 +163,13 @@ template RecordVector<VariantValue> RecordHdu::parseRecordVector(const std::vect
 
 #ifndef COMPILE_WRITE_RECORD
   #define COMPILE_WRITE_RECORD(type, unused) \
-    template void RecordHdu::writeRecord(const Record<type>&, RecordHdu::WriteMode) const;
+    template void RecordHdu::writeRecord<RecordHdu::WriteMode::CreateUnique>(const Record<type>&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
   #undef COMPILE_WRITE_RECORD
 #endif
 
-template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&, RecordHdu::WriteMode) const;
+template void
+RecordHdu::writeRecords<RecordHdu::WriteMode::CreateUnique>(const std::vector<Record<VariantValue>>&) const;
 
 } // namespace FitsIO
 } // namespace Euclid

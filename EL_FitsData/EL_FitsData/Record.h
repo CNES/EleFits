@@ -100,7 +100,7 @@ struct Record {
   using Value = T;
 
   /**
-   * @brief Assign a record.
+   * @brief Constructor.
    * @param k The keyword.
    * @param v The value.
    * @param u The unit.
@@ -109,22 +109,28 @@ struct Record {
   Record(const std::string& k = "", T v = T(), const std::string& u = "", const std::string& c = "");
 
   /**
-   * @brief Create a Record from a Record of another type.
+   * @brief Create a record from a Record of another type.
    * @details
    * This constructor can be used to homogenize types, for example to create a
    * `vector<Record<any>>` from various `Record<T>`s with different `T`s.
    * @warning
-   * Source type TOther must be castable to destination type T.
+   * Source type TFrom must be castable to destination type T.
    * @see cast
    */
-  template <typename TOther>
-  explicit Record(const Record<TOther>& other);
+  template <typename TFrom>
+  explicit Record(const Record<TFrom>& other);
+
+  /**
+   * @brief Assign new fields to the record.
+   */
+  template <typename TFrom>
+  Record<T>& assign(const std::string& k = "", TFrom v = TFrom(), const std::string& u = "", const std::string& c = "");
 
   /**
    * @brief Copy a Record of another type.
    */
-  template <typename TOther>
-  Record<T>& assign(const Record<TOther>& other);
+  template <typename U>
+  Record<T>& assign(const Record<U>& other);
 
   /**
    * @brief Helper function to cast Record value types.
@@ -138,8 +144,8 @@ struct Record {
    * - complex number -> `any`
    * - `string` -> `any`
    */
-  template <typename TOther>
-  static T cast(TOther value);
+  template <typename TFrom>
+  static T cast(TFrom value);
 
   /**
    * @brief Slice the record as its value.

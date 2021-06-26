@@ -17,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsData/RecordVector.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE(RecordVector_test)
 BOOST_AUTO_TEST_CASE(records_are_found_by_their_keyword_test) {
   RecordVector<int> records(3);
   for (std::size_t i = 0; i < records.vector.size(); ++i) {
-    records.vector[i] = { std::to_string(i), int(i) };
+    records.vector[i].assign(std::to_string(i), int(i));
   }
   BOOST_CHECK_EQUAL(records["1"].value, 1);
   BOOST_CHECK_EQUAL(records["2"].value, 2);
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(records_are_found_by_their_keyword_test) {
 
 BOOST_AUTO_TEST_CASE(records_are_cast_while_found_by_their_keyword_test) {
   RecordVector<double> records(1);
-  records.vector[0] = { "PI", 3.14 };
+  records.vector[0].assign("PI", 3.14);
   auto pi_record = records.as<int>("PI");
   BOOST_CHECK_EQUAL(pi_record.value, 3);
   int pi = records.as<int>("PI");

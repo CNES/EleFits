@@ -79,18 +79,16 @@ struct KeywordNotFoundError : public FitsIOError {
  * This class provides services common to all HDUs for reading and writing records.
  *
  * When reading or writing several records, it is recommended to use the plural form of the methods
- * (e.g. one call to writeRecords() instead of several calls to writeRecord()),
- * which are optimized.
- * Methods to update records are analogous to methods to write records;
- * The difference is that, when a record with given keyword already exists,
- * update methods will change its value while write methods will create a new record with same keyword.
- * In general, refer to the documentation of write methods for more details.
- *
+ * (e.g. one call to writeRecords() instead of several calls to writeRecord()), which are optimized.
+ * 
+ * Different write modes (see WriteMode) are supported, which are controlled by setMode().
+ * 
  * There are two approaches to read and write several records at once:
- * - As heterogeneous collections, through variadic methods or tuples;
+ * - As heterogeneous collections, through a variadic parameter pack, tuple, or RecordCollection;
  * - As homogeneous collections, using vectors of Records or RecordVector.
  *
- * Heterogeneous collections can also be wrapped in vectors using VariantValue.
+ * In a RecordCollection, values are read and written as VariantValue
+ * 
  * This is the mandatory option when types are not all known at compile time,
  * and can be a more comfortable option in other cases.
  * Indeed, working with a tuple might become a nightmare with many values,
@@ -400,8 +398,8 @@ public:
   /**
    * @brief Write a record.
    */
-  template <typename T>
-  void writeRecord(const Record<T>& record, WriteMode policy = WriteMode::CreateUnique) const;
+  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  void writeRecord(const Record<T>& record) const;
 
   /**
    * @brief Write a record.
@@ -411,43 +409,35 @@ public:
    * @param c The comment.
    * @deprecated
    */
-  template <typename T>
-  void writeRecord(
-      const std::string& k,
-      T v,
-      const std::string& u = "",
-      const std::string& c = "",
-      WriteMode policy = WriteMode::CreateUnique) const;
+  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  void writeRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Write several records.
    * @deprecated
    */
-  template <typename... Ts>
-  void writeRecords(const Record<Ts>&... records) const; // FIXME cannot specify WriteMode
+  template <WriteMode Mode = WriteMode::CreateUnique, typename... Ts>
+  void writeRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Write several records.
    */
-  template <typename... Ts>
-  void writeRecords(const std::tuple<Record<Ts>...>& records, WriteMode policy = WriteMode::CreateUnique) const;
+  template <WriteMode Mode = WriteMode::CreateUnique, typename... Ts>
+  void writeRecords(const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Write several homogeneous records.
    * @details
    * Similarly to the reading counterpart parseRecordVector, `T` can also be `VariantValue`.
    */
-  template <typename T>
-  void writeRecords(const std::vector<Record<T>>& records, WriteMode policy = WriteMode::CreateUnique) const;
+  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  void writeRecords(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Write a subset of a RecordVector.
    */
-  template <typename T>
-  void writeRecords(
-      const RecordVector<T>& records,
-      const std::vector<std::string>& keywords,
-      WriteMode policy = WriteMode::CreateUnique) const;
+  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  void writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Write a COMMENT record.
@@ -550,6 +540,11 @@ protected:
    * @brief The HDU status.
    */
   mutable HduCategory m_status;
+
+  /**
+   * @brief The default write mode.
+   */
+  WriteMode m_mode;
 
   /**
    * @brief Dummy file handler dedicated to dummy constructor.

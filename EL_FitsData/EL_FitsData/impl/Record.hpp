@@ -200,19 +200,25 @@ Record<T>::Record(const std::string& k, T v, const std::string& u, const std::st
     keyword(k), value(v), unit(u), comment(c) {}
 
 template <typename T>
-template <typename TOther>
-Record<T>::Record(const Record<TOther>& other) :
-    keyword(other.keyword), value(Internal::CasterImpl<TOther, T>::cast(other.value)), unit(other.unit),
+template <typename TFrom>
+Record<T>::Record(const Record<TFrom>& other) :
+    keyword(other.keyword), value(Internal::CasterImpl<TFrom, T>::cast(other.value)), unit(other.unit),
     comment(other.comment) {}
 
 template <typename T>
-template <typename TOther>
-Record<T>& Record<T>::assign(const Record<TOther>& other) {
-  keyword = other.keyword;
-  value = Internal::CasterImpl<TOther, T>::cast(other.value);
-  unit = other.unit;
-  comment = other.comment;
+template <typename TFrom>
+Record<T>& Record<T>::assign(const std::string& k, TFrom v, const std::string& u, const std::string& c) {
+  keyword = k;
+  value = Internal::CasterImpl<TFrom, T>::cast(v);
+  unit = u;
+  comment = c;
   return *this;
+}
+
+template <typename T>
+template <typename TFrom>
+Record<T>& Record<T>::assign(const Record<TFrom>& other) {
+  return assign(other.keyword, other.value, other.unit, other.comment);
 }
 
 template <typename T>
@@ -221,9 +227,9 @@ Record<T>::operator T() const {
 }
 
 template <typename T>
-template <typename TOther>
-T Record<T>::cast(TOther value) {
-  return Internal::CasterImpl<TOther, T>::cast(value);
+template <typename TFrom>
+T Record<T>::cast(TFrom value) {
+  return Internal::CasterImpl<TFrom, T>::cast(value);
 }
 
 template <typename T>

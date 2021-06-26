@@ -87,9 +87,9 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
       "This is probably one of the longest strings "
       "that I have ever written in a serious code.";
   BOOST_CHECK_GT(longStr.length(), FLEN_VALUE);
-  h.writeRecord<std::string>("SHORT", shortStr);
+  h.writeRecord("SHORT", shortStr);
   BOOST_CHECK_THROW(h.parseRecord<std::string>("LONGSTRN"), std::exception); // TODO replace with not h.hasKeyword()
-  h.writeRecord<std::string>("LONG", longStr);
+  h.writeRecord("LONG", longStr);
   const auto output = h.parseRecord<std::string>("LONG");
   h.parseRecord<std::string>("LONGSTRN"); // TODO replace with h.hasKeyword()
   BOOST_CHECK_EQUAL(output.value, longStr);

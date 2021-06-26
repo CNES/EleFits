@@ -34,11 +34,11 @@ using namespace FitsIO;
 void writeMeta(MefFile& f, int objIndex) {
   std::string extname = std::to_string(objIndex) + "_META";
   const auto& ext = f.initImageExt<unsigned char, 1>(extname, { 0 });
-  ext.writeRecords<int, int, float, float>(
-      { "DITH_NUM", 0 }, // TODO
-      { "SOURC_ID", objIndex },
-      { "RA_OBJ", float(2 * objIndex) },
-      { "DEC_OBJ", float(3 * objIndex) });
+  ext.writeRecords(
+      Record<int>("DITH_NUM", 0), // TODO
+      Record<int>("SOURC_ID", objIndex),
+      Record<float>("RA_OBJ", float(2 * objIndex)),
+      Record<float>("DEC_OBJ", float(3 * objIndex)));
 }
 
 void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
@@ -55,18 +55,18 @@ void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
   const auto& ext = f.assignBintableExt(extname, wminCol, signalCol);
   ext.appendColumn(qualityCol);
   ext.appendColumn(varCol);
-  ext.writeRecords<float, float, int, float>(
-      { "WMIN", 0.F },
-      { "BINWIDTH", 1.F },
-      { "BINCOUNT", bins },
-      { "EXPTIME", 3600.F });
+  ext.writeRecords(
+      Record<float>("WMIN", 0.F),
+      Record<float>("BINWIDTH", 1.F),
+      Record<int>("BINCOUNT", bins),
+      Record<float>("EXPTIME", 3600.F));
 }
 
 void writeCombinedCov(MefFile& f, int objIndex, int bins) {
   Test::RandomRaster<float, 2> cov_raster({ bins, bins });
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_COV";
   const auto& ext = f.assignImageExt(extname, cov_raster);
-  ext.writeRecords<int, std::string>({ "COV_SIDE", bins }, { "CODEC", "IDENTITY" });
+  ext.writeRecords(Record<int>("COV_SIDE", bins), Record<std::string>("CODEC", "IDENTITY"));
 }
 
 void writeCombined(MefFile& f, int objIndex, int bins) {
