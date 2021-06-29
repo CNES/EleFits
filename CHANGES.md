@@ -4,14 +4,15 @@
 
 ### New features
 
+* New handler `Header` is responsible for record reading and writing; created with `RecordHdu::header()`
+* `RecordMode` controls the behavior of record writing method
 * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
 * HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
-* Introduction of classes `VariantValue` and `RecordCollection` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
-* `RecordHdu` methods to write records throw by default if keyword already exists (optional argument allows changing the behavior)
+* Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
 
 ### Deprecated
 
-* Update methods of `RecordHdu` are deprecated, and should be replaced with write analogous methods
+* Methods of `RecordHdu` to read and write records are deprecated, and should be replaced with analogous methods of `Header`
 * Enum `HduType` refactored as class `HduCategory`; alias `HduType` created for backqard compatiility is deprecated
 
 ## 3.1

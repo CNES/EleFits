@@ -24,75 +24,19 @@
 #include "EL_FitsData/DataUtils.h"
 #include "EL_FitsData/HduCategory.h"
 #include "EL_FitsData/Record.h"
+#include "EL_FitsFile/Header.h"
 
 namespace Euclid {
 namespace FitsIO {
 
-class RecordHdu;
-
-/**
- * @brief Exception thrown when a keyword already exists.
- */
-struct KeywordExistsError : public FitsIOError {
-
-  /**
-   * @brief Constructor.
-   */
-  KeywordExistsError(const std::string& keyword);
-
-  /**
-   * @brief Throw if an HDU already contains a given keyword.
-   */
-  static void mayThrow(const std::string& keyword, const RecordHdu& hdu);
-
-  /**
-   * @brief Throw if an HDU already contains any of given keywords.
-   */
-  static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
-};
-
-/**
- * @brief Exception thrown when a keyword is not found.
- */
-struct KeywordNotFoundError : public FitsIOError {
-
-  /**
-   * @brief Constructor.
-   */
-  KeywordNotFoundError(const std::string& keyword);
-
-  /**
-   * @brief Throw if an HDU misses a given keyword.
-   */
-  static void mayThrow(const std::string& keyword, const RecordHdu& hdu);
-
-  /**
-   * @brief Throw if an HDU misses any of given keywords.
-   */
-  static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
-};
+/* Forward declaration */
+class Header;
 
 /**
  * @ingroup handlers
  * @brief Header reader-writer.
  * @details
  * This class provides services common to all HDUs for reading and writing records.
- *
- * When reading or writing several records, it is recommended to use the plural form of the methods
- * (e.g. one call to writeRecords() instead of several calls to writeRecord()), which are optimized.
- * 
- * Different write modes (see WriteMode) are supported, which are controlled by setMode().
- * 
- * There are two approaches to read and write several records at once:
- * - As heterogeneous collections, through a variadic parameter pack, tuple, or RecordCollection;
- * - As homogeneous collections, using vectors of Records or RecordVector.
- *
- * In a RecordCollection, values are read and written as VariantValue
- * 
- * This is the mandatory option when types are not all known at compile time,
- * and can be a more comfortable option in other cases.
- * Indeed, working with a tuple might become a nightmare with many values,
- * and std::vector<VariantValue> can provide valuable help.
  *
  * @note
  * RecordHdus are written as Image HDUs with NAXIS=0.
@@ -104,18 +48,9 @@ struct KeywordNotFoundError : public FitsIOError {
  */
 class RecordHdu {
 
-public:
-  /**
- * @brief Records writing modes.
- */
-  enum WriteMode
-  {
-    CreateUnique, ///< Create a record, throw if keyword already exists
-    CreateNew, ///< Create a record, even if keyword already exists
-    Update, ///< Modify a record, throw if keyword doesn't exist
-    CreateOrUpdate ///< Modify a record if keyword already exists, create a record otherwise
-  };
+  friend class Header;
 
+public:
   /// @cond INTERNAL
 
   /**
@@ -226,6 +161,12 @@ public:
   void updateName(const std::string& name) const;
 
   /**
+   * @brief Access the header unit to read and write records.
+   * @see Header
+   */
+  Header header() const;
+
+  /**
    * @brief Read the header as a string.
    * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank).
    * @details
@@ -234,34 +175,40 @@ public:
    * std::string header = readHeader(false);
    * WcsLib::wcspih(&header[0], header.size()/80, WCSHDR_all, 0, &nreject, &nwcs, &wcs);
    * \endcode
+   * @deprecated
    */
   std::string readHeader(bool incNonValued = true) const;
 
   /**
    * @brief List keywords.
    * @param categories The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
+   * @deprecated
    */
   std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief List keywords and their values.
    * @copydetails readKeywords
+   * @deprecated
    */
   std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief Check whether the HDU contains a given keyword.
+   * @deprecated
    */
   bool hasKeyword(const std::string& keyword) const;
 
   /**
    * @brief Parse a record.
+   * @deprecated
    */
   template <typename T>
   Record<T> parseRecord(const std::string& keyword) const;
 
   /**
    * @brief Parse several records.
+   * @deprecated
    * @deprecated
    */
   template <typename... Ts>
@@ -278,6 +225,7 @@ public:
    * \code
    * auto records = parseRecords<int, float>("INT", "FLOAT");
    * \endcode
+   * @deprecated
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseRecords(const Named<Ts>&... keywords) const;
@@ -335,6 +283,7 @@ public:
    *     Named<float>("HEIGHT"),
    *     Names<float>("MASS"));
    * \endcode
+   * @deprecated
    */
   template <class TReturn, typename... Ts>
   TReturn parseRecordsAs(const Named<Ts>&... keywords) const;
@@ -352,6 +301,7 @@ public:
    * \endcode
    * if KEY is found, the record is parsed;
    * otherwise, the returned record has keyword "KEY", value 0, empty unit, and empty comment.
+   * @deprecated
    */
   template <typename T>
   Record<T> parseRecordOr(const Record<T>& fallback) const;
@@ -362,6 +312,7 @@ public:
    * For each keyword, if it exists, the record is parsed;
    * otherwise the fallback record is returned.
    * @see parseRecordOr
+   * @deprecated
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseRecordsOr(const Record<Ts>&... fallbacks) const;
@@ -369,6 +320,7 @@ public:
   /**
    * @brief Parse several homogeneous records.
    * @tparam T The common value type.
+   * @deprecated
    */
   template <typename T>
   RecordVector<T> parseRecordVector(const std::vector<std::string>& keywords) const;
@@ -384,13 +336,15 @@ public:
    * auto records = f.parseRecordCollection({ "INT", "FLOAT", "DOUBLE", "BOOL" });
    * int value = records.as<int>("INT");
    * \endcode
+   * @deprecated
    */
-  RecordCollection parseRecordCollection(const std::vector<std::string>& keywords) const;
+  RecordVector<> parseRecordCollection(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse all the records as a RecordVector.
    * @details
    * This method is similar to parseRecordVector.
+   * @deprecated
    */
   template <typename T>
   RecordVector<T> parseAllRecords() const;
@@ -398,7 +352,7 @@ public:
   /**
    * @brief Write a record.
    */
-  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  template <typename T>
   void writeRecord(const Record<T>& record) const;
 
   /**
@@ -409,43 +363,48 @@ public:
    * @param c The comment.
    * @deprecated
    */
-  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  template <typename T>
   void writeRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Write several records.
    * @deprecated
    */
-  template <WriteMode Mode = WriteMode::CreateUnique, typename... Ts>
+  template <typename... Ts>
   void writeRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Write several records.
+   * @deprecated
    */
-  template <WriteMode Mode = WriteMode::CreateUnique, typename... Ts>
+  template <typename... Ts>
   void writeRecords(const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Write several homogeneous records.
    * @details
    * Similarly to the reading counterpart parseRecordVector, `T` can also be `VariantValue`.
+   * @deprecated
    */
-  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  template <typename T>
   void writeRecords(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Write a subset of a RecordVector.
+   * @deprecated
    */
-  template <WriteMode Mode = WriteMode::CreateUnique, typename T>
+  template <typename T>
   void writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Write a COMMENT record.
+   * @deprecated
    */
   void writeComment(const std::string& comment) const;
 
   /**
    * @brief Write a HISTORY record.
+   * @deprecated
    */
   void writeHistory(const std::string& history) const;
 
@@ -542,11 +501,6 @@ protected:
   mutable HduCategory m_status;
 
   /**
-   * @brief The default write mode.
-   */
-  WriteMode m_mode;
-
-  /**
    * @brief Dummy file handler dedicated to dummy constructor.
    */
   fitsfile* m_dummyFptr = nullptr;
@@ -556,9 +510,10 @@ protected:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_HDU_IMPL
+#define _EL_FITSFILE_RECORDHDU_IMPL
+#include "EL_FitsFile/Header.h"
 #include "EL_FitsFile/impl/RecordHdu.hpp"
-#undef _EL_FITSFILE_HDU_IMPL
+#undef _EL_FITSFILE_RECORDHDU_IMPL
 /// @endcond
 
 #endif

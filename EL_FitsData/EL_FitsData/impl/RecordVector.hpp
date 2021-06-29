@@ -19,22 +19,23 @@
 
 #if defined(_EL_FITSDATA_RECORDVECTOR_IMPL) || defined(CHECK_QUALITY)
 
-#include <algorithm> // find_if
+  #include "EL_FitsData/FitsIOError.h"
+  #include "EL_FitsData/RecordVector.h"
 
-#include "EL_FitsData/FitsIOError.h"
-#include "EL_FitsData/RecordVector.h"
+  #include <algorithm> // find_if
 
 namespace Euclid {
 namespace FitsIO {
 
 template <typename T>
-RecordVector<T>::RecordVector(std::size_t size) : vector(size) {
-}
+RecordVector<T>::RecordVector(std::size_t size) : vector(size) {}
+
+template <typename T>
+RecordVector<T>::RecordVector(std::vector<T> records) : vector(std::move(records)) {}
 
 template <typename T>
 template <typename... Ts>
-RecordVector<T>::RecordVector(const Record<Ts>&... records) : vector { Record<T>(records)... } {
-}
+RecordVector<T>::RecordVector(const Record<Ts>&... records) : vector { Record<T>(records)... } {}
 
 template <typename T>
 const Record<T>& RecordVector<T>::operator[](const std::string& keyword) const {

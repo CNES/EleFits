@@ -37,7 +37,7 @@ namespace FitsIO {
  * auto allButComments = KeywordCategory::All & ~KeywordCategory::Comment;
  * \endcode
  */
-enum KeywordCategory
+enum KeywordCategory // FIXME move enumerators inside StandardKeyword, to be renamed as KeywordCategory
 {
   Mandatory = 0b0001, ///< Mandatory standard keyword.
   Reserved = 0b0010, ///< Optional standard keywords (only valued keywords are put in this category).

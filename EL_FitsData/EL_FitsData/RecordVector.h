@@ -20,6 +20,7 @@
 #ifndef _EL_FITSDATA_RECORDVECTOR_H
 #define _EL_FITSDATA_RECORDVECTOR_H
 
+#include "EL_FitsData/DataUtils.h"
 #include "EL_FitsData/Record.h"
 
 #include <vector>
@@ -33,7 +34,7 @@ namespace FitsIO {
  * @tparam T The value type of the records; can be VariantValue.
  * @see RecordCollection
  */
-template <typename T>
+template <typename T = VariantValue>
 class RecordVector {
 
 public:
@@ -46,6 +47,11 @@ public:
    * @brief Create a RecordVector with given number of records.
    */
   explicit RecordVector(std::size_t size);
+
+  /**
+   * @brief Create a RecordVector from a vector of records.
+   */
+  RecordVector(std::vector<T> records);
 
   /**
    * @brief Create a RecordVector from a list of records.
@@ -85,10 +91,10 @@ public:
 };
 
 /**
- * @ingroup data_classes
- * @brief A heterogeneous collection of records.
+ * @brief A series of records.
  */
-using RecordCollection = RecordVector<VariantValue>;
+template <typename... Ts>
+using RecordTuple = Tuple<Record<Ts>...>;
 
 } // namespace FitsIO
 } // namespace Euclid

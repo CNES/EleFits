@@ -25,49 +25,11 @@
 namespace Euclid {
 namespace FitsIO {
 
-KeywordExistsError::KeywordExistsError(const std::string& keyword) :
-    FitsIOError(std::string("Keyword already exists: ") + keyword) {}
-
-void KeywordExistsError::mayThrow(const std::string& keyword, const RecordHdu& hdu) {
-  if (hdu.hasKeyword(keyword)) {
-    throw KeywordExistsError(keyword);
-  }
-}
-
-void KeywordExistsError::mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu) {
-  const auto found = hdu.readKeywords();
-  for (const auto& k : keywords) {
-    if (std::find(found.begin(), found.end(), k) != found.end()) {
-      throw KeywordExistsError(k);
-    }
-  }
-}
-
-KeywordNotFoundError::KeywordNotFoundError(const std::string& keyword) :
-    FitsIOError(std::string("Keyword not found: ") + keyword) {}
-
-void KeywordNotFoundError::mayThrow(const std::string& keyword, const RecordHdu& hdu) {
-  if (not hdu.hasKeyword(keyword)) {
-    throw KeywordNotFoundError(keyword);
-  }
-}
-
-void KeywordNotFoundError::mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu) {
-  const auto found = hdu.readKeywords();
-  for (const auto& k : keywords) {
-    if (std::find(found.begin(), found.end(), k) == found.end()) {
-      throw KeywordNotFoundError(k);
-    }
-  }
-}
-
 RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
-    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_status(status),
-    m_mode(RecordHdu::WriteMode::CreateUnique) {}
+    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_status(status) {}
 
 RecordHdu::RecordHdu() :
-    m_fptr(m_dummyFptr), m_cfitsioIndex(0), m_type(HduCategory::Image), m_status(HduCategory::Untouched),
-    m_mode(RecordHdu::WriteMode::CreateUnique) {}
+    m_fptr(m_dummyFptr), m_cfitsioIndex(0), m_type(HduCategory::Image), m_status(HduCategory::Untouched) {}
 
 long RecordHdu::index() const {
   return m_cfitsioIndex - 1;
@@ -121,7 +83,7 @@ bool RecordHdu::hasKeyword(const std::string& keyword) const {
   return Cfitsio::Header::hasKeyword(m_fptr, keyword);
 }
 
-RecordCollection RecordHdu::parseRecordCollection(const std::vector<std::string>& keywords) const {
+RecordVector<VariantValue> RecordHdu::parseRecordCollection(const std::vector<std::string>& keywords) const {
   return parseRecordVector<VariantValue>(keywords);
 }
 
@@ -162,14 +124,12 @@ EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
 template RecordVector<VariantValue> RecordHdu::parseRecordVector(const std::vector<std::string>&) const;
 
 #ifndef COMPILE_WRITE_RECORD
-  #define COMPILE_WRITE_RECORD(type, unused) \
-    template void RecordHdu::writeRecord<RecordHdu::WriteMode::CreateUnique>(const Record<type>&) const;
+  #define COMPILE_WRITE_RECORD(type, unused) template void RecordHdu::writeRecord(const Record<type>&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
   #undef COMPILE_WRITE_RECORD
 #endif
 
-template void
-RecordHdu::writeRecords<RecordHdu::WriteMode::CreateUnique>(const std::vector<Record<VariantValue>>&) const;
+template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
 
 } // namespace FitsIO
 } // namespace Euclid

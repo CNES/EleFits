@@ -21,6 +21,7 @@
 #define _EL_FITSDATA_DATAUTILS_H
 
 #include <string>
+#include <tuple>
 
 namespace Euclid {
 namespace FitsIO {
@@ -32,7 +33,7 @@ template <typename T>
 struct Named {
 
   /** @brief Constructor. */
-  explicit Named(const std::string& value) : name(value) {};
+  Named(const std::string& value) : name(value) {};
 
   /**
    * @brief Slice as the name.
@@ -52,7 +53,7 @@ template <typename T>
 struct Indexed {
 
   /** @brief Constructor. */
-  explicit Indexed(long value) : index(value) {};
+  Indexed(long value) : index(value) {};
 
   /**
    * @brief Slice as the index.
@@ -65,8 +66,49 @@ struct Indexed {
   long index;
 };
 
-} // namespace FitsIO
+/// @cond INTERNAL
+namespace Internal {
+template <typename TReturn, typename... Ts, std::size_t... Is>
+TReturn tupleAsImpl(const std::tuple<Ts...>& elements, std::index_sequence<Is...>) {
+  return { std::get<Is>(elements)... };
+}
+} // namespace Internal
 
+/**
+ * @brief A tuple wrapper to homogeneize signatures.
+ * @
+ */
+template <typename... Ts>
+struct Tuple {
+
+  /**
+   * @brief Convert the series as a given type.
+   * @tparam TReturn The return type, constructed from a brace-enclosed list of the elements
+   */
+  template <typename TReturn>
+  TReturn as() const {
+    return Internal::tupleAsImpl<TReturn>(tuple, std::make_index_sequence<sizeof...(Ts)>());
+  }
+
+  /**
+   * @brief The elements as a tuple.
+   */
+  std::tuple<Ts...> tuple;
+};
+
+/**
+ * @brief A series of names.
+ */
+template <typename... Ts>
+using NameTuple = Tuple<Named<Ts>...>;
+
+/**
+ * @brief A series of indices.
+ */
+template <typename... Ts>
+using IndexTuple = Tuple<Indexed<Ts>...>;
+
+} // namespace FitsIO
 } // namespace Euclid
 
 #endif

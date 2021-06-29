@@ -118,7 +118,7 @@ const Record<std::string>& RandomHeader::getRecord<std::string>() const {
   return str;
 }
 
-RecordCollection RandomHeader::allRecords() const {
+RecordVector<VariantValue> RandomHeader::allRecords() const {
   return RecordVector<VariantValue>(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str);
 }
 

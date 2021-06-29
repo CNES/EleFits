@@ -85,6 +85,10 @@ elements_add_unit_test(HduIterator tests/src/HduIterator_test.cpp
                      EXECUTABLE EL_FitsFile_HduIterator_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
+elements_add_unit_test(Header tests/src/Header_test.cpp 
+                     EXECUTABLE EL_FitsFile_Header_test
+                     LINK_LIBRARIES EL_FitsFile
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

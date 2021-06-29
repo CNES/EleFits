@@ -17,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsData/StandardKeyword.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -38,37 +38,37 @@ BOOST_AUTO_TEST_CASE(standard_keyword_matching_test) {
   BOOST_CHECK(not StandardKeyword::matches("KEYWORD", "KEYn"));
 }
 
-BOOST_AUTO_TEST_CASE(mandatory_masking_test) {
-  BOOST_CHECK(KeywordCategory::Mandatory & KeywordCategory::Mandatory);
-  BOOST_CHECK(KeywordCategory::Mandatory & KeywordCategory::All);
-  BOOST_CHECK(
-      not(KeywordCategory::Mandatory & (KeywordCategory::Reserved | KeywordCategory::Comment | KeywordCategory::User)));
-  BOOST_CHECK(not(KeywordCategory::Mandatory & (KeywordCategory::All & ~KeywordCategory::Mandatory)));
-}
+// BOOST_AUTO_TEST_CASE(mandatory_masking_test) {
+//   BOOST_CHECK(KeywordCategory::Mandatory & KeywordCategory::Mandatory);
+//   BOOST_CHECK(KeywordCategory::Mandatory & KeywordCategory::All);
+//   BOOST_CHECK(
+//       not(KeywordCategory::Mandatory & (KeywordCategory::Reserved | KeywordCategory::Comment | KeywordCategory::User)));
+//   BOOST_CHECK(not(KeywordCategory::Mandatory & (KeywordCategory::All & ~KeywordCategory::Mandatory)));
+// }
 
-BOOST_AUTO_TEST_CASE(reserved_masking_test) {
-  BOOST_CHECK(KeywordCategory::Reserved & KeywordCategory::Reserved);
-  BOOST_CHECK(KeywordCategory::Reserved & KeywordCategory::All);
-  BOOST_CHECK(
-      not(KeywordCategory::Reserved & (KeywordCategory::Mandatory | KeywordCategory::Comment | KeywordCategory::User)));
-  BOOST_CHECK(not(KeywordCategory::Reserved & (KeywordCategory::All & ~KeywordCategory::Reserved)));
-}
+// BOOST_AUTO_TEST_CASE(reserved_masking_test) {
+//   BOOST_CHECK(KeywordCategory::Reserved & KeywordCategory::Reserved);
+//   BOOST_CHECK(KeywordCategory::Reserved & KeywordCategory::All);
+//   BOOST_CHECK(
+//       not(KeywordCategory::Reserved & (KeywordCategory::Mandatory | KeywordCategory::Comment | KeywordCategory::User)));
+//   BOOST_CHECK(not(KeywordCategory::Reserved & (KeywordCategory::All & ~KeywordCategory::Reserved)));
+// }
 
-BOOST_AUTO_TEST_CASE(comment_masking_test) {
-  BOOST_CHECK(KeywordCategory::Comment & KeywordCategory::Comment);
-  BOOST_CHECK(KeywordCategory::Comment & KeywordCategory::All);
-  BOOST_CHECK(
-      not(KeywordCategory::Comment & (KeywordCategory::Mandatory | KeywordCategory::Reserved | KeywordCategory::User)));
-  BOOST_CHECK(not(KeywordCategory::Comment & (KeywordCategory::All & ~KeywordCategory::Comment)));
-}
+// BOOST_AUTO_TEST_CASE(comment_masking_test) {
+//   BOOST_CHECK(KeywordCategory::Comment & KeywordCategory::Comment);
+//   BOOST_CHECK(KeywordCategory::Comment & KeywordCategory::All);
+//   BOOST_CHECK(
+//       not(KeywordCategory::Comment & (KeywordCategory::Mandatory | KeywordCategory::Reserved | KeywordCategory::User)));
+//   BOOST_CHECK(not(KeywordCategory::Comment & (KeywordCategory::All & ~KeywordCategory::Comment)));
+// }
 
-BOOST_AUTO_TEST_CASE(user_masking_test) {
-  BOOST_CHECK(KeywordCategory::User & KeywordCategory::User);
-  BOOST_CHECK(KeywordCategory::User & KeywordCategory::All);
-  BOOST_CHECK(
-      not(KeywordCategory::User & (KeywordCategory::Mandatory | KeywordCategory::Reserved | KeywordCategory::Comment)));
-  BOOST_CHECK(not(KeywordCategory::User & (KeywordCategory::All & ~KeywordCategory::User)));
-}
+// BOOST_AUTO_TEST_CASE(user_masking_test) {
+//   BOOST_CHECK(KeywordCategory::User & KeywordCategory::User);
+//   BOOST_CHECK(KeywordCategory::User & KeywordCategory::All);
+//   BOOST_CHECK(
+//       not(KeywordCategory::User & (KeywordCategory::Mandatory | KeywordCategory::Reserved | KeywordCategory::Comment)));
+//   BOOST_CHECK(not(KeywordCategory::User & (KeywordCategory::All & ~KeywordCategory::User)));
+// }
 
 BOOST_AUTO_TEST_CASE(mandatory_categorization_test) {
   const std::string mandatory = "SIMPLE";
