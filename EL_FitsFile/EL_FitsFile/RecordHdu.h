@@ -27,6 +27,7 @@
 #include "EL_FitsData/StandardKeyword.h"
 
 #include <fitsio.h>
+#include <memory>
 
 namespace Euclid {
 namespace FitsIO {
@@ -39,7 +40,7 @@ class Header;
  * @brief Header reader-writer.
  * @details
  * This class provides services common to all HDUs for reading and writing records.
- * Specialized services (e.g. to work with HDU name or checksums) are directly provided as methods,
+ * Services exclusively applicable to MEF files (e.g. HDU name or type) are directly provided as methods,
  * while generic services are accessed through the header() method (refer to the documentation of the Header class).
  *
  * @note
@@ -153,7 +154,7 @@ public:
    * @brief Access the header unit to read and write records.
    * @see Header
    */
-  Header header() const; // FIXME make const reference
+  const Header& header() const; // FIXME make const reference
 
   /**
    * @brief Read the extension name.
@@ -457,17 +458,6 @@ public:
    */
   void deleteRecord(const std::string& keyword) const;
 
-  /**
-   * @brief Compute the HDU and data checksums and compare them to the values in the header.
-   * @throw ChecksumError if checksums values in header are missing or incorrect
-   */
-  void verifyChecksums() const;
-
-  /**
-   * @brief Compute and write (or update) the HDU and data checksums.
-   */
-  void computeChecksums() const;
-
 protected:
   /**
    * @brief Set the current HDU to this one.
@@ -503,6 +493,13 @@ protected:
    * @brief The HDU type.
    */
   HduCategory m_type;
+
+  /**
+   * @brief The header unit handler.
+   * @details
+   * This is a pointer because Header is only forward declared at this point.
+   */
+  std::unique_ptr<Header> m_header;
 
   /**
    * @brief The HDU status.

@@ -26,10 +26,11 @@ namespace Euclid {
 namespace FitsIO {
 
 RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
-    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_status(status) {}
+    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_header(nullptr), m_status(status) {
+  m_header = std::make_unique<Header>(*this);
+}
 
-RecordHdu::RecordHdu() :
-    m_fptr(m_dummyFptr), m_cfitsioIndex(0), m_type(HduCategory::Image), m_status(HduCategory::Untouched) {}
+RecordHdu::RecordHdu() : RecordHdu(Token(), m_dummyFptr, 0, HduCategory::Image, HduCategory::Untouched) {}
 
 long RecordHdu::index() const {
   return m_cfitsioIndex - 1;
@@ -49,8 +50,8 @@ HduCategory RecordHdu::readCategory() const {
   return cat;
 }
 
-Header RecordHdu::header() const {
-  return Header(*this);
+const Header& RecordHdu::header() const {
+  return *m_header;
 }
 
 bool RecordHdu::matches(HduFilter filter) const {
@@ -105,21 +106,6 @@ void RecordHdu::deleteRecord(const std::string& keyword) const {
   editThisHdu();
   KeywordNotFoundError::mayThrow(keyword, *this);
   Cfitsio::Header::deleteRecord(m_fptr, keyword);
-}
-
-void RecordHdu::verifyChecksums() const {
-  int status = 0;
-  int datastatus;
-  int hdustatus;
-  fits_verify_chksum(m_fptr, &datastatus, &hdustatus, &status);
-  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
-  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
-}
-
-void RecordHdu::computeChecksums() const {
-  int status = 0;
-  fits_write_chksum(m_fptr, &status);
-  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
 }
 
 void RecordHdu::touchThisHdu() const {

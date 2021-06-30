@@ -53,8 +53,10 @@ public:
 
   /**
    * @brief Access the header.
+   * @warning
+   * Return will be of type Header from version 4.0 on.
    */
-  const RecordHdu& header() const;
+  const RecordHdu& header() const; // FIXME return const Header&
 
   /**
    * @brief Read the raster.

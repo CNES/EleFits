@@ -398,6 +398,17 @@ public:
   template <RecordMode mode = RecordMode::CreateOrUpdate, typename T>
   void writeN(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const;
 
+  /**
+   * @brief Compute the HDU and data checksums and compare them to the values in the header.
+   * @throw ChecksumError if checksums values in header are missing or incorrect
+   */
+  void verifyChecksums() const;
+
+  /**
+   * @brief Compute and write (or update) the HDU and data checksums.
+   */
+  void computeChecksums() const;
+
 private:
   /**
    * @brief The parent HDU.
@@ -412,7 +423,7 @@ private:
     #define _EL_FITSFILE_HEADER_IMPL
     #include "EL_FitsFile/impl/Header.hpp"
     #undef _EL_FITSFILE_HEADER_IMPL
-  /// @endcond
+/// @endcond
 
   #endif
 #endif

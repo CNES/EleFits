@@ -92,5 +92,20 @@ RecordVector<VariantValue> Header::parseAll(KeywordCategory categories) const {
   return parseN<VariantValue>(readKeywords(categories));
 }
 
+void Header::verifyChecksums() const {
+  int status = 0;
+  int datastatus;
+  int hdustatus;
+  fits_verify_chksum(m_hdu.m_fptr, &datastatus, &hdustatus, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
+  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
+}
+
+void Header::computeChecksums() const {
+  int status = 0;
+  fits_write_chksum(m_hdu.m_fptr, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
+}
+
 } // namespace FitsIO
 } // namespace Euclid

@@ -160,7 +160,8 @@ void Header::write1(const std::string& keyword, const T& value, const std::strin
 
 template <RecordMode Mode, typename... Ts>
 void Header::writeN(const std::tuple<Record<Ts>...>& records) const {
-  // FIXME
+  m_hdu.editThisHdu();
+  Cfitsio::Header::writeRecords(m_hdu.m_fptr, records); // FIXME Mode
 }
 
 template <RecordMode Mode, typename... Ts>
@@ -171,7 +172,7 @@ void Header::writeN(const std::vector<std::string>& keywords, const std::tuple<R
 template <RecordMode Mode, typename... Ts>
 void Header::writeN(const Record<Ts>&... records) const {
   m_hdu.editThisHdu();
-  Cfitsio::Header::writeRecords(m_hdu.m_fptr, records...); // FIXME
+  Cfitsio::Header::writeRecords(m_hdu.m_fptr, records...); // FIXME Mode
 }
 
 template <RecordMode Mode, typename... Ts>

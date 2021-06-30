@@ -12,7 +12,7 @@ Legend:
 
 - **CFitsIO Error Status Routines**
 - Fits File Access Routines
-  - **Open file**
+  - **Open file** (and with more modes, e.g. temporary)
   - Open table/image (useful?)
   - **Create file**
   - **Close file**
@@ -28,7 +28,7 @@ Legend:
   - **HDU index**
   - **HDU type**
   - Copy HDUs
-  - Copy header
+  - **Copy header** (and with keyword filtering)
   - *Delete HDU*
 - Keyword Reading Routines
   - **Record count** (through keyword list)
@@ -46,7 +46,7 @@ Legend:
   - Rename record (useful?)
   - **Delete record**
 - Primary Array or Image Extension I/O Routines
-  - Read image type
+  - **Read image type**
   - **Read image size**
   - **Create image extension**
   - Copy image data to image or binary table extension

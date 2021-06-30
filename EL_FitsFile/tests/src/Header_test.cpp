@@ -26,7 +26,7 @@ using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_SUITE(Header_test, Test::TemporaryMefFile)
+BOOST_FIXTURE_TEST_SUITE(Header_test, Test::TemporarySifFile)
 
 //-----------------------------------------------------------------------------
 
@@ -39,7 +39,9 @@ BOOST_AUTO_TEST_CASE(keyword_error_test) {
 }
 
 BOOST_AUTO_TEST_CASE(syntax_test) {
-  const auto& h = accessPrimary<>().header();
+
+  /* Setup */
+  const auto& h = header().header();
   const Record<int> i("I", 1);
   const Record<float> f("F", 3.14);
   const auto t = std::make_tuple(i, f);
@@ -77,6 +79,15 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
 
   /* Homogeneous read */
   h.parseN<VariantValue>({ "I", "F" });
+}
+
+BOOST_AUTO_TEST_CASE(checksum_test) {
+  const auto& h = header().header();
+  BOOST_CHECK_THROW(h.verifyChecksums(), ChecksumError);
+  h.computeChecksums();
+  BOOST_CHECK_NO_THROW(h.verifyChecksums());
+  h.write1("DATASUM", std::string(""));
+  BOOST_CHECK_THROW(h.verifyChecksums(), ChecksumError);
 }
 
 //-----------------------------------------------------------------------------
