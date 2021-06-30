@@ -19,6 +19,7 @@
 
 #if defined(_EL_FITSFILE_RECORDHDU_IMPL) || defined(CHECK_QUALITY)
 
+  #include "EL_CfitsioWrapper/HeaderWrapper.h"
   #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {

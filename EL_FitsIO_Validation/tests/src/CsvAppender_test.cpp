@@ -1,8 +1,4 @@
 /**
- * @file tests/src/CsvAppender_test.cpp
- * @date 02/10/21
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -21,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsIO_Validation//CsvAppender.h"
+
+#include <boost/test/unit_test.hpp>
 
 //-----------------------------------------------------------------------------
 

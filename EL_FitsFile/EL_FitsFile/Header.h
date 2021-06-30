@@ -36,6 +36,7 @@ namespace FitsIO {
 
 /**
  * @brief Exception thrown when a keyword already exists.
+ * @ingroup exceptions
  */
 struct KeywordExistsError : public FitsIOError {
 
@@ -53,10 +54,16 @@ struct KeywordExistsError : public FitsIOError {
    * @brief Throw if an HDU already contains any of given keywords.
    */
   static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
+
+  /**
+   * @brief The keyword which already exists.
+   */
+  std::string keyword;
 };
 
 /**
  * @brief Exception thrown when a keyword is not found.
+ * @ingroup exceptions
  */
 struct KeywordNotFoundError : public FitsIOError {
 
@@ -74,6 +81,22 @@ struct KeywordNotFoundError : public FitsIOError {
    * @brief Throw if an HDU misses any of given keywords.
    */
   static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
+
+  /**
+   * @brief The missing keyword.
+   */
+  std::string keyword;
+};
+
+/**
+ * @brief Record writing modes.
+ */
+enum class RecordMode
+{
+  CreateUnique, ///< Create a record, throw if keyword already exists
+  CreateNew, ///< Create a record, even if keyword already exists
+  UpdateExisting, ///< Modify a record, throw if keyword doesn't exist
+  CreateOrUpdate ///< Modify a record if keyword already exists, create a record otherwise
 };
 
 /**
@@ -82,10 +105,10 @@ struct KeywordNotFoundError : public FitsIOError {
  * Several groups of methods are available:
  * - readXxx methods read the raw ASCII characters from the header unit as strings;
  * - parseXxx methods parse the contents of the header unit to return user-specified types;
- * - writeXxx methods write provided values following a strategy defined as a WriteMode.
+ * - writeXxx methods write provided values following a strategy defined as a RecordMode.
  * 
  * When reading or writing several records, it is recommended to use the variadic form of the methods
- * (e.g. one call `write(a, b, c)` instead of several calls `write(a), write(b), write(c)`), which are optimized.
+ * (e.g. one call to `writeN()` instead of several calls to `write1()`), which are optimized.
  * 
  * There are two approaches to read and write several records at once:
  * - As heterogeneous collections, through a variadic parameter pack, tuple, or relying on VariantValue;
@@ -98,20 +121,15 @@ struct KeywordNotFoundError : public FitsIOError {
  * where `std::vector<VariantValue>` and `RecordVector<VariantValue>` can provide valuable help
  * by reducing the boilerplate.
  * The impact on runtime is negligible.
+ * 
+ * @warning
+ * There is a known bug in CFitsIO with the reading of Record<unsigned long>:
+ * if the value is greater than `max(long)`, CFitsIO returns an overflow error.
+ * This is a false alarm but cannot be worked around easily.
+ * There should be a fix on CFitsIO side.
  */
 class Header {
 public:
-  /**
-   * @brief Record writing modes.
-   */
-  enum class WriteMode
-  {
-    CreateUnique, ///< Create a record, throw if keyword already exists
-    CreateNew, ///< Create a record, even if keyword already exists
-    Update, ///< Modify a record, throw if keyword doesn't exist
-    CreateOrUpdate ///< Modify a record if keyword already exists, create a record otherwise
-  };
-
   Header(const RecordHdu& hdu);
 
   /**
@@ -278,10 +296,10 @@ public:
    * Example usages:
    * \code
    * h.write(record);
-   * h.write<WriteMode::CreateNew>(record);
+   * h.write<RecordMode::CreateNew>(record);
    * \endcode
    */
-  template <WriteMode Mode = WriteMode::CreateOrUpdate, typename T>
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
   void write1(const Record<T>& record) const;
 
   /**
@@ -292,10 +310,10 @@ public:
    * Example usages:
    * \code
    * h.write("KEY", 0);
-   * h.write<WriteMode::CreateNew>("KEY", 0);
+   * h.write<RecordMode::CreateNew>("KEY", 0);
    * \endcode
    */
-  template <WriteMode Mode = WriteMode::CreateOrUpdate, typename T>
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
   void write1(const std::string& keyword, const T& value, const std::string& unit = "", const std::string& comment = "")
       const;
 
@@ -312,7 +330,7 @@ public:
    * \endcode
    * where `h` is a `Header` and `records` is a `RecordTuple`.
    */
-  template <WriteMode Mode = WriteMode::CreateOrUpdate, typename... Ts>
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeN(const std::tuple<Record<Ts>...>& records) const;
 
   /**
@@ -323,7 +341,7 @@ public:
    * @param records The available records
    * @param mode The write mode
    */
-  template <WriteMode Mode = WriteMode::CreateOrUpdate, typename... Ts>
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeN(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const;
 
   /**
@@ -336,11 +354,11 @@ public:
    * Example usage:
    * \code
    * h.write(r0, r1, r2);
-   * h.write<WriteMode::CreateNew>(r0, r1, r2);
+   * h.write<RecordMode::CreateNew>(r0, r1, r2);
    * \endcode
    * where `h` is a `Header` and `r1`, `r2`, `r3` are `Record`s.
    */
-  template <WriteMode Mode = WriteMode::CreateOrUpdate, typename... Ts>
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeN(const Record<Ts>&... records) const;
 
   /**
@@ -354,11 +372,11 @@ public:
    * Example usage:
    * \code
    * h.write({ "R0", "R1" }, r0, r1, r2);
-   * h.write<WriteMode::CreateNew>({ "R0", "R1" }, r0, r1, r2);
+   * h.write<RecordMode::CreateNew>({ "R0", "R1" }, r0, r1, r2);
    * \endcode
    * where `h` is a `Header` and `r1`, `r2`, `r3` are `Record`s.
    */
-  template <WriteMode Mode = WriteMode::CreateOrUpdate, typename... Ts>
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeN(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
 
   /**
@@ -367,7 +385,7 @@ public:
    * @tparam T The record value type, doesn't need to be specified
    * @param records The records
    */
-  template <WriteMode mode = WriteMode::CreateOrUpdate, typename T>
+  template <RecordMode mode = RecordMode::CreateOrUpdate, typename T>
   void writeN(const std::vector<Record<T>>& records) const;
 
   /**
@@ -377,7 +395,7 @@ public:
    * @param keywords The selection of records to be written
    * @param records The available records
    */
-  template <WriteMode mode = WriteMode::CreateOrUpdate, typename T>
+  template <RecordMode mode = RecordMode::CreateOrUpdate, typename T>
   void writeN(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const;
 
 private:
@@ -394,7 +412,7 @@ private:
     #define _EL_FITSFILE_HEADER_IMPL
     #include "EL_FitsFile/impl/Header.hpp"
     #undef _EL_FITSFILE_HEADER_IMPL
-/// @endcond
+  /// @endcond
 
   #endif
 #endif

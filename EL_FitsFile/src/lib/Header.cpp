@@ -17,48 +17,51 @@
  *
  */
 
+#include "EL_CfitsioWrapper/HeaderWrapper.h"
 #include "EL_FitsFile/RecordHdu.h"
+
+#include <algorithm> // find
 
 namespace Euclid {
 namespace FitsIO {
 
-Header::Header(const RecordHdu& hdu) : m_hdu(hdu) {}
+KeywordExistsError::KeywordExistsError(const std::string& existingKeyword) :
+    FitsIOError(std::string("Keyword already exists: ") + existingKeyword), keyword(existingKeyword) {}
 
-KeywordExistsError::KeywordExistsError(const std::string& keyword) :
-    FitsIOError(std::string("Keyword already exists: ") + keyword) {}
-
-void KeywordExistsError::mayThrow(const std::string& keyword, const RecordHdu& hdu) {
-  if (hdu.hasKeyword(keyword)) {
-    throw KeywordExistsError(keyword);
+void KeywordExistsError::mayThrow(const std::string& existingKeyword, const RecordHdu& hdu) {
+  if (hdu.hasKeyword(existingKeyword)) {
+    throw KeywordExistsError(existingKeyword);
   }
 }
 
-void KeywordExistsError::mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu) {
+void KeywordExistsError::mayThrow(const std::vector<std::string>& existingKeywords, const RecordHdu& hdu) {
   const auto found = hdu.readKeywords();
-  for (const auto& k : keywords) {
+  for (const auto& k : existingKeywords) {
     if (std::find(found.begin(), found.end(), k) != found.end()) {
       throw KeywordExistsError(k);
     }
   }
 }
 
-KeywordNotFoundError::KeywordNotFoundError(const std::string& keyword) :
-    FitsIOError(std::string("Keyword not found: ") + keyword) {}
+KeywordNotFoundError::KeywordNotFoundError(const std::string& missingKeyword) :
+    FitsIOError(std::string("Keyword not found: ") + missingKeyword), keyword(missingKeyword) {}
 
-void KeywordNotFoundError::mayThrow(const std::string& keyword, const RecordHdu& hdu) {
-  if (not hdu.hasKeyword(keyword)) {
-    throw KeywordNotFoundError(keyword);
+void KeywordNotFoundError::mayThrow(const std::string& missingKeyword, const RecordHdu& hdu) {
+  if (not hdu.hasKeyword(missingKeyword)) {
+    throw KeywordNotFoundError(missingKeyword);
   }
 }
 
-void KeywordNotFoundError::mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu) {
+void KeywordNotFoundError::mayThrow(const std::vector<std::string>& missingKeywords, const RecordHdu& hdu) {
   const auto found = hdu.readKeywords();
-  for (const auto& k : keywords) {
+  for (const auto& k : missingKeywords) {
     if (std::find(found.begin(), found.end(), k) == found.end()) {
       throw KeywordNotFoundError(k);
     }
   }
 }
+
+Header::Header(const RecordHdu& hdu) : m_hdu(hdu) {}
 
 bool Header::has(const std::string& keyword) const {
   m_hdu.touchThisHdu();

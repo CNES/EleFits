@@ -19,7 +19,9 @@
 
 #if defined(_EL_FITSFILE_HEADER_IMPL) || defined(CHECK_QUALITY)
 
+  #include "EL_CfitsioWrapper/HeaderWrapper.h"
   #include "EL_FitsFile/Header.h"
+  #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -86,33 +88,33 @@ RecordVector<std::decay_t<T>> Header::parseNOr(const std::vector<Record<T>>& fal
 /// @cond INTERNAL
 namespace Internal {
 
-template <Header::WriteMode Mode, typename T>
+template <RecordMode Mode, typename T>
 struct RecordWriterImpl {
   static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
 };
 
 template <typename T>
-struct RecordWriterImpl<Header::WriteMode::CreateUnique, T> {
+struct RecordWriterImpl<RecordMode::CreateUnique, T> {
   static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
 };
 
 template <typename T>
-struct RecordWriterImpl<Header::WriteMode::CreateNew, T> {
+struct RecordWriterImpl<RecordMode::CreateNew, T> {
   static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
 };
 
 template <typename T>
-struct RecordWriterImpl<Header::WriteMode::Update, T> {
+struct RecordWriterImpl<RecordMode::UpdateExisting, T> {
   static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
 };
 
 template <typename T>
-struct RecordWriterImpl<Header::WriteMode::CreateOrUpdate, T> {
+struct RecordWriterImpl<RecordMode::CreateOrUpdate, T> {
   static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
 };
 
 template <typename T>
-void RecordWriterImpl<Header::WriteMode::CreateUnique, T>::write1(
+void RecordWriterImpl<RecordMode::CreateUnique, T>::write1(
     fitsfile* fptr,
     const RecordHdu& hdu,
     const Record<T>& record) {
@@ -121,15 +123,12 @@ void RecordWriterImpl<Header::WriteMode::CreateUnique, T>::write1(
 }
 
 template <typename T>
-void RecordWriterImpl<Header::WriteMode::CreateNew, T>::write1(
-    fitsfile* fptr,
-    const RecordHdu& hdu,
-    const Record<T>& record) {
+void RecordWriterImpl<RecordMode::CreateNew, T>::write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record) {
   Cfitsio::Header::writeRecord(fptr, record);
 }
 
 template <typename T>
-void RecordWriterImpl<Header::WriteMode::Update, T>::write1(
+void RecordWriterImpl<RecordMode::UpdateExisting, T>::write1(
     fitsfile* fptr,
     const RecordHdu& hdu,
     const Record<T>& record) {
@@ -138,7 +137,7 @@ void RecordWriterImpl<Header::WriteMode::Update, T>::write1(
 }
 
 template <typename T>
-void RecordWriterImpl<Header::WriteMode::CreateOrUpdate, T>::write1(
+void RecordWriterImpl<RecordMode::CreateOrUpdate, T>::write1(
     fitsfile* fptr,
     const RecordHdu& hdu,
     const Record<T>& record) {
@@ -147,45 +146,45 @@ void RecordWriterImpl<Header::WriteMode::CreateOrUpdate, T>::write1(
 
 } // namespace Internal
 
-template <Header::WriteMode Mode, typename T>
+template <RecordMode Mode, typename T>
 void Header::write1(const Record<T>& record) const {
   m_hdu.editThisHdu();
   Internal::RecordWriterImpl<Mode, T>::write1(m_hdu.m_fptr, m_hdu, record);
 }
 
-template <Header::WriteMode Mode, typename T>
+template <RecordMode Mode, typename T>
 void Header::write1(const std::string& keyword, const T& value, const std::string& unit, const std::string& comment)
     const {
   return write1<Mode, T>({ keyword, value, unit, comment });
 }
 
-template <Header::WriteMode Mode, typename... Ts>
+template <RecordMode Mode, typename... Ts>
 void Header::writeN(const std::tuple<Record<Ts>...>& records) const {
   // FIXME
 }
 
-template <Header::WriteMode Mode, typename... Ts>
+template <RecordMode Mode, typename... Ts>
 void Header::writeN(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const {
   // FIXME
 }
 
-template <Header::WriteMode Mode, typename... Ts>
+template <RecordMode Mode, typename... Ts>
 void Header::writeN(const Record<Ts>&... records) const {
   m_hdu.editThisHdu();
   Cfitsio::Header::writeRecords(m_hdu.m_fptr, records...); // FIXME
 }
 
-template <Header::WriteMode Mode, typename... Ts>
+template <RecordMode Mode, typename... Ts>
 void Header::writeN(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
   // FIXME
 }
 
-template <Header::WriteMode mode, typename T>
+template <RecordMode mode, typename T>
 void Header::writeN(const std::vector<Record<T>>& records) const {
   // FIXME
 }
 
-template <Header::WriteMode mode, typename T>
+template <RecordMode mode, typename T>
 void Header::writeN(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const {
   // FIXME
 }

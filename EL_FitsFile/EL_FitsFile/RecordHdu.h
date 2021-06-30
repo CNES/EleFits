@@ -20,16 +20,18 @@
 #ifndef _EL_FITSFILE_HDU_H
 #define _EL_FITSFILE_HDU_H
 
-#include "EL_CfitsioWrapper/HeaderWrapper.h"
 #include "EL_FitsData/DataUtils.h"
 #include "EL_FitsData/HduCategory.h"
 #include "EL_FitsData/Record.h"
-#include "EL_FitsFile/Header.h"
+#include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/StandardKeyword.h"
+
+#include <fitsio.h>
 
 namespace Euclid {
 namespace FitsIO {
 
-/* Forward declaration */
+/* Forward declaration to avoid type nesting */
 class Header;
 
 /**
@@ -37,14 +39,11 @@ class Header;
  * @brief Header reader-writer.
  * @details
  * This class provides services common to all HDUs for reading and writing records.
+ * Specialized services (e.g. to work with HDU name or checksums) are directly provided as methods,
+ * while generic services are accessed through the header() method (refer to the documentation of the Header class).
  *
  * @note
  * RecordHdus are written as Image HDUs with NAXIS=0.
- * @warning
- * There is a known bug in CFitsIO with the reading of Record<unsigned long>:
- * if the value is greater than `max(long)`, CFitsIO returns an overflow error.
- * This is a false alarm but cannot be worked around easily.
- * There should be a fix on CFitsIO side.
  */
 class RecordHdu {
 
@@ -151,6 +150,12 @@ public:
   const T& as() const;
 
   /**
+   * @brief Access the header unit to read and write records.
+   * @see Header
+   */
+  Header header() const; // FIXME make const reference
+
+  /**
    * @brief Read the extension name.
    */
   std::string readName() const;
@@ -161,12 +166,6 @@ public:
   void updateName(const std::string& name) const;
 
   /**
-   * @brief Access the header unit to read and write records.
-   * @see Header
-   */
-  Header header() const;
-
-  /**
    * @brief Read the header as a string.
    * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank).
    * @details
@@ -175,41 +174,40 @@ public:
    * std::string header = readHeader(false);
    * WcsLib::wcspih(&header[0], header.size()/80, WCSHDR_all, 0, &nreject, &nwcs, &wcs);
    * \endcode
-   * @deprecated
+   * @deprecated See header() and Header
    */
   std::string readHeader(bool incNonValued = true) const;
 
   /**
    * @brief List keywords.
    * @param categories The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
-   * @deprecated
+   * @deprecated See header() and Header
    */
   std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief List keywords and their values.
    * @copydetails readKeywords
-   * @deprecated
+   * @deprecated See header() and Header
    */
   std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief Check whether the HDU contains a given keyword.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   bool hasKeyword(const std::string& keyword) const;
 
   /**
    * @brief Parse a record.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   Record<T> parseRecord(const std::string& keyword) const;
 
   /**
    * @brief Parse several records.
-   * @deprecated
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseRecords(const std::vector<std::string>& keywords) const;
@@ -225,7 +223,7 @@ public:
    * \code
    * auto records = parseRecords<int, float>("INT", "FLOAT");
    * \endcode
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseRecords(const Named<Ts>&... keywords) const;
@@ -261,7 +259,7 @@ public:
    * std::cout << "Hello, " << body.name << "!" << std::endl;
    * std::cout << "Your BMI is: " << body.bmi() << std::endl;
    * \endcode
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <class TReturn, typename... Ts>
   TReturn parseRecordsAs(const std::vector<std::string>& keywords) const;
@@ -283,7 +281,7 @@ public:
    *     Named<float>("HEIGHT"),
    *     Names<float>("MASS"));
    * \endcode
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <class TReturn, typename... Ts>
   TReturn parseRecordsAs(const Named<Ts>&... keywords) const;
@@ -301,7 +299,7 @@ public:
    * \endcode
    * if KEY is found, the record is parsed;
    * otherwise, the returned record has keyword "KEY", value 0, empty unit, and empty comment.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   Record<T> parseRecordOr(const Record<T>& fallback) const;
@@ -312,7 +310,7 @@ public:
    * For each keyword, if it exists, the record is parsed;
    * otherwise the fallback record is returned.
    * @see parseRecordOr
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseRecordsOr(const Record<Ts>&... fallbacks) const;
@@ -320,7 +318,7 @@ public:
   /**
    * @brief Parse several homogeneous records.
    * @tparam T The common value type.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   RecordVector<T> parseRecordVector(const std::vector<std::string>& keywords) const;
@@ -336,7 +334,7 @@ public:
    * auto records = f.parseRecordCollection({ "INT", "FLOAT", "DOUBLE", "BOOL" });
    * int value = records.as<int>("INT");
    * \endcode
-   * @deprecated
+   * @deprecated See header() and Header
    */
   RecordVector<> parseRecordCollection(const std::vector<std::string>& keywords) const;
 
@@ -344,7 +342,7 @@ public:
    * @brief Parse all the records as a RecordVector.
    * @details
    * This method is similar to parseRecordVector.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   RecordVector<T> parseAllRecords() const;
@@ -361,21 +359,21 @@ public:
    * @param v The value.
    * @param u The unit.
    * @param c The comment.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   void writeRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Write several records.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename... Ts>
   void writeRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Write several records.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename... Ts>
   void writeRecords(const std::tuple<Record<Ts>...>& records) const;
@@ -384,33 +382,33 @@ public:
    * @brief Write several homogeneous records.
    * @details
    * Similarly to the reading counterpart parseRecordVector, `T` can also be `VariantValue`.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   void writeRecords(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Write a subset of a RecordVector.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   void writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Write a COMMENT record.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   void writeComment(const std::string& comment) const;
 
   /**
    * @brief Write a HISTORY record.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   void writeHistory(const std::string& history) const;
 
   /**
    * @brief Update a record if it exists; write a new record otherwise.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   void updateRecord(const Record<T>& record) const;
@@ -421,35 +419,35 @@ public:
    * @param v The value.
    * @param u The unit.
    * @param c The comment.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   void updateRecord(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename... Ts>
   void updateRecords(const Record<Ts>&... records) const;
 
   /**
    * @brief Update several records if they exist; write new records otherwise.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename... Ts>
   void updateRecords(const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Update several homogeneous records if they exist; write new records otherwise.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   void updateRecords(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Update a subset of a RecordVector.
-   * @deprecated
+   * @deprecated See header() and Header
    */
   template <typename T>
   void updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
@@ -458,6 +456,17 @@ public:
    * @brief Delete a record.
    */
   void deleteRecord(const std::string& keyword) const;
+
+  /**
+   * @brief Compute the HDU and data checksums and compare them to the values in the header.
+   * @throw ChecksumError if checksums values in header are missing or incorrect
+   */
+  void verifyChecksums() const;
+
+  /**
+   * @brief Compute and write (or update) the HDU and data checksums.
+   */
+  void computeChecksums() const;
 
 protected:
   /**
@@ -485,7 +494,7 @@ protected:
   /**
    * @brief The 1-based CFitsIO HDU index.
    * @warning
-   * EL_FitsIO HDUs are 0-based here and 1-based in the CfitsioWrapper namespace
+   * EL_FitsIO HDUs are 0-based in the public API and 1-based in the CfitsioWrapper namespace
    * because CFitsIO indices are 1-based.
    */
   long m_cfitsioIndex;
@@ -497,6 +506,9 @@ protected:
 
   /**
    * @brief The HDU status.
+   * @details
+   * It is mutable because read/write operations change it.
+   * Another option to avoid such practice would be to store a record of statuses in MefFile instead.
    */
   mutable HduCategory m_status;
 

@@ -49,6 +49,10 @@ HduCategory RecordHdu::readCategory() const {
   return cat;
 }
 
+Header RecordHdu::header() const {
+  return Header(*this);
+}
+
 bool RecordHdu::matches(HduFilter filter) const {
   return filter.accepts(readCategory());
 }
@@ -101,6 +105,21 @@ void RecordHdu::deleteRecord(const std::string& keyword) const {
   editThisHdu();
   KeywordNotFoundError::mayThrow(keyword, *this);
   Cfitsio::Header::deleteRecord(m_fptr, keyword);
+}
+
+void RecordHdu::verifyChecksums() const {
+  int status = 0;
+  int datastatus;
+  int hdustatus;
+  fits_verify_chksum(m_fptr, &datastatus, &hdustatus, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
+  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
+}
+
+void RecordHdu::computeChecksums() const {
+  int status = 0;
+  fits_write_chksum(m_fptr, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
 }
 
 void RecordHdu::touchThisHdu() const {

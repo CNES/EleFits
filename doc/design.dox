@@ -24,7 +24,7 @@ which aims at handling Fits files and their contents with an as-simple-as-possib
   - Data classes represent the data contents of the file,
   - Service classes provide access to each node of the file structure;
 - A low-level procedural layer (namespace Cfitsio, see below)
-which consists in C++ wrapper functions of selected CFitsIO functions:
+which consists in C++ wrapper functions of selected CFitsIO functions, not intended to end-users:
   - C arrays are wrapped with aforementioned data classes,
   - The use of raw pointers is limited to `fitsfile*`, which is itself wrapped in the service classes,
   - Templates wrap the CFitsIO type codes,
@@ -65,7 +65,9 @@ Of course, this is also where the tutorial is implemented.
   - The performances of EL_FitsIO are compared to those of CFitsIO;
   - A validation script checks that all of the provided programs run smoothly.
 
-The organization of the free functions, data classes and service classes in modules is illustrated below in the form of a class diagram.
+Satellite classes, like exceptions, which are useful to both EL_CfitsioWrapper and EL_FitsFile are implemented in EL_FitsData.
+
+The general organization of the free functions, data classes and service classes in modules is illustrated below in the form of a class diagram.
 
 \image html doc/diagrams/out/ClassOverview.png
 
@@ -73,70 +75,75 @@ The organization of the free functions, data classes and service classes in modu
 
 Inside each module, the source files are organized as follows:
 
-- Declarations are in files with .h extension in a folder named after the module;
-- Inline definitions are in files with .hpp extension in a subfolder impl of the header folder;
-- Other library definitions are in files with .cpp extension in the folder src/lib;
+- The declarations are in files with .h extension in a folder named after the module;
+- The nline (inc. template) definitions are in files with .hpp extension in a subfolder impl of the header folder;
+- The other library definitions are in files with .cpp extension in the folder src/lib;
 - Tests are implemented in files with _test suffix and .cpp extension;
-- Programs are implemented in .cpp files in the folder src/program.
+- The programs are implemented in .cpp files in the folder src/program.
 
 \section design-types Type codes
 
 \subsection design-types-overview Overview
 
 Simple things first:
-- Indices and lengths are implemented as longs instead of std::size_t's,
-as recommended in the C++ core guidelines.
-- Strings are generally handled as std::string, except for a few shortcuts with const char *.
-In the latter case, a std::string version is still provided.
+- Indices and lengths are implemented as `long`s instead of `std::size_t`s (see \ref data-types rationale).
+- Strings are generally handled as `std::string`; additionally, a few shortcuts with `const char *` are provided;
+In the latter case, a `std::string` version is still provided.
 
 As for the binary parts of Fits files (image and binary table data), the mapping is not straightforward.
 CFitsIO functions are not consistent with this respect:
-half of them work with built-in types (e.g. CFitsIO type code TSHORT corresponds to short)
-and the other half with fixed types (e.g. CFitsIO type code SHORT_IMG corresponds to std::int16_t).
+half of them work with built-in types (e.g. CFitsIO type code `TSHORT` corresponds to `short`)
+and the other half with fixed types (e.g. CFitsIO type code `SHORT_IMG` corresponds to `std::int16_t`).
+Check the \ref type_map for more details.
 This makes the user responsible of knowing the underlying architecture,
 or to spend runtime in converting at each value reading and writing operation.
-Check the \ref type_map for more details.
 
 \subsection design-types-codes Type code handling
 
 One of the main purposes of EL_FitsIO is to abstract from type codes, and to provide homogeneous template functions.
-This is implemented in class Cfitsio::TypeCode, which provides one method per column of the \ref type_map.
+This is implemented as type traits in class `Cfitsio::TypeCode`, which provides one method per column of the \ref type_map.
 Template specialization are made with built-in types or fixed types depending on what the CFitsIO functions expect.
-For example, TSHORT is Cfitsio::TypeCode<short>::forImage() and SHORT_IMG is Cfitsio::TypeCode<std::int16_t>::bitpix().
+For example, `TSHORT` is Cfitsio::TypeCode<short>::forImage() and `SHORT_IMG` is Cfitsio::TypeCode<std::int16_t>::bitpix().
 
 \note
 Internally, CFitsIO does the opposite when working with built-in types:
 it detects the length of those types and selects the appropriate fixed type.
 Therefore, a possible improvement would be to bypass top-level CFitsIO functions,
 and avoid casting fixed types to built-ins and back.
+Yet, the runtime benefit is expected to be minimal for such a costly development effort
+(see benchmark results).
 
-\subsection design-types-string Specific types: std::string
+\subsection design-types-string Specific types: `std::string`
 
-As stated above, strings are handled with std::string, while CFitsIO is using const char * or char *.
-Most of the template functions are therefore specialized for std::string.
+As stated above, strings are represented with `std::string`, while CFitsIO is using `const char *` or even `char *`.
+Most of the template functions are therefore specialized for `std::string`.
 Moreover, strings are treated very differently from other types in binary table columns:
 they are considered by CFitsIO like scalar columns with a repeat count greater than one.
 Therefore, FitsIO::Column methods are also specialized.
 
-\subsection design-types-any Specific types: VariantValue
+\subsection design-types-any Specific types: `VariantValue`
 
-Another specific type is VariantValue.
+Another specific type is `VariantValue`, which is an alias for `boost::any` as of today (see note below).
 It was added to the library to handle large sets of heterogeneous records.
 It is obviously necessary to provide read and write functions for this type,
 and they have to work with any underlying value type.
 This is implemented as runtime switches in read and write functions.
 
-In addition, Record<VariantValue> can be cast to Record<T> if T is compatible with the VariantValue value type.
-This cast is more complex than a mere boost::any_cast because the size of an integer record cannot be known at compile time.
-For example, 666 is read a short, while 1,000,000 is read as an int or long.
-Since there is no way for the user to know the type of a record,
-the casting service should allow to request an int when a short was read.
+In addition, `Record<VariantValue>` can be cast to `Record<T>` if `T` is compatible with the underlying `VariantValue` value type.
+This cast is more complex than a mere `boost::any_cast` because the size of an integer record cannot be known at compile time.
+For example, 666 is read as a `short`, while 1,000,000 is read as an `int` or `long`.
+Since there is no way for the user to know the value and therefore the deduced type of a record,
+the casting service should allow to request an `int` when a `short` was read.
+
+\note
+A welcome improvement would be to switch from `boost::any` to `boost::variant` or `std::variant` (C++17).
+This would allow relying on compile-time dispatch (visitor pattern) instead of runtime dispatch (switches).
 This is the role of FitsIO::Record::cast.
 
 \section design-variadic Variadic templates
 
 Reading and writing collections of heterogeneous objects, like columns of different types, requires using variadic templates
-(or abstraction classes like VariantValue which cost too much for thousands of values).
+(or abstraction classes like `VariantValue` which cost too much for thousands of values).
 
 \todo
 Variatic template design patterns:
@@ -145,17 +152,31 @@ Variatic template design patterns:
 - return parameters
 - packs vs. tuples
 
-\section design-file-handlers File handlers
+\section design-data_classes Data classes
+
+Data classes are one of Record, Raster, Column and their children or helpers (e.g. ColumnInfo).
+
+To give as much freedom as possible to the user, Raster and Column are interfaces with as few requirements as possible.
+Implementations are provided to allow users working with them without writing themeselves child classes, although this is a possibility.
+Raster and Column come with three flavors:
+- PtrRaster and PtrColumn do not own the raw data array: they just now a pointer to it;
+- VecRefRaster and VecRefColumn work with `std::vector`s which they reference but do not own;
+- VecRaster and VecColumn own the data: such objects are returned by read services.
+
+\section design-handlers File handlers
 
 \todo
 File operations
+
+Nested classes are generally avoided, in order to simplify name resolution.
+Friend classes are preferred.
 
 \section design-hdu-handlers HDU handlers
 
 \todo
 Handling of HDUs through vector of pointers
-HDU factory
-Access through references
+HDU factory, inc. passkey idiom
+Access through const references
 
 */
 
