@@ -81,7 +81,7 @@ private:
   /**
    * @brief Constructor.
    */
-  Header(fitsfile*& fptr, std::function<void(void)> touchFunction, std::function<void(void)> editFunction);
+  Header(fitsfile*& fptr, std::function<void(void)> touchFunc, std::function<void(void)> editFunc);
 
 public:
   /**
@@ -222,7 +222,7 @@ public:
    *   int age;
    *   float height;
    *   float mass;
-   *   float bmi() { return mass / (height * height); }
+   *   float bmi() const { return mass / (height * height); }
    * };
    *
    * auto body = hdu.parseStruct<Body>(

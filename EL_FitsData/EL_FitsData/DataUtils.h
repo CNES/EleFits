@@ -88,20 +88,20 @@ TReturn tupleAsImpl(TTuple&& tuple, std::index_sequence<Is...>) {
 /**
  * @brief Apply a variadic function to a tuple.
  */
-template <typename TFunc, typename TTuple, std::size_t... Is>
-constexpr decltype(auto) applyImpl(TFunc f, TTuple&& tuple, std::index_sequence<Is...>) {
-  return f(std::get<Is>(tuple)...);
+template <typename TTuple, typename TFunc, std::size_t... Is>
+constexpr decltype(auto) applyImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
+  return func(std::get<Is>(tuple)...);
 }
 
 /**
  * @brief Apply a function which returns void to each element of a tuple.
  */
-template <typename TFunc, typename TTuple, std::size_t... Is>
-void foreachImpl(TFunc f, TTuple&& tuple, std::index_sequence<Is...>) {
+template <typename TTuple, typename TFunc, std::size_t... Is>
+void foreachImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
   using mockUnpack = int[];
   (void)mockUnpack { 0, // Ensure there is at least one element
-                     (f(std::get<Is>(tuple)), // Use comma operator to return an int even if f doesn't
-                      void(), // Add void() in case where the return type of f would define a comma-operator
+                     (func(std::get<Is>(tuple)), // Use comma operator to return an int even if func doesn't
+                      void(), // Add void() in case where the return type of func would define a comma-operator
                       0)... };
 }
 
@@ -109,8 +109,8 @@ void foreachImpl(TFunc f, TTuple&& tuple, std::index_sequence<Is...>) {
  * @brief Apply a function to each element of a tuple, and make a user-defined struct from the results.
  */
 template <typename TReturn, typename TTuple, typename TFunc, std::size_t... Is>
-TReturn transformImpl(TFunc f, TTuple&& tuple, std::index_sequence<Is...>) {
-  return { f(std::get<Is>(tuple))... };
+TReturn transformImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
+  return { func(std::get<Is>(tuple))... };
 }
 
 } // namespace Internal
@@ -126,25 +126,31 @@ TReturn tupleAs(TTuple&& tuple) {
 /**
    * @brief Apply a variadic function a tuple.
    */
-template <typename TFunc, typename TTuple>
-constexpr decltype(auto) tupleApply(TFunc func, TTuple&& tuple) {
-  return Internal::applyImpl(func, std::forward<TTuple>(tuple), Internal::tupleIndexSequence<TTuple>());
+template <typename TTuple, typename TFunc>
+constexpr decltype(auto) tupleApply(TTuple&& tuple, TFunc&& func) {
+  return Internal::applyImpl(
+      std::forward<TTuple>(tuple),
+      std::forward<TFunc>(func),
+      Internal::tupleIndexSequence<TTuple>());
 }
 
 /**
    * @brief Apply a void-returning function to each element of the tuple.
    */
-template <typename TFunc, typename TTuple>
-void tupleForeach(TFunc f, TTuple&& tuple) {
-  return Internal::foreachImpl(f, std::forward<TTuple>(tuple), Internal::tupleIndexSequence<TTuple>());
+template <typename TTuple, typename TFunc>
+void tupleForeach(TTuple&& tuple, TFunc&& func) {
+  Internal::foreachImpl(std::forward<TTuple>(tuple), std::forward<TFunc>(func), Internal::tupleIndexSequence<TTuple>());
 }
 
 /**
    * @brief Apply a transform to each element of the tuple and make a user-defined struct from the results.
    */
-template <typename TReturn, typename TFunc, typename TTuple>
-TReturn tupleTransform(TFunc f, TTuple&& tuple) {
-  return Internal::transformImpl<TReturn>(f, std::forward<TTuple>(tuple), Internal::tupleIndexSequence<TTuple>());
+template <typename TReturn, typename TTuple, typename TFunc>
+TReturn tupleTransform(TTuple&& tuple, TFunc&& func) {
+  return Internal::transformImpl<TReturn>(
+      std::forward<TTuple>(tuple),
+      std::forward<TFunc>(func),
+      Internal::tupleIndexSequence<TTuple>());
 }
 
 } // namespace FitsIO

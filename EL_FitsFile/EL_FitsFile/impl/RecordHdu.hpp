@@ -80,32 +80,32 @@ RecordVector<T> RecordHdu::parseAllRecords() const {
 
 template <typename T>
 void RecordHdu::writeRecord(const Record<T>& record) const {
-  m_header.write(record);
+  m_header.write<RecordMode::CreateNew>(record);
 }
 
 template <typename T>
 void RecordHdu::writeRecord(const std::string& k, T v, const std::string& u, const std::string& c) const {
-  m_header.write(k, v, u, c);
+  m_header.write<RecordMode::CreateNew>(k, v, u, c);
 }
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const Record<Ts>&... records) const {
-  m_header.writeTuple(records...);
+  m_header.writeTuple<RecordMode::CreateNew>(records...);
 }
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const std::tuple<Record<Ts>...>& records) const {
-  m_header.writeTuple(records);
+  m_header.writeTuple<RecordMode::CreateNew>(records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const std::vector<Record<T>>& records) const {
-  m_header.writeVector(records);
+  m_header.writeVector<RecordMode::CreateNew>(records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  m_header.writeVectorIn(keywords, records.vector);
+  m_header.writeVectorIn<RecordMode::CreateNew>(keywords, records.vector);
 }
 
 template <typename T>

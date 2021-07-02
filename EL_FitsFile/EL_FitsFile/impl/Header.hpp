@@ -61,10 +61,10 @@ TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> Header::parseTupleOr(const std::tuple<Record<Ts>...>& fallbacks) const {
-  auto f = [&](auto... fs) {
+  auto func = [&](const auto&... fs) {
     return this->parseTupleOr(fs...);
   };
-  return tupleApply(f, fallbacks);
+  return tupleApply(fallbacks, func);
 }
 
 template <typename... Ts>
@@ -96,68 +96,52 @@ RecordVector<T> Header::parseVectorOr(const std::vector<Record<T>>& fallbacks) c
 /// @cond INTERNAL
 namespace Internal {
 
-template <RecordMode Mode, typename T>
+template <RecordMode Mode>
 struct RecordWriterImpl {
+  template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
 };
 
-template <typename T>
-struct RecordWriterImpl<RecordMode::CreateUnique, T> {
-  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
+template <>
+struct RecordWriterImpl<RecordMode::CreateUnique> {
+  template <typename T>
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
+    KeywordExistsError::mayThrow(record.keyword, header);
+    Cfitsio::Header::writeRecord(fptr, record);
+  }
 };
 
-template <typename T>
-struct RecordWriterImpl<RecordMode::CreateNew, T> {
-  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
+template <>
+struct RecordWriterImpl<RecordMode::CreateNew> {
+  template <typename T>
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
+    Cfitsio::Header::writeRecord(fptr, record);
+  }
 };
 
-template <typename T>
-struct RecordWriterImpl<RecordMode::UpdateExisting, T> {
-  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
+template <>
+struct RecordWriterImpl<RecordMode::UpdateExisting> {
+  template <typename T>
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
+    KeywordNotFoundError::mayThrow(record.keyword, header);
+    Cfitsio::Header::updateRecord(fptr, record);
+  }
 };
 
-template <typename T>
-struct RecordWriterImpl<RecordMode::CreateOrUpdate, T> {
-  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
+template <>
+struct RecordWriterImpl<RecordMode::CreateOrUpdate> {
+  template <typename T>
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
+    Cfitsio::Header::updateRecord(fptr, record);
+  }
 };
-
-template <typename T>
-void RecordWriterImpl<RecordMode::CreateUnique, T>::write(
-    fitsfile* fptr,
-    const Header& header,
-    const Record<T>& record) {
-  KeywordExistsError::mayThrow(record.keyword, header);
-  Cfitsio::Header::writeRecord(fptr, record);
-}
-
-template <typename T>
-void RecordWriterImpl<RecordMode::CreateNew, T>::write(fitsfile* fptr, const Header& header, const Record<T>& record) {
-  Cfitsio::Header::writeRecord(fptr, record);
-}
-
-template <typename T>
-void RecordWriterImpl<RecordMode::UpdateExisting, T>::write(
-    fitsfile* fptr,
-    const Header& header,
-    const Record<T>& record) {
-  KeywordNotFoundError::mayThrow(record.keyword, header);
-  Cfitsio::Header::updateRecord(fptr, record);
-}
-
-template <typename T>
-void RecordWriterImpl<RecordMode::CreateOrUpdate, T>::write(
-    fitsfile* fptr,
-    const Header& header,
-    const Record<T>& record) {
-  Cfitsio::Header::updateRecord(fptr, record);
-}
 
 } // namespace Internal
 
 template <RecordMode Mode, typename T>
 void Header::write(const Record<T>& record) const {
   m_edit();
-  Internal::RecordWriterImpl<Mode, T>::write(m_fptr, *this, record);
+  Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, record);
 }
 
 template <RecordMode Mode, typename T>
@@ -169,7 +153,10 @@ void Header::write(const std::string& keyword, const T& value, const std::string
 template <RecordMode Mode, typename... Ts>
 void Header::writeTuple(const std::tuple<Record<Ts>...>& records) const {
   m_edit();
-  Cfitsio::Header::writeRecords(m_fptr, records); // FIXME Mode
+  auto func = [&](const auto& r) {
+    Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
+  };
+  tupleForeach(records, func);
 }
 
 template <RecordMode Mode, typename... Ts>
