@@ -46,47 +46,54 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   const Record<float> f("F", 3.14);
   const auto t = std::make_tuple(i, f);
   const auto v = RecordVector<> { i, f };
+  struct S {
+    int i;
+    float f;
+  };
 
   /* Single write */
-  h.write1("I", 0);
-  h.write1(i);
-  h.write1<RecordMode::CreateNew>("I", 0);
-  h.write1<RecordMode::CreateNew>("I", 0);
+  h.write("I", 0);
+  h.write(i);
+  h.write<RecordMode::CreateNew>("I", 0);
+  h.write<RecordMode::CreateNew>("I", 0);
 
   /* Heterogeneous write */
-  h.writeN(i, f);
-  h.writeN(t);
-  h.writeN<RecordMode::CreateNew>(i, f);
-  h.writeN<RecordMode::CreateNew>(t);
+  h.writeTuple(i, f);
+  h.writeTuple(t);
+  h.writeTupleIn({ "I" }, i, f);
+  h.writeTupleIn({ "F" }, t);
+  h.writeTuple<RecordMode::CreateNew>(i, f);
+  h.writeTuple<RecordMode::CreateNew>(t);
 
   /* Homogeneous write */
-  h.writeN(v.vector);
-  h.writeN<RecordMode::CreateNew>(v.vector);
+  h.writeVector(v.vector);
+  h.writeVectorIn({ "I" }, v.vector);
+  h.writeVector<RecordMode::CreateNew>(v.vector);
 
   /* Global read */
   h.readAll(~KeywordCategory::Comment);
   h.parseAll(~KeywordCategory::Comment);
 
   /* Single read */
-  h.parse1<int>(i.keyword);
-  h.parse1Or<int>(i.keyword, 0);
-  h.parse1Or(i);
+  h.parse<int>(i.keyword);
+  h.parseOr<int>(i.keyword, 0);
+  h.parseOr(i);
 
   /* Heterogeneous read */
-  h.parseN(Named<int>("I"), Named<float>("F"));
-  h.parseN(std::make_tuple(Named<int>("I"), Named<float>("F")));
-  h.parseNOr(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
+  h.parseTuple(Named<int>("I"), Named<float>("F"));
+  h.parseTupleOr(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
+  h.parseStruct<S>(Named<int>("I"), Named<float>("F"));
 
   /* Homogeneous read */
-  h.parseN<VariantValue>({ "I", "F" });
+  h.parseVector<VariantValue>({ "I", "F" });
 }
 
 BOOST_AUTO_TEST_CASE(checksum_test) {
   const auto& h = header().header();
   BOOST_CHECK_THROW(h.verifyChecksums(), ChecksumError);
-  h.computeChecksums();
+  h.updateChecksums();
   BOOST_CHECK_NO_THROW(h.verifyChecksums());
-  h.write1("DATASUM", std::string(""));
+  h.write("DATASUM", std::string(""));
   BOOST_CHECK_THROW(h.verifyChecksums(), ChecksumError);
 }
 

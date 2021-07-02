@@ -17,76 +17,21 @@
  *
  */
 
-#if defined(_EL_FITSFILE_RECORDHDU_IMPL) || defined(CHECK_QUALITY)
-  #ifndef _EL_FITSFILE_HEADER_H
-    #define _EL_FITSFILE_HEADER_H
+#ifndef _EL_FITSFILE_HEADER_H
+#define _EL_FITSFILE_HEADER_H
 
-    #include "EL_FitsData/DataUtils.h"
-    #include "EL_FitsData/Record.h"
-    #include "EL_FitsData/RecordVector.h"
-    #include "EL_FitsData/StandardKeyword.h"
-    #include "EL_FitsFile/RecordHdu.h"
+#include "EL_FitsData/DataUtils.h"
+#include "EL_FitsData/Record.h"
+#include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/StandardKeyword.h"
 
-    #include <string>
-    #include <tuple>
-    #include <vector>
+#include <fitsio.h>
+#include <string>
+#include <tuple>
+#include <vector>
 
 namespace Euclid {
 namespace FitsIO {
-
-/**
- * @brief Exception thrown when a keyword already exists.
- * @ingroup exceptions
- */
-struct KeywordExistsError : public FitsIOError {
-
-  /**
-   * @brief Constructor.
-   */
-  KeywordExistsError(const std::string& keyword);
-
-  /**
-   * @brief Throw if an HDU already contains a given keyword.
-   */
-  static void mayThrow(const std::string& keyword, const RecordHdu& hdu);
-
-  /**
-   * @brief Throw if an HDU already contains any of given keywords.
-   */
-  static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
-
-  /**
-   * @brief The keyword which already exists.
-   */
-  std::string keyword;
-};
-
-/**
- * @brief Exception thrown when a keyword is not found.
- * @ingroup exceptions
- */
-struct KeywordNotFoundError : public FitsIOError {
-
-  /**
-   * @brief Constructor.
-   */
-  KeywordNotFoundError(const std::string& keyword);
-
-  /**
-   * @brief Throw if an HDU misses a given keyword.
-   */
-  static void mayThrow(const std::string& keyword, const RecordHdu& hdu);
-
-  /**
-   * @brief Throw if an HDU misses any of given keywords.
-   */
-  static void mayThrow(const std::vector<std::string>& keywords, const RecordHdu& hdu);
-
-  /**
-   * @brief The missing keyword.
-   */
-  std::string keyword;
-};
 
 /**
  * @brief Record writing modes.
@@ -108,7 +53,7 @@ enum class RecordMode
  * - writeXxx methods write provided values following a strategy defined as a RecordMode.
  * 
  * When reading or writing several records, it is recommended to use the variadic form of the methods
- * (e.g. one call to `writeN()` instead of several calls to `write1()`), which are optimized.
+ * (e.g. one call to `writeTuple()` instead of several calls to `write()`), which are optimized.
  * 
  * There are two approaches to read and write several records at once:
  * - As heterogeneous collections, through a variadic parameter pack, tuple, or relying on VariantValue;
@@ -129,9 +74,16 @@ enum class RecordMode
  * There should be a fix on CFitsIO side.
  */
 class Header {
-public:
-  Header(const RecordHdu& hdu);
 
+private:
+  friend class RecordHdu;
+
+  /**
+   * @brief Constructor.
+   */
+  Header(fitsfile*& fptr, std::function<void(void)> touchFunction, std::function<void(void)> editFunction);
+
+public:
   /**
    * @brief Check whether the HDU contains a given keyword.
    */
@@ -169,9 +121,11 @@ public:
    * @details
    * Example usage:
    * \code
-   * auto records = h.parseAll(~KeywordCategory::Comment);
+   * auto records = h.parseAll(KeywordCategory::Reserved);
    * \endcode
    * where `h` is a `Header`.
+   * @warning
+   * Comment records are not parsed, as of today.
    */
   RecordVector<VariantValue> parseAll(KeywordCategory categories = KeywordCategory::All) const;
 
@@ -188,7 +142,7 @@ public:
    * where `h` is a `Header`.
    */
   template <typename T>
-  Record<std::decay_t<T>> parse1(const std::string& keyword) const;
+  Record<T> parse(const std::string& keyword) const;
 
   /**
    * @brief Parse a record if it exists, return a fallback record otherwise.
@@ -206,7 +160,7 @@ public:
    * where `h` is a `Header` and `T` is the value type of the fallback.
    */
   template <typename T>
-  Record<std::decay_t<T>> parse1Or(const Record<T>& fallback) const;
+  Record<T> parseOr(const Record<T>& fallback) const;
 
   /**
    * @brief Parse a record if it exists, return a fallback otherwise.
@@ -224,19 +178,11 @@ public:
    * where `h` is a `Header` and `T` is the value type of the fallback.
    */
   template <typename T>
-  Record<std::decay_t<T>> parse1Or(
+  Record<T> parseOr(
       const std::string& keyword,
       const T& fallbackValue,
       const std::string& fallbackUnit = "",
       const std::string& fallbackComment = "") const;
-
-  /**
-   * @brief Parse several records.
-   * @tparam Ts The desired record value types, doesn't need to be set explicitely
-   * @param keywords The keywords and desired types of the records to be parsed
-   */
-  template <typename... Ts>
-  RecordTuple<std::decay_t<Ts>...> parseN(const std::tuple<Named<Ts>...>& keywords) const;
 
   /**
    * @brief Parse several records.
@@ -249,7 +195,48 @@ public:
    * \endcode
    */
   template <typename... Ts>
-  RecordTuple<std::decay_t<Ts>...> parseN(const Named<Ts>&... keywords) const;
+  std::tuple<Record<Ts>...> parseTuple(const Named<Ts>&... keywords) const;
+
+  /**
+   * @brief Parse several records as a user-defined structure.
+   * @tparam TReturn A structure which can be constructed as:
+   * \code TReturn { Ts ... } \endcode
+   * or:
+   * \code TReturn { Record<Ts> ... } \endcode
+   * like a simple structure:
+   * \code struct TReturn { T1 p1; T2 p2; ... }; \endcode
+   * or a class with such a constructor:
+   * \code TReturn::TReturn(T1, T2, ...) \endcode
+   * @details
+   * This method can be used to mimic a named tuple,
+   * which is generally more convenient than a std::tuple,
+   * because you chose how to to access the records in your own class
+   * instead of accessing them by their indices -- with `std::get<i>(tuple)`.
+   *
+   * Example usage:
+   * \code
+   * // Body can be constructed from a brace-enclosed list:
+   * // Body body { name, age, height, mass };
+   * struct Body {
+   *   std::string name;
+   *   int age;
+   *   float height;
+   *   float mass;
+   *   float bmi() { return mass / (height * height); }
+   * };
+   *
+   * auto body = hdu.parseStruct<Body>(
+   *     Named<std::string>("NAME"),
+   *     Named<int>("AGE"),
+   *     Named<float>("HEIGHT"),
+   *     Named<float>("MASS"));
+   *
+   * std::cout << "Hello, " << body.name << "!" << std::endl;
+   * std::cout << "Your BMI is: " << body.bmi() << std::endl;
+   * \endcode
+   */
+  template <typename TReturn, typename... Ts>
+  TReturn parseStruct(const Named<Ts>&... keywords) const;
 
   /**
    * @brief Parse several records if they exists, return fallbacks for those which don't.
@@ -257,7 +244,7 @@ public:
    * @param fallbacks The fallback records, keywords of which is looked for
    */
   template <typename... Ts>
-  RecordTuple<std::decay_t<Ts>...> parseNOr(const std::tuple<Record<Ts>...>& fallbacks) const;
+  std::tuple<Record<Ts>...> parseTupleOr(const std::tuple<Record<Ts>...>& fallbacks) const;
 
   /**
    * @brief Parse several records if they exists, return fallbacks for those which don't.
@@ -270,7 +257,7 @@ public:
    * \endcode
    */
   template <typename... Ts>
-  RecordTuple<std::decay_t<Ts>...> parseNOr(const Record<Ts>&... fallbacks) const;
+  std::tuple<Record<Ts>...> parseTupleOr(const Record<Ts>&... fallbacks) const;
 
   /**
    * @brief Parse several records.
@@ -278,7 +265,7 @@ public:
    * @param keywords The keywords
    */
   template <typename T>
-  RecordVector<std::decay_t<T>> parseN(const std::vector<std::string>& keywords) const;
+  RecordVector<T> parseVector(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse several records if they exists, given fallbacks for those which don't.
@@ -286,7 +273,7 @@ public:
    * @param fallbacks The fallback records, keywords of which is looked for
    */
   template <typename T>
-  RecordVector<std::decay_t<T>> parseNOr(const std::vector<Record<T>>& fallbacks) const;
+  RecordVector<T> parseVectorOr(const std::vector<Record<T>>& fallbacks) const;
 
   /**
    * @brief Write a record.
@@ -300,7 +287,7 @@ public:
    * \endcode
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
-  void write1(const Record<T>& record) const;
+  void write(const Record<T>& record) const;
 
   /**
    * @brief Write a record.
@@ -314,7 +301,7 @@ public:
    * \endcode
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
-  void write1(const std::string& keyword, const T& value, const std::string& unit = "", const std::string& comment = "")
+  void write(const std::string& keyword, const T& value, const std::string& unit = "", const std::string& comment = "")
       const;
 
   /**
@@ -323,26 +310,9 @@ public:
    * @tparam Ts The record value types, doesn't need to be specified
    * @param records The records
    * @param mode The write mode
-   * @brief
-   * Using a tuple parameter can be handy when working with `RecordTuple`s, e.g.:
-   * \code
-   * h.write(records.tuple);
-   * \endcode
-   * where `h` is a `Header` and `records` is a `RecordTuple`.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeN(const std::tuple<Record<Ts>...>& records) const;
-
-  /**
-   * @brief Write a subset of a tuple of records.
-   * @tparam Mode The write mode
-   * @tparam Ts The record value types, doesn't need to be specified
-   * @param keywords The selection of records to be written
-   * @param records The available records
-   * @param mode The write mode
-   */
-  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeN(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const;
+  void writeTuple(const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Write a tuple of records.
@@ -359,7 +329,18 @@ public:
    * where `h` is a `Header` and `r1`, `r2`, `r3` are `Record`s.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeN(const Record<Ts>&... records) const;
+  void writeTuple(const Record<Ts>&... records) const;
+
+  /**
+   * @brief Write a subset of a tuple of records.
+   * @tparam Mode The write mode
+   * @tparam Ts The record value types, doesn't need to be specified
+   * @param keywords The selection of records to be written
+   * @param records The available records
+   * @param mode The write mode
+   */
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
+  void writeTupleIn(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const;
 
   /**
    * @brief Write a subset of a tuple of records.
@@ -374,10 +355,10 @@ public:
    * h.write({ "R0", "R1" }, r0, r1, r2);
    * h.write<RecordMode::CreateNew>({ "R0", "R1" }, r0, r1, r2);
    * \endcode
-   * where `h` is a `Header` and `r1`, `r2`, `r3` are `Record`s.
+   * where `h` is a `Header` and `r0`, `r1`, `r2` are `Record`s.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeN(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
+  void writeTupleIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
 
   /**
    * @brief Write a vector of records.
@@ -386,7 +367,7 @@ public:
    * @param records The records
    */
   template <RecordMode mode = RecordMode::CreateOrUpdate, typename T>
-  void writeN(const std::vector<Record<T>>& records) const;
+  void writeVector(const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Write a subset of a vector of records.
@@ -396,7 +377,7 @@ public:
    * @param records The available records
    */
   template <RecordMode mode = RecordMode::CreateOrUpdate, typename T>
-  void writeN(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const;
+  void writeVectorIn(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const;
 
   /**
    * @brief Compute the HDU and data checksums and compare them to the values in the header.
@@ -407,23 +388,86 @@ public:
   /**
    * @brief Compute and write (or update) the HDU and data checksums.
    */
-  void computeChecksums() const;
+  void updateChecksums() const;
 
 private:
   /**
-   * @brief The parent HDU.
+   * @brief The fitsfile.
    */
-  const RecordHdu& m_hdu;
+  fitsfile*& m_fptr;
+
+  /**
+   * @brief The function to declare that the header was touched.
+   */
+  std::function<void(void)> m_touch;
+
+  /**
+   * @brief The function to declare that the header was edited.
+   */
+  std::function<void(void)> m_edit;
+};
+
+/**
+ * @brief Exception thrown when a keyword already exists.
+ * @ingroup exceptions
+ */
+struct KeywordExistsError : public FitsIOError {
+
+  /**
+   * @brief Constructor.
+   */
+  KeywordExistsError(const std::string& keyword);
+
+  /**
+   * @brief Throw if an HDU already contains a given keyword.
+   */
+  static void mayThrow(const std::string& keyword, const Header& header);
+
+  /**
+   * @brief Throw if an HDU already contains any of given keywords.
+   */
+  static void mayThrow(const std::vector<std::string>& keywords, const Header& header);
+
+  /**
+   * @brief The keyword which already exists.
+   */
+  std::string keyword;
+};
+
+/**
+ * @brief Exception thrown when a keyword is not found.
+ * @ingroup exceptions
+ */
+struct KeywordNotFoundError : public FitsIOError {
+
+  /**
+   * @brief Constructor.
+   */
+  KeywordNotFoundError(const std::string& keyword);
+
+  /**
+   * @brief Throw if an HDU misses a given keyword.
+   */
+  static void mayThrow(const std::string& keyword, const Header& header);
+
+  /**
+   * @brief Throw if an HDU misses any of given keywords.
+   */
+  static void mayThrow(const std::vector<std::string>& keywords, const Header& header);
+
+  /**
+   * @brief The missing keyword.
+   */
+  std::string keyword;
 };
 
 } // namespace FitsIO
 } // namespace Euclid
 
-    /// @cond INTERNAL
-    #define _EL_FITSFILE_HEADER_IMPL
-    #include "EL_FitsFile/impl/Header.hpp"
-    #undef _EL_FITSFILE_HEADER_IMPL
+/// @cond INTERNAL
+#define _EL_FITSFILE_HEADER_IMPL
+#include "EL_FitsFile/impl/Header.hpp"
+#undef _EL_FITSFILE_HEADER_IMPL
 /// @endcond
 
-  #endif
 #endif

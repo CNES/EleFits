@@ -31,7 +31,10 @@ template <typename T>
 RecordVector<T>::RecordVector(std::size_t size) : vector(size) {}
 
 template <typename T>
-RecordVector<T>::RecordVector(std::vector<T> records) : vector(std::move(records)) {}
+RecordVector<T>::RecordVector(const std::vector<Record<T>>& records) : vector(records) {}
+
+template <typename T>
+RecordVector<T>::RecordVector(std::vector<Record<T>>&& records) : vector(std::move(records)) {}
 
 template <typename T>
 template <typename... Ts>

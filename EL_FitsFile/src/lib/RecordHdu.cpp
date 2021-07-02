@@ -26,9 +26,15 @@ namespace Euclid {
 namespace FitsIO {
 
 RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
-    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_header(nullptr), m_status(status) {
-  m_header = std::make_unique<Header>(*this);
-}
+    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_header(
+                                                               m_fptr,
+                                                               [&]() {
+                                                                 touchThisHdu();
+                                                               },
+                                                               [&]() {
+                                                                 editThisHdu();
+                                                               }),
+    m_status(status) {}
 
 RecordHdu::RecordHdu() : RecordHdu(Token(), m_dummyFptr, 0, HduCategory::Image, HduCategory::Untouched) {}
 
@@ -51,7 +57,7 @@ HduCategory RecordHdu::readCategory() const {
 }
 
 const Header& RecordHdu::header() const {
-  return *m_header;
+  return m_header;
 }
 
 bool RecordHdu::matches(HduFilter filter) const {
@@ -74,13 +80,11 @@ std::string RecordHdu::readHeader(bool incNonValued) const {
 }
 
 std::vector<std::string> RecordHdu::readKeywords(KeywordCategory categories) const {
-  touchThisHdu();
-  return Cfitsio::Header::listKeywords(m_fptr, categories);
+  return m_header.readKeywords(categories);
 }
 
 std::map<std::string, std::string> RecordHdu::readKeywordsValues(KeywordCategory categories) const {
-  touchThisHdu();
-  return Cfitsio::Header::listKeywordsValues(m_fptr, categories);
+  return m_header.readKeywordsValues(categories);
 }
 
 bool RecordHdu::hasKeyword(const std::string& keyword) const {
@@ -104,7 +108,7 @@ void RecordHdu::writeHistory(const std::string& history) const {
 
 void RecordHdu::deleteRecord(const std::string& keyword) const {
   editThisHdu();
-  KeywordNotFoundError::mayThrow(keyword, *this);
+  KeywordNotFoundError::mayThrow(keyword, m_header);
   Cfitsio::Header::deleteRecord(m_fptr, keyword);
 }
 

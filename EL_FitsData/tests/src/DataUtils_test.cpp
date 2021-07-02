@@ -49,9 +49,6 @@ struct PassBySpy {
   bool copied;
 };
 
-template <typename... Ts>
-using PassBySpyTuple = Tuple<PassBySpy<Ts>...>;
-
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(DataUtils_test)

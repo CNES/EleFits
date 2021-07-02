@@ -20,6 +20,7 @@
 #if defined(_EL_FITSFILE_RECORDHDU_IMPL) || defined(CHECK_QUALITY)
 
   #include "EL_CfitsioWrapper/HeaderWrapper.h"
+  #include "EL_FitsData/RecordVector.h"
   #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
@@ -32,8 +33,7 @@ const T& RecordHdu::as() const {
 
 template <typename T>
 Record<T> RecordHdu::parseRecord(const std::string& keyword) const {
-  touchThisHdu();
-  return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
+  return m_header.parse<T>(keyword);
 }
 
 template <typename... Ts>
@@ -44,7 +44,7 @@ std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string>
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecords(const Named<Ts>&... keywords) const {
-  return parseRecords<Ts...>({ keywords.name... });
+  return m_header.parseTuple(keywords...);
 }
 
 template <class TReturn, typename... Ts>
@@ -55,105 +55,87 @@ TReturn RecordHdu::parseRecordsAs(const std::vector<std::string>& keywords) cons
 
 template <class TReturn, typename... Ts>
 TReturn RecordHdu::parseRecordsAs(const Named<Ts>&... keywords) const {
-  return parseRecordsAs<TReturn, Ts...>({ keywords.name... });
+  return m_header.parseStruct<TReturn>(keywords...);
 }
 
 template <typename T>
 Record<T> RecordHdu::parseRecordOr(const Record<T>& fallback) const {
-  if (hasKeyword(fallback.keyword)) {
-    return parseRecord<T>(fallback.keyword);
-  }
-  return fallback;
+  return m_header.parseOr(fallback);
 }
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecordsOr(const Record<Ts>&... fallbacks) const {
-  return { parseRecordOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
+  return m_header.parseTupleOr(fallbacks...);
 }
 
 template <typename T>
 RecordVector<T> RecordHdu::parseRecordVector(const std::vector<std::string>& keywords) const {
-  touchThisHdu();
-  return Cfitsio::Header::parseRecordVector<T>(m_fptr, keywords);
+  return m_header.parseVector<T>(keywords);
 }
 
 template <typename T>
 RecordVector<T> RecordHdu::parseAllRecords() const {
-  return parseRecordVector<T>(readKeywords(KeywordCategory::All & ~KeywordCategory::Comment));
+  return m_header.parseVector<T>(readKeywords());
 }
 
 template <typename T>
 void RecordHdu::writeRecord(const Record<T>& record) const {
-  editThisHdu();
-  Cfitsio::Header::writeRecord(m_fptr, record);
+  m_header.write(record);
 }
 
 template <typename T>
 void RecordHdu::writeRecord(const std::string& k, T v, const std::string& u, const std::string& c) const {
-  writeRecord<T>({ k, v, u, c });
+  m_header.write(k, v, u, c);
 }
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const Record<Ts>&... records) const {
-  editThisHdu();
-  Cfitsio::Header::writeRecords(m_fptr, records...);
+  m_header.writeTuple(records...);
 }
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const std::tuple<Record<Ts>...>& records) const {
-  editThisHdu();
-  Cfitsio::Header::writeRecords(m_fptr, records);
+  m_header.writeTuple(records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const std::vector<Record<T>>& records) const {
-  editThisHdu();
-  Cfitsio::Header::writeRecords(m_fptr, records);
+  m_header.writeVector(records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  editThisHdu();
-  for (const auto& k : keywords) {
-    Cfitsio::Header::writeRecord(m_fptr, records[k]);
-  }
+  m_header.writeVectorIn(keywords, records.vector);
 }
 
 template <typename T>
 void RecordHdu::updateRecord(const Record<T>& record) const {
-  editThisHdu();
-  Cfitsio::Header::updateRecord(m_fptr, record);
+  m_header.write<RecordMode::CreateOrUpdate>(record);
 }
 
 template <typename T>
 void RecordHdu::updateRecord(const std::string& k, T v, const std::string& u, const std::string& c) const {
-  updateRecord(Record<T>(k, v, u, c));
+  m_header.write<RecordMode::CreateOrUpdate>(k, v, c, u);
 }
 
 template <typename... Ts>
 void RecordHdu::updateRecords(const Record<Ts>&... records) const {
-  editThisHdu();
-  Cfitsio::Header::updateRecords(m_fptr, records...);
+  m_header.writeTuple<RecordMode::CreateOrUpdate>(records...);
 }
 
 template <typename... Ts>
 void RecordHdu::updateRecords(const std::tuple<Record<Ts>...>& records) const {
-  editThisHdu();
-  Cfitsio::Header::updateRecords(m_fptr, records);
+  m_header.writeTuple<RecordMode::CreateOrUpdate>(records);
 }
 
 template <typename T>
 void RecordHdu::updateRecords(const std::vector<Record<T>>& records) const {
-  editThisHdu();
-  Cfitsio::Header::updateRecords(m_fptr, records);
+  m_header.writeVector<RecordMode::CreateOrUpdate>(records);
 }
 
 template <typename T>
 void RecordHdu::updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  editThisHdu();
-  for (const auto& k : keywords) {
-    Cfitsio::Header::updateRecord(m_fptr, records[k]);
-  }
+  m_header.writeVectorIn<RecordMode::CreateOrUpdate>(keywords, records.vector);
 }
 
   #ifndef DECLARE_PARSE_RECORD

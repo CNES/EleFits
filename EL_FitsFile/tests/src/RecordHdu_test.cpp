@@ -88,10 +88,10 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
       "that I have ever written in a serious code.";
   BOOST_CHECK_GT(longStr.length(), FLEN_VALUE);
   h.writeRecord("SHORT", shortStr);
-  BOOST_CHECK_THROW(h.parseRecord<std::string>("LONGSTRN"), std::exception); // TODO replace with not h.hasKeyword()
+  BOOST_CHECK(not h.hasKeyword("LONGSTRN"));
   h.writeRecord("LONG", longStr);
   const auto output = h.parseRecord<std::string>("LONG");
-  h.parseRecord<std::string>("LONGSTRN"); // TODO replace with h.hasKeyword()
+  h.parseRecord<std::string>("LONGSTRN");
   BOOST_CHECK_EQUAL(output.value, longStr);
   BOOST_CHECK(output.hasLongStringValue());
 }

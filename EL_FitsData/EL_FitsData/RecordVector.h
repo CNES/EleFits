@@ -51,7 +51,12 @@ public:
   /**
    * @brief Create a RecordVector from a vector of records.
    */
-  RecordVector(std::vector<T> records);
+  RecordVector(const std::vector<Record<T>>& records);
+
+  /**
+   * @brief Create a RecordVector from a vector of records.
+   */
+  RecordVector(std::vector<Record<T>>&& records);
 
   /**
    * @brief Create a RecordVector from a list of records.
@@ -89,12 +94,6 @@ public:
   template <typename TValue>
   Record<TValue> as(const std::string& keyword) const;
 };
-
-/**
- * @brief A series of records.
- */
-template <typename... Ts>
-using RecordTuple = Tuple<Record<Ts>...>;
 
 } // namespace FitsIO
 } // namespace Euclid

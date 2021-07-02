@@ -21,68 +21,76 @@
 
   #include "EL_CfitsioWrapper/HeaderWrapper.h"
   #include "EL_FitsFile/Header.h"
-  #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
 namespace FitsIO {
 
 template <typename T>
-Record<std::decay_t<T>> Header::parse1(const std::string& keyword) const {
-  m_hdu.touchThisHdu();
-  return Cfitsio::Header::parseRecord<T>(m_hdu.m_fptr, keyword);
+Record<T> Header::parse(const std::string& keyword) const {
+  m_touch();
+  return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
 }
 
 template <typename T>
-Record<std::decay_t<T>> Header::parse1Or(const Record<T>& fallback) const {
+Record<T> Header::parseOr(const Record<T>& fallback) const {
   if (has(fallback.keyword)) {
-    return parse1<T>(fallback.keyword);
+    return parse<T>(fallback.keyword);
   }
   return fallback;
 }
 
 template <typename T>
-Record<std::decay_t<T>> Header::parse1Or(
+Record<T> Header::parseOr(
     const std::string& keyword,
     const T& fallbackValue,
     const std::string& fallbackUnit,
     const std::string& fallbackComment) const {
-  return parse1Or(Record<T>(keyword, fallbackValue, fallbackUnit, fallbackComment));
+  return parseOr(Record<T>(keyword, fallbackValue, fallbackUnit, fallbackComment));
 }
 
 template <typename... Ts>
-RecordTuple<std::decay_t<Ts>...> Header::parseN(const std::tuple<Named<Ts>...>& keywords) const {
-  return RecordTuple<std::decay_t<Ts>...>(); // FIXME
+std::tuple<Record<Ts>...> Header::parseTuple(const Named<Ts>&... keywords) const {
+  return parseStruct<std::tuple<Record<Ts>...>, Ts...>(keywords...);
+}
+
+template <typename TReturn, typename... Ts>
+TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
+  m_touch();
+  return { Cfitsio::Header::parseRecord<Ts>(m_fptr, keywords.name)... };
 }
 
 template <typename... Ts>
-RecordTuple<std::decay_t<Ts>...> Header::parseN(const Named<Ts>&... keywords) const {
-  return parseN<Ts...>({ keywords.name... });
+std::tuple<Record<Ts>...> Header::parseTupleOr(const std::tuple<Record<Ts>...>& fallbacks) const {
+  auto f = [&](auto... fs) {
+    return this->parseTupleOr(fs...);
+  };
+  return tupleApply(f, fallbacks);
 }
 
 template <typename... Ts>
-RecordTuple<std::decay_t<Ts>...> Header::parseNOr(const std::tuple<Record<Ts>...>& fallbacks) const {
-  // FIXME
-  return { fallbacks };
-}
-
-template <typename... Ts>
-RecordTuple<std::decay_t<Ts>...> Header::parseNOr(const Record<Ts>&... fallbacks) const {
-  return { { parse1Or<Ts>(fallbacks)... } }; // TODO avoid calling touchThisHdu for each keyword
+std::tuple<Record<Ts>...> Header::parseTupleOr(const Record<Ts>&... fallbacks) const {
+  std::tuple<Record<Ts>...> t { parseOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
+  return std::tuple<Record<Ts>...> { t };
 }
 
 template <typename T>
-RecordVector<std::decay_t<T>> Header::parseN(const std::vector<std::string>& keywords) const {
-  RecordVector<std::decay_t<T>> res(keywords.size());
+RecordVector<T> Header::parseVector(const std::vector<std::string>& keywords) const {
+  m_touch();
+  RecordVector<T> res(keywords.size());
   std::transform(keywords.begin(), keywords.end(), res.vector.begin(), [&](const std::string& k) {
-    return parse1<T>(k);
+    return Cfitsio::Header::parseRecord<T>(m_fptr, k);
   });
   return res;
 }
 
 template <typename T>
-RecordVector<std::decay_t<T>> Header::parseNOr(const std::vector<Record<T>>& fallbacks) const {
-  // FIXME
-  return fallbacks;
+RecordVector<T> Header::parseVectorOr(const std::vector<Record<T>>& fallbacks) const {
+  m_touch();
+  RecordVector<T> v(0);
+  for (const auto& f : fallbacks) {
+    v.push_back(parseOr(f)); // TODO avoid calling touchThisHdu for each keyword
+  }
+  return v;
 }
 
 /// @cond INTERNAL
@@ -90,56 +98,56 @@ namespace Internal {
 
 template <RecordMode Mode, typename T>
 struct RecordWriterImpl {
-  static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
 };
 
 template <typename T>
 struct RecordWriterImpl<RecordMode::CreateUnique, T> {
-  static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
 };
 
 template <typename T>
 struct RecordWriterImpl<RecordMode::CreateNew, T> {
-  static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
 };
 
 template <typename T>
 struct RecordWriterImpl<RecordMode::UpdateExisting, T> {
-  static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
 };
 
 template <typename T>
 struct RecordWriterImpl<RecordMode::CreateOrUpdate, T> {
-  static void write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record);
+  static void write(fitsfile* fptr, const Header& header, const Record<T>& record);
 };
 
 template <typename T>
-void RecordWriterImpl<RecordMode::CreateUnique, T>::write1(
+void RecordWriterImpl<RecordMode::CreateUnique, T>::write(
     fitsfile* fptr,
-    const RecordHdu& hdu,
+    const Header& header,
     const Record<T>& record) {
-  KeywordExistsError::mayThrow(record.keyword, hdu);
+  KeywordExistsError::mayThrow(record.keyword, header);
   Cfitsio::Header::writeRecord(fptr, record);
 }
 
 template <typename T>
-void RecordWriterImpl<RecordMode::CreateNew, T>::write1(fitsfile* fptr, const RecordHdu& hdu, const Record<T>& record) {
+void RecordWriterImpl<RecordMode::CreateNew, T>::write(fitsfile* fptr, const Header& header, const Record<T>& record) {
   Cfitsio::Header::writeRecord(fptr, record);
 }
 
 template <typename T>
-void RecordWriterImpl<RecordMode::UpdateExisting, T>::write1(
+void RecordWriterImpl<RecordMode::UpdateExisting, T>::write(
     fitsfile* fptr,
-    const RecordHdu& hdu,
+    const Header& header,
     const Record<T>& record) {
-  KeywordNotFoundError::mayThrow(record.keyword, hdu);
+  KeywordNotFoundError::mayThrow(record.keyword, header);
   Cfitsio::Header::updateRecord(fptr, record);
 }
 
 template <typename T>
-void RecordWriterImpl<RecordMode::CreateOrUpdate, T>::write1(
+void RecordWriterImpl<RecordMode::CreateOrUpdate, T>::write(
     fitsfile* fptr,
-    const RecordHdu& hdu,
+    const Header& header,
     const Record<T>& record) {
   Cfitsio::Header::updateRecord(fptr, record);
 }
@@ -147,47 +155,55 @@ void RecordWriterImpl<RecordMode::CreateOrUpdate, T>::write1(
 } // namespace Internal
 
 template <RecordMode Mode, typename T>
-void Header::write1(const Record<T>& record) const {
-  m_hdu.editThisHdu();
-  Internal::RecordWriterImpl<Mode, T>::write1(m_hdu.m_fptr, m_hdu, record);
+void Header::write(const Record<T>& record) const {
+  m_edit();
+  Internal::RecordWriterImpl<Mode, T>::write(m_fptr, *this, record);
 }
 
 template <RecordMode Mode, typename T>
-void Header::write1(const std::string& keyword, const T& value, const std::string& unit, const std::string& comment)
+void Header::write(const std::string& keyword, const T& value, const std::string& unit, const std::string& comment)
     const {
-  return write1<Mode, T>({ keyword, value, unit, comment });
+  return write<Mode, T>({ keyword, value, unit, comment });
 }
 
 template <RecordMode Mode, typename... Ts>
-void Header::writeN(const std::tuple<Record<Ts>...>& records) const {
-  m_hdu.editThisHdu();
-  Cfitsio::Header::writeRecords(m_hdu.m_fptr, records); // FIXME Mode
+void Header::writeTuple(const std::tuple<Record<Ts>...>& records) const {
+  m_edit();
+  Cfitsio::Header::writeRecords(m_fptr, records); // FIXME Mode
 }
 
 template <RecordMode Mode, typename... Ts>
-void Header::writeN(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const {
+void Header::writeTupleIn(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const {
   // FIXME
 }
 
 template <RecordMode Mode, typename... Ts>
-void Header::writeN(const Record<Ts>&... records) const {
-  m_hdu.editThisHdu();
-  Cfitsio::Header::writeRecords(m_hdu.m_fptr, records...); // FIXME Mode
+void Header::writeTuple(const Record<Ts>&... records) const {
+  m_edit();
+  Cfitsio::Header::writeRecords(m_fptr, records...); // FIXME Mode
 }
 
 template <RecordMode Mode, typename... Ts>
-void Header::writeN(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
-  // FIXME
-}
-
-template <RecordMode mode, typename T>
-void Header::writeN(const std::vector<Record<T>>& records) const {
+void Header::writeTupleIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
+  m_edit();
   // FIXME
 }
 
 template <RecordMode mode, typename T>
-void Header::writeN(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const {
-  // FIXME
+void Header::writeVector(const std::vector<Record<T>>& records) const {
+  m_edit();
+  for (const auto& r : records) {
+    Cfitsio::Header::writeRecord(m_fptr, r);
+  }
+}
+
+template <RecordMode mode, typename T>
+void Header::writeVectorIn(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const {
+  m_edit();
+  RecordVector<T> v(records);
+  for (const auto& k : keywords) {
+    Cfitsio::Header::writeRecord(m_fptr, v[k]);
+  }
 }
 
 } // namespace FitsIO

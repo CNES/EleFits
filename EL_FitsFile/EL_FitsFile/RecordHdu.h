@@ -25,15 +25,13 @@
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/RecordVector.h"
 #include "EL_FitsData/StandardKeyword.h"
+#include "EL_FitsFile/Header.h"
 
 #include <fitsio.h>
 #include <memory>
 
 namespace Euclid {
 namespace FitsIO {
-
-/* Forward declaration to avoid type nesting */
-class Header;
 
 /**
  * @ingroup handlers
@@ -47,8 +45,6 @@ class Header;
  * RecordHdus are written as Image HDUs with NAXIS=0.
  */
 class RecordHdu {
-
-  friend class Header;
 
 public:
   /// @cond INTERNAL
@@ -154,7 +150,7 @@ public:
    * @brief Access the header unit to read and write records.
    * @see Header
    */
-  const Header& header() const; // FIXME make const reference
+  const Header& header() const;
 
   /**
    * @brief Read the extension name.
@@ -496,10 +492,8 @@ protected:
 
   /**
    * @brief The header unit handler.
-   * @details
-   * This is a pointer because Header is only forward declared at this point.
    */
-  std::unique_ptr<Header> m_header;
+  Header m_header;
 
   /**
    * @brief The HDU status.
@@ -520,7 +514,6 @@ protected:
 
 /// @cond INTERNAL
 #define _EL_FITSFILE_RECORDHDU_IMPL
-#include "EL_FitsFile/Header.h"
 #include "EL_FitsFile/impl/RecordHdu.hpp"
 #undef _EL_FITSFILE_RECORDHDU_IMPL
 /// @endcond

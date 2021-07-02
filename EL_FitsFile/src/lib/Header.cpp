@@ -25,17 +25,69 @@
 namespace Euclid {
 namespace FitsIO {
 
+Header::Header(fitsfile*& fptr, std::function<void(void)> touchFunction, std::function<void(void)> editFunction) :
+    m_fptr(fptr), m_touch(touchFunction), m_edit(editFunction) {}
+
+bool Header::has(const std::string& keyword) const {
+  m_touch();
+  return Cfitsio::Header::hasKeyword(m_fptr, keyword);
+}
+
+void Header::remove(const std::string& keyword) const {
+  m_edit();
+  KeywordNotFoundError::mayThrow(keyword, *this);
+  Cfitsio::Header::deleteRecord(m_fptr, keyword);
+}
+
+std::vector<std::string> Header::readKeywords(KeywordCategory categories) const {
+  m_touch();
+  return Cfitsio::Header::listKeywords(m_fptr, categories);
+}
+
+std::map<std::string, std::string> Header::readKeywordsValues(KeywordCategory categories) const {
+  m_touch();
+  return Cfitsio::Header::listKeywordsValues(m_fptr, categories);
+}
+
+std::string Header::readAll(KeywordCategory categories) const {
+  m_touch();
+  const bool comments = StandardKeyword::belongsCategories("COMMENT", categories); // TODO clean
+  return Cfitsio::Header::readHeader(m_fptr, comments);
+}
+
+RecordVector<VariantValue> Header::parseAll(KeywordCategory categories) const {
+  return parseVector<VariantValue>(readKeywords(categories & ~KeywordCategory::Comment));
+  // FIXME return comments as string Records?
+}
+
+void Header::verifyChecksums() const {
+  m_touch();
+  int status = 0;
+  int datastatus;
+  int hdustatus;
+  fits_verify_chksum(m_fptr, &datastatus, &hdustatus, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
+  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
+}
+
+void Header::updateChecksums() const {
+  m_edit();
+  int status = 0;
+  fits_write_chksum(m_fptr, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
+}
+
 KeywordExistsError::KeywordExistsError(const std::string& existingKeyword) :
     FitsIOError(std::string("Keyword already exists: ") + existingKeyword), keyword(existingKeyword) {}
 
-void KeywordExistsError::mayThrow(const std::string& existingKeyword, const RecordHdu& hdu) {
-  if (hdu.hasKeyword(existingKeyword)) {
+void KeywordExistsError::mayThrow(const std::string& existingKeyword, const Header& header) {
+  if (header.has(existingKeyword)) {
     throw KeywordExistsError(existingKeyword);
   }
 }
 
-void KeywordExistsError::mayThrow(const std::vector<std::string>& existingKeywords, const RecordHdu& hdu) {
-  const auto found = hdu.readKeywords();
+void KeywordExistsError::mayThrow(const std::vector<std::string>& existingKeywords, const Header& header) {
+  const auto found = header.readKeywords();
   for (const auto& k : existingKeywords) {
     if (std::find(found.begin(), found.end(), k) != found.end()) {
       throw KeywordExistsError(k);
@@ -46,65 +98,19 @@ void KeywordExistsError::mayThrow(const std::vector<std::string>& existingKeywor
 KeywordNotFoundError::KeywordNotFoundError(const std::string& missingKeyword) :
     FitsIOError(std::string("Keyword not found: ") + missingKeyword), keyword(missingKeyword) {}
 
-void KeywordNotFoundError::mayThrow(const std::string& missingKeyword, const RecordHdu& hdu) {
-  if (not hdu.hasKeyword(missingKeyword)) {
+void KeywordNotFoundError::mayThrow(const std::string& missingKeyword, const Header& header) {
+  if (not header.has(missingKeyword)) {
     throw KeywordNotFoundError(missingKeyword);
   }
 }
 
-void KeywordNotFoundError::mayThrow(const std::vector<std::string>& missingKeywords, const RecordHdu& hdu) {
-  const auto found = hdu.readKeywords();
+void KeywordNotFoundError::mayThrow(const std::vector<std::string>& missingKeywords, const Header& header) {
+  const auto found = header.readKeywords();
   for (const auto& k : missingKeywords) {
     if (std::find(found.begin(), found.end(), k) == found.end()) {
       throw KeywordNotFoundError(k);
     }
   }
-}
-
-Header::Header(const RecordHdu& hdu) : m_hdu(hdu) {}
-
-bool Header::has(const std::string& keyword) const {
-  m_hdu.touchThisHdu();
-  return Cfitsio::Header::hasKeyword(m_hdu.m_fptr, keyword);
-}
-
-void Header::remove(const std::string& keyword) const {
-  m_hdu.editThisHdu();
-  KeywordNotFoundError::mayThrow(keyword, m_hdu);
-  Cfitsio::Header::deleteRecord(m_hdu.m_fptr, keyword);
-}
-
-std::vector<std::string> Header::readKeywords(KeywordCategory categories) const {
-  return {}; // FIXME
-}
-
-std::map<std::string, std::string> Header::readKeywordsValues(KeywordCategory categories) const {
-  return {}; // FIXME
-}
-
-std::string Header::readAll(KeywordCategory categories) const {
-  m_hdu.touchThisHdu();
-  const bool comments = StandardKeyword::belongsCategories("COMMENT", categories); // TODO clean
-  return Cfitsio::Header::readHeader(m_hdu.m_fptr, comments);
-}
-
-RecordVector<VariantValue> Header::parseAll(KeywordCategory categories) const {
-  return parseN<VariantValue>(readKeywords(categories));
-}
-
-void Header::verifyChecksums() const {
-  int status = 0;
-  int datastatus;
-  int hdustatus;
-  fits_verify_chksum(m_hdu.m_fptr, &datastatus, &hdustatus, &status);
-  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
-  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
-}
-
-void Header::computeChecksums() const {
-  int status = 0;
-  fits_write_chksum(m_hdu.m_fptr, &status);
-  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
 }
 
 } // namespace FitsIO
