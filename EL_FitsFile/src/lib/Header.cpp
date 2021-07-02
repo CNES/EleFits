@@ -52,6 +52,7 @@ std::map<std::string, std::string> Header::readKeywordsValues(KeywordCategory ca
 std::string Header::readAll(KeywordCategory categories) const {
   m_touch();
   const bool comments = StandardKeyword::belongsCategories("COMMENT", categories); // TODO clean
+  // TODO filter categories
   return Cfitsio::Header::readHeader(m_fptr, comments);
 }
 

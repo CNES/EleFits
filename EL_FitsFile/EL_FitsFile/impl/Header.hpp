@@ -62,7 +62,7 @@ TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
 template <typename... Ts>
 std::tuple<Record<Ts>...> Header::parseTupleOr(const std::tuple<Record<Ts>...>& fallbacks) const {
   auto func = [&](const auto&... fs) {
-    return this->parseTupleOr(fs...);
+    return parseTupleOr(fs...);
   };
   return tupleApply(fallbacks, func);
 }
@@ -115,6 +115,7 @@ template <>
 struct RecordWriterImpl<RecordMode::CreateNew> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
+    (void)(header);
     Cfitsio::Header::writeRecord(fptr, record);
   }
 };
@@ -132,6 +133,7 @@ template <>
 struct RecordWriterImpl<RecordMode::CreateOrUpdate> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
+    (void)(header);
     Cfitsio::Header::updateRecord(fptr, record);
   }
 };
@@ -150,47 +152,52 @@ void Header::write(const std::string& keyword, const T& value, const std::string
   return write<Mode, T>({ keyword, value, unit, comment });
 }
 
-template <RecordMode Mode, typename... Ts>
-void Header::writeTuple(const std::tuple<Record<Ts>...>& records) const {
+template <RecordMode Mode, typename TTuple>
+void Header::writeTuple(TTuple&& records) const {
   m_edit();
   auto func = [&](const auto& r) {
     Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
   };
-  tupleForeach(records, func);
-}
-
-template <RecordMode Mode, typename... Ts>
-void Header::writeTupleIn(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const {
-  // FIXME
+  tupleForeach(std::forward<TTuple>(records), func);
 }
 
 template <RecordMode Mode, typename... Ts>
 void Header::writeTuple(const Record<Ts>&... records) const {
+  writeTuple<Mode>(std::forward_as_tuple(records...));
+}
+
+template <RecordMode Mode, typename TTuple>
+void Header::writeTupleIn(const std::vector<std::string>& keywords, TTuple&& records) const {
   m_edit();
-  Cfitsio::Header::writeRecords(m_fptr, records...); // FIXME Mode
+  auto func = [&](const auto& r) {
+    if (std::find(keywords.begin(), keywords.end(), r.keyword) != keywords.end()) {
+      Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
+    }
+  };
+  tupleForeach(std::forward<TTuple>(records), func);
 }
 
 template <RecordMode Mode, typename... Ts>
 void Header::writeTupleIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
-  m_edit();
-  // FIXME
+  writeTupleIn<Mode>(keywords, std::forward_as_tuple(records...));
 }
 
-template <RecordMode mode, typename T>
+template <RecordMode Mode, typename T>
 void Header::writeVector(const std::vector<Record<T>>& records) const {
   m_edit();
   for (const auto& r : records) {
-    Cfitsio::Header::writeRecord(m_fptr, r);
+    Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
   }
 }
 
-template <RecordMode mode, typename T>
+template <RecordMode Mode, typename T>
 void Header::writeVectorIn(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const {
   m_edit();
   RecordVector<T> v(records);
   for (const auto& k : keywords) {
-    Cfitsio::Header::writeRecord(m_fptr, v[k]);
+    Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, v[k]);
   }
+  // TODO use same algo as for tuples
 }
 
 } // namespace FitsIO

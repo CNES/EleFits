@@ -311,8 +311,8 @@ public:
    * @param records The records
    * @param mode The write mode
    */
-  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeTuple(const std::tuple<Record<Ts>...>& records) const;
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TTuple>
+  void writeTuple(TTuple&& records) const;
 
   /**
    * @brief Write a tuple of records.
@@ -339,8 +339,8 @@ public:
    * @param records The available records
    * @param mode The write mode
    */
-  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeTupleIn(const std::vector<std::string>& keywords, const std::tuple<Record<Ts>...>& records) const;
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TTuple>
+  void writeTupleIn(const std::vector<std::string>& keywords, TTuple&& records) const;
 
   /**
    * @brief Write a subset of a tuple of records.
