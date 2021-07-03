@@ -63,6 +63,36 @@ std::string toString(std::string name, int age, float height, float mass) {
   return name + " (" + std::to_string(age) + ") :" + std::to_string(height) + "m, " + std::to_string(mass) + "kg";
 }
 
+template <typename TSeq>
+void dispatchSeq(TSeq&& seq, bool isTuple);
+
+template <typename T>
+void dispatchSeq(const std::vector<T>& seq, bool isTuple);
+
+template <typename T>
+void dispatchSeq(std::vector<T>&& seq, bool isTuple);
+
+template <typename TSeq>
+void dispatchSeq(TSeq&& seq, bool isTuple) {
+  tupleForeach(std::forward<TSeq>(seq), [&](const auto& e) {
+    BOOST_TEST(isTuple);
+  });
+}
+
+template <typename T>
+void dispatchSeq(const std::vector<T>& seq, bool isTuple) {
+  for (const auto& e : seq) {
+    BOOST_TEST(not isTuple);
+  }
+}
+
+template <typename T>
+void dispatchSeq(std::vector<T>&& seq, bool isTuple) {
+  for (const auto& e : seq) {
+    BOOST_TEST(not isTuple);
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(DataUtils_test)
@@ -115,6 +145,14 @@ BOOST_AUTO_TEST_CASE(tuple_foreach_test) {
   BOOST_TEST(std::get<1>(me) > 32);
   BOOST_TEST(std::get<2>(me) > 1.75);
   BOOST_TEST(std::get<3>(me) > 65);
+}
+
+BOOST_AUTO_TEST_CASE(seq_dispatch_test) {
+  const std::tuple<int, float> t { 1, 3.14 };
+  const std::vector<int> v { 1, 2 };
+  dispatchSeq(t, true);
+  dispatchSeq(v, false);
+  dispatchSeq(std::vector<float> { 1, 3.14 }, false);
 }
 
 //-----------------------------------------------------------------------------
