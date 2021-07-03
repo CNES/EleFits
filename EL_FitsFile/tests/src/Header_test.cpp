@@ -58,17 +58,17 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.write<RecordMode::CreateNew>("I", 0);
 
   /* Heterogeneous write */
-  h.writeTuple(i, f);
-  h.writeTuple(t);
-  h.writeTupleIn({ "I" }, i, f);
-  h.writeTupleIn({ "F" }, t);
-  h.writeTuple<RecordMode::CreateNew>(i, f);
-  h.writeTuple<RecordMode::CreateNew>(t);
+  h.writeSeq(i, f);
+  h.writeSeq(t);
+  h.writeSeqIn({ "I" }, i, f);
+  h.writeSeqIn({ "F" }, t);
+  h.writeSeq<RecordMode::CreateNew>(i, f);
+  h.writeSeq<RecordMode::CreateNew>(t);
 
   /* Homogeneous write */
-  h.writeVector(v.vector);
-  h.writeVectorIn({ "I" }, v.vector);
-  h.writeVector<RecordMode::CreateNew>(v.vector);
+  h.writeSeq(v.vector);
+  h.writeSeqIn({ "I" }, v.vector);
+  h.writeSeq<RecordMode::CreateNew>(v.vector);
 
   /* Global read */
   h.readAll(~KeywordCategory::Comment);
@@ -80,12 +80,12 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.parseOr(i);
 
   /* Heterogeneous read */
-  h.parseTuple(Named<int>("I"), Named<float>("F"));
-  h.parseTupleOr(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
+  h.parseSeq(Named<int>("I"), Named<float>("F"));
+  h.parseSeqOr(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
   h.parseStruct<S>(Named<int>("I"), Named<float>("F"));
 
   /* Homogeneous read */
-  h.parseVector<VariantValue>({ "I", "F" });
+  h.parseSeq<VariantValue>({ "I", "F" });
 }
 
 BOOST_AUTO_TEST_CASE(checksum_test) {

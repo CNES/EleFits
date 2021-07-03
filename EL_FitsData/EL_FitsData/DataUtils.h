@@ -20,8 +20,10 @@
 #ifndef _EL_FITSDATA_DATAUTILS_H
 #define _EL_FITSDATA_DATAUTILS_H
 
+#include <algorithm> // transform
 #include <string>
 #include <tuple>
+#include <vector>
 
 namespace Euclid {
 namespace FitsIO {
@@ -97,7 +99,7 @@ constexpr decltype(auto) applyImpl(TTuple&& tuple, TFunc&& func, std::index_sequ
  * @brief Apply a function which returns void to each element of a tuple.
  */
 template <typename TTuple, typename TFunc, std::size_t... Is>
-void foreachImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
+void tupleForeachImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
   using mockUnpack = int[];
   (void)mockUnpack { 0, // Ensure there is at least one element
                      (func(std::get<Is>(tuple)), // Use comma operator to return an int even if func doesn't
@@ -109,7 +111,7 @@ void foreachImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
  * @brief Apply a function to each element of a tuple, and make a user-defined struct from the results.
  */
 template <typename TReturn, typename TTuple, typename TFunc, std::size_t... Is>
-TReturn transformImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
+TReturn tupleTransformImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
   return { func(std::get<Is>(tuple))... };
 }
 
@@ -138,19 +140,55 @@ constexpr decltype(auto) tupleApply(TTuple&& tuple, TFunc&& func) {
    * @brief Apply a void-returning function to each element of the tuple.
    */
 template <typename TTuple, typename TFunc>
-void tupleForeach(TTuple&& tuple, TFunc&& func) {
-  Internal::foreachImpl(std::forward<TTuple>(tuple), std::forward<TFunc>(func), Internal::tupleIndexSequence<TTuple>());
-}
+void seqForeach(TTuple&& tuple, TFunc&& func);
 
-/**
-   * @brief Apply a transform to each element of the tuple and make a user-defined struct from the results.
-   */
-template <typename TReturn, typename TTuple, typename TFunc>
-TReturn tupleTransform(TTuple&& tuple, TFunc&& func) {
-  return Internal::transformImpl<TReturn>(
+template <typename T, typename TFunc>
+void seqForeach(const std::vector<T>& vector, TFunc&& func);
+
+template <typename T, typename TFunc>
+void seqForeach(std::vector<T>&& vector, TFunc&& func);
+
+template <typename TTuple, typename TFunc>
+void seqForeach(TTuple&& tuple, TFunc&& func) {
+  Internal::tupleForeachImpl(
       std::forward<TTuple>(tuple),
       std::forward<TFunc>(func),
       Internal::tupleIndexSequence<TTuple>());
+}
+
+template <typename T, typename TFunc>
+void seqForeach(const std::vector<T>& vector, TFunc&& func) {
+  for (const auto& element : vector) {
+    func(element);
+  }
+}
+
+template <typename T, typename TFunc>
+void seqForeach(std::vector<T>&& vector, TFunc&& func) {
+  for (auto& element : vector) {
+    func(element);
+  }
+}
+
+/**
+ * @brief Apply a transform to each element of a tuple and create a user-defined struct from the results.
+ */
+template <typename TReturn, typename TTuple, typename TFunc>
+TReturn seqTransform(TTuple&& tuple, TFunc&& func) {
+  return Internal::tupleTransformImpl<TReturn>(
+      std::forward<TTuple>(tuple),
+      std::forward<TFunc>(func),
+      Internal::tupleIndexSequence<TTuple>());
+}
+
+/**
+ * @brief Apply a transform to each element of a tuple and create a user-defined struct from the results.
+ */
+template <typename TReturn, typename T, typename TFunc>
+TReturn seqTransform(const std::vector<T>& vector, TFunc&& func) {
+  TReturn res(vector.size);
+  std::transform(vector.begin(), vector.end(), res.begin(), func);
+  return res;
 }
 
 } // namespace FitsIO

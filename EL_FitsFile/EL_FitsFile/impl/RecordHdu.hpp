@@ -44,7 +44,7 @@ std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string>
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecords(const Named<Ts>&... keywords) const {
-  return m_header.parseTuple(keywords...);
+  return m_header.parseSeq(keywords...);
 }
 
 template <class TReturn, typename... Ts>
@@ -65,17 +65,17 @@ Record<T> RecordHdu::parseRecordOr(const Record<T>& fallback) const {
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecordsOr(const Record<Ts>&... fallbacks) const {
-  return m_header.parseTupleOr(fallbacks...);
+  return m_header.parseSeqOr(fallbacks...);
 }
 
 template <typename T>
 RecordVector<T> RecordHdu::parseRecordVector(const std::vector<std::string>& keywords) const {
-  return m_header.parseVector<T>(keywords);
+  return m_header.parseSeq<T>(keywords);
 }
 
 template <typename T>
 RecordVector<T> RecordHdu::parseAllRecords() const {
-  return m_header.parseVector<T>(readKeywords());
+  return m_header.parseSeq<T>(readKeywords());
 }
 
 template <typename T>
@@ -90,22 +90,22 @@ void RecordHdu::writeRecord(const std::string& k, T v, const std::string& u, con
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const Record<Ts>&... records) const {
-  m_header.writeTuple<RecordMode::CreateNew>(records...);
+  m_header.writeSeq<RecordMode::CreateNew>(records...);
 }
 
 template <typename... Ts>
 void RecordHdu::writeRecords(const std::tuple<Record<Ts>...>& records) const {
-  m_header.writeTuple<RecordMode::CreateNew>(records);
+  m_header.writeSeq<RecordMode::CreateNew>(records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const std::vector<Record<T>>& records) const {
-  m_header.writeVector<RecordMode::CreateNew>(records);
+  m_header.writeSeq<RecordMode::CreateNew>(records);
 }
 
 template <typename T>
 void RecordHdu::writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  m_header.writeVectorIn<RecordMode::CreateNew>(keywords, records.vector);
+  m_header.writeSeqIn<RecordMode::CreateNew>(keywords, records.vector);
 }
 
 template <typename T>
@@ -120,22 +120,22 @@ void RecordHdu::updateRecord(const std::string& k, T v, const std::string& u, co
 
 template <typename... Ts>
 void RecordHdu::updateRecords(const Record<Ts>&... records) const {
-  m_header.writeTuple<RecordMode::CreateOrUpdate>(records...);
+  m_header.writeSeq<RecordMode::CreateOrUpdate>(records...);
 }
 
 template <typename... Ts>
 void RecordHdu::updateRecords(const std::tuple<Record<Ts>...>& records) const {
-  m_header.writeTuple<RecordMode::CreateOrUpdate>(records);
+  m_header.writeSeq<RecordMode::CreateOrUpdate>(records);
 }
 
 template <typename T>
 void RecordHdu::updateRecords(const std::vector<Record<T>>& records) const {
-  m_header.writeVector<RecordMode::CreateOrUpdate>(records);
+  m_header.writeSeq<RecordMode::CreateOrUpdate>(records);
 }
 
 template <typename T>
 void RecordHdu::updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
-  m_header.writeVectorIn<RecordMode::CreateOrUpdate>(keywords, records.vector);
+  m_header.writeSeqIn<RecordMode::CreateOrUpdate>(keywords, records.vector);
 }
 
   #ifndef DECLARE_PARSE_RECORD

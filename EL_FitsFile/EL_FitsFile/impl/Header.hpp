@@ -48,33 +48,8 @@ Record<T> Header::parseOr(
   return parseOr(Record<T>(keyword, fallbackValue, fallbackUnit, fallbackComment));
 }
 
-template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parseTuple(const Named<Ts>&... keywords) const {
-  return parseStruct<std::tuple<Record<Ts>...>, Ts...>(keywords...);
-}
-
-template <typename TReturn, typename... Ts>
-TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
-  m_touch();
-  return { Cfitsio::Header::parseRecord<Ts>(m_fptr, keywords.name)... };
-}
-
-template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parseTupleOr(const std::tuple<Record<Ts>...>& fallbacks) const {
-  auto func = [&](const auto&... fs) {
-    return parseTupleOr(fs...);
-  };
-  return tupleApply(fallbacks, func);
-}
-
-template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parseTupleOr(const Record<Ts>&... fallbacks) const {
-  std::tuple<Record<Ts>...> t { parseOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
-  return std::tuple<Record<Ts>...> { t };
-}
-
 template <typename T>
-RecordVector<T> Header::parseVector(const std::vector<std::string>& keywords) const {
+RecordVector<T> Header::parseSeq(const std::vector<std::string>& keywords) const {
   m_touch();
   RecordVector<T> res(keywords.size());
   std::transform(keywords.begin(), keywords.end(), res.vector.begin(), [&](const std::string& k) {
@@ -83,14 +58,39 @@ RecordVector<T> Header::parseVector(const std::vector<std::string>& keywords) co
   return res;
 }
 
-template <typename T>
-RecordVector<T> Header::parseVectorOr(const std::vector<Record<T>>& fallbacks) const {
+template <typename... Ts>
+std::tuple<Record<Ts>...> Header::parseSeq(const Named<Ts>&... keywords) const {
+  return parseStruct<std::tuple<Record<Ts>...>, Ts...>(keywords...);
+}
+
+template <typename TSeq>
+TSeq Header::parseSeqOr(TSeq&& fallbacks) const {
+  auto func = [&](const auto& f) {
+    return parseOr(f);
+  };
+  return seqTransform<TSeq>(fallbacks, func);
+}
+
+template <typename... Ts>
+std::tuple<Record<Ts>...> Header::parseSeqOr(const Record<Ts>&... fallbacks) const {
+  std::tuple<Record<Ts>...> t { parseOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
+  return std::tuple<Record<Ts>...> { t };
+}
+
+template <typename TReturn, typename... Ts>
+TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
   m_touch();
-  RecordVector<T> v(0);
-  for (const auto& f : fallbacks) {
-    v.push_back(parseOr(f)); // TODO avoid calling touchThisHdu for each keyword
-  }
-  return v;
+  return { Cfitsio::Header::parseRecord<Ts>(m_fptr, keywords.name)... };
+}
+
+template <typename TReturn, typename... Ts>
+TReturn Header::parseStructOr(const Record<Ts>&... fallbacks) const {
+  return {}; // FIXME
+}
+
+template <typename TReturn, typename TSeq>
+TReturn Header::parseStructOr(TSeq&& fallbacks) const {
+  return {}; // FIXME
 }
 
 /// @cond INTERNAL
@@ -152,52 +152,34 @@ void Header::write(const std::string& keyword, const T& value, const std::string
   return write<Mode, T>({ keyword, value, unit, comment });
 }
 
-template <RecordMode Mode, typename TTuple>
-void Header::writeTuple(TTuple&& records) const {
+template <RecordMode Mode, typename... Ts>
+void Header::writeSeq(const Record<Ts>&... records) const {
+  writeSeq<Mode>(std::forward_as_tuple(records...));
+}
+
+template <RecordMode Mode, typename TSeq>
+void Header::writeSeq(TSeq&& records) const {
   m_edit();
   auto func = [&](const auto& r) {
     Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
   };
-  tupleForeach(std::forward<TTuple>(records), func);
+  seqForeach(std::forward<TSeq>(records), func);
 }
 
 template <RecordMode Mode, typename... Ts>
-void Header::writeTuple(const Record<Ts>&... records) const {
-  writeTuple<Mode>(std::forward_as_tuple(records...));
+void Header::writeSeqIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
+  writeSeqIn<Mode>(keywords, std::forward_as_tuple(records...));
 }
 
-template <RecordMode Mode, typename TTuple>
-void Header::writeTupleIn(const std::vector<std::string>& keywords, TTuple&& records) const {
+template <RecordMode Mode, typename TSeq>
+void Header::writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records) const {
   m_edit();
   auto func = [&](const auto& r) {
     if (std::find(keywords.begin(), keywords.end(), r.keyword) != keywords.end()) {
       Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
     }
   };
-  tupleForeach(std::forward<TTuple>(records), func);
-}
-
-template <RecordMode Mode, typename... Ts>
-void Header::writeTupleIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
-  writeTupleIn<Mode>(keywords, std::forward_as_tuple(records...));
-}
-
-template <RecordMode Mode, typename T>
-void Header::writeVector(const std::vector<Record<T>>& records) const {
-  m_edit();
-  for (const auto& r : records) {
-    Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
-  }
-}
-
-template <RecordMode Mode, typename T>
-void Header::writeVectorIn(const std::vector<std::string>& keywords, const std::vector<Record<T>>& records) const {
-  m_edit();
-  RecordVector<T> v(records);
-  for (const auto& k : keywords) {
-    Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, v[k]);
-  }
-  // TODO use same algo as for tuples
+  seqForeach(std::forward<TSeq>(records), func);
 }
 
 } // namespace FitsIO

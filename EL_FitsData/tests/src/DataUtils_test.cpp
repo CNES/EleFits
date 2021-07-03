@@ -74,7 +74,7 @@ void dispatchSeq(std::vector<T>&& seq, bool isTuple);
 
 template <typename TSeq>
 void dispatchSeq(TSeq&& seq, bool isTuple) {
-  tupleForeach(std::forward<TSeq>(seq), [&](const auto& e) {
+  seqForeach(std::forward<TSeq>(seq), [&](const auto& e) {
     BOOST_TEST(isTuple);
   });
 }
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(tuple_transform_test) {
   auto twice = [](const auto& e) {
     return e + e;
   };
-  const auto jojo = tupleTransform<Body>(jo, twice);
+  const auto jojo = seqTransform<Body>(jo, twice);
   BOOST_TEST(jojo.name == "JOJO");
   BOOST_TEST(jojo.age > std::get<1>(jo));
   BOOST_TEST(jojo.height > std::get<2>(jo));
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(tuple_foreach_test) {
   auto twice = [](auto& e) {
     e += e;
   };
-  tupleForeach(me, twice);
+  seqForeach(me, twice);
   BOOST_TEST(std::get<0>(me) == "MEME");
   BOOST_TEST(std::get<1>(me) > 32);
   BOOST_TEST(std::get<2>(me) > 1.75);

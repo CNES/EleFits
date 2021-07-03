@@ -57,7 +57,7 @@ std::string Header::readAll(KeywordCategory categories) const {
 }
 
 RecordVector<VariantValue> Header::parseAll(KeywordCategory categories) const {
-  return parseVector<VariantValue>(readKeywords(categories & ~KeywordCategory::Comment));
+  return parseSeq<VariantValue>(readKeywords(categories & ~KeywordCategory::Comment));
   // FIXME return comments as string Records?
 }
 
