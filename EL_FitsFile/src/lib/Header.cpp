@@ -47,13 +47,13 @@ std::vector<std::string> Header::readKeywords(KeywordCategory categories) const 
 std::map<std::string, std::string> Header::readKeywordsValues(KeywordCategory categories) const {
   m_touch();
   return Cfitsio::Header::listKeywordsValues(m_fptr, categories);
+  // FIXME handle duplicated keywords
 }
 
 std::string Header::readAll(KeywordCategory categories) const {
   m_touch();
-  const bool comments = StandardKeyword::belongsCategories("COMMENT", categories); // TODO clean
-  // TODO filter categories
-  return Cfitsio::Header::readHeader(m_fptr, comments);
+  const bool incNonValues = categories == KeywordCategory::All;
+  return Cfitsio::Header::readHeader(m_fptr, incNonValues);
 }
 
 RecordVector<VariantValue> Header::parseAll(KeywordCategory categories) const {

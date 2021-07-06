@@ -13,3 +13,22 @@ tt, code, kbd, samp {
     border: 1px solid #C4CFE5;
     background-color: #FBFCFD;
 }
+
+/* Highlight @name */
+.groupHeader {
+	-webkit-transition: text-shadow 0.5s linear;
+	-moz-transition: text-shadow 0.5s linear;
+	-ms-transition: text-shadow 0.5s linear;
+	-o-transition: text-shadow 0.5s linear;
+	transition: text-shadow 0.5s linear;
+	margin-right: 15px;
+	border-bottom: 1px solid #879ECB;
+	color: #354C7B;
+	/* font-size: 150%; */
+	font-size: 125%;
+	font-weight: normal;
+	margin-top: 1.75em;
+	padding-top: 8px;
+	padding-bottom: 4px;
+	width: 100%;
+}

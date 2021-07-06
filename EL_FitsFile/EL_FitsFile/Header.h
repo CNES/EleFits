@@ -38,59 +38,56 @@ namespace FitsIO {
  */
 enum class RecordMode
 {
-  CreateUnique, ///< Create a record, throw if keyword already exists
-  CreateNew, ///< Create a record, even if keyword already exists
-  UpdateExisting, ///< Modify a record, throw if keyword doesn't exist
-  CreateOrUpdate ///< Modify a record if keyword already exists, create a record otherwise
+  CreateOrUpdate, ///< Modify a record if keyword already exists, create a record otherwise
+  CreateUnique, ///< Create a record, throw KeywordExistsError if keyword already exists
+  CreateNew, ///< Create a new record, even if keyword already exists
+  UpdateExisting ///< Modify a record, throw KeywordNotFoundError if keyword doesn't exist
 };
 
 /**
- * @brief Header unit reader-writer.
+ * @brief Reader-writer for the header unit.
  * @details
+ * This class provides services to read and write records in the header units.
  * Several groups of methods are available:
- * - readXxx methods read the raw ASCII characters from the header unit as strings;
- * - parseXxx methods parse the contents of the header unit to return user-specified types;
+ * - readXxx methods read the raw ASCII characters from the header unit as `std::string`s;
+ * - parseXxx methods parse the contents of the header unit in various types;
  * - writeXxx methods write provided values following a strategy defined as a RecordMode.
  * 
  * When reading or writing several records, it is recommended to use the xxxSeq form of the methods
  * (e.g. one call to `writeSeq()` instead of several calls to `write()`), which are optimized.
  * 
- * To write sequences of records, the following parameters are accepted,
+ * To write sequences of records, the following types are accepted,
  * as well as their constant and reference counterparts:
  * - For homogeneous sequences:
- *   - `std::vector<Record<T>>`,
- *   - `std::array<Record<T>>`;
+ *   - `std::vector<Record<T>>` (where `T` can be `VariantValue`),
+ *   - `RecordVector<T>` (where `T` can be `VariantValue`),
+ *   - `std::array<Record<T>>` (where `T` can be `VariantValue`);
  * - For heterogeneous sequences:
  *   - `Record<Ts>...`,
- *   - `std::tuple<Record<Ts>...>`,
- *   - `std::vector<Record<VariantValue>>`,
- *   - `std::array<Record<VariantValue>>`.
+ *   - `std::tuple<Record<Ts>...>`.
  * 
  * For reading, the following return types are available:
  * - For homogeneous sequences:
- *   - `RecordVector<T>`;
+ *   - `std::vector<Record<T>>` (where `T` can be `VariantValue`),
+ *   - `RecordVector<T>` (where `T` can be `VariantValue`);
  * - For heterogeneous sequences:
  *   - `std::tuple<Record<Ts>...>`,
- *   - `RecordVector<VariantValue>`,
- *   - User-specified structures which can be constructed from brace-enclosed heterogeneous lists (TODO document).
+ *   - User-defined structures which can be constructed from brace-enclosed heterogeneous lists.
+ *     Such stuctures should be constructible from brace-enclosed lists of the form `{ Record<Ts>... }` or `{ Ts... }`.
+ *     More details and examples are provided in the methods documentation.
  * 
  * Relying on `VariantValue` is the way to go when types are not all known at compile time,
- * and can be the most comfortable option in other cases.
+ * and can be the most comfortable option in many other cases.
  * Indeed, working with a tuple might become a nightmare with many values,
- * where `std::vector<VariantValue>` and `RecordVector<VariantValue>` can provide valuable help
- * by reducing the boilerplate.
+ * where `std::vector<VariantValue>` and `RecordVector<VariantValue>` can provide valuable help by reducing the boilerplate.
  * The impact on runtime is negligible.
- * 
- * @warning
- * There is a known bug in CFitsIO (TODO version?) with the reading of Record<unsigned long>:
- * if the value is greater than `max(long)`, CFitsIO returns an overflow error.
- * This is a false alarm but cannot be worked around easily.
- * There should be a fix on CFitsIO side.
  */
 class Header {
 
 private:
+  //// @cond INTERNAL
   friend class RecordHdu;
+  //// @endcond
 
   /**
    * @brief Constructor.
@@ -99,25 +96,27 @@ private:
 
 public:
   /**
-   * @brief Check whether the HDU contains a given keyword.
+   * @name Read/parse the keywords/records of given categories
+   * @param categories The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
+   * @details
+   * Example usages:
+   * \code
+   * auto keywords = h.readKeywords(~KeywordCategory::Comment);
+   * auto keyVals = h.readKeywordValues();
+   * auto header = h.readAll();
+   * auto records = h.parseAll(KeywordCategory::Reserved);
+   * \endcode
+   * where `h` is a `Header`.
    */
-  bool has(const std::string& keyword) const;
-
-  /**
-   * @brief Delete a record.
-   * @throw KeywordNotFoundError
-   */
-  void remove(const std::string& keyword) const;
+  /// @{
 
   /**
    * @brief List keywords.
-   * @param categories The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
    */
   std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief List keywords and their values.
-   * @param categories The set of selected categories, e.g. `KeywordCategory::Reserved | KeywordCategory::User`
    * @warning
    * If several records have the same keywords, the returned value is a line break-separated list.
    */
@@ -131,68 +130,60 @@ public:
 
   /**
    * @brief Read all or a subset of the header records.
-   * @param categories The selected keyword categories
-   * @details
-   * Example usage:
-   * \code
-   * auto records = h.parseAll(KeywordCategory::Reserved);
-   * \endcode
-   * where `h` is a `Header`.
    * @warning
    * Comment records are not parsed, as of today.
    */
   RecordVector<VariantValue> parseAll(KeywordCategory categories = KeywordCategory::All) const;
 
+  /// @}
   /**
-   * @brief Parse a record.
+   * @name Parse a single record, optionally with a fallback
    * @tparam T The record value type
    * @param keyword The record keyword
+   * @param fallback The fallback record, keyword of which is looked for;
+   * If the keyword is not found, then the record is returned
+   * 
    * @details
    * Example usages:
    * \code
-   * auto record = h.parse<int>("KEY"); // Get a Record<int>
-   * int value = h.parse<int>("KEY"); // Get only the value of a Record<int>
+   * // Parse a record
+   * Record<int> record = h.parse<int>("INT");
+   * 
+   * // Parse a record and keep the value only
+   * int value = h.parse<int>("INT");
+   * 
+   * // Parse a record if available, or get a fallback value
+   * auto record = h.parseOr<int>("INT", -1);
+   * 
+   * // The above line is a shortcut for
+   * Record<int> record("INT", -1);
+   * if (h.has(record.keyword)) {
+   *   record = h.parse<T>(record.keyword);
+   * }
    * \endcode
    * where `h` is a `Header`.
+   */
+  /// @{
+
+  /**
+   * @brief Check whether the HDU contains a given keyword.
+   */
+  bool has(const std::string& keyword) const;
+
+  /**
+   * @brief Parse a record.
    */
   template <typename T>
   Record<T> parse(const std::string& keyword) const;
 
   /**
    * @brief Parse a record if it exists, return a fallback record otherwise.
-   * @tparam T The record value type (automatically deduced)
-   * @param fallback The fallback record, keyword of which is looked for
-   * @details
-   * This is a shortcut for:
-   * \code
-   * // auto record = h.parseOr(fallback);
-   * auto record = fallback;
-   * if (h.has(fallback.keyword)) {
-   *   record = h.parse<T>(fallback.keyword);
-   * }
-   * \endcode
-   * where `h` is a `Header` and `T` is the value type of the fallback.
    */
   template <typename T>
   Record<T> parseOr(const Record<T>& fallback) const;
 
   /**
    * @brief Parse a record if it exists, return a fallback otherwise.
-   * @tparam T The record value type (automatically deduced)
-   * @param keyword The record keyword
-   * @param fallbackValue The fallback value
-   * @param fallbackUnit The fallback unit
-   * @param fallbackComment The fallback comment
-   * @details
-   * This is a shortcut for:
-   * \code
-   * // auto record = h.parseOr(keyword, value, unit, comment);
-   * Record<T> record(keyword, value, unit, comment);
-   * if (h.has(keyword)) {
-   *   record = h.parse<T>(keyword);
-   * }
-   * \endcode
-   * where `h` is a `Header` and `T` is the value type of the fallback.
    */
   template <typename T>
   Record<T> parseOr(
@@ -201,82 +192,95 @@ public:
       const std::string& fallbackUnit = "",
       const std::string& fallbackComment = "") const;
 
+  /// @}
+  /**
+   * @name Parse a sequence of records as a vector or a tuple, optionally with fallbacks
+   * @tparam T The record value type for homogeneous sequences (automatically deduced with fallbacks)
+   * @tparam Ts The record value types for heterogeneous sequences (automatically deduced with fallbacks)
+   * @tparam TSeq The record sequence type (automatically deduced)
+   * @param keywords The keywords
+   * @param fallbacks The fallback records, keywords of which are looked for
+   * @details
+   * Example usage with no fallback:
+   * \code
+   * auto records = h.parseSeq(Named<int>("INT"), Named<float>("FLOAT"));
+   * \endcode
+   * where `h` is a `Header`
+   * 
+   * Example usage without fallbacks:
+   * \code
+   * // Homogeneous records
+   * auto vector = h.parseSeq<int>({ "A", "B", "C" });
+   * 
+   * // Heterogeneous records
+   * auto tuple = h.parseSeq(Named<int>("INT"), Named<float>("FLOAT"));
+   * \endcode
+   * 
+   * Example usages with fallbacks:
+   * \code
+   * // std::vector to std::vector
+   * std::vector<Records<VariantValue>> fallbacks { {"ONE", 1}, {"TWO", 2.0} };
+   * auto vector = h.parseSeqOr(fallbacks);
+   * 
+   * // RecordVector to RecordVector
+   * RecordVector<VariantValue> fallbacks { { {"ONE", 1}, {"TWO", 2.0} } };
+   * auto recVec = h.parseSeqOr(fallbacks);
+   * 
+   * // std::tuple to std::tuple
+   * auto fallbacks = std::make_tuple(Record<int>("ONE", 1), Record<double>("TWO", 2.0));
+   * auto tuple = h.parseSeqOr(fallbacks);
+   * 
+   * // Variadic to std::tuple
+   * auto tuple = h.parseSeqOr(Record<int>("INT", 0), Record<float>("FLOAT", 3.14));
+   * \endcode
+   */
+  /// @{
+
   /**
    * @brief Parse a sequence of homogeneous records.
-   * @tparam T The record value type
-   * @param keywords The keywords
    */
   template <typename T = VariantValue>
   RecordVector<T> parseSeq(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse a sequence of heterogeneous records.
-   * @tparam Ts The record value types (automatically deduced)
-   * @param keywords The keywords and value types of the records to be parsed
-   * @details
-   * Example usage:
-   * \code
-   * auto records = h.parseSeq(Named<int>("INT"), Named<float>("FLOAT"));
-   * \endcode
-   * where `h` is a `Header`
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseSeq(const Named<Ts>&... keywords) const;
 
   /**
-   * @brief Parse a sequence records if they exists, return fallbacks for those which don't.
-   * @tparam TSeq A record sequence (automatically deduced)
-   * @param fallbacks The fallback records, keywords of which are looked for
-   * @return
-   * If `TSeq` is an `std::vector`, then a `RecordVector` is returned;
-   * If `TSeq` is an `std::tuple`, then an `std::tuple` is returned.
-   * @details
-   * Example usages:
-   * \code
-   * std::vector<Records<VariantValue>> records { {"ONE", 1}, {"TWO", 2.0} };
-   * auto vector = h.parseSeqOr(records); // Returns a RecordVector<VariantValue>
-   * // OR
-   * auto records = std::make_tuple(Record<int>("ONE", 1), Record<double>("TWO", 2.0));
-   * auto tuple = h.parseSeqOr(records); // Returns an std::tuple<int, double>
-   * \endcode
+   * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
    */
   template <typename TSeq>
   TSeq parseSeqOr(TSeq&& fallbacks) const;
 
   /**
-   * @brief Parse several records if they exists, return fallbacks for those which don't.
-   * @tparam TRecords The record types (automatically deduced)
-   * @param fallbacks The fallback records, keywords of which are looked for
-   * @details
-   * Example usage:
-   * \code
-   * auto records = h.parseSeqOr(Record<int>("INT", 0), Record<float>("FLOAT", 3.14));
-   * \endcode
+   * @brief Parse a heterogeneous sequence of records if they exist, return fallbacks for those which don't.
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parseSeqOr(const Record<Ts>&... fallbacks) const;
 
+  /// @}
   /**
-   * @brief Parse a sequence of heterogeneous records as a user-defined structure.
-   * @tparam TReturn A structure which can be constructed as:
-   * \code TReturn { Ts ... } \endcode
+   * @name Parse a sequence of records as a user-defined structure, optionally with fallbacks
+   * @tparam TOut A structure which can be constructed as:
+   * \code TOut { Ts ... } \endcode
    * or:
-   * \code TReturn { Record<Ts> ... } \endcode
+   * \code TOut { Record<Ts> ... } \endcode
    * like a simple structure:
-   * \code struct TReturn { T1 p1; T2 p2; ... }; \endcode
+   * \code struct TOut { T1 p1; T2 p2; ... }; \endcode
    * or a class with such a constructor:
-   * \code TReturn::TReturn(T1, T2, ...) \endcode
+   * \code TOut::TOut(T1, T2, ...) \endcode
    * @tparam Ts The desired record value types (automatically deduced)
+   * @tparam TSeq The record sequence type (automatically deduced)
    * @details
-   * This method can be used to mimic a named tuple,
-   * which is generally more convenient than a std::tuple,
-   * because you chose how to to access the records in your own class
+   * The output structure can be used to mimic a named tuple,
+   * which is generally more convenient than a `std::tuple`,
+   * because you access the records as parameters of your own class
    * instead of accessing them by their indices -- with `std::get<i>(tuple)`.
    *
    * Example usage:
    * \code
-   * // Body can be constructed from a brace-enclosed list:
-   * // Body body { name, age, height, mass };
    * struct Body {
    *   std::string name;
    *   int age;
@@ -284,6 +288,8 @@ public:
    *   float mass;
    *   float bmi() const { return mass / (height * height); }
    * };
+   * // Body can be constructed from a brace-enclosed list:
+   * // Body body { name, age, height, mass };
    *
    * auto body = hdu.parseStruct<Body>(
    *     Named<std::string>("NAME"),
@@ -295,96 +301,114 @@ public:
    * std::cout << "Your BMI is: " << body.bmi() << std::endl;
    * \endcode
    */
-  template <typename TReturn, typename... Ts>
-  TReturn parseStruct(const Named<Ts>&... keywords) const;
-
-  template <typename TReturn, typename... Ts>
-  TReturn parseStructOr(const Record<Ts>&... fallbacks) const;
-
-  template <typename TReturn, typename TSeq>
-  TReturn parseStructOr(TSeq&& fallbacks) const;
+  /// @{
 
   /**
-   * @brief Write a record.
+   * @brief Parse a sequence of records.
+   */
+  template <typename TOut, typename... Ts>
+  TOut parseStruct(const Named<Ts>&... keywords) const;
+
+  /**
+   * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
+   */
+  template <typename TOut, typename... Ts>
+  TOut parseStructOr(const Record<Ts>&... fallbacks) const;
+
+  /**
+   * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
+   */
+  template <typename TOut, typename TSeq>
+  TOut parseStructOr(TSeq&& fallbacks) const;
+
+  /// @}
+  /**
+   * @name Write a single record
    * @tparam Mode The write mode
-   * @tparam T The record value type, doesn't need to be specified
+   * @tparam T The record value type (automatically deduced)
+   * @param record The record to be written
    * @details
    * Example usages:
    * \code
    * h.write(record);
    * h.write<RecordMode::CreateNew>(record);
+   * h.write("KEY", 0);
+   * h.write<RecordMode::CreateNew>("KEY", 0);
    * \endcode
+   * where `h` is a `Header` and `record` is a `Record<T>`.
+   * @see RecordMode
+   */
+  /// @{
+
+  /**
+   * @brief Write a record.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
   void write(const Record<T>& record) const;
 
   /**
    * @brief Write a record.
-   * @tparam Mode The write mode
-   * @tparam T The record value type, doesn't need to be specified
-   * @details
-   * Example usages:
-   * \code
-   * h.write("KEY", 0);
-   * h.write<RecordMode::CreateNew>("KEY", 0);
-   * \endcode
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
   void write(const std::string& k, const T& v, const std::string& u = "", const std::string& c = "") const;
 
   /**
-   * @brief Write a tuple of records.
+   * @brief Delete a record.
+   * @throw KeywordNotFoundError if the keyword does not exist
+   */
+  void remove(const std::string& keyword) const;
+
+  /// @}
+  /**
+   * @name Write a sequence of records
    * @tparam Mode The write mode
-   * @tparam Ts The record value types, doesn't need to be specified
-   * @param records The records
-   * @param mode The write mode
+   * @tparam T The record value type for homogeneous sequences (automatically deduced)
+   * @tparam Ts The record value types for heterogeneous sequences (automatically deduced)
+   * @tparam TSeq The sequence type
+   * @param records The sequence of records
+   * @param keywords The selection to be written
    * @details
    * Example usage:
    * \code
    * h.write(r0, r1, r2);
    * h.write<RecordMode::CreateNew>(r0, r1, r2);
    * \endcode
-   * where `h` is a `Header` and `r1`, `r2`, `r3` are `Record`s.
+   * where `h` is a `Header` and `r0`, `r1`, `r2` are `Record<T>`s.
+   * @see RecordMode
+   */
+  /// @{
+
+  /**
+   * @brief Write a sequence of records.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeSeq(const Record<Ts>&... records) const;
 
   /**
    * @brief Write a sequence of records.
-   * @tparam Mode The write mode
-   * @tparam TSeq A record sequence type (automatically deduced)
-   * @param records The records
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
   void writeSeq(TSeq&& records) const;
 
   /**
    * @brief Write a subset of a tuple of records.
-   * @tparam Mode The write mode
-   * @tparam Ts The record value types (automatically deduced)
-   * @param keywords The selection of records to be written
-   * @param records The available records
-   * @details
-   * Example usage:
-   * \code
-   * h.write({ "R0", "R1" }, r0, r1, r2);
-   * h.write<RecordMode::CreateNew>({ "R0", "R1" }, r0, r1, r2);
-   * \endcode
-   * where `h` is a `Header` and `r0`, `r1`, `r2` are `Record`s.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeSeqIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
 
   /**
-   * @brief Write a subset of a tuple of records.
-   * @tparam Mode The write mode
-   * @tparam TSeq A record sequence type (automatically deduced)
-   * @param keywords The selection of records to be written
-   * @param records The available records
-   * @param mode The write mode
+   * @brief Write a subset of a sequence of records.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
   void writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records) const;
+
+  /// @}
+  /**
+   * @name Handle checksums
+   * @details
+   * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`). 
+   */
+  /// @{
 
   /**
    * @brief Compute the HDU and data checksums and compare them to the values in the header.
@@ -396,6 +420,8 @@ public:
    * @brief Compute and write (or update) the HDU and data checksums.
    */
   void updateChecksums() const;
+
+  /// @}
 
 private:
   /**
@@ -471,10 +497,10 @@ struct KeywordNotFoundError : public FitsIOError {
 } // namespace FitsIO
 } // namespace Euclid
 
-/// @cond INTERNAL
+//// @cond INTERNAL
 #define _EL_FITSFILE_HEADER_IMPL
 #include "EL_FitsFile/impl/Header.hpp"
 #undef _EL_FITSFILE_HEADER_IMPL
-/// @endcond
+//// @endcond
 
 #endif
