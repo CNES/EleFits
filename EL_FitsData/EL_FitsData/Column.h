@@ -118,6 +118,7 @@ namespace FitsIO {
  * Therefore, users are encouraged to consider the repeat count as a meaningful value,
  * rather than as an optimization trick.
  *
+ * @see \ref optim
  * @see \ref data_classes
  */
 template <typename T>
@@ -165,14 +166,19 @@ public:
   using Value = T;
 
   /**
+   * @brief Create a column with given metadata.
+   */
+  explicit Column(ColumnInfo<T> columnInfo);
+
+  /**
    * @brief Destructor.
    */
   virtual ~Column() = default;
 
   /**
-   * @brief Create a column with given metadata.
+   * @name Get properties
    */
-  explicit Column(ColumnInfo<T> columnInfo);
+  /// @{
 
   /**
    * @brief Number of elements in the column, i.e. repeat count * number of rows.
@@ -186,9 +192,23 @@ public:
    */
   long rowCount() const;
 
+  /// @}
+  /**
+   * @name Access elements
+   */
+  /// @{
+
   /**
    * @brief Access the value at given row and repeat indices.
-   * @see at
+   * @details
+   * Three methods are available to access elements:
+   * 
+   * - Methods operator()() provide access to the value at given row and repeat indices;
+   * - Methods at() additionally perform bound checking and allows for backward (negative) indexing;
+   * - Method data() returns a pointer to the first element.
+   * 
+   * @param row The row index
+   * @param repeat The repeat index
    */
   const T& operator()(long row, long repeat = 0) const;
 
@@ -198,23 +218,21 @@ public:
   T& operator()(long row, long repeat = 0);
 
   /**
-   * @brief Const pointer to the first data element.
-   */
-  virtual const T* data() const = 0;
-
-  /**
-   * @brief Access the value at given row and repeat indices.
-   * @details
-   * As opposed to operator(), negative indices are supported for backward indexing,
-   * and bounds are checked.
-   * @see operator()
+   * @copydoc operator()()
    */
   const T& at(long row, long repeat = 0) const;
 
   /**
-   * @copydoc at
+   * @copydoc at()
    */
   T& at(long row, long repeat = 0);
+
+  /**
+   * @copydoc operator()()
+   */
+  virtual const T* data() const = 0;
+
+  /// @}
 
 public:
   /**

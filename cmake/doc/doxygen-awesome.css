@@ -772,10 +772,12 @@ div.header .summary {
 
 td.memSeparator {
     border-color: var(--separator-color);
+    opacity: 0;
 }
 
 .mdescLeft, .mdescRight, .memItemLeft, .memItemRight, .memTemplItemLeft, .memTemplItemRight, .memTemplParams {
     background: var(--code-background);
+    background-color: transparent;
 }
 
 .mdescRight {
@@ -823,6 +825,12 @@ h2.groupheader {
     color: var(--page-foreground-color);
 }
 
+.groupHeader {
+    font-size: 125%;
+    border-bottom: 1px solid var(--separator-color);
+    color: var(--page-foreground-color);
+}
+
 blockquote {
     padding: var(--spacing-small) var(--spacing-medium);
     background: var(--blockquote-background);
@@ -837,6 +845,10 @@ blockquote p {
 .paramname {
     font-weight: 600;
     color: var(--primary-dark-color);
+}
+
+.tparams .paramname, .params .paramname {
+    text-align: right;
 }
 
 .glow {

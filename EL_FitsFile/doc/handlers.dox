@@ -3,8 +3,7 @@ namespace FitsIO {
 
 /**
 
-\defgroup handlers 3. File and HDU handlers
-\brief Classes and functions to manipulate Fits files.
+\addtogroup handlers
 
 
 \tableofcontents
