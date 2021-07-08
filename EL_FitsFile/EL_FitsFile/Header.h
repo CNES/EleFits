@@ -45,7 +45,9 @@ enum class RecordMode
 };
 
 /**
+ * @ingroup handlers
  * @brief Reader-writer for the header unit.
+ * 
  * @details
  * This class provides services to read and write records in the header units.
  * Several groups of methods are available:
@@ -160,13 +162,12 @@ public:
   bool has(const std::string& keyword) const;
 
   /**
-   * @brief Parse a record.
-   * 
    * @details
-   * Parse a single record, optionally with a fallback,
+   * There are two ways to parse a record: with or without a fallback,
    * that is, a record which is returned if the specified keyword is not found in the header.
    * Without a fallback, the expected return value type is provided as the template parameter.
-   * When a fallback is provided, this type is the fallback value type, by default.
+   * When a fallback is provided, the return type is the fallback type, by default,
+   * and the template parameter can be omitted.
    * 
    * Example usages:
    * \code
@@ -190,6 +191,10 @@ public:
    * @tparam T The record value type
    * @param keyword The record keyword
    * @param fallback The fallback record, keyword of which is looked for
+   */
+
+  /**
+   * @brief Parse a record.
    */
   template <typename T>
   Record<T> parse(const std::string& keyword) const;
@@ -218,10 +223,9 @@ public:
   /// @{
 
   /**
-   * @brief Parse a sequence of homogeneous records.
-   * 
    * @details
-   * Parse a sequence of records, optionally with fallbacks.
+   * Like for single record reading, there are two ways to parse a sequence of records:
+   * with or without fallbacks.
    * For each record to be parsed, if the specified keyword is not found in the header,
    * the fallback is returned.
    * 
@@ -260,6 +264,10 @@ public:
    * @param keywords The keywords
    * @param fallbacks The fallback records, keywords of which are looked for
    */
+
+  /** 
+   * @brief Parse a sequence of homogeneous records.
+   */
   template <typename T = VariantValue>
   RecordVector<T> parseSeq(const std::vector<std::string>& keywords) const;
 
@@ -294,12 +302,12 @@ public:
    * @brief Parse a sequence of records.
    * 
    * @details
-   * Parse a sequence of records, optionally with fallbacks.
-   * For each record to be parsed, if the specified keyword is not found in the header,
-   * the fallback is returned.
-   * 
-   * Differs from `parseSeq()`-like methods in that the returned sequence is interpretted as a user-defined structure,
-   * provided that it can be constructed from a brace-enclosed list of `Record`s.
+   * Several methods are provided to return records or record values as a user-defined structure,
+   * instead of a `std::vector` or `std::tuple`.
+   * These methods differe from `parseSeq`-prefixed methods in that the returned sequence
+   * is interpretted as a user-defined structure,
+   * provided that it can be constructed from a brace-enclosed list of `Record`s
+   * or from a brace-enclosed list of record values.
    * For example, the return type can be a mere structure like:
    * \code
    * struct TOut {
@@ -316,8 +324,8 @@ public:
    * 
    * The output structure can be used to mimic a named tuple,
    * which is generally more convenient than a `std::tuple`,
-   * because you access the records as parameters of your own class -- e.g. `tout.p1` --
-   * instead of accessing them by their indices -- e.g. `std::get<1>(tout)`.
+   * because the records or values are accessed as named parameters -- e.g. `tout.p1` --
+   * instead of being accessed by their indices -- e.g. `std::get<1>(tout)`.
    *
    * Example usage:
    * \code
@@ -369,10 +377,11 @@ public:
   /// @{
 
   /**
-   * @brief Write a record.
-   * 
    * @details
-   * Write a record using a behavior specified by the template parameter `Mode`.
+   * Methods to write records may have different behaviors,
+   * according to the template parameter `Mode`.
+   * It specifies what to do if a keyword already exists (update or throw)
+   * and if a keyword does not exist (write or throw).
    * 
    * Example usages:
    * \code
@@ -388,6 +397,10 @@ public:
    * @param record The record to be written
    * 
    * @see RecordMode
+   */
+
+  /**
+   * @brief Write a record.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
   void write(const Record<T>& record) const;
@@ -411,18 +424,15 @@ public:
   /// @{
 
   /**
-   * @brief Write a homogeneoussequence of records.
-   * 
    * @details
-   * Write a sequence (or subset of sequence) of records.
+   * Several methods allow write a sequence of records or subset of sequence of records.
+   * Analogously to `write()`, template parameter `Mode` controls the writing behavior,
+   * depending on wether the keyword to be written already exists or not.
    * 
    * If parameter `keywords` is provided, then only the records
    * for which the keyword belongs to `keywords` are written.
    * This is especially handy when a unique sequence of records
    * should be written in different HDUs.
-   * 
-   * The write mode specifies what to do
-   * depending on wether the keyword to be written already exists or not.
    * 
    * Example usage:
    * \code
@@ -441,6 +451,10 @@ public:
    * @param keywords The selection to be written
    * 
    * @see RecordMode
+   */
+
+  /**
+   * @brief Write a homogeneous sequence of records.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeSeq(const Record<Ts>&... records) const;
@@ -483,6 +497,7 @@ public:
    * @brief Compute and write (or update) the HDU and data checksums.
    * @details
    * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`).
+   * @see verifyChecksums()
    */
   void updateChecksums() const;
 

@@ -75,7 +75,7 @@ RecordVector<T> RecordHdu::parseRecordVector(const std::vector<std::string>& key
 
 template <typename T>
 RecordVector<T> RecordHdu::parseAllRecords() const {
-  return m_header.parseSeq<T>(readKeywords());
+  return m_header.parseSeq<T>(readKeywords(~KeywordCategory::Comment));
 }
 
 template <typename T>
@@ -115,7 +115,7 @@ void RecordHdu::updateRecord(const Record<T>& record) const {
 
 template <typename T>
 void RecordHdu::updateRecord(const std::string& k, T v, const std::string& u, const std::string& c) const {
-  m_header.write<RecordMode::CreateOrUpdate>(k, v, c, u);
+  m_header.write<RecordMode::CreateOrUpdate>(k, v, u, c);
 }
 
 template <typename... Ts>

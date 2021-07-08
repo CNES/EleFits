@@ -74,8 +74,8 @@ namespace FitsIO {
  * \endcode
  * For performance, the values are stored sequentially in a 1D array as follows:
  * \code
- * int scalar[] = { 11, 21, 31, 41 };
- * int vector[] = { 11, 12, 13, 21, 22, 33, 41, 42, 43, 44 };
+ * int repeat1[] = { 11, 21, 31, 41 };
+ * int repeat3[] = { 11, 12, 13, 21, 22, 33, 41, 42, 43, 44 };
  * \endcode
  *
  * The only exception to this is string columns, which are vector columns
@@ -183,7 +183,8 @@ public:
   /**
    * @brief Number of elements in the column, i.e. repeat count * number of rows.
    * @warning
-   * For string columns, CFitsIO requires elementCount to be just the number of rows.
+   * For string columns, CFitsIO requires elementCount to be just the number of rows,
+   * although they are vector columns.
    */
   virtual long elementCount() const = 0;
 
@@ -199,7 +200,6 @@ public:
   /// @{
 
   /**
-   * @brief Access the value at given row and repeat indices.
    * @details
    * Three methods are available to access elements:
    * 
@@ -209,6 +209,10 @@ public:
    * 
    * @param row The row index
    * @param repeat The repeat index
+   */
+
+  /**
+   * @brief Access the value at given row and repeat indices.
    */
   const T& operator()(long row, long repeat = 0) const;
 
