@@ -1,18 +1,21 @@
 /**
 
+\defgroup primer  What's a Fits file?
+\brief The structure and contents of a Fits file, and how they relate to EL_FitsIO
+
+\defgroup handlers File and HDU handlers
+\brief Classes and functions to manipulate Fits files.
+
 \defgroup data_classes Data classes
 \brief Classes to represent the data stored in a Fits file.
 
 \defgroup types On types
 \brief Which types to use?
 
-\defgroup handlers File and HDU handlers
-\brief Classes and functions to manipulate Fits files.
-
 \defgroup iterators HDU selectors and iterators
 \brief Tools to iterate over HDUs with selected categories and/or states.
 
-\defgroup optim Optimization good practices
+\defgroup optim Optimization and good practices
 \brief What to do, what not to, and why!
 
 */

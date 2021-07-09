@@ -34,15 +34,6 @@ class FitsFile {
 + close()
 }
 
-class SifFile {
-+ header() : Header
-+ array() : ImageArray
-+ readRaster() : Raster
-+ writeRaster(Raster)
-+ verifyChecksums()
-+ updateChecksums()
-}
-
 class MefFile {
 + hduCount() : long
 + access(string) : RecordHdu
@@ -97,7 +88,6 @@ class BintableRows {
 
 }
 
-FitsFile <|- SifFile
 FitsFile <|-- MefFile
 ImageHdu -|> RecordHdu
 RecordHdu <|- BintableHdu

@@ -1,0 +1,58 @@
+@startuml
+package EL_FitsData {
+
+class Record<T> {
++ keyword : string
++ value : T
++ unit : string
++ comment : comment
+}
+
+abstract class Raster<T> {
++ shape : long...
++ size() : long
++ at(long...) : T
++ data() : T*
+}
+
+}
+
+package EL_FitsFile {
+
+class FitsFile {
++ open(string)
++ close()
+}
+
+class SifFile {
++ header() : Header
++ array() : ImageArray
++ readRaster() : Raster
++ writeRaster(Raster)
++ verifyChecksums()
++ updateChecksums()
+}
+
+class Header {
++ readAll() : string
++ parse(string) : Record
++ write(Record)
++ parseSeq(string...) : Record...
++ writeSeq(Record...)
+}
+
+class ImageArray {
++ readRaster() : Raster
++ writeRaster(Raster)
+}
+
+}
+
+FitsFile <|-- SifFile
+SifFile *-- Header
+SifFile *-- ImageArray
+Header -- Record
+ImageArray -- Raster
+
+Record -[hidden]right- Raster
+@enduml

@@ -1,0 +1,35 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\addtogroup primer
+
+
+\tableofcontents
+
+
+\section primer-intro Yet another Fits primer!
+
+
+Why so, when there are many nice examples already available?
+Because this one shows the mapping between the components of a Fits file, and the classes we implemented.
+Of course, feel free to have a look to the others, like that of the <a href="https://fits.gsfc.nasa.gov/fits_primer.html">Fits support office</a>.
+
+
+\section primer-sif A bit of history: Header unit and data unit
+
+
+TODO: SIF file
+
+
+\section primer-mef Now: Extensions
+
+
+TODO MEF file
+
+
+*/
+
+}
+}

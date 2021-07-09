@@ -9,7 +9,7 @@ namespace FitsIO {
 \section iterators-all Iterate over all HDUs of a MefFile
 
 
-An iterator class and begin/end functions are defined to enable loops over all the HDUs of a MefFile.
+An iterator class and begin/end functions are defined to enable looping over all the HDUs of a MefFile.
 Usage is straightforward:
 
 \code
@@ -36,13 +36,13 @@ const auto category = HduCategory::IntImage & HduCategory::Ext;
 
 An HduFilter is a list of acceptable HDU categories and unacceptable HDU categories.
 They are buit with operators `+` (accept) and `-` (reject).
-For example, to accept all real-valued images and Primary, excluding the HDUs which were just created:
+For example, to accept the Primary HDU and all the real-valued image HDUs, excluding the HDUs which were just created:
 
 \code
-const auto filter = HduCategory::IntImage + HduCategory::Primary - HduCategory::Created;
+const auto filter = HduCategory::Primary + HduCategory::IntImage - HduCategory::Created;
 \endcode
 
-It is possible to check if an HDU is of given category or matches a given filter with method RecordHdu::matches, as follows:
+It is possible to check if an HDU is of given category or matches a given filter with method `RecordHdu::matches`, as follows:
 
 \code
 for (const auto& hdu : f) {
@@ -60,8 +60,8 @@ for (const auto& hdu : f) {
 \section iterators-slected Iterate over selected HDUs of a MefFile
 
 
-Similarly to the range loop presented at the beginning of this page, it is possible to loop over a subset of the HDUs of a MefFile.
-This is done by creating the adequate iterator using method MefFile::select():
+Similarly to the range loop presented at the beginning of this page, it is possible to loop over a subset of HDUs.
+This is done by creating the adequate iterator using method `MefFile::select()`:
 
 \code
 for (const auto& hdu : f.select<ImageHdu>(HduCategory::Image & HduCategory::Created)) {
@@ -82,7 +82,7 @@ for (const auto& hdu : f.select<ImageHdu>(HduCategory::Created)) { // Don't repe
 \endcode
 
 \warning
-Even when using filters, the whole MefFile is scanned.
+Even when using filters, the whole file is scanned.
 It is therefore very inefficient to write several loops when one would be enough.
 For example, instead of:
 \code
@@ -103,6 +103,8 @@ for (const auto& hdu : f) {
   }
 }
 \endcode
+
+\see optim
 
 */
 

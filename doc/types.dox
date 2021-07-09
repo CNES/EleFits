@@ -11,15 +11,13 @@ namespace FitsIO {
 
 \section types-indices Indices
 
-
-\subsection types-indices-fitsio In the FitsIO namespace
-
 Indices in the FitsIO namespace are 0-based `long`s.
 Here is why.
 
 There is no way to make everybody happy:
 
-- FITS uses 1-based integers (sign undefined);
+- Fits generally relies on 1-based integers, sign-ness of which is undefined;
+- HDUs have no index in the Fits definition: they are just contiguous in the file;
 - C uses 0-based signed integers;
 - The C++ standard library uses 0-based unsigned integers;
 - CFitsIO uses 1-based signed integers with varying type (e.g. `int` for column count and `long` or `LONGLONG` for row count).
@@ -31,17 +29,11 @@ We do not rely on `ptrdiff_t` as suggested in the Guidelines, because it would c
 Using `long`s conveys the following message: trying to use something larger than the max of `long` won't work.
 
 Having signed indices also enables backard indexing, where -1 means the last index.
-This is supported, for example, by the Raster::at and Column::at methods.
+This is supported, for example, by the `Raster::at()` and `Column::at()` methods.
 
-Since indices in `std::vector`s (and therefore in Raster and Column) are 0-based, we had no other choice to provide a fully consistent API.
-This way, the user code can be fully consistent, with only 0-based indices.
-
-\subsection types-indices-cfitsio In the Cfitsio namespace
-
-In contrast, as the name implies, the Cfitsio namespace is tightly bound to CFitsIO and follows its conventions.
-In this namespace, indices are 1-based.
-This is because people using functions from the Cfitsio namespace are probably also using CFitsIO functions.
-It would thus be very error-prone to have the user code half 0-based, half 1-based.
+Since indices in `std::vector`s are 0-based, and we use a lot of `std::vector`s,
+we follow the same convention to provide a fully consistent API.
+This way, the user code only copes with 0-based indices.
 
 
 \section types-data Data types
@@ -55,7 +47,7 @@ Template functions and methods are provided to simply let the user set the desir
 auto raster = ext.readRaster<float>();
 \endcode
 
-Conversions are performed internally when the template type does not correspond to the file type.
+When possible, conversions are performed internally when the template type does not correspond to the file type.
 
 \subsection types-data-int Integers
 
@@ -74,8 +66,8 @@ used to correctly recover the value at reading.
 
 \subsection types-data-string String
 
-Strings are represented as `std::string` and not `const char *` in general.
-Yet, a few sevices are overloaded for `const char *` for convenience.
+Strings are represented as `std::string` and not `const char*` in general.
+Yet, a few sevices are overloaded with `const char*` for convenience.
 
 \subsection types-data-variant VariantValue
 
@@ -85,7 +77,7 @@ Development efforts have been put to allow the user to get whatever compatible t
 
 For example, assume some `unsigned long` record value is read as a `VariantValue`.
 The library will allow the user casting to `long long` because this is a mathematically valid conversion,
-where `boost::any_cast<long long>` and the likes would throw an exception.
+where `std::any_cast<long long>()` and the likes would throw an exception.
 
 */
 
