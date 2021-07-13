@@ -178,7 +178,7 @@ public:
    * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.
    * @return A reference to the new RecordHdu.
    */
-  const RecordHdu& initRecordExt(const std::string& name); // FIXME rename as initMetadataExt
+  const RecordHdu& initRecordExt(const std::string& name);
 
   /**
    * @brief Append a new ImageHdu with given name and shape.

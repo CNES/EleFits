@@ -17,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsData/TestRaster.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_SUITE(TestRaster_test)
 
 template <typename T, long n>
 void checkRasterEqualsItself(const Raster<T, n>& raster) {
-  BOOST_CHECK(Test::rasterApprox(raster, raster));
+  BOOST_TEST(Test::rasterApprox(raster, raster));
 }
 
 template <typename T>
@@ -62,7 +62,7 @@ void checkRastersWithDifferentShapesDiffer(const Raster<T, n>& raster) {
   for (long i = 0; i < raster.size(); ++i) {
     other.vector()[i] = *(raster.data() + i);
   }
-  BOOST_CHECK(not Test::rasterApprox(other, raster));
+  BOOST_TEST(not Test::rasterApprox(other, raster));
 }
 
 template <typename T>
@@ -87,8 +87,8 @@ EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 template <typename T, long n>
 void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n>& raster) {
   VecRaster<T, n> other(raster.shape);
-  BOOST_CHECK(not Test::rasterApprox(other, raster));
-  BOOST_CHECK(not Test::rasterApprox(raster, other));
+  BOOST_TEST(not Test::rasterApprox(other, raster));
+  BOOST_TEST(not Test::rasterApprox(raster, other));
 }
 
 template <typename T>

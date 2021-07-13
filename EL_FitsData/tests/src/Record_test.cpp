@@ -34,30 +34,30 @@ BOOST_AUTO_TEST_CASE(full_init_test) {
 
   Record<int> full { "FULL", 4, "m", "Full" };
 
-  BOOST_CHECK_EQUAL(full.keyword, "FULL");
-  BOOST_CHECK_EQUAL(full.value, 4);
-  BOOST_CHECK_EQUAL(full.unit, "m");
-  BOOST_CHECK_EQUAL(full.comment, "Full");
+  BOOST_TEST(full.keyword == "FULL");
+  BOOST_TEST(full.value == 4);
+  BOOST_TEST(full.unit == "m");
+  BOOST_TEST(full.comment == "Full");
 }
 
 BOOST_AUTO_TEST_CASE(unit_init_test) {
 
   Record<int> unit { "UNIT", 3, "m" };
 
-  BOOST_CHECK_EQUAL(unit.keyword, "UNIT");
-  BOOST_CHECK_EQUAL(unit.value, 3);
-  BOOST_CHECK_EQUAL(unit.unit, "m");
-  BOOST_CHECK_EQUAL(unit.comment, "");
+  BOOST_TEST(unit.keyword == "UNIT");
+  BOOST_TEST(unit.value == 3);
+  BOOST_TEST(unit.unit == "m");
+  BOOST_TEST(unit.comment == "");
 }
 
 BOOST_AUTO_TEST_CASE(mini_init_test) {
 
   Record<int> mini { "MINI", 2 };
 
-  BOOST_CHECK_EQUAL(mini.keyword, "MINI");
-  BOOST_CHECK_EQUAL(mini.value, 2);
-  BOOST_CHECK_EQUAL(mini.unit, "");
-  BOOST_CHECK_EQUAL(mini.comment, "");
+  BOOST_TEST(mini.keyword == "MINI");
+  BOOST_TEST(mini.value == 2);
+  BOOST_TEST(mini.unit == "");
+  BOOST_TEST(mini.comment == "");
 }
 
 template <typename T>
@@ -66,8 +66,8 @@ void checkRecordCopy(const std::string& keyword) {
   Record<T> copy(original);
   Record<T> assigned;
   assigned = original;
-  BOOST_CHECK(copy == original);
-  BOOST_CHECK(assigned == original);
+  BOOST_TEST((copy == original));
+  BOOST_TEST((assigned == original));
 }
 
 #define RECORD_COPY_TEST(type, name) \
@@ -83,19 +83,19 @@ BOOST_AUTO_TEST_CASE(raw_comment_test) {
   Record<int> unit { "V", 1, "m", "Speed" };
   Record<int> unitInComment { "V", 1, "", "[m] Speed" };
 
-  BOOST_CHECK_EQUAL(noUnit.rawComment(), "Speed");
-  BOOST_CHECK_EQUAL(unit.rawComment(), "[m] Speed");
-  BOOST_CHECK_EQUAL(unitInComment.rawComment(), "[m] Speed");
+  BOOST_TEST(noUnit.rawComment() == "Speed");
+  BOOST_TEST(unit.rawComment() == "[m] Speed");
+  BOOST_TEST(unitInComment.rawComment() == "[m] Speed");
 }
 
 template <typename T>
 void checkEqual(T value, T expected) {
-  BOOST_CHECK_EQUAL(value, expected);
+  BOOST_TEST(value == expected);
 }
 
 template <typename TV, typename TE>
 void checkApprox(TV value, TE expected) {
-  BOOST_CHECK(Test::approx(value, static_cast<TV>(expected)));
+  BOOST_TEST(Test::approx(value, static_cast<TV>(expected)));
 }
 
 template <typename TV, typename TE>
@@ -106,7 +106,7 @@ void checkApprox(std::complex<TV> value, std::complex<TE> expected) {
 
 template <>
 void checkApprox(std::string value, std::string expected) {
-  BOOST_CHECK_EQUAL(value, expected);
+  BOOST_TEST(value == expected);
 }
 
 template <typename T>
@@ -126,16 +126,16 @@ EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_SLICING_TEST)
 BOOST_AUTO_TEST_CASE(long_string_values_are_detected_test) {
   const std::string shortString = "XS";
   const std::string longString = std::string(99, 'X') + 'L';
-  BOOST_CHECK_LE(shortString.length(), 80);
-  BOOST_CHECK_GT(longString.length(), 80);
+  BOOST_TEST(shortString.length() <= 80);
+  BOOST_TEST(longString.length() > 80);
   const Record<std::string> shortStringRecord("STRINGXS", shortString);
-  BOOST_CHECK(not shortStringRecord.hasLongStringValue());
+  BOOST_TEST(not shortStringRecord.hasLongStringValue());
   const Record<std::string> longStringRecord("STRINGXL", longString);
-  BOOST_CHECK(longStringRecord.hasLongStringValue());
+  BOOST_TEST(longStringRecord.hasLongStringValue());
   const Record<VariantValue> shortAnyRecord("ANYXS", shortString);
-  BOOST_CHECK(not shortAnyRecord.hasLongStringValue());
+  BOOST_TEST(not shortAnyRecord.hasLongStringValue());
   const Record<VariantValue> longAnyRecord("ANYXL", longString);
-  BOOST_CHECK(longAnyRecord.hasLongStringValue());
+  BOOST_TEST(longAnyRecord.hasLongStringValue());
 }
 
 template <typename TFrom, typename TTo>
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(any_record_casting_test) {
 
 template <typename T>
 void checkAnyEqual(VariantValue value, T expected) {
-  BOOST_CHECK_EQUAL(boost::any_cast<T>(value), expected);
+  BOOST_TEST(boost::any_cast<T>(value) == expected);
 }
 
 BOOST_AUTO_TEST_CASE(vector_of_any_is_built_and_cast_back_test) {

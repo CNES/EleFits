@@ -70,7 +70,7 @@ BOOST_FIXTURE_TEST_CASE(access_hdu_by_type, FitsIO::Test::MinimalFile) {
   Hdu::gotoName(this->fptr, name, 0, FitsIO::HduCategory::Bintable);
   BOOST_TEST(Hdu::currentIndex(this->fptr) == bintableIndex);
 
-  // FIXME test extver
+  // TODO test extver
 }
 
 //-----------------------------------------------------------------------------

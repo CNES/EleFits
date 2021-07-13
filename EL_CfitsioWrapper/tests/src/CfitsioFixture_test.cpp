@@ -17,11 +17,11 @@
  *
  */
 
-#include <boost/filesystem.hpp>
-#include <boost/test/unit_test.hpp>
-
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/FileWrapper.h"
+
+#include <boost/filesystem.hpp>
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::Cfitsio;
 using namespace Euclid::FitsIO::Test;
@@ -37,9 +37,9 @@ BOOST_AUTO_TEST_CASE(temporary_file_is_removed_by_destructor_test) {
   {
     MinimalFile f;
     filename = f.filename;
-    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+    BOOST_TEST(boost::filesystem::is_regular_file(filename));
   }
-  BOOST_CHECK(not boost::filesystem::is_regular_file(filename));
+  BOOST_TEST(not boost::filesystem::is_regular_file(filename));
 }
 
 //-----------------------------------------------------------------------------

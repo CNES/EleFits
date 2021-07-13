@@ -17,21 +17,14 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
+#include "EL_FitsData/TestRaster.h"
+#include "EL_FitsFile/ImageHdu.h"
+#include "EL_FitsFile/MefFile.h"
 #include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsData/TestRaster.h"
-#include "EL_FitsFile/MefFile.h"
-
-#include "EL_FitsFile/ImageHdu.h"
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
-
-template <typename T>
-void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
-  BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
-}
 
 //-----------------------------------------------------------------------------
 
@@ -46,7 +39,7 @@ void check_2d() {
   MefFile file(filename, MefFile::Permission::Temporary);
   file.assignImageExt("IMGEXT", input);
   const auto output = file.accessFirst<ImageHdu>("IMGEXT").readRaster<T, 2>();
-  checkEqualVectors(output.vector(), input.vector());
+  BOOST_TEST(output.vector() == input.vector());
 }
 
 /**

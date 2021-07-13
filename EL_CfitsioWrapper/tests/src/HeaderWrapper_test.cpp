@@ -17,13 +17,12 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
-#include "EL_FitsData/TestRecord.h"
-
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
+#include "EL_FitsData/TestRecord.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -38,7 +37,7 @@ const double atol = 1e-4;
 
 template <typename T>
 void checkClose(T value, T expected) {
-  BOOST_CHECK_EQUAL(value, expected);
+  BOOST_TEST(value == expected);
 }
 
 template <>
@@ -73,8 +72,8 @@ void checkRecordIsReadBack(const std::string& label) {
   Header::writeRecord(file.fptr, FitsIO::Record<T>(keyword, value, unit, comment));
   const auto parsed = Header::parseRecord<T>(file.fptr, keyword);
   checkClose(parsed.value, value);
-  BOOST_CHECK_EQUAL(parsed.unit, unit);
-  BOOST_CHECK_EQUAL(parsed.comment, comment);
+  BOOST_TEST(parsed.unit == unit);
+  BOOST_TEST(parsed.comment == comment);
 }
 
 template <>
@@ -95,7 +94,7 @@ BOOST_AUTO_TEST_CASE(empty_value_test) {
   FitsIO::Record<std::string> empty("EMPTY", "", "", "");
   Header::writeRecord(file.fptr, empty);
   const auto output = Header::parseRecord<std::string>(file.fptr, empty.keyword);
-  BOOST_CHECK_EQUAL(output.value, "");
+  BOOST_TEST(output.value == "");
 }
 
 BOOST_AUTO_TEST_CASE(missing_keyword_test) {
@@ -119,7 +118,7 @@ struct ValueList {
 
 void checkContains(const std::vector<std::string>& list, const std::vector<std::string>& values) {
   for (const auto& v : values) {
-    BOOST_CHECK(std::find(list.begin(), list.end(), v) != list.end());
+    BOOST_TEST((std::find(list.begin(), list.end(), v) != list.end()));
   }
 }
 
@@ -136,15 +135,15 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, FitsIO::Test::MinimalFile) {
   const auto found = Header::listKeywords(this->fptr, categories);
   checkContains(found, keywords);
   auto records = Header::parseRecordsAs<RecordList, bool, int, double, std::string>(this->fptr, keywords);
-  BOOST_CHECK_EQUAL(records.b.value, input.b.value);
-  BOOST_CHECK_EQUAL(records.i.value, input.i.value);
-  BOOST_CHECK_EQUAL(records.d.value, input.d.value);
-  BOOST_CHECK_EQUAL(records.s.value, input.s.value);
+  BOOST_TEST(records.b.value == input.b.value);
+  BOOST_TEST(records.i.value == input.i.value);
+  BOOST_TEST(records.d.value == input.d.value);
+  BOOST_TEST(records.s.value == input.s.value);
   auto values = Header::parseRecordsAs<ValueList, bool, int, double, std::string>(this->fptr, keywords);
-  BOOST_CHECK_EQUAL(values.b, input.b.value);
-  BOOST_CHECK_EQUAL(values.i, input.i.value);
-  BOOST_CHECK_EQUAL(values.d, input.d.value);
-  BOOST_CHECK_EQUAL(values.s, input.s.value);
+  BOOST_TEST(values.b == input.b.value);
+  BOOST_TEST(values.i == input.i.value);
+  BOOST_TEST(values.d == input.d.value);
+  BOOST_TEST(values.s == input.s.value);
 }
 
 BOOST_FIXTURE_TEST_CASE(several_records_test, FitsIO::Test::MinimalFile) {
@@ -154,20 +153,20 @@ BOOST_FIXTURE_TEST_CASE(several_records_test, FitsIO::Test::MinimalFile) {
   FitsIO::Record<float> floatRecord { "FLOAT", 3.14F };
   auto records = std::make_tuple(intRecord, floatRecord);
   Header::writeRecords(this->fptr, strRecord, boolRecord);
-  BOOST_CHECK_EQUAL(Header::parseRecord<std::string>(this->fptr, "STR").value, "VALUE");
-  BOOST_CHECK_EQUAL(Header::parseRecord<bool>(this->fptr, "BOOL").value, true);
+  BOOST_TEST(Header::parseRecord<std::string>(this->fptr, "STR").value == "VALUE");
+  BOOST_TEST(Header::parseRecord<bool>(this->fptr, "BOOL").value == true);
   Header::writeRecords(this->fptr, records);
-  BOOST_CHECK_EQUAL(Header::parseRecord<int>(this->fptr, "INT").value, 42);
+  BOOST_TEST(Header::parseRecord<int>(this->fptr, "INT").value == 42);
   checkClose(Header::parseRecord<float>(this->fptr, "FLOAT").value, 3.14F);
   strRecord.value = "NEW";
   boolRecord.value = false;
   std::get<0>(records).value = 43;
   std::get<1>(records).value = 4.14F;
   Header::updateRecords(this->fptr, strRecord, boolRecord);
-  BOOST_CHECK_EQUAL(Header::parseRecord<std::string>(this->fptr, "STR").value, "NEW");
-  BOOST_CHECK_EQUAL(Header::parseRecord<bool>(this->fptr, "BOOL").value, false);
+  BOOST_TEST(Header::parseRecord<std::string>(this->fptr, "STR").value == "NEW");
+  BOOST_TEST(Header::parseRecord<bool>(this->fptr, "BOOL").value == false);
   Header::updateRecords(this->fptr, records);
-  BOOST_CHECK_EQUAL(Header::parseRecord<int>(this->fptr, "INT").value, 43);
+  BOOST_TEST(Header::parseRecord<int>(this->fptr, "INT").value == 43);
   checkClose(Header::parseRecord<float>(this->fptr, "FLOAT").value, 4.14F);
 }
 
@@ -178,7 +177,7 @@ void checkRecordTypeid(T value, const std::vector<std::size_t>& validTypeCodes) 
   Header::writeRecord(f.fptr, record);
   const auto& id = Header::recordTypeid(f.fptr, "KEYWORD").hash_code();
   const auto& it = std::find(validTypeCodes.begin(), validTypeCodes.end(), id);
-  BOOST_CHECK(it != validTypeCodes.end());
+  BOOST_TEST((it != validTypeCodes.end()));
 }
 
 template <typename T>
@@ -226,9 +225,9 @@ BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, FitsIO::Test::MinimalFile) {
   FitsIO::Record<long long> longlongRecord("LONGLONG", 2);
   Header::writeRecords(this->fptr, shortRecord, longRecord, longlongRecord);
   const auto records = Header::parseRecordVector<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
-  BOOST_CHECK_EQUAL(records["SHORT"].value, shortRecord);
-  BOOST_CHECK_EQUAL(records["LONG"].value, longRecord);
-  BOOST_CHECK_EQUAL(records["LONGLONG"].value, longlongRecord);
+  BOOST_TEST(records["SHORT"].value == shortRecord);
+  BOOST_TEST(records["LONG"].value == longRecord);
+  BOOST_TEST(records["LONGLONG"].value == longlongRecord);
 }
 
 //-----------------------------------------------------------------------------

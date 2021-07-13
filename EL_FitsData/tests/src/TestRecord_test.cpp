@@ -17,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsData/TestRecord.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -32,9 +32,9 @@ BOOST_FIXTURE_TEST_SUITE(TestRecord_test, Test::RandomHeader)
 template <typename T>
 void checkFieldsAreAllSet(const Test::RandomHeader& header) {
   const auto& record = header.getRecord<T>();
-  BOOST_CHECK(not record.keyword.empty());
-  BOOST_CHECK(not record.unit.empty());
-  BOOST_CHECK(not record.comment.empty());
+  BOOST_TEST(not record.keyword.empty());
+  BOOST_TEST(not record.unit.empty());
+  BOOST_TEST(not record.comment.empty());
 }
 
 template <typename T>

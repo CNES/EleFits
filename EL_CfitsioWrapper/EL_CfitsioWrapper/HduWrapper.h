@@ -123,6 +123,11 @@ bool initPrimary(fitsfile* fptr);
 bool updateName(fitsfile* fptr, const std::string& name);
 
 /**
+ * @brief Write or update HDU version.
+ */
+bool updateVersion(fitsfile* fptr, long version);
+
+/**
  * @brief Create a new image HDU with empty data unit.
  */
 void createMetadataExtension(fitsfile* fptr, const std::string& name);

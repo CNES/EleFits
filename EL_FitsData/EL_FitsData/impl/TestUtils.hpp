@@ -19,15 +19,12 @@
 
 #if defined(_EL_FITSDATA_TESTUTILS_IMPL) || defined(CHECK_QUALITY)
 
-#include <algorithm> // generate
-#include <chrono> // chrono
-#include <random> // default_random_engine, uniform_real_distribution
+  #include "EL_FitsData/TestUtils.h"
+  #include "ElementsKernel/Unused.h"
 
-// #include <boost/test/unit_test.hpp> // See checkEqualVectors below
-
-#include "ElementsKernel/Unused.h"
-
-#include "EL_FitsData/TestUtils.h"
+  #include <algorithm> // generate
+  #include <chrono> // chrono
+  #include <random> // default_random_engine, uniform_real_distribution
 
 namespace Euclid {
 namespace FitsIO {
@@ -122,13 +119,6 @@ generateRandomVector<std::complex<double>>(long size, std::complex<double> min, 
 
 template <>
 std::vector<std::string> generateRandomVector<std::string>(long size, std::string min, std::string max);
-
-template <typename T>
-void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& expected) {
-  // BOOST_CHECK_EQUAL_COLLECTIONS needs some values to be set from the test suite
-  // so the header for it is included in the unit test sources only
-  BOOST_CHECK_EQUAL_COLLECTIONS(test.begin(), test.end(), expected.begin(), expected.end());
-}
 
 template <typename T>
 bool approx(T test, T ref, ELEMENTS_UNUSED double tol) {

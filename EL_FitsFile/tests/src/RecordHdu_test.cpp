@@ -36,20 +36,19 @@ BOOST_AUTO_TEST_SUITE(RecordHdu_test)
 
 template <typename T>
 void checkRecordWithFallbackIsReadBack(const RecordHdu& h, const std::string& keyword) {
-  BOOST_CHECK(not h.hasKeyword(keyword));
+  BOOST_TEST(not h.hasKeyword(keyword));
   BOOST_CHECK_THROW(h.parseRecord<T>(keyword), std::exception);
   const Record<T> fallback { keyword, Test::generateRandomValue<T>(), "", "FALLBACK" };
   auto output = h.parseRecordOr<T>(fallback);
-  BOOST_CHECK(output == fallback);
+  BOOST_TEST((output == fallback));
   const Record<T> input { keyword, Test::generateRandomValue<T>(), "", "INPUT" };
   h.writeRecord(input);
-  BOOST_CHECK(input != fallback); // At least the comments differ
+  BOOST_TEST((input != fallback)); // At least the comments differ
   output = h.parseRecordOr<T>(fallback);
-  // BOOST_CHECK(output == input);
-  BOOST_CHECK_EQUAL(output.keyword, input.keyword);
-  BOOST_CHECK(Test::approx(output.value, input.value));
-  BOOST_CHECK_EQUAL(output.unit, input.unit);
-  BOOST_CHECK_EQUAL(output.comment, input.comment);
+  BOOST_TEST(output.keyword == input.keyword);
+  BOOST_TEST(Test::approx(output.value, input.value));
+  BOOST_TEST(output.unit == input.unit);
+  BOOST_TEST(output.comment == input.comment);
 }
 
 template <>
@@ -70,8 +69,8 @@ BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::Temporar
   Record<short> written("SHORT", 1);
   Record<long> fallback("LONG", 10);
   const auto& header = this->header();
-  BOOST_CHECK(not header.hasKeyword(written.keyword));
-  BOOST_CHECK(not header.hasKeyword(fallback.keyword));
+  BOOST_TEST(not header.hasKeyword(written.keyword));
+  BOOST_TEST(not header.hasKeyword(fallback.keyword));
   header.writeRecord(written);
   written.value++;
   fallback.value++;
@@ -88,12 +87,12 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
       "that I have ever written in a serious code.";
   BOOST_CHECK_GT(longStr.length(), FLEN_VALUE);
   h.writeRecord("SHORT", shortStr);
-  BOOST_CHECK(not h.hasKeyword("LONGSTRN"));
+  BOOST_TEST(not h.hasKeyword("LONGSTRN"));
   h.writeRecord("LONG", longStr);
   const auto output = h.parseRecord<std::string>("LONG");
   h.parseRecord<std::string>("LONGSTRN");
   BOOST_CHECK_EQUAL(output.value, longStr);
-  BOOST_CHECK(output.hasLongStringValue());
+  BOOST_TEST(output.hasLongStringValue());
 }
 
 void checkHierarchKeywordIsReadBack(const RecordHdu& h, const std::string& keyword) {

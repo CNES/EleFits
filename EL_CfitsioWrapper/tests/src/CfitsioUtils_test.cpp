@@ -17,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::Cfitsio;
 
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(c_str_array_test) {
   CStrArray arr(vec);
   for (std::size_t row = 0; row < vec.size(); ++row) {
     for (std::size_t letter = 0; letter < vec[row].length(); ++letter) {
-      BOOST_CHECK_EQUAL(vec[row].c_str()[letter], arr.data()[row][letter]);
+      BOOST_TEST(vec[row].c_str()[letter] == arr.data()[row][letter]);
     }
   }
 }

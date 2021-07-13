@@ -67,7 +67,7 @@ FitsIO::HduCategory currentType(fitsfile* fptr) {
   if (type == BINARY_TBL) {
     return FitsIO::HduCategory::Bintable;
   }
-  throw std::runtime_error("Unknown HDU type (code " + std::to_string(type) + ")."); // FIXME Exception class
+  throw FitsIO::FitsIOError("Unknown HDU type (code " + std::to_string(type) + ").");
 }
 
 bool currentIsPrimary(fitsfile* fptr) {
@@ -89,17 +89,15 @@ bool gotoName(fitsfile* fptr, const std::string& name, long version, FitsIO::Hdu
   if (name == "") {
     return false;
   }
-  if (name == "Primary") { // FIXME allow any case
-    return gotoPrimary(fptr);
-  }
   int status = 0;
   int hdutype = ANY_HDU;
   if (category == FitsIO::HduCategory::Image) {
     hdutype = IMAGE_HDU;
   } else if (category == FitsIO::HduCategory::Bintable) {
     hdutype = BINARY_TBL;
+  } else if (category != FitsIO::HduCategory::Any) {
+    throw FitsIO::FitsIOError("Invalid HduCategory; Only Any, Image and Bintable are supported.");
   }
-  // FIXME catch invalid category values, e.g. ImageExt
   fits_movnam_hdu(fptr, hdutype, toCharPtr(name).get(), version, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot move to HDU: " + name);
   return true;
@@ -133,6 +131,14 @@ bool updateName(fitsfile* fptr, const std::string& name) {
     return false;
   }
   Header::updateRecord(fptr, FitsIO::Record<std::string>("EXTNAME", name));
+  return true;
+}
+
+bool updateVersion(fitsfile* fptr, long version) {
+  if (version == 0) {
+    return false;
+  }
+  Header::updateRecord(fptr, FitsIO::Record<long>("EXTVER", version));
   return true;
 }
 

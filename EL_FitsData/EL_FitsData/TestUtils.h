@@ -69,14 +69,6 @@ template <typename T>
 std::vector<T> generateRandomVector(long size, T min = halfMin<T>(), T max = halfMax<T>());
 
 /**
- * @brief Check that two vectors are exactly equal.
- * @details
- * This is using BOOST_CHECK_EQUAL_COLLECTIONS.
- */
-template <typename T>
-void checkEqualVectors(const std::vector<T>& test, const std::vector<T>& ref);
-
-/**
  * @brief Check whether a test value is approximately equal to a reference value.
  * @details
  * Floating point values are compared as: |test - ref| / ref < tol

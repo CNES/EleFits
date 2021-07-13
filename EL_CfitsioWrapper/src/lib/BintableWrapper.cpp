@@ -17,11 +17,12 @@
  *
  */
 
-#include <algorithm>
-
 #include "EL_CfitsioWrapper/BintableWrapper.h"
+
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
+
+#include <algorithm>
 
 namespace Euclid {
 namespace Cfitsio {
@@ -75,7 +76,7 @@ void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
   Cfitsio::Header::updateRecord<std::string>(fptr, { keyword, newName });
   int status = 0;
   fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
-  // FIXME fits_set_hdustruc is DEPRECATED
+  // TODO fits_set_hdustruc is DEPRECATED => ask CFitsIO support
   CfitsioError::mayThrow(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
 }
 

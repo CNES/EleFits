@@ -17,13 +17,11 @@
  *
  */
 
-#include <limits>
+#include "EL_CfitsioWrapper/CfitsioFixture.h"
+#include "EL_CfitsioWrapper/CfitsioWrapper.h"
 
 #include <boost/test/unit_test.hpp>
-
-#include "EL_CfitsioWrapper/CfitsioFixture.h"
-
-#include "EL_CfitsioWrapper/CfitsioWrapper.h"
+#include <limits>
 
 //-----------------------------------------------------------------------------
 
@@ -54,17 +52,17 @@ BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::FitsIO::Test::M
   unsigned long signed_max = std::numeric_limits<long>::max();
   unsigned long unsigned_max = std::numeric_limits<unsigned long>::max();
   fits_write_key(fptr, TULONG, "SIGNED", &signed_max, nullptr, &status);
-  BOOST_CHECK_EQUAL(status, 0);
+  BOOST_TEST(status == 0);
   fits_write_key(fptr, TULONG, "UNSIGNED", &unsigned_max, nullptr, &status);
-  BOOST_CHECK_EQUAL(status, 0);
+  BOOST_TEST(status == 0);
   /* Read */
   unsigned long output = 0;
   fits_read_key(fptr, TULONG, "SIGNED", &output, nullptr, &status);
-  BOOST_CHECK_EQUAL(status, 0);
-  BOOST_CHECK_EQUAL(output, signed_max);
+  BOOST_TEST(status == 0);
+  BOOST_TEST(output == signed_max);
   fits_read_key(fptr, TULONG, "UNSIGNED", &output, nullptr, &status);
-  BOOST_CHECK_NE(status, 0); // CFitsIO bug?
-  BOOST_CHECK_NE(output, unsigned_max); // CFitsIO bug?
+  BOOST_TEST(status != 0); // CFitsIO bug
+  BOOST_TEST(output != unsigned_max); // CFitsIO bug
 }
 
 //-----------------------------------------------------------------------------

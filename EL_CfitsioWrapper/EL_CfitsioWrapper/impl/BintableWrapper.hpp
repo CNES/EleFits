@@ -19,14 +19,12 @@
 
 #if defined(_EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-#include <algorithm> // transform
+  #include "EL_CfitsioWrapper/BintableWrapper.h"
+  #include "EL_CfitsioWrapper/ErrorWrapper.h"
+  #include "EL_FitsData/FitsIOError.h"
+  #include "ElementsKernel/Unused.h"
 
-#include "ElementsKernel/Unused.h"
-
-#include "EL_CfitsioWrapper/BintableWrapper.h"
-#include "EL_CfitsioWrapper/ErrorWrapper.h"
-
-#include "EL_FitsData/FitsIOError.h"
+  #include <algorithm> // transform
 
 namespace Euclid {
 namespace Cfitsio {
@@ -197,8 +195,7 @@ struct ColumnLooperImpl<std::size_t(-1), Ts...> {
       ELEMENTS_UNUSED fitsfile* fptr,
       ELEMENTS_UNUSED const std::vector<long>& indices,
       ELEMENTS_UNUSED std::tuple<FitsIO::VecColumn<Ts>...>& columns,
-      ELEMENTS_UNUSED long rowCount) {
-  }
+      ELEMENTS_UNUSED long rowCount) {}
 
   /** @brief Pass */
   static void readChunks(
@@ -206,13 +203,11 @@ struct ColumnLooperImpl<std::size_t(-1), Ts...> {
       ELEMENTS_UNUSED const std::vector<long>& indices,
       ELEMENTS_UNUSED std::tuple<FitsIO::VecColumn<Ts>...>& columns,
       ELEMENTS_UNUSED long firstRow,
-      ELEMENTS_UNUSED long rowCount) {
-  }
+      ELEMENTS_UNUSED long rowCount) {}
 
   /** @brief Pass */
   static void
-  maxRowCount(ELEMENTS_UNUSED const std::tuple<const FitsIO::Column<Ts>&...>& columns, ELEMENTS_UNUSED long& count) {
-  }
+  maxRowCount(ELEMENTS_UNUSED const std::tuple<const FitsIO::Column<Ts>&...>& columns, ELEMENTS_UNUSED long& count) {}
 
   /** @brief Pass */
   static void writeChunks(
@@ -220,8 +215,7 @@ struct ColumnLooperImpl<std::size_t(-1), Ts...> {
       ELEMENTS_UNUSED const std::vector<long>& indices,
       ELEMENTS_UNUSED std::tuple<const FitsIO::Column<Ts>&...> columns,
       ELEMENTS_UNUSED long firstRow,
-      ELEMENTS_UNUSED long rowCount) {
-  }
+      ELEMENTS_UNUSED long rowCount) {}
 };
 
 } // namespace Internal
@@ -348,7 +342,7 @@ void writeColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
   long rows = 0;
   Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::maxRowCount(table, rows);
   long chunkRows = 0;
-  fits_get_rowsize(fptr, &chunkRows, &status); // FIXME test with other values, e.g. 1
+  fits_get_rowsize(fptr, &chunkRows, &status); // Tested with other values, e.g. 1 and 10; less efficient
   if (chunkRows == 0) {
     throw FitsIO::FitsIOError("Cannot compute the optimal number of rows to be read at once");
   }

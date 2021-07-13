@@ -17,10 +17,10 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsData/Column.h"
 #include "EL_FitsData/TestColumn.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -33,20 +33,20 @@ BOOST_AUTO_TEST_SUITE(Column_test)
 BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test) {
   std::vector<int> input { 1, 2, 3 };
   VecRefColumn<int> column({ "SHARED", "", 1 }, input);
-  BOOST_CHECK_EQUAL(column.data()[1], 2);
+  BOOST_TEST(column.data()[1] == 2);
   input[1] = 4;
-  BOOST_CHECK_EQUAL(column.data()[1], 4);
+  BOOST_TEST(column.data()[1] == 4);
 }
 
 BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test) {
   std::vector<int> input { 4, 5, 6 };
   VecColumn<int> column({ "DATA", "", 1 }, std::move(input));
-  BOOST_CHECK_EQUAL(column.vector()[1], 5);
-  BOOST_CHECK_EQUAL(input.size(), 0);
+  BOOST_TEST(column.vector()[1] == 5);
+  BOOST_TEST(input.size() == 0);
   input = std::move(column.vector());
-  BOOST_CHECK_EQUAL(input[1], 5);
-  BOOST_CHECK_EQUAL(column.vector().size(), 0);
-  BOOST_CHECK_EQUAL(column.elementCount(), 0);
+  BOOST_TEST(input[1] == 5);
+  BOOST_TEST(column.vector().size() == 0);
+  BOOST_TEST(column.elementCount() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
@@ -54,13 +54,13 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   const long repeatCount = 3;
   Test::RandomVectorColumn<int> column(repeatCount, rowCount);
   column.at(1, -1) = 1;
-  BOOST_CHECK_EQUAL(column.at(1, -1), 1);
+  BOOST_TEST(column.at(1, -1) == 1);
   const auto& vec = column.vector();
-  BOOST_CHECK_EQUAL(column.at(0), vec[0]);
-  BOOST_CHECK_EQUAL(column.at(-1), vec[(rowCount - 1) * repeatCount]);
-  BOOST_CHECK_EQUAL(column.at(-rowCount), vec[0]);
-  BOOST_CHECK_EQUAL(column.at(0, -1), vec[repeatCount - 1]);
-  BOOST_CHECK_EQUAL(column.at(-1, -1), vec[rowCount * repeatCount - 1]);
+  BOOST_TEST(column.at(0) == vec[0]);
+  BOOST_TEST(column.at(-1) == vec[(rowCount - 1) * repeatCount]);
+  BOOST_TEST(column.at(-rowCount) == vec[0]);
+  BOOST_TEST(column.at(0, -1) == vec[repeatCount - 1]);
+  BOOST_TEST(column.at(-1, -1) == vec[rowCount * repeatCount - 1]);
   BOOST_CHECK_THROW(column.at(rowCount), FitsIOError);
   BOOST_CHECK_THROW(column.at(-1 - rowCount), FitsIOError);
   BOOST_CHECK_THROW(column.at(0, repeatCount), FitsIOError);

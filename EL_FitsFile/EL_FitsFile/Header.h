@@ -83,6 +83,9 @@ enum class RecordMode
  * Indeed, working with a tuple might become a nightmare with many values,
  * where `std::vector<VariantValue>` and `RecordVector<VariantValue>` can provide valuable help by reducing the boilerplate.
  * The impact on runtime is negligible.
+ * 
+ * @note
+ * As specified in the Fits definition, duplicated keywords lead to an undefined behavior.
  */
 class Header {
 

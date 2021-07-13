@@ -17,14 +17,13 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
-#include "EL_FitsData/TestColumn.h"
-
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
+#include "EL_FitsData/TestColumn.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -43,13 +42,13 @@ void checkScalarColumnIsReadBack() {
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto index = Bintable::columnIndex(file.fptr, input.info.name);
-    BOOST_CHECK_EQUAL(index, 1);
+    BOOST_TEST(index == 1);
     const auto info = Bintable::readColumnInfo<T>(file.fptr, index);
-    BOOST_CHECK_EQUAL(info.name, input.info.name);
-    BOOST_CHECK_EQUAL(info.unit, input.info.unit);
-    BOOST_CHECK_EQUAL(info.repeatCount, input.info.repeatCount);
+    BOOST_TEST(info.name == input.info.name);
+    BOOST_TEST(info.unit == input.info.unit);
+    BOOST_TEST(info.repeatCount == input.info.repeatCount);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
-    checkEqualVectors(output.vector(), input.vector());
+    BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
     for (const auto& v : input.vector()) {
@@ -81,8 +80,8 @@ void checkVectorColumnIsReadBack() {
   try {
     Hdu::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
-    BOOST_CHECK_EQUAL(output.info.repeatCount, repeatCount);
-    checkEqualVectors(output.vector(), input.vector());
+    BOOST_TEST(output.info.repeatCount == repeatCount);
+    BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
     for (const auto& v : input.vector()) {
@@ -117,18 +116,18 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
   SmallTable input;
   Hdu::createBintableExtension(this->fptr, "IMGEXT", input.numCol, input.radecCol, input.nameCol, input.distMagCol);
   const auto outputNums = Bintable::readColumn<SmallTable::Num>(this->fptr, input.numCol.info.name);
-  checkEqualVectors(outputNums.vector(), input.numCol.vector());
+  BOOST_TEST(outputNums.vector() == input.numCol.vector());
   const auto outputRadecs = Bintable::readColumn<SmallTable::Radec>(this->fptr, input.radecCol.info.name);
-  checkEqualVectors(outputRadecs.vector(), input.radecCol.vector());
+  BOOST_TEST(outputRadecs.vector() == input.radecCol.vector());
   const auto outputNames = Bintable::readColumn<SmallTable::Name>(this->fptr, input.nameCol.info.name);
-  checkEqualVectors(outputNames.vector(), input.nameCol.vector());
+  BOOST_TEST(outputNames.vector() == input.nameCol.vector());
   const auto outputDistsMags = Bintable::readColumn<SmallTable::DistMag>(this->fptr, input.distMagCol.info.name);
-  checkEqualVectors(outputDistsMags.vector(), input.distMagCol.vector());
+  BOOST_TEST(outputDistsMags.vector() == input.distMagCol.vector());
 }
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
-  constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full // FIXME check
+  constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full
   RandomScalarColumn<int> i(rowCount);
   i.info.name = "I";
   RandomScalarColumn<float> f(rowCount);
@@ -137,9 +136,13 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   d.info.name = "D";
   Hdu::createBintableExtension(this->fptr, "BINEXT", i, f, d);
   const auto table = Bintable::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });
-  checkEqualVectors(std::get<0>(table).vector(), i.vector());
-  checkEqualVectors(std::get<1>(table).vector(), f.vector());
-  checkEqualVectors(std::get<2>(table).vector(), d.vector());
+  int status = 0;
+  long chunkRows = 0;
+  fits_get_rowsize(fptr, &chunkRows, &status);
+  BOOST_TEST(chunkRows < rowCount);
+  BOOST_TEST(std::get<0>(table).vector() == i.vector());
+  BOOST_TEST(std::get<1>(table).vector() == f.vector());
+  BOOST_TEST(std::get<2>(table).vector() == d.vector());
 }
 
 BOOST_FIXTURE_TEST_CASE(append_test, FitsIO::Test::MinimalFile) {
@@ -147,12 +150,12 @@ BOOST_FIXTURE_TEST_CASE(append_test, FitsIO::Test::MinimalFile) {
   SmallTable table;
   Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol);
   const auto names = Bintable::readColumn<SmallTable::Name>(fptr, table.nameCol.info.name);
-  checkEqualVectors(names.vector(), table.names);
+  BOOST_TEST(names.vector() == table.names);
   Bintable::appendColumns(fptr, table.distMagCol, table.radecCol);
   const auto distsMags = Bintable::readColumn<SmallTable::DistMag>(fptr, table.distMagCol.info.name);
-  checkEqualVectors(distsMags.vector(), table.distsMags);
+  BOOST_TEST(distsMags.vector() == table.distsMags);
   const auto radecs = Bintable::readColumn<SmallTable::Radec>(fptr, table.radecCol.info.name);
-  checkEqualVectors(radecs.vector(), table.radecs);
+  BOOST_TEST(radecs.vector() == table.radecs);
 }
 
 //-----------------------------------------------------------------------------

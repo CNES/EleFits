@@ -17,13 +17,12 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
-#include "EL_FitsData/TestRaster.h"
-
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/ImageWrapper.h"
+#include "EL_FitsData/TestRaster.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -41,10 +40,10 @@ void checkRandom3DRasterIsReadBack() {
   MinimalFile file;
   Hdu::createImageExtension(file.fptr, "IMGEXT", input);
   const auto fixedOutput = Image::readRaster<T, 3>(file.fptr);
-  checkEqualVectors(fixedOutput.vector(), input.vector());
+  BOOST_TEST(fixedOutput.vector() == input.vector());
   const auto variableOuptut = Image::readRaster<T, -1>(file.fptr);
-  BOOST_CHECK_EQUAL(variableOuptut.dimension(), 3);
-  checkEqualVectors(variableOuptut.vector(), input.vector());
+  BOOST_TEST(variableOuptut.dimension() == 3);
+  BOOST_TEST(variableOuptut.vector() == input.vector());
 }
 
 #define RANDOM_3D_RASTER_IS_READ_BACK_TEST(type, name) \

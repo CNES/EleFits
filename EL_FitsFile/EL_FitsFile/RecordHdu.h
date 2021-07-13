@@ -168,6 +168,11 @@ public:
   void updateName(const std::string& name) const;
 
   /**
+   * @brief Write or update the extension version.
+   */
+  void updateVersion(long version) const;
+
+  /**
    * @brief Read the header as a string.
    * @param incNonValued Include non-valued records (COMMENT, HISTORY, blank).
    * @details

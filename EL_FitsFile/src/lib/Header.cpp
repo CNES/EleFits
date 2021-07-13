@@ -47,7 +47,6 @@ std::vector<std::string> Header::readKeywords(KeywordCategory categories) const 
 std::map<std::string, std::string> Header::readKeywordsValues(KeywordCategory categories) const {
   m_touch();
   return Cfitsio::Header::listKeywordsValues(m_fptr, categories);
-  // FIXME handle duplicated keywords
 }
 
 std::string Header::readAll(KeywordCategory categories) const {

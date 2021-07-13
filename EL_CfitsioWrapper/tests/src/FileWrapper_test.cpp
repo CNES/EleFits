@@ -17,12 +17,12 @@
  *
  */
 
-#include <boost/filesystem.hpp>
-#include <boost/test/unit_test.hpp>
-
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/FileWrapper.h"
+
+#include <boost/filesystem.hpp>
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid;
 using namespace Cfitsio;
@@ -35,18 +35,18 @@ BOOST_AUTO_TEST_SUITE(FileWrapper_test)
 
 BOOST_FIXTURE_TEST_CASE(file_operations_test, FitsIO::Test::MinimalFile) {
   BOOST_CHECK_THROW(File::createAndOpen(filename, File::CreatePolicy::CreateOnly), CfitsioError);
-  BOOST_CHECK(fptr);
+  BOOST_TEST(fptr);
   File::close(fptr);
-  BOOST_CHECK(boost::filesystem::is_regular_file(filename));
-  BOOST_CHECK(not fptr);
+  BOOST_TEST(boost::filesystem::is_regular_file(filename));
+  BOOST_TEST(not fptr);
   fptr = File::open(filename, File::OpenPolicy::ReadOnly);
-  BOOST_CHECK(fptr);
+  BOOST_TEST(fptr);
   BOOST_CHECK_THROW(File::closeAndDelete(fptr), CfitsioError);
   File::close(fptr);
   fptr = File::open(filename, File::OpenPolicy::ReadWrite);
   File::closeAndDelete(fptr);
-  BOOST_CHECK(not boost::filesystem::exists(filename));
-  BOOST_CHECK(not fptr);
+  BOOST_TEST(not boost::filesystem::exists(filename));
+  BOOST_TEST(not fptr);
 }
 
 //-----------------------------------------------------------------------------

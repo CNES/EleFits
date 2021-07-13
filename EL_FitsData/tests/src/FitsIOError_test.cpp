@@ -17,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EL_FitsData/FitsIOError.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -35,9 +35,9 @@ BOOST_AUTO_TEST_CASE(message_test) {
   FitsIOError error(message);
   const std::string output = error.what();
   const auto prefixPos = output.find(prefix);
-  BOOST_CHECK_NE(prefixPos, std::string::npos);
+  BOOST_TEST(prefixPos != std::string::npos);
   const auto messagePos = output.find(message, prefixPos + prefix.length());
-  BOOST_CHECK_NE(messagePos, std::string::npos);
+  BOOST_TEST(messagePos != std::string::npos);
 }
 
 //-----------------------------------------------------------------------------

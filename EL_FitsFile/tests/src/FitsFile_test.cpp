@@ -17,11 +17,10 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
+#include "EL_FitsFile/FitsFile.h"
 #include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsFile/FitsFile.h"
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -35,11 +34,11 @@ BOOST_AUTO_TEST_CASE(empty_file_test) {
 
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
-  BOOST_CHECK(not boost::filesystem::exists(filename));
+  BOOST_TEST(not boost::filesystem::exists(filename));
 
   FitsFile newFile(filename, FitsFile::Permission::Create);
   BOOST_CHECK_EQUAL(newFile.filename(), filename);
-  BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+  BOOST_TEST(boost::filesystem::is_regular_file(filename));
   newFile.close();
 
   BOOST_CHECK_THROW(FitsFile(filename, FitsFile::Permission::Create), std::exception);
@@ -53,13 +52,13 @@ BOOST_AUTO_TEST_CASE(empty_file_test) {
 
   FitsFile editableFile(filename, FitsFile::Permission::Edit);
   editableFile.closeAndDelete();
-  BOOST_CHECK(not boost::filesystem::exists(filename));
+  BOOST_TEST(not boost::filesystem::exists(filename));
 
   {
     FitsFile tempFile(filename, FitsFile::Permission::Temporary);
-    BOOST_CHECK(boost::filesystem::is_regular_file(filename));
+    BOOST_TEST(boost::filesystem::is_regular_file(filename));
   }
-  BOOST_CHECK(not boost::filesystem::exists(filename));
+  BOOST_TEST(not boost::filesystem::exists(filename));
 }
 
 //-----------------------------------------------------------------------------

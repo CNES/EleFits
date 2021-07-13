@@ -80,18 +80,6 @@ MefFile::Selector<THdu> MefFile::select(const HduFilter& filter) {
   return { *this, filter * HduCategory::forClass<THdu>() };
 }
 
-/**
- * @brief Add HduCategory::Image constraint to the filter.
- */
-// template <>
-// MefFile::Selector<ImageHdu> MefFile::select<ImageHdu>(const HduFilter& filter);
-
-/**
- * @brief Add HduCategory::Bintable constraint to the filter.
- */
-// template <>
-// MefFile::Selector<BintableHdu> MefFile::select<BintableHdu>(const HduFilter& filter);
-
 template <typename T, long n>
 const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
   Cfitsio::Hdu::createImageExtension<T, n>(m_fptr, name, shape);

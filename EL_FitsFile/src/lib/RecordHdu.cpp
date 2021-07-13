@@ -79,6 +79,11 @@ void RecordHdu::updateName(const std::string& name) const {
   Cfitsio::Hdu::updateName(m_fptr, name);
 }
 
+void RecordHdu::updateVersion(long version) const {
+  editThisHdu();
+  Cfitsio::Hdu::updateVersion(m_fptr, version);
+}
+
 std::string RecordHdu::readHeader(bool incNonValued) const {
   touchThisHdu();
   return Cfitsio::Header::readHeader(m_fptr, incNonValued);

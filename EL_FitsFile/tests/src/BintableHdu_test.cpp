@@ -17,15 +17,13 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
-#include "ElementsKernel/Temporary.h"
-
 #include "EL_FitsData/TestColumn.h"
+#include "EL_FitsFile/BintableHdu.h"
 #include "EL_FitsFile/FitsFileFixture.h"
 #include "EL_FitsFile/MefFile.h"
+#include "ElementsKernel/Temporary.h"
 
-#include "EL_FitsFile/BintableHdu.h"
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::FitsIO;
 
@@ -42,7 +40,7 @@ void checkScalar() {
   MefFile file(filename, MefFile::Permission::Temporary);
   file.assignBintableExt("BINEXT", input);
   const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
-  Test::checkEqualVectors(output.vector(), input.vector());
+  BOOST_TEST(output.vector() == input.vector());
 }
 
 template <typename T>
@@ -96,16 +94,16 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   Test::RandomScalarColumn<double> column2;
   column2.info.name = name2;
   const auto& ext = assignBintableExt("", column1, column2);
-  BOOST_CHECK_EQUAL(ext.readColumnCount(), 2);
-  BOOST_CHECK_EQUAL(ext.readRowCount(), column1.rowCount());
-  BOOST_CHECK(ext.hasColumn(name1));
-  BOOST_CHECK(ext.hasColumn(name2));
-  BOOST_CHECK(not ext.hasColumn("NOTHERE"));
+  BOOST_TEST(ext.readColumnCount() == 2);
+  BOOST_TEST(ext.readRowCount() == column1.rowCount());
+  BOOST_TEST(ext.hasColumn(name1));
+  BOOST_TEST(ext.hasColumn(name2));
+  BOOST_TEST(not ext.hasColumn("NOTHERE"));
   const auto presence = ext.hasColumns({ name1, name2, "NOTHERE" });
-  BOOST_CHECK_EQUAL(presence.size(), 3);
-  BOOST_CHECK(presence[0]);
-  BOOST_CHECK(presence[1]);
-  BOOST_CHECK(not presence[2]);
+  BOOST_TEST(presence.size() == 3);
+  BOOST_TEST(presence[0]);
+  BOOST_TEST(presence[1]);
+  BOOST_TEST(not presence[2]);
 }
 
 BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
@@ -113,11 +111,11 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto floatColumn = Test::RandomTable::generateColumn<float>("FLOAT");
   const auto& ext = assignBintableExt("", intColumn, floatColumn);
   const auto byName = ext.readColumns(Named<int>(intColumn.info.name), Named<float>(floatColumn.info.name));
-  Test::checkEqualVectors(std::get<0>(byName).vector(), intColumn.vector());
-  Test::checkEqualVectors(std::get<1>(byName).vector(), floatColumn.vector());
+  BOOST_TEST(std::get<0>(byName).vector() == intColumn.vector());
+  BOOST_TEST(std::get<1>(byName).vector() == floatColumn.vector());
   const auto byIndex = ext.readColumns(Indexed<int>(0), Indexed<float>(1));
-  Test::checkEqualVectors(std::get<0>(byIndex).vector(), intColumn.vector());
-  Test::checkEqualVectors(std::get<1>(byIndex).vector(), floatColumn.vector());
+  BOOST_TEST(std::get<0>(byIndex).vector() == intColumn.vector());
+  BOOST_TEST(std::get<1>(byIndex).vector() == floatColumn.vector());
 }
 
 BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
@@ -125,8 +123,8 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   const auto& ext = initBintableExt("TABLE", header[0], header[1], header[2]);
   auto names = ext.readColumnNames();
   for (long i = 0; i < header.size(); ++i) {
-    BOOST_CHECK_EQUAL(ext.readColumnName(i), header[i].name);
-    BOOST_CHECK_EQUAL(names[i], header[i].name);
+    BOOST_TEST(ext.readColumnName(i) == header[i].name);
+    BOOST_TEST(names[i] == header[i].name);
   }
   header[0].name = "A2";
   header[2].name = "C2";
@@ -134,8 +132,8 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   ext.renameColumn("C", header[2].name);
   names = ext.readColumnNames();
   for (long i = 0; i < header.size(); ++i) {
-    BOOST_CHECK_EQUAL(ext.readColumnName(i), header[i].name);
-    BOOST_CHECK_EQUAL(names[i], header[i].name);
+    BOOST_TEST(ext.readColumnName(i) == header[i].name);
+    BOOST_TEST(names[i] == header[i].name);
   }
 }
 
