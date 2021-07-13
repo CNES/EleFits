@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE(MefFile_test)
 
 BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::NewMefFile) {
   const auto& primary = this->accessPrimary<>();
-  BOOST_CHECK_EQUAL(primary.index(), MefFile::primaryIndex);
+  BOOST_TEST(primary.index() == MefFile::primaryIndex);
 }
 
 BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
@@ -51,32 +51,32 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
-  BOOST_CHECK_EQUAL(this->hduCount(), 1); // 0 with CFitsIO
+  BOOST_TEST(this->hduCount() == 1); // 0 with CFitsIO
   Test::SmallRaster raster;
   const auto& primary = this->accessPrimary<ImageHdu>();
   primary.updateShape<float, 2>(raster.shape);
-  BOOST_CHECK_EQUAL(this->hduCount(), 1);
+  BOOST_TEST(this->hduCount() == 1);
   const auto& ext = this->initImageExt<float, 2>("IMG", raster.shape);
-  BOOST_CHECK_EQUAL(this->hduCount(), 2); // 1 with CFitsIO
+  BOOST_TEST(this->hduCount() == 2); // 1 with CFitsIO
   ext.writeRaster(raster);
-  BOOST_CHECK_EQUAL(this->hduCount(), 2);
+  BOOST_TEST(this->hduCount() == 2);
 }
 
 BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   Test::SmallRaster raster; // TODO RandomRaster
   const auto& ext1 = this->assignImageExt("IMG1", raster);
-  BOOST_CHECK_EQUAL(ext1.index(), 1);
-  BOOST_CHECK_EQUAL(this->hduCount(), 2);
+  BOOST_TEST(ext1.index() == 1);
+  BOOST_TEST(this->hduCount() == 2);
   this->close();
   // Reopen as read-only
   this->open(this->filename(), MefFile::Permission::Edit);
-  BOOST_CHECK_EQUAL(this->hduCount(), 2);
+  BOOST_TEST(this->hduCount() == 2);
   const auto& ext2 = this->assignImageExt("IMG2", raster);
-  BOOST_CHECK_EQUAL(ext2.index(), 2);
-  BOOST_CHECK_EQUAL(this->hduCount(), 3);
+  BOOST_TEST(ext2.index() == 2);
+  BOOST_TEST(this->hduCount() == 3);
   std::vector<std::string> inputNames { "", "IMG1", "IMG2" };
   const auto outputNames = this->readHduNames();
-  BOOST_CHECK_EQUAL_COLLECTIONS(outputNames.begin(), outputNames.end(), inputNames.begin(), inputNames.end());
+  BOOST_TEST(outputNames == inputNames);
   remove(this->filename().c_str());
 }
 
@@ -85,7 +85,7 @@ BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::Temp
   BOOST_CHECK_NO_THROW(firstlyAccessedPrimary.readName());
   this->initImageExt<float, 2>("IMG", {});
   const auto& secondlyAccessedPrimary = this->accessPrimary<>();
-  BOOST_CHECK_EQUAL(firstlyAccessedPrimary.readName(), secondlyAccessedPrimary.readName());
+  BOOST_TEST(firstlyAccessedPrimary.readName() == secondlyAccessedPrimary.readName());
 }
 
 BOOST_FIXTURE_TEST_CASE(access_single_named_hdu, Test::TemporaryMefFile) {

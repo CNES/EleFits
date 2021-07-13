@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE(records_are_found_by_their_keyword_test) {
   for (std::size_t i = 0; i < records.vector.size(); ++i) {
     records.vector[i].assign(std::to_string(i), int(i));
   }
-  BOOST_CHECK_EQUAL(records["1"].value, 1);
-  BOOST_CHECK_EQUAL(records["2"].value, 2);
+  BOOST_TEST(records["1"].value == 1);
+  BOOST_TEST(records["2"].value == 2);
   BOOST_CHECK_THROW(records["OOPS!"], std::exception);
 }
 
@@ -43,9 +43,9 @@ BOOST_AUTO_TEST_CASE(records_are_cast_while_found_by_their_keyword_test) {
   RecordVector<double> records(1);
   records.vector[0].assign("PI", 3.14);
   auto pi_record = records.as<int>("PI");
-  BOOST_CHECK_EQUAL(pi_record.value, 3);
+  BOOST_TEST(pi_record.value == 3);
   int pi = records.as<int>("PI");
-  BOOST_CHECK_EQUAL(pi, 3);
+  BOOST_TEST(pi == 3);
 }
 
 //-----------------------------------------------------------------------------

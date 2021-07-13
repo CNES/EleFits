@@ -40,9 +40,9 @@ void checkFieldsAreAllSet(const Test::RandomHeader& header) {
 template <typename T>
 void checkFieldsAreAllDifferent(const Test::RandomHeader& header) {
   const auto& record = header.getRecord<T>();
-  BOOST_CHECK_NE(record.keyword, record.unit);
-  BOOST_CHECK_NE(record.unit, record.comment);
-  BOOST_CHECK_NE(record.comment, record.keyword);
+  BOOST_TEST(record.keyword != record.unit);
+  BOOST_TEST(record.unit != record.comment);
+  BOOST_TEST(record.comment != record.keyword);
 }
 
 #define FIELDS_ARE_ALL_SET_TEST(type, name) \
@@ -61,12 +61,12 @@ EL_FITSIO_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_DIFFERENT_TEST)
 
 BOOST_AUTO_TEST_CASE(keywords_are_all_different_test) {
   const auto v = allRecords().vector;
-  BOOST_CHECK_EQUAL(v.size(), recordCount);
+  BOOST_TEST(v.size() == recordCount);
   for (long lhs = 0; lhs < recordCount; ++lhs) {
     const auto& vlhs = v[lhs];
     for (long rhs = 0; rhs < lhs; ++rhs) {
       const auto& vrhs = v[rhs];
-      BOOST_CHECK_NE(vlhs.keyword, vrhs.keyword);
+      BOOST_TEST(vlhs.keyword != vrhs.keyword);
     }
   }
 }

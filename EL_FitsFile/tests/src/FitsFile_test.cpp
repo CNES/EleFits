@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(empty_file_test) {
   BOOST_TEST(not boost::filesystem::exists(filename));
 
   FitsFile newFile(filename, FitsFile::Permission::Create);
-  BOOST_CHECK_EQUAL(newFile.filename(), filename);
+  BOOST_TEST(newFile.filename() == filename);
   BOOST_TEST(boost::filesystem::is_regular_file(filename));
   newFile.close();
 
