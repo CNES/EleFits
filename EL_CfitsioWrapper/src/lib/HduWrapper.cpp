@@ -50,6 +50,13 @@ std::string currentName(fitsfile* fptr) {
   return "";
 }
 
+long currentVersion(fitsfile* fptr) {
+  if (Header::hasKeyword(fptr, "EXTVER")) {
+    return Header::parseRecord<long>(fptr, "EXTVER");
+  }
+  return 1;
+}
+
 FitsIO::HduCategory currentType(fitsfile* fptr) {
   int type = 0;
   int status = 0;
@@ -78,18 +85,22 @@ bool gotoIndex(fitsfile* fptr, long index) {
   return true;
 }
 
-bool gotoName(fitsfile* fptr, const std::string& name) {
+bool gotoName(fitsfile* fptr, const std::string& name, long version, FitsIO::HduCategory category) {
   if (name == "") {
     return false;
   }
-  if (name == "Primary") {
+  if (name == "Primary") { // FIXME allow any case
     return gotoPrimary(fptr);
   }
-  if (name == currentName(fptr)) {
-    return false;
-  }
   int status = 0;
-  fits_movnam_hdu(fptr, ANY_HDU, toCharPtr(name).get(), 0, &status);
+  int hdutype = ANY_HDU;
+  if (category == FitsIO::HduCategory::Image) {
+    hdutype = IMAGE_HDU;
+  } else if (category == FitsIO::HduCategory::Bintable) {
+    hdutype = BINARY_TBL;
+  }
+  // FIXME catch invalid category values, e.g. ImageExt
+  fits_movnam_hdu(fptr, hdutype, toCharPtr(name).get(), version, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot move to HDU: " + name);
   return true;
 }

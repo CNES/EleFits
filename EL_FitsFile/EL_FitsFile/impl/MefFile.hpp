@@ -42,29 +42,32 @@ const T& MefFile::access(long index) {
 }
 
 template <class T>
-const T& MefFile::accessFirst(const std::string& name) {
-  Cfitsio::Hdu::gotoName(m_fptr, name);
+const T& MefFile::accessFirst(const std::string& name, long version) {
+  Cfitsio::Hdu::gotoName(m_fptr, name, version, HduCategory::forClass<T>());
   return access<T>(Cfitsio::Hdu::currentIndex(m_fptr) - 1); // -1 because CFitsIO index is 1-based
 }
 
 template <class T>
-const T& MefFile::access(const std::string& name) {
-  const auto names = readHduNames();
-  long index = 0;
-  bool found = false;
-  for (long i = 0; i < static_cast<long>(names.size()); ++i) {
-    if (names[i] == name) {
-      if (found) {
-        throw FitsIOError("Several HDUs named: " + name);
+const T& MefFile::access(const std::string& name, long version) {
+  const auto category = HduCategory::forClass<T>();
+  const RecordHdu* hduPtr = nullptr;
+  for (long i = 0; i < hduCount(); ++i) {
+    const auto& hdu = access<RecordHdu>(i);
+    const bool cMatch = (category == HduCategory::Any || hdu.type() == category);
+    const bool cnMatch = cMatch && (name == "" || hdu.readName() == name);
+    const bool cnvMatch = cnMatch && (version == 0 || hdu.readVersion() == version);
+    if (cnvMatch) {
+      if (hduPtr) {
+        throw FitsIOError("Several HDU matches."); // TODO specific exception?
+      } else {
+        hduPtr = &hdu;
       }
-      index = i;
-      found = true;
     }
   }
-  if (not found) {
-    throw FitsIOError("No HDU named: " + name);
+  if (not hduPtr) {
+    throw FitsIOError("No HDU match."); // TODO specific exception?
   }
-  return access<T>(index);
+  return hduPtr->as<T>();
 }
 
 template <class T>
@@ -74,20 +77,20 @@ const T& MefFile::accessPrimary() {
 
 template <typename THdu>
 MefFile::Selector<THdu> MefFile::select(const HduFilter& filter) {
-  return { *this, filter };
+  return { *this, filter * HduCategory::forClass<THdu>() };
 }
 
 /**
  * @brief Add HduCategory::Image constraint to the filter.
  */
-template <>
-MefFile::Selector<ImageHdu> MefFile::select<ImageHdu>(const HduFilter& filter);
+// template <>
+// MefFile::Selector<ImageHdu> MefFile::select<ImageHdu>(const HduFilter& filter);
 
 /**
  * @brief Add HduCategory::Bintable constraint to the filter.
  */
-template <>
-MefFile::Selector<BintableHdu> MefFile::select<BintableHdu>(const HduFilter& filter);
+// template <>
+// MefFile::Selector<BintableHdu> MefFile::select<BintableHdu>(const HduFilter& filter);
 
 template <typename T, long n>
 const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {

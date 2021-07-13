@@ -20,14 +20,142 @@ Of course, feel free to have a look to the others, like that of the <a href="htt
 \section primer-sif A bit of history: Header unit and data unit
 
 
-TODO: SIF file
+The Fits format appeared in 1981, as a single-image file format.
+At that time, a Fits file only consisted of a *header unit*, full of metadata,
+and a *data unit*, full of... data.
+
+The format definition has drammatically evolved, but with backward compatibility in mind.
+Therefore, the concepts of header and data units are still valid.
+A Fits file made of a single image is named *Single Image Fits* file, or SIF file in short.
 
 
-\section primer-mef Now: Extensions
+\subsection primer-sif-header Header unit
 
 
-TODO MEF file
+The header unit is a block of ASCII characters, which you can display in a 80-character wide terminal.
+Each chunk of 80 characters is named a *record*.
+Most records are *keyword records*, which store a keyword-value pair as follows:
 
+\verbatim
+KEYWORD = VALUE
+\endverbatim
+
+A comment can be appended, separated with a slash (`/`):
+
+\verbatim
+KEYWORD = VALUE / comment
+\endverbatim
+
+A unit can also be inserted, between square brackets:
+
+\verbatim
+KEYWORD = VALUE / [unit] comment
+\endverbatim
+
+The value can be:
+- an integer,
+- a floating-point number, possibly in exponential notation,
+- a complex number (a pair of floating-point numbers),
+- a string.
+
+In EL_FitsIO, keyword records are instantiated as `Record` objects, templated with the value type.
+
+
+\subsection primer-sif-data Primary data unit
+
+
+The data unit of a SIF file is an *n*-dimensional array,
+like a 0D nothing, a 1D vector, a 2D image, a 3D data cube, a 4D color video,
+or whatever fancier array you wish (with *n*<1000, but this should not be a show-stopper in general).
+
+Pixels are stored contiguously, and the properties of the image are stored in the header unit as special records.
+For example, the size of the image is given by the values associated with keys `NAXIS1`, `NAXIS2`, `NAXIS3`...
+The pixel value type can be an 8- to 64-bit integer, or a 32- or 64-bit floating-point.
+
+(Be patient, we'll explain the *Primary* word in the next section.)
+
+The class which represents a SIF file is `SifFile`.
+That which represents the header is `Header`, and that which represent the array is `ImageArray`.
+In EL_FitsIO, a `SifFile` can therefore simply be seen like a structure made of a `Header` and an `ImageArray`,
+accessed by getters `SifFile::header()` and `SifFile::array()`, respectively.
+
+
+\section primer-mef Newer Fits: Extensions
+
+
+During several decades, the definition of the Fits format has evolved quite a lot.
+First, Fits has become a multi-image format, where header and data units (HDUs) are written in sequence.
+The first HDU is referred to as Primary array, Primary HDU, or simply *Primary*.
+The subsequent HDUs, if any, are named *extensions*.
+
+Another vast improvement of the standard is the support for tabular data.
+As opposed to values in arrays, the values in tables can have different types
+(although the values of a same column share the same type).
+Table HDUs are necessarily extensions: the Primary is always an image HDU.
+This means that files which store only tabular data start with a header-only Primary,
+that is, an image HDU with empty array.
+
+There are two types of table HDUs: ASCII tables and binary tables.
+Binary table columns can be scalar (one value per cell) or vector (several values per cell).
+A more recent addition to the standard is binary tables with vector columns of varying size,
+i.e. the cells of a single column have different value counts.
+ASCII tables are generally no more used, and are not supported at all by EL_FitsIO.
+Only binary tables with columns of fixed width are available.
+
+Fits files with extensions are known as *Multi-Extension Fits* (MEF) files.
+
+Image and binary table HDUs are respectively handled with `ImageHdu` and `BintableHdu`.
+Like for the Primary, the handler class for the header units of the extensions is `Header`,
+and for the image data units (the arrays), it is `ImageArray`.
+Binary table data units can be read and written column-wise with `BintableColumns`,
+or row-wise with `BintableRows`.
+
+
+\section primer-wrapup Wrap-up
+
+
+A Fits file is composed of contiguous HDUs, themselves made of an ASCII header unit,
+and a binary data unit.
+The first HDU is named Primary, and is necessarily an image, which may be empty.
+The following HDUs are named extensions, and they may be images or binary tables.
+
+Header units are a sequence of records, image data units are *n*-D arrays,
+and binary table data units are a sequence of rows which represent scalar or vector columns.
+
+There is almost a 1-to-1 mapping of the Fits and EL_FitsIO structures:
+
+<table>
+<tr>
+<th>Fits</th><th>Service class</th><th>Data class</th>
+</tr>
+<tr>
+<td>SIF file = header unit + array</td>
+<td>`SifFile` = `Header` + `ImageArray`</td>
+<td>`Record`s + `Raster`</td>
+</tr>
+<tr>
+<td>MEF file = image HDUs + binary table HDUs</td>
+<td>`MefFile` = `ImageHdu`s + `BintableHdu`s</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Image HDU = header unit + array</td>
+<td>`ImageHdu` = `Header` + `ImageArray`</td>
+<td>`Record`s + `Raster`</td>
+</tr>
+<tr>
+<td>Binary table HDU = header unit + columns or rows</td>
+<td>`BintableHdu` = `Header` + `BintableColumns` or `BintableRows`</td>
+<td>`Record`s + `Column`s</td>
+</tr>
+</table>
+
+Same goes for a SIF file, obviously, which is simply made of a header and array.
+
+For more details, head to the following pages:
+- \ref handlers
+- \ref data_classes
+- \ref tuto
 
 */
 

@@ -152,6 +152,21 @@ const HduCategory HduCategory::OnlyRead {
 const HduCategory HduCategory::Edited { HduCategory::TritPosition::ReadEdited, HduCategory::Trit::Second };
 const HduCategory HduCategory::Created { ~HduCategory::Existed & HduCategory::Edited };
 
+template <>
+HduCategory HduCategory::forClass<RecordHdu>() {
+  return HduCategory::Any;
+}
+
+template <>
+HduCategory HduCategory::forClass<ImageHdu>() {
+  return HduCategory::Image;
+}
+
+template <>
+HduCategory HduCategory::forClass<BintableHdu>() {
+  return HduCategory::Bintable;
+}
+
 HduFilter::HduFilter(const HduCategory& category) : m_accept { category }, m_reject {} {}
 
 HduFilter::HduFilter(const std::vector<HduCategory>& accept, const std::vector<HduCategory>& reject) :

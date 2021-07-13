@@ -41,18 +41,20 @@ std::vector<std::string> MefFile::readHduNames() {
   return names;
 }
 
+std::vector<std::pair<std::string, long>> MefFile::readHduNamesVersions() {
+  const long count = hduCount();
+  std::vector<std::pair<std::string, long>> namesVersions(count);
+  for (long i = 0; i < count; ++i) {
+    const auto& hdu = access<>(i);
+    const auto name = hdu.readName();
+    const auto version = hdu.readVersion();
+    namesVersions[i] = std::make_pair(name, version);
+  }
+  return namesVersions;
+}
+
 const RecordHdu& MefFile::operator[](long index) {
   return access<RecordHdu>(index);
-}
-
-template <>
-MefFile::Selector<ImageHdu> MefFile::select<ImageHdu>(const HduFilter& filter) {
-  return { *this, filter * HduCategory::Image };
-}
-
-template <>
-MefFile::Selector<BintableHdu> MefFile::select<BintableHdu>(const HduFilter& filter) {
-  return { *this, filter * HduCategory::Bintable };
 }
 
 const RecordHdu& MefFile::initRecordExt(const std::string& name) {

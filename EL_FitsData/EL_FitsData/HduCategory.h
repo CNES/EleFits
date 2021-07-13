@@ -141,6 +141,16 @@ public:
    */
   bool isInstance(const HduCategory& model) const;
 
+  /**
+   * @brief The HDU filter which corresponds to a given HDU handler.
+   * @return
+   * - HduCategory::forClass<RecordHdu>() = HduCategory::Any,
+   * - HduCategory::forClass<ImageHdu>() = HduCategory::Image,
+   * - HduCategory::forClass<BintableHdu>() = HduCategory::Bintable.
+   */
+  template <typename T>
+  static HduCategory forClass();
+
 protected:
   /**
    * @brief The trinary flag mask.
@@ -355,5 +365,11 @@ inline HduFilter operator-(HduCategory rhs) {
 
 } // namespace FitsIO
 } // namespace Euclid
+
+/// @cond INTERNAL
+#define _EL_FITSDATA_HDUCATEGORY_IMPL
+#include "EL_FitsData/impl/HduCategory.hpp"
+#undef _EL_FITSDATA_HDUCATEGORY_IMPL
+/// @endcond
 
 #endif

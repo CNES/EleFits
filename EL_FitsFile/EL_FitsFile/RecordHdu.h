@@ -158,6 +158,11 @@ public:
   std::string readName() const;
 
   /**
+   * @brief Read the extension version.
+   */
+  long readVersion() const;
+
+  /**
    * @brief Write or update the extension name.
    */
   void updateName(const std::string& name) const;

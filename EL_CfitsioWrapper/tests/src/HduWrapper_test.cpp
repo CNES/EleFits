@@ -53,6 +53,26 @@ BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, FitsIO::Test::Mi
   BOOST_TEST(output.vector() == input.vector());
 }
 
+BOOST_FIXTURE_TEST_CASE(access_hdu_by_type, FitsIO::Test::MinimalFile) {
+  using namespace FitsIO::Test;
+  const std::string name = "NAME";
+  constexpr long primaryIndex = 1;
+  Hdu::createImageExtension(this->fptr, name, SmallRaster());
+  constexpr long imageIndex = primaryIndex + 1;
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == imageIndex);
+  Hdu::createBintableExtension(this->fptr, name, SmallTable().nameCol);
+  constexpr long bintableIndex = imageIndex + 1;
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == bintableIndex);
+  Hdu::gotoName(this->fptr, name);
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == imageIndex);
+  Hdu::gotoName(this->fptr, name, 0, FitsIO::HduCategory::Image);
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == imageIndex);
+  Hdu::gotoName(this->fptr, name, 0, FitsIO::HduCategory::Bintable);
+  BOOST_TEST(Hdu::currentIndex(this->fptr) == bintableIndex);
+
+  // FIXME test extver
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -65,6 +65,11 @@ long currentIndex(fitsfile* fptr);
 std::string currentName(fitsfile* fptr);
 
 /**
+ * @brief Get the version of the current HDU.
+ */
+long currentVersion(fitsfile* fptr);
+
+/**
  * @brief Get the type of the current HDU (either Image or Bintable).
  * @return Either HduCategory::Image or HduCategory::Bintable.
  * @details
@@ -89,8 +94,13 @@ bool gotoIndex(fitsfile* fptr, long index);
 
 /**
  * @brief Go to an HDU specified by its name.
+ * @param category The desired HDU category: either Any, Image or Bintable
  */
-bool gotoName(fitsfile* fptr, const std::string& name);
+bool gotoName(
+    fitsfile* fptr,
+    const std::string& name,
+    long version = 0,
+    FitsIO::HduCategory category = FitsIO::HduCategory::Any);
 
 /**
  * @brief Go to an HDU specified by incrementing the index by a given amount.

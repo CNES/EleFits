@@ -32,7 +32,7 @@ namespace FitsIO {
  * @details
  * Provide HDU access/create services.
  * Single Image Fits files can be handled by this class, but SifFile is better suited:
- * it is safer and provide shortcuts.
+ * it is safer and provides shortcuts.
  * @see \ref handlers
  */
 class MefFile : public FitsFile {
@@ -94,6 +94,14 @@ public:
   std::vector<std::string> readHduNames();
 
   /**
+   * @brief Read the name and version of each HDU.
+   * @details
+   * When there is no name specified, an empty string is returned.
+   * When there is no version specified, 1 is returned.
+   */
+  std::vector<std::pair<std::string, long>> readHduNamesVersions();
+
+  /**
    * @brief Access the HDU at given 0-based index.
    * @tparam T The type of HDU: ImageHdu, BintableHdu, or RecordHdu to just handle metadata.
    * @return A reference to the HDU reader-writer.
@@ -115,17 +123,30 @@ public:
   const RecordHdu& operator[](long index);
 
   /**
-   * @brief Access the first HDU with given name.
+   * @brief Access the first HDU with given name, type and version.
+   * @tparam T The type of HDU, or RecordHdu to not check the type
+   * @param name The HDU name
+   * @param version The HDU version, or 0 to not check the version
    * @details
-   * In the case where several HDUs have the same name, method readHduNames can be used to get the indices.
+   * The template parameter is used to disambiguate when two extensions of different types have the same name,
+   * if set to ImageHdu or BintableHdu.
+   * For example, in a file with an image extension and a binary table extension both named "EXT",
+   * `accessFirst<ImageHdu>("EXT")` returns the image extension,
+   * while `accessFirst<BintableHdu>("EXT")` returns the binary table extension,
+   * and `accessFirst<RecordHdu>("EXT")` returns whichever of the two has the smallest index.
+   * 
+   * In the case where several HDUs of same type have the same name
+   * (which is discouraged by the standard, but not forbidden),
+   * method `readHduNames()` should be used to get the indices
+   * and then `access(long)` should be called.
    * @see access(long)
-   * @see access(const std::string &)
+   * @see access(const std::string&)
    */
   template <class T = RecordHdu>
-  const T& accessFirst(const std::string& name);
+  const T& accessFirst(const std::string& name, long version = 0);
 
   /**
-   * @brief Access the only HDU with given name.
+   * @brief Access the only HDU with given name, type and version.
    * @details
    * Throws an exception if several HDUs with given name exists.
    * @warning
@@ -134,7 +155,7 @@ public:
    * @see accessFirst
    */
   template <class T = RecordHdu>
-  const T& access(const std::string& name);
+  const T& access(const std::string& name, long version = 0);
 
   /**
    * @brief Access the Primary HDU.
@@ -142,6 +163,8 @@ public:
    */
   template <class T = RecordHdu>
   const T& accessPrimary();
+  // FIXME remove T: Primary is necessarily an ImageHdu
+  // RecordHdu makes no sense anymore, now that header() and array() exist
 
   /**
    * @ingroup iterators
