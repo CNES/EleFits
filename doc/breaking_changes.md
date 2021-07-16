@@ -16,9 +16,10 @@ For each breaking change, this page details the underlying reasons,
 the status in version 3.2,
 and how to adapt the client code.
 
-### EL_FitsIO becomes EleFits
+### EL_FitsIO becomes EleFits and associated changes
 
-And  `EL_Fits` prefix becomes `EleFits`, where Ele stands for Euclid libraries and executables.
+Namespace `FitsIO` becomes `Fits`,
+Prefix `EL_Fits` becomes `EleFits`, where Ele stands for Euclid libraries and executables.
 Underscores in program names are removed.
 Namespaces are unchanged.
 
@@ -37,7 +38,8 @@ compatibility with 4.0 cannot be anticipated in code which depends on 3.2.
 
 * Find and replace word `EL_FitsIO` with `EleFits` in CMakeLists';
 * Find and replace prefix `EL_Fits` with `EleFits` in CMakeLists' and in includes;
-* Remove underscores from program names.
+* Find and replace namespace `FitsIO` with `Fits` in sources;
+* Remove underscores from program names in command lines.
 
 ### 3rd handler level
 
@@ -69,23 +71,29 @@ Methods in HDU-level handlers still exist for backward compatibility, although t
 * Manual fix: 1 to 2 more calls in user code for each HDU;
 * Negligible impact on runtime.
 
-### Raster becomes NdArray
+### Raster and Position become NdArray and NdIndex
+
+And new types are defined with `Nd` prefix for working with regions,
+e.g. `NdRegion` and `NdView`.
 
 **Rationale**
 
 * Closer to Fits wording: "array";
 * More classical wording outside Earth observation community;
 * Rasters are commonly 2D or 3D, not *n*-D;
-* Conceptually similar to well-known Python `ndarray`.
+* Conceptually similar to well-known Python `ndarray`;
+* Several new classes are necessary to handle compression and regions,
+and `Nd` prefix groups them naturally.
 
 **Status in version 3.2**
 
-Name has changed.
-A deprecated alias `Raster` is provided for backward compatibility.
+Names have changed.
+Deprecated aliases `Raster` and `Position` are provided for backward compatibility.
 
 **Impact on client code**
 
-* Find and replace occurrences of word `Raster` with `NdArray`.
+* Find and replace occurrences of word `Raster` with `NdArray`;
+* Find and replace occurrences of word `Position` with `NdIndex`.
 
 ### FitsFile::Permission becomes FileMode
 
@@ -121,6 +129,25 @@ A deprecated alias `HduType` is provided for backward compatibility.
 **Impact on client code**
 
 * Find and replace occurrences of word `HduType` with `HduCategory`.
+
+### MefFile::accessPrimary is not a template anymore
+
+An `ImageHdu` is always returned.
+
+**Rationale**
+
+* The Primary is always an image;
+* With the 3rd handler layer, there is no more reason to return a `RecordHdu` (see impact below).
+
+**Status is version 3.2**
+
+Not implemented:
+compatibility with 4.0 cannot be anticipated in code which depends on 3.2.
+
+**Impact on client code**
+
+* Remove template parameter if it is `ImageHdu`;
+* Use `accessPrimary().header()` instead of `accessPrimary<RecordHdu>()` if only the header unit is needed.
 
 
 ## Breaking changes in 3.0

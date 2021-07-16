@@ -150,6 +150,56 @@ There is almost a 1-to-1 mapping of the Fits and EL_FitsIO structures:
 </tr>
 </table>
 
+<table class="markdownTable">
+<tr>
+<th>File structure</th><th>Class structure</th>
+</tr><tr>
+<td>
+SIF file
+- header unit
+  - records
+- data unit
+  - array
+</td><td>
+`SifFile`
+- `Header`
+  - `Record`s
+- `ImageArray`
+  - `NdArray`
+</td>
+</tr><tr>
+<td>
+MEF file
+- image HDUs
+  - header unit
+    - records
+  - data unit
+    - array
+- binary table HDUs
+  - header unit
+    - records
+  - data unit (column-wise)
+    - columns
+  - data unit (row-wise)
+    - rows
+</td><td>
+`MefFile`
+- `ImageHdu`s
+  - `Header`
+    - `Record`s
+  - `ImageArray`
+    - `NdArray`
+- `BintableHdu`s
+  - `Header`
+    - `Record`s
+  - `BintableColumns`
+    - `Column`s
+  - `BintableRows`
+    - User-defined objects
+</td>
+</tr>
+</table>
+
 Same goes for a SIF file, obviously, which is simply made of a header and array.
 
 For more details, head to the following pages:

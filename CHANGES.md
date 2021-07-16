@@ -4,6 +4,8 @@
 
 ### New features
 
+* Named HDU access methods support `EXTVER` keyword and use HDU type
+* Image regions can be read
 * New handler `Header` is responsible for record reading and writing; created with `RecordHdu::header()`
 * `RecordMode` controls the behavior of record writing method
 * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
