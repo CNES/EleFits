@@ -71,30 +71,6 @@ Methods in HDU-level handlers still exist for backward compatibility, although t
 * Manual fix: 1 to 2 more calls in user code for each HDU;
 * Negligible impact on runtime.
 
-### Raster and Position become NdArray and NdIndex
-
-And new types are defined with `Nd` prefix for working with regions,
-e.g. `NdRegion` and `NdView`.
-
-**Rationale**
-
-* Closer to Fits wording: "array";
-* More classical wording outside Earth observation community;
-* Rasters are commonly 2D or 3D, not *n*-D;
-* Conceptually similar to well-known Python `ndarray`;
-* Several new classes are necessary to handle compression and regions,
-and `Nd` prefix groups them naturally.
-
-**Status in version 3.2**
-
-Names have changed.
-Deprecated aliases `Raster` and `Position` are provided for backward compatibility.
-
-**Impact on client code**
-
-* Find and replace occurrences of word `Raster` with `NdArray`;
-* Find and replace occurrences of word `Position` with `NdIndex`.
-
 ### FitsFile::Permission becomes FileMode
 
 **Rationale**

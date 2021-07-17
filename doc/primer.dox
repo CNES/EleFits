@@ -165,7 +165,7 @@ SIF file
 - `Header`
   - `Record`s
 - `ImageArray`
-  - `NdArray`
+  - `Raster`
 </td>
 </tr><tr>
 <td>
@@ -188,7 +188,7 @@ MEF file
   - `Header`
     - `Record`s
   - `ImageArray`
-    - `NdArray`
+    - `Raster`
 - `BintableHdu`s
   - `Header`
     - `Record`s

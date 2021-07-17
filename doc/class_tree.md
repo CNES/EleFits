@@ -6,7 +6,7 @@
   * header unit / `Header`
     * records / `Record`s
   * data unit / `ImageArray`
-    * array / `NdArray`
+    * array / `Raster`
 
 ## Multi Extension Fits
 
@@ -15,7 +15,7 @@
     * header unit / `Header`
       * records / `Record`s
     * data unit / `ImageArray`
-      * array / `NdArray`
+      * array / `Raster`
   * binary table HDUs / `BintableHdu`s
     * header unit / `Header`
       * records / `Record`s

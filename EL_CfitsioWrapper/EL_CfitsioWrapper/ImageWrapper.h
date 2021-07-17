@@ -33,62 +33,96 @@ namespace Euclid {
 // FIXME move to Raster.h
 namespace FitsIO {
 
-template <typename T, long n = 2>
-using NdArray = Raster<T, n>;
-
-template <typename T, long n = 2>
-using VecNdArray = VecRaster<T, n>;
-
+/**
+ * @brief A *n*D rectangle region, defined by its first and last positions,
+ * or first position and shape.
+ */
 template <long n = 2>
-using NdIndex = Position<n>;
-
-template <long n = 2>
-class NdRegion {
+class Region {
 public:
-  static NdRegion<n> fromOver(NdIndex<n> first, NdIndex<n> shape) {
-    NdRegion<n> region { first, first, shape, first };
-    for (std::size_t i = 0; i < region.m_first.size(); ++i) {
-      region.m_last[i] = region.m_first[i] + region.m_shape[i] - 1;
-      region.m_step[i] = 1;
+  /**
+   * @brief Create a region from a first position and shape.
+   */
+  static Region<n> fromOver(Position<n> first, Position<n> shape) {
+    Region<n> region { first, first, shape };
+    for (std::size_t i = 0; i < region.m_first.size(); ++i) { // TODO iterators
+      region.m_last[i] += region.m_shape[i] - 1;
     }
     return region;
   }
 
-  static NdRegion<n> fromTo(NdIndex<n> first, NdIndex<n> last) {
-    NdRegion<n> region { first, last, first, first };
-    for (std::size_t i = 0; i < region.m_first.size(); ++i) {
-      region.m_shape[i] = region.m_last[i] - region.m_first[i] + 1;
-      region.m_step[i] = 1;
+  /**
+   * @brief Create a region from first and last positions.
+   */
+  static Region<n> fromTo(Position<n> first, Position<n> last) {
+    Region<n> region { first, last, last };
+    for (std::size_t i = 0; i < region.m_first.size(); ++i) { // TODO iterators
+      region.m_shape[i] -= region.m_first[i] - 1;
     }
     return region;
   }
 
-  NdIndex<n> first() const {
+  /**
+   * @brief The first position in the region.
+   */
+  Position<n> first() const {
     return m_first;
   }
-  NdIndex<n> last() const {
+
+  /**
+   * @brief The last position in the region.
+   */
+  Position<n> last() const {
     return m_last;
   }
-  NdIndex<n> shape() const {
+
+  /**
+   * @brief The region shape.
+   */
+  Position<n> shape() const {
     return m_shape;
-  }
-  NdIndex<n> step() const {
-    return m_step;
   }
 
 private:
-  NdRegion(NdIndex<n> first, NdIndex<n> last, NdIndex<n> shape, NdIndex<n> step) :
-      m_first(first), m_last(last), m_shape(shape), m_step(step) {}
-  NdIndex<n> m_first;
-  NdIndex<n> m_last;
-  NdIndex<n> m_shape;
-  NdIndex<n> m_step;
+  Region(Position<n> first, Position<n> last, Position<n> shape) : m_first(first), m_last(last), m_shape(shape) {}
+  Position<n> m_first;
+  Position<n> m_last;
+  Position<n> m_shape;
 };
 
+/**
+ * @brief A subraster as a view of a raster region.
+ * @details
+ * As opposed to a Raster, values of a Subraster are generally not contiguous in memory:
+ * they are piece-wise contiguous only.
+ * 
+ * When a region is indeed contiguous, it is better to rely on a PtrRaster instead:
+ * \code
+ * VecRaster<char, 3> raster({ 800, 600, 3 });
+ * 
+ * // Good :)
+ * auto region = Region<3>::fromOver({ 100, 100, 0 }, { 100, 100, 3 });
+ * Subraster<char, 3> subraster { raster, region };
+ * 
+ * // Bad :(
+ * auto slice = Region<3>::fromTo({ 0, 0, 1 }, { -1, -1, 1 });
+ * Subraster<char, 3> contiguousSubraster { raster, slice };
+ * 
+ * // Good :)
+ * PtrRaster<char, 2> ptrRaster({ 800, 600 }, &raster[{ 0, 0, 1 }]);
+ * \endcode
+ */
 template <typename T, long n = 2>
-struct NdView {
-  VecNdArray<T, n>& parent; // FIXME
-  NdRegion<n> region;
+struct Subraster {
+  /**
+   * @brief The parent raster.
+   */
+  VecRaster<T, n>& parent; // FIXME Raster => non-const data()
+
+  /**
+   * @brief The region.
+   */
+  Region<n> region;
 };
 
 } // namespace FitsIO
@@ -112,126 +146,87 @@ template <long n = 2>
 FitsIO::Position<n> readShape(fitsfile* fptr);
 
 /**
- * @brief Reshape the Raster of the current image HDU.
+ * @brief Reshape the current image HDU.
  */
 template <typename T, long n = 2>
 void updateShape(fitsfile* fptr, const FitsIO::Position<n>& shape);
 
 /**
- * @brief Read a Raster in current image HDU.
+ * @brief Read the whole raster of the current image HDU.
  */
 template <typename T, long n = 2>
 FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr);
 
 /**
- * @brief Write a Raster in current image HDU.
+ * @brief Read the whole raster of the current image HDU into a pre-existing raster.
+ */
+template <typename T, long n = 2>
+void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination); // FIXME implement
+
+/**
+ * @brief Read the whole raster of the current image HDU into a pre-existing subraster.
+ */
+template <typename T, long n = 2>
+void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination); // FIXME implement
+
+/**
+ * @brief Read a region of the current image HDU.
+ */
+template <typename T, long n = 2>
+FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region);
+
+/**
+ * @brief Read a region of the current image HDU into a pre-existing raster.
+ * @param region The source region
+ * @param destination The destination raster
+ * @details
+ * Similarly to a *n*D-blit operation, this method reads the data line-by-line
+ * directly in a destination subraster.
+ */
+template <typename T, long n = 2>
+void readRegionTo(
+    fitsfile* fptr,
+    const FitsIO::Region<n>& region,
+    FitsIO::Raster<T, n>& destination); // FIXME implement => non-const data()
+
+/**
+ * @brief Read a region of the current image HDU into a pre-existing subraster.
+ * @param region The source region
+ * @param destination The destination subraster
+ * @details
+ * Similarly to a *n*D-blit operation, this method reads the data line-by-line
+ * directly in a destination subraster.
+ */
+template <typename T, long n = 2>
+void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, n>& destination);
+
+/**
+ * @brief Write a whole raster in the current image HDU.
  */
 template <typename T, long n = 2>
 void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 
 /**
- * @brief Read an array region.
+ * @brief Write a whole raster into a region of the current image HDU.
+ * @param raster The raster to be written
+ * @param region The destination region
  */
 template <typename T, long n = 2>
-FitsIO::VecNdArray<T, n> readRegion(fitsfile* fptr, const FitsIO::NdRegion<n>& region) {
-  FitsIO::VecNdArray<T, n> raster(region.shape());
-  int status = 0;
-  const std::size_t dim = region.first().size(); // TODO shortcut
-  FitsIO::NdIndex<n> first = region.first();
-  FitsIO::NdIndex<n> last = region.last();
-  std::vector<long> step(dim, 1);
-  for (std::size_t i = 0; i < dim; ++i) {
-    first[i]++; // CFitsIO is 1-based
-    last[i]++; // idem
-  }
-  fits_read_subset(
-      fptr,
-      TypeCode<T>::forImage(),
-      first.data(),
-      last.data(),
-      step.data(),
-      nullptr,
-      raster.data(),
-      nullptr,
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
-  return raster;
-}
-
-namespace Internal {
-
-template <long n>
-long countLines(const FitsIO::NdIndex<n>& first, const FitsIO::NdIndex<n>& last) {
-  long res = 1;
-  for (std::size_t i = 1; i < first.size(); ++i) {
-    res *= last[i] - first[i] + 1;
-  }
-  return res;
-}
-
-template <long n>
-void incLinePos(
-    const FitsIO::NdIndex<n>& first,
-    const FitsIO::NdIndex<n>& last,
-    FitsIO::NdIndex<n>& src,
-    FitsIO::NdIndex<n>& dst) {
-  src[0]++;
-  dst[0]++;
-  for (std::size_t i = 0; i < src.size(); ++i) {
-    if (src[i] > last[i]) {
-      const auto delta = dst[i] - src[i];
-      src[i] = first[i];
-      dst[i] = src[i] + delta;
-      src[i + 1]++;
-      dst[i + 1]++;
-    }
-  }
-}
-
-} // namespace Internal
+void writeRegion(
+    fitsfile* fptr,
+    const FitsIO::Raster<T, n>& raster,
+    const FitsIO::Region<n>& region); // FIXME implement
 
 /**
- * @brief Read a region in place.
- * @details
- * Similarly to a nD-blit operation, this method reads the data line-by-line
- * directly in a destination array.
+ * @brief Write a subraster into a region of the current image HDU.
+ * @param subraster The subraster to be written
+ * @param region The destination region
  */
 template <typename T, long n = 2>
-void readRegionTo(fitsfile* fptr, const FitsIO::NdRegion<n>& region, FitsIO::NdView<T, n>& destination) {
-
-  FitsIO::NdIndex<n> first = region.first();
-  for (auto& e : first) {
-    e++; // 1-based
-  }
-  FitsIO::NdIndex<n> last = region.last();
-  for (auto& e : last) {
-    e++; // 1-based
-  }
-  last[0] = first[0]; // Region of dimension n-1, to be convolved by reading lines along axis 0
-  const auto lineCount = Internal::countLines<n>(first, last);
-  std::vector<long> step(destination.parent.dimension(), 1L);
-
-  FitsIO::NdIndex<n> srcFirst = first;
-  FitsIO::NdIndex<n> dstFirst = destination.region.first();
-
-  int status = 0;
-  for (long i = 0; i < lineCount; ++i) {
-    FitsIO::NdIndex<n> srcLast = srcFirst;
-    srcLast[0] += region.shape()[0] - 1;
-    fits_read_subset(
-        fptr,
-        TypeCode<T>::forImage(),
-        srcFirst.data(),
-        srcLast.data(),
-        step.data(),
-        nullptr,
-        &destination.parent[dstFirst],
-        nullptr,
-        &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
-    Internal::incLinePos<n>(first, last, srcFirst, dstFirst);
-  }
-}
+void writeRegion(
+    fitsfile* fptr,
+    const FitsIO::Subraster<T, n>& subraster,
+    const FitsIO::Region<n>& region); // FIXME implement
 
 } // namespace Image
 } // namespace Cfitsio
