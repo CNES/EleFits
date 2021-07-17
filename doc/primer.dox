@@ -64,9 +64,9 @@ In EL_FitsIO, keyword records are instantiated as `Record` objects, templated wi
 \subsection primer-sif-data Primary data unit
 
 
-The data unit of a SIF file is an *n*-dimensional array,
+The data unit of a SIF file is an _n_-dimensional array,
 like a 0D nothing, a 1D vector, a 2D image, a 3D data cube, a 4D color video,
-or whatever fancier array you wish (with *n*<1000, but this should not be a show-stopper in general).
+or whatever fancier array you wish (with _n_<1000, but this should not be a show-stopper in general).
 
 Pixels are stored contiguously, and the properties of the image are stored in the header unit as special records.
 For example, the size of the image is given by the values associated with keys `NAXIS1`, `NAXIS2`, `NAXIS3`...
@@ -119,7 +119,7 @@ and a binary data unit.
 The first HDU is named Primary, and is necessarily an image, which may be empty.
 The following HDUs are named extensions, and they may be images or binary tables.
 
-Header units are a sequence of records, image data units are *n*-D arrays,
+Header units are a sequence of records, image data units are _n_-D arrays,
 and binary table data units are a sequence of rows which represent scalar or vector columns.
 
 There is almost a 1-to-1 mapping of the Fits and EL_FitsIO structures:

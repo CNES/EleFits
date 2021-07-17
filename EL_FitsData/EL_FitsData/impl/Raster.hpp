@@ -19,11 +19,11 @@
 
 #if defined(_EL_FITSDATA_RASTER_IMPL) || defined(CHECK_QUALITY)
 
-#include <functional> // multiplies
-#include <numeric> // accumulate
+  #include "EL_FitsData/FitsIOError.h"
+  #include "EL_FitsData/Raster.h"
 
-#include "EL_FitsData/FitsIOError.h"
-#include "EL_FitsData/Raster.h"
+  #include <functional> // multiplies
+  #include <numeric> // accumulate
 
 namespace Euclid {
 namespace FitsIO {
@@ -90,7 +90,11 @@ struct IndexRecursionImpl<-1, i> {
 /// @endcond
 
 template <typename T, long n>
-Raster<T, n>::Raster(Position<n> shape_) : shape(shape_) {
+Raster<T, n>::Raster(Position<n> shape_) : shape(shape_) {}
+
+template <typename T, long n>
+T* Raster<T, n>::data() {
+  return nullptr;
 }
 
 template <typename T, long n>
@@ -144,37 +148,52 @@ inline T& Raster<T, n>::at(const Position<n>& pos) {
 }
 
 template <typename T, long n>
-PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T* data) : Raster<T, n>(shape_), m_data(data) {
-}
+PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T* data) : Raster<T, n>(shape_), m_cData(data), m_data(nullptr) {}
+
+template <typename T, long n>
+PtrRaster<T, n>::PtrRaster(Position<n> shape_, T* data) : Raster<T, n>(shape_), m_cData(data), m_data(data) {}
 
 template <typename T, long n>
 const T* PtrRaster<T, n>::data() const {
+  return m_cData;
+}
+
+template <typename T, long n>
+T* PtrRaster<T, n>::data() {
   return m_data;
 }
 
 template <typename T, long n>
 VecRefRaster<T, n>::VecRefRaster(Position<n> shape_, const std::vector<T>& vecRef) :
-    Raster<T, n>(shape_),
-    m_ref(vecRef) {
-}
+    Raster<T, n>(shape_), m_cVecPtr(&vecRef), m_vecPtr(nullptr) {}
+
+template <typename T, long n>
+VecRefRaster<T, n>::VecRefRaster(Position<n> shape_, std::vector<T>& vecRef) :
+    Raster<T, n>(shape_), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
 
 template <typename T, long n>
 const T* VecRefRaster<T, n>::data() const {
-  return m_ref.data();
+  return m_cVecPtr->data();
+}
+
+template <typename T, long n>
+T* VecRefRaster<T, n>::data() {
+  if (m_vecPtr) {
+    return m_vecPtr->data();
+  }
+  return nullptr;
 }
 
 template <typename T, long n>
 const std::vector<T>& VecRefRaster<T, n>::vector() const {
-  return m_ref;
+  return *m_cVecPtr;
 }
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> shape_, std::vector<T> vec) : Raster<T, n>(shape_), m_vec(vec) {
-}
+VecRaster<T, n>::VecRaster(Position<n> shape_, std::vector<T> vec) : Raster<T, n>(shape_), m_vec(vec) {}
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> shape_) : Raster<T, n>(shape_), m_vec(this->size()) {
-}
+VecRaster<T, n>::VecRaster(Position<n> shape_) : Raster<T, n>(shape_), m_vec(this->size()) {}
 
 template <typename T, long n>
 const T* VecRaster<T, n>::data() const {
@@ -196,23 +215,23 @@ std::vector<T>& VecRaster<T, n>::vector() {
   return m_vec;
 }
 
-#ifndef DECLARE_RASTER_CLASSES
-#define DECLARE_RASTER_CLASSES(type, unused) \
-  extern template class Raster<type, -1>; \
-  extern template class PtrRaster<type, -1>; \
-  extern template class VecRefRaster<type, -1>; \
-  extern template class VecRaster<type, -1>; \
-  extern template class Raster<type, 2>; \
-  extern template class PtrRaster<type, 2>; \
-  extern template class VecRefRaster<type, 2>; \
-  extern template class VecRaster<type, 2>; \
-  extern template class Raster<type, 3>; \
-  extern template class PtrRaster<type, 3>; \
-  extern template class VecRefRaster<type, 3>; \
-  extern template class VecRaster<type, 3>;
+  #ifndef DECLARE_RASTER_CLASSES
+    #define DECLARE_RASTER_CLASSES(type, unused) \
+      extern template class Raster<type, -1>; \
+      extern template class PtrRaster<type, -1>; \
+      extern template class VecRefRaster<type, -1>; \
+      extern template class VecRaster<type, -1>; \
+      extern template class Raster<type, 2>; \
+      extern template class PtrRaster<type, 2>; \
+      extern template class VecRefRaster<type, 2>; \
+      extern template class VecRaster<type, 2>; \
+      extern template class Raster<type, 3>; \
+      extern template class PtrRaster<type, 3>; \
+      extern template class VecRefRaster<type, 3>; \
+      extern template class VecRaster<type, 3>;
 EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
-#undef DECLARE_COLUMN_CLASSES
-#endif
+    #undef DECLARE_COLUMN_CLASSES
+  #endif
 
 } // namespace FitsIO
 } // namespace Euclid

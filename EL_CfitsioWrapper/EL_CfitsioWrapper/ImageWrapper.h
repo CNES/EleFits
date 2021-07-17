@@ -34,7 +34,8 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief A *n*D rectangle region, defined by its first and last positions,
+ * @ingroup image_data_classes
+ * @brief A _n_-D rectangle region, defined by its first and last positions,
  * or first position and shape.
  */
 template <long n = 2>
@@ -91,6 +92,7 @@ private:
 };
 
 /**
+ * @ingroup image_data_classes
  * @brief A subraster as a view of a raster region.
  * @details
  * As opposed to a Raster, values of a Subraster are generally not contiguous in memory:
@@ -117,7 +119,7 @@ struct Subraster {
   /**
    * @brief The parent raster.
    */
-  VecRaster<T, n>& parent; // FIXME Raster => non-const data()
+  Raster<T, n>& parent;
 
   /**
    * @brief The region.
@@ -180,8 +182,8 @@ FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& regi
  * @param region The source region
  * @param destination The destination raster
  * @details
- * Similarly to a *n*D-blit operation, this method reads the data line-by-line
- * directly in a destination subraster.
+ * Similarly to a blit operation, this method reads the data line-by-line
+ * directly in a destination raster.
  */
 template <typename T, long n = 2>
 void readRegionTo(
@@ -194,7 +196,7 @@ void readRegionTo(
  * @param region The source region
  * @param destination The destination subraster
  * @details
- * Similarly to a *n*D-blit operation, this method reads the data line-by-line
+ * Similarly to a blit operation, this method reads the data line-by-line
  * directly in a destination subraster.
  */
 template <typename T, long n = 2>

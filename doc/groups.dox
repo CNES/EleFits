@@ -9,6 +9,10 @@
 \defgroup data_classes Data classes
 \brief Classes to represent the data stored in a Fits file.
 
+\defgroup image_data_classes Image data classes
+\brief Classes to manipulate the data stored in image HDUs.
+\ingroup data_classes
+
 \defgroup types On types
 \brief Which types to use?
 
