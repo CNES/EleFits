@@ -147,6 +147,11 @@ inline T& Raster<T, n>::at(const Position<n>& pos) {
   return const_cast<T&>(const_cast<const Raster*>(this)->at(pos));
 }
 
+// template <typename T, long n>
+// Subraster<T, n> Raster<T, n>::subraster(Region<n> region) const {
+//   return Subraster<T, n> { *this, region };
+// }
+
 template <typename T, long n>
 PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T* data) : Raster<T, n>(shape_), m_cData(data), m_data(nullptr) {}
 

@@ -24,110 +24,12 @@
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 #include "EL_FitsData/Raster.h"
+#include "EL_FitsData/Subraster.h"
 
 #include <fitsio.h>
 #include <string>
 
 namespace Euclid {
-
-// FIXME move to Raster.h
-namespace FitsIO {
-
-/**
- * @ingroup image_data_classes
- * @brief A _n_-D rectangle region, defined by its first and last positions,
- * or first position and shape.
- */
-template <long n = 2>
-class Region {
-public:
-  /**
-   * @brief Create a region from a first position and shape.
-   */
-  static Region<n> fromOver(Position<n> first, Position<n> shape) {
-    Region<n> region { first, first, shape };
-    for (std::size_t i = 0; i < region.m_first.size(); ++i) { // TODO iterators
-      region.m_last[i] += region.m_shape[i] - 1;
-    }
-    return region;
-  }
-
-  /**
-   * @brief Create a region from first and last positions.
-   */
-  static Region<n> fromTo(Position<n> first, Position<n> last) {
-    Region<n> region { first, last, last };
-    for (std::size_t i = 0; i < region.m_first.size(); ++i) { // TODO iterators
-      region.m_shape[i] -= region.m_first[i] - 1;
-    }
-    return region;
-  }
-
-  /**
-   * @brief The first position in the region.
-   */
-  Position<n> first() const {
-    return m_first;
-  }
-
-  /**
-   * @brief The last position in the region.
-   */
-  Position<n> last() const {
-    return m_last;
-  }
-
-  /**
-   * @brief The region shape.
-   */
-  Position<n> shape() const {
-    return m_shape;
-  }
-
-private:
-  Region(Position<n> first, Position<n> last, Position<n> shape) : m_first(first), m_last(last), m_shape(shape) {}
-  Position<n> m_first;
-  Position<n> m_last;
-  Position<n> m_shape;
-};
-
-/**
- * @ingroup image_data_classes
- * @brief A subraster as a view of a raster region.
- * @details
- * As opposed to a Raster, values of a Subraster are generally not contiguous in memory:
- * they are piece-wise contiguous only.
- * 
- * When a region is indeed contiguous, it is better to rely on a PtrRaster instead:
- * \code
- * VecRaster<char, 3> raster({ 800, 600, 3 });
- * 
- * // Good :)
- * auto region = Region<3>::fromOver({ 100, 100, 0 }, { 100, 100, 3 });
- * Subraster<char, 3> subraster { raster, region };
- * 
- * // Bad :(
- * auto slice = Region<3>::fromTo({ 0, 0, 1 }, { -1, -1, 1 });
- * Subraster<char, 3> contiguousSubraster { raster, slice };
- * 
- * // Good :)
- * PtrRaster<char, 2> ptrRaster({ 800, 600 }, &raster[{ 0, 0, 1 }]);
- * \endcode
- */
-template <typename T, long n = 2>
-struct Subraster {
-  /**
-   * @brief The parent raster.
-   */
-  Raster<T, n>& parent;
-
-  /**
-   * @brief The region.
-   */
-  Region<n> region;
-};
-
-} // namespace FitsIO
 
 namespace Cfitsio {
 

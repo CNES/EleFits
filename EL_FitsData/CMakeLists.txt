@@ -96,6 +96,10 @@ elements_add_unit_test(HduCategory tests/src/HduCategory_test.cpp
                      EXECUTABLE EL_FitsData_HduCategory_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
+elements_add_unit_test(Subraster tests/src/Subraster_test.cpp 
+                     EXECUTABLE EL_FitsData_Subraster_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

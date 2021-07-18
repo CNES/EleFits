@@ -32,6 +32,19 @@ namespace FitsIO {
 
 /**
  * @ingroup image_data_classes
+ * @brief _n_-dimensional pixel position or image shape, i.e. set of integer coordinates.
+ * @tparam n A non-negative dimension (0 is allowed), or -1 for variable dimension.
+ * @details
+ * Alias for `std::array<long, n>` in general (`n >= 0`),
+ * or `std::vector<long>` for variable dimension (`n = -1`).
+ *
+ * Memory and services are optimized when dimension is fixed at compile-time (`n >= 0`).
+ */
+template <long n = 2>
+using Position = typename std::conditional<(n == -1), std::vector<long>, std::array<long, (std::size_t)n>>::type;
+
+/**
+ * @ingroup image_data_classes
  * @brief Loop over supported raster types.
  * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
  * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
@@ -49,19 +62,6 @@ namespace FitsIO {
   MACRO(std::uint16_t, uint16) \
   MACRO(std::uint32_t, uint32) \
   MACRO(std::uint64_t, uint64)
-
-/**
- * @ingroup image_data_classes
- * @brief _n_-dimensional pixel position or image shape, i.e. set of integer coordinates.
- * @tparam n A non-negative dimension (0 is allowed), or -1 for variable dimension.
- * @details
- * Alias for `std::array<long, n>` in general (`n >= 0`),
- * or `std::vector<long>` for variable dimension (`n = -1`).
- *
- * Memory and services are optimized when dimension is fixed at compile-time (`n >= 0`).
- */
-template <long n = 2>
-using Position = typename std::conditional<(n == -1), std::vector<long>, std::array<long, (std::size_t)n>>::type;
 
 /**
  * @ingroup image_data_classes
@@ -167,6 +167,11 @@ public:
    * @copydoc at()
    */
   T& at(const Position<n>& pos);
+
+  /**
+   * @brief Create a subraster from given region.
+   */
+  // Subraster<T, n> subraster(Region<n> region) const;
 
 public:
   /**

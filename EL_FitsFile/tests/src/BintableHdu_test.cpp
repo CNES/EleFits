@@ -122,7 +122,7 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   std::vector<ColumnInfo<int>> header { { "A" }, { "B" }, { "C" } };
   const auto& ext = initBintableExt("TABLE", header[0], header[1], header[2]);
   auto names = ext.readColumnNames();
-  for (long i = 0; i < header.size(); ++i) {
+  for (std::size_t i = 0; i < header.size(); ++i) {
     BOOST_TEST(ext.readColumnName(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);
   }
@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   ext.renameColumn(0, header[0].name);
   ext.renameColumn("C", header[2].name);
   names = ext.readColumnNames();
-  for (long i = 0; i < header.size(); ++i) {
+  for (std::size_t i = 0; i < header.size(); ++i) {
     BOOST_TEST(ext.readColumnName(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);
   }
