@@ -20,28 +20,15 @@
 #ifndef _EL_FITSDATA_RASTER_H
 #define _EL_FITSDATA_RASTER_H
 
-#include <array>
+#include "EL_FitsData/Position.h"
+
 #include <complex>
 #include <cstdint>
 #include <string>
-#include <type_traits> // conditional
 #include <vector>
 
 namespace Euclid {
 namespace FitsIO {
-
-/**
- * @ingroup image_data_classes
- * @brief _n_-dimensional pixel position or image shape, i.e. set of integer coordinates.
- * @tparam n A non-negative dimension (0 is allowed), or -1 for variable dimension.
- * @details
- * Alias for `std::array<long, n>` in general (`n >= 0`),
- * or `std::vector<long>` for variable dimension (`n = -1`).
- *
- * Memory and services are optimized when dimension is fixed at compile-time (`n >= 0`).
- */
-template <long n = 2>
-using Position = typename std::conditional<(n == -1), std::vector<long>, std::array<long, (std::size_t)n>>::type;
 
 /**
  * @ingroup image_data_classes

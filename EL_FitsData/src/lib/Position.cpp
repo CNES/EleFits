@@ -17,25 +17,16 @@
  *
  */
 
-#include "EL_FitsData/TestRaster.h"
+#include "EL_FitsData/Position.h"
 
 namespace Euclid {
 namespace FitsIO {
-namespace Test {
 
-SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
-    VecRaster<float>({ rasterWidth, rasterHeight }), width(rasterWidth), height(rasterHeight) {
-  for (long y = 0; y < shape[1]; ++y) {
-    for (long x = 0; x < shape[0]; ++x) {
-      operator[]({ x, y }) = 0.1F * float(y) + float(x);
-    }
-  }
-}
+template <>
+Position<-1>::Position(long dim) : indices(dim) {}
 
-bool SmallRaster::approx(const Raster<float>& other, double tol) const {
-  return rasterApprox(*this, other, tol);
-}
+template <>
+Position<-1>::Position(std::initializer_list<long> posIndices) : indices(posIndices) {}
 
-} // namespace Test
 } // namespace FitsIO
 } // namespace Euclid

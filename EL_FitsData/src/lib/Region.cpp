@@ -17,25 +17,4 @@
  *
  */
 
-#include "EL_FitsData/TestRaster.h"
-
-namespace Euclid {
-namespace FitsIO {
-namespace Test {
-
-SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
-    VecRaster<float>({ rasterWidth, rasterHeight }), width(rasterWidth), height(rasterHeight) {
-  for (long y = 0; y < shape[1]; ++y) {
-    for (long x = 0; x < shape[0]; ++x) {
-      operator[]({ x, y }) = 0.1F * float(y) + float(x);
-    }
-  }
-}
-
-bool SmallRaster::approx(const Raster<float>& other, double tol) const {
-  return rasterApprox(*this, other, tol);
-}
-
-} // namespace Test
-} // namespace FitsIO
-} // namespace Euclid
+#include "EL_FitsData/Region.h"

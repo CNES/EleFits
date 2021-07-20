@@ -78,9 +78,9 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, FitsIO::Test::MinimalFile) {
   FitsIO::VecRaster<long, 3> output({ 3, 4, 5 });
   FitsIO::Subraster<long, 3> dst { output, region }; // FIXME don't use the same region
   Image::readRegionTo<long, 3>(fptr, region, dst);
-  for (long z = region.first[2]; z <= region.last[2]; ++z) {
-    for (long y = region.first[1]; y <= region.last[1]; ++y) {
-      for (long x = region.first[0]; x <= region.last[0]; ++x) {
+  for (long z = region.front[2]; z <= region.back[2]; ++z) {
+    for (long y = region.front[1]; y <= region.back[1]; ++y) {
+      for (long x = region.front[0]; x <= region.back[0]; ++x) {
         const auto& o = output[{ x, y, z }];
         const auto& i = input[{ x, y, z }];
         BOOST_TEST(o == i);

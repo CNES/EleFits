@@ -63,19 +63,19 @@ template <typename T, long n = 2>
 FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region) {
   FitsIO::VecRaster<T, n> raster(region.shape());
   int status = 0;
-  const std::size_t dim = region.first.size(); // TODO shortcut
-  FitsIO::Position<n> first = region.first; // Copy for const-correctness
-  FitsIO::Position<n> last = region.last; // idem
+  const std::size_t dim = region.dimension();
+  FitsIO::Position<n> front = region.front; // Copy for const-correctness
+  FitsIO::Position<n> back = region.back; // idem
   std::vector<long> step(dim, 1);
   for (std::size_t i = 0; i < dim; ++i) {
-    first[i]++; // CFitsIO is 1-based
-    last[i]++; // idem
+    front[i]++; // CFitsIO is 1-based
+    back[i]++; // idem
   }
   fits_read_subset(
       fptr,
       TypeCode<T>::forImage(),
-      first.data(),
-      last.data(),
+      front.data(),
+      back.data(),
       step.data(),
       nullptr,
       raster.data(),
@@ -89,42 +89,38 @@ template <typename T, long n = 2>
 void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, n>& destination) {
 
   /* 1-based, flatten region (beginning of each line) */
-  auto lineRegion = region;
-  for (long i = 0; i < lineRegion.dimension(); ++i) {
-    lineRegion.first[i]++;
-    lineRegion.last[i]++;
-  }
-  lineRegion.last[0] = lineRegion.first[0];
-  const auto lineCount = lineRegion.size();
+  FitsIO::Region<n> srcRegion = region + 1;
+  srcRegion.back[0] = srcRegion.front[0];
+  const auto srcCount = srcRegion.size();
 
   /* Screening positions */
-  auto lineFirst = lineRegion.first;
-  auto lineLast = lineFirst;
-  lineLast[0] += region.shape()[0] - 1;
-  auto dstFirst = destination.region.first;
-  FitsIO::RegionScreener<n> lineScreener(lineRegion, { lineLast, dstFirst });
+  auto srcFront = srcRegion.front;
+  auto srcBack = srcFront;
+  srcBack[0] += region.shape()[0] - 1;
+  auto dstFront = destination.region.front;
+  FitsIO::RegionScreener<n> srcScreener(srcRegion, { srcBack, dstFront });
 
   /* Step */
-  std::vector<long> step(lineRegion.dimension(), 1L);
+  std::vector<long> step(srcRegion.dimension(), 1L);
 
   /* Process each line */
   int status = 0;
-  for (long i = 0; i < lineCount; ++i) {
+  for (long i = 0; i < srcCount; ++i) {
     fits_read_subset(
         fptr,
         TypeCode<T>::forImage(),
-        lineFirst.data(),
-        lineLast.data(),
+        srcFront.data(),
+        srcBack.data(),
         step.data(),
         nullptr,
-        &destination.parent[dstFirst],
+        &destination.parent[dstFront],
         nullptr,
         &status);
     CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
-    lineScreener.next();
-    lineFirst = lineScreener.current();
-    lineLast = lineScreener.followers()[0];
-    dstFirst = lineScreener.followers()[1];
+    srcScreener.next();
+    srcFront = srcScreener.current();
+    srcBack = srcScreener.followers()[0];
+    dstFront = srcScreener.followers()[1];
   }
 }
 

@@ -12,12 +12,17 @@
 * HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
 * HDU checksums can be computed and verified
 * Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
+* `Position` has arithmetics operators
 
 ### Deprecated
 
 * Methods of `RecordHdu` to read and write records are deprecated, and should be replaced with analogous methods of `Header`
 * Enum `HduType` refactored as class `HduCategory`; alias `HduType` created for backqard compatibility is deprecated
 * Explicit use of `boost::any`: should be replaced with `VariantValue`
+
+### Cleaning
+
+* `Position` is a proper class, instead of a compile-time conditional alias
 
 ## 3.1
 

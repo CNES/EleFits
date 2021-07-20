@@ -43,7 +43,8 @@ struct IndexRecursionImpl {
    * @brief Index of given position in given shape for Raster::index.
    */
   static long index(const Position<n>& shape, const Position<n>& pos) {
-    return std::get<n - 1 - i>(pos) + std::get<n - 1 - i>(shape) * IndexRecursionImpl<n, i - 1>::index(shape, pos);
+    return std::get<n - 1 - i>(pos.indices) +
+        std::get<n - 1 - i>(shape.indices) * IndexRecursionImpl<n, i - 1>::index(shape, pos);
   }
 };
 
@@ -58,7 +59,7 @@ struct IndexRecursionImpl<n, 0> {
    */
   static long index(const Position<n>& shape, const Position<n>& pos) {
     (void)(shape);
-    return std::get<n - 1>(pos);
+    return std::get<n - 1>(pos.indices);
   }
 };
 
@@ -79,7 +80,7 @@ struct IndexRecursionImpl<-1, i> {
           std::to_string(pos.size()));
     }
     long res = 0;
-    for (std::size_t j = 0; j < shape.size(); ++j) {
+    for (long j = 0; j < shape.size(); ++j) {
       res = pos[n - 1 - j] + shape[n - 1 - j] * res;
     }
     return res;
@@ -105,7 +106,7 @@ inline long Raster<T, n>::dimension() const {
 template <typename T, long n>
 template <long i>
 inline long Raster<T, n>::length() const {
-  return std::get<i>(shape);
+  return std::get<i>(shape.indices);
 }
 
 template <typename T, long n>
