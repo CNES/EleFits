@@ -81,7 +81,7 @@ Three such concrete classes are provided:
 
 You can create your own raster types by inheriting from `Raster`.
 
-All functions which return a `Raster` really return a `VecRaster` (e.g. `ImageArray::read()`).
+All functions which return a `Raster` really return a `VecRaster` (e.g. `ImageRaster::read()`).
 All methods which take a `Raster` as input accept whatever flavor of it.
 
 `Raster` ensures constant-time access to elements, whatever the dimension of the data,

@@ -54,6 +54,21 @@ namespace FitsIO {
  */
 template <typename T, long n = 2>
 struct Subraster {
+
+  /**
+   * @brief The subraster shape.
+   */
+  Position<n> shape() const {
+    return region.shape();
+  }
+
+  /**
+   * @brief The number of pixels in the subraster.
+   */
+  long size() const {
+    return region.size();
+  }
+
   /**
    * @brief The parent raster.
    */

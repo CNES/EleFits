@@ -93,6 +93,10 @@ elements_add_unit_test(BintableColumns tests/src/BintableColumns_test.cpp
                      EXECUTABLE EL_FitsFile_BintableColumns_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
+elements_add_unit_test(ImageRaster tests/src/ImageRaster_test.cpp 
+                     EXECUTABLE EL_FitsFile_ImageRaster_test
+                     LINK_LIBRARIES EL_FitsFile
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

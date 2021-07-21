@@ -36,7 +36,7 @@ class FitsFile {
 
 class SifFile {
 + header() : Header
-+ array() : ImageArray
++ array() : ImageRaster
 + readRaster() : Raster
 + writeRaster(Raster)
 + verifyChecksums()
@@ -59,7 +59,7 @@ class RecordHdu {
 }
 
 class ImageHdu {
-+ array() : ImageArray
++ array() : ImageRaster
 }
 
 class BintableHdu {
@@ -76,7 +76,7 @@ class Header {
 + writeSeq(Record...)
 }
 
-class ImageArray {
+class ImageRaster {
 + readRaster() : Raster
 + writeRaster(Raster)
 }
@@ -102,11 +102,11 @@ FitsFile <|-- MefFile
 ImageHdu -|> RecordHdu
 RecordHdu <|- BintableHdu
 RecordHdu *-- Header
-ImageHdu *-- ImageArray
+ImageHdu *-- ImageRaster
 BintableHdu *-- BintableColumns
 BintableHdu *-- BintableRows
 MefFile *-- RecordHdu
 Header -- Record
-ImageArray -- Raster
+ImageRaster -- Raster
 BintableColumns -- Column
 @enduml

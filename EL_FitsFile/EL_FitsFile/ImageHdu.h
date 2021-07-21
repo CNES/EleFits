@@ -22,6 +22,7 @@
 
 #include "EL_CfitsioWrapper/ImageWrapper.h"
 #include "EL_FitsData/Raster.h"
+#include "EL_FitsFile/ImageRaster.h"
 #include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
@@ -78,6 +79,13 @@ public:
   virtual ~ImageHdu() = default;
 
   /**
+   * @brief Access the data unit to read and write the raster.
+   * @see ImageRaster
+   */
+  template <typename T, long n = 2>
+  ImageRaster<T, n> raster() const;
+
+  /**
    * @brief Read the image pixel value type.
    */
   const std::type_info& readTypeid() const;
@@ -114,7 +122,7 @@ public:
    * @brief Write the Raster.
    */
   template <typename T, long n = 2>
-  void writeRaster(const Raster<T, n>& raster) const;
+  void writeRaster(const Raster<T, n>& data) const;
 };
 
 } // namespace FitsIO

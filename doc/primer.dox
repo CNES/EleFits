@@ -75,8 +75,8 @@ The pixel value type can be an 8- to 64-bit integer, or a 32- or 64-bit floating
 (Be patient, we'll explain the *Primary* word in the next section.)
 
 The class which represents a SIF file is `SifFile`.
-That which represents the header is `Header`, and that which represent the array is `ImageArray`.
-In EL_FitsIO, a `SifFile` can therefore simply be seen like a structure made of a `Header` and an `ImageArray`,
+That which represents the header is `Header`, and that which represent the array is `ImageRaster`.
+In EL_FitsIO, a `SifFile` can therefore simply be seen like a structure made of a `Header` and an `ImageRaster`,
 accessed by getters `SifFile::header()` and `SifFile::array()`, respectively.
 
 
@@ -106,7 +106,7 @@ Fits files with extensions are known as *Multi-Extension Fits* (MEF) files.
 
 Image and binary table HDUs are respectively handled with `ImageHdu` and `BintableHdu`.
 Like for the Primary, the handler class for the header units of the extensions is `Header`,
-and for the image data units (the arrays), it is `ImageArray`.
+and for the image data units (the arrays), it is `ImageRaster`.
 Binary table data units can be read and written column-wise with `BintableColumns`,
 or row-wise with `BintableRows`.
 
@@ -130,7 +130,7 @@ There is almost a 1-to-1 mapping of the Fits and EL_FitsIO structures:
 </tr>
 <tr>
 <td>SIF file = header unit + array</td>
-<td>`SifFile` = `Header` + `ImageArray`</td>
+<td>`SifFile` = `Header` + `ImageRaster`</td>
 <td>`Record`s + `Raster`</td>
 </tr>
 <tr>
@@ -140,7 +140,7 @@ There is almost a 1-to-1 mapping of the Fits and EL_FitsIO structures:
 </tr>
 <tr>
 <td>Image HDU = header unit + array</td>
-<td>`ImageHdu` = `Header` + `ImageArray`</td>
+<td>`ImageHdu` = `Header` + `ImageRaster`</td>
 <td>`Record`s + `Raster`</td>
 </tr>
 <tr>
@@ -164,7 +164,7 @@ SIF file
 `SifFile`
 - `Header`
   - `Record`s
-- `ImageArray`
+- `ImageRaster`
   - `Raster`
 </td>
 </tr><tr>
@@ -187,7 +187,7 @@ MEF file
 - `ImageHdu`s
   - `Header`
     - `Record`s
-  - `ImageArray`
+  - `ImageRaster`
     - `Raster`
 - `BintableHdu`s
   - `Header`

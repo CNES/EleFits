@@ -46,7 +46,7 @@ public:
   /**
    * @brief Helper class to provide filtered iterators.
    * @details
-   * Functions begin(Selector) and end(Selector) are provided, so that it is possible to loop over HDUs as follows:
+   * Functions begin(HduSelector) and end(HduSelector) are provided, so that it is possible to loop over HDUs as follows:
    * \code
    * MefFile f(...);
    * for (const auto& hdu : f.selectAs<ImageHdu>(HduCategory::ImageExt)) {
@@ -55,7 +55,7 @@ public:
    * \endcode
    */
   template <typename THdu>
-  struct Selector {
+  struct HduSelector {
     /**
      * @brief The MefFile to apply the selector on.
      */
@@ -172,7 +172,7 @@ public:
    * @return An iterable object, i.e. one for which begin and end functions are provided.
    */
   template <typename THdu = RecordHdu>
-  Selector<THdu> select(const HduFilter& filter = HduCategory::Any);
+  HduSelector<THdu> select(const HduFilter& filter = HduCategory::Any);
 
   /**
    * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.

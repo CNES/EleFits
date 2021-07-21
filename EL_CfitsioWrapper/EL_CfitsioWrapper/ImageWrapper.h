@@ -113,24 +113,18 @@ void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
 /**
  * @brief Write a whole raster into a region of the current image HDU.
  * @param raster The raster to be written
- * @param region The destination region
+ * @param destination The destination position (size is deduced from raster size)
  */
 template <typename T, long n = 2>
-void writeRegion(
-    fitsfile* fptr,
-    const FitsIO::Raster<T, n>& raster,
-    const FitsIO::Region<n>& region); // FIXME implement
+void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, n>& raster, const FitsIO::Position<n>& destination);
 
 /**
  * @brief Write a subraster into a region of the current image HDU.
  * @param subraster The subraster to be written
- * @param region The destination region
+ * @param region The destination position (size is deduced from subraster size)
  */
 template <typename T, long n = 2>
-void writeRegion(
-    fitsfile* fptr,
-    const FitsIO::Subraster<T, n>& subraster,
-    const FitsIO::Region<n>& region); // FIXME implement
+void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const FitsIO::Position<n>& destination);
 
 } // namespace Image
 } // namespace Cfitsio

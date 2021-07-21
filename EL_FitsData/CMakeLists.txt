@@ -108,6 +108,14 @@ elements_add_unit_test(Region tests/src/Region_test.cpp
                      EXECUTABLE EL_FitsData_Region_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
+elements_add_unit_test(PositionIterator tests/src/PositionIterator_test.cpp 
+                     EXECUTABLE EL_FitsData_PositionIterator_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
+elements_add_unit_test(PixelIterator tests/src/PixelIterator_test.cpp 
+                     EXECUTABLE EL_FitsData_PixelIterator_test
+                     LINK_LIBRARIES EL_FitsData
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

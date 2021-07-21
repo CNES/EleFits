@@ -15,7 +15,7 @@ namespace FitsIO {
 `EL_FitsIO` is split into service classes, known as handlers, in the package `EL_FitsFile`, and data classes in `EL_FitsData`.
 
 File handlers (`MefFile` and `SifFile`) store the index and type of the HDUs, access and create HDUs.
-HDU handlers (`RecordHdu`, `ImageHdu`, `BintableHdu`, `Header`, `ImageArray`, `BintableColumns` and `BintableRows`)
+HDU handlers (`RecordHdu`, `ImageHdu`, `BintableHdu`, `Header`, `ImageRaster`, `BintableColumns` and `BintableRows`)
 only provide read/write services.
 Records, images and tables are never stored by those classes
 (to know where they are, refer to \ref data_classes).
@@ -46,7 +46,7 @@ There are methods to access the HDUs by index or by name, to select and iterate 
 Classes `ImageHdu` and `BintableHdu` extend `RecordHdu`, a parent class which implements the common services.
 The header units are manipulated by `Header` objects.
 The data units of image and binary table HDUs are respectively manipulated
-by `ImageArray` and `BintableColumns` or `BintableRows` objects.
+by `ImageRaster` and `BintableColumns` or `BintableRows` objects.
 
 Conceptually, `MefFile` is a tree of objects, which can be minimalistically represented as follows
 (there are actually many more methods available):
@@ -62,7 +62,7 @@ Conceptually, `MefFile` is a tree of objects, which can be minimalistically repr
 - access the header unit as `Header`
   - read records
   - write records
-- access the data unit as `ImageArray`
+- access the data unit as `ImageRaster`
   - read pixels
   - write pixels
 
@@ -87,7 +87,7 @@ HDU access and creation methods all return a constant reference to the desired t
 `RecordHdu`, `ImageHdu` or `BintableHdu`.
 The header units are read and written through `RecordHdu::header()`
 (also available in `ImageHdu` and `BintableHdu` as child classes of `RecordHdu`).
-The data unit handler of image HDUs (`ImageArray`) is instantiated by `ImageHdu::array()`,
+The data unit handler of image HDUs (`ImageRaster`) is instantiated by `ImageHdu::array()`,
 while those of binary table HDUs (`BintableColumns` and `BintableRows`)
 are instantiated by `BintableHdu::columns()` and `BintableHdu::rows()`.
 
@@ -114,7 +114,7 @@ For comparison with `MefFile`, here is are much simplified tree view and class d
 - access the header unit as `Header`
   - read records
   - write records
-- access the data unit as `ImageArray`
+- access the data unit as `ImageRaster`
   - read pixels
   - write pixels
 

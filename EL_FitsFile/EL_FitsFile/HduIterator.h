@@ -166,7 +166,7 @@ HduIterator<> end(MefFile& f) {
  * @param selector The HDU selector
  */
 template <typename THdu = RecordHdu>
-HduIterator<THdu> begin(MefFile::Selector<THdu>& selector) {
+HduIterator<THdu> begin(MefFile::HduSelector<THdu>& selector) {
   return { selector.mef, 0, selector.filter };
 }
 
@@ -175,7 +175,7 @@ HduIterator<THdu> begin(MefFile::Selector<THdu>& selector) {
  * @brief End of an iterator to loop over selected HDUs.
  */
 template <typename THdu = RecordHdu>
-HduIterator<THdu> end(MefFile::Selector<THdu>& selector) {
+HduIterator<THdu> end(MefFile::HduSelector<THdu>& selector) {
   return { selector.mef, selector.mef.hduCount(), selector.filter };
 }
 

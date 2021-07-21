@@ -5,8 +5,8 @@
 ### New features
 
 * Named HDU access methods support `EXTVER` keyword and use HDU type
-* Image regions can be read
-* New handler `Header` is responsible for record reading and writing; created with `RecordHdu::header()`
+* Image regions can be read and written
+* New handlers `Header` and `ImageRaster` are responsible for reading and writing header and data units
 * `RecordMode` controls the behavior of record writing method
 * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
 * HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
@@ -16,7 +16,8 @@
 
 ### Deprecated
 
-* Methods of `RecordHdu` to read and write records are deprecated, and should be replaced with analogous methods of `Header`
+* Methods of `RecordHdu` and `ImageHdu` to read and write records and rasters are deprecated;
+They should be replaced with analogous methods of `Header` and `ImageRaster`
 * Enum `HduType` refactored as class `HduCategory`; alias `HduType` created for backqard compatibility is deprecated
 * Explicit use of `boost::any`: should be replaced with `VariantValue`
 

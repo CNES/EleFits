@@ -76,7 +76,7 @@ const T& MefFile::accessPrimary() {
 }
 
 template <typename THdu>
-MefFile::Selector<THdu> MefFile::select(const HduFilter& filter) {
+MefFile::HduSelector<THdu> MefFile::select(const HduFilter& filter) {
   return { *this, filter * HduCategory::forClass<THdu>() };
 }
 
