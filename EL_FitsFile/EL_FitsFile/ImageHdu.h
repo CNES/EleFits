@@ -29,7 +29,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @ingroup handlers
+ * @ingroup image_handlers
  * @brief Image HDU reader-writer.
  * @details
  * The Fits format can accommodate images of any dimension.

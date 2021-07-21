@@ -62,6 +62,7 @@ namespace FitsIO {
 std::string version();
 
 /**
+ * @ingroup file_handlers
  * @brief Fits file reader-writer.
  * @details
  * Mostly en empty shell for file opening and closing operations;

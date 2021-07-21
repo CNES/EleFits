@@ -34,7 +34,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @ingroup handlers
+ * @ingroup header_handlers
  * @brief Header reader-writer.
  * @details
  * This class provides services common to all HDUs for reading and writing records.

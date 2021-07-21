@@ -26,6 +26,10 @@
 namespace Euclid {
 namespace FitsIO {
 
+/**
+ * @ingroup bintable_handlers
+ * @brief NOT YET IMPLEMENTED!
+ */
 class BintableColumns {
 
 private:

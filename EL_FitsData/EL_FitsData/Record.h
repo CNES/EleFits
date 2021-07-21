@@ -28,6 +28,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup header_data_classes
  * @brief Loop over supported record types.
  * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
  * @see Program EL_FitsIO_PrintSupportedTypes to display all supported types
@@ -53,7 +54,7 @@ namespace FitsIO {
   MACRO(unsigned long long, ulonglong)
 
 /**
- * @ingroup data_classes
+ * @ingroup header_data_classes
  * @brief The variant value type for records.
  * @warning
  * This is a boost::any today, which should be replaced with a boost::variant at some point,
@@ -62,7 +63,7 @@ namespace FitsIO {
 using VariantValue = boost::any;
 
 /**
- * @ingroup data_classes
+ * @ingroup header_data_classes
  * @brief Keyword-value pair with optional unit and comment.
  * @tparam T The value type;
  * Can be an integer, floating point, complex, `std::string`, `const char *` or `VariantValue`.
@@ -238,6 +239,7 @@ bool operator==(const Record<T>& lhs, const Record<T>& rhs) {
 }
 
 /**
+ * @ingroup header_data_classes
  * @brief Check whether two records are different.
  */
 template <typename T>

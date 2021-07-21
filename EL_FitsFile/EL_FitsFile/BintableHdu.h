@@ -29,7 +29,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @ingroup handlers
+ * @ingroup bintable_handlers
  * @brief Binary table HDU reader-writer.
  */
 class BintableHdu : public RecordHdu {

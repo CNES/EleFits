@@ -30,7 +30,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @ingroup handlers
+ * @ingroup image_handlers
  * @brief Reader-writer for the image data unit.
  * @tparam T The desired pixel type
  * @tparam n The desired raster dimension (or -1 for dynamic dimension)

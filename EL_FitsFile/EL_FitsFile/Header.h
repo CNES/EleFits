@@ -34,6 +34,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup header_handlers
  * @brief Record writing modes.
  */
 enum class RecordMode
@@ -45,7 +46,7 @@ enum class RecordMode
 };
 
 /**
- * @ingroup handlers
+ * @ingroup header_handlers
  * @brief Reader-writer for the header unit.
  * 
  * @details
@@ -524,8 +525,8 @@ private:
 };
 
 /**
- * @brief Exception thrown when a keyword already exists.
  * @ingroup exceptions
+ * @brief Exception thrown when a keyword already exists.
  */
 struct KeywordExistsError : public FitsIOError {
 
@@ -551,8 +552,8 @@ struct KeywordExistsError : public FitsIOError {
 };
 
 /**
- * @brief Exception thrown when a keyword is not found.
  * @ingroup exceptions
+ * @brief Exception thrown when a keyword is not found.
  */
 struct KeywordNotFoundError : public FitsIOError {
 

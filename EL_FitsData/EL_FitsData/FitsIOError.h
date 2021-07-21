@@ -28,8 +28,8 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Base of all exceptions thrown directly by the library.
  * @ingroup exceptions
+ * @brief Base of all exceptions thrown directly by the library.
  */
 class FitsIOError : public std::exception {
 
@@ -63,8 +63,8 @@ private:
 };
 
 /**
- * @brief Exception thrown if a value lies out of given bounds.
  * @ingroup exceptions
+ * @brief Exception thrown if a value lies out of given bounds.
  */
 class OutOfBoundsError : public FitsIOError {
 public:
@@ -82,8 +82,8 @@ public:
 };
 
 /**
- * @brief Exception thrown if a checksum is missing or incorrect.
  * @ingroup exceptions
+ * @brief Exception thrown if a checksum is missing or incorrect.
  */
 struct ChecksumError : public FitsIOError {
 

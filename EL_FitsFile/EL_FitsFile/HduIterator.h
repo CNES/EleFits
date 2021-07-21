@@ -29,6 +29,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup iterators
  * @brief Iterator for MefFile's HDUs.
  * @tparam TCategories The categories to be filtered
  * @tparam THdu The type of HDU class (iterator elements), can generally be unspecified (see details below)

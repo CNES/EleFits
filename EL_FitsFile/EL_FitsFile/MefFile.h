@@ -27,7 +27,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @ingroup handlers
+ * @ingroup file_handlers
  * @brief Multi-Extension Fits file reader-writer.
  * @details
  * Provide HDU access/create services.

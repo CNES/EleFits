@@ -24,6 +24,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
+ * @ingroup image_data_classes
  * @brief A helper class to screen a `Raster` or `Subraster`.
  */
 class PixelIterator {

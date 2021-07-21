@@ -1,25 +1,59 @@
 /**
 
 \defgroup primer  What's a Fits file?
-\brief The structure and contents of a Fits file, and how they relate to EL_FitsIO
+\brief The structure and contents of a Fits file, and how they relate to EL_FitsIO.
 
 \defgroup handlers File and HDU handlers
-\brief Classes and functions to manipulate Fits files.
+\brief All the services you need!
+
+\defgroup file_handlers File handlers
+\ingroup handlers
+\brief Work with the Fits file structure.
+
+\defgroup iterators HDU selectors and iterators
+\ingroup handlers
+\brief Tools to iterate over HDUs with selected categories and/or states.
+
+\defgroup header_handlers Header unit handlers
+\ingroup handlers
+\brief Read and write header units.
+
+\defgroup image_handlers Image data unit handlers
+\ingroup handlers
+\brief Read and write image data units.
+
+\defgroup bintable_handlers Binary table data unit handlers
+\ingroup handlers
+\brief Read and write binary table data units.
 
 \defgroup data_classes Data classes
 \brief Classes to represent the data stored in a Fits file.
 
-\defgroup image_data_classes Image data classes
-\brief Classes to manipulate the data stored in image HDUs.
+\defgroup header_data_classes Header data classes
 \ingroup data_classes
+\brief Classes to manipulate the data stored header units.
+
+\defgroup image_data_classes Image data classes
+\ingroup data_classes
+\brief Image data containers and tools.
+
+\defgroup bintable_data_classes Binary table data classes
+\ingroup data_classes
+\brief Binary table data containers and tools.
+
+\defgroup guidelines Development guidelines
+\brief What to do, what not to, and why!
 
 \defgroup types On types
+\ingroup guidelines
 \brief Which types to use?
 
-\defgroup iterators HDU selectors and iterators
-\brief Tools to iterate over HDUs with selected categories and/or states.
-
 \defgroup optim Optimization and good practices
-\brief What to do, what not to, and why!
+\ingroup guidelines
+\brief How to make a program efficient?
+
+\defgroup exceptions Exceptions
+\ingroup guidelines
+\brief All the exception classes directly thrown by EL_FitsIO.
 
 */

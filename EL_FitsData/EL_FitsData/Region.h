@@ -228,6 +228,7 @@ Region<n> operator-(const Region<n>& lhs, long rhs) {
 }
 
 /**
+ * @ingroup image_data_classes
  * @brief A helper class to screen a `Region`.
  */
 template <long n = 2>
