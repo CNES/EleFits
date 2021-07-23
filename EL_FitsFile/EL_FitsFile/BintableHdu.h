@@ -21,6 +21,7 @@
 #define _EL_FITSFILE_BINTABLEHDU_H
 
 #include "EL_CfitsioWrapper/BintableWrapper.h"
+#include "EL_FitsFile/BintableColumns.h"
 #include "EL_FitsFile/RecordHdu.h"
 
 #include <string>
@@ -53,6 +54,12 @@ public:
    * @brief Destructor.
    */
   virtual ~BintableHdu() = default;
+
+  /**
+   * @brief Access the data unit column-wise.
+   * @see BintableColumns
+   */
+  const BintableColumns& columns() const;
 
   /**
    * @brief Read the number of columns.
@@ -182,6 +189,12 @@ public:
    */
   template <typename... Ts>
   void appendColumns(const Column<Ts>&... columns) const;
+
+private:
+  /**
+   * @brief The column-wise data unit handler.
+   */
+  BintableColumns m_columns;
 };
 
 } // namespace FitsIO

@@ -18,3 +18,16 @@
  */
 
 #include "EL_FitsFile/BintableColumns.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+BintableColumns::BintableColumns(
+    fitsfile*& fptr,
+    std::function<void(void)> touchFunc,
+    std::function<void(void)> editFunc) :
+    m_fptr(fptr),
+    m_touch(touchFunc), m_edit(editFunc) {}
+
+} // namespace FitsIO
+} // namespace Euclid

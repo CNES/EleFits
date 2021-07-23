@@ -23,9 +23,24 @@ namespace Euclid {
 namespace FitsIO {
 
 BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
-    RecordHdu(token, fptr, index, HduCategory::Bintable, status) {}
+    RecordHdu(token, fptr, index, HduCategory::Bintable, status), m_columns(
+                                                                      m_fptr,
+                                                                      [&]() {
+                                                                        touchThisHdu();
+                                                                      },
+                                                                      [&]() {
+                                                                        editThisHdu();
+                                                                      }) {}
 
-BintableHdu::BintableHdu() : RecordHdu() {}
+BintableHdu::BintableHdu() :
+    RecordHdu(), m_columns(
+                     m_fptr,
+                     [&]() {
+                       touchThisHdu();
+                     },
+                     [&]() {
+                       editThisHdu();
+                     }) {}
 
 long BintableHdu::readColumnCount() const {
   touchThisHdu();
