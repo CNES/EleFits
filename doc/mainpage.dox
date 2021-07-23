@@ -6,10 +6,14 @@ namespace FitsIO {
 \mainpage Project Overview
 
 
+\image html doc/diagrams/out/elefits_square.svg width=25%
+
+
 \tableofcontents
 
 
 \section purpose Purpose and scope
+
 
 The Fits format and C++ language are extremely popular among astronomers, and are at the heart of the Euclid ground segment.
 In this context, a library to read and write Fits files in C++ was needed.
@@ -52,6 +56,7 @@ For a clear overview of what's there and what's missing, see \ref cfitsio_cov.
 
 \section build Install and depend on EL_FitsIO
 
+
 See the \ref install_guide.
 
 
@@ -60,9 +65,9 @@ See the \ref install_guide.
 
 To go further, check the <a href="modules.html">Modules tab</a>, which is the main entry point for usage documentation.
 Each so-called module addresses a specific topic to learn how to use EL_FitsIO and understand why it is designed the way it is.
-The API documentation of related namespaces, classes and functions is liked at the bottom of each module page.
+The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.
 
-To go even further, many other topics are discussed in the <a href="pages.html">related pages</a>, as unordered documents.
+To go even further, many other topics are discussed in the <a href="pages.html">Related pages</a>, as unordered documents.
 Among others, you'll find there thoughts on CFitsIO, the tutorial, and some design documentation.
 
 */

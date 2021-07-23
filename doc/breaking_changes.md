@@ -18,7 +18,7 @@ and how to adapt the client code.
 
 ### EL_FitsIO becomes EleFits and associated changes
 
-Namespace `FitsIO` becomes `Fits`,
+Namespace `FitsIO` becomes `Fits`.
 Prefix `EL_Fits` becomes `EleFits`, where Ele stands for Euclid libraries and executables.
 Underscores in program names are removed.
 Namespaces are unchanged.
@@ -59,6 +59,7 @@ f.access<>(3).header().write("KEY", 1);
 * Better mapping to Fits structure (separate header unit and data unit);
 * Cleaner `SifFile` (e.g. no more useless `index()` method);
 * Better application of the Single Responsibility Principle;
+* Better structured documentation, while many more services are provided;
 * Enable row-wise binary table I/Os.
 
 **Status in version 3.2**
@@ -95,6 +96,7 @@ And it is now a proper class instead of an enum.
 **Rationale**
 
 * Much richer concept now, e.g. with support for HDU state filtering;
+* Enable implementation of HDU selectors, along with iterators;
 * Analogous usage to `KeywordCategory`.
 
 **Status in version 3.2**
@@ -123,7 +125,7 @@ compatibility with 4.0 cannot be anticipated in code which depends on 3.2.
 **Impact on client code**
 
 * Remove template parameter if it is `ImageHdu`;
-* Use `accessPrimary().header()` instead of `accessPrimary<RecordHdu>()` if only the header unit is needed.
+* Use `accessPrimary().header()` instead of `accessPrimary<RecordHdu>()` when only the header unit is needed.
 
 
 ## Breaking changes in 3.0
@@ -131,15 +133,17 @@ compatibility with 4.0 cannot be anticipated in code which depends on 3.2.
 ### All indices are 0-based
 
 Most indices in 2.0 were 0-based (e.g. in `Raster` and `Column`).
-A notable exception is the HDU index, which used to follow the CFitsIO convention.
+A notable exception was the HDU index, which used to follow the CFitsIO convention.
 Yet, the Fits standard doesn't set any convention for HDU indices
 (well, HDU indices are not even mentioned in the standard).
 Therefore, it was decided to homogeneize indexing, and follow the C++ convention instead.
+
+For more details, see \ref types.
 
 
 ## Breaking changes in 2.0
 
 ### Method name change
 
-* Method case is pascalCase;
+* Method name case is now pascalCase, according to Euclid quality rules;
 * Method names are homogeneized.

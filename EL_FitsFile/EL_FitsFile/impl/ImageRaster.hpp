@@ -25,100 +25,79 @@
 namespace Euclid {
 namespace FitsIO {
 
-template <typename T, long n>
-ImageRaster<T, n>::ImageRaster(
-    fitsfile*& fptr,
-    std::function<void(void)> touchFunc,
-    std::function<void(void)> editFunc) :
-    m_fptr(fptr),
-    m_touch(touchFunc), m_edit(editFunc) {}
-
-template <typename T, long n>
-const std::type_info& ImageRaster<T, n>::readTypeid() const {
-  m_touch();
-  return Cfitsio::Image::readTypeid(m_fptr);
-}
-
-template <typename T, long n>
-long ImageRaster<T, n>::readSize() const {
-  return shapeSize(readShape());
-}
-
-template <typename T, long n>
-Position<n> ImageRaster<T, n>::readShape() const {
+template <long n>
+Position<n> ImageRaster::readShape() const {
   m_edit();
   return Cfitsio::Image::readShape<n>(m_fptr);
 }
 
-template <typename T, long n>
-void ImageRaster<T, n>::updateShape(const Position<n>& shape) const {
+template <long n>
+void ImageRaster::updateShape(const Position<n>& shape) const {
   m_edit();
-  Cfitsio::Image::updateShape<T, n>(m_fptr, shape);
+  Cfitsio::Image::updateShape<n>(m_fptr, shape);
 }
 
 template <typename T, long n>
-template <typename U, long m>
-ImageRaster<U, m> ImageRaster<T, n>::reInit(const Position<m>& shape) {
+void ImageRaster::reinit(const Position<n>& shape) const {
   m_edit();
-  Cfitsio::Image::updateShape<T, n>(m_fptr, shape);
-  return ImageRaster<U, m>(m_fptr, m_touch, m_edit); // TODO how to invalidate *this
+  Cfitsio::Image::updateTypeShape<T, n>(m_fptr, shape);
 }
 
 template <typename T, long n>
-VecRaster<T, n> ImageRaster<T, n>::read() const {
+VecRaster<T, n> ImageRaster::read() const {
   m_touch();
   return Cfitsio::Image::readRaster<T, n>(m_fptr);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::readTo(Raster<T, n>& raster) const {
+void ImageRaster::readTo(Raster<T, n>& raster) const {
   m_touch();
   Cfitsio::Image::readRasterTo<T, n>(m_fptr, raster);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::readTo(Subraster<T, n>& subraster) const {
+void ImageRaster::readTo(Subraster<T, n>& subraster) const {
   m_touch();
   Cfitsio::Image::readRasterTo<T, n>(m_fptr, subraster);
 }
 
 template <typename T, long n>
-VecRaster<T, n> ImageRaster<T, n>::readRegion(const Region<n>& region) const {
+VecRaster<T, n> ImageRaster::readRegion(const Region<n>& region) const {
   m_touch();
   return Cfitsio::Image::readRegion<T, n>(m_fptr, region);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::readRegionTo(const Region<n>& region, Raster<T, n>& raster) const {
+void ImageRaster::readRegionTo(const Region<n>& region, Raster<T, n>& raster) const {
   m_touch();
   Cfitsio::Image::readRegionTo<T, n>(m_fptr, region, raster);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::readRegionTo(const Region<n>& region, Subraster<T, n>& subraster) const {
+void ImageRaster::readRegionTo(const Region<n>& region, Subraster<T, n>& subraster) const {
   m_touch();
   Cfitsio::Image::readRegionTo<T, n>(m_fptr, region, subraster);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::write(const Raster<T, n>& raster) const {
+void ImageRaster::write(const Raster<T, n>& raster) const {
   m_edit();
   Cfitsio::Image::writeRaster<T, n>(m_fptr, raster);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::writeRegion(const Raster<T, n>& raster, const Position<n>& destination) {
+void ImageRaster::writeRegion(const Raster<T, n>& raster, const Position<n>& destination) {
   m_edit();
   Cfitsio::Image::writeRegion<T, n>(m_fptr, raster, destination);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::writeRegion(const Subraster<T, n>& subraster) {
+void ImageRaster::writeRegion(const Subraster<T, n>& subraster) {
   writeRegion(subraster, subraster.region.front);
 }
 
 template <typename T, long n>
-void ImageRaster<T, n>::writeRegion(const Subraster<T, n>& subraster, const Position<n>& destination) {
+void ImageRaster::writeRegion(const Subraster<T, n>& subraster, const Position<n>& destination) {
   m_edit();
   Cfitsio::Image::writeRegion<T, n>(m_fptr, subraster, destination);
 }

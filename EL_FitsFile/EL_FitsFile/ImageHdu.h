@@ -82,8 +82,7 @@ public:
    * @brief Access the data unit to read and write the raster.
    * @see ImageRaster
    */
-  template <typename T, long n = 2>
-  ImageRaster<T, n> raster() const;
+  const ImageRaster& raster() const;
 
   /**
    * @brief Read the image pixel value type.
@@ -123,6 +122,12 @@ public:
    */
   template <typename T, long n = 2>
   void writeRaster(const Raster<T, n>& data) const;
+
+private:
+  /**
+   * @brief The data unit handler.
+   */
+  ImageRaster m_raster;
 };
 
 } // namespace FitsIO

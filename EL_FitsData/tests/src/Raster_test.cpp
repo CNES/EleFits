@@ -88,6 +88,27 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   BOOST_CHECK_THROW(raster.at({ 0, -1 - height }), OutOfBoundsError);
 }
 
+BOOST_AUTO_TEST_CASE(make_raster_test) {
+  constexpr long width = 16;
+  constexpr long height = 9;
+  constexpr long depth = 3;
+  short data2[width * height] = { 0 };
+  const short constData2[width * height] = { 0 };
+  float data3[width * height * depth] = { 0 };
+  const float constData3[width * height * depth] = { 0 };
+  const auto raster2 = makeRaster({ width, height }, data2);
+  const auto constRaster2 = makeRaster({ width, height }, constData2);
+  const auto raster3 = makeRaster<3>({ width, height, depth }, data3);
+  const auto constRaster3 = makeRaster<3>({ width, height, depth }, constData3);
+  const auto rasterDyn = makeRaster<-1>({ width, height, depth }, data3);
+  const auto constRasterDyn = makeRaster<-1>({ width, height, depth }, constData3);
+  BOOST_TEST(raster2.dimension() == 2);
+  BOOST_TEST(constRaster2.dimension() == 2);
+  BOOST_TEST(raster3.dimension() == 3);
+  BOOST_TEST(constRaster3.dimension() == 3);
+  BOOST_TEST(rasterDyn.dimension() == 3);
+  BOOST_TEST(constRasterDyn.dimension() == 3);
+}
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -372,6 +372,43 @@ private:
   std::vector<T> m_vec;
 };
 
+/**
+ * @brief Shortcut to create a raster from a shape and data without specifying the pixel type.
+ * @tparam n The raster dimension (2 by default)
+ * @tparam T The pixel type, should not be specified (deduced from `data`)
+ * @param shape The raster shape
+ * @param data The raster data
+ * @details
+ * The pixel type is deduced from the `data` parameter.
+ * The dimension cannot be deduced from a brace-enclosed list:
+ * for example, a shape of `{ width, height, depth }` can be seen as a `Position<3>` or a `Position<-1>`.
+ * Like for all raster-related classes and services, the default value is 2.
+ * 
+ * When using a pre-existing shape, the dimension can be skipped.
+ * 
+ * Example usages:
+ * \code
+ * auto raster = makeRaster({ width, height }, data);
+ * auto raster = makeRaster<3>({ width, height, depth }, data);
+ * auto raster = makeRaster<-1>({ width, height, depth }, data);
+ * 
+ * Position<3> shape { width, height, depth };
+ * auto raster = makeRaster(shape, data);
+ * \endcode
+ */
+template <long n = 2, typename T>
+PtrRaster<T, n> makeRaster(const Position<n>& shape, T* data) {
+  return PtrRaster<T, n>(shape, data);
+}
+
+/**
+ * @copydoc makeRaster
+ */
+template <long n = 2, typename T>
+PtrRaster<T, n> makeRaster(const Position<n>& shape, const T* data) {
+  return PtrRaster<T, n>(shape, data);
+}
+
 } // namespace FitsIO
 } // namespace Euclid
 

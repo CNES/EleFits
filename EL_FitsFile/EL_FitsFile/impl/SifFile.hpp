@@ -19,7 +19,7 @@
 
 #if defined(_EL_FITSFILE_SIFFILE_IMPL) || defined(CHECK_QUALITY)
 
-#include "EL_FitsFile/SifFile.h"
+  #include "EL_FitsFile/SifFile.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -32,7 +32,7 @@ VecRaster<T, n> SifFile::readRaster() const {
 template <typename T, long n>
 void SifFile::writeRaster(const Raster<T, n>& raster) const {
   Cfitsio::Hdu::gotoPrimary(m_fptr);
-  Cfitsio::Image::updateShape<T, n>(m_fptr, raster.shape);
+  Cfitsio::Image::updateTypeShape<T, n>(m_fptr, raster.shape);
   Cfitsio::Image::writeRaster(m_fptr, raster);
 }
 

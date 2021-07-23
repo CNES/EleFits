@@ -24,40 +24,24 @@
 namespace Euclid {
 namespace FitsIO {
 
-template <typename T, long n>
-ImageRaster<T, n> ImageHdu::raster() const {
-  return ImageRaster<T, n>(
-      m_fptr,
-      [&]() {
-        touchThisHdu();
-      },
-      [&]() {
-        editThisHdu();
-      });
-}
-
 template <long n>
 Position<n> ImageHdu::readShape() const {
-  touchThisHdu();
-  return Cfitsio::Image::readShape<n>(m_fptr);
+  return m_raster.readShape<n>();
 }
 
 template <typename T, long n>
 void ImageHdu::updateShape(const Position<n>& shape) const {
-  editThisHdu();
-  Cfitsio::Image::updateShape<T, n>(m_fptr, shape);
+  return m_raster.reinit<T, n>(shape);
 }
 
 template <typename T, long n>
 VecRaster<T, n> ImageHdu::readRaster() const {
-  touchThisHdu();
-  return raster<T, n>().read();
+  return m_raster.read<T, n>();
 }
 
 template <typename T, long n>
 void ImageHdu::writeRaster(const Raster<T, n>& data) const {
-  editThisHdu();
-  raster<T, n>().write(data);
+  m_raster.write(data);
 }
 
   #ifndef DECLARE_READ_RASTER

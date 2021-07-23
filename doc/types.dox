@@ -73,8 +73,8 @@ Yet, a few sevices are overloaded with `const char*` for convenience.
 
 In addition to CFitsIO data types, EL_FitsIO provides some of the services for `VariantValue` (e.g., to read records).
 In this case, the underlying type is wrapped in a `VariantValue` object, which can be cast later.
-Development efforts have been put to allow the user to get whatever compatible type from the `VariantValue` object.
 
+Development efforts have been put to allow the user to get whatever compatible type from the `VariantValue` object.
 For example, assume some `unsigned long` record value is read as a `VariantValue`.
 The library will allow the user casting to `long long` because this is a mathematically valid conversion,
 where `std::any_cast<long long>()` and the likes would throw an exception.

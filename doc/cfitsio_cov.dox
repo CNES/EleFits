@@ -50,14 +50,14 @@ Legend:
   - **Read image size**
   - **Create image extension**
   - Copy image data to image or binary table extension
-  - Write image region
+  - **Write image region**
   - **Write image**
-  - Read image region
+  - **Read image region**
   - **Read image**
   - Copy image region
 - Image Compression
   - Compress image
-  - Decompress image
+  - **Decompress image**
 - Binary Table Routines (ASCII tables not supported)
   - **Create table extension**
   - **Read row/column count**
@@ -99,7 +99,8 @@ Partly supported: to be documented.
 
 - Const-correctness
 - Consistent type management (not mixing C types and Fits types)
-- Read/write several columns at once (with optimal usage of CFitsIO buffer: boosts IOs)
+- Read/write several columns at once (with optimal usage of CFitsIO buffer: boosts I/Os)
 - Count the total number of HDUs (CFitsIO counting excludes empty or incomplete HDUs at write time)
+- Iterate over selected HDUs
 
 */

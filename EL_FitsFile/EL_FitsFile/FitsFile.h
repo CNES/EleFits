@@ -62,6 +62,18 @@ namespace FitsIO {
 std::string version();
 
 /**
+ * @brief Fits file read/write permissions.
+ */
+enum class FileMode
+{
+  Read, ///< Open as read-only
+  Edit, ///< Open with write permission
+  Create, ///< Create a new file (overwrite forbidden)
+  Overwrite, ///< Create a new file or overwrite existing file
+  Temporary ///< Create a temporary file (removed by destructor, overwrite forbidden)
+};
+
+/**
  * @ingroup file_handlers
  * @brief Fits file reader-writer.
  * @details
@@ -73,16 +85,10 @@ class FitsFile {
 
 public:
   /**
-   * @brief Fits file read/write permissions.
+   * @brief Deprecated alias for backward compatibility.
+   * @deprecated Replaced with FileMode
    */
-  enum class Permission
-  {
-    Read, ///< Open as read-only
-    Edit, ///< Open with write permission
-    Create, ///< Create a new file (overwrite forbidden)
-    Overwrite, ///< Create a new file or overwrite existing file
-    Temporary ///< Create a temporary file (removed by destructor, overwrite forbidden)
-  };
+  using Permission = FileMode;
 
   /**
    * @brief Create a new Fits file handler with given filename and permission.

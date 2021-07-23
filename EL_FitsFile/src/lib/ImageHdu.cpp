@@ -26,18 +26,35 @@ namespace Euclid {
 namespace FitsIO {
 
 ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
-    RecordHdu(token, fptr, index, HduCategory::Image, status) {}
+    RecordHdu(token, fptr, index, HduCategory::Image, status), m_raster(
+                                                                   m_fptr,
+                                                                   [&]() {
+                                                                     touchThisHdu();
+                                                                   },
+                                                                   [&]() {
+                                                                     editThisHdu();
+                                                                   }) {}
 
-ImageHdu::ImageHdu() : RecordHdu() {}
+ImageHdu::ImageHdu() :
+    RecordHdu(), m_raster(
+                     m_fptr,
+                     [&]() {
+                       touchThisHdu();
+                     },
+                     [&]() {
+                       editThisHdu();
+                     }) {}
+
+const ImageRaster& ImageHdu::raster() const {
+  return m_raster;
+}
 
 const std::type_info& ImageHdu::readTypeid() const {
-  touchThisHdu();
-  return Cfitsio::Image::readTypeid(m_fptr);
+  return m_raster.readTypeid();
 }
 
 long ImageHdu::readSize() const {
-  const auto shape = readShape<-1>();
-  return std::accumulate(shape.begin(), shape.end(), 1L, std::multiplies<long>());
+  return m_raster.readSize();
 }
 
 HduCategory ImageHdu::readCategory() const {

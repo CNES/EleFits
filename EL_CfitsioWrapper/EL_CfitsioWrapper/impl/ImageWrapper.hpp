@@ -40,8 +40,18 @@ FitsIO::Position<n> readShape(fitsfile* fptr) {
   return shape;
 }
 
-template <typename T, long n>
+template <long n>
 void updateShape(fitsfile* fptr, const FitsIO::Position<n>& shape) {
+  int status = 0;
+  int imgtype = 0;
+  fits_get_img_type(fptr, &imgtype, &status);
+  auto nonconstShape = shape;
+  fits_resize_img(fptr, imgtype, shape.size(), nonconstShape.data(), &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot reshape raster.");
+}
+
+template <typename T, long n>
+void updateTypeShape(fitsfile* fptr, const FitsIO::Position<n>& shape) {
   int status = 0;
   auto nonconstShape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconstShape.data(), &status);

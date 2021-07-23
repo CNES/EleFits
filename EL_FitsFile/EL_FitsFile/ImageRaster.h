@@ -41,7 +41,6 @@ namespace FitsIO {
  * @see Raster
  * @see Subraster
  */
-template <typename T, long n = 2>
 class ImageRaster {
 private:
   friend class ImageHdu;
@@ -70,23 +69,20 @@ public:
   /**
    * @brief Read the image shape.
    */
+  template <long n = 2>
   Position<n> readShape() const;
 
   /**
    * @brief Update the image shape.
-   * @details
-   * Only the axis length can be changed, not the number of axes, or pixel type.
-   * For more control, see `reInit()`.
    */
+  template <long n = 2>
   void updateShape(const Position<n>& shape) const;
 
   /**
-   * @brief Reset the image shape and pixel type.
-   * @details
-   * The current `ImageRaster` object is made invalid, and a new one is returned.
+   * @brief Update the image type and shape.
    */
-  template <typename U, long m>
-  ImageRaster<U, m> reInit(const Position<m>& shape);
+  template <typename T, long n = 2>
+  void reinit(const Position<n>& shape) const;
 
   /// @}
   /**
@@ -107,18 +103,21 @@ public:
    * @warning
    * Filling a `Subraster` is much slower than filling a `Raster`.
    */
+  template <typename T, long n = 2>
   VecRaster<T, n> read() const;
 
   /**
    * @brief Read the whole data unit into an existing `Raster`.
    * @copydetails read()
    */
+  template <typename T, long n = 2>
   void readTo(Raster<T, n>& raster) const;
 
   /**
    * @brief Read the whole data unit into an existing `Subraster`.
    * @copydetails read()
    */
+  template <typename T, long n = 2>
   void readTo(Subraster<T, n>& subraster) const;
 
   /// @}
@@ -137,18 +136,21 @@ public:
    * 
    * In the last two cases, the raster or subraster is assumed to already have a conforming shape.
    */
+  template <typename T, long n = 2>
   VecRaster<T, n> readRegion(const Region<n>& region) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Raster`.
    * @copydetails readRegion()
    */
+  template <typename T, long n = 2>
   void readRegionTo(const Region<n>& region, Raster<T, n>& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
    * @copydetails readRegion()
    */
+  template <typename T, long n = 2>
   void readRegionTo(const Region<n>& region, Subraster<T, n>& subraster) const;
 
   /// @}
@@ -160,6 +162,7 @@ public:
   /**
    * @brief Write the whole data unit.
    */
+  template <typename T, long n = 2>
   void write(const Raster<T, n>& raster) const;
 
   /// @}
@@ -175,18 +178,21 @@ public:
    * The given position is the front of the destination region.
    * The back of the destination region is deduced from its front and the raster or subraster shape.
    */
+  template <typename T, long n = 2>
   void writeRegion(const Raster<T, n>& raster, const Position<n>& destination);
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
    * @copydetails writeRegion()
    */
+  template <typename T, long n = 2>
   void writeRegion(const Subraster<T, n>& subraster);
 
   /**
    * @brief Write a `Subraster` at a given position of the data unit.
    * @copydetails writeRegion()
    */
+  template <typename T, long n = 2>
   void writeRegion(const Subraster<T, n>& subraster, const Position<n>& destination);
 
   /// @}

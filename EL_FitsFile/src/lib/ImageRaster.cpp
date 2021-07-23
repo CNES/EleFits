@@ -18,3 +18,21 @@
  */
 
 #include "EL_FitsFile/ImageRaster.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+ImageRaster::ImageRaster(fitsfile*& fptr, std::function<void(void)> touchFunc, std::function<void(void)> editFunc) :
+    m_fptr(fptr), m_touch(touchFunc), m_edit(editFunc) {}
+
+const std::type_info& ImageRaster::readTypeid() const {
+  m_touch();
+  return Cfitsio::Image::readTypeid(m_fptr);
+}
+
+long ImageRaster::readSize() const {
+  return shapeSize(readShape());
+}
+
+} // namespace FitsIO
+} // namespace Euclid
