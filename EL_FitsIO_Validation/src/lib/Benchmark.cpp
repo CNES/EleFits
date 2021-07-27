@@ -24,10 +24,7 @@ namespace FitsIO {
 namespace Test {
 
 Benchmark::Benchmark(const std::string& filename) :
-    m_filename(filename),
-    m_chrono(),
-    m_logger(Elements::Logging::getLogger("Benchmark")) {
-}
+    m_filename(filename), m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {}
 
 const BChronometer& Benchmark::writeImages(long count, const BRaster& raster) {
   open();
@@ -90,6 +87,9 @@ const BChronometer& Benchmark::readBintables(long first, long count) {
 }
 
 void BenchmarkFactory::registerBenchmarkMaker(const std::string& key, BenchmarkMaker factory) {
+  if (m_register.find(key) != m_register.end()) {
+    throw std::runtime_error(std::string("Benchmark already registered: ") + key);
+  }
   m_register[key] = factory;
 }
 
@@ -100,6 +100,14 @@ BenchmarkFactory::createBenchmark(const std::string& key, const std::string& fil
     throw TestCaseNotImplemented(key);
   }
   return it->second(filename);
+}
+
+std::vector<std::string> BenchmarkFactory::keys() const {
+  std::vector<std::string> res;
+  for (const auto& kv : m_register) {
+    res.push_back(kv.first);
+  }
+  return res;
 }
 
 } // namespace Test

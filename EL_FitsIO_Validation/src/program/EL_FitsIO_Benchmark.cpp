@@ -38,11 +38,11 @@ using namespace Euclid::FitsIO;
 
 Test::BenchmarkFactory initFactory() {
   Test::BenchmarkFactory factory;
-  factory.registerBenchmark<Test::CfitsioBenchmark>("CFitsIO_rowwise", 1);
-  factory.registerBenchmark<Test::CfitsioBenchmark>("CFitsIO_colwise", -1);
-  factory.registerBenchmark<Test::CfitsioBenchmark>("CFitsIO", 0);
-  factory.registerBenchmark<Test::ElColwiseBenchmark>("EL_FitsIO_colwise");
-  factory.registerBenchmark<Test::ElBenchmark>("EL_FitsIO");
+  factory.registerBenchmark<Test::CfitsioBenchmark>("CFITSIO row-wise", 1);
+  factory.registerBenchmark<Test::CfitsioBenchmark>("CFITSIO column-wise", -1);
+  factory.registerBenchmark<Test::CfitsioBenchmark>("CFITSIO optimal", 0);
+  factory.registerBenchmark<Test::ElColwiseBenchmark>("EleFits column-wise");
+  factory.registerBenchmark<Test::ElBenchmark>("EleFits optimal");
   return factory;
 }
 
@@ -85,8 +85,11 @@ public:
 
     logger.info("Setting up the benchmark...");
 
-    auto benchmark = initFactory() // TODO pass factory to CTor of the program, with initFactory() as default
-                         .createBenchmark(testSetup, filename);
+    const auto factory = initFactory(); // TODO pass factory to CTor of the program, with initFactory() as default
+    for (const auto& k : factory.keys()) {
+      logger.info(k);
+    }
+    auto benchmark = factory.createBenchmark(testSetup, filename);
     if (not benchmark) {
       throw Test::TestCaseNotImplemented(std::string("No setup named: ") + testSetup);
     }

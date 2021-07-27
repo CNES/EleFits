@@ -62,11 +62,11 @@ BOOST_AUTO_TEST_CASE(array_init_test) {
   BOOST_TEST(iterators.size() == indices.size());
 
   Position<3> dimension(indices.size());
-  for (long i = 0; i < indices.size(); ++i) {
+  for (std::size_t i = 0; i < indices.size(); ++i) {
     dimension[i] = indices[i];
   }
 
-  for (long i = 0; i < indices.size(); ++i) {
+  for (std::size_t i = 0; i < indices.size(); ++i) {
     BOOST_TEST(braceList[i] == indices[i]);
     BOOST_TEST(iterators[i] == indices[i]);
     BOOST_TEST(dimension[i] == indices[i]);

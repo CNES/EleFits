@@ -28,13 +28,15 @@ CfitsioBenchmark::~CfitsioBenchmark() {
 }
 
 CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long rowChunkSize) :
-    Benchmark(filename),
-    m_fptr(nullptr),
-    m_status(0),
-    m_rowChunkSize(rowChunkSize) {
+    Benchmark(filename), m_fptr(nullptr), m_status(0), m_rowChunkSize(rowChunkSize) {
+  m_logger.info() << "CFitsIO benchmark (rowChunkSize: " << rowChunkSize << ", filename: " << filename << ")";
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
   fits_create_img(m_fptr, BYTE_IMG, 0, nullptr, &m_status); // Create empty Primary
   mayThrow("Cannot create file");
+}
+
+long CfitsioBenchmark::rowChunkSize() const {
+  return m_rowChunkSize;
 }
 
 void CfitsioBenchmark::open() {
@@ -176,14 +178,17 @@ BColumns CfitsioBenchmark::readBintable(long index) {
 
 long CfitsioBenchmark::computeRowChunkSize(long rowCount) {
   if (m_rowChunkSize == -1) {
+    m_logger.debug() << "Row chunk size: " << rowCount;
     return rowCount;
   }
   if (m_rowChunkSize == 0) {
     long size = 0;
     fits_get_rowsize(m_fptr, &size, &m_status);
     mayThrow("Cannot compute buffer size");
+    m_logger.debug() << "Row chunk size: " << size;
     return size;
   }
+  m_logger.debug() << "Row chunk size: " << m_rowChunkSize;
   return m_rowChunkSize;
 }
 

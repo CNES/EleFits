@@ -19,7 +19,7 @@ and how to adapt the client code.
 ### EL_FitsIO becomes EleFits and associated changes
 
 Namespace `FitsIO` becomes `Fits`.
-Prefix `EL_Fits` becomes `EleFits`, where Ele stands for Euclid libraries and executables.
+Prefix `EL_Fits` becomes `EleFits`.
 Underscores in program names are removed.
 Namespaces are unchanged.
 
@@ -27,7 +27,8 @@ Namespaces are unchanged.
 
 * Underscores are forbidden by some package managers;
 * Easier to say, read and write;
-* Make presence of executables explicit.
+* "EL" stands for Euclid library, while the project is instead a package with libraries and executables;
+"Ele" stands for Euclid libraries and executables.
 
 **Status in version 3.2**
 

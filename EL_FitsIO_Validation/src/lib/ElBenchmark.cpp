@@ -24,8 +24,8 @@ namespace FitsIO {
 namespace Test {
 
 ElColwiseBenchmark::ElColwiseBenchmark(const std::string& filename) :
-    Benchmark(filename),
-    m_f(filename, MefFile::Permission::Overwrite) {
+    Benchmark(filename), m_f(filename, MefFile::Permission::Overwrite) {
+  m_logger.info() << "EL_FitsIO benchmark (column-wise, filename: " << filename << ")";
 }
 
 void ElColwiseBenchmark::open() {
@@ -82,6 +82,7 @@ BColumns ElColwiseBenchmark::readBintable(long index) {
 }
 
 ElBenchmark::ElBenchmark(const std::string& filename) : ElColwiseBenchmark(filename) {
+  m_logger.info() << "EL_FitsIO benchmark (buffered, filename: " << filename << ")";
 }
 
 BChronometer::Unit ElBenchmark::writeImage(const BRaster& raster) {

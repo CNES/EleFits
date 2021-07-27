@@ -20,16 +20,15 @@
 #ifndef _EL_FITSIO_VALIDATION_BENCHMARK_H
 #define _EL_FITSIO_VALIDATION_BENCHMARK_H
 
+#include "EL_FitsData/Column.h"
+#include "EL_FitsData/DataUtils.h"
+#include "EL_FitsData/Raster.h"
+#include "EL_FitsIO_Validation/Chronometer.h"
+#include "ElementsKernel/Logging.h"
+
 #include <memory>
 #include <tuple>
 #include <unordered_map>
-
-#include "ElementsKernel/Logging.h"
-
-#include "EL_FitsData/Column.h"
-#include "EL_FitsData/Raster.h"
-
-#include "EL_FitsIO_Validation/Chronometer.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -74,8 +73,7 @@ struct TestCaseNotImplemented : public std::exception {
   /**
    * @brief Constructor.
    */
-  TestCaseNotImplemented(const std::string& testCaseName) : message("Test case not implemented: " + testCaseName) {
-  }
+  TestCaseNotImplemented(const std::string& testCaseName) : message("Test case not implemented: " + testCaseName) {}
 
   /**
    * @brief Get the error message.
@@ -214,7 +212,7 @@ public:
    */
   template <typename TBenchmark, typename... Ts>
   void registerBenchmark(const std::string& key, Ts... args) {
-    registerBenchmarkMaker(key, [&](const std::string& filename) {
+    registerBenchmarkMaker(key, [=](const std::string& filename) {
       return std::make_unique<TBenchmark>(filename, args...);
     });
   }
@@ -223,6 +221,11 @@ public:
    * @brief Create a new benchmark from its name and filename.
    */
   std::unique_ptr<Benchmark> createBenchmark(const std::string& key, const std::string& filename) const;
+
+  /**
+   * @brief Get the registered keys.
+   */
+  std::vector<std::string> keys() const;
 
 private:
   std::unordered_map<std::string, BenchmarkMaker> m_register;

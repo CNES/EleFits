@@ -25,12 +25,12 @@ import subprocess
 import ElementsKernel.Logging as log
 
 
-def makeCommand(testCase, output, results):
+def makeCommand(testCase, output, results, log_level):
     """Run a test case specified as a dictionary with following keys:
     "Test setup", "HDU type", "HDU count", "Value count / HDU"
     """
-    cmd = f'EL_FitsIO_Benchmark --output {output} --res {results}'
-    cmd += f' --setup {testCase["Test setup"]}'
+    cmd = f'EL_FitsIO_Benchmark --log-level {log_level} --output {output} --res {results}'
+    cmd += f' --setup "{testCase["Test setup"]}"'
     if testCase['HDU type'] == 'Image':
         cmd += f' --images {int(float(testCase["HDU count"]))} --pixels {int(float(testCase["Value count / HDU"]))}'
         # int(float(value)) allows value to be an integer in scientific notation
@@ -59,7 +59,7 @@ def mainMethod(args):
         with open(args.tests, 'r') as f:
             for testCase in csv.DictReader(f, delimiter='\t'):
                 logger.debug(testCase)
-                cmd = makeCommand(testCase, args.output, args.res)
+                cmd = makeCommand(testCase, args.output, args.res, 'INFO') # FIXME get log level from args
                 logger.info('')
                 logger.info(cmd)
                 logger.info('')

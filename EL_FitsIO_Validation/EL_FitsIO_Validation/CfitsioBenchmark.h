@@ -20,13 +20,12 @@
 #ifndef _EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_H
 #define _EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_H
 
-#include <fitsio.h>
-
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
-
 #include "EL_FitsIO_Validation/Benchmark.h"
+
+#include <fitsio.h>
 
 namespace Euclid {
 namespace FitsIO {
@@ -49,7 +48,12 @@ public:
    * or -1 to write all rows at once,
    * or 0 for the buffer size.
    */
-  CfitsioBenchmark(const std::string& filename, long rowChunkSize = -1);
+  CfitsioBenchmark(const std::string& filename, long rowChunkSize);
+
+  /**
+   * @brief Get the rowChunkSize parameter.
+   */
+  long rowChunkSize() const;
 
   /**
    * @brief Open file.

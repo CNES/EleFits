@@ -191,6 +191,23 @@ TReturn seqTransform(const std::vector<T>& vector, TFunc&& func) {
   return res;
 }
 
+/**
+ * @brief Log a heterogeneous list of arguments.
+ * @details
+ * Applies operator<<() to arguments, separated with ", ".
+ * For example:
+ * \code
+ * logArgs(std::cout, 1, 3.14, "str");
+ * \endcode
+ * Prints: `1, 3.14, str`
+ */
+template <typename TLogger, typename T0, typename... Ts>
+void logArgs(TLogger&& logger, T0&& arg0, Ts&&... args) {
+  logger << std::forward<T0>(arg0);
+  using mockUnpack = int[];
+  (void)mockUnpack { 0, (void(std::forward<TLogger>(logger) << ", " << std::forward<Ts>(args)), 0)... };
+}
+
 } // namespace FitsIO
 } // namespace Euclid
 

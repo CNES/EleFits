@@ -17,9 +17,11 @@
  *
  */
 
-#include "EL_FitsIO_Validation//CfitsioBenchmark.h"
+#include "EL_FitsIO_Validation/CfitsioBenchmark.h"
 
 #include <boost/test/unit_test.hpp>
+
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
@@ -27,9 +29,20 @@ BOOST_AUTO_TEST_SUITE(CfitsioBenchmark_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(example_test) {
+BOOST_AUTO_TEST_CASE(parameter_test) {
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+  Test::BenchmarkFactory factory;
+  factory.registerBenchmark<Test::CfitsioBenchmark>("colwise", -1);
+  factory.registerBenchmark<Test::CfitsioBenchmark>("optimal", 0);
+  factory.registerBenchmark<Test::CfitsioBenchmark>("rowwise", 1);
+
+  const auto colwise = dynamic_cast<Test::CfitsioBenchmark*>(factory.createBenchmark("colwise", "file.fits").get());
+  const auto optimal = dynamic_cast<Test::CfitsioBenchmark*>(factory.createBenchmark("optimal", "file.fits").get());
+  const auto rowwise = dynamic_cast<Test::CfitsioBenchmark*>(factory.createBenchmark("rowwise", "file.fits").get());
+
+  BOOST_TEST(colwise->rowChunkSize() == -1);
+  BOOST_TEST(optimal->rowChunkSize() == 0);
+  BOOST_TEST(rowwise->rowChunkSize() == 1);
 }
 
 //-----------------------------------------------------------------------------
