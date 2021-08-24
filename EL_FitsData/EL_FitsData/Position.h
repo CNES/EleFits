@@ -172,7 +172,7 @@ Position<n>::Position() : indices {} {
 
 template <long n>
 Position<n>::Position(long dim) : indices {} {
-  // FIXME check dim
+  // TODO check dim
 }
 
 template <long n>

@@ -98,14 +98,14 @@ public:
   /**
    * @brief Const pointer to the first data element.
    */
-  virtual const T* data() const = 0;
+  virtual const T* data() const = 0; // TODO avoid virtual, through ctor?
 
   /**
    * @brief Pointer to the first data element.
    * @details
    * If the Raster is read-only, returns `nullptr`.
    */
-  virtual T* data(); // FIXME throw?
+  virtual T* data(); // TODO throw?
 
   /**
    * @brief Dimension.

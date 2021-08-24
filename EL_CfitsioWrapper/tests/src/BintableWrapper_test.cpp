@@ -145,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   BOOST_TEST(std::get<2>(table).vector() == d.vector());
 }
 
-BOOST_FIXTURE_TEST_CASE(append_test, FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(append_columns_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
   SmallTable table;
   Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol);
@@ -156,6 +156,16 @@ BOOST_FIXTURE_TEST_CASE(append_test, FitsIO::Test::MinimalFile) {
   BOOST_TEST(distsMags.vector() == table.distsMags);
   const auto radecs = Bintable::readColumn<SmallTable::Radec>(fptr, table.radecCol.info.name);
   BOOST_TEST(radecs.vector() == table.radecs);
+}
+
+BOOST_FIXTURE_TEST_CASE(append_rows_test, FitsIO::Test::MinimalFile) {
+  using namespace FitsIO::Test;
+  const SmallTable table;
+  const auto initSize = table.names.size();
+  Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol, table.radecCol);
+  BOOST_TEST(Bintable::rowCount(this->fptr) == initSize);
+  Bintable::writeColumns(this->fptr, table.nameCol, table.radecCol);
+  BOOST_TEST(Bintable::rowCount(this->fptr) == initSize * 2);
 }
 
 //-----------------------------------------------------------------------------

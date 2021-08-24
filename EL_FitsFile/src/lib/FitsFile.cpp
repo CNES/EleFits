@@ -17,12 +17,11 @@
  *
  */
 
-#include "ElementsKernel/Project.h"
+#include "EL_FitsFile/FitsFile.h"
 
 #include "EL_CfitsioWrapper/FileWrapper.h"
-
 #include "EL_FitsData/FitsIOError.h"
-#include "EL_FitsFile/FitsFile.h"
+#include "ElementsKernel/Project.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -31,11 +30,16 @@ std::string version() {
   return Elements::Project::versionString();
 }
 
+ReadOnlyError::ReadOnlyError(const std::string& prefix) : FitsIOError(prefix + ": Trying to write a read-only file.") {}
+
+void ReadOnlyError::mayThrow(const std::string& prefix, FileMode mode) {
+  if (mode == FileMode::Read) {
+    throw ReadOnlyError(prefix);
+  }
+}
+
 FitsFile::FitsFile(const std::string& filename, Permission permission) :
-    m_fptr(nullptr),
-    m_filename(filename),
-    m_permission(permission),
-    m_open(false) {
+    m_fptr(nullptr), m_filename(filename), m_permission(permission), m_open(false) {
   open(filename, permission);
 }
 

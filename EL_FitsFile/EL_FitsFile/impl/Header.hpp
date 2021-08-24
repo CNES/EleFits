@@ -73,8 +73,7 @@ TSeq Header::parseSeqOr(TSeq&& fallbacks) const {
 
 template <typename... Ts>
 std::tuple<Record<Ts>...> Header::parseSeqOr(const Record<Ts>&... fallbacks) const {
-  std::tuple<Record<Ts>...> t { parseOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
-  return std::tuple<Record<Ts>...> { t };
+  return parseStructOr<std::tuple<Record<Ts>...>, Ts...>(fallbacks...);
 }
 
 template <typename TReturn, typename... Ts>
@@ -85,7 +84,7 @@ TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
 
 template <typename TReturn, typename... Ts>
 TReturn Header::parseStructOr(const Record<Ts>&... fallbacks) const {
-  return {}; // FIXME
+  return { parseOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
 }
 
 template <typename TReturn, typename TSeq>

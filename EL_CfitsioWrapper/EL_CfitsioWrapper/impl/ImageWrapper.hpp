@@ -59,14 +59,32 @@ void updateTypeShape(fitsfile* fptr, const FitsIO::Position<n>& shape) {
 }
 
 template <typename T, long n>
-FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) {
-  int status = 0;
+FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) { // FIXME move to EL_FitsFile
   FitsIO::VecRaster<T, n> raster(readShape<n>(fptr));
-  const auto size = raster.size();
-  fits_read_img(fptr, TypeCode<T>::forImage(), 1, size, nullptr, raster.data(), nullptr, &status);
-  // Number 1 is a 1-based index (so we read the whole raster here)
-  CfitsioError::mayThrow(status, fptr, "Cannot read raster.");
+  readRasterTo(fptr, raster);
   return raster;
+}
+
+template <typename T, long n = 2>
+void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination) {
+  int status = 0;
+  const auto size = destination.size();
+  fits_read_img(
+      fptr,
+      TypeCode<T>::forImage(),
+      1, // Number 1 is a 1-based index (so we read the whole raster here)
+      size,
+      nullptr,
+      destination.data(),
+      nullptr,
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read raster.");
+}
+
+template <typename T, long n = 2>
+void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination) { // FIXME move to EL_FitsFile
+  const auto region = FitsIO::Region<n>::fromShape({}, readShape<n>(fptr)); // FIXME -1 specialization?
+  readRegionTo(fptr, region, destination);
 }
 
 template <typename T, long n = 2>

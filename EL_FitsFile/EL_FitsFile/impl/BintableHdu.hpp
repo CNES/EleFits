@@ -28,18 +28,16 @@ namespace FitsIO {
 
 template <typename T>
 VecColumn<T> BintableHdu::readColumn(long index) const {
-  touchThisHdu();
-  return Cfitsio::Bintable::readColumn<T>(m_fptr, index + 1);
+  return m_columns.read<T>(index);
 }
 
 template <typename T>
 VecColumn<T> BintableHdu::readColumn(const std::string& name) const {
-  touchThisHdu();
-  return Cfitsio::Bintable::readColumn<T>(m_fptr, name);
+  return m_columns.read<T>(name);
 }
 
 template <typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<long>& indices) const {
+std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<long>& indices) const { // Deprecated signature
   touchThisHdu();
   std::vector<long> cfitsioIndices(indices.size());
   std::transform(indices.begin(), indices.end(), cfitsioIndices.begin(), [](long i) {
@@ -50,42 +48,39 @@ std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<long>& i
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Indexed<Ts>&... indices) const {
-  return readColumns<Ts...>(std::vector<long> { indices.index... });
+  return m_columns.readSeq<Ts...>(indices...);
 }
 
 template <typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<std::string>& names) const {
+std::tuple<VecColumn<Ts>...>
+BintableHdu::readColumns(const std::vector<std::string>& names) const { // Deprecated signature
   touchThisHdu();
   return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, names);
 }
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Named<Ts>&... names) const {
-  return readColumns<Ts...>(std::vector<std::string> { names.name... });
+  return m_columns.readSeq<Ts...>(names...);
 }
 
 template <typename T>
 void BintableHdu::writeColumn(const Column<T>& column) const {
-  editThisHdu();
-  Cfitsio::Bintable::writeColumn(m_fptr, column);
+  m_columns.write<T>(column);
 }
 
 template <typename... Ts>
 void BintableHdu::writeColumns(const Column<Ts>&... columns) const {
-  editThisHdu();
-  Cfitsio::Bintable::writeColumns(m_fptr, columns...);
+  m_columns.writeSeq<Ts...>(columns...);
 }
 
 template <typename T>
 void BintableHdu::appendColumn(const Column<T>& column) const {
-  editThisHdu();
-  Cfitsio::Bintable::appendColumn(m_fptr, column);
+  m_columns.insert<T>(column, -1);
 }
 
 template <typename... Ts>
 void BintableHdu::appendColumns(const Column<Ts>&... columns) const {
-  editThisHdu();
-  Cfitsio::Bintable::appendColumns(m_fptr, columns...);
+  m_columns.appendSeq<Ts...>(columns...);
 }
 
   #ifndef DECLARE_READ_COLUMN

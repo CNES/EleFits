@@ -59,7 +59,7 @@ def mainMethod(args):
         with open(args.tests, 'r') as f:
             for testCase in csv.DictReader(f, delimiter='\t'):
                 logger.debug(testCase)
-                cmd = makeCommand(testCase, args.output, args.res, 'INFO') # FIXME get log level from args
+                cmd = makeCommand(testCase, args.output, args.res, 'INFO') # TODO get log level from args
                 logger.info('')
                 logger.info(cmd)
                 logger.info('')

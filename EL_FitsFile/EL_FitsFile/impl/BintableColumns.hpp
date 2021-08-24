@@ -19,65 +19,69 @@
 
 #if defined(_EL_FITSFILE_BINTABLECOLUMNS_IMPL) || defined(CHECK_QUALITY)
 
+  #include "EL_CfitsioWrapper/BintableWrapper.h"
   #include "EL_FitsFile/BintableColumns.h"
 
 namespace Euclid {
 namespace FitsIO {
 
 template <typename T>
-VecColumn<T> read(const std::string& name) const {
+VecColumn<T> BintableColumns::read(const std::string& name) const {
   m_touch();
-  Cfitsio::Bintable::readColumn<T>(name);
+  return Cfitsio::Bintable::readColumn<T>(m_fptr, name);
 }
 
 template <typename T>
-VecColumn<T> read(long index) const {
+VecColumn<T> BintableColumns::read(long index) const {
   m_touch();
-  Cfitsio::Bintable::readColumn<T>(name);
+  return Cfitsio::Bintable::readColumn<T>(m_fptr, index);
 }
 
 template <typename... Ts>
-std::tuple<VecColumn<Ts>...> readSeq(const Named<Ts>&... names) const {
+std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Named<Ts>&... names) const {
   m_touch();
-  Cfitsio::Bintable::readColumns<Ts...>(names.name...);
+  const std::vector<std::string> nameVector { names.name... };
+  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, nameVector);
 }
 
 template <typename... Ts>
-std::tuple<VecColumn<Ts>...> readSeq(const Indexed<Ts>&... indices) const {
+std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
   m_touch();
-  Cfitsio::Bintable::readColumns<Ts...>(indices.index...);
+  const std::vector<long> cfitsioIndices { (indices.index + 1)... }; // 1-based
+  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, cfitsioIndices);
 }
 
 template <typename T>
-void write(const Column<T>& column) const {
+void BintableColumns::write(const Column<T>& column) const {
   m_edit();
-  Cfitsio::Bintable::writeColumn(column);
+  Cfitsio::Bintable::writeColumn(m_fptr, column);
 }
 
 template <typename T>
-void insert(const Column<T>& column, long index = -1) const {
+void BintableColumns::insert(const Column<T>& column, long index) const {
   m_edit();
-  if (index == -1) {
-    Cfitsio::Bintable::appendColumn(column); // FIXME handle other values
+  if (index == -1) { // TODO handle other negative values?
+    Cfitsio::Bintable::appendColumn(m_fptr, column);
+  } else {
+    Cfitsio::Bintable::insertColumn(m_fptr, index + 1, column);
   }
-  Cfitsio::Bintable::insertColumn(m_fptr, index, column);
 }
 
 template <typename... Ts>
-void writeSeq(const Column<Ts>&... columns) const {
+void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
   m_edit();
-  Cfitsio::Bintable::writeColumns(m_fptr, columns);
+  Cfitsio::Bintable::writeColumns(m_fptr, columns...); // FIXME test
 }
 
 template <typename TSeq>
-void writeSeq(TSeq&& columns) const {
-  // FIXME implement!
+void BintableColumns::writeSeq(TSeq&& columns) const {
+  tupleApply(columns, this->writeSeq<TSeq>); // FIXME test
 }
 
 template <typename... Ts>
-void appendSeq(const Column<Ts>&... columns) const {
+void BintableColumns::appendSeq(const Column<Ts>&... columns) const {
   m_edit();
-  Cfitsio::Bintable::appendColumns(m_fptr, columns);
+  Cfitsio::Bintable::appendColumns(m_fptr, columns...);
 }
 
 } // namespace FitsIO

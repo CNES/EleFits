@@ -211,8 +211,8 @@ public:
    * \endcode
    */
   template <typename TBenchmark, typename... Ts>
-  void registerBenchmark(const std::string& key, Ts... args) {
-    registerBenchmarkMaker(key, [=](const std::string& filename) {
+  void registerBenchmark(const std::string& key, const Ts&... args) {
+    registerBenchmarkMaker(key, [=](const std::string& filename) { // Force copy
       return std::make_unique<TBenchmark>(filename, args...);
     });
   }

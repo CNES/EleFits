@@ -70,13 +70,13 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, FitsIO::Test::MinimalFile) {
     for (long y = 0; y < view.length<1>(); ++y) {
       for (long x = 0; x < view.length<0>(); ++x) {
         const auto& v = view[{ x, y, z }];
-        const auto& i = input[{ x + 1, y + 0, z + 1 }]; // FIXME no hardcoded offsets
+        const auto& i = input[{ x + 1, y + 0, z + 1 }]; // TODO no hardcoded offsets
         BOOST_TEST(v == i);
       }
     }
   }
   FitsIO::VecRaster<long, 3> output({ 3, 4, 5 });
-  FitsIO::Subraster<long, 3> dst { output, region }; // FIXME don't use the same region
+  FitsIO::Subraster<long, 3> dst { output, region }; // TODO don't use the same region
   Image::readRegionTo<long, 3>(fptr, region, dst);
   for (long z = region.front[2]; z <= region.back[2]; ++z) {
     for (long y = region.front[1]; y <= region.back[1]; ++y) {

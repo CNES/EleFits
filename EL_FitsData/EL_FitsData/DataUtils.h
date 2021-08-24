@@ -68,6 +68,29 @@ struct Indexed {
   long index;
 };
 
+/**
+ * @brief Bounds of a closed index interval.
+ */
+struct Segment {
+
+  /**
+   * @brief The lower bound.
+   */
+  long lower;
+
+  /**
+   * @brief The upper bound.
+   */
+  long upper;
+
+  /**
+   * @brief Get the number of elements.
+   */
+  long size() const {
+    return upper - lower + 1;
+  }
+};
+
 /// @cond INTERNAL
 namespace Internal {
 

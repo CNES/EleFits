@@ -65,13 +65,13 @@ FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr);
  * @brief Read the whole raster of the current image HDU into a pre-existing raster.
  */
 template <typename T, long n = 2>
-void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination); // FIXME implement
+void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing subraster.
  */
 template <typename T, long n = 2>
-void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination); // FIXME implement
+void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination);
 
 /**
  * @brief Read a region of the current image HDU.

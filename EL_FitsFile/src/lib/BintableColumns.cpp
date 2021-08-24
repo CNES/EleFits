@@ -29,5 +29,57 @@ BintableColumns::BintableColumns(
     m_fptr(fptr),
     m_touch(touchFunc), m_edit(editFunc) {}
 
+long BintableColumns::readColumnCount() const {
+  m_touch();
+  return Cfitsio::Bintable::columnCount(m_fptr);
+}
+
+long BintableColumns::readRowCount() const {
+  m_touch();
+  return Cfitsio::Bintable::rowCount(m_fptr);
+}
+
+bool BintableColumns::has(const std::string& name) const {
+  m_touch();
+  return Cfitsio::Bintable::hasColumn(m_fptr, name);
+}
+
+long BintableColumns::readIndex(const std::string& name) const {
+  m_touch();
+  return Cfitsio::Bintable::columnIndex(m_fptr, name) - 1;
+}
+
+std::string BintableColumns::readName(long index) const {
+  m_touch();
+  return Cfitsio::Bintable::columnName(m_fptr, index + 1);
+}
+
+std::vector<std::string> BintableColumns::readAllNames() const {
+  const auto size = readColumnCount();
+  std::vector<std::string> names(size);
+  for (long i = 0; i < size; ++i) {
+    names[i] = readName(i);
+  }
+  return names;
+}
+
+void BintableColumns::rename(const std::string& name, const std::string& newName) const {
+  rename(readIndex(name), newName);
+}
+
+void BintableColumns::rename(long index, const std::string& newName) const {
+  m_edit();
+  Cfitsio::Bintable::updateColumnName(m_fptr, index + 1, newName);
+}
+
+void BintableColumns::remove(const std::string& name) const {
+  remove(readIndex(name));
+}
+
+void BintableColumns::remove(long index) const {
+  m_edit();
+  // FIXME implement
+}
+
 } // namespace FitsIO
 } // namespace Euclid

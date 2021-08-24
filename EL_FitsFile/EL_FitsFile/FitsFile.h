@@ -66,11 +66,30 @@ std::string version();
  */
 enum class FileMode
 {
-  Read, ///< Open as read-only
-  Edit, ///< Open with write permission
+  Read, ///< Open an existing file with read-only permission
+  Edit, ///< Open an existing file with write permission
   Create, ///< Create a new file (overwrite forbidden)
   Overwrite, ///< Create a new file or overwrite existing file
   Temporary ///< Create a temporary file (removed by destructor, overwrite forbidden)
+};
+
+/**
+ * @ingroup exceptions
+ * @brief Exception thrown if trying to write a read-only file.
+ */
+class ReadOnlyError : public FitsIOError {
+public:
+  /**
+   * @brief Constructor.
+   * @details
+   * The error message is of the form "<prefix>: Tring to write a read-only file (<mode>)".
+   */
+  ReadOnlyError(const std::string& prefix);
+
+  /**
+   * @brief Throw if mode is read-only.
+   */
+  static void mayThrow(const std::string& prefix, FileMode mode);
 };
 
 /**
