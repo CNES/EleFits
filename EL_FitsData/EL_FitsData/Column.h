@@ -20,6 +20,8 @@
 #ifndef _EL_FITSDATA_COLUMN_H
 #define _EL_FITSDATA_COLUMN_H
 
+#include "EL_FitsData/DataUtils.h"
+
 #include <complex>
 #include <cstdint>
 #include <string>
@@ -237,6 +239,13 @@ public:
    */
   virtual const T* data() const = 0;
 
+  /**
+   * @brief Pointer to the first data element.
+   * @details
+   * If the Column is read-only, returns `nullptr`.
+   */
+  virtual T* data(); // TODO throw?
+
   /// @}
 
 public:
@@ -257,15 +266,29 @@ template <typename T>
 class PtrColumn : public Column<T> {
 
 public:
-  /** @brief Destructor. */
+  /**
+   * @brief Destructor. 
+   */
   virtual ~PtrColumn() = default;
-  /** @brief Copy constructor. */
+
+  /**
+   * @brief Copy constructor.
+   */
   PtrColumn(const PtrColumn&) = default;
-  /** @brief Move constructor. */
+
+  /**
+   * @brief Move constructor.
+   */
   PtrColumn(PtrColumn&&) = default;
-  /** @brief Copy assignment. */
+
+  /**
+   * @brief Copy assignment.
+   */
   PtrColumn& operator=(const PtrColumn&) = default;
-  /** @brief Move assignment. */
+
+  /**
+   * @brief Move assignment.
+   */
   PtrColumn& operator=(PtrColumn&&) = default;
 
   /**
@@ -277,15 +300,34 @@ public:
    */
   PtrColumn(ColumnInfo<T> info, long elementCount, const T* data);
 
-  /** @copydoc Column::elementCount */
+  /**
+   * @brief Create a new column with given metadata and data.
+   * @param info The column metadata.
+   * @param elementCount The number of elements in the column,
+   * which is the number of rows for scalar and string columns.
+   * @param data Pointer to the first element of the data.
+   */
+  PtrColumn(ColumnInfo<T> info, long elementCount, T* data);
+
+  /**
+   * @copydoc Column::elementCount()
+   */
   long elementCount() const override;
 
-  /** @copydoc Column::data */
+  /**
+   * @copydoc Column::data() const
+   */
   const T* data() const override;
+
+  /**
+   * @copydoc Column::data()
+   */
+  T* data() override;
 
 private:
   long m_nelements;
-  const T* m_data;
+  const T* m_cData;
+  T* m_data;
 };
 
 /**
@@ -299,15 +341,29 @@ template <typename T>
 class VecRefColumn : public Column<T> {
 
 public:
-  /** @brief Destructor. */
+  /**
+   * @brief Destructor.
+   */
   virtual ~VecRefColumn() = default;
-  /** @brief Copy constructor. */
+
+  /**
+   * @brief Copy constructor.
+   */
   VecRefColumn(const VecRefColumn&) = default;
-  /** @brief Move constructor. */
+
+  /**
+   * @brief Move constructor.
+   */
   VecRefColumn(VecRefColumn&&) = default;
-  /** @brief Copy assignment. */
+
+  /**
+   * @brief Copy assignment.
+   */
   VecRefColumn& operator=(const VecRefColumn&) = default;
-  /** @brief Move assignment. */
+
+  /**
+   * @brief Move assignment.
+   */
   VecRefColumn& operator=(VecRefColumn&&) = default;
 
   /**
@@ -315,11 +371,25 @@ public:
    */
   VecRefColumn(ColumnInfo<T> info, const std::vector<T>& vecRef);
 
-  /** @copydoc Column::elementCount */
+  /**
+   * @brief Create a VecRefColumn with given metadata and reference to data.
+   */
+  VecRefColumn(ColumnInfo<T> info, std::vector<T>& vecRef);
+
+  /**
+   * @copydoc Column::elementCount()
+   */
   long elementCount() const override;
 
-  /** @copydoc Column::data */
+  /**
+   * @copydoc Column::data() const
+   */
   const T* data() const override;
+
+  /**
+   * @copydoc Column::data()
+   */
+  T* data() override;
 
   /**
    * @brief Const reference to the vector data.
@@ -327,7 +397,8 @@ public:
   const std::vector<T>& vector() const;
 
 private:
-  const std::vector<T>& m_ref;
+  const std::vector<T>* m_cVecPtr;
+  std::vector<T>* m_vecPtr;
 };
 
 /**
@@ -341,15 +412,29 @@ template <typename T>
 class VecColumn : public Column<T> {
 
 public:
-  /** @brief Destructor. */
+  /**
+   * @brief Destructor.
+   */
   virtual ~VecColumn() = default;
-  /** @brief Copy constructor. */
+
+  /**
+   * @brief Copy constructor.
+   */
   VecColumn(const VecColumn&) = default;
-  /** @brief Move constructor. */
+
+  /**
+   * @brief Move constructor.
+   */
   VecColumn(VecColumn&&) = default;
-  /** @brief Copy assignment. */
+
+  /**
+   * @brief Copy assignment.
+   */
   VecColumn& operator=(const VecColumn&) = default;
-  /** @brief Move assignment. */
+
+  /**
+   * @brief Move assignment.
+   */
   VecColumn& operator=(VecColumn&&) = default;
 
   /**
@@ -372,16 +457,20 @@ public:
    */
   VecColumn(ColumnInfo<T> info, long rowCount);
 
-  /** @copydoc Column::elementCount */
+  /**
+   * @copydoc Column::elementCount()
+   */
   long elementCount() const override;
 
-  /** @copydoc Column::data */
+  /**
+   * @copydoc Column::data() const
+   */
   const T* data() const override;
 
   /**
    * @brief Non-const pointer to the first data element.
    */
-  T* data();
+  T* data() override;
 
   /**
    * @brief Const reference to the vector data.

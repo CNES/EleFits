@@ -37,6 +37,11 @@ VecColumn<T> BintableColumns::read(long index) const {
   return Cfitsio::Bintable::readColumn<T>(m_fptr, index);
 }
 
+template <typename T>
+void BintableColumns::readTo(Column<T>& column) const {
+  m_touch();
+}
+
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Named<Ts>&... names) const {
   m_touch();

@@ -20,13 +20,12 @@
 #ifndef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_H
 #define _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_H
 
-#include <tuple>
-#include <vector>
-
-#include "EL_FitsData/Column.h"
-
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
+#include "EL_FitsData/Column.h"
+
+#include <tuple>
+#include <vector>
 
 namespace Euclid {
 namespace Cfitsio {
@@ -77,6 +76,12 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile* fptr, long index);
  */
 template <typename T>
 FitsIO::VecColumn<T> readColumn(fitsfile* fptr, long index);
+
+/**
+ * @brief Read the segment of a binary table column with given index.
+ */
+template <typename T>
+void readColumnSegment(fitsfile* fptr, const FitsIO::Segment& rows, long index, FitsIO::Column<T>& column);
 
 /**
  * @brief Read a binary table column with given name.

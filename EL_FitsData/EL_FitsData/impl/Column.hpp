@@ -19,9 +19,8 @@
 
 #if defined(_EL_FITSDATA_COLUMN_IMPL) || defined(CHECK_QUALITY)
 
-#include "EL_FitsData/Column.h"
-
-#include "EL_FitsData/FitsIOError.h"
+  #include "EL_FitsData/Column.h"
+  #include "EL_FitsData/FitsIOError.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -53,8 +52,7 @@ long rowCountDispatchImpl(long elementCount, long repeatCount) {
 /// @endcond
 
 template <typename T>
-Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {
-}
+Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {}
 
 template <typename T>
 long Column<T>::rowCount() const {
@@ -87,11 +85,17 @@ T& Column<T>::at(long row, long repeat) {
 }
 
 template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T* data) :
-    Column<T>(columnInfo),
-    m_nelements(elementCount),
-    m_data(data) {
+T* Column<T>::data() {
+  return nullptr;
 }
+
+template <typename T>
+PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T* data) :
+    Column<T>(columnInfo), m_nelements(elementCount), m_cData(data), m_data(nullptr) {}
+
+template <typename T>
+PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, T* data) :
+    Column<T>(columnInfo), m_nelements(elementCount), m_cData(data), m_data(data) {}
 
 template <typename T>
 long PtrColumn<T>::elementCount() const {
@@ -100,43 +104,51 @@ long PtrColumn<T>::elementCount() const {
 
 template <typename T>
 const T* PtrColumn<T>::data() const {
+  return m_cData;
+}
+
+template <typename T>
+T* PtrColumn<T>::data() {
   return m_data;
 }
 
 template <typename T>
 VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vecRef) :
-    Column<T>(columnInfo),
-    m_ref(vecRef) {
-}
+    Column<T>(columnInfo), m_cVecPtr(&vecRef), m_vecPtr(nullptr) {}
+
+template <typename T>
+VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, std::vector<T>& vecRef) :
+    Column<T>(columnInfo), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
 
 template <typename T>
 long VecRefColumn<T>::elementCount() const {
-  return m_ref.size();
+  return m_cVecPtr->size();
 }
 
 template <typename T>
 const T* VecRefColumn<T>::data() const {
-  return m_ref.data();
+  return m_cVecPtr->data();
+}
+
+template <typename T>
+T* VecRefColumn<T>::data() {
+  return m_vecPtr->data();
 }
 
 template <typename T>
 const std::vector<T>& VecRefColumn<T>::vector() const {
-  return m_ref;
+  return *m_cVecPtr;
 }
 
 template <typename T>
-VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {
-}
+VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {}
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vec) : Column<T>(columnInfo), m_vec(vec) {
-}
+VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vec) : Column<T>(columnInfo), m_vec(vec) {}
 
 template <typename T>
 VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, long rowCount) :
-    Column<T>(columnInfo),
-    m_vec(columnInfo.repeatCount * rowCount) {
-}
+    Column<T>(columnInfo), m_vec(columnInfo.repeatCount * rowCount) {}
 
 template <>
 VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount);
@@ -166,16 +178,16 @@ std::vector<T>& VecColumn<T>::vector() {
   return m_vec;
 }
 
-#ifndef DECLARE_COLUMN_CLASSES
-#define DECLARE_COLUMN_CLASSES(type, unused) \
-  extern template struct ColumnInfo<type>; \
-  extern template class Column<type>; \
-  extern template class PtrColumn<type>; \
-  extern template class VecRefColumn<type>; \
-  extern template class VecColumn<type>;
+  #ifndef DECLARE_COLUMN_CLASSES
+    #define DECLARE_COLUMN_CLASSES(type, unused) \
+      extern template struct ColumnInfo<type>; \
+      extern template class Column<type>; \
+      extern template class PtrColumn<type>; \
+      extern template class VecRefColumn<type>; \
+      extern template class VecColumn<type>;
 EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
-#undef DECLARE_COLUMN_CLASSES
-#endif
+    #undef DECLARE_COLUMN_CLASSES
+  #endif
 
 } // namespace FitsIO
 } // namespace Euclid

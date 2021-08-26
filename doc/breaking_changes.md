@@ -59,7 +59,8 @@ f.access<>(3).header().write("KEY", 1);
 
 * Better mapping to Fits structure (separate header unit and data unit);
 * Cleaner `SifFile` (e.g. no more useless `index()` method);
-* Better application of the Single Responsibility Principle;
+* Better application of the Single Responsibility Principle
+(e.g. `BintableHdu` goes from 57 methods to 15 in `BintableColumns`);
 * Better structured documentation, while many more services are provided;
 * Enable row-wise binary table I/Os.
 

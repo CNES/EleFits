@@ -244,30 +244,41 @@ FitsIO::ColumnInfo<T> readColumnInfo(fitsfile* fptr, long index) {
   return { name, unit, repeatCount };
 }
 
-/**
- * @brief String specialization.
- */
-template <>
-FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile* fptr, long index);
-
 template <typename T>
 FitsIO::VecColumn<T> readColumn(fitsfile* fptr, long index) {
   const long rows = rowCount(fptr);
   FitsIO::VecColumn<T> column(readColumnInfo<T>(fptr, index), rows);
+  readColumnSegment<T>(fptr, { 1, rows }, index, column);
+  return column;
+}
+
+/// @cond INTERNAL
+/**
+ * @brief String specialization.
+ */
+template <>
+void readColumnSegment<std::string>(
+    fitsfile* fptr,
+    const FitsIO::Segment& rows,
+    long index,
+    FitsIO::Column<std::string>& column);
+/// @endcond
+
+template <typename T>
+void readColumnSegment(fitsfile* fptr, const FitsIO::Segment& rows, long index, FitsIO::Column<T>& column) {
   int status = 0;
   fits_read_col(
       fptr,
       TypeCode<T>::forBintable(), // datatype
-      static_cast<int>(index), // colnum
-      1, // firstrow (1-based)
-      1, // firstelemn (1-based)
-      column.elementCount(), // nelements
-      nullptr, // nulval
+      static_cast<int>(index),
+      rows.lower, // 1-based first row index
+      1, // 1-based first element index
+      rows.size() * column.info.repeatCount, // number of elements
+      nullptr,
       column.data(),
-      nullptr, // anynul
+      nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + column.info.name);
-  return column;
+  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
 }
 
 template <typename T>

@@ -91,7 +91,7 @@ struct IndexRecursionImpl<-1, i> {
 /// @endcond
 
 template <typename T, long n>
-Raster<T, n>::Raster(Position<n> shape_) : shape(shape_) {}
+Raster<T, n>::Raster(Position<n> rasterShape) : shape(rasterShape) {}
 
 template <typename T, long n>
 T* Raster<T, n>::data() {
@@ -154,10 +154,11 @@ inline T& Raster<T, n>::at(const Position<n>& pos) {
 // }
 
 template <typename T, long n>
-PtrRaster<T, n>::PtrRaster(Position<n> shape_, const T* data) : Raster<T, n>(shape_), m_cData(data), m_data(nullptr) {}
+PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, const T* data) :
+    Raster<T, n>(rasterShape), m_cData(data), m_data(nullptr) {}
 
 template <typename T, long n>
-PtrRaster<T, n>::PtrRaster(Position<n> shape_, T* data) : Raster<T, n>(shape_), m_cData(data), m_data(data) {}
+PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, T* data) : Raster<T, n>(rasterShape), m_cData(data), m_data(data) {}
 
 template <typename T, long n>
 const T* PtrRaster<T, n>::data() const {
@@ -170,12 +171,12 @@ T* PtrRaster<T, n>::data() {
 }
 
 template <typename T, long n>
-VecRefRaster<T, n>::VecRefRaster(Position<n> shape_, const std::vector<T>& vecRef) :
-    Raster<T, n>(shape_), m_cVecPtr(&vecRef), m_vecPtr(nullptr) {}
+VecRefRaster<T, n>::VecRefRaster(Position<n> rasterShape, const std::vector<T>& vecRef) :
+    Raster<T, n>(rasterShape), m_cVecPtr(&vecRef), m_vecPtr(nullptr) {}
 
 template <typename T, long n>
-VecRefRaster<T, n>::VecRefRaster(Position<n> shape_, std::vector<T>& vecRef) :
-    Raster<T, n>(shape_), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
+VecRefRaster<T, n>::VecRefRaster(Position<n> rasterShape, std::vector<T>& vecRef) :
+    Raster<T, n>(rasterShape), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
 
 template <typename T, long n>
 const T* VecRefRaster<T, n>::data() const {
@@ -196,10 +197,10 @@ const std::vector<T>& VecRefRaster<T, n>::vector() const {
 }
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> shape_, std::vector<T> vec) : Raster<T, n>(shape_), m_vec(vec) {}
+VecRaster<T, n>::VecRaster(Position<n> rasterShape, std::vector<T> vec) : Raster<T, n>(rasterShape), m_vec(vec) {}
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> shape_) : Raster<T, n>(shape_), m_vec(this->size()) {}
+VecRaster<T, n>::VecRaster(Position<n> rasterShape) : Raster<T, n>(rasterShape), m_vec(this->size()) {}
 
 template <typename T, long n>
 const T* VecRaster<T, n>::data() const {

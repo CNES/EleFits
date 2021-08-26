@@ -351,7 +351,7 @@ public:
   /**
    * @copydoc Raster::data()
    */
-  T* data();
+  T* data() override;
 
   /**
    * @brief Const reference to the vector.

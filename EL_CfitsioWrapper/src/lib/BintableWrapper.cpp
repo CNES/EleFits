@@ -171,32 +171,33 @@ void writeColumnChunkImpl<std::string>(
 } // namespace Internal
 
 template <>
-FitsIO::VecColumn<std::string> readColumn<std::string>(fitsfile* fptr, long index) {
-  long rows = rowCount(fptr);
-  FitsIO::VecColumn<std::string> column(readColumnInfo<std::string>(fptr, index), rows);
-  std::vector<char*> data(rows);
+void readColumnSegment<std::string>(
+    fitsfile* fptr,
+    const FitsIO::Segment& rows,
+    long index,
+    FitsIO::Column<std::string>& column) {
+  std::vector<char*> data(rows.size());
   std::generate(data.begin(), data.end(), [&]() {
     return (char*)malloc(column.info.repeatCount);
   });
   int status = 0;
   fits_read_col(
       fptr,
-      TypeCode<std::string>::forBintable(), // datatype
-      static_cast<int>(index), // colnum // column indices are int
-      1, // firstrow (1-based)
+      TypeCode<std::string>::forBintable(),
+      static_cast<int>(index),
+      rows.lower,
       1, // firstelemn (1-based)
-      column.elementCount(), // nelements
+      data.size(), // nelements = number of rows for strings
       nullptr, // nulval
       &data[0],
       nullptr, // anynul
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read string column: " + column.info.name);
-  auto columnIt = column.vector().begin();
-  for (auto dataIt = &data[0]; dataIt != &data[rows]; ++dataIt, ++columnIt) {
+  CfitsioError::mayThrow(status, fptr, "Cannot read string column #" + std::to_string(index));
+  auto columnIt = column.data();
+  for (auto dataIt = data.begin(); dataIt != data.end(); ++dataIt, ++columnIt) {
     *columnIt = std::string(*dataIt);
     free(*dataIt);
   }
-  return column;
 }
 
 template <>
