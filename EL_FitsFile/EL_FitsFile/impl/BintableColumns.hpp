@@ -27,19 +27,58 @@ namespace FitsIO {
 
 template <typename T>
 VecColumn<T> BintableColumns::read(const std::string& name) const {
-  m_touch();
-  return Cfitsio::Bintable::readColumn<T>(m_fptr, name);
+  return read<T>(Cfitsio::Bintable::columnIndex(m_fptr, name) - 1);
 }
 
 template <typename T>
 VecColumn<T> BintableColumns::read(long index) const {
-  m_touch();
-  return Cfitsio::Bintable::readColumn<T>(m_fptr, index);
+  const auto rows = Cfitsio::Bintable::rowCount(m_fptr);
+  return readSegment<T>({ 0, rows - 1 }, index);
 }
 
 template <typename T>
 void BintableColumns::readTo(Column<T>& column) const {
+  readTo<T>(column.info.name, column);
+}
+
+template <typename T>
+void BintableColumns::readTo(const std::string& name, Column<T>& column) const {
+  readTo<T>(Cfitsio::Bintable::columnIndex(m_fptr, name) - 1, column);
+}
+
+template <typename T>
+void BintableColumns::readTo(long index, Column<T>& column) const {
+  const auto rows = Cfitsio::Bintable::rowCount(m_fptr);
+  readSegmentTo<T>({ 0, rows - 1 }, column);
+}
+
+template <typename T>
+VecColumn<T> BintableColumns::readSegment(const Segment& rows, const std::string& name) const {
+  return readSegment<T>(rows, Cfitsio::Bintable::columnIndex(m_fptr, name) - 1);
+}
+
+template <typename T>
+VecColumn<T> BintableColumns::readSegment(const Segment& rows, long index) const {
+  VecColumn<T> column(Cfitsio::Bintable::readColumnInfo<T>(m_fptr, index + 1), rows.size());
+  readSegmentTo<T>(rows, index, column);
+  return column;
+}
+
+template <typename T>
+void BintableColumns::readSegmentTo(const Segment& rows, Column<T>& column) const {
+  readSegmentTo<T>(rows, column.info.name, column);
+}
+
+template <typename T>
+void BintableColumns::readSegmentTo(const Segment& rows, const std::string& name, Column<T>& column) const {
+  readSegmentTo<T>(rows, Cfitsio::Bintable::columnIndex(m_fptr, name), column);
+}
+
+template <typename T>
+void BintableColumns::readSegmentTo(const Segment& rows, long index, Column<T>& column) const {
   m_touch();
+  const Segment cfitsioRows { rows.lower + 1, rows.upper + 1 };
+  Cfitsio::Bintable::readColumnSegment<T>(m_fptr, cfitsioRows, index + 1, column);
 }
 
 template <typename... Ts>
