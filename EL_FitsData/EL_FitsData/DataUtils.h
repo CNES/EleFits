@@ -73,6 +73,10 @@ struct Indexed {
  */
 struct Segment {
 
+  static Segment fromSize(long lowerBound, long size) {
+    return Segment { lowerBound, lowerBound + size - 1 };
+  }
+
   /**
    * @brief The lower bound.
    */

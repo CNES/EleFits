@@ -90,6 +90,16 @@ T* Column<T>::data() {
 }
 
 template <typename T>
+const PtrColumn<T> Column<T>::subcolumn(const Segment& rows) const {
+  return { info, rows.size(), data() + rows.lower };
+}
+
+template <typename T>
+PtrColumn<T> Column<T>::subcolumn(const Segment& rows) {
+  return { info, rows.size(), data() + rows.lower };
+}
+
+template <typename T>
 PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T* data) :
     Column<T>(columnInfo), m_nelements(elementCount), m_cData(data), m_data(nullptr) {}
 

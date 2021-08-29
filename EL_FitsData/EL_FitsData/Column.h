@@ -149,6 +149,9 @@ struct ColumnInfo {
   long repeatCount;
 };
 
+template <typename T>
+class PtrColumn; // FIXME rm forward declaration
+
 /**
  * @ingroup bintable_data_classes
  * @brief Binary table column data and metadata.
@@ -245,6 +248,22 @@ public:
    * If the Column is read-only, returns `nullptr`.
    */
   virtual T* data(); // TODO throw?
+
+  /// @}
+  /**
+   * @name Slicing
+   */
+  /// @{
+
+  /**
+   * @brief Get a view on contiguous rows.
+   */
+  const PtrColumn<T> subcolumn(const Segment& rows) const;
+
+  /**
+   * @copydoc subcolumn()
+   */
+  PtrColumn<T> subcolumn(const Segment& rows);
 
   /// @}
 
