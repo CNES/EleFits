@@ -89,7 +89,9 @@ TReturn Header::parseStructOr(const Record<Ts>&... fallbacks) const {
 
 template <typename TReturn, typename TSeq>
 TReturn Header::parseStructOr(TSeq&& fallbacks) const {
-  return {}; // FIXME
+  return seqTransform<TReturn>(fallbacks, [&](auto f) {
+    return parseOr(f);
+  }); // FIXME test
 }
 
 /// @cond INTERNAL

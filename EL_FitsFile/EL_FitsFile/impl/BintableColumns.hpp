@@ -245,6 +245,10 @@ void BintableColumns::insert(const Column<T>& column, long index) const {
   }
 }
 
+// FIXME writeSegment
+
+// FIXME insertSegment
+
 // writeSeq
 
 template <typename... Ts>
@@ -255,16 +259,25 @@ void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
 
 template <typename TSeq>
 void BintableColumns::writeSeq(TSeq&& columns) const {
-  tupleApply(columns, this->writeSeq<TSeq>); // FIXME test
+  // FIXME implement
 }
 
 // appendSeq
+
+template <typename TSeq>
+void BintableColumns::appendSeq(TSeq&& columns) const {
+  // FIXME implement
+}
 
 template <typename... Ts>
 void BintableColumns::appendSeq(const Column<Ts>&... columns) const {
   m_edit();
   Cfitsio::Bintable::appendColumns(m_fptr, columns...);
 }
+
+// FIXME writeSegmentSeq
+
+// FIXME appendSegmentSeq
 
 } // namespace FitsIO
 } // namespace Euclid

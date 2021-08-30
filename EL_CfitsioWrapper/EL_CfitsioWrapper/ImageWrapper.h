@@ -88,10 +88,7 @@ FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& regi
  * directly in a destination raster.
  */
 template <typename T, long n = 2>
-void readRegionTo(
-    fitsfile* fptr,
-    const FitsIO::Region<n>& region,
-    FitsIO::Raster<T, n>& destination); // FIXME implement => non-const data()
+void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raster<T, n>& destination);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing subraster.

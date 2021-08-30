@@ -113,6 +113,8 @@ FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& regi
   return raster;
 }
 
+// FIXME readRegionTo Raster
+
 template <typename T, long n = 2>
 void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, n>& destination) {
 
