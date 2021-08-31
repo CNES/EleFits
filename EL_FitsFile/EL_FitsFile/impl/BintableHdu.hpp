@@ -38,49 +38,43 @@ VecColumn<T> BintableHdu::readColumn(const std::string& name) const {
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const std::vector<long>& indices) const { // Deprecated signature
-  touchThisHdu();
-  std::vector<long> cfitsioIndices(indices.size());
-  std::transform(indices.begin(), indices.end(), cfitsioIndices.begin(), [](long i) {
-    return i + 1;
-  });
-  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, cfitsioIndices);
+  return m_columns.readSeq(Indexed<Ts>(indices)...);
 }
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Indexed<Ts>&... indices) const {
-  return m_columns.readSeq<Ts...>(indices...);
+  return m_columns.readSeq(indices...);
 }
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...>
 BintableHdu::readColumns(const std::vector<std::string>& names) const { // Deprecated signature
-  touchThisHdu();
-  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, names);
+  return m_columns.readSeq(Named<Ts>(names)...);
 }
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableHdu::readColumns(const Named<Ts>&... names) const {
-  return m_columns.readSeq<Ts...>(names...);
+  return m_columns.readSeq(names...);
 }
 
 template <typename T>
 void BintableHdu::writeColumn(const Column<T>& column) const {
-  m_columns.write<T>(column);
+  m_columns.write(column);
 }
 
 template <typename... Ts>
 void BintableHdu::writeColumns(const Column<Ts>&... columns) const {
-  m_columns.writeSeq<Ts...>(columns...);
+  m_columns.writeSeq(columns...);
 }
 
 template <typename T>
 void BintableHdu::appendColumn(const Column<T>& column) const {
-  m_columns.insert<T>(column, -1);
+  m_columns.insert(column, -1);
 }
 
 template <typename... Ts>
 void BintableHdu::appendColumns(const Column<Ts>&... columns) const {
-  m_columns.appendSeq<Ts...>(columns...);
+  m_columns.appendSeq(columns...);
 }
 
   #ifndef DECLARE_READ_COLUMN
