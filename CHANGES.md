@@ -4,7 +4,7 @@
 
 ### Refactoring
 
-* New handlers `Header` and `ImageRaster` are responsible for reading and writing header and data units
+* New handlers `Header`, `ImageRaster` and `BintableColumns` are responsible for reading and writing header and data units
 * Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
 * `FileMode` replaces `FitsFile::Permission`, `SifFile::Permission` and `MefFile::Permission`
 * Class `HduCategory` replaces enum `HduType`
@@ -15,14 +15,17 @@
 * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
 * HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
 * Image regions can be read and written
+* Image data can be read in place
+* Binary table column segments can be read and written
+* Binary table data can be read in place
 * `Position` has arithmetics operators
 * `RecordMode` controls the behavior of record writing methods
 * HDU checksums can be computed and verified
 
 ### Deprecated
 
-* Methods of `RecordHdu` and `ImageHdu` to read and write records and rasters are deprecated
-They should be replaced with analogous methods of `Header` and `ImageRaster`
+* Methods of `RecordHdu`, `ImageHdu` and `BintableHdu` to read and write records, rasters and columns are deprecated
+They should be replaced with analogous methods of `Header`, `ImageRaster` and `BintableColumns`
 * Explicit use of `boost::any`: should be replaced with `VariantValue`
 * `FitsFile::Permission` is a deprecated alias to `FileMode`
 * `HduType` is a deprecated alias to `HduCategory`
