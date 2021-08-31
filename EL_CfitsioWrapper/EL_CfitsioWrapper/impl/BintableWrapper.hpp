@@ -223,7 +223,6 @@ struct ColumnLooperImpl<std::size_t(-1), Ts...> {
 
 template <typename T>
 FitsIO::ColumnInfo<T> readColumnInfo(fitsfile* fptr, long index) {
-  FitsIO::ColumnInfo<T> info;
   int status = 0;
   char name[FLEN_VALUE];
   char unit[FLEN_VALUE];

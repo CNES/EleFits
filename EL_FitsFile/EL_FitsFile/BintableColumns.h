@@ -140,6 +140,18 @@ public:
   /// @{
 
   /**
+   * @brief Read the info of a column.
+   */
+  template <typename T>
+  ColumnInfo<T> readInfo(const std::string& name) const;
+
+  /**
+   * @copydoc readInfo
+   */
+  template <typename T>
+  ColumnInfo<T> readInfo(long index) const;
+
+  /**
    * @brief Read the column with given name.
    * @details
    * There are several ways to read a column, which can be specified either by its name or 0-based index.

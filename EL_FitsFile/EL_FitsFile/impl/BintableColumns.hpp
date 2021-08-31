@@ -25,17 +25,28 @@
 namespace Euclid {
 namespace FitsIO {
 
+// readInfo
+
+template <typename T>
+ColumnInfo<T> BintableColumns::readInfo(const std::string& name) const {
+  return readInfo<T>(readIndex(name));
+}
+
+template <typename T>
+ColumnInfo<T> BintableColumns::readInfo(long index) const {
+  return Cfitsio::Bintable::readColumnInfo<T>(m_fptr, index + 1);
+}
+
 // read
 
 template <typename T>
 VecColumn<T> BintableColumns::read(const std::string& name) const {
-  return read<T>(Cfitsio::Bintable::columnIndex(m_fptr, name) - 1);
+  return read<T>(readIndex(name));
 }
 
 template <typename T>
 VecColumn<T> BintableColumns::read(long index) const {
-  const auto rows = Cfitsio::Bintable::rowCount(m_fptr);
-  return readSegment<T>({ 0, rows - 1 }, index);
+  return readSegment<T>({ 0, readRowCount() - 1 }, index);
 }
 
 // readTo
@@ -47,25 +58,24 @@ void BintableColumns::readTo(Column<T>& column) const {
 
 template <typename T>
 void BintableColumns::readTo(const std::string& name, Column<T>& column) const {
-  readTo<T>(Cfitsio::Bintable::columnIndex(m_fptr, name) - 1, column);
+  readTo<T>(readIndex(name), column);
 }
 
 template <typename T>
 void BintableColumns::readTo(long index, Column<T>& column) const {
-  const auto rows = Cfitsio::Bintable::rowCount(m_fptr);
-  readSegmentTo<T>({ 0, rows - 1 }, column);
+  readSegmentTo<T>({ 0, readRowCount() - 1 }, column);
 }
 
 // readSegment
 
 template <typename T>
 VecColumn<T> BintableColumns::readSegment(const Segment& rows, const std::string& name) const {
-  return readSegment<T>(rows, Cfitsio::Bintable::columnIndex(m_fptr, name) - 1);
+  return readSegment<T>(rows, readIndex(name));
 }
 
 template <typename T>
 VecColumn<T> BintableColumns::readSegment(const Segment& rows, long index) const {
-  VecColumn<T> column(Cfitsio::Bintable::readColumnInfo<T>(m_fptr, index + 1), rows.size());
+  VecColumn<T> column(readInfo<T>(index), rows.size());
   readSegmentTo<T>(rows, index, column);
   return column;
 }
@@ -79,13 +89,13 @@ void BintableColumns::readSegmentTo(const Segment& rows, Column<T>& column) cons
 
 template <typename T>
 void BintableColumns::readSegmentTo(const Segment& rows, const std::string& name, Column<T>& column) const {
-  readSegmentTo<T>(rows, Cfitsio::Bintable::columnIndex(m_fptr, name), column);
+  readSegmentTo<T>(rows, readIndex(name), column);
 }
 
 template <typename T>
 void BintableColumns::readSegmentTo(const Segment& rows, long index, Column<T>& column) const {
   m_touch();
-  const Segment cfitsioRows { rows.lower + 1, rows.upper + 1 };
+  const Segment cfitsioRows { rows.lower + 1, rows.upper + 1 }; // FIXME rows + 1
   Cfitsio::Bintable::readColumnSegment<T>(m_fptr, cfitsioRows, index + 1, column);
 }
 
@@ -93,23 +103,21 @@ void BintableColumns::readSegmentTo(const Segment& rows, long index, Column<T>& 
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Named<Ts>&... names) const {
-  m_touch();
-  const std::vector<std::string> nameVector { names.name... };
-  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, nameVector);
+  return readSeq(Indexed<Ts>(readIndex(names.name))...);
 }
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
   m_touch();
   const std::vector<long> cfitsioIndices { (indices.index + 1)... }; // 1-based
-  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, cfitsioIndices);
+  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, cfitsioIndices); // FIXME through readSegmentSeqTo
 }
 
 // readSeqTo
 
 template <typename TSeq>
 void BintableColumns::readSeqTo(TSeq&& columns) const {
-  const auto names = seqTransform<std::vector<std::string>>(columns, [&](auto c) { // FOXME forward
+  const auto names = seqTransform<std::vector<std::string>>(columns, [&](auto c) { // FIXME forward
     return c.info.name;
   });
   readSeqTo(names, columns); // FIXME forward
@@ -124,7 +132,7 @@ template <typename TSeq>
 void BintableColumns::readSeqTo(const std::vector<std::string>& names, TSeq&& columns) const {
   std::vector<long> indices(names.size());
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
-    return Cfitsio::Bintable::columnIndex(m_fptr, n) - 1;
+    return readIndex(n);
   });
   readSeqTo(indices, columns); // FIXME forward
 }
@@ -136,8 +144,7 @@ void BintableColumns::readSeqTo(const std::vector<std::string>& names, Column<Ts
 
 template <typename TSeq>
 void BintableColumns::readSeqTo(const std::vector<long>& indices, TSeq&& columns) const {
-  const auto rowCount = readRowCount();
-  readSegmentSeqTo({ 0, rowCount - 1 }, indices, columns);
+  readSegmentSeqTo({ 0, readRowCount() - 1 }, indices, columns);
 }
 
 template <typename... Ts>
@@ -149,14 +156,12 @@ void BintableColumns::readSeqTo(const std::vector<long>& indices, Column<Ts>&...
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Named<Ts>&... names) const {
-  std::tuple<VecColumn<Ts>...> columns { { Cfitsio::Bintable::readColumnInfo<Ts>(m_fptr, names), rows.size() }... };
-  readSegmentSeqTo(rows, columns);
-  return columns;
+  return readSegmentSeq(rows, Indexed<Ts>(readIndex(names))...);
 }
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Indexed<Ts>&... indices) const {
-  std::tuple<VecColumn<Ts>...> columns { { Cfitsio::Bintable::readColumnInfo<Ts>(m_fptr, index), rows.size() }... };
+  std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(index), rows.size() }... };
   readSegmentSeqTo(rows, columns);
   return columns;
 }
@@ -165,7 +170,7 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
 
 template <typename TSeq>
 void BintableColumns::readSegmentSeqTo(const Segment& rows, TSeq&& columns) const {
-  const auto names = seqTransform<std::vector<std::string>>(columns, [&](auto c) { // FOXME forward
+  const auto names = seqTransform<std::vector<std::string>>(columns, [&](auto c) { // FIXME forward
     return c.info.name;
   });
   readSegmentSeqTo(rows, names, columns); // FIXME forward
@@ -181,7 +186,7 @@ void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<st
     const {
   std::vector<long> indices(names.size());
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
-    return Cfitsio::Bintable::columnIndex(m_fptr, n) - 1;
+    return readIndex(n);
   });
   readSegmentSeqTo(rows, indices, columns); // FIXME forward
 }
@@ -193,7 +198,7 @@ void BintableColumns::readSegmentSeqTo(
     Column<Ts>&... columns) const {
   std::vector<long> indices(names.size());
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
-    return Cfitsio::Bintable::columnIndex(m_fptr, n) - 1;
+    return readIndex(n);
   });
   readSegmentSeqTo(rows, indices, columns...);
 }

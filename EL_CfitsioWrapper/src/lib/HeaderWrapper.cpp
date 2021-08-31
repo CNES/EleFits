@@ -127,7 +127,7 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::
   char* value = nullptr; // That's almost the only function in which CFitsIO allocates itself!
   char unit[FLEN_COMMENT];
   unit[0] = '\0';
-  char comment[FLEN_COMMENT];
+  char comment[FLEN_COMMENT]; // FIXME could be longer! No known way of reading the comment size (mail sent)
   comment[0] = '\0';
   fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);

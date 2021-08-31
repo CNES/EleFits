@@ -75,6 +75,7 @@ void dispatchSeq(std::vector<T>&& seq, bool isTuple);
 template <typename TSeq>
 void dispatchSeq(TSeq&& seq, bool isTuple) {
   seqForeach(std::forward<TSeq>(seq), [&](const auto& e) {
+    (void)e;
     BOOST_TEST(isTuple);
   });
 }
@@ -82,6 +83,7 @@ void dispatchSeq(TSeq&& seq, bool isTuple) {
 template <typename T>
 void dispatchSeq(const std::vector<T>& seq, bool isTuple) {
   for (const auto& e : seq) {
+    (void)e;
     BOOST_TEST(not isTuple);
   }
 }
@@ -89,6 +91,7 @@ void dispatchSeq(const std::vector<T>& seq, bool isTuple) {
 template <typename T>
 void dispatchSeq(std::vector<T>&& seq, bool isTuple) {
   for (const auto& e : seq) {
+    (void)e;
     BOOST_TEST(not isTuple);
   }
 }
