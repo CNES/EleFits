@@ -39,7 +39,7 @@ Record<T> RecordHdu::parseRecord(const std::string& keyword) const {
 template <typename... Ts>
 std::tuple<Record<Ts>...> RecordHdu::parseRecords(const std::vector<std::string>& keywords) const {
   touchThisHdu();
-  return Cfitsio::Header::parseRecords<Ts...>(m_fptr, keywords);
+  return Cfitsio::HeaderIo::parseRecords<Ts...>(m_fptr, keywords);
 }
 
 template <typename... Ts>
@@ -50,7 +50,7 @@ std::tuple<Record<Ts>...> RecordHdu::parseRecords(const Named<Ts>&... keywords) 
 template <class TReturn, typename... Ts>
 TReturn RecordHdu::parseRecordsAs(const std::vector<std::string>& keywords) const {
   touchThisHdu();
-  return Cfitsio::Header::parseRecordsAs<TReturn, Ts...>(m_fptr, keywords);
+  return Cfitsio::HeaderIo::parseRecordsAs<TReturn, Ts...>(m_fptr, keywords);
 }
 
 template <class TReturn, typename... Ts>

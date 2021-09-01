@@ -28,7 +28,7 @@ namespace FitsIO {
 template <typename T>
 Record<T> Header::parse(const std::string& keyword) const {
   m_touch();
-  return Cfitsio::Header::parseRecord<T>(m_fptr, keyword);
+  return Cfitsio::HeaderIo::parseRecord<T>(m_fptr, keyword);
 }
 
 template <typename T>
@@ -53,7 +53,7 @@ RecordVector<T> Header::parseSeq(const std::vector<std::string>& keywords) const
   m_touch();
   RecordVector<T> res(keywords.size());
   std::transform(keywords.begin(), keywords.end(), res.vector.begin(), [&](const std::string& k) {
-    return Cfitsio::Header::parseRecord<T>(m_fptr, k);
+    return Cfitsio::HeaderIo::parseRecord<T>(m_fptr, k);
   });
   return res;
 }
@@ -79,7 +79,7 @@ std::tuple<Record<Ts>...> Header::parseSeqOr(const Record<Ts>&... fallbacks) con
 template <typename TReturn, typename... Ts>
 TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
   m_touch();
-  return { Cfitsio::Header::parseRecord<Ts>(m_fptr, keywords.name)... };
+  return { Cfitsio::HeaderIo::parseRecord<Ts>(m_fptr, keywords.name)... };
 }
 
 template <typename TReturn, typename... Ts>
@@ -108,7 +108,7 @@ struct RecordWriterImpl<RecordMode::CreateUnique> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
     KeywordExistsError::mayThrow(record.keyword, header);
-    Cfitsio::Header::writeRecord(fptr, record);
+    Cfitsio::HeaderIo::writeRecord(fptr, record);
   }
 };
 
@@ -117,7 +117,7 @@ struct RecordWriterImpl<RecordMode::CreateNew> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
     (void)(header);
-    Cfitsio::Header::writeRecord(fptr, record);
+    Cfitsio::HeaderIo::writeRecord(fptr, record);
   }
 };
 
@@ -126,7 +126,7 @@ struct RecordWriterImpl<RecordMode::UpdateExisting> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
     KeywordNotFoundError::mayThrow(record.keyword, header);
-    Cfitsio::Header::updateRecord(fptr, record);
+    Cfitsio::HeaderIo::updateRecord(fptr, record);
   }
 };
 
@@ -135,7 +135,7 @@ struct RecordWriterImpl<RecordMode::CreateOrUpdate> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
     (void)(header);
-    Cfitsio::Header::updateRecord(fptr, record);
+    Cfitsio::HeaderIo::updateRecord(fptr, record);
   }
 };
 

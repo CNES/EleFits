@@ -25,7 +25,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Header {
+namespace HeaderIo {
 
 std::string readHeader(fitsfile* fptr, bool incNonValued) {
   int status = 0;
@@ -407,6 +407,6 @@ void writeHistory(fitsfile* fptr, const std::string& history) {
   CfitsioError::mayThrow(status, fptr, "Cannot write HISTORY record");
 }
 
-} // namespace Header
+} // namespace HeaderIo
 } // namespace Cfitsio
 } // namespace Euclid

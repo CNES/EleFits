@@ -73,7 +73,7 @@ std::string columnName(fitsfile* fptr, long index) {
 
 void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
   const std::string keyword = "TTYPE" + std::to_string(index);
-  Cfitsio::Header::updateRecord<std::string>(fptr, { keyword, newName });
+  Cfitsio::HeaderIo::updateRecord<std::string>(fptr, { keyword, newName });
   int status = 0;
   fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
   // TODO fits_set_hdustruc is DEPRECATED => ask CFitsIO support

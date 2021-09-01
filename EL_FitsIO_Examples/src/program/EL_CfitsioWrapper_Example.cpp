@@ -56,11 +56,11 @@ public:
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
-    Header::writeRecord<int>(fptr, { "VALUE", 1 });
+    HeaderIo::writeRecord<int>(fptr, { "VALUE", 1 });
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
-    Header::updateRecord<int>(fptr, { "VALUE", 2 });
+    HeaderIo::updateRecord<int>(fptr, { "VALUE", 2 });
     //! [Update record]
 
     logger.info();
@@ -82,7 +82,7 @@ public:
     FitsIO::Record<std::string> strRecord("STRING", "string");
     logger.info() << "Writing record: INTEGER = 8";
     FitsIO::Record<int> intRecord("INTEGER", 8);
-    Header::writeRecords(fptr, strRecord, intRecord);
+    HeaderIo::writeRecords(fptr, strRecord, intRecord);
 
     logger.info();
 
@@ -98,7 +98,7 @@ public:
     fptr = FileAccess::open(filename, FileAccess::OpenPolicy::ReadOnly);
     //! [Open Fits]
     //! [Read record]
-    const auto recordValue = Header::parseRecord<int>(fptr, "VALUE");
+    const auto recordValue = HeaderIo::parseRecord<int>(fptr, "VALUE");
     //! [Read record]
     logger.info() << "Reading record: VALUE = " << recordValue;
 
@@ -130,7 +130,7 @@ public:
     const auto extname = HduAccess::currentName(fptr);
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
-    const auto records = Header::parseRecords<std::string, int>(fptr, { "STRING", "INTEGER" });
+    const auto records = HeaderIo::parseRecords<std::string, int>(fptr, { "STRING", "INTEGER" });
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     HduAccess::gotoName(fptr, "SMALLIMG");

@@ -86,7 +86,7 @@ void RecordHdu::updateVersion(long version) const {
 
 std::string RecordHdu::readHeader(bool incNonValued) const {
   touchThisHdu();
-  return Cfitsio::Header::readHeader(m_fptr, incNonValued);
+  return Cfitsio::HeaderIo::readHeader(m_fptr, incNonValued);
 }
 
 std::vector<std::string> RecordHdu::readKeywords(KeywordCategory categories) const {
@@ -99,7 +99,7 @@ std::map<std::string, std::string> RecordHdu::readKeywordsValues(KeywordCategory
 
 bool RecordHdu::hasKeyword(const std::string& keyword) const {
   touchThisHdu();
-  return Cfitsio::Header::hasKeyword(m_fptr, keyword);
+  return Cfitsio::HeaderIo::hasKeyword(m_fptr, keyword);
 }
 
 RecordVector<VariantValue> RecordHdu::parseRecordCollection(const std::vector<std::string>& keywords) const {
@@ -108,18 +108,18 @@ RecordVector<VariantValue> RecordHdu::parseRecordCollection(const std::vector<st
 
 void RecordHdu::writeComment(const std::string& comment) const {
   editThisHdu();
-  return Cfitsio::Header::writeComment(m_fptr, comment);
+  return Cfitsio::HeaderIo::writeComment(m_fptr, comment);
 }
 
 void RecordHdu::writeHistory(const std::string& history) const {
   editThisHdu();
-  return Cfitsio::Header::writeHistory(m_fptr, history);
+  return Cfitsio::HeaderIo::writeHistory(m_fptr, history);
 }
 
 void RecordHdu::deleteRecord(const std::string& keyword) const {
   editThisHdu();
   KeywordNotFoundError::mayThrow(keyword, m_header);
-  Cfitsio::Header::deleteRecord(m_fptr, keyword);
+  Cfitsio::HeaderIo::deleteRecord(m_fptr, keyword);
 }
 
 void RecordHdu::touchThisHdu() const {

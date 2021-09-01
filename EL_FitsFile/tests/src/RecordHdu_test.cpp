@@ -217,20 +217,20 @@ BOOST_FIXTURE_TEST_CASE(full_header_is_read_as_string_test, Test::TemporarySifFi
 }
 
 BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFile) {
-  struct Header {
+  struct MyHeader {
     bool b;
     int i;
     float f;
     std::string s;
   };
   const auto& header = this->header();
-  const Header input { false, 1, 3.14F, "VAL" };
+  const MyHeader input { false, 1, 3.14F, "VAL" };
   header.writeRecords(
       Record<bool>("BOOL", input.b),
       Record<int>("INT", input.i),
       Record<float>("FLOAT", input.f),
       Record<std::string>("STRING", input.s));
-  const auto output = header.parseRecordsAs<Header>(
+  const auto output = header.parseRecordsAs<MyHeader>(
       Named<bool>("BOOL"),
       Named<int>("INT"),
       Named<float>("FLOAT"),

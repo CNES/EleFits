@@ -25,7 +25,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Header {
+namespace HeaderIo {
 
 /**
  * @copydoc parseRecord
@@ -229,7 +229,7 @@ void updateRecords(fitsfile* fptr, const std::vector<FitsIO::Record<T>>& records
   }
 }
 
-} // namespace Header
+} // namespace HeaderIo
 } // namespace Cfitsio
 } // namespace Euclid
 

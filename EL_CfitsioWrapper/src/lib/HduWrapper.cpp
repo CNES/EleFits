@@ -41,18 +41,18 @@ long currentIndex(fitsfile* fptr) {
 }
 
 std::string currentName(fitsfile* fptr) {
-  if (Header::hasKeyword(fptr, "EXTNAME")) {
-    return Header::parseRecord<std::string>(fptr, "EXTNAME");
+  if (HeaderIo::hasKeyword(fptr, "EXTNAME")) {
+    return HeaderIo::parseRecord<std::string>(fptr, "EXTNAME");
   }
-  if (Header::hasKeyword(fptr, "HDUNAME")) {
-    return Header::parseRecord<std::string>(fptr, "HDUNAME");
+  if (HeaderIo::hasKeyword(fptr, "HDUNAME")) {
+    return HeaderIo::parseRecord<std::string>(fptr, "HDUNAME");
   }
   return "";
 }
 
 long currentVersion(fitsfile* fptr) {
-  if (Header::hasKeyword(fptr, "EXTVER")) {
-    return Header::parseRecord<long>(fptr, "EXTVER");
+  if (HeaderIo::hasKeyword(fptr, "EXTVER")) {
+    return HeaderIo::parseRecord<long>(fptr, "EXTVER");
   }
   return 1;
 }
@@ -130,7 +130,7 @@ bool updateName(fitsfile* fptr, const std::string& name) {
   if (name == "") {
     return false;
   }
-  Header::updateRecord(fptr, FitsIO::Record<std::string>("EXTNAME", name));
+  HeaderIo::updateRecord(fptr, FitsIO::Record<std::string>("EXTNAME", name));
   return true;
 }
 
@@ -138,7 +138,7 @@ bool updateVersion(fitsfile* fptr, long version) {
   if (version == 0) {
     return false;
   }
-  Header::updateRecord(fptr, FitsIO::Record<long>("EXTVER", version));
+  HeaderIo::updateRecord(fptr, FitsIO::Record<long>("EXTVER", version));
   return true;
 }
 

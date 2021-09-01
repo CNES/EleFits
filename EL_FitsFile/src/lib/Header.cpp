@@ -30,29 +30,29 @@ Header::Header(fitsfile*& fptr, std::function<void(void)> touchFunction, std::fu
 
 bool Header::has(const std::string& keyword) const {
   m_touch();
-  return Cfitsio::Header::hasKeyword(m_fptr, keyword);
+  return Cfitsio::HeaderIo::hasKeyword(m_fptr, keyword);
 }
 
 void Header::remove(const std::string& keyword) const {
   m_edit();
   KeywordNotFoundError::mayThrow(keyword, *this);
-  Cfitsio::Header::deleteRecord(m_fptr, keyword);
+  Cfitsio::HeaderIo::deleteRecord(m_fptr, keyword);
 }
 
 std::vector<std::string> Header::readKeywords(KeywordCategory categories) const {
   m_touch();
-  return Cfitsio::Header::listKeywords(m_fptr, categories);
+  return Cfitsio::HeaderIo::listKeywords(m_fptr, categories);
 }
 
 std::map<std::string, std::string> Header::readKeywordsValues(KeywordCategory categories) const {
   m_touch();
-  return Cfitsio::Header::listKeywordsValues(m_fptr, categories);
+  return Cfitsio::HeaderIo::listKeywordsValues(m_fptr, categories);
 }
 
 std::string Header::readAll(KeywordCategory categories) const {
   m_touch();
   const bool incNonValues = categories == KeywordCategory::All;
-  return Cfitsio::Header::readHeader(m_fptr, incNonValues);
+  return Cfitsio::HeaderIo::readHeader(m_fptr, incNonValues);
 }
 
 RecordVector<VariantValue> Header::parseAll(KeywordCategory categories) const {

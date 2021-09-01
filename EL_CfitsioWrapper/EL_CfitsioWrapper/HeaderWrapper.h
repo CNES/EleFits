@@ -20,13 +20,6 @@
 #ifndef _EL_CFITSIOWRAPPER_HEADERWRAPPER_H
 #define _EL_CFITSIOWRAPPER_HEADERWRAPPER_H
 
-#include <string>
-#include <tuple>
-#include <typeinfo> // type_info
-#include <vector>
-
-#include <fitsio.h>
-
 #include "EL_CfitsioWrapper/CfitsioUtils.h"
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
@@ -35,13 +28,19 @@
 #include "EL_FitsData/RecordVector.h"
 #include "EL_FitsData/StandardKeyword.h"
 
+#include <fitsio.h>
+#include <string>
+#include <tuple>
+#include <typeinfo> // type_info
+#include <vector>
+
 namespace Euclid {
 namespace Cfitsio {
 
 /**
  * @brief Header-related functions.
  */
-namespace Header {
+namespace HeaderIo {
 
 /**
  * @brief Read the whole header as a string.
@@ -160,7 +159,7 @@ void writeComment(fitsfile* fptr, const std::string& comment);
  */
 void writeHistory(fitsfile* fptr, const std::string& history);
 
-} // namespace Header
+} // namespace HeaderIo
 } // namespace Cfitsio
 } // namespace Euclid
 
