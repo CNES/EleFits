@@ -18,18 +18,17 @@
  */
 
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
+
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
 
-CfitsioError::CfitsioError(int cfitsioStatus) : FitsIOError(message(cfitsioStatus)), status(cfitsioStatus) {
-}
+CfitsioError::CfitsioError(int cfitsioStatus) : FitsIOError(message(cfitsioStatus)), status(cfitsioStatus) {}
 
 CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string& context) :
-    FitsIOError(context),
-    status(cfitsioStatus) {
+    FitsIOError(context), status(cfitsioStatus) {
   append("");
   if (not fptr) {
     append("CFitsIO fitsfile pointer is null.");
@@ -40,12 +39,12 @@ CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string&
       append("Unknown file name.");
     }
     try {
-      append("Current HDU index (0-based): " + std::to_string(Hdu::currentIndex(fptr) - 1));
+      append("Current HDU index (0-based): " + std::to_string(HduAccess::currentIndex(fptr) - 1));
     } catch (...) {
       append("Unknown current HDU index.");
     }
     try {
-      append("Current HDU name: " + Hdu::currentName(fptr));
+      append("Current HDU name: " + HduAccess::currentName(fptr));
     } catch (...) {
       append("Unknown current HDU name.");
     }

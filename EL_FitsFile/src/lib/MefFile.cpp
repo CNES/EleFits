@@ -25,7 +25,7 @@ namespace Euclid {
 namespace FitsIO {
 
 MefFile::MefFile(const std::string& filename, Permission permission) :
-    FitsFile(filename, permission), m_hdus(std::max(1L, Cfitsio::Hdu::count(m_fptr))) {
+    FitsFile(filename, permission), m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))) {
 } // 1 for create, count() for open
 
 long MefFile::hduCount() const {
@@ -58,7 +58,7 @@ const RecordHdu& MefFile::operator[](long index) {
 }
 
 const RecordHdu& MefFile::initRecordExt(const std::string& name) {
-  Cfitsio::Hdu::createMetadataExtension(m_fptr, name);
+  Cfitsio::HduAccess::createMetadataExtension(m_fptr, name);
   const auto size = m_hdus.size();
   m_hdus.push_back(
       std::make_unique<RecordHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Image, HduCategory::Created));

@@ -46,7 +46,7 @@ namespace Cfitsio {
  * Functions to go to an HDU return false if target HDU is already current HDU.
  * Functions to create an HDU append it at the end of the file.
  */
-namespace Hdu {
+namespace HduAccess {
 
 /**
  * @brief Read the number of HDUs in a Fits file.
@@ -171,7 +171,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Tupl
  */
 void deleteHdu(fitsfile* fptr, long index);
 
-} // namespace Hdu
+} // namespace HduAccess
 } // namespace Cfitsio
 } // namespace Euclid
 

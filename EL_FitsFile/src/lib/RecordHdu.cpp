@@ -66,22 +66,22 @@ bool RecordHdu::matches(HduFilter filter) const {
 
 std::string RecordHdu::readName() const {
   touchThisHdu();
-  return Cfitsio::Hdu::currentName(m_fptr);
+  return Cfitsio::HduAccess::currentName(m_fptr);
 }
 
 long RecordHdu::readVersion() const {
   touchThisHdu();
-  return Cfitsio::Hdu::currentVersion(m_fptr);
+  return Cfitsio::HduAccess::currentVersion(m_fptr);
 }
 
 void RecordHdu::updateName(const std::string& name) const {
   editThisHdu();
-  Cfitsio::Hdu::updateName(m_fptr, name);
+  Cfitsio::HduAccess::updateName(m_fptr, name);
 }
 
 void RecordHdu::updateVersion(long version) const {
   editThisHdu();
-  Cfitsio::Hdu::updateVersion(m_fptr, version);
+  Cfitsio::HduAccess::updateVersion(m_fptr, version);
 }
 
 std::string RecordHdu::readHeader(bool incNonValued) const {
@@ -123,7 +123,7 @@ void RecordHdu::deleteRecord(const std::string& keyword) const {
 }
 
 void RecordHdu::touchThisHdu() const {
-  Cfitsio::Hdu::gotoIndex(m_fptr, m_cfitsioIndex);
+  Cfitsio::HduAccess::gotoIndex(m_fptr, m_cfitsioIndex);
   if (m_status == HduCategory::Untouched) {
     m_status = HduCategory::Touched;
   }

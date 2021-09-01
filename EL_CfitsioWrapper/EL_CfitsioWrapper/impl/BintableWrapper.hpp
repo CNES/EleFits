@@ -371,6 +371,7 @@ template <typename T>
 void insertColumn(fitsfile* fptr, long index, const FitsIO::Column<T>& column) {
   auto name = toCharPtr(column.info.name);
   auto tform = toCharPtr(TypeCode<T>::tform(column.info.repeatCount));
+  // FIXME write unit
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
   writeColumn(fptr, column);
@@ -380,6 +381,7 @@ template <typename... Ts>
 void insertColumns(fitsfile* fptr, long index, const FitsIO::Column<Ts>&... columns) {
   auto names = CStrArray({ columns.info.name... });
   auto tforms = CStrArray({ TypeCode<Ts>::tform(columns.info.repeatCount)... });
+  // FIXME write unit
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(Ts), names.data(), tforms.data(), &status);
   writeColumns(fptr, columns...);

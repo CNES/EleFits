@@ -68,7 +68,7 @@ public:
     logger.info() << "Creating binary table extension: SMALLTBL";
     FitsIO::Test::SmallTable table; // Predefined table for testing purpose
     //! [Create binary table ext]
-    Hdu::createBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
+    HduAccess::createBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create binary table ext]
 
     logger.info();
@@ -76,7 +76,7 @@ public:
     logger.info() << "Creating image extension: SMALLIMG";
     FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
     //! [Create image ext]
-    Hdu::createImageExtension(fptr, "SMALLIMG", raster);
+    HduAccess::createImageExtension(fptr, "SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     FitsIO::Record<std::string> strRecord("STRING", "string");
@@ -106,10 +106,10 @@ public:
 
     logger.info() << "Reading binary table.";
     //! [Find HDU by name]
-    Hdu::gotoName(fptr, "SMALLTBL");
+    HduAccess::gotoName(fptr, "SMALLTBL");
     //! [Find HDU by name]
     //! [Get HDU index]
-    const auto index = Hdu::currentIndex(fptr);
+    const auto index = HduAccess::currentIndex(fptr);
     //! [Get HDU index]
     logger.info() << "HDU index: " << index;
     //! [Read column]
@@ -124,16 +124,16 @@ public:
 
     logger.info() << "Reading image.";
     //! [Find HDU by index]
-    Hdu::gotoIndex(fptr, 3);
+    HduAccess::gotoIndex(fptr, 3);
     //! [Find HDU by index]
     //! [Get HDU name]
-    const auto extname = Hdu::currentName(fptr);
+    const auto extname = HduAccess::currentName(fptr);
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
     const auto records = Header::parseRecords<std::string, int>(fptr, { "STRING", "INTEGER" });
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-    Hdu::gotoName(fptr, "SMALLIMG");
+    HduAccess::gotoName(fptr, "SMALLIMG");
     //! [Read raster]
     const auto image = Image::readRaster<float>(fptr);
     const auto firstPixel = image[{ 0, 0 }];

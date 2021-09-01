@@ -19,13 +19,13 @@
 
 #if defined(_EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-#include <utility> // index_sequence, make_index_sequence
+  #include "EL_CfitsioWrapper/HduWrapper.h"
 
-#include "EL_CfitsioWrapper/HduWrapper.h"
+  #include <utility> // index_sequence, make_index_sequence
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Hdu {
+namespace HduAccess {
 
 template <typename T, long n>
 void createImageExtension(fitsfile* fptr, const std::string& name, const FitsIO::Position<n>& shape) {
@@ -100,7 +100,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
   Bintable::writeColumn(fptr, column);
 }
 
-} // namespace Hdu
+} // namespace HduAccess
 } // namespace Cfitsio
 } // namespace Euclid
 

@@ -31,7 +31,7 @@ VecRaster<T, n> SifFile::readRaster() const {
 
 template <typename T, long n>
 void SifFile::writeRaster(const Raster<T, n>& raster) const {
-  Cfitsio::Hdu::gotoPrimary(m_fptr);
+  Cfitsio::HduAccess::gotoPrimary(m_fptr);
   Cfitsio::Image::updateTypeShape<T, n>(m_fptr, raster.shape);
   Cfitsio::Image::writeRaster(m_fptr, raster);
 }

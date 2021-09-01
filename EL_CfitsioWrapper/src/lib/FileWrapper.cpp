@@ -18,6 +18,7 @@
  */
 
 #include "EL_CfitsioWrapper/FileWrapper.h"
+
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 
@@ -34,7 +35,7 @@ fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
   int status = 0;
   fits_create_file(&fptr, cfitsioName.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create file: " + filename);
-  Hdu::initPrimary(fptr);
+  HduAccess::initPrimary(fptr);
   return fptr;
 }
 

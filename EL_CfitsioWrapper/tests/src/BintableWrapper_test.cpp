@@ -40,7 +40,7 @@ void checkScalarColumnIsReadBack() {
   RandomScalarColumn<T> input;
   MinimalFile file;
   try {
-    Hdu::createBintableExtension(file.fptr, "BINEXT", input);
+    HduAccess::createBintableExtension(file.fptr, "BINEXT", input);
     const auto index = Bintable::columnIndex(file.fptr, input.info.name);
     BOOST_TEST(index == 1);
     const auto info = Bintable::readColumnInfo<T>(file.fptr, index);
@@ -78,7 +78,7 @@ void checkVectorColumnIsReadBack() {
   RandomVectorColumn<T> input(repeatCount, rowCount);
   MinimalFile file;
   try {
-    Hdu::createBintableExtension(file.fptr, "BINEXT", input);
+    HduAccess::createBintableExtension(file.fptr, "BINEXT", input);
     const auto output = Bintable::readColumn<T>(file.fptr, input.info.name);
     BOOST_TEST(output.info.repeatCount == repeatCount);
     BOOST_TEST(output.vector() == input.vector());
@@ -114,7 +114,13 @@ EL_FITSIO_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
 BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
   SmallTable input;
-  Hdu::createBintableExtension(this->fptr, "IMGEXT", input.numCol, input.radecCol, input.nameCol, input.distMagCol);
+  HduAccess::createBintableExtension(
+      this->fptr,
+      "IMGEXT",
+      input.numCol,
+      input.radecCol,
+      input.nameCol,
+      input.distMagCol);
   const auto outputNums = Bintable::readColumn<SmallTable::Num>(this->fptr, input.numCol.info.name);
   BOOST_TEST(outputNums.vector() == input.numCol.vector());
   const auto outputRadecs = Bintable::readColumn<SmallTable::Radec>(this->fptr, input.radecCol.info.name);
@@ -134,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   f.info.name = "F";
   RandomScalarColumn<double> d(rowCount);
   d.info.name = "D";
-  Hdu::createBintableExtension(this->fptr, "BINEXT", i, f, d);
+  HduAccess::createBintableExtension(this->fptr, "BINEXT", i, f, d);
   const auto table = Bintable::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });
   int status = 0;
   long chunkRows = 0;
@@ -148,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
 BOOST_FIXTURE_TEST_CASE(append_columns_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
   SmallTable table;
-  Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol);
+  HduAccess::createBintableExtension(this->fptr, "TABLE", table.nameCol);
   const auto names = Bintable::readColumn<SmallTable::Name>(fptr, table.nameCol.info.name);
   BOOST_TEST(names.vector() == table.names);
   Bintable::appendColumns(fptr, table.distMagCol, table.radecCol);
@@ -162,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE(append_rows_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;
   const SmallTable table;
   const auto initSize = table.names.size();
-  Hdu::createBintableExtension(this->fptr, "TABLE", table.nameCol, table.radecCol);
+  HduAccess::createBintableExtension(this->fptr, "TABLE", table.nameCol, table.radecCol);
   BOOST_TEST(Bintable::rowCount(this->fptr) == initSize);
   Bintable::writeColumns(this->fptr, table.nameCol, table.radecCol);
   BOOST_TEST(Bintable::rowCount(this->fptr) == initSize * 2);

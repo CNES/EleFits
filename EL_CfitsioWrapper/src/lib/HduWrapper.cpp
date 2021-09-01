@@ -24,7 +24,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Hdu {
+namespace HduAccess {
 
 long count(fitsfile* fptr) {
   int count = 0;
@@ -153,6 +153,6 @@ void deleteHdu(fitsfile* fptr, long index) {
   CfitsioError::mayThrow(status, fptr, "Cannot delete HDU: " + std::to_string(index - 1));
 }
 
-} // namespace Hdu
+} // namespace HduAccess
 } // namespace Cfitsio
 } // namespace Euclid
