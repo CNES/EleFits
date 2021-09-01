@@ -34,17 +34,17 @@ BOOST_AUTO_TEST_SUITE(FileWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE(file_operations_test, FitsIO::Test::MinimalFile) {
-  BOOST_CHECK_THROW(File::createAndOpen(filename, File::CreatePolicy::CreateOnly), CfitsioError);
+  BOOST_CHECK_THROW(FileAccess::createAndOpen(filename, FileAccess::CreatePolicy::CreateOnly), CfitsioError);
   BOOST_TEST(fptr);
-  File::close(fptr);
+  FileAccess::close(fptr);
   BOOST_TEST(boost::filesystem::is_regular_file(filename));
   BOOST_TEST(not fptr);
-  fptr = File::open(filename, File::OpenPolicy::ReadOnly);
+  fptr = FileAccess::open(filename, FileAccess::OpenPolicy::ReadOnly);
   BOOST_TEST(fptr);
-  BOOST_CHECK_THROW(File::closeAndDelete(fptr), CfitsioError);
-  File::close(fptr);
-  fptr = File::open(filename, File::OpenPolicy::ReadWrite);
-  File::closeAndDelete(fptr);
+  BOOST_CHECK_THROW(FileAccess::closeAndDelete(fptr), CfitsioError);
+  FileAccess::close(fptr);
+  fptr = FileAccess::open(filename, FileAccess::OpenPolicy::ReadWrite);
+  FileAccess::closeAndDelete(fptr);
   BOOST_TEST(not boost::filesystem::exists(filename));
   BOOST_TEST(not fptr);
 }

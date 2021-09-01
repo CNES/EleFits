@@ -18,6 +18,7 @@
  */
 
 #include "EL_CfitsioWrapper/CfitsioFixture.h"
+
 #include "EL_CfitsioWrapper/FileWrapper.h"
 
 namespace Euclid {
@@ -25,11 +26,11 @@ namespace FitsIO {
 namespace Test {
 
 MinimalFile::MinimalFile() : tmp(), filename(tmp.path().string()), fptr(nullptr) {
-  fptr = Cfitsio::File::createAndOpen(filename, Cfitsio::File::CreatePolicy::OverWrite);
+  fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::OverWrite);
 }
 
 MinimalFile::~MinimalFile() {
-  Cfitsio::File::close(fptr);
+  Cfitsio::FileAccess::close(fptr);
 }
 
 } // namespace Test

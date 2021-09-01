@@ -52,7 +52,7 @@ public:
 
     logger.info() << "Creating Fits file: " << filename;
     //! [Create Fits]
-    auto fptr = File::createAndOpen(filename, File::CreatePolicy::OverWrite);
+    auto fptr = FileAccess::createAndOpen(filename, FileAccess::CreatePolicy::OverWrite);
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
@@ -88,14 +88,14 @@ public:
 
     logger.info() << "Closing file.";
     //! [Close Fits]
-    File::close(fptr);
+    FileAccess::close(fptr);
     //! [Close Fits]
 
     logger.info();
 
     logger.info() << "Reopening file.";
     //! [Open Fits]
-    fptr = File::open(filename, File::OpenPolicy::ReadOnly);
+    fptr = FileAccess::open(filename, FileAccess::OpenPolicy::ReadOnly);
     //! [Open Fits]
     //! [Read record]
     const auto recordValue = Header::parseRecord<int>(fptr, "VALUE");
@@ -145,7 +145,7 @@ public:
     logger.info();
 
     logger.info() << "Reclosing file.";
-    File::close(fptr);
+    FileAccess::close(fptr);
 
     logger.info();
 

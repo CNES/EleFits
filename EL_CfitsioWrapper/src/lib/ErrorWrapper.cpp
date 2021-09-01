@@ -34,7 +34,7 @@ CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string&
     append("CFitsIO fitsfile pointer is null.");
   } else {
     try {
-      append("File name: " + File::name(fptr));
+      append("File name: " + FileAccess::name(fptr));
     } catch (...) {
       append("Unknown file name.");
     }
@@ -78,7 +78,7 @@ void CfitsioError::mayThrow(int cfitsioStatus, fitsfile* fptr, const std::string
 }
 
 void mayThrowReadonlyError(fitsfile* fptr) {
-  if (not File::isWritable(fptr)) {
+  if (not FileAccess::isWritable(fptr)) {
     throw CfitsioError(READONLY_FILE);
   }
 }

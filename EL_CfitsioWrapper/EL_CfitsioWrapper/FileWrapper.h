@@ -29,12 +29,13 @@ namespace Cfitsio {
 /**
  * @brief File-related functions.
  */
-namespace File {
+namespace FileAccess {
 
 /**
  * @brief File creation policy.
  */
-enum class CreatePolicy {
+enum class CreatePolicy
+{
   CreateOnly, ///< Create only (abort if file exists).
   OverWrite ///< Allow overwriting if file already exists.
 };
@@ -42,7 +43,8 @@ enum class CreatePolicy {
 /**
  * @brief File opening policy.
  */
-enum class OpenPolicy {
+enum class OpenPolicy
+{
   ReadOnly, ///< Read persmission only.
   ReadWrite ///< Read and write permissions.
 };
@@ -78,7 +80,7 @@ std::string name(fitsfile* fptr);
  */
 bool isWritable(fitsfile* fptr);
 
-} // namespace File
+} // namespace FileAccess
 } // namespace Cfitsio
 } // namespace Euclid
 

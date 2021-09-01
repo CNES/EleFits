@@ -24,7 +24,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace File {
+namespace FileAccess {
 
 fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
   std::string cfitsioName = filename;
@@ -87,6 +87,6 @@ bool isWritable(fitsfile* fptr) {
   return filemode == READWRITE;
 }
 
-} // namespace File
+} // namespace FileAccess
 } // namespace Cfitsio
 } // namespace Euclid

@@ -1,9 +1,5 @@
 #!/bin/sh
 #
-# File: scripts/EL_FitsIO_CheckPrograms
-# Created on: 01/22/20
-# Author: user
-#
 # Copyright (C) 2012-2020 Euclid Science Ground Segment
 #
 # This library is free software; you can redistribute it and/or modify it under
