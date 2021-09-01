@@ -22,7 +22,7 @@
 
 #include "EL_CfitsioWrapper/BintableWrapper.h"
 #include "EL_FitsFile/BintableColumns.h"
-#include "EL_FitsFile/RecordHdu.h"
+#include "EL_FitsFile/Hdu.h"
 
 #include <string>
 
@@ -33,18 +33,18 @@ namespace FitsIO {
  * @ingroup bintable_handlers
  * @brief Binary table HDU reader-writer.
  */
-class BintableHdu : public RecordHdu {
+class BintableHdu : public Hdu {
 
 public:
   /// @cond INTERNAL
 
   /**
-   * @see RecordHdu
+   * @see Hdu
    */
   BintableHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
 
   /**
-   * @see RecordHdu
+   * @see Hdu
    */
   BintableHdu();
 
@@ -72,7 +72,7 @@ public:
   long readRowCount() const;
 
   /**
-   * @copydoc RecordHdu::readCategory
+   * @copydoc Hdu::readCategory
    */
   HduCategory readCategory() const override;
 

@@ -19,8 +19,8 @@
 
 #include "EL_FitsData/TestRecord.h"
 #include "EL_FitsFile/FitsFileFixture.h"
+#include "EL_FitsFile/Hdu.h"
 #include "EL_FitsFile/MefFile.h"
-#include "EL_FitsFile/RecordHdu.h"
 #include "EL_FitsFile/SifFile.h"
 #include "ElementsKernel/Temporary.h"
 
@@ -30,12 +30,12 @@ using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(RecordHdu_test)
+BOOST_AUTO_TEST_SUITE(Hdu_test)
 
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkRecordWithFallbackIsReadBack(const RecordHdu& h, const std::string& keyword) {
+void checkRecordWithFallbackIsReadBack(const Hdu& h, const std::string& keyword) {
   BOOST_TEST(not h.hasKeyword(keyword));
   BOOST_CHECK_THROW(h.parseRecord<T>(keyword), std::exception);
   const Record<T> fallback { keyword, Test::generateRandomValue<T>(), "", "FALLBACK" };
@@ -52,7 +52,7 @@ void checkRecordWithFallbackIsReadBack(const RecordHdu& h, const std::string& ke
 }
 
 template <>
-void checkRecordWithFallbackIsReadBack<unsigned long>(const RecordHdu& h, const std::string& keyword) {
+void checkRecordWithFallbackIsReadBack<unsigned long>(const Hdu& h, const std::string& keyword) {
   // Wait for CFitsIO bug to be fixed
   (void)h;
   (void)keyword;
@@ -95,7 +95,7 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
   BOOST_TEST(output.hasLongStringValue());
 }
 
-void checkHierarchKeywordIsReadBack(const RecordHdu& h, const std::string& keyword) {
+void checkHierarchKeywordIsReadBack(const Hdu& h, const std::string& keyword) {
   BOOST_TEST(h.readHeader(false).find("HIERARCH") == std::string::npos); // Not found
   const Record<int> record(keyword, 10);
   BOOST_TEST(record.hasLongKeyword() == (keyword.length() > 8));

@@ -10,7 +10,7 @@ namespace FitsIO {
 
 
 In this tutorial, we will show how to read and write multi-extension Fits (MEF) files.
-This means understanding the usage of MefFile, RecordHdu, ImageHdu and BintableHdu service classes,
+This means understanding the usage of MefFile, Hdu, ImageHdu and BintableHdu service classes,
 as well as Record, Raster and Column data classes.
 We strongly recommend reading first the
 <a href=https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node18.html>Fits primer</a>
@@ -171,9 +171,9 @@ It can then be accessed and resized.
 MefFile provides service to create and access extensions.
 There are three types of extensions:
 
-- RecordHdu to read and write records;
-- ImageHdu to read and write images (extends RecordHdu);
-- BintableHdu to read and write binary tables (extends RecordHdu).
+- Hdu to read and write records;
+- ImageHdu to read and write images (extends Hdu);
+- BintableHdu to read and write binary tables (extends Hdu).
 
 Image and binary table HDUs can be considered record HDUs for header work.
 Metadata (i.e., header-only) HDUs are image HDUs with empty data.
@@ -195,14 +195,14 @@ And here's one of creating binary table HDUs:
 \subsection tuto-write-record Write records
 
 
-Records are read and written through RecordHdu services
-(remember ImageHdu and BintableHdu are RecordHdu).
+Records are read and written through Hdu services
+(remember ImageHdu and BintableHdu are Hdu).
 They can be written and updated one-by-one or by batches.
 There are many ways of doing so; here are a few examples:
 
 \snippet EL_FitsIO_Tutorial.cpp Write records
 
-\see RecordHdu
+\see Hdu
 
 
 \section tuto-read Read a MEF file
@@ -211,9 +211,9 @@ There are many ways of doing so; here are a few examples:
 \subsection tuto-access-hdu Access HDUs
 
 
-HDUs can be accessed with a set of methods, templated with the type of HDU: BintableHdu, ImageHdu, or RecordHdu.
+HDUs can be accessed with a set of methods, templated with the type of HDU: BintableHdu, ImageHdu, or Hdu.
 For metadata work, we don't need to know the type of HDU:
-whether this is an image or binary table HDU has no impact, and a RecordHdu will be returned by default.
+whether this is an image or binary table HDU has no impact, and a Hdu will be returned by default.
 
 HDUs are accessed either by their name (first HDU whose name matches argument is returned) or by their index,
 and a shortcut is provided for the primary HDU (which has index 0):
@@ -230,12 +230,12 @@ Indeed, HDU handlers are owned by the MefFile instance and are not modified by r
 \subsection tuto-read-record Parse records
 
 
-Records are parsed using RecordHdu services.
+Records are parsed using Hdu services.
 Like for writing, you can parse several records at once:
 
 \snippet EL_FitsIO_Tutorial.cpp Read records
 
-\see RecordHdu
+\see Hdu
 
 
 \subsection tuto-read-image Read image values

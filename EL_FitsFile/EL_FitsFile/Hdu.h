@@ -42,9 +42,9 @@ namespace FitsIO {
  * while generic services are accessed through the header() method (refer to the documentation of the Header class).
  *
  * @note
- * RecordHdus are written as Image HDUs with NAXIS=0.
+ * `Hdu`s are written as Image HDUs with NAXIS=0.
  */
-class RecordHdu {
+class Hdu {
 
 public:
   /// @cond INTERNAL
@@ -52,13 +52,13 @@ public:
   /**
    * @brief A token for the passkey idiom.
    * @details
-   * Only few classes should be able to create a RecordHdu.
+   * Only few classes should be able to create a Hdu.
    * This is enforced by the private Token constructor with restricted set of friend classes.
    */
   class Token {
     friend class MefFile;
     friend class SifFile;
-    friend class RecordHdu;
+    friend class Hdu;
     friend class ImageHdu;
     friend class BintableHdu;
 
@@ -69,7 +69,7 @@ public:
   /**
    * @brief Constructor.
    * @warning
-   * You should not try to instantiate a RecordHdu yourself,
+   * You should not try to instantiate a Hdu yourself,
    * but use the dedicated MefFile creation methods.
    * @details
    * The constructor cannot be protected, because unique pointers are created with the make_unique function,
@@ -77,8 +77,7 @@ public:
    * We rely on the passkey idiom: Token is protected and therefore accessible only from MefFile (a fiend class)
    * and classes derived from RecrodHdu.
    */
-  RecordHdu(
-      Token,
+  Hdu(Token,
       fitsfile*& file,
       long index,
       HduCategory type = HduCategory::Image,
@@ -87,14 +86,14 @@ public:
   /**
    * @brief Dummy constructor, dedicated to iterators.
    */
-  RecordHdu();
+  Hdu();
 
   /// @endcond
 
   /**
    * @brief Destructor.
    */
-  virtual ~RecordHdu() = default;
+  virtual ~Hdu() = default;
 
   /**
    * @brief Get the 0-based index of the HDU.
@@ -519,13 +518,19 @@ protected:
   fitsfile* m_dummyFptr = nullptr;
 };
 
+/**
+ * @brief Deprecated alias for backward compatibility.
+ * @deprecated Replaced with Hdu
+ */
+using RecordHdu = Hdu;
+
 } // namespace FitsIO
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_RECORDHDU_IMPL
-#include "EL_FitsFile/impl/RecordHdu.hpp"
-#undef _EL_FITSFILE_RECORDHDU_IMPL
+#define _EL_FITSFILE_HDU_IMPL
+#include "EL_FitsFile/impl/Hdu.hpp"
+#undef _EL_FITSFILE_HDU_IMPL
 /// @endcond
 
 #endif

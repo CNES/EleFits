@@ -80,8 +80,8 @@ TutoColumns createColumns();
 
 void writeMefFile(const std::string& filename);
 void readMefFile(const std::string& filename);
-void writeRecords(const FitsIO::RecordHdu& hdu);
-void readRecords(const FitsIO::RecordHdu& hdu);
+void writeRecords(const FitsIO::Hdu& hdu);
+void readRecords(const FitsIO::Hdu& hdu);
 void readRaster(const FitsIO::ImageHdu& hdu);
 void readColumns(const FitsIO::BintableHdu& hdu);
 
@@ -245,7 +245,7 @@ void writeMefFile(const std::string& filename) {
   // File is closed at destruction of f.
 }
 
-void writeRecords(const FitsIO::RecordHdu& hdu) {
+void writeRecords(const FitsIO::Hdu& hdu) {
 
   const auto records = createRecords();
 
@@ -293,8 +293,8 @@ void readMefFile(const std::string& filename) {
 
   /* Access the Primary HDU */
 
-  const auto& primary = f.accessPrimary<FitsIO::RecordHdu>();
-  // Our primary contains only metadata, which is why we request a RecordHdu.
+  const auto& primary = f.accessPrimary<FitsIO::Hdu>();
+  // Our primary contains only metadata, which is why we request a Hdu.
   logger.info() << "    Primary index: " << primary.index();
   // Indices are 0-based in the FitsIO namespace.
 
@@ -316,7 +316,7 @@ void readMefFile(const std::string& filename) {
   readColumns(table1);
 }
 
-void readRecords(const FitsIO::RecordHdu& hdu) {
+void readRecords(const FitsIO::Hdu& hdu) {
 
   //! [Read records]
 

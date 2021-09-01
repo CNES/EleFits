@@ -18,7 +18,7 @@
  */
 
 #include "EL_FitsFile/FitsFileFixture.h"
-#include "EL_FitsFile/RecordHdu.h"
+#include "EL_FitsFile/Hdu.h"
 
 #include <boost/test/unit_test.hpp>
 

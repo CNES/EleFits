@@ -31,11 +31,11 @@ const T& MefFile::access(long index) {
   auto& ptr = m_hdus[index];
   if (ptr == nullptr) {
     if (hduType == HduCategory::Image) {
-      ptr.reset(new ImageHdu(RecordHdu::Token {}, m_fptr, index));
+      ptr.reset(new ImageHdu(Hdu::Token {}, m_fptr, index));
     } else if (hduType == HduCategory::Bintable) {
-      ptr.reset(new BintableHdu(RecordHdu::Token {}, m_fptr, index));
+      ptr.reset(new BintableHdu(Hdu::Token {}, m_fptr, index));
     } else {
-      ptr.reset(new RecordHdu(RecordHdu::Token {}, m_fptr, index));
+      ptr.reset(new Hdu(Hdu::Token {}, m_fptr, index));
     }
   }
   return ptr->as<T>();
@@ -50,9 +50,9 @@ const T& MefFile::accessFirst(const std::string& name, long version) {
 template <class T>
 const T& MefFile::access(const std::string& name, long version) {
   const auto category = HduCategory::forClass<T>();
-  const RecordHdu* hduPtr = nullptr;
+  const Hdu* hduPtr = nullptr;
   for (long i = 0; i < hduCount(); ++i) {
-    const auto& hdu = access<RecordHdu>(i);
+    const auto& hdu = access<Hdu>(i);
     const bool cMatch = (category == HduCategory::Any || hdu.type() == category);
     const bool cnMatch = cMatch && (name == "" || hdu.readName() == name);
     const bool cnvMatch = cnMatch && (version == 0 || hdu.readVersion() == version);
@@ -84,7 +84,7 @@ template <typename T, long n>
 const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
   Cfitsio::HduAccess::createImageExtension<T, n>(m_fptr, name, shape);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
+  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<ImageHdu>();
 }
 
@@ -92,7 +92,7 @@ template <typename T, long n>
 const ImageHdu& MefFile::assignImageExt(const std::string& name, const Raster<T, n>& raster) {
   Cfitsio::HduAccess::createImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
+  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<ImageHdu>();
 }
 
@@ -100,7 +100,7 @@ template <typename... Ts>
 const BintableHdu& MefFile::initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header) {
   Cfitsio::HduAccess::createBintableExtension(m_fptr, name, header...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
+  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<BintableHdu>();
 }
 
@@ -108,7 +108,7 @@ template <typename... Ts>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Column<Ts>&... columns) {
   Cfitsio::HduAccess::createBintableExtension(m_fptr, name, columns...);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
+  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<BintableHdu>();
 }
 
@@ -116,7 +116,7 @@ template <typename Tuple, std::size_t count>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Tuple& columns) {
   Cfitsio::HduAccess::createBintableExtension<Tuple, count>(m_fptr, name, columns);
   const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(RecordHdu::Token {}, m_fptr, size, HduCategory::Created));
+  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<BintableHdu>();
 }
 

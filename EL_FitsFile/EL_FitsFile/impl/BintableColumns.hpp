@@ -34,7 +34,7 @@ ColumnInfo<T> BintableColumns::readInfo(const std::string& name) const {
 
 template <typename T>
 ColumnInfo<T> BintableColumns::readInfo(long index) const {
-  return Cfitsio::Bintable::readColumnInfo<T>(m_fptr, index + 1);
+  return Cfitsio::BintableIo::readColumnInfo<T>(m_fptr, index + 1);
 }
 
 // read
@@ -96,7 +96,7 @@ template <typename T>
 void BintableColumns::readSegmentTo(const Segment& rows, long index, Column<T>& column) const {
   m_touch();
   const Segment cfitsioRows { rows.lower + 1, rows.upper + 1 }; // FIXME rows + 1
-  Cfitsio::Bintable::readColumnSegment<T>(m_fptr, cfitsioRows, index + 1, column);
+  Cfitsio::BintableIo::readColumnSegment<T>(m_fptr, cfitsioRows, index + 1, column);
 }
 
 // readSeq
@@ -110,7 +110,7 @@ template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
   m_touch();
   const std::vector<long> cfitsioIndices { (indices.index + 1)... }; // 1-based
-  return Cfitsio::Bintable::readColumns<Ts...>(m_fptr, cfitsioIndices); // FIXME through readSegmentSeqTo
+  return Cfitsio::BintableIo::readColumns<Ts...>(m_fptr, cfitsioIndices); // FIXME through readSegmentSeqTo
 }
 
 // readSeqTo
@@ -209,7 +209,7 @@ void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<lo
   int status = 0;
   fits_get_rowsize(m_fptr, &bufferSize, &status);
   // FIXME mayThrow
-  // FIXME const auto bufferSize = Cfitsio::Bintable::bufferSize(m_fptr);
+  // FIXME const auto bufferSize = Cfitsio::BintableIo::bufferSize(m_fptr);
   for (Segment src = Segment::fromSize(rows.lower, bufferSize), dst = Segment::fromSize(0, bufferSize);
        src.lower <= rows.upper; // FIXME src += bufferSize, dst += bufferSize) {
        src.lower += bufferSize, src.upper += bufferSize, dst.lower += bufferSize, dst.upper += bufferSize) {
@@ -235,7 +235,7 @@ void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<lo
 template <typename T>
 void BintableColumns::write(const Column<T>& column) const {
   m_edit();
-  Cfitsio::Bintable::writeColumn(m_fptr, column);
+  Cfitsio::BintableIo::writeColumn(m_fptr, column);
 }
 
 // insert
@@ -244,9 +244,9 @@ template <typename T>
 void BintableColumns::insert(const Column<T>& column, long index) const {
   m_edit();
   if (index == -1) { // TODO handle other negative values?
-    Cfitsio::Bintable::appendColumn(m_fptr, column);
+    Cfitsio::BintableIo::appendColumn(m_fptr, column);
   } else {
-    Cfitsio::Bintable::insertColumn(m_fptr, index + 1, column);
+    Cfitsio::BintableIo::insertColumn(m_fptr, index + 1, column);
   }
 }
 
@@ -259,7 +259,7 @@ void BintableColumns::insert(const Column<T>& column, long index) const {
 template <typename... Ts>
 void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
   m_edit();
-  Cfitsio::Bintable::writeColumns(m_fptr, columns...); // FIXME test
+  Cfitsio::BintableIo::writeColumns(m_fptr, columns...); // FIXME test
 }
 
 template <typename TSeq>
@@ -277,7 +277,7 @@ void BintableColumns::appendSeq(TSeq&& columns) const {
 template <typename... Ts>
 void BintableColumns::appendSeq(const Column<Ts>&... columns) const {
   m_edit();
-  Cfitsio::Bintable::appendColumns(m_fptr, columns...);
+  Cfitsio::BintableIo::appendColumns(m_fptr, columns...);
 }
 
 // FIXME writeSegmentSeq

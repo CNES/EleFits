@@ -153,7 +153,7 @@ const HduCategory HduCategory::Edited { HduCategory::TritPosition::ReadEdited, H
 const HduCategory HduCategory::Created { ~HduCategory::Existed & HduCategory::Edited };
 
 template <>
-HduCategory HduCategory::forClass<RecordHdu>() {
+HduCategory HduCategory::forClass<Hdu>() {
   return HduCategory::Any;
 }
 

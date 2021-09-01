@@ -17,15 +17,14 @@
  *
  */
 
-#include "EL_FitsFile/RecordHdu.h"
-
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
+#include "EL_FitsFile/Hdu.h"
 
 namespace Euclid {
 namespace FitsIO {
 
-RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
+Hdu::Hdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
     m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_header(
                                                                m_fptr,
                                                                [&]() {
@@ -36,17 +35,17 @@ RecordHdu::RecordHdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCa
                                                                }),
     m_status(status) {}
 
-RecordHdu::RecordHdu() : RecordHdu(Token(), m_dummyFptr, 0, HduCategory::Image, HduCategory::Untouched) {}
+Hdu::Hdu() : Hdu(Token(), m_dummyFptr, 0, HduCategory::Image, HduCategory::Untouched) {}
 
-long RecordHdu::index() const {
+long Hdu::index() const {
   return m_cfitsioIndex - 1;
 }
 
-HduCategory RecordHdu::type() const {
+HduCategory Hdu::type() const {
   return m_type;
 }
 
-HduCategory RecordHdu::readCategory() const {
+HduCategory Hdu::readCategory() const {
   HduCategory cat = m_type & m_status;
   if (m_cfitsioIndex == 1) {
     cat &= HduCategory::Primary;
@@ -56,99 +55,99 @@ HduCategory RecordHdu::readCategory() const {
   return cat;
 }
 
-const Header& RecordHdu::header() const {
+const Header& Hdu::header() const {
   return m_header;
 }
 
-bool RecordHdu::matches(HduFilter filter) const {
+bool Hdu::matches(HduFilter filter) const {
   return filter.accepts(readCategory());
 }
 
-std::string RecordHdu::readName() const {
+std::string Hdu::readName() const {
   touchThisHdu();
   return Cfitsio::HduAccess::currentName(m_fptr);
 }
 
-long RecordHdu::readVersion() const {
+long Hdu::readVersion() const {
   touchThisHdu();
   return Cfitsio::HduAccess::currentVersion(m_fptr);
 }
 
-void RecordHdu::updateName(const std::string& name) const {
+void Hdu::updateName(const std::string& name) const {
   editThisHdu();
   Cfitsio::HduAccess::updateName(m_fptr, name);
 }
 
-void RecordHdu::updateVersion(long version) const {
+void Hdu::updateVersion(long version) const {
   editThisHdu();
   Cfitsio::HduAccess::updateVersion(m_fptr, version);
 }
 
-std::string RecordHdu::readHeader(bool incNonValued) const {
+std::string Hdu::readHeader(bool incNonValued) const {
   touchThisHdu();
   return Cfitsio::HeaderIo::readHeader(m_fptr, incNonValued);
 }
 
-std::vector<std::string> RecordHdu::readKeywords(KeywordCategory categories) const {
+std::vector<std::string> Hdu::readKeywords(KeywordCategory categories) const {
   return m_header.readKeywords(categories);
 }
 
-std::map<std::string, std::string> RecordHdu::readKeywordsValues(KeywordCategory categories) const {
+std::map<std::string, std::string> Hdu::readKeywordsValues(KeywordCategory categories) const {
   return m_header.readKeywordsValues(categories);
 }
 
-bool RecordHdu::hasKeyword(const std::string& keyword) const {
+bool Hdu::hasKeyword(const std::string& keyword) const {
   touchThisHdu();
   return Cfitsio::HeaderIo::hasKeyword(m_fptr, keyword);
 }
 
-RecordVector<VariantValue> RecordHdu::parseRecordCollection(const std::vector<std::string>& keywords) const {
+RecordVector<VariantValue> Hdu::parseRecordCollection(const std::vector<std::string>& keywords) const {
   return parseRecordVector<VariantValue>(keywords);
 }
 
-void RecordHdu::writeComment(const std::string& comment) const {
+void Hdu::writeComment(const std::string& comment) const {
   editThisHdu();
   return Cfitsio::HeaderIo::writeComment(m_fptr, comment);
 }
 
-void RecordHdu::writeHistory(const std::string& history) const {
+void Hdu::writeHistory(const std::string& history) const {
   editThisHdu();
   return Cfitsio::HeaderIo::writeHistory(m_fptr, history);
 }
 
-void RecordHdu::deleteRecord(const std::string& keyword) const {
+void Hdu::deleteRecord(const std::string& keyword) const {
   editThisHdu();
   KeywordNotFoundError::mayThrow(keyword, m_header);
   Cfitsio::HeaderIo::deleteRecord(m_fptr, keyword);
 }
 
-void RecordHdu::touchThisHdu() const {
+void Hdu::touchThisHdu() const {
   Cfitsio::HduAccess::gotoIndex(m_fptr, m_cfitsioIndex);
   if (m_status == HduCategory::Untouched) {
     m_status = HduCategory::Touched;
   }
 }
 
-void RecordHdu::editThisHdu() const {
+void Hdu::editThisHdu() const {
   touchThisHdu();
   m_status &= HduCategory::Edited;
 }
 
 #ifndef COMPILE_PARSE_RECORD
-  #define COMPILE_PARSE_RECORD(type, unused) template Record<type> RecordHdu::parseRecord(const std::string&) const;
+  #define COMPILE_PARSE_RECORD(type, unused) template Record<type> Hdu::parseRecord(const std::string&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
   #undef COMPILE_PARSE_RECORD
 #endif
 
-template RecordVector<VariantValue> RecordHdu::parseRecordVector(const std::vector<std::string>&) const;
+template RecordVector<VariantValue> Hdu::parseRecordVector(const std::vector<std::string>&) const;
 
 #ifndef COMPILE_WRITE_RECORD
-  #define COMPILE_WRITE_RECORD(type, unused) template void RecordHdu::writeRecord(const Record<type>&) const;
+  #define COMPILE_WRITE_RECORD(type, unused) template void Hdu::writeRecord(const Record<type>&) const;
 EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
   #undef COMPILE_WRITE_RECORD
 #endif
 
-template void RecordHdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
+template void Hdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
 
 } // namespace FitsIO
 } // namespace Euclid

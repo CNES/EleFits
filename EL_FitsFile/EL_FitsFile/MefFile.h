@@ -103,10 +103,10 @@ public:
 
   /**
    * @brief Access the HDU at given 0-based index.
-   * @tparam T The type of HDU: ImageHdu, BintableHdu, or RecordHdu to just handle metadata.
+   * @tparam T The type of HDU: ImageHdu, BintableHdu, or Hdu to just handle metadata.
    * @return A reference to the HDU reader-writer.
    * @details
-   * The type can be ImageHdu, BintableHdu or unspecified (i.e. base class RecordHdu, the metadata reader-writer.).
+   * The type can be ImageHdu, BintableHdu or unspecified (i.e. base class Hdu, the metadata reader-writer.).
    * In the latter case, if needs be, the returned HDU can still be cast to an ImageHdu or BintableHdu:
    * \code
    * const auto &ext = f.access<>(1);
@@ -114,17 +114,17 @@ public:
    * \endcode
    * @see operator[]
    */
-  template <class T = RecordHdu>
+  template <class T = Hdu>
   const T& access(long index);
 
   /**
-   * @brief Shortcut for access<RecordHdu>(long)
+   * @brief Shortcut for access<Hdu>(long)
    */
-  const RecordHdu& operator[](long index);
+  const Hdu& operator[](long index);
 
   /**
    * @brief Access the first HDU with given name, type and version.
-   * @tparam T The type of HDU, or RecordHdu to not check the type
+   * @tparam T The type of HDU, or Hdu to not check the type
    * @param name The HDU name
    * @param version The HDU version, or 0 to not check the version
    * @details
@@ -133,7 +133,7 @@ public:
    * For example, in a file with an image extension and a binary table extension both named "EXT",
    * `accessFirst<ImageHdu>("EXT")` returns the image extension,
    * while `accessFirst<BintableHdu>("EXT")` returns the binary table extension,
-   * and `accessFirst<RecordHdu>("EXT")` returns whichever of the two has the smallest index.
+   * and `accessFirst<Hdu>("EXT")` returns whichever of the two has the smallest index.
    * 
    * In the case where several HDUs of same type have the same name
    * (which is discouraged by the standard, but not forbidden),
@@ -142,7 +142,7 @@ public:
    * @see access(long)
    * @see access(const std::string&)
    */
-  template <class T = RecordHdu>
+  template <class T = Hdu>
   const T& accessFirst(const std::string& name, long version = 0);
 
   /**
@@ -154,31 +154,31 @@ public:
    * which may have a non-negligible I/O cost.
    * @see accessFirst
    */
-  template <class T = RecordHdu>
+  template <class T = Hdu>
   const T& access(const std::string& name, long version = 0);
 
   /**
    * @brief Access the Primary HDU.
    * @see access
    */
-  template <class T = RecordHdu>
+  template <class T = Hdu>
   const T& accessPrimary();
   // FIXME remove T: Primary is necessarily an ImageHdu
-  // RecordHdu makes no sense anymore, now that header() and array() exist
+  // Hdu makes no sense anymore, now that header() and array() exist
 
   /**
    * @ingroup iterators
    * @brief Select a filtered set of HDUs.
    * @return An iterable object, i.e. one for which begin and end functions are provided.
    */
-  template <typename THdu = RecordHdu>
+  template <typename THdu = Hdu>
   HduSelector<THdu> select(const HduFilter& filter = HduCategory::Any);
 
   /**
-   * @brief Append a new RecordHdu (as an empty ImageHdu) with given name.
-   * @return A reference to the new RecordHdu.
+   * @brief Append a new Hdu (as an empty ImageHdu) with given name.
+   * @return A reference to the new Hdu.
    */
-  const RecordHdu& initRecordExt(const std::string& name);
+  const Hdu& initRecordExt(const std::string& name);
 
   /**
    * @brief Append a new ImageHdu with given name and shape.
@@ -243,15 +243,15 @@ protected:
    * @brief Append an extension.
    * @return A reference to the new HDU of type T.
    */
-  template <class T = RecordHdu>
+  template <class T = Hdu>
   const T& appendExt(T extension);
 
   /**
-   * @brief Vector of RecordHdus (castable to ImageHdu or BintableHdu).
+   * @brief Vector of `Hdu`s (castable to `ImageHdu` or `BintableHdu`).
    * @warning
    * m_hdus is 0-based while Cfitsio HDUs are 1-based.
    */
-  std::vector<std::unique_ptr<RecordHdu>> m_hdus;
+  std::vector<std::unique_ptr<Hdu>> m_hdus;
 };
 
 } // namespace FitsIO

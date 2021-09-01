@@ -28,7 +28,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Bintable {
+namespace BintableIo {
 
 /// @cond INTERNAL
 namespace Internal {
@@ -403,7 +403,7 @@ void appendColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
   insertColumns(fptr, ncols + 1, columns...);
 }
 
-} // namespace Bintable
+} // namespace BintableIo
 } // namespace Cfitsio
 } // namespace Euclid
 

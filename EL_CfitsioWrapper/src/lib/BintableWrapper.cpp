@@ -26,7 +26,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Bintable {
+namespace BintableIo {
 
 long columnCount(fitsfile* fptr) {
   int status = 0;
@@ -219,6 +219,6 @@ void writeColumn<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>&
   CfitsioError::mayThrow(status, fptr, "Cannot write column: " + column.info.name);
 }
 
-} // namespace Bintable
+} // namespace BintableIo
 } // namespace Cfitsio
 } // namespace Euclid

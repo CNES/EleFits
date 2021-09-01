@@ -22,8 +22,8 @@
 
 #include "EL_CfitsioWrapper/ImageWrapper.h"
 #include "EL_FitsData/Raster.h"
+#include "EL_FitsFile/Hdu.h"
 #include "EL_FitsFile/ImageRaster.h"
-#include "EL_FitsFile/RecordHdu.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -50,24 +50,24 @@ namespace FitsIO {
  * In this case, the dimension is read in the Fits file,
  * but the user should be careful to handle all possible values.
  * @see
- * RecordHdu for services to read and write records.
+ * Hdu for services to read and write records.
  * @see
  * Position for details on the handling of fixed- and variable-dimension arrays.
  * @see
  * EL_FITSIO_FOREACH_RASTER_TYPE and program EL_FitsIO_PrintSupportedTypes for the list of supported pixel types.
  */
-class ImageHdu : public RecordHdu {
+class ImageHdu : public Hdu {
 
 public:
   /// @cond INTERNAL
 
   /**
-   * @see RecordHdu
+   * @see Hdu
    */
   ImageHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
 
   /**
-   * @see RecordHdu
+   * @see Hdu
    */
   ImageHdu();
 
@@ -101,7 +101,7 @@ public:
   Position<n> readShape() const;
 
   /**
-   * @copydoc RecordHdu::readCategory
+   * @copydoc Hdu::readCategory
    */
   HduCategory readCategory() const override;
 

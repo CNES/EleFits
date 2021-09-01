@@ -63,7 +63,7 @@ void writeBintable(const std::string& filename, long rows) {
  * We rely on VariantValue, but it would be possible to skip this abstraction and go with raw types
  * using a tuple instead of a vector.
  */
-void writeSomeRecords(const RecordHdu& hdu) {
+void writeSomeRecords(const Hdu& hdu) {
   std::vector<Record<VariantValue>> records = {
     { "WCSAXES", 2, "", "Number of axes in World Coordinate System" },
     { "CRPIX1", "", "", "Pixel coordinate of reference point" },

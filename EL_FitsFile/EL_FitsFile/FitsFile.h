@@ -21,8 +21,8 @@
 #define _EL_FITSFILE_FITSFILE_H
 
 #include "EL_FitsFile/BintableHdu.h"
+#include "EL_FitsFile/Hdu.h"
 #include "EL_FitsFile/ImageHdu.h"
-#include "EL_FitsFile/RecordHdu.h"
 
 #include <fitsio.h>
 #include <string>
@@ -44,15 +44,15 @@ namespace Euclid {
  * * `read` and `parse` means that some data are read from the Fits file;
  * * `parse` differs from `read` in that the raw contents of the Fits file are interpreted
  * instead of being simply forwarded:
- * for example, RecordHdu::parseRecord returns a Record with user-defined type
+ * for example, Hdu::parseRecord returns a Record with user-defined type
  * by parsing the characters in the Fits file,
- * while RecordHdu::readName returns the raw value of the EXTNAME keyword.
+ * while Hdu::readName returns the raw value of the EXTNAME keyword.
  * * `write`, `update`, `init` and `assign` means that some data are written to the Fits file;
- * * `update` differs from `write` (e.g. RecordHdu::updateRecord vs. RecordHdu::writeRecord)
+ * * `update` differs from `write` (e.g. Hdu::updateRecord vs. Hdu::writeRecord)
  * in that if the data already exist in the Fits file, they are overridden instead of new data to be written.
  * * `init` methods write metadata (e.g. image size) while `assign` methods also write data (e.g. image pixels);
  * * Getters -- which do not imply reading from the Files but only working with class members -- are nouns:
- * for example, RecordHdu::readHduName is a reading operation, while RecordHdu::index is a simple getter.
+ * for example, Hdu::readHduName is a reading operation, while Hdu::index is a simple getter.
  */
 namespace FitsIO {
 

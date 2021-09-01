@@ -23,37 +23,37 @@ namespace Euclid {
 namespace FitsIO {
 
 BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
-    RecordHdu(token, fptr, index, HduCategory::Bintable, status), m_columns(
-                                                                      m_fptr,
-                                                                      [&]() {
-                                                                        touchThisHdu();
-                                                                      },
-                                                                      [&]() {
-                                                                        editThisHdu();
-                                                                      }) {}
+    Hdu(token, fptr, index, HduCategory::Bintable, status), m_columns(
+                                                                m_fptr,
+                                                                [&]() {
+                                                                  touchThisHdu();
+                                                                },
+                                                                [&]() {
+                                                                  editThisHdu();
+                                                                }) {}
 
 BintableHdu::BintableHdu() :
-    RecordHdu(), m_columns(
-                     m_fptr,
-                     [&]() {
-                       touchThisHdu();
-                     },
-                     [&]() {
-                       editThisHdu();
-                     }) {}
+    Hdu(), m_columns(
+               m_fptr,
+               [&]() {
+                 touchThisHdu();
+               },
+               [&]() {
+                 editThisHdu();
+               }) {}
 
 long BintableHdu::readColumnCount() const {
   touchThisHdu();
-  return Cfitsio::Bintable::columnCount(m_fptr);
+  return Cfitsio::BintableIo::columnCount(m_fptr);
 }
 
 long BintableHdu::readRowCount() const {
   touchThisHdu();
-  return Cfitsio::Bintable::rowCount(m_fptr);
+  return Cfitsio::BintableIo::rowCount(m_fptr);
 }
 
 HduCategory BintableHdu::readCategory() const {
-  auto cat = RecordHdu::readCategory();
+  auto cat = Hdu::readCategory();
   if (readColumnCount() == 0 || readRowCount() == 0) {
     cat &= HduCategory::Metadata;
   } else {
@@ -64,7 +64,7 @@ HduCategory BintableHdu::readCategory() const {
 
 bool BintableHdu::hasColumn(const std::string& name) const {
   touchThisHdu();
-  return Cfitsio::Bintable::hasColumn(m_fptr, name);
+  return Cfitsio::BintableIo::hasColumn(m_fptr, name);
 }
 
 std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string>& names) const {
@@ -72,26 +72,26 @@ std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string>& names)
   const auto size = names.size();
   std::vector<bool> counts(size);
   std::transform(names.begin(), names.end(), counts.begin(), [&](const std::string& n) {
-    return Cfitsio::Bintable::hasColumn(m_fptr, n);
+    return Cfitsio::BintableIo::hasColumn(m_fptr, n);
   });
   return counts;
 }
 
 long BintableHdu::readColumnIndex(const std::string& name) const {
   touchThisHdu();
-  return Cfitsio::Bintable::columnIndex(m_fptr, name) - 1;
+  return Cfitsio::BintableIo::columnIndex(m_fptr, name) - 1;
 }
 
 std::string BintableHdu::readColumnName(long index) const {
   touchThisHdu();
-  return Cfitsio::Bintable::columnName(m_fptr, index + 1);
+  return Cfitsio::BintableIo::columnName(m_fptr, index + 1);
 }
 
 std::vector<std::string> BintableHdu::readColumnNames() const {
   const auto size = readColumnCount(); // calls touchThisHdu
   std::vector<std::string> names(size);
   for (long i = 0; i < size; ++i) {
-    names[i] = Cfitsio::Bintable::columnName(m_fptr, i + 1);
+    names[i] = Cfitsio::BintableIo::columnName(m_fptr, i + 1);
   }
   return names;
 }
@@ -102,7 +102,7 @@ void BintableHdu::renameColumn(const std::string& name, const std::string& newNa
 
 void BintableHdu::renameColumn(long index, const std::string& newName) const {
   editThisHdu();
-  Cfitsio::Bintable::updateColumnName(m_fptr, index + 1, newName);
+  Cfitsio::BintableIo::updateColumnName(m_fptr, index + 1, newName);
 }
 
 #ifndef COMPILE_READ_COLUMN

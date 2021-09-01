@@ -113,11 +113,11 @@ public:
     //! [Get HDU index]
     logger.info() << "HDU index: " << index;
     //! [Read column]
-    const auto ids = Bintable::readColumn<int>(fptr, "ID").vector();
+    const auto ids = BintableIo::readColumn<int>(fptr, "ID").vector();
     const auto firstCell = ids[0];
     //! [Read column]
     logger.info() << "First id: " << firstCell;
-    const auto names = Bintable::readColumn<std::string>(fptr, "NAME").vector();
+    const auto names = BintableIo::readColumn<std::string>(fptr, "NAME").vector();
     logger.info() << "Last name: " << names[names.size() - 1];
 
     logger.info();

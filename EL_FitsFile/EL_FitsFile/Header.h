@@ -91,7 +91,7 @@ enum class RecordMode
 class Header {
 
 private:
-  friend class RecordHdu;
+  friend class Hdu;
 
   /**
    * @brief Constructor.

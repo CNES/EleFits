@@ -20,8 +20,8 @@
 #ifndef _EL_FITSFILE_HDUITERATOR_H
 #define _EL_FITSFILE_HDUITERATOR_H
 
+#include "EL_FitsFile/Hdu.h"
 #include "EL_FitsFile/MefFile.h"
-#include "EL_FitsFile/RecordHdu.h"
 
 #include <iterator>
 
@@ -37,11 +37,11 @@ namespace FitsIO {
  * If THdu is not specified, the following deduction rules are applied:
  * - If bit Image = 1 and bit Bintable = 0 in TCategories, THdu = ImageHdu;
  * - If bit Image = 0 and bit Bintable = 1 in TCategories, THdu = Bintable;
- * - Otherwise, THdu = RecordHdu.
+ * - Otherwise, THdu = Hdu.
  * 
  * If this default value is not adequate, THdu can be specified.
  */
-template <typename THdu = RecordHdu>
+template <typename THdu = Hdu>
 class HduIterator : public std::iterator<std::input_iterator_tag, const THdu> {
 public:
   /**
@@ -131,7 +131,7 @@ private:
   /**
    * @brief The current HDU.
    */
-  const RecordHdu* m_hdu;
+  const Hdu* m_hdu;
 
   /**
    * @brief The HDU filter.
@@ -146,7 +146,7 @@ private:
 
 /**
  * @ingroup iterators
- * @brief Beginning of an iterator to loop over all HDUs as RecordHdus.
+ * @brief Beginning of an iterator to loop over all HDUs as `Hdu`s.
  */
 HduIterator<> begin(MefFile& f) {
   return { f, 0 };
@@ -154,7 +154,7 @@ HduIterator<> begin(MefFile& f) {
 
 /**
  * @ingroup iterators
- * @brief End of an iterator to loop over all HDUs as RecordHdus.
+ * @brief End of an iterator to loop over all HDUs as `Hdu`s.
  */
 HduIterator<> end(MefFile& f) {
   return { f, f.hduCount() };
@@ -166,7 +166,7 @@ HduIterator<> end(MefFile& f) {
  * @tparam THdu The desired HDU type
  * @param selector The HDU selector
  */
-template <typename THdu = RecordHdu>
+template <typename THdu = Hdu>
 HduIterator<THdu> begin(MefFile::HduSelector<THdu>& selector) {
   return { selector.mef, 0, selector.filter };
 }
@@ -175,7 +175,7 @@ HduIterator<THdu> begin(MefFile::HduSelector<THdu>& selector) {
  * @ingroup iterators
  * @brief End of an iterator to loop over selected HDUs.
  */
-template <typename THdu = RecordHdu>
+template <typename THdu = Hdu>
 HduIterator<THdu> end(MefFile::HduSelector<THdu>& selector) {
   return { selector.mef, selector.mef.hduCount(), selector.filter };
 }

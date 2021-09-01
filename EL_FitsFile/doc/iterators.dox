@@ -42,7 +42,7 @@ For example, to accept the Primary HDU and all the real-valued image HDUs, exclu
 const auto filter = HduCategory::Primary + HduCategory::IntImage - HduCategory::Created;
 \endcode
 
-It is possible to check if an HDU is of given category or matches a given filter with method `RecordHdu::matches`, as follows:
+It is possible to check if an HDU is of given category or matches a given filter with method `Hdu::matches`, as follows:
 
 \code
 for (const auto& hdu : f) {
@@ -69,7 +69,7 @@ for (const auto& hdu : f.select<ImageHdu>(HduCategory::Image & HduCategory::Crea
 }
 \endcode
 
-The template parameter specifies the class to be returned: RecordHdu, ImageHdu, or BintableHdu.
+The template parameter specifies the class to be returned: Hdu, ImageHdu, or BintableHdu.
 It is used to constrain the given filter:
 for ImageHdu (resp. BintableHdu), HduCategory::Image (resp. HduCategory::Bintable) is added to the filter.
 Therefore, `f.select<ImageHdu>()` is strictly equivalent to `f.select<ImageHdu>(HduCategory::Image)`,

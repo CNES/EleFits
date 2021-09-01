@@ -26,24 +26,24 @@ namespace Euclid {
 namespace FitsIO {
 
 ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
-    RecordHdu(token, fptr, index, HduCategory::Image, status), m_raster(
-                                                                   m_fptr,
-                                                                   [&]() {
-                                                                     touchThisHdu();
-                                                                   },
-                                                                   [&]() {
-                                                                     editThisHdu();
-                                                                   }) {}
+    Hdu(token, fptr, index, HduCategory::Image, status), m_raster(
+                                                             m_fptr,
+                                                             [&]() {
+                                                               touchThisHdu();
+                                                             },
+                                                             [&]() {
+                                                               editThisHdu();
+                                                             }) {}
 
 ImageHdu::ImageHdu() :
-    RecordHdu(), m_raster(
-                     m_fptr,
-                     [&]() {
-                       touchThisHdu();
-                     },
-                     [&]() {
-                       editThisHdu();
-                     }) {}
+    Hdu(), m_raster(
+               m_fptr,
+               [&]() {
+                 touchThisHdu();
+               },
+               [&]() {
+                 editThisHdu();
+               }) {}
 
 const ImageRaster& ImageHdu::raster() const {
   return m_raster;
@@ -58,7 +58,7 @@ long ImageHdu::readSize() const {
 }
 
 HduCategory ImageHdu::readCategory() const {
-  auto cat = RecordHdu::readCategory();
+  auto cat = Hdu::readCategory();
   if (readSize() == 0) {
     cat &= HduCategory::Metadata;
   } else {

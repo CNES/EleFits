@@ -24,12 +24,12 @@
 namespace Euclid {
 namespace FitsIO {
 
-class RecordHdu;
+class Hdu;
 class ImageHdu;
 class BintableHdu;
 
 template <>
-HduCategory HduCategory::forClass<RecordHdu>();
+HduCategory HduCategory::forClass<Hdu>();
 
 template <>
 HduCategory HduCategory::forClass<ImageHdu>();

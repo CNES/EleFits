@@ -31,27 +31,27 @@ BintableColumns::BintableColumns(
 
 long BintableColumns::readColumnCount() const {
   m_touch();
-  return Cfitsio::Bintable::columnCount(m_fptr);
+  return Cfitsio::BintableIo::columnCount(m_fptr);
 }
 
 long BintableColumns::readRowCount() const {
   m_touch();
-  return Cfitsio::Bintable::rowCount(m_fptr);
+  return Cfitsio::BintableIo::rowCount(m_fptr);
 }
 
 bool BintableColumns::has(const std::string& name) const {
   m_touch();
-  return Cfitsio::Bintable::hasColumn(m_fptr, name);
+  return Cfitsio::BintableIo::hasColumn(m_fptr, name);
 }
 
 long BintableColumns::readIndex(const std::string& name) const {
   m_touch();
-  return Cfitsio::Bintable::columnIndex(m_fptr, name) - 1;
+  return Cfitsio::BintableIo::columnIndex(m_fptr, name) - 1;
 }
 
 std::string BintableColumns::readName(long index) const {
   m_touch();
-  return Cfitsio::Bintable::columnName(m_fptr, index + 1);
+  return Cfitsio::BintableIo::columnName(m_fptr, index + 1);
 }
 
 std::vector<std::string> BintableColumns::readAllNames() const {
@@ -69,7 +69,7 @@ void BintableColumns::rename(const std::string& name, const std::string& newName
 
 void BintableColumns::rename(long index, const std::string& newName) const {
   m_edit();
-  Cfitsio::Bintable::updateColumnName(m_fptr, index + 1, newName);
+  Cfitsio::BintableIo::updateColumnName(m_fptr, index + 1, newName);
 }
 
 void BintableColumns::remove(const std::string& name) const {

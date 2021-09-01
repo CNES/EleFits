@@ -33,7 +33,7 @@ namespace Cfitsio {
 /**
  * @brief Binary table-related functions.
  */
-namespace Bintable {
+namespace BintableIo {
 
 /**
  * @brief Get the number of columns.
@@ -137,7 +137,7 @@ void appendColumn(fitsfile* fptr, const FitsIO::Column<T>& column);
 template <typename... Ts>
 void appendColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 
-} // namespace Bintable
+} // namespace BintableIo
 } // namespace Cfitsio
 } // namespace Euclid
 

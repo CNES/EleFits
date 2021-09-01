@@ -27,8 +27,8 @@ namespace FitsIO {
 SifFile::SifFile(const std::string& filename, SifFile::Permission permission) :
     FitsFile(filename, permission), m_hdu(ImageHdu::Token {}, m_fptr, 0) {}
 
-const RecordHdu& SifFile::header() const {
-  return m_hdu.as<RecordHdu>();
+const Hdu& SifFile::header() const {
+  return m_hdu.as<Hdu>();
 }
 
 } // namespace FitsIO

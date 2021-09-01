@@ -15,7 +15,7 @@ namespace FitsIO {
 `EL_FitsIO` is split into service classes, known as handlers, in the package `EL_FitsFile`, and data classes in `EL_FitsData`.
 
 File handlers (`MefFile` and `SifFile`) store the index and type of the HDUs, access and create HDUs.
-HDU handlers (`RecordHdu`, `ImageHdu`, `BintableHdu`, `Header`, `ImageRaster`, `BintableColumns` and `BintableRows`)
+HDU handlers (`Hdu`, `ImageHdu`, `BintableHdu`, `Header`, `ImageRaster`, `BintableColumns` and `BintableRows`)
 only provide read/write services.
 Records, images and tables are never stored by those classes
 (to know where they are, refer to \ref data_classes).
@@ -43,7 +43,7 @@ Multi-extension Fits (MEF) files are manipulated through the `MefFile` class.
 
 All in all, `MefFile` is a mere container of HDUs, each of which is either of type `ImageHdu` or `BintableHdu`.
 There are methods to access the HDUs by index or by name, to select and iterate over HDUs, and to create new HDUs.
-Classes `ImageHdu` and `BintableHdu` extend `RecordHdu`, a parent class which implements the common services.
+Classes `ImageHdu` and `BintableHdu` extend `Hdu`, a parent class which implements the common services.
 The header units are manipulated by `Header` objects.
 The data units of image and binary table HDUs are respectively manipulated
 by `ImageRaster` and `BintableColumns` or `BintableRows` objects.
@@ -84,9 +84,9 @@ Conceptually, `MefFile` is a tree of objects, which can be minimalistically repr
 - `assign`-prefixed methods additionally write the data unit.
 
 HDU access and creation methods all return a constant reference to the desired type of HDU:
-`RecordHdu`, `ImageHdu` or `BintableHdu`.
-The header units are read and written through `RecordHdu::header()`
-(also available in `ImageHdu` and `BintableHdu` as child classes of `RecordHdu`).
+`Hdu`, `ImageHdu` or `BintableHdu`.
+The header units are read and written through `Hdu::header()`
+(also available in `ImageHdu` and `BintableHdu` as child classes of `Hdu`).
 The data unit handler of image HDUs (`ImageRaster`) is instantiated by `ImageHdu::array()`,
 while those of binary table HDUs (`BintableColumns` and `BintableRows`)
 are instantiated by `BintableHdu::columns()` and `BintableHdu::rows()`.

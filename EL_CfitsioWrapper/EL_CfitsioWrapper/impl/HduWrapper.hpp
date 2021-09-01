@@ -64,7 +64,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
-  Bintable::writeColumns(fptr, columns...);
+  BintableIo::writeColumns(fptr, columns...);
 }
 
 /// @cond INTERNAL
@@ -97,7 +97,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, columnCount, &cName, &cFormat, &cUnit, name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
-  Bintable::writeColumn(fptr, column);
+  BintableIo::writeColumn(fptr, column);
 }
 
 } // namespace HduAccess

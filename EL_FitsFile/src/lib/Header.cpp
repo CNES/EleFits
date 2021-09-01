@@ -18,7 +18,7 @@
  */
 
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
-#include "EL_FitsFile/RecordHdu.h"
+#include "EL_FitsFile/Hdu.h"
 
 #include <algorithm> // find
 

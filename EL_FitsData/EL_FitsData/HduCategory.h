@@ -51,7 +51,7 @@ namespace FitsIO {
  * \endcode
  * 
  * Method isInstance is provided to test whether a category validates a model.
- * Yet, in general, RecordHdu::matches is an adequate shortcut.
+ * Yet, in general, Hdu::matches is an adequate shortcut.
  * 
  * More complex, multi-category filters can be created as HduFilter objects.
  */
@@ -144,7 +144,7 @@ public:
   /**
    * @brief The HDU filter which corresponds to a given HDU handler.
    * @return
-   * - HduCategory::forClass<RecordHdu>() = HduCategory::Any,
+   * - HduCategory::forClass<Hdu>() = HduCategory::Any,
    * - HduCategory::forClass<ImageHdu>() = HduCategory::Image,
    * - HduCategory::forClass<BintableHdu>() = HduCategory::Bintable.
    */
