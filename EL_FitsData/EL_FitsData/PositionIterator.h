@@ -43,7 +43,7 @@ public:
    * @param region The region to be screened
    * @param followers Positions which follow the same moves as the current position
    */
-  PositionIterator(const Region<n>& region, const std::vector<Position<n>>& followers = {}) :
+  explicit PositionIterator(const Region<n>& region, const std::vector<Position<n>>& followers = {}) :
       m_region(region), m_current(region.front), m_fronts(followers), m_followers(followers) {}
 
   /**

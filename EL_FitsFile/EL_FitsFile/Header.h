@@ -533,7 +533,7 @@ struct KeywordExistsError : public FitsIOError {
   /**
    * @brief Constructor.
    */
-  KeywordExistsError(const std::string& keyword);
+  explicit KeywordExistsError(const std::string& keyword);
 
   /**
    * @brief Throw if an HDU already contains a given keyword.
@@ -560,7 +560,7 @@ struct KeywordNotFoundError : public FitsIOError {
   /**
    * @brief Constructor.
    */
-  KeywordNotFoundError(const std::string& keyword);
+  explicit KeywordNotFoundError(const std::string& keyword);
 
   /**
    * @brief Throw if an HDU misses a given keyword.

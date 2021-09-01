@@ -73,7 +73,8 @@ struct TestCaseNotImplemented : public std::exception {
   /**
    * @brief Constructor.
    */
-  TestCaseNotImplemented(const std::string& testCaseName) : message("Test case not implemented: " + testCaseName) {}
+  explicit TestCaseNotImplemented(const std::string& testCaseName) :
+      message("Test case not implemented: " + testCaseName) {}
 
   /**
    * @brief Get the error message.

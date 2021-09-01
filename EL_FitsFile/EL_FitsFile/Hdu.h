@@ -518,12 +518,6 @@ protected:
   fitsfile* m_dummyFptr = nullptr;
 };
 
-/**
- * @brief Deprecated alias for backward compatibility.
- * @deprecated Replaced with Hdu
- */
-using RecordHdu = Hdu;
-
 } // namespace FitsIO
 } // namespace Euclid
 

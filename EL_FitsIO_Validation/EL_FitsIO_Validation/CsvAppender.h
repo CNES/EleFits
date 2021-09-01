@@ -41,7 +41,10 @@ public:
    * If the file exists and the header is provided, it should match the first row of the file.
    * If the file does not exist, the header is written.
    */
-  CsvAppender(const std::string& filename, const std::vector<std::string>& header = {}, const std::string& sep = "\t");
+  explicit CsvAppender(
+      const std::string& filename,
+      const std::vector<std::string>& header = {},
+      const std::string& sep = "\t");
 
   /**
    * @brief Write a value.

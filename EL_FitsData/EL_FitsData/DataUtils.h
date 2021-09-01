@@ -34,8 +34,10 @@ namespace FitsIO {
 template <typename T>
 struct Named {
 
-  /** @brief Constructor. */
-  Named(const std::string& value) : name(value) {};
+  /**
+   * @brief Constructor.
+   */
+  explicit Named(const std::string& value) : name(value) {};
 
   /**
    * @brief Slice as the name.
@@ -54,8 +56,10 @@ struct Named {
 template <typename T>
 struct Indexed {
 
-  /** @brief Constructor. */
-  Indexed(long value) : index(value) {};
+  /**
+   * @brief Constructor.
+   */
+  explicit Indexed(long value) : index(value) {};
 
   /**
    * @brief Slice as the index.
@@ -73,6 +77,9 @@ struct Indexed {
  */
 struct Segment {
 
+  /**
+   * @brief Create a segment specified by a lower bound and size.
+   */
   static Segment fromSize(long lowerBound, long size) {
     return Segment { lowerBound, lowerBound + size - 1 };
   }

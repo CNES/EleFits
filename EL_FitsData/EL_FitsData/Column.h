@@ -130,7 +130,7 @@ struct ColumnInfo {
   /**
    * @brief Constructor.
    */
-  ColumnInfo(const std::string& columnName, const std::string& columnUnit = "", long columnRepeatCount = 1);
+  explicit ColumnInfo(const std::string& columnName, const std::string& columnUnit = "", long columnRepeatCount = 1);
 
   /**
    * @brief Column name.

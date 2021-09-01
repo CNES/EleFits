@@ -84,7 +84,7 @@ public:
    * @details
    * The error message is of the form "<prefix>: Tring to write a read-only file (<mode>)".
    */
-  ReadOnlyError(const std::string& prefix);
+  explicit ReadOnlyError(const std::string& prefix);
 
   /**
    * @brief Throw if mode is read-only.
