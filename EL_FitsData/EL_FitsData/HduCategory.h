@@ -255,7 +255,7 @@ public:
   /**
    * @brief Casting constructor to make a HduFilter from a HduCategory.
    */
-  explicit HduFilter(const HduCategory& category);
+  HduFilter(const HduCategory& category);
 
   /**
    * @brief Constructor.
