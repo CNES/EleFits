@@ -36,7 +36,7 @@ The API is organized in namespaces as follows:
 
 - Euclid is the top level namespace, which contains everything;
 - Cfitsio corresponds to the low-level layer module:
-  - It is organized in thematic namespaces like Cfitsio::File or Cfitsio::Image;
+  - It is organized in thematic namespaces like Cfitsio::FileAccess or Cfitsio::ImageIo;
 - FitsIO is the end-user namespace:
   - Data classes and service classes are implemented in it,
   - FitsIO::Test contains test helper classes and functions like fixtures;

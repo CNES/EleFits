@@ -105,7 +105,7 @@ until its value matches the name.
 
 \code
 // Good :)
-void doSomethingWithHdu(const RecordHdu& hdu);
+void doSomethingWithHdu(const Hdu& hdu);
 
 // Bad :(
 void doSomethingWithHdu(long index);

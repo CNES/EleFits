@@ -21,7 +21,6 @@ and how to adapt the client code.
 Namespace `FitsIO` becomes `Fits`.
 Prefix `EL_Fits` becomes `EleFits`.
 Underscores in program names are removed.
-Namespaces are unchanged.
 
 **Rationale**
 
@@ -73,6 +72,22 @@ Methods in HDU-level handlers still exist for backward compatibility, although t
 
 * Manual fix: 1 to 2 more calls in user code for each HDU;
 * Negligible impact on runtime.
+
+### RecordHdu becomes Hdu
+
+**Rationale**
+
+* Given the new handler level, `(Record)Hdu` is not responsible anymore for record I/Os;
+* Inheritance is more explicit: `ImageHdu` and `BintableHdu` both extend `Hdu`.
+
+**Status in version 3.2**
+
+Name has changed.
+Deprecated alias `RecordHdu` is provided for backward-compatibility.
+
+**Impact on client code**
+
+* Find and replace word `RecordHdu` with `Hdu`, including in include directives.
 
 ### FitsFile::Permission becomes FileMode
 

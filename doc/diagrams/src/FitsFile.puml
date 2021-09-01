@@ -45,13 +45,13 @@ class SifFile {
 
 class MefFile {
 + hduCount() : long
-+ access(string) : RecordHdu
-+ access(long) : RecordHdu
++ access(string) : Hdu
++ access(long) : Hdu
 + assignImageExt(string, Raster) : ImageHdu
 + assignBintableExt(string, Column...) : BintableHdu
 }
 
-class RecordHdu {
+class Hdu {
 + index() : long
 + name() : string
 + verifyChecksums()
@@ -99,13 +99,13 @@ class BintableRows {
 
 FitsFile <|- SifFile
 FitsFile <|-- MefFile
-ImageHdu -|> RecordHdu
-RecordHdu <|- BintableHdu
-RecordHdu *-- Header
+ImageHdu -|> Hdu
+Hdu <|- BintableHdu
+Hdu *-- Header
 ImageHdu *-- ImageRaster
 BintableHdu *-- BintableColumns
 BintableHdu *-- BintableRows
-MefFile *-- RecordHdu
+MefFile *-- Hdu
 Header -- Record
 ImageRaster -- Raster
 BintableColumns -- Column

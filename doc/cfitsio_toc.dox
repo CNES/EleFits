@@ -26,7 +26,7 @@ namespace FitsIO {
   - Exceptions: FitsIOError
   - Fits file access: SifFile, MefFile
   - HDU access and creation: MefFile
-  - Header keyword records read/write: Record, RecordHdu
+  - Header keyword records read/write: Record, Hdu
   - Primary array or image extension: Raster, ImageHdu
   - Image Compression: *not supported*
   - ASCII table extension: *not supported*
@@ -38,7 +38,7 @@ namespace FitsIO {
 - Template Files: *not supported*
 - Local FITS Conventions
   - 64-bit long integers: *not relevant*
-  - Long string keyword record values: RecordHdu
+  - Long string keyword record values: Hdu
   - Arrays of fixed-length strings in binary tables: Column
   - Keyword record units strings: Record
   - HIERARCH convention for extended keyword record names: Record

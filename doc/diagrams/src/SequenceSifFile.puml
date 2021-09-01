@@ -2,7 +2,7 @@
 actor "Jean-René" as User
 box EL_FitsFile
 participant SifFile
-participant RecordHdu
+participant Hdu
 participant ImageHdu
 endbox
 box EL_CfitsioWrapper
@@ -20,18 +20,18 @@ CfitsioWrapper --> SifFile : fitsfile*
 SifFile --> User : SifFile
 == auto &header = file.header(); ==
 User -> SifFile : header()
-SifFile -> RecordHdu* : create()
-activate RecordHdu
-RecordHdu --> SifFile : RecordHdu
-SifFile --> User : RecordHdu
+SifFile -> Hdu* : create()
+activate Hdu
+Hdu --> SifFile : Hdu
+SifFile --> User : Hdu
 == int value = header.parseRecord<int>("KEYWORD"); ==
-User -> RecordHdu : parseRecord()
-RecordHdu -> CfitsioWrapper : parseRecord()
+User -> Hdu : parseRecord()
+Hdu -> CfitsioWrapper : parseRecord()
 CfitsioWrapper -> Record* : create()
 activate Record
 Record --> CfitsioWrapper : Record
-CfitsioWrapper --> RecordHdu : Record
-RecordHdu --> User : Record
+CfitsioWrapper --> Hdu : Record
+Hdu --> User : Record
 User -> Record : int()
 Record --> User : value
 destroy Record
