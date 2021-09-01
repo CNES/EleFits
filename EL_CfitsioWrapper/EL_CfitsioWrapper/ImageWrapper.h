@@ -36,7 +36,7 @@ namespace Cfitsio {
 /**
  * @brief Image-related functions.
  */
-namespace Image {
+namespace ImageIo {
 
 /**
  * @brief Read the value type of the current image HDU.
@@ -123,7 +123,7 @@ void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, n>& raster, const FitsI
 template <typename T, long n = 2>
 void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const FitsIO::Position<n>& destination);
 
-} // namespace Image
+} // namespace ImageIo
 } // namespace Cfitsio
 } // namespace Euclid
 

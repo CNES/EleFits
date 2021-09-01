@@ -39,9 +39,9 @@ void checkRandom3DRasterIsReadBack() {
   RandomRaster<T, 3> input({ 2, 3, 4 });
   MinimalFile file;
   HduAccess::createImageExtension(file.fptr, "IMGEXT", input);
-  const auto fixedOutput = Image::readRaster<T, 3>(file.fptr);
+  const auto fixedOutput = ImageIo::readRaster<T, 3>(file.fptr);
   BOOST_TEST(fixedOutput.vector() == input.vector());
-  const auto variableOuptut = Image::readRaster<T, -1>(file.fptr);
+  const auto variableOuptut = ImageIo::readRaster<T, -1>(file.fptr);
   BOOST_TEST(variableOuptut.dimension() == 3);
   BOOST_TEST(variableOuptut.vector() == input.vector());
 }
@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, FitsIO::Test::MinimalFile) {
   }
   HduAccess::createImageExtension(fptr, "EXT", input);
   const auto region = FitsIO::Region<3>::fromShape({ 1, 0, 1 }, { 2, 3, 3 });
-  const auto view = Image::readRegion<long>(fptr, region);
+  const auto view = ImageIo::readRegion<long>(fptr, region);
   BOOST_TEST(view.shape == region.shape());
   for (long z = 0; z < view.length<2>(); ++z) {
     for (long y = 0; y < view.length<1>(); ++y) {
@@ -77,7 +77,7 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, FitsIO::Test::MinimalFile) {
   }
   FitsIO::VecRaster<long, 3> output({ 3, 4, 5 });
   FitsIO::Subraster<long, 3> dst { output, region }; // TODO don't use the same region
-  Image::readRegionTo<long, 3>(fptr, region, dst);
+  ImageIo::readRegionTo<long, 3>(fptr, region, dst);
   for (long z = region.front[2]; z <= region.back[2]; ++z) {
     for (long y = region.front[1]; y <= region.back[1]; ++y) {
       for (long x = region.front[0]; x <= region.back[0]; ++x) {

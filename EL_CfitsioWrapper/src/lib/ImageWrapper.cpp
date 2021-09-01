@@ -18,11 +18,12 @@
  */
 
 #include "EL_CfitsioWrapper/ImageWrapper.h"
+
 #include "EL_FitsData/Raster.h" // EL_FITSIO_FOREACH_RASTER_TYPE
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Image {
+namespace ImageIo {
 
 #define RETURN_TYPEID_IF_MATCH(type, name) \
   if (Euclid::Cfitsio::TypeCode<type>::bitpix() == bitpix) { \
@@ -49,6 +50,6 @@ FitsIO::Position<-1> readShape<-1>(fitsfile* fptr) {
   return shape;
 }
 
-} // namespace Image
+} // namespace ImageIo
 } // namespace Cfitsio
 } // namespace Euclid

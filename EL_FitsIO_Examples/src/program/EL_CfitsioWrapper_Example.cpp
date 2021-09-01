@@ -135,7 +135,7 @@ public:
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     HduAccess::gotoName(fptr, "SMALLIMG");
     //! [Read raster]
-    const auto image = Image::readRaster<float>(fptr);
+    const auto image = ImageIo::readRaster<float>(fptr);
     const auto firstPixel = image[{ 0, 0 }];
     const auto lastPixel = image.at({ -1, -1 }); // at() allows backward indexing
     //! [Read raster]

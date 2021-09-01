@@ -23,7 +23,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Image {
+namespace ImageIo {
 
 /**
  * @brief Variable dimension case.
@@ -205,7 +205,7 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const
   }
 }
 
-} // namespace Image
+} // namespace ImageIo
 } // namespace Cfitsio
 } // namespace Euclid
 

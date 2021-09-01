@@ -27,7 +27,7 @@ ImageRaster::ImageRaster(fitsfile*& fptr, std::function<void(void)> touchFunc, s
 
 const std::type_info& ImageRaster::readTypeid() const {
   m_touch();
-  return Cfitsio::Image::readTypeid(m_fptr);
+  return Cfitsio::ImageIo::readTypeid(m_fptr);
 }
 
 long ImageRaster::readSize() const {
