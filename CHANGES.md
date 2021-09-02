@@ -33,6 +33,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 ### Cleaning
 
 * `Position` is a proper class, instead of a compile-time conditional alias
+* `KeywordCategory` is merged into `StandardKeyword` (named `KeywordCategory` analogously to `HduCategory`)
 
 ## 3.1
 

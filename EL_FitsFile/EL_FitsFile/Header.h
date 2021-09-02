@@ -21,9 +21,9 @@
 #define _EL_FITSFILE_HEADER_H
 
 #include "EL_FitsData/DataUtils.h"
+#include "EL_FitsData/KeywordCategory.h"
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/RecordVector.h"
-#include "EL_FitsData/StandardKeyword.h"
 
 #include <fitsio.h>
 #include <string>

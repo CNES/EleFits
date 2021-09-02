@@ -54,7 +54,7 @@ std::vector<std::string> listKeywords(fitsfile* fptr, FitsIO::KeywordCategory ca
   char value[FLEN_KEYWORD];
   for (int i = 0; i < count; ++i) {
     fits_read_keyn(fptr, i + 1, keyword, value, nullptr, &status);
-    if (FitsIO::StandardKeyword::belongsCategories(keyword, categories)) {
+    if (FitsIO::KeywordCategory::belongsCategories(keyword, categories)) {
       keywords.emplace_back(keyword);
     }
   }
@@ -70,7 +70,7 @@ std::map<std::string, std::string> listKeywordsValues(fitsfile* fptr, FitsIO::Ke
   char value[FLEN_KEYWORD];
   for (int i = 0; i < count; ++i) {
     fits_read_keyn(fptr, i + 1, keyword, value, nullptr, &status);
-    if (FitsIO::StandardKeyword::belongsCategories(keyword, categories)) {
+    if (FitsIO::KeywordCategory::belongsCategories(keyword, categories)) {
       records[keyword] = value;
     }
   }

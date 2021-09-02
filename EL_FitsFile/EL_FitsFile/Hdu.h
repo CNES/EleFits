@@ -22,9 +22,9 @@
 
 #include "EL_FitsData/DataUtils.h"
 #include "EL_FitsData/HduCategory.h"
+#include "EL_FitsData/KeywordCategory.h"
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/RecordVector.h"
-#include "EL_FitsData/StandardKeyword.h"
 #include "EL_FitsFile/Header.h"
 
 #include <fitsio.h>

@@ -24,9 +24,9 @@
 #include "EL_CfitsioWrapper/ErrorWrapper.h"
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
+#include "EL_FitsData/KeywordCategory.h"
 #include "EL_FitsData/Record.h"
 #include "EL_FitsData/RecordVector.h"
-#include "EL_FitsData/StandardKeyword.h"
 
 #include <fitsio.h>
 #include <string>

@@ -88,8 +88,8 @@ elements_add_unit_test(DataUtils tests/src/DataUtils_test.cpp
                      EXECUTABLE EL_FitsData_DataUtils_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
-elements_add_unit_test(StandardKeyword tests/src/StandardKeyword_test.cpp 
-                     EXECUTABLE EL_FitsData_StandardKeyword_test
+elements_add_unit_test(KeywordCategory tests/src/KeywordCategory_test.cpp 
+                     EXECUTABLE EL_FitsData_KeywordCategory_test
                      LINK_LIBRARIES EL_FitsData
                      TYPE Boost)
 elements_add_unit_test(HduCategory tests/src/HduCategory_test.cpp 
