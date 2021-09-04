@@ -20,11 +20,21 @@
 #ifndef _EL_FITSFILE_MEFFILE_H
 #define _EL_FITSFILE_MEFFILE_H
 
-#include "EL_CfitsioWrapper/HduWrapper.h"
+#include "EL_FitsFile/BintableHdu.h"
 #include "EL_FitsFile/FitsFile.h"
+#include "EL_FitsFile/Hdu.h"
+#include "EL_FitsFile/ImageHdu.h"
+#include "EL_FitsFile/RecordHdu.h" // FIXME remove in 4.0
+
+#include <memory>
+#include <vector>
 
 namespace Euclid {
 namespace FitsIO {
+
+// Forward declaration for MefFile::select()
+template <typename THdu>
+class HduSelector;
 
 /**
  * @ingroup file_handlers
@@ -44,29 +54,6 @@ public:
   using FitsFile::Permission;
 
   /**
-   * @brief Helper class to provide filtered iterators.
-   * @details
-   * Functions begin(HduSelector) and end(HduSelector) are provided, so that it is possible to loop over HDUs as follows:
-   * \code
-   * MefFile f(...);
-   * for (const auto& hdu : f.selectAs<ImageHdu>(HduCategory::ImageExt)) {
-   *   ... // hdu is an image extension of type ImageHdu
-   * }
-   * \endcode
-   */
-  template <typename THdu>
-  struct HduSelector {
-    /**
-     * @brief The MefFile to apply the selector on.
-     */
-    MefFile& mef;
-    /**
-     * @brief The HDU filter to be applied.
-     */
-    HduFilter filter;
-  };
-
-  /**
    * @copydoc FitsFile::~FitsFile
    */
   virtual ~MefFile() = default;
@@ -74,7 +61,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  MefFile(const std::string& filename, Permission permission);
+  MefFile(const std::string& filename, FileMode permission);
 
   /**
    * @brief Get the number of HDUs.
@@ -256,6 +243,8 @@ protected:
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#include "EL_FitsFile/HduIterator.h"
 
 /// @cond INTERNAL
 #define _EL_FITSFILE_MEFFILE_IMPL

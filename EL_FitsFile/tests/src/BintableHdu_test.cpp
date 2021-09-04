@@ -37,7 +37,7 @@ template <typename T>
 void checkScalar() {
   Test::RandomScalarColumn<T> input;
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::Temporary);
+  MefFile file(filename, FileMode::Temporary);
   file.assignBintableExt("BINEXT", input);
   const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
   BOOST_TEST(output.vector() == input.vector());
@@ -50,7 +50,7 @@ void checkVector() {
   Test::RandomScalarColumn<T> input(rowCount * repeatCount);
   input.info.repeatCount = repeatCount;
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::Temporary);
+  MefFile file(filename, FileMode::Temporary);
   file.initBintableExt("BINEXT", input.info);
   file.accessFirst<BintableHdu>("BINEXT").writeColumn(input);
   const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(float_test) {
 BOOST_AUTO_TEST_CASE(empty_column_test) {
   const std::string filename = Elements::TempFile().path().string();
   VecColumn<float> input({ "NAME", "", 1 }, std::vector<float>());
-  MefFile file(filename, MefFile::Permission::Temporary);
+  MefFile file(filename, FileMode::Temporary);
   file.assignBintableExt("BINEXT", input);
 }
 
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
   input1.info.name = "COL1";
   input2.info.name = "COL2";
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::Temporary);
+  MefFile file(filename, FileMode::Temporary);
   BOOST_CHECK_NO_THROW(file.assignBintableExt("0AND1", input0, input1));
   BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND0", input1, input0));
   BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND2", input1, input2));

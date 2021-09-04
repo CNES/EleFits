@@ -52,7 +52,7 @@ public:
     {
       logger.info() << "Creating Fits file: " << filename;
       //! [Create Fits]
-      MefFile f(filename, MefFile::Permission::Overwrite);
+      MefFile f(filename, FileMode::Overwrite);
       //! [Create Fits]
       const auto& primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
       logger.info() << "Writing new record: VALUE = 1";
@@ -97,7 +97,7 @@ public:
 
       logger.info() << "Reopening file.";
       //! [Open Fits]
-      MefFile f(filename, MefFile::Permission::Read);
+      MefFile f(filename, FileMode::Read);
       //! [Open Fits]
       //! [Read record]
       const auto recordValue = f.accessPrimary<>().parseRecord<int>("VALUE");

@@ -45,7 +45,7 @@ VecColumn<T> randomColumn(const std::string& name, long rows) {
  * Random columns of type double ('D') and float ('E') are generated and written.
  */
 void writeBintable(const std::string& filename, long rows) {
-  MefFile f(filename, MefFile::Permission::Overwrite);
+  MefFile f(filename, FileMode::Overwrite);
   const auto col1 = randomColumn<double>("SHE_LENSMC_UPDATED_RA", rows);
   const auto col2 = randomColumn<double>("SHE_LENSMC_UPDATED_DEC", rows);
   const auto col3 = randomColumn<float>("SHE_LENSMC_G1", rows);
@@ -94,7 +94,7 @@ void writeSomeRecords(const Hdu& hdu) {
  * A random 3D raster is generated and written.
  */
 void writeImage(const std::string& filename, const Position<3>& shape) {
-  MefFile f(filename, MefFile::Permission::Overwrite);
+  MefFile f(filename, FileMode::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
   const auto& ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
   writeSomeRecords(ext);
@@ -131,12 +131,12 @@ public:
     logger.info("Done.");
 
     logger.info("Reading binary table...");
-    MefFile b(bintable, MefFile::Permission::Read);
+    MefFile b(bintable, FileMode::Read);
     const auto someColumn = b.access<BintableHdu>(1).readColumn<float>("SHE_LENSMC_G1");
     logger.info() << "First value of SHE_LENSMC_G1 = " << someColumn.vector()[0];
 
     logger.info("Reading image...");
-    MefFile i(image, MefFile::Permission::Read);
+    MefFile i(image, FileMode::Read);
     const auto& ext = i.accessFirst<ImageHdu>("KAPPA_PATCH");
     const auto raster = ext.readRaster<float, 3>();
     const Position<3> center { raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2 };

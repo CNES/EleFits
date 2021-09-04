@@ -20,10 +20,9 @@
 #ifndef _EL_FITSFILE_FITSFILEFIXTURE_H
 #define _EL_FITSFILE_FITSFILEFIXTURE_H
 
-#include "ElementsKernel/Temporary.h"
-
 #include "EL_FitsFile/MefFile.h"
 #include "EL_FitsFile/SifFile.h"
+#include "ElementsKernel/Temporary.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -42,8 +41,7 @@ std::string temporaryFilename() {
 class TemporarySifFile : public SifFile {
 public:
   /** @brief Constructor */
-  TemporarySifFile() : SifFile(temporaryFilename(), SifFile::Permission::Temporary) {
-  }
+  TemporarySifFile() : SifFile(temporaryFilename(), FileMode::Temporary) {}
 };
 
 /**
@@ -52,8 +50,7 @@ public:
 class NewSifFile : public SifFile {
 public:
   /** @brief Constructor */
-  NewSifFile() : SifFile(temporaryFilename(), SifFile::Permission::Create) {
-  }
+  NewSifFile() : SifFile(temporaryFilename(), FileMode::Create) {}
 };
 
 /**
@@ -62,8 +59,7 @@ public:
 class TemporaryMefFile : public MefFile {
 public:
   /** @brief Constructor */
-  TemporaryMefFile() : MefFile(temporaryFilename(), SifFile::Permission::Temporary) {
-  }
+  TemporaryMefFile() : MefFile(temporaryFilename(), FileMode::Temporary) {}
 };
 
 /**
@@ -72,8 +68,7 @@ public:
 class NewMefFile : public MefFile {
 public:
   /** @brief Constructor */
-  NewMefFile() : MefFile(temporaryFilename(), SifFile::Permission::Create) {
-  }
+  NewMefFile() : MefFile(temporaryFilename(), FileMode::Create) {}
 };
 
 } // namespace Test

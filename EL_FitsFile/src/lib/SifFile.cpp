@@ -24,7 +24,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-SifFile::SifFile(const std::string& filename, SifFile::Permission permission) :
+SifFile::SifFile(const std::string& filename, FileMode permission) :
     FitsFile(filename, permission), m_hdu(ImageHdu::Token {}, m_fptr, 0) {}
 
 const Hdu& SifFile::header() const {

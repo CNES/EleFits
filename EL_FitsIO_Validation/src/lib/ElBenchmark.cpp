@@ -24,7 +24,7 @@ namespace FitsIO {
 namespace Test {
 
 ElColwiseBenchmark::ElColwiseBenchmark(const std::string& filename) :
-    Benchmark(filename), m_f(filename, MefFile::Permission::Overwrite) {
+    Benchmark(filename), m_f(filename, FileMode::Overwrite) {
   m_logger.info() << "EL_FitsIO benchmark (column-wise, filename: " << filename << ")";
 }
 

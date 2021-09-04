@@ -36,7 +36,7 @@ template <typename T>
 void check_2d() {
   Test::RandomRaster<T, 2> input({ 16, 9 });
   const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, MefFile::Permission::Temporary);
+  MefFile file(filename, FileMode::Temporary);
   file.assignImageExt("IMGEXT", input);
   const auto output = file.accessFirst<ImageHdu>("IMGEXT").readRaster<T, 2>();
   BOOST_TEST(output.vector() == input.vector());

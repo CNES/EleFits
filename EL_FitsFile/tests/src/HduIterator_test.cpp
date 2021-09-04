@@ -18,7 +18,7 @@
  */
 
 #include "EL_FitsFile/FitsFileFixture.h"
-#include "EL_FitsFile/HduIterator.h"
+#include "EL_FitsFile/MefFile.h" // Includes HduIterator
 
 #include <boost/test/unit_test.hpp>
 

@@ -13,7 +13,7 @@ An iterator class and begin/end functions are defined to enable looping over all
 Usage is straightforward:
 
 \code
-MefFile f(filename, MefFile::Permission::Edit);
+MefFile f(filename, FileMode::Edit);
 // ...
 for (const auto& hdu : f) {
     processHdu(hdu); // Do something with each HDU

@@ -190,7 +190,7 @@ void writeMefFile(const std::string& filename) {
 
   logger.info("Creating a MEF file...");
 
-  FitsIO::MefFile f(filename, FitsIO::MefFile::Permission::Create);
+  FitsIO::MefFile f(filename, FitsIO::FileMode::Create);
 
   //! [Create a MEF file]
 
@@ -283,7 +283,7 @@ void readMefFile(const std::string& filename) {
 
   logger.info("Reading the MEF file...");
 
-  FitsIO::MefFile f(filename, FitsIO::MefFile::Permission::Read);
+  FitsIO::MefFile f(filename, FitsIO::FileMode::Read);
 
   //! [Open a MEF file]
 

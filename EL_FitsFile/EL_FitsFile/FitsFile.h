@@ -20,9 +20,7 @@
 #ifndef _EL_FITSFILE_FITSFILE_H
 #define _EL_FITSFILE_FITSFILE_H
 
-#include "EL_FitsFile/BintableHdu.h"
-#include "EL_FitsFile/Hdu.h"
-#include "EL_FitsFile/ImageHdu.h"
+#include "EL_FitsData/FitsIOError.h"
 
 #include <fitsio.h>
 #include <string>
@@ -112,12 +110,12 @@ public:
   /**
    * @brief Create a new Fits file handler with given filename and permission.
    */
-  FitsFile(const std::string& filename, Permission permission);
+  FitsFile(const std::string& filename, FileMode permission);
 
   /**
    * @brief Destroy the object and close the file.
    * @details
-   * Also remove the file if permission is FitsFile::Permission::Temporary.
+   * Also remove the file for `FileMode::Temporary`.
    */
   virtual ~FitsFile();
 
@@ -134,16 +132,16 @@ public:
   /**
    * @brief Reopen the file.
    * @details
-   * Specific behaviors apply to the following permissions:
-   * - Permission::Create and Permission::Overwrite: The file is reopened with Permission::Edit;
-   * - Permission::Temporary: The file cannot be reopened.
+   * Specific behaviors apply to the following file modes:
+   * - `FileMode::Create` and `FileMode::Overwrite`: The file is reopened with `FileMode::Edit`;
+   * - `FileMode::Temporary`: The file cannot be reopened.
    */
   void reopen();
 
   /**
    * @brief Close the file.
    * @details
-   * Files opened with Permission::Temporary are deleted after closing by this method.
+   * Files opened with `FileMode::Temporary` are deleted after closing by this method.
    */
   void close();
 
@@ -160,10 +158,10 @@ protected:
    * It throws an exception otherwise.
    * This method can be used to change the permission:
    * \code
-   * FitsFile f(filename, FitsFile::Permission::CREATE);
+   * FitsFile f(filename, FileMode::Create);
    * ... // Write things
    * f.close();
-   * f.open(filename, FitsFile::Permission::READ);
+   * f.open(filename, FileMode::Read);
    * ... // Read things
    * \endcode
    * ... but not to change the filename:
@@ -171,15 +169,26 @@ protected:
    * @warning
    * In any case, relying on the constructors and destructors by managing the object lifetime is preferable.
    */
-  void open(const std::string& filename, Permission permission);
+  void open(const std::string& filename, FileMode permission);
 
-  /** @brief The CFitsIO file handler. */
+  /**
+   * @brief The CFitsIO file handler.
+   */
   fitsfile* m_fptr;
-  /** @brief The file name. */
+
+  /**
+   * @brief The file name.
+   */
   std::string m_filename;
-  /** @brief The file permission. */
-  Permission m_permission;
-  /** @brief An open flag to nullify m_fptr at close. */
+
+  /**
+   * @brief The file permission.
+   */
+  FileMode m_permission;
+
+  /**
+   * @brief An open flag to nullify m_fptr at close.
+   */
   bool m_open;
 };
 

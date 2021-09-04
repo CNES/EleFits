@@ -45,7 +45,7 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   primary.writeRaster(input);
   this->close();
   // Reopen as read-only
-  this->open(this->filename(), MefFile::Permission::Read);
+  this->open(this->filename(), FileMode::Read);
   const auto output = this->accessPrimary<ImageHdu>().readRaster<float, 2>();
   remove(this->filename().c_str());
 }
@@ -69,7 +69,7 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   BOOST_TEST(this->hduCount() == 2);
   this->close();
   // Reopen as read-only
-  this->open(this->filename(), MefFile::Permission::Edit);
+  this->open(this->filename(), FileMode::Edit);
   BOOST_TEST(this->hduCount() == 2);
   const auto& ext2 = this->assignImageExt("IMG2", raster);
   BOOST_TEST(ext2.index() == 2);

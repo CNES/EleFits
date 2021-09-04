@@ -17,4 +17,18 @@
  *
  */
 
-#include "EL_FitsFile/HduIterator.h"
+#include "EL_FitsFile/MefFile.h"
+
+namespace Euclid {
+namespace FitsIO {
+
+HduIterator<> begin(MefFile& f) {
+  return { f, 0 };
+}
+
+HduIterator<> end(MefFile& f) {
+  return { f, f.hduCount() };
+}
+
+} // namespace FitsIO
+} // namespace Euclid

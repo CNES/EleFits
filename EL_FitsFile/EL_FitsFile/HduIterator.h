@@ -21,12 +21,35 @@
 #define _EL_FITSFILE_HDUITERATOR_H
 
 #include "EL_FitsFile/Hdu.h"
-#include "EL_FitsFile/MefFile.h"
 
 #include <iterator>
 
 namespace Euclid {
 namespace FitsIO {
+
+/**
+ * @ingroup iterators
+ * @brief Helper class to provide filtered iterators.
+ * @details
+ * Functions begin(HduSelector) and end(HduSelector) are provided, so that it is possible to loop over HDUs as follows:
+ * \code
+ * MefFile f(...);
+ * for (const auto& hdu : f.selectAs<ImageHdu>(HduCategory::ImageExt)) {
+ *   ... // hdu is an image extension of type ImageHdu
+ * }
+ * \endcode
+ */
+template <typename THdu>
+struct HduSelector {
+  /**
+     * @brief The MefFile to apply the selector on.
+     */
+  MefFile& mef;
+  /**
+     * @brief The HDU filter to be applied.
+     */
+  HduFilter filter;
+};
 
 /**
  * @ingroup iterators
@@ -47,76 +70,43 @@ public:
   /**
    * @brief Constructor.
    */
-  HduIterator(MefFile& f, long index, HduFilter filter = HduCategory::Any) :
-      m_f(f), m_index(index - 1), m_hdu(nullptr), m_filter(filter), m_dummyHdu() {
-    next();
-  }
+  HduIterator(MefFile& f, long index, HduFilter filter = HduCategory::Any);
 
   /**
    * @brief Dereference operator.
    */
-  const THdu& operator*() const {
-    return m_hdu->as<THdu>();
-  }
+  const THdu& operator*() const;
 
   /**
    * @brief Arrow operator.
    */
-  const THdu* operator->() const {
-    if (not m_hdu) {
-      return nullptr;
-    }
-    return &m_hdu->as<THdu>();
-  }
+  const THdu* operator->() const;
 
   /**
    * @brief Increment operator.
    */
-  const THdu& operator++() {
-    next();
-    return m_hdu->as<THdu>();
-  }
+  const THdu& operator++();
 
   /**
    * @brief Increment operator.
    */
-  const THdu* operator++(int) {
-    next();
-    if (not m_hdu) {
-      return nullptr;
-    }
-    return &m_hdu->as<THdu>();
-  }
+  const THdu* operator++(int);
 
   /**
    * @brief Equality operator.
    */
-  bool operator==(const HduIterator& rhs) const {
-    return m_index == rhs.m_index; // TODO Should we test m_f, too?
-  }
+  bool operator==(const HduIterator<THdu>& rhs) const;
 
   /**
    * @brief Non-equality operator.
    */
-  bool operator!=(const HduIterator& rhs) const {
-    return m_index != rhs.m_index; // TODO Should we test m_f, too?
-  }
+  bool operator!=(const HduIterator<THdu>& rhs) const;
 
 private:
   /**
    * @brief Move to next HDU with valid category.
    */
-  void next() {
-    do {
-      m_index++;
-      if (m_index >= m_f.hduCount()) {
-        m_index = m_f.hduCount();
-        m_hdu = &m_dummyHdu;
-        return;
-      }
-      m_hdu = &m_f[m_index];
-    } while (not(m_hdu->matches(m_filter)));
-  }
+  void next();
 
   /**
    * @brief The MEF file handler.
@@ -148,17 +138,13 @@ private:
  * @ingroup iterators
  * @brief Beginning of an iterator to loop over all HDUs as `Hdu`s.
  */
-HduIterator<> begin(MefFile& f) {
-  return { f, 0 };
-}
+HduIterator<> begin(MefFile& f);
 
 /**
  * @ingroup iterators
  * @brief End of an iterator to loop over all HDUs as `Hdu`s.
  */
-HduIterator<> end(MefFile& f) {
-  return { f, f.hduCount() };
-}
+HduIterator<> end(MefFile& f);
 
 /**
  * @ingroup iterators
@@ -167,20 +153,22 @@ HduIterator<> end(MefFile& f) {
  * @param selector The HDU selector
  */
 template <typename THdu = Hdu>
-HduIterator<THdu> begin(MefFile::HduSelector<THdu>& selector) {
-  return { selector.mef, 0, selector.filter };
-}
+HduIterator<THdu> begin(HduSelector<THdu>& selector);
 
 /**
  * @ingroup iterators
  * @brief End of an iterator to loop over selected HDUs.
  */
 template <typename THdu = Hdu>
-HduIterator<THdu> end(MefFile::HduSelector<THdu>& selector) {
-  return { selector.mef, selector.mef.hduCount(), selector.filter };
-}
+HduIterator<THdu> end(HduSelector<THdu>& selector);
 
 } // namespace FitsIO
 } // namespace Euclid
+
+/// @cond INTERNAL
+#define _EL_FITSFILE_HDUITERATOR_IMPL
+#include "EL_FitsFile/impl/HduIterator.hpp"
+#undef _EL_FITSFILE_HDUITERATOR_IMPL
+/// @endcond
 
 #endif

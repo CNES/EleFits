@@ -40,7 +40,7 @@ BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile) {
   this->header().writeRecord(keyword, value);
   this->writeRaster(input);
   this->close();
-  this->open(this->filename(), SifFile::Permission::Read); // Reopen as read-only
+  this->open(this->filename(), FileMode::Read); // Reopen as read-only
   const auto record = this->header().parseRecord<int>(keyword);
   BOOST_TEST((record == value));
   const auto output = this->readRaster<float>();
