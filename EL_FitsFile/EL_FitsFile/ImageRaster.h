@@ -21,7 +21,6 @@
 #define _EL_FITSFILE_IMAGERASTER_H
 
 #include "EL_FitsData/Raster.h"
-#include "EL_FitsData/Subraster.h"
 
 #include <fitsio.h>
 #include <functional>

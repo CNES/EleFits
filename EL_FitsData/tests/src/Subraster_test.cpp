@@ -17,7 +17,7 @@
  *
  */
 
-#include "EL_FitsData//Subraster.h"
+#include "EL_FitsData/Raster.h"
 
 #include <boost/test/unit_test.hpp>
 

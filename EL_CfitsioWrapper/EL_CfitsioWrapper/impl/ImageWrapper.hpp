@@ -127,7 +127,7 @@ void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subra
   auto srcFront = srcRegion.front;
   auto srcBack = srcFront;
   srcBack[0] += region.shape()[0] - 1;
-  auto dstFront = destination.region.front;
+  auto dstFront = destination.region().front;
   FitsIO::RegionScreener<n> srcScreener(srcRegion, { srcBack, dstFront });
 
   /* Step */
@@ -143,7 +143,7 @@ void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subra
         srcBack.data(),
         step.data(),
         nullptr,
-        &destination.parent[dstFront],
+        &destination.parent()[dstFront],
         nullptr,
         &status);
     CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
@@ -185,10 +185,10 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const
 
   /* Screening positions */
   const auto dstSize = shape[0];
-  const auto delta = subraster.region.front - destination;
+  const auto delta = subraster.region().front - destination;
 
   /* Non-const line for CFitsIO */
-  const auto begin = &subraster[0];
+  const auto begin = &subraster[0]; // FIXME Subraster::operator[]
   const auto end = begin + dstSize;
   std::vector<T> line(begin, end);
 

@@ -21,6 +21,7 @@
 #define _EL_FITSDATA_RASTER_H
 
 #include "EL_FitsData/Position.h"
+#include "EL_FitsData/Region.h"
 
 #include <complex>
 #include <cstdint>
@@ -49,6 +50,10 @@ namespace FitsIO {
   MACRO(std::uint16_t, uint16) \
   MACRO(std::uint32_t, uint32) \
   MACRO(std::uint64_t, uint64)
+
+// Forward declaration for Raster::subraster()
+template <typename T, long n>
+class Subraster;
 
 /**
  * @ingroup image_data_classes
@@ -158,7 +163,12 @@ public:
   /**
    * @brief Create a subraster from given region.
    */
-  // Subraster<T, n> subraster(Region<n> region) const;
+  const Subraster<T, n> subraster(const Region<n>& region) const;
+
+  /**
+   * @copydoc subraster().
+   */
+  Subraster<T, n> subraster(const Region<n>& region);
 
 public:
   /**
@@ -411,6 +421,8 @@ PtrRaster<T, n> makeRaster(const Position<n>& shape, const T* data) {
 
 } // namespace FitsIO
 } // namespace Euclid
+
+#include "EL_FitsData/Subraster.h"
 
 /// @cond INTERNAL
 #define _EL_FITSDATA_RASTER_IMPL

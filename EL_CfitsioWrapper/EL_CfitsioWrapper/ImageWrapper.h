@@ -24,7 +24,6 @@
 #include "EL_CfitsioWrapper/FileWrapper.h"
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 #include "EL_FitsData/Raster.h"
-#include "EL_FitsData/Subraster.h"
 
 #include <fitsio.h>
 #include <string>

@@ -53,7 +53,18 @@ namespace FitsIO {
  * \endcode
  */
 template <typename T, long n = 2>
-struct Subraster {
+class Subraster {
+public:
+  /**
+   * @brief Constructor.
+   */
+  Subraster(const Raster<T, n>& parent, const Region<n>& region) :
+      m_cParent(&parent), m_parent(nullptr), m_region(region) {}
+
+  /**
+   * @brief Constructor.
+   */
+  Subraster(Raster<T, n>& parent, const Region<n>& region) : m_cParent(&parent), m_parent(&parent), m_region(region) {}
 
   /**
    * @brief The subraster shape.
@@ -72,12 +83,39 @@ struct Subraster {
   /**
    * @brief The parent raster.
    */
-  Raster<T, n>& parent;
+  const Raster<T, n>& parent() const {
+    return *m_cParent;
+  }
+
+  /**
+   * @copydoc parent()
+   */
+  Raster<T, n>& parent() {
+    return *m_parent;
+  }
 
   /**
    * @brief The region.
    */
-  Region<n> region;
+  const Region<n>& region() const {
+    return m_region;
+  }
+
+private:
+  /**
+   * @brief Read-only pointer to the raster.
+   */
+  const Raster<T, n>* m_cParent;
+
+  /**
+   * @brief Read/write pointer to the raster.
+   */
+  Raster<T, n>* m_parent;
+
+  /**
+   * @brief The region.
+   */
+  Region<n> m_region;
 };
 
 } // namespace FitsIO

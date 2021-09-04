@@ -17,4 +17,4 @@
  *
  */
 
-#include "EL_FitsData/Subraster.h"
+#include "EL_FitsData/Raster.h"
