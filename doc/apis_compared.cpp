@@ -1,9 +1,8 @@
-#include <memory>
-#include <string>
+#include "EL_FitsFile/SifFile.h"
 
 #include <fitsio.h>
-
-#include "EL_FitsFile/SifFile.h"
+#include <memory>
+#include <string>
 
 using namespace Euclid::FitsIO;
 
@@ -60,7 +59,7 @@ void afwExample() {
 // EL_FitsIO: 3 lines; 142 characters; 9 parameters
 
 void elfitsioExample() {
-  SifFile fits(filename, SifFile::Permission::CREATE);
+  SifFile fits(filename, FileMode::Create);
   fits.header().writeRecord(name, value, "", comment);
   fits.writeRaster(PtrRaster<short>({ width, height }, data));
 }
