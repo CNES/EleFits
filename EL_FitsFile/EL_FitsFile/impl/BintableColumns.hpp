@@ -205,11 +205,7 @@ void BintableColumns::readSegmentSeqTo(
 
 template <typename TSeq>
 void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<long>& indices, TSeq&& columns) const {
-  long bufferSize = 0;
-  int status = 0;
-  fits_get_rowsize(m_fptr, &bufferSize, &status);
-  // FIXME mayThrow
-  // FIXME const auto bufferSize = Cfitsio::BintableIo::bufferSize(m_fptr);
+  const auto bufferSize = readBufferRowCount();
   for (Segment src = Segment::fromSize(rows.lower, bufferSize), dst = Segment::fromSize(0, bufferSize);
        src.lower <= rows.upper; // FIXME src += bufferSize, dst += bufferSize) {
        src.lower += bufferSize, src.upper += bufferSize, dst.lower += bufferSize, dst.upper += bufferSize) {
@@ -238,23 +234,26 @@ void BintableColumns::write(const Column<T>& column) const {
   Cfitsio::BintableIo::writeColumn(m_fptr, column);
 }
 
-// insert
+// init
 
 template <typename T>
-void BintableColumns::insert(const Column<T>& column, long index) const {
-  m_edit();
-  if (index == -1) { // TODO handle other negative values?
-    Cfitsio::BintableIo::appendColumn(m_fptr, column);
-  } else {
-    Cfitsio::BintableIo::insertColumn(m_fptr, index + 1, column);
-  }
+void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
+  auto name = Cfitsio::toCharPtr(info.name);
+  auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<T>::tform(info.repeatCount));
+  // FIXME write unit
+  int status = 0;
+  fits_insert_col(m_fptr, static_cast<int>(index), name.get(), tform.get(), &status);
+  // FIXME to Cfitsio
 }
 
 // FIXME writeSegment
 
-// FIXME insertSegment
-
 // writeSeq
+
+template <typename TSeq>
+void BintableColumns::writeSeq(TSeq&& columns) const {
+  // FIXME implement
+}
 
 template <typename... Ts>
 void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
@@ -263,26 +262,24 @@ void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
 }
 
 template <typename TSeq>
-void BintableColumns::writeSeq(TSeq&& columns) const {
-  // FIXME implement
-}
-
-// appendSeq
-
-template <typename TSeq>
-void BintableColumns::appendSeq(TSeq&& columns) const {
+void BintableColumns::initSeq(TSeq&& infos, const std::vector<long>& indices) const {
   // FIXME implement
 }
 
 template <typename... Ts>
-void BintableColumns::appendSeq(const Column<Ts>&... columns) const {
-  m_edit();
-  Cfitsio::BintableIo::appendColumns(m_fptr, columns...);
+void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, const std::vector<long>& indices) const {
+  // FIXME implement
+  auto names = Cfitsio::CStrArray({ infos.name... });
+  auto tforms = Cfitsio::CStrArray({ Cfitsio::TypeCode<Ts>::tform(infos.repeatCount)... });
+  // FIXME write unit
+  int status = 0;
+  fits_insert_cols(m_fptr, static_cast<int>(index), sizeof...(Ts), names.data(), tforms.data(), &status);
+  // FIXME to Cfitsio
 }
 
-// FIXME writeSegmentSeq
+// FIXME initSeq
 
-// FIXME appendSegmentSeq
+// FIXME writeSegmentSeq
 
 } // namespace FitsIO
 } // namespace Euclid

@@ -39,6 +39,15 @@ long BintableColumns::readRowCount() const {
   return Cfitsio::BintableIo::rowCount(m_fptr);
 }
 
+long BintableColumns::readBufferRowCount() const {
+  long size = 0;
+  int status = 0;
+  fits_get_rowsize(m_fptr, &size, &status);
+  // FIXME mayThrow
+  // FIXME const auto bufferSize = Cfitsio::BintableIo::bufferSize(m_fptr);
+  return size;
+}
+
 bool BintableColumns::has(const std::string& name) const {
   m_touch();
   return Cfitsio::BintableIo::hasColumn(m_fptr, name);

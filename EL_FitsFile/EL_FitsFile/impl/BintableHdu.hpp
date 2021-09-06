@@ -69,12 +69,15 @@ void BintableHdu::writeColumns(const Column<Ts>&... columns) const {
 
 template <typename T>
 void BintableHdu::appendColumn(const Column<T>& column) const {
-  m_columns.insert(column, -1);
+  m_columns.init(column.info, -1);
+  m_columns.write(column);
 }
 
 template <typename... Ts>
 void BintableHdu::appendColumns(const Column<Ts>&... columns) const {
-  m_columns.appendSeq(columns...);
+  const std::vector<long> indices(sizeof...(Ts), -1);
+  m_columns.initSeq(columns.info..., indices);
+  m_columns.writeSeq(columns...);
 }
 
   #ifndef DECLARE_READ_COLUMN

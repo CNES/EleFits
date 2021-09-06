@@ -46,9 +46,17 @@ namespace FitsIO {
  * 
  * When writing, if more rows are needed, they are automatically filled with zeros.
  * 
- * Methods to read and write several columns take advantage of some internal buffer.
+ * As opposed to methods to read and write a single column,
+ * methods to read and write several columns take advantage of some internal buffer.
  * It is therefore much more efficient to use those than to chain several calls to methods for single columns.
  * Depending on the table width, the speed-up can reach several orders of magnitude.
+ * 
+ * Method to read and write columns conform to the following naming convention:
+ * - Start with `read` or `write`;
+ * - Contain `Segment` for reading or writing segments;
+ * - Contain `Seq` for reading or writing several columns;
+ * - Contain `To` for filling an existing column.
+ * For example, `readSegmentSeqTo()` is a method to read a sequence of segments into existing `Column` objects.
  * 
  * For working with segments, two intervals can generally be specified:
  * - That in the binary table, which is specified as a `rows` or `firstRow` parameter;
@@ -58,20 +66,20 @@ namespace FitsIO {
  * Here is an option:
  * \code
  * // Specs
- * const Segment segment { 11, 50 };
- * const long columns = 3;
- * const long rows = segment.size();
+ * const Segment rows { 11, 50 };
+ * const long columnCount = 3;
+ * const long rowCount = rows.size();
  * 
- * // Data container
- * std::vector<float> data(rows * columns);
+ * // Data container for all columns
+ * std::vector<float> data(rowCount * columnCount);
  * 
  * // Contiguous views
- * PtrColumn<float> one({ "ONE", "", 1 }, rows, &data[0]);
- * PtrColumn<float> two({ "TWO", "", 1 }, rows, &data[rows]);
- * PtrColumn<float> three({ "THREE", "", 1 }, rows, &data[rows * 2]);
+ * PtrColumn<float> one({ "ONE", "", 1 }, rowCount, &data[0]);
+ * PtrColumn<float> two({ "TWO", "", 1 }, rowCount, &data[rowCount]);
+ * PtrColumn<float> three({ "THREE", "", 1 }, rowCount, &data[rowCount * 2]);
  * 
  * // In-place reading
- * columns.readSegmentSeqTo(segment, one, two, three);
+ * columnCount.readSegmentSeqTo(rows, one, two, three);
  * \endcode
  */
 class BintableColumns {
@@ -99,6 +107,14 @@ public:
    * @brief Get the current number of rows.
    */
   long readRowCount() const;
+
+  /**
+   * @brief Get the number of rows in the internal buffer.
+   * @details
+   * CFitsIO internally implements a buffer to read and write data units efficiently.
+   * To optimize its usage, columns should be read and written by chunks of the buffer size at most.
+   */
+  long readBufferRowCount() const;
 
   /**
    * @brief Check whether the HDU contains a given column.
@@ -426,11 +442,11 @@ public:
 
   /**
    * @brief Append or insert a column, which was not previously initialized.
-   * @param column The column
+   * @param info The column info
    * @param index The 0-based column index, which may be >= 0 or -1 to append the column at the end
    */
   template <typename T>
-  void insert(const Column<T>& column, long index = -1) const;
+  void init(const ColumnInfo<T>& info, long index = -1) const;
 
   /**
    * @brief Remove a column specified by its name.
@@ -459,14 +475,6 @@ public:
   template <typename T>
   void writeSegment(long firstRow, const Column<T>& column);
 
-  /**
-   * @brief Insert a column segment.
-   * @param index The 0-based column index, which may be >= 0 or -1 to append the column at the end
-   * @copydetails writeSegment()
-   */
-  template <typename T>
-  void insertSegment(long firstRow, const Column<T>& column, long index = -1);
-
   /// @}
   /**
    * @name Write a sequence of columns.
@@ -487,18 +495,28 @@ public:
   void writeSeq(const Column<Ts>&... columns) const;
 
   /**
-   * @brief Append several columns.
-   * @copydetails writeSeq()
+   * @brief Append or insert a sequence of columns, which were not previously initialized.
+   * @param info The column infos
+   * @param index The 0-based column index, which may be >= 0 or -1 to append the column at the end
    */
   template <typename TSeq>
-  void appendSeq(TSeq&& columns) const;
+  void initSeq(TSeq&& infos, const std::vector<long>& indices) const;
 
   /**
-   * @brief Append several columns.
-   * @copydetails writeSeq()
+   * @copydoc initSeq
    */
   template <typename... Ts>
-  void appendSeq(const Column<Ts>&... columns) const;
+  void initSeq(const ColumnInfo<Ts>&... infos, const std::vector<long>& indices) const;
+
+  /**
+   * @brief Remove a sequence of columns specified by their names.
+   */
+  void removeSeq(const std::vector<std::string>& names) const;
+
+  /**
+   * @brief Remove a sequence of columns specified by their indices.
+   */
+  void removeSeq(const std::vector<long>& indices) const;
 
   /// @}
   /**
@@ -522,20 +540,6 @@ public:
    */
   template <typename... Ts>
   void writeSegmentSeq(long firstRow, const Column<Ts>&... columns) const;
-
-  /**
-   * @brief Append a sequence of segments.
-   * @copydetails writeSegmentSeq
-   */
-  template <typename TSeq>
-  void appendSegmentSeq(long firstRow, TSeq&& columns) const;
-
-  /**
-   * @brief Append a sequence of segments.
-   * @copydetails writeSegmentSeq
-   */
-  template <typename... Ts>
-  void appendSegmentSeq(long firstRow, const Column<Ts>&... columns) const;
 
   /// @}
 
