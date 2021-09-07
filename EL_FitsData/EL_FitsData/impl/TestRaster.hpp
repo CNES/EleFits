@@ -19,18 +19,16 @@
 
 #if defined(_EL_FITSDATA_TESTRASTER_IMPL) || defined(CHECK_QUALITY)
 
-#include "EL_FitsData/TestUtils.h"
-
-#include "EL_FitsData/TestRaster.h"
+  #include "EL_FitsData/TestRaster.h"
+  #include "EL_FitsData/TestUtils.h"
 
 namespace Euclid {
 namespace FitsIO {
 namespace Test {
 
 template <typename T, long n>
-RandomRaster<T, n>::RandomRaster(Position<n> rasterShape, T min, T max) : VecRaster<T, n>(rasterShape) {
-  this->vector() = generateRandomVector<T>(this->size(), min, max);
-}
+RandomRaster<T, n>::RandomRaster(Position<n> rasterShape, T min, T max) :
+    VecRaster<T, n>(rasterShape, generateRandomVector<T>(shapeSize(rasterShape), min, max)) {}
 
 template <typename T, long n>
 bool RandomRaster<T, n>::approx(const Raster<T, n>& other, double tol) const {

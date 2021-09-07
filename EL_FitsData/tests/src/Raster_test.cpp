@@ -53,6 +53,32 @@ BOOST_AUTO_TEST_CASE(index_test) {
   BOOST_TEST(variableIndex == fixedIndex);
 }
 
+BOOST_AUTO_TEST_CASE(raster_data_test) {
+  int data[] = { 0, 1, 2 };
+  Raster<int, 1> raster({ 3 }, data);
+  BOOST_TEST(raster.data() != nullptr);
+  BOOST_TEST(raster[{ 0 }] == 0);
+}
+
+BOOST_AUTO_TEST_CASE(const_raster_data_test) {
+  const int cData[] = { 3, 4, 5 };
+  Raster<const int, 1> cRaster({ 3 }, cData);
+  BOOST_TEST(cRaster.data() != nullptr);
+  BOOST_TEST(cRaster[{ 0 }] == 3);
+}
+
+BOOST_AUTO_TEST_CASE(vec_raster_data_test) {
+  VecRaster<int, 1> vecRaster({ 3 });
+  BOOST_TEST(vecRaster.data() != nullptr);
+  BOOST_TEST(vecRaster[{ 0 }] == 0);
+}
+
+BOOST_AUTO_TEST_CASE(const_vec_raster_data_test) {
+  const VecRaster<int, 1> cVecRaster({ 3 });
+  BOOST_TEST(cVecRaster.data() != nullptr);
+  BOOST_TEST(cVecRaster[{ 0 }] == 0);
+}
+
 BOOST_FIXTURE_TEST_CASE(small_raster_size_test, Test::SmallRaster) {
   long size(this->width * this->height);
   BOOST_TEST(this->dimension() == 2);
@@ -77,6 +103,7 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   raster.at({ 1, -1 }) = 1;
   BOOST_TEST(raster.at({ 1, -1 }) == 1);
   const auto& vec = raster.vector();
+  BOOST_TEST((raster[{ 0, 0 }]) == vec[0]);
   BOOST_TEST(raster.at({ 0, 0 }) == vec[0]);
   BOOST_TEST(raster.at({ -1, 0 }) == vec[width - 1]);
   BOOST_TEST(raster.at({ -width, 0 }) == vec[0]);

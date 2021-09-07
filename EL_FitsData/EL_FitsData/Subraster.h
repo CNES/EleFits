@@ -70,14 +70,14 @@ public:
    * @brief The subraster shape.
    */
   Position<n> shape() const {
-    return region.shape();
+    return m_region.shape();
   }
 
   /**
    * @brief The number of pixels in the subraster.
    */
   long size() const {
-    return region.size();
+    return m_region.size();
   }
 
   /**
@@ -99,6 +99,20 @@ public:
    */
   const Region<n>& region() const {
     return m_region;
+  }
+
+  /**
+   * @brief Pixel at given position.
+   */
+  const T& operator[](const Position<n>& pos) const {
+    return (*m_cParent)[pos + m_region.front];
+  }
+
+  /**
+   * @brief Pixel at given position.
+   */
+  T& operator[](const Position<n>& pos) {
+    return (*m_parent)[pos + m_region.front];
   }
 
 private:

@@ -1,8 +1,4 @@
 /**
- * @file src/lib/PositionIterator.cpp
- * @date 07/20/21
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -22,11 +18,3 @@
  */
 
 #include "EL_FitsData/PositionIterator.h"
-
-namespace EL_FitsData {
-
-
-}  // namespace EL_FitsData
-
-
-

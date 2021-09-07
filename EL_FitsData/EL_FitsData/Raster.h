@@ -58,13 +58,11 @@ class Subraster;
 /**
  * @ingroup image_data_classes
  * @brief Raster of a _n_-dimensional image (2D by default).
+ * @tparam The value type, which can be `const`-qualified for read-only rasters
+ * @tparam The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
  * @details
- * This is an interface to be implemented with a concrete data container (e.g. `std::vector`).
- * Some implementations are provided with the library,
- * but others could be useful to interface with client code
- * (e.g. with other external libraries with custom containers).
- *
- * The dimension can be >= 0 for fixed dimension, or -1 for variable dimension.
+ * A raster is a contiguous container for the pixel data of an image.
+ * It features access and view services.
  * @see Position for details on the fixed- and variable-dimension cases.
  */
 template <typename T, long n = 2>
@@ -86,31 +84,68 @@ public:
   static constexpr long Dim = n;
 
   /**
+   * @name Constructors, destructor.
+   */
+  /// @{
+
+  /**
    * @brief Destructor.
    */
   virtual ~Raster() = default;
 
   /**
-   * @brief Default constructor.
+   * @brief Copy constructor.
+   */
+  Raster(const Raster<T, n>& rhs) = default;
+
+  /**
+   * @brief Move constructor.
+   */
+  Raster(Raster<T, n>&& rhs) = default;
+
+  /**
+   * @brief Copy assignment.
+   */
+  Raster<T, n>& operator=(const Raster<T, n>& rhs) = default;
+
+  /**
+   * @brief Move assignment.
+   */
+  Raster<T, n>& operator=(Raster<T, n>&& rhs) = default;
+
+  /**
+   * @brief Create an empty raster.
    */
   Raster() = default;
 
   /**
-   * @brief Create a Raster with given shape.
+   * @brief Create a raster with given shape and data.
    */
-  explicit Raster(Position<n> rasterShape);
+  Raster(Position<n> rasterShape, T* data);
+
+  /// \}
+  /**
+   * @name Properties.
+   */
+  /// \{
+
+  // /**
+  //  * @brief Get the raster shape.
+  //  */
+  // const Position<n>& shape() const; // FIXME for 4.0
 
   /**
-   * @brief Const pointer to the first data element.
-   */
-  virtual const T* data() const = 0; // TODO avoid virtual, through ctor?
-
-  /**
-   * @brief Pointer to the first data element.
+   * @brief Get raster domain.
    * @details
-   * If the Raster is read-only, returns `nullptr`.
+   * The domain is the region which spans from the first to the last pixel position.
+   * It can be used to loop over all pixels, e.g.:
+   * \code
+   * for (auto pos : raster.domain()) {
+   *   processPixel(pos, raster[pos]);
+   * }
+   * \endcode
    */
-  virtual T* data(); // TODO throw?
+  Region<n> domain() const;
 
   /**
    * @brief Dimension.
@@ -121,15 +156,33 @@ public:
   long dimension() const;
 
   /**
+   * @brief Number of pixels.
+   */
+  long size() const;
+
+  /**
    * @brief Length along given axis.
    */
   template <long i>
   long length() const;
 
+  /// @}
   /**
-   * @brief Number of pixels.
+   * @name Element access.
    */
-  long size() const;
+  /// @{
+
+  /**
+   * @brief Const pointer to the first data element.
+   */
+  const T* data() const;
+
+  /**
+   * @brief Pointer to the first data element.
+   * @details
+   * If the Raster is read-only, returns `nullptr`.
+   */
+  T* data();
 
   /**
    * @brief Raw index of a position.
@@ -160,6 +213,12 @@ public:
    */
   T& at(const Position<n>& pos);
 
+  /// @}
+  /**
+   * @brief Views.
+   */
+  /// @{
+
   /**
    * @brief Create a subraster from given region.
    */
@@ -170,74 +229,35 @@ public:
    */
   Subraster<T, n> subraster(const Region<n>& region);
 
+  // FIXME implement Raster<T, n> slice(const Region<n>& region)
+
+  /// @}
+
 public:
   /**
    * @brief Raster shape, i.e. length along each axis.
+   * @deprecated Use method `shape()` instead
    */
   Position<n> shape;
-};
 
-/**
- * @ingroup image_data_classes
- * @brief `Raster` which references some external pointer data.
- */
-template <typename T, long n = 2>
-class PtrRaster : public Raster<T, n> {
-
-public:
+protected:
   /**
-   * @brief Destructor.
+   * @brief The data, possibly constant if `T` is `const`-qualified.
    */
-  virtual ~PtrRaster() = default;
-
-  /**
-   * @brief Copy constructor.
-   */
-  PtrRaster(const PtrRaster&) = default;
-
-  /**
-   * @brief Move constructor.
-   */
-  PtrRaster(PtrRaster&&) = default;
-
-  /**
-   * @brief Copy assignment.
-   */
-  PtrRaster& operator=(const PtrRaster&) = default;
-
-  /**
-   * @brief Move assignment.
-   */
-  PtrRaster& operator=(PtrRaster&&) = default;
-
-  /**
-   * @brief Create a read-only raster with given shape and values.
-   */
-  PtrRaster(Position<n> shape, const T* data);
-
-  /**
-   * @brief Create a read-write raster with given shape and values.
-   */
-  PtrRaster(Position<n> shape, T* data);
-
-  /**
-   * @copydoc Raster::data() const
-   */
-  const T* data() const override;
-
-  /**
-   * @copydoc Raster::data()
-   */
-  T* data() override;
-
-private:
-  const T* m_cData;
   T* m_data;
 };
 
 /**
+ * @brief Alias to Raster for backward compatibility.
+ * @deprecated Use `Raster` instead.
+ */
+template <typename T, long n = 2>
+using PtrRaster = Raster<T, n>;
+
+/**
  * @ingroup image_data_classes
  * @brief `Raster` which references some external `std::vector` data.
+ * @deprecated Doesn't bring much added value. Use `Raster` instead.
  */
 template <typename T, long n = 2>
 class VecRefRaster : public Raster<T, n> {
@@ -269,24 +289,9 @@ public:
   VecRefRaster& operator=(VecRefRaster&&) = default;
 
   /**
-   * @brief Create a read-only raster with given shape and values.
+   * @brief Create a raster with given shape and values.
    */
-  VecRefRaster(Position<n> shape, const std::vector<T>& vecRef);
-
-  /**
-   * @brief Create a read-write raster with given shape and values.
-   */
-  VecRefRaster(Position<n> shape, std::vector<T>& vecRef);
-
-  /**
-   * @copydoc Raster::data() const
-   */
-  const T* data() const override;
-
-  /**
-   * @copydoc Raster::data()
-   */
-  T* data() override;
+  VecRefRaster(Position<n> shape, std::vector<std::decay_t<T>>& vecRef);
 
   /**
    * @brief Const reference to the vector.
@@ -341,7 +346,7 @@ public:
    * VecRaster column(shape, std::move(data));
    * \endcode
    */
-  VecRaster(Position<n> shape, std::vector<T> vec);
+  VecRaster(Position<n> shape, std::vector<std::decay_t<T>> vec);
 
   /**
    * @brief Create a VecRaster with given shape and empty data.
@@ -354,19 +359,9 @@ public:
   VecRaster() = default;
 
   /**
-   * @copydoc Raster::data() const
-   */
-  const T* data() const override;
-
-  /**
-   * @copydoc Raster::data()
-   */
-  T* data() override;
-
-  /**
    * @brief Const reference to the vector.
    */
-  const std::vector<T>& vector() const;
+  const std::vector<std::decay_t<T>>& vector() const;
 
   /**
    * @brief Non-const reference to the vector.
@@ -376,18 +371,16 @@ public:
    * std::vector<T> v = std::move(raster.vector());
    * \endcode
    */
-  std::vector<T>& vector();
+  std::vector<std::decay_t<T>>& vector(); // FIXME avoid this! E.g. provide move(std::vector) instead
 
 private:
-  std::vector<T> m_vec;
+  std::vector<std::decay_t<T>> m_vec;
 };
 
 /**
  * @brief Shortcut to create a raster from a shape and data without specifying the pixel type.
  * @tparam n The raster dimension (2 by default)
  * @tparam T The pixel type, should not be specified (deduced from `data`)
- * @param shape The raster shape
- * @param data The raster data
  * @details
  * The pixel type is deduced from the `data` parameter.
  * The dimension cannot be deduced from a brace-enclosed list:
@@ -407,7 +400,7 @@ private:
  * \endcode
  */
 template <long n = 2, typename T>
-PtrRaster<T, n> makeRaster(const Position<n>& shape, T* data) {
+Raster<T, n> makeRaster(const Position<n>& shape, T* data) {
   return PtrRaster<T, n>(shape, data);
 }
 
@@ -415,13 +408,15 @@ PtrRaster<T, n> makeRaster(const Position<n>& shape, T* data) {
  * @copydoc makeRaster
  */
 template <long n = 2, typename T>
-PtrRaster<T, n> makeRaster(const Position<n>& shape, const T* data) {
-  return PtrRaster<T, n>(shape, data);
+VecRaster<T, n> makeRaster(const Position<n>& shape, std::vector<T>&& data) {
+  return VecRaster<T, n>(shape, std::move(data));
 }
 
 } // namespace FitsIO
 } // namespace Euclid
 
+#include "EL_FitsData/PixelIterator.h"
+#include "EL_FitsData/PositionIterator.h"
 #include "EL_FitsData/Subraster.h"
 
 /// @cond INTERNAL

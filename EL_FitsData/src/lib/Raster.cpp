@@ -23,21 +23,18 @@ namespace Euclid {
 namespace FitsIO {
 
 #ifndef COMPILE_RASTER_CLASSES
-#define COMPILE_RASTER_CLASSES(type, unused) \
-  template class Raster<type, -1>; \
-  template class PtrRaster<type, -1>; \
-  template class VecRefRaster<type, -1>; \
-  template class VecRaster<type, -1>; \
-  template class Raster<type, 2>; \
-  template class PtrRaster<type, 2>; \
-  template class VecRefRaster<type, 2>; \
-  template class VecRaster<type, 2>; \
-  template class Raster<type, 3>; \
-  template class PtrRaster<type, 3>; \
-  template class VecRefRaster<type, 3>; \
-  template class VecRaster<type, 3>;
+  #define COMPILE_RASTER_CLASSES(type, unused) \
+    template class Raster<type, -1>; \
+    template class VecRefRaster<type, -1>; \
+    template class VecRaster<type, -1>; \
+    template class Raster<type, 2>; \
+    template class VecRefRaster<type, 2>; \
+    template class VecRaster<type, 2>; \
+    template class Raster<type, 3>; \
+    template class VecRefRaster<type, 3>; \
+    template class VecRaster<type, 3>;
 EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_RASTER_CLASSES)
-#undef COMPILE_COLUMN_CLASSES
+  #undef COMPILE_COLUMN_CLASSES
 #endif
 
 } // namespace FitsIO

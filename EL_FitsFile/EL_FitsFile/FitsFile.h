@@ -42,15 +42,13 @@ namespace Euclid {
  * * `read` and `parse` means that some data are read from the Fits file;
  * * `parse` differs from `read` in that the raw contents of the Fits file are interpreted
  * instead of being simply forwarded:
- * for example, Hdu::parseRecord returns a Record with user-defined type
+ * for example, `Header::parse()` returns a `Record` with user-defined type
  * by parsing the characters in the Fits file,
- * while Hdu::readName returns the raw value of the EXTNAME keyword.
- * * `write`, `update`, `init` and `assign` means that some data are written to the Fits file;
- * * `update` differs from `write` (e.g. Hdu::updateRecord vs. Hdu::writeRecord)
- * in that if the data already exist in the Fits file, they are overridden instead of new data to be written.
+ * while `Hdu::readName()` returns the raw value of the `EXTNAME` keyword.
+ * * `write`, `init` and `assign` means that some data are written to the Fits file;
  * * `init` methods write metadata (e.g. image size) while `assign` methods also write data (e.g. image pixels);
  * * Getters -- which do not imply reading from the Files but only working with class members -- are nouns:
- * for example, Hdu::readHduName is a reading operation, while Hdu::index is a simple getter.
+ * for example, `Hdu::readName()` is a reading operation, while `Hdu::index()` is a simple getter.
  */
 namespace FitsIO {
 

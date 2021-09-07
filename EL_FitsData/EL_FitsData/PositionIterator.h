@@ -49,21 +49,21 @@ public:
   /**
    * @brief Dereference operator.
    */
-  Position<n>& operator*() const {
+  const Position<n>& operator*() const {
     return m_current;
   }
 
   /**
    * @brief Arrow operator.
    */
-  Position<n>* operator->() const {
+  const Position<n>* operator->() const {
     return &m_current;
   }
 
   /**
    * @brief Increment operator.
    */
-  Position<n>& operator++() {
+  const Position<n>& operator++() {
     next();
     return m_current;
   }
@@ -71,7 +71,7 @@ public:
   /**
    * @brief Increment operator.
    */
-  Position<n>* operator++(int) {
+  const Position<n>* operator++(int) {
     next();
     return &m_current;
   }
