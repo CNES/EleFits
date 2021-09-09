@@ -20,6 +20,7 @@
 #if defined(_EL_FITSFILE_BINTABLECOLUMNS_IMPL) || defined(CHECK_QUALITY)
 
   #include "EL_CfitsioWrapper/BintableWrapper.h"
+  #include "EL_CfitsioWrapper/HeaderWrapper.h" // TODO rm when implementation of init(Seq) is in BintableWrapper
   #include "EL_FitsFile/BintableColumns.h"
 
 namespace Euclid {
@@ -240,11 +241,17 @@ template <typename T>
 void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
   auto name = Cfitsio::toCharPtr(info.name);
   auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<T>::tform(info.repeatCount));
-  // FIXME write unit
   int status = 0;
-  int cfitsioIndex = index == -1 ? readColumnCount() + 1 : index + 1;
+  int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_col(m_fptr, cfitsioIndex, name.get(), tform.get(), &status);
   Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
+  if (info.unit != "") {
+    const Record<std::string> record { "TUNIT" + std::to_string(cfitsioIndex),
+                                       info.unit,
+                                       "",
+                                       "physical unit of field" };
+    Cfitsio::HeaderIo::writeRecord(m_fptr, record);
+  }
   // FIXME to Cfitsio
 }
 
@@ -273,10 +280,20 @@ void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const 
   // FIXME implement
   auto names = Cfitsio::CStrArray({ infos.name... });
   auto tforms = Cfitsio::CStrArray({ Cfitsio::TypeCode<Ts>::tform(infos.repeatCount)... });
-  // FIXME write unit
+  const std::vector<std::string*> tunits {
+    &infos.unit...
+  }; // TODO no vector is needed: this is just easier for looping
   int status = 0;
-  fits_insert_cols(m_fptr, static_cast<int>(index), sizeof...(Ts), names.data(), tforms.data(), &status);
+  int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
+  fits_insert_cols(m_fptr, cfitsioIndex, sizeof...(Ts), names.data(), tforms.data(), &status);
   // FIXME to Cfitsio
+  long i = cfitsioIndex;
+  for (const auto* u : tunits) {
+    if (*u != "") {
+      const Record<std::string> record { "TUNIT" + std::to_string(i), *u, "", "physical unit of field" };
+      Cfitsio::HeaderIo::writeRecord(m_fptr, record);
+    }
+  }
 }
 
 // FIXME initSeq
