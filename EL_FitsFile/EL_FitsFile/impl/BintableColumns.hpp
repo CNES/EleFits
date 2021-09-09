@@ -264,12 +264,12 @@ void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
 }
 
 template <typename TSeq>
-void BintableColumns::initSeq(TSeq&& infos, const std::vector<long>& indices) const {
+void BintableColumns::initSeq(TSeq&& infos, long index) const {
   // FIXME implement
 }
 
 template <typename... Ts>
-void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, const std::vector<long>& indices) const {
+void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const {
   // FIXME implement
   auto names = Cfitsio::CStrArray({ infos.name... });
   auto tforms = Cfitsio::CStrArray({ Cfitsio::TypeCode<Ts>::tform(infos.repeatCount)... });
