@@ -2,7 +2,7 @@
 
 ## Introduction
 
-EL_FitsIO depends on Elements, a build framework based on CMake.
+EL_FitsIO depends on Elements, a Euclid-developed build framework based on CMake.
 As such, EL_FitsIO can be used either from an Elements project or from a CMake project.
 Euclid developers benefit from the continuous delivery of EDEN (Euclid development environment) and have nothing to install.
 Others must install EL_FitsIO (and Elements) before they configure their project.
@@ -27,13 +27,13 @@ cd Elements
 git checkout <Elements_version>
 ```
 
-Then, install Elements with user-defined prefix (e.g. the standard `/usr`):
+Then, install Elements with user-defined prefix which may be `/usr` or `/usr/local`:
 
 ```xml
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
-sudo make install -j
+sudo make install
 ```
 
 Finally, install EL_FitsIO the same way:
@@ -42,10 +42,10 @@ Finally, install EL_FitsIO the same way:
 cd <root>/EL_FitsIO
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
-make -j
+cmake -DCMAKE_INSTALL_PREFIX=<prefix> -DCMAKE_INCLUDE_PATH=<prefix> ..
+make
 make test
-sudo make install -j
+sudo make install
 ```
 
 This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
@@ -66,8 +66,7 @@ elements_project(<project_name> <project_version>
     USE EL_FitsIO <EL_FitsIO_version>)
 ```
 
-and to the EL_FitsFile module (for the end-user API) or to the EL_CfitsioWrapper module (for the low-level API)
-in the `CMakeLists.txt` of each module which requires EL_FitsIO:
+and to the EL_FitsFile module in the `CMakeLists.txt` of each module which requires EL_FitsIO:
 
 ```xml
 elements_depends_on_subdirs(EL_FitsFile)
@@ -92,8 +91,6 @@ find_package(EL_FitsFile REQUIRED)
 add_executable(<exe_name> <exe_source>)
 target_link_libraries(<exe_name> EL_FitsFile)
 ```
-
-To use the low-level API, replace EL_FitsFile with EL_CfitsioWrapper.
 
 The `find_package` command expects parent folder of the file `FindEL_FitsFile.cmake` to be in the `CMAKE_MODULE_PATH`.
 For now, it is located in the sources of EL_FitsIO, in `cmake/modules`
