@@ -242,7 +242,9 @@ void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
   auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<T>::tform(info.repeatCount));
   // FIXME write unit
   int status = 0;
-  fits_insert_col(m_fptr, static_cast<int>(index), name.get(), tform.get(), &status);
+  int cfitsioIndex = index == -1 ? readColumnCount() + 1 : index + 1;
+  fits_insert_col(m_fptr, cfitsioIndex, name.get(), tform.get(), &status);
+  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
   // FIXME to Cfitsio
 }
 

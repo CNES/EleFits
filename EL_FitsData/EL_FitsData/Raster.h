@@ -236,7 +236,6 @@ public:
 public:
   /**
    * @brief Raster shape, i.e. length along each axis.
-   * @deprecated Use method `shape()` instead
    */
   Position<n> shape;
 
@@ -370,6 +369,9 @@ public:
    * \code
    * std::vector<T> v = std::move(raster.vector());
    * \endcode
+   * @warning
+   * This method should not be used to assign the vector.
+   * Instead, a new `VecRaster` should be created.
    */
   std::vector<std::decay_t<T>>& vector(); // FIXME avoid this! E.g. provide move(std::vector) instead
 
