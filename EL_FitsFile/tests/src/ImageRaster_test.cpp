@@ -1,8 +1,4 @@
 /**
- * @file tests/src/ImageRaster_test.cpp
- * @date 07/21/21
- * @author user
- *
  * @copyright (C) 2012-2020 Euclid Science Ground Segment
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -21,24 +17,29 @@
  *
  */
 
+#include "EL_FitsData/TestRaster.h"
+#include "EL_FitsFile/FitsFileFixture.h"
+#include "EL_FitsFile/ImageRaster.h"
+
 #include <boost/test/unit_test.hpp>
 
-#include "EL_FitsFile//ImageRaster.h"
+using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE (ImageRaster_test)
+BOOST_AUTO_TEST_SUITE(ImageRaster_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE( example_test ) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
-
+BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
+  const Position<2> shape { 7, 2 };
+  const auto cData = Test::generateRandomVector<std::int16_t>(shapeSize(shape));
+  const Raster<const std::int16_t> cRaster = makeRaster(shape, cData.data());
+  writeRaster(cRaster);
+  const auto res = readRaster<std::int16_t>();
+  BOOST_TEST(res.vector() == cData);
 }
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE_END ()
-
-
+BOOST_AUTO_TEST_SUITE_END()

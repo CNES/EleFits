@@ -160,7 +160,7 @@ void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   int status = 0;
   const auto begin = raster.data();
   const auto end = begin + raster.size();
-  std::vector<T> nonconstData(begin, end); // For const-correctness issue
+  std::vector<std::decay_t<T>> nonconstData(begin, end); // For const-correctness issue
   fits_write_img(fptr, TypeCode<T>::forImage(), 1, raster.size(), nonconstData.data(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot write image.");
 }
@@ -190,7 +190,7 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const
   /* Non-const line for CFitsIO */
   const auto begin = &subraster[0]; // FIXME Subraster::operator[]
   const auto end = begin + dstSize;
-  std::vector<T> line(begin, end);
+  std::vector<std::decay_t<T>> line(begin, end);
 
   /* Process each line */
   int status = 0;

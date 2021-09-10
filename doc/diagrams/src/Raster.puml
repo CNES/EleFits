@@ -1,0 +1,44 @@
+@startuml
+package EL_FitsData {
+
+class Position<n> {
+}
+
+class Raster<T, n> {
+- m_shape : Position<n>
+- m_data : T*
++ shape () -> Position<n>
++ data () -> T*
++ operator[] (position) -> T&
++ at (position) -> T&
++ subraster (region) -> Subraster<T, n>
+}
+
+class VecRaster<T, n> {
+- m_vec : vector<T>
++ vector () -> const vector<T>&
+}
+
+class Region<n> {
++ front : Position<n>
++ back : Position<n>
++ shape () -> Position<n>
+}
+
+class Subraster<T, n> {
+- m_region : Region<n>
+- m_raster : Raster<T, n>
++ shape () -> Position<n>
++ data () -> T*
++ operator[] (position) -> T&
++ at (position) -> T&
+}
+
+Raster <|-- VecRaster
+Position --* Raster
+Raster -o Subraster
+Region --* Subraster
+Position -* Region
+
+}
+@enduml

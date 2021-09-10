@@ -48,7 +48,7 @@ void readColumnInfoImpl<std::string>(fitsfile* fptr, long index, FitsIO::VecColu
 template <typename T>
 void readColumnInfoImpl(fitsfile* fptr, long index, FitsIO::VecColumn<T>& column, long rowCount) {
   column.info = readColumnInfo<T>(fptr, index);
-  column.vector() = std::vector<T>(column.info.repeatCount * rowCount);
+  column.vector() = std::vector<std::decay_t<T>>(column.info.repeatCount * rowCount);
 }
 
 /**
@@ -114,7 +114,7 @@ void writeColumnChunkImpl(fitsfile* fptr, long index, const FitsIO::Column<T>& c
   const auto begin = column.data() + (firstRow - 1) * column.info.repeatCount;
   const auto size = clipedRowCount * column.info.repeatCount;
   const auto end = begin + size;
-  std::vector<T> vec(begin, end);
+  std::vector<std::decay_t<T>> vec(begin, end);
   /* Write data */
   int status = 0;
   fits_write_col(fptr, TypeCode<T>::forBintable(), static_cast<int>(index), firstRow, 1, size, vec.data(), &status);
@@ -296,7 +296,7 @@ void writeColumn(fitsfile* fptr, const FitsIO::Column<T>& column) {
   long index = columnIndex(fptr, column.info.name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
-  std::vector<T> nonconstData(begin, end); // We need a non-const data for CFitsIO
+  std::vector<std::decay_t<T>> nonconstData(begin, end); // We need a non-const data for CFitsIO
   int status = 0;
   fits_write_col(
       fptr,

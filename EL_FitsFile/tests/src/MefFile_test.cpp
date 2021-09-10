@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_SUITE(MefFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::NewMefFile) {
+BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::TemporaryMefFile) {
   const auto& primary = this->accessPrimary<>();
   BOOST_TEST(primary.index() == MefFile::primaryIndex);
 }

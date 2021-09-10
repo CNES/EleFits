@@ -58,8 +58,8 @@ class Subraster;
 /**
  * @ingroup image_data_classes
  * @brief Raster of a _n_-dimensional image (2D by default).
- * @tparam The value type, which can be `const`-qualified for read-only rasters
- * @tparam The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
+ * @tparam T The value type, which can be `const`-qualified for read-only rasters
+ * @tparam n The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
  * @details
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.

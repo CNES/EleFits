@@ -3,9 +3,9 @@
 package EL_FitsData {
 
 Raster <|-- VecRaster
-Raster <|-- VecRefRaster
-Raster <|-- PtrRaster
 Raster *- Position
+Subraster *- Raster
+Subraster *- Region
 
 Record -[hidden] Record
 
