@@ -11,16 +11,21 @@
 
 ### New features
 
-* Named HDU access methods support `EXTVER` keyword and use HDU type to disambiguate name-version couples
-* Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
-* HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
-* Image regions can be read and written
-* Image data can be read in place
-* Binary table column segments can be read and written
-* Binary table data can be read in place
-* `Position` has arithmetics operators
-* `RecordMode` controls the behavior of record writing methods
-* HDU checksums can be computed and verified
+* HDU access
+  * Named HDU access methods support `EXTVER` keyword and use HDU type to disambiguate name-version couples
+  * Iterators, filters and selectors are provided to iterate over selected HDUs (e.g. with range loops)
+  * HDUs are categorized more precisely with `HduCategory` (e.g. `Primary` vs. `Ext`, `Data` vs. `Metadata`) than with `HduType`
+* All HDUs
+  * `RecordMode` controls the behavior of record writing methods
+  * HDU checksums can be computed and verified
+* Image HDUs
+  * Image regions can be read and written, classes `Region` and `Subraster` are introduced
+  * Image data can be read in place
+  * `Position` has arithmetics operators
+* Binary table HDUs
+  * Binary table column segments can be read and written
+  * Vectors of `Column`s can be read and written, in addition to tuples
+  * Binary table data can be read in place
 
 ### Deprecated
 
@@ -29,9 +34,11 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 * Explicit use of `boost::any`: should be replaced with `VariantValue`
 * `FitsFile::Permission` is a deprecated alias to `FileMode`
 * `HduType` is a deprecated alias to `HduCategory`
+* `VecRefRaster` and `VecRefColumn`
 
 ### Cleaning
 
+* `Raster` is refactored, and the value type can be const-qualified for read-only data
 * `Position` is a proper class, instead of a compile-time conditional alias
 * `KeywordCategory` is merged into `StandardKeyword` (named `KeywordCategory` analogously to `HduCategory`)
 

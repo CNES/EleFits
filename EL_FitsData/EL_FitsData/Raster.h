@@ -63,7 +63,33 @@ class Subraster;
  * @details
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.
+ * 
+ * Two classes are provided:
+ * - `Raster` doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;
+ * - `VecRaster` owns a `vector` (and is compatible with move semantics, which allows borrowing the `vector`).
+ * 
+ * Example usages:
+ * \code
+ * Position<2> shape { 2, 3 };
+ * 
+ * // Read/write Raster
+ * float data[] = { 1, 2, 3, 4, 5, 6 };
+ * Raster<float> raster(shape, data);
+ * 
+ * // Read-only Raster
+ * const float cData[] = { 1, 2, 3, 4, 5, 6 };
+ * Raster<const float> cRaster(shape, cData);
+ * 
+ * // Read/write VecRaster
+ * std::vector<float> vec(&data[0], &data[6]);
+ * VecRaster<float> vecRaster(shape, std::move(vec));
+ * 
+ * // Read-only VecRaster
+ * std::vector<const float> cVec(&data[0], &data[6]);
+ * VecRaster<const float> cVecRaster(shape, std::move(cVec));
+ * \endcode
  * @see Position for details on the fixed- and variable-dimension cases.
+ * @see makeRaster() for creation shortcuts.
  */
 template <typename T, long n = 2>
 class Raster {
@@ -305,8 +331,7 @@ private:
 };
 
 /**
- * @ingroup image_data_classes
- * @brief `Raster` which stores internally the data as a vector.
+ * @copydoc Raster
  */
 template <typename T, long n = 2>
 class VecRaster : public Raster<T, n> {
@@ -393,12 +418,12 @@ private:
  * 
  * Example usages:
  * \code
- * auto raster = makeRaster({ width, height }, data);
+ * auto raster = makeRaster({ width, height }, data); // n = 2 by default
  * auto raster = makeRaster<3>({ width, height, depth }, data);
  * auto raster = makeRaster<-1>({ width, height, depth }, data);
  * 
  * Position<3> shape { width, height, depth };
- * auto raster = makeRaster(shape, data);
+ * auto raster = makeRaster(shape, data); // n is deduced from shape
  * \endcode
  */
 template <long n = 2, typename T>

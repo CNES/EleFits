@@ -1,0 +1,18 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\addtogroup image_data_classes
+
+
+\tableofcontents
+
+// FIXME
+
+\image html doc/diagrams/out/Raster.png
+
+*/
+
+}
+}
