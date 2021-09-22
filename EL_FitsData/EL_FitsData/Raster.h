@@ -323,8 +323,6 @@ public:
    */
   const std::vector<T>& vector() const;
 
-  // FIXME implement non-const vector() => implement ReadOnlyError
-
 private:
   const std::vector<T>* m_cVecPtr;
   std::vector<T>* m_vecPtr;
@@ -397,8 +395,19 @@ public:
    * @warning
    * This method should not be used to assign the vector.
    * Instead, a new `VecRaster` should be created.
+   * @deprecated Use moveTo() instead
    */
-  std::vector<std::decay_t<T>>& vector(); // FIXME avoid this! E.g. provide move(std::vector) instead
+  std::vector<std::decay_t<T>>& vector();
+
+  /**
+   * @brief Move the vector outside the raster.
+   * @details
+   * This method is used to take ownership on the data without copying it.
+   * The raster shape is untouched.
+   * @warning
+   * The raster data is not usable anymore after this call.
+   */
+  std::vector<std::decay_t<T>>& moveTo(std::vector<std::decay_t<T>>& destination);
 
 private:
   std::vector<std::decay_t<T>> m_vec;

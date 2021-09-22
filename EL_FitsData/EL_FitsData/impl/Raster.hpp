@@ -199,6 +199,12 @@ std::vector<std::decay_t<T>>& VecRaster<T, n>::vector() {
   return m_vec;
 }
 
+template <typename T, long n>
+std::vector<std::decay_t<T>>& VecRaster<T, n>::moveTo(std::vector<std::decay_t<T>>& destination) {
+  destination = std::move(m_vec); // FIXME test
+  return destination;
+}
+
   #ifndef DECLARE_RASTER_CLASSES
     #define DECLARE_RASTER_CLASSES(type, unused) \
       extern template class Raster<type, -1>; \
