@@ -42,6 +42,10 @@ BintableHdu::BintableHdu() :
                  editThisHdu();
                }) {}
 
+const BintableColumns& BintableHdu::columns() const {
+  return m_columns;
+}
+
 long BintableHdu::readColumnCount() const {
   touchThisHdu();
   return Cfitsio::BintableIo::columnCount(m_fptr);
