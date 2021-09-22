@@ -404,6 +404,14 @@ public:
    * @details
    * This method is used to take ownership on the data without copying it.
    * The raster shape is untouched.
+   * Example usage:
+   * \code
+   * VecRaster<float> raster(...);
+   * std::vector<float> data;
+   * raster.moveTo(data);
+   * // Values have been moved to data without copy.
+   * // raster.vector() is empty now.
+   * \endcode
    * @warning
    * The raster data is not usable anymore after this call.
    */

@@ -201,7 +201,7 @@ std::vector<std::decay_t<T>>& VecRaster<T, n>::vector() {
 
 template <typename T, long n>
 std::vector<std::decay_t<T>>& VecRaster<T, n>::moveTo(std::vector<std::decay_t<T>>& destination) {
-  destination = std::move(m_vec); // FIXME test
+  destination = std::move(m_vec);
   return destination;
 }
 
