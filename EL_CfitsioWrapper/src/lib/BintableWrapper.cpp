@@ -219,6 +219,25 @@ void writeColumn<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>&
   CfitsioError::mayThrow(status, fptr, "Cannot write column: " + column.info.name);
 }
 
+template <>
+void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column) {
+  const auto begin = column.data();
+  const auto end = begin + column.elementCount();
+  CStrArray array(begin, end);
+  long index = columnIndex(fptr, column.info.name);
+  int status = 0;
+  fits_write_col(
+      fptr,
+      TypeCode<std::string>::forBintable(), // datatype
+      static_cast<int>(index), // colnum // column indices are int
+      firstRow + 1, // firstrow (1-based)
+      1, // firstelem (1-based)
+      column.elementCount(), // nelements
+      array.data(),
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot write column: " + column.info.name);
+}
+
 } // namespace BintableIo
 } // namespace Cfitsio
 } // namespace Euclid

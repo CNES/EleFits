@@ -310,6 +310,31 @@ void writeColumn(fitsfile* fptr, const FitsIO::Column<T>& column) {
   CfitsioError::mayThrow(status, fptr, "Cannot write column data: " + column.info.name);
 }
 
+/**
+ * @brief String specialization.
+ */
+template <>
+void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column);
+
+template <typename T>
+void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<T>& column) {
+  long index = columnIndex(fptr, column.info.name);
+  const auto begin = column.data();
+  const auto end = begin + column.elementCount();
+  std::vector<std::decay_t<T>> nonconstData(begin, end); // We need a non-const data for CFitsIO
+  int status = 0;
+  fits_write_col(
+      fptr,
+      TypeCode<T>::forBintable(), // datatype
+      static_cast<int>(index), // colnum
+      firstRow + 1, // firstrow (1-based)
+      1, // firstelem (1-based)
+      column.elementCount(), // nelements
+      nonconstData.data(),
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot write column data: " + column.info.name);
+}
+
 template <typename... Ts>
 std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vector<long>& indices) {
   /* Read column metadata */

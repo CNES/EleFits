@@ -480,7 +480,7 @@ public:
    * and `insertSegment()` otherwise.
    */
   template <typename T>
-  void writeSegment(long firstRow, const Column<T>& column);
+  void writeSegment(long firstRow, const Column<T>& column) const;
 
   /// @}
   /**

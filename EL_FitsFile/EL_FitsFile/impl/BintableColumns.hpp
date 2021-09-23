@@ -230,8 +230,7 @@ void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<lo
 
 template <typename T>
 void BintableColumns::write(const Column<T>& column) const {
-  m_edit();
-  Cfitsio::BintableIo::writeColumn(m_fptr, column);
+  writeSegment(0, column);
 }
 
 // init
@@ -254,19 +253,28 @@ void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
   // FIXME to Cfitsio
 }
 
-// FIXME writeSegment
+// writeSegment
+
+template <typename T>
+void BintableColumns::writeSegment(long firstRow, const Column<T>& column) const {
+  m_edit();
+  Cfitsio::BintableIo::writeColumnSegment(m_fptr, firstRow, column);
+}
 
 // writeSeq
 
 template <typename TSeq>
 void BintableColumns::writeSeq(TSeq&& columns) const {
-  // FIXME implement
+  long rowCount = 0;
+  seqForeach(columns, [&](const auto& c) {
+    rowCount = std::max(rowCount, c.rowCount()); // Needed if rows becomes firstRow
+  });
+  writeSegmentSeq({ 0, rowCount - 1 }, columns);
 }
 
 template <typename... Ts>
 void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
-  m_edit();
-  Cfitsio::BintableIo::writeColumns(m_fptr, columns...); // FIXME test
+  writeSeq(std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
@@ -300,10 +308,6 @@ void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const 
 template <typename TSeq>
 void BintableColumns::writeSegmentSeq(const Segment& rows, TSeq&& columns) const {
   const auto bufferSize = readBufferRowCount();
-  // auto rowCount = 0;
-  // seqForeach(columns, [&](const auto& c) {
-  //   rowCount = std::max(rowCount, c.rowCount()); // Needed if rows becomes firstRow
-  // });
   for (auto dst = Segment::fromSize(rows.lower, bufferSize), src = Segment::fromSize(0, bufferSize);
        dst.lower <= rows.upper; // FIXME src += bufferSize, dst += bufferSize) {
        src.lower += bufferSize, src.upper += bufferSize, dst.lower += bufferSize, dst.upper += bufferSize) {

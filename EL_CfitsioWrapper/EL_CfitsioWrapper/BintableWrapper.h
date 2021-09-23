@@ -108,6 +108,12 @@ template <typename T>
 void writeColumn(fitsfile* fptr, const FitsIO::Column<T>& column);
 
 /**
+ * @brief Write a segment of a binary table column.
+ */
+template <typename T>
+void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<T>& column);
+
+/**
  * @brief Write several binary table columns.
  */
 template <typename... Ts>
