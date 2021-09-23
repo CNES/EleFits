@@ -41,13 +41,20 @@ namespace FitsIO {
  * - Read/write a sequence of column segments (same row interval for all the columns).
  * 
  * For reading, new columns can be either returned, or existing columns can be filled.
- * Columns can be specified either by their name or index.
+ * Columns can be specified either by their name or index;
+ * using index is faster because names are internally converted to indices anyway, via a read operation.
  * When filling an existing column, the name of the column can also be used to specify the column to be read.
  * 
  * When writing, if more rows are needed, they are automatically filled with zeros.
  * 
+ * In the Fits file, binary tables are written row-wise, i.e. values of a row are contiguous in the file.
+ * As of today, in memory, values are stored column-wise (in `Column`) for convenience,
+ * to avoid heterogeneous containers as much as possible.
+ * This implies that read and write functions jump from one disk or memory adress to another all the time,
+ * which costs a lot of resources.
+ * To save on I/Os, an internal buffer is instantiated by CFitsIO.
  * As opposed to methods to read and write a single column,
- * methods to read and write several columns take advantage of some internal buffer.
+ * methods to read and write several columns take advantage of the internal buffer.
  * It is therefore much more efficient to use those than to chain several calls to methods for single columns.
  * Depending on the table width, the speed-up can reach several orders of magnitude.
  * 
@@ -526,20 +533,20 @@ public:
 
   /**
    * @brief Write a sequence of segments.
-   * @param firstRow The destination row of the first element of each column
+   * @param rows The destination rows of the first element of each column
    * @param columns The columns to be written
    * Segments can be written in already initialized columns with `writeSegmentSeq()`
    * or in new columns with `appendSegmentSeq()`.
    */
   template <typename TSeq>
-  void writeSegmentSeq(long firstRow, TSeq&& columns) const;
+  void writeSegmentSeq(const Segment& rows, TSeq&& columns) const;
 
   /**
    * @brief Write a sequence of segments.
    * @copydetails writeSegmentSeq
    */
   template <typename... Ts>
-  void writeSegmentSeq(long firstRow, const Column<Ts>&... columns) const;
+  void writeSegmentSeq(const Segment& rows, const Column<Ts>&... columns) const;
 
   /// @}
 
