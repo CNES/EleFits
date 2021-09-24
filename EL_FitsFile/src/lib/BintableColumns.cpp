@@ -43,8 +43,7 @@ long BintableColumns::readBufferRowCount() const {
   long size = 0;
   int status = 0;
   fits_get_rowsize(m_fptr, &size, &status);
-  // FIXME mayThrow
-  // FIXME const auto bufferSize = Cfitsio::BintableIo::bufferSize(m_fptr);
+  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot compute buffer row count.");
   return size;
 }
 
@@ -87,7 +86,22 @@ void BintableColumns::remove(const std::string& name) const {
 
 void BintableColumns::remove(long index) const {
   m_edit();
-  // FIXME implement
+  int status = 0;
+  fits_delete_col(m_fptr, index + 1, &status);
+  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot remove column #" + std::to_string(index));
+  // FIXME to Cfitsio
+}
+
+void BintableColumns::removeSeq(const std::vector<std::string>& names) const {
+  for (const auto& n : names) {
+    remove(n);
+  }
+}
+
+void BintableColumns::removeSeq(const std::vector<long>& indices) const {
+  for (const auto& i : indices) {
+    remove(i);
+  }
 }
 
 } // namespace FitsIO

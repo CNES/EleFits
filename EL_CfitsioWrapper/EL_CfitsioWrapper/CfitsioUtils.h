@@ -72,6 +72,11 @@ struct CStrArray {
   explicit CStrArray(const std::initializer_list<std::string>& data);
 
   /**
+   * @brief The number of elements.
+   */
+  std::size_t size() const;
+
+  /**
    * @brief A vector of smart pointers to `char[]`.
    * @warning
    * Modification makes CStrArray object invalid.

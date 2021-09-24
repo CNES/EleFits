@@ -128,6 +128,11 @@ template <typename T>
 struct ColumnInfo {
 
   /**
+   * @brief The value type.
+   */
+  using Value = T;
+
+  /**
    * @brief Constructor.
    */
   ColumnInfo(const std::string& columnName, const std::string& columnUnit = "", long columnRepeatCount = 1);

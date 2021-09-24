@@ -120,10 +120,10 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indi
 
 template <typename TSeq>
 void BintableColumns::readSeqTo(TSeq&& columns) const {
-  const auto names = seqTransform<std::vector<std::string>>(columns, [&](auto c) { // FIXME forward
+  const auto names = seqTransform<std::vector<std::string>>(std::forward<TSeq>(columns), [&](const auto& c) {
     return c.info.name;
   });
-  readSeqTo(names, columns); // FIXME forward
+  readSeqTo(names, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
@@ -137,7 +137,7 @@ void BintableColumns::readSeqTo(const std::vector<std::string>& names, TSeq&& co
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
     return readIndex(n);
   });
-  readSeqTo(indices, columns); // FIXME forward
+  readSeqTo(indices, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
@@ -173,15 +173,16 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
 
 template <typename TSeq>
 void BintableColumns::readSegmentSeqTo(const Segment& rows, TSeq&& columns) const {
-  const auto names = seqTransform<std::vector<std::string>>(columns, [&](auto c) { // FIXME forward
+  const auto names = seqTransform<std::vector<std::string>>(std::forward<TSeq>(columns), [&](const auto& c) {
     return c.info.name;
   });
-  readSegmentSeqTo(rows, names, columns); // FIXME forward
+  readSegmentSeqTo(rows, names, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
 void BintableColumns::readSegmentSeqTo(const Segment& rows, Column<Ts>&... columns) const {
-  readSegmentSeqTo(rows, { columns.info.name... }, columns...); // TODO forward_as_tuple?
+  readSegmentSeqTo(rows, { columns.info.name... }, columns...);
+  // Could forward_as_tuple but would be 1 more indirection for the same amount of lines
 }
 
 template <typename TSeq>
@@ -191,7 +192,7 @@ void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<st
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
     return readIndex(n);
   });
-  readSegmentSeqTo(rows, indices, columns); // FIXME forward
+  readSegmentSeqTo(rows, indices, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
@@ -212,7 +213,7 @@ void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<lo
       src.upper = rows.upper;
     }
     auto it = indices.begin();
-    seqForeach(columns, [&](auto& c) {
+    seqForeach(std::forward<TSeq>(columns), [&](auto& c) {
       auto subcolumn = c.subcolumn(dst);
       readSegmentTo(src, *it, subcolumn);
       ++it;
@@ -248,9 +249,9 @@ void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
                                        info.unit,
                                        "",
                                        "physical unit of field" };
-    Cfitsio::HeaderIo::writeRecord(m_fptr, record);
+    Cfitsio::HeaderIo::updateRecord(m_fptr, record);
   }
-  // FIXME to Cfitsio
+  // TODO to Cfitsio
 }
 
 // writeSegment
@@ -266,8 +267,8 @@ void BintableColumns::writeSegment(long firstRow, const Column<T>& column) const
 template <typename TSeq>
 void BintableColumns::writeSeq(TSeq&& columns) const {
   long rowCount = 0;
-  seqForeach(columns, [&](const auto& c) {
-    rowCount = std::max(rowCount, c.rowCount()); // Needed if rows becomes firstRow
+  seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
+    rowCount = std::max(rowCount, c.rowCount());
   });
   writeSegmentSeq({ 0, rowCount - 1 }, columns);
 }
@@ -279,31 +280,49 @@ void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
 
 template <typename TSeq>
 void BintableColumns::initSeq(TSeq&& infos, long index) const {
-  // FIXME implement
+  m_edit();
+  auto names = seqTransform<Cfitsio::CStrArray>(infos, [&](const auto& info) {
+    return info.name;
+  });
+  auto tforms = seqTransform<Cfitsio::CStrArray>(infos, [&](const auto& info) {
+    return Cfitsio::TypeCode<typename decltype(info)::Value>::tform(info.repeatCount);
+  });
+  int status = 0;
+  int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
+  fits_insert_cols(m_fptr, cfitsioIndex, names.size(), names.data(), tforms.data(), &status);
+  // TODO to Cfitsio
+  long i = cfitsioIndex;
+  seqForeach(infos, [&](const auto& info) {
+    if (info.unit != "") {
+      const Record<std::string> record { "TUNIT" + std::to_string(i), info.unit, "", "physical unit of field" };
+      Cfitsio::HeaderIo::updateRecord(m_fptr, record);
+    }
+  });
+  // TODO to Cfitsio
 }
 
 template <typename... Ts>
 void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const {
-  // FIXME implement
+  m_edit();
   auto names = Cfitsio::CStrArray({ infos.name... });
   auto tforms = Cfitsio::CStrArray({ Cfitsio::TypeCode<Ts>::tform(infos.repeatCount)... });
-  const std::vector<std::string*> tunits {
-    &infos.unit...
-  }; // TODO no vector is needed: this is just easier for looping
+  const std::vector<std::string*> tunits { &infos.unit... }; // No vector is needed: this is just easier for looping
   int status = 0;
   int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_cols(m_fptr, cfitsioIndex, sizeof...(Ts), names.data(), tforms.data(), &status);
-  // FIXME to Cfitsio
+  // TODO to Cfitsio
   long i = cfitsioIndex;
   for (const auto* u : tunits) {
     if (*u != "") {
       const Record<std::string> record { "TUNIT" + std::to_string(i), *u, "", "physical unit of field" };
-      Cfitsio::HeaderIo::writeRecord(m_fptr, record);
+      Cfitsio::HeaderIo::updateRecord(m_fptr, record);
     }
   }
+  // TODO to Cfitsio
+  // FIXME initSeq(std::forward_as_tuple(infos...), index); when working
 }
 
-// FIXME removeSeq
+// writeSegmentSeq
 
 template <typename TSeq>
 void BintableColumns::writeSegmentSeq(const Segment& rows, TSeq&& columns) const {
@@ -314,7 +333,7 @@ void BintableColumns::writeSegmentSeq(const Segment& rows, TSeq&& columns) const
     if (dst.upper > rows.upper) {
       dst.upper = rows.upper;
     }
-    seqForeach(columns, [&](const auto& c) {
+    seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
       writeSegment(dst.lower, c.subcolumn(src));
     });
   }

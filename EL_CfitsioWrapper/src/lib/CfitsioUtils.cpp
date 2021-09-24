@@ -29,10 +29,12 @@ std::unique_ptr<char[]> toCharPtr(const std::string& str) {
   return c_str;
 }
 
-CStrArray::CStrArray(const std::vector<std::string>& data) : CStrArray(data.begin(), data.end()) {
-}
+CStrArray::CStrArray(const std::vector<std::string>& data) : CStrArray(data.begin(), data.end()) {}
 
-CStrArray::CStrArray(const std::initializer_list<std::string>& data) : CStrArray(data.begin(), data.end()) {
+CStrArray::CStrArray(const std::initializer_list<std::string>& data) : CStrArray(data.begin(), data.end()) {}
+
+std::size_t CStrArray::size() const {
+  return cStrVector.size();
 }
 
 char** CStrArray::data() {
