@@ -4,18 +4,22 @@ class Position<n> {
 
 class Raster<T, n> {
 - m_shape : Position<n>
-- m_data : T*
 + shape () -> Position<n>
-+ data () -> T*
++ {abstract}data () -> T*
 + operator[] (position) -> T&
 + at (position) -> T&
 + subraster (region) -> Subraster<T, n>
 }
 
+class PtrRaster<T, n> {
+- m_data : T*
++ data () -> T*
+}
+
 class VecRaster<T, n> {
 - m_vec : vector<T>
-+ vector () -> const vector<T>&
 + data () -> T*
++ vector () -> const vector<T>&
 }
 
 class Region<n> {
@@ -35,6 +39,7 @@ class Subraster<T, n> {
 + at (position) -> T&
 }
 
+Raster <|-- PtrRaster
 Raster <|-- VecRaster
 Position --* Raster
 Raster -o Subraster

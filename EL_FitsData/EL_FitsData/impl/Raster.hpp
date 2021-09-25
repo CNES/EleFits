@@ -90,8 +90,10 @@ struct IndexRecursionImpl<-1, i> {
 } // namespace Internal
 /// @endcond
 
+// Raster
+
 template <typename T, long n>
-Raster<T, n>::Raster(Position<n> rasterShape, T* data) : shape(rasterShape), m_data(data) {}
+Raster<T, n>::Raster(Position<n> rasterShape) : shape(rasterShape) {}
 
 template <typename T, long n>
 Region<n> Raster<T, n>::domain() const {
@@ -112,11 +114,6 @@ template <typename T, long n>
 template <long i>
 inline long Raster<T, n>::length() const {
   return std::get<i>(shape.indices);
-}
-
-template <typename T, long n>
-const T* Raster<T, n>::data() const {
-  return m_data;
 }
 
 template <typename T, long n>
@@ -168,9 +165,21 @@ const Subraster<T, n> Raster<T, n>::subraster(const Region<n>& region) const {
   return Subraster<T, n> { *this, region };
 }
 
+// PtrRaster
+
+template <typename T, long n>
+PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, T* data) : Raster<T, n>(rasterShape), m_data(data) {}
+
+template <typename T, long n>
+const T* PtrRaster<T, n>::data() const {
+  return m_data;
+}
+
+// VecRefRaster
+
 template <typename T, long n>
 VecRefRaster<T, n>::VecRefRaster(Position<n> rasterShape, std::vector<std::decay_t<T>>& vecRef) :
-    Raster<T, n>(rasterShape, vecRef.data()), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
+    Raster<T, n>(rasterShape), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
 
 template <typename T, long n>
 const std::vector<T>& VecRefRaster<T, n>::vector() const {
@@ -178,15 +187,22 @@ const std::vector<T>& VecRefRaster<T, n>::vector() const {
 }
 
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> rasterShape, std::vector<std::decay_t<T>> vec) :
-    Raster<T, n>(rasterShape, nullptr), m_vec(vec) {
-  this->m_data = m_vec.data();
+const T* VecRefRaster<T, n>::data() const {
+  return m_cVecPtr->data();
 }
 
+// VecRaster
+
 template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> rasterShape) :
-    Raster<T, n>(rasterShape, nullptr), m_vec(shapeSize(rasterShape)) {
-  this->m_data = m_vec.data();
+VecRaster<T, n>::VecRaster(Position<n> rasterShape, std::vector<std::decay_t<T>> vec) :
+    Raster<T, n>(rasterShape), m_vec(vec) {}
+
+template <typename T, long n>
+VecRaster<T, n>::VecRaster(Position<n> rasterShape) : Raster<T, n>(rasterShape), m_vec(shapeSize(rasterShape)) {}
+
+template <typename T, long n>
+const T* VecRaster<T, n>::data() const {
+  return m_vec.data();
 }
 
 template <typename T, long n>

@@ -23,7 +23,7 @@
   * Image data can be read in place
   * `Position` has arithmetics operators
 * Binary table HDUs
-  * Binary table column segments can be read and written
+  * Binary table column segments can be read and written, class `Segment` is introduced
   * Vectors of `Column`s can be read and written, in addition to tuples
   * Binary table data can be read in place
 

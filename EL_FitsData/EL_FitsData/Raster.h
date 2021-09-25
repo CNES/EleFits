@@ -64,8 +64,8 @@ class Subraster;
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.
  * 
- * Two classes are provided:
- * - `Raster` doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;
+ * Two implementations are provided:
+ * - `PtrRaster` doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;
  * - `VecRaster` owns a `vector` (and is compatible with move semantics, which allows borrowing the `vector`).
  * 
  * Example usages:
@@ -140,14 +140,9 @@ public:
   Raster<T, n>& operator=(Raster<T, n>&& rhs) = default;
 
   /**
-   * @brief Create an empty raster.
+   * @brief Create a raster with given shape.
    */
-  Raster() = default;
-
-  /**
-   * @brief Create a raster with given shape and data.
-   */
-  Raster(Position<n> rasterShape, T* data);
+  Raster(Position<n> rasterShape);
 
   /// \}
   /**
@@ -201,7 +196,7 @@ public:
   /**
    * @brief Const pointer to the first data element.
    */
-  const T* data() const;
+  virtual const T* data() const = 0;
 
   /**
    * @brief Pointer to the first data element.
@@ -264,20 +259,62 @@ public:
    * @brief Raster shape, i.e. length along each axis.
    */
   Position<n> shape;
+};
 
-protected:
+/**
+ * @brief A raster which points to some existing data.
+ * @details
+ * The value type parameter `T` can be const-qualified for read-only rasters.
+ */
+template <typename T, long n = 2>
+class PtrRaster : public Raster<T, n> {
+public:
+  /**
+   * @brief Destructor.
+   */
+  ~PtrRaster() = default;
+
+  /**
+   * @brief Copy constructor.
+   */
+  PtrRaster(const PtrRaster&) = default;
+
+  /**
+   * @brief Move constructor.
+   */
+  PtrRaster(PtrRaster&&) = default;
+
+  /**
+   * @brief Copy assignment operator.
+   */
+  PtrRaster& operator=(const PtrRaster&) = default;
+
+  /**
+   * @brief Move assignment operator.
+   */
+  PtrRaster& operator=(PtrRaster&&) = default;
+
+  /**
+   * @brief Constructor.
+   */
+  PtrRaster(Position<n> shape, T* data);
+
+  /**
+   * @copydoc Raster::data()
+   */
+  const T* data() const override;
+
+  /**
+   * @copydoc Raster::data()
+   */
+  using Raster<T, n>::data;
+
+private:
   /**
    * @brief The data, possibly constant if `T` is `const`-qualified.
    */
   T* m_data;
 };
-
-/**
- * @brief Alias to Raster for backward compatibility.
- * @deprecated Use `Raster` instead.
- */
-template <typename T, long n = 2>
-using PtrRaster = Raster<T, n>;
 
 /**
  * @ingroup image_data_classes
@@ -317,6 +354,11 @@ public:
    * @brief Create a raster with given shape and values.
    */
   VecRefRaster(Position<n> shape, std::vector<std::decay_t<T>>& vecRef);
+
+  /**
+   * @copydoc Raster::data()
+   */
+  const T* data() const override;
 
   /**
    * @brief Const reference to the vector.
@@ -379,6 +421,16 @@ public:
    * @brief Create an empty VecRaster.
    */
   VecRaster() = default;
+
+  /**
+   * @copydoc Raster::data()
+   */
+  const T* data() const override;
+
+  /**
+   * @copydoc Raster::data()
+   */
+  using Raster<T, n>::data;
 
   /**
    * @brief Const reference to the vector.
@@ -444,7 +496,7 @@ private:
  * \endcode
  */
 template <long n = 2, typename T>
-Raster<T, n> makeRaster(const Position<n>& shape, T* data) {
+PtrRaster<T, n> makeRaster(const Position<n>& shape, T* data) {
   return PtrRaster<T, n>(shape, data);
 }
 
@@ -452,7 +504,7 @@ Raster<T, n> makeRaster(const Position<n>& shape, T* data) {
  * @copydoc makeRaster
  */
 template <long n = 2, typename T>
-VecRaster<T, n> makeRaster(const Position<n>& shape, std::vector<T>&& data) {
+VecRaster<T, n> makeRaster(const Position<n>& shape, std::vector<T> data) {
   return VecRaster<T, n>(shape, std::move(data));
 }
 

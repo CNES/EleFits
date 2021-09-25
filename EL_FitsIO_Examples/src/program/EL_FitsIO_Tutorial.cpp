@@ -137,9 +137,8 @@ TutoRasters createRasters() {
   std::vector<std::int32_t> int32Vec(16 * 9 * 3);
   // ... do what you have to do with the vector, and then move it to the raster ...
   FitsIO::VecRaster<std::int32_t, 3> int32Raster3D({ 16, 9, 3 }, std::move(int32Vec));
-  // Instead moving a vector, it's also possible to work with:
-  // - a vector reference with the VecRefRaster class, or
-  // - a raw pointer with the PtrRaster class.
+  // Instead of moving a vector, it's also possible to work with
+  // a raw pointer with the PtrRaster class.
 
   /* Generate a random raster */
 

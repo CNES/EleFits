@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_SUITE(ImageRaster_test)
 BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
   const Position<2> shape { 7, 2 };
   const auto cData = Test::generateRandomVector<std::int16_t>(shapeSize(shape));
-  const Raster<const std::int16_t> cRaster = makeRaster(shape, cData.data());
+  const PtrRaster<const std::int16_t> cRaster = makeRaster(shape, cData.data());
   writeRaster(cRaster);
   const auto res = readRaster<std::int16_t>();
   BOOST_TEST(res.vector() == cData);

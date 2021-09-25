@@ -55,14 +55,14 @@ BOOST_AUTO_TEST_CASE(index_test) {
 
 BOOST_AUTO_TEST_CASE(raster_data_test) {
   int data[] = { 0, 1, 2 };
-  Raster<int, 1> raster({ 3 }, data);
+  PtrRaster<int, 1> raster({ 3 }, data);
   BOOST_TEST(raster.data() != nullptr);
   BOOST_TEST(raster[{ 0 }] == 0);
 }
 
 BOOST_AUTO_TEST_CASE(const_raster_data_test) {
   const int cData[] = { 3, 4, 5 };
-  Raster<const int, 1> cRaster({ 3 }, cData);
+  PtrRaster<const int, 1> cRaster({ 3 }, cData);
   BOOST_TEST(cRaster.data() != nullptr);
   BOOST_TEST(cRaster[{ 0 }] == 3);
 }
