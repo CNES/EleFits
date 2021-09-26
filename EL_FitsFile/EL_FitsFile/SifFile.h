@@ -56,7 +56,7 @@ public:
    * @warning
    * Return will be of type Header from version 4.0 on.
    */
-  const Hdu& header() const; // FIXME return const Header&
+  const Hdu& header() const; // FIXME return const Header& in 4.0
 
   /**
    * @brief Read the raster.

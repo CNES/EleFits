@@ -73,26 +73,26 @@ BOOST_AUTO_TEST_CASE(mandatory_categorization_test) {
 
 BOOST_AUTO_TEST_CASE(reserved_categorization_test) {
   const std::string reserved = "TFORM1";
-  BOOST_TEST(KeywordCategory::belongsCategories(reserved, KeywordCategory::Reserved)); // FIXME
+  BOOST_TEST(KeywordCategory::belongsCategories(reserved, KeywordCategory::Reserved));
   BOOST_TEST(KeywordCategory::belongsCategories(reserved, KeywordCategory::Reserved | KeywordCategory::User));
   BOOST_TEST(not KeywordCategory::belongsCategories(reserved, KeywordCategory::Mandatory));
   BOOST_TEST(not KeywordCategory::belongsCategories(reserved, KeywordCategory::Comment));
-  BOOST_TEST(not KeywordCategory::belongsCategories(reserved, KeywordCategory::User)); // FIXME
+  BOOST_TEST(not KeywordCategory::belongsCategories(reserved, KeywordCategory::User));
   BOOST_TEST(not KeywordCategory::belongsCategories(
       reserved,
-      KeywordCategory::Mandatory | KeywordCategory::Comment | KeywordCategory::User)); // FIXME
+      KeywordCategory::Mandatory | KeywordCategory::Comment | KeywordCategory::User));
 }
 
 BOOST_AUTO_TEST_CASE(comment_categorization_test) {
   const std::string comment = "COMMENT";
-  BOOST_TEST(KeywordCategory::belongsCategories(comment, KeywordCategory::Comment)); // FIXME
+  BOOST_TEST(KeywordCategory::belongsCategories(comment, KeywordCategory::Comment));
   BOOST_TEST(KeywordCategory::belongsCategories(comment, KeywordCategory::Comment | KeywordCategory::User));
   BOOST_TEST(not KeywordCategory::belongsCategories(comment, KeywordCategory::Mandatory));
   BOOST_TEST(not KeywordCategory::belongsCategories(comment, KeywordCategory::Reserved));
-  BOOST_TEST(not KeywordCategory::belongsCategories(comment, KeywordCategory::User)); // FIXME
+  BOOST_TEST(not KeywordCategory::belongsCategories(comment, KeywordCategory::User));
   BOOST_TEST(not KeywordCategory::belongsCategories(
       comment,
-      KeywordCategory::Reserved | KeywordCategory::Mandatory | KeywordCategory::User)); // FIXME
+      KeywordCategory::Reserved | KeywordCategory::Mandatory | KeywordCategory::User));
 }
 
 BOOST_AUTO_TEST_CASE(user_categorization_test) {

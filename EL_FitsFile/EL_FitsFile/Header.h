@@ -495,7 +495,7 @@ public:
    * @throw ChecksumError if checksums values in header are missing or incorrect
    * @see updateChecksums()
    */
-  void verifyChecksums() const;
+  void verifyChecksums() const; // FIXME to Hdu and SifFile
 
   /**
    * @brief Compute and write (or update) the HDU and data checksums.
@@ -503,7 +503,7 @@ public:
    * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`).
    * @see verifyChecksums()
    */
-  void updateChecksums() const;
+  void updateChecksums() const; // FIXME to Hdu and SifFile
 
   /// @}
 

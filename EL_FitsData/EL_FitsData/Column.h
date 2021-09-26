@@ -159,8 +159,9 @@ struct ColumnInfo {
   long repeatCount;
 };
 
+// Forward declaration for Column::subcolumn()
 template <typename T>
-class PtrColumn; // FIXME rm forward declaration
+class PtrColumn;
 
 /**
  * @ingroup bintable_data_classes

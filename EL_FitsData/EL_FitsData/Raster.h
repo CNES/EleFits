@@ -250,7 +250,7 @@ public:
    */
   Subraster<T, n> subraster(const Region<n>& region);
 
-  // FIXME implement Raster<T, n> slice(const Region<n>& region)
+  // FIXME implement PtrRaster<T, m> slice<m>(const Region<n>& region) or similar
 
   /// @}
 

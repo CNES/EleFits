@@ -150,7 +150,7 @@ public:
    */
   template <class T = Hdu>
   const T& accessPrimary();
-  // FIXME remove T: Primary is necessarily an ImageHdu
+  // FIXME remove T in 4.0: Primary is necessarily an ImageHdu
   // Hdu makes no sense anymore, now that header() and array() exist
 
   /**

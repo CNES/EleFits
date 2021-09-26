@@ -70,7 +70,7 @@ HduCategory ImageHdu::readCategory() const {
   } else {
     cat &= HduCategory::IntImage;
   }
-  // FIXME check compression
+  cat &= HduCategory::RawImage; // TODO check compression when implemented
   return cat;
 }
 

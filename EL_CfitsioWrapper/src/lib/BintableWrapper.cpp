@@ -221,10 +221,12 @@ void writeColumn<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>&
 
 template <>
 void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column) {
+  long index = columnIndex(fptr, column.info.name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
   CStrArray array(begin, end);
-  long index = columnIndex(fptr, column.info.name);
+  // CStrArray is the only deviation from the generic case;
+  // could we avoid specializing?
   int status = 0;
   fits_write_col(
       fptr,
@@ -235,7 +237,7 @@ void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<std:
       column.elementCount(), // nelements
       array.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column: " + column.info.name);
+  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info.name);
 }
 
 } // namespace BintableIo

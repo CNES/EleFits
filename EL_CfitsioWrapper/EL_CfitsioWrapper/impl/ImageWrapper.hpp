@@ -59,7 +59,7 @@ void updateTypeShape(fitsfile* fptr, const FitsIO::Position<n>& shape) {
 }
 
 template <typename T, long n>
-FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) { // FIXME move to EL_FitsFile
+FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) {
   FitsIO::VecRaster<T, n> raster(readShape<n>(fptr));
   readRasterTo(fptr, raster);
   return raster;
@@ -82,7 +82,7 @@ void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination) {
 }
 
 template <typename T, long n = 2>
-void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination) { // FIXME move to EL_FitsFile
+void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination) {
   const auto region = FitsIO::Region<n>::fromShape({}, readShape<n>(fptr)); // FIXME -1 specialization?
   readRegionTo(fptr, region, destination);
 }
@@ -188,7 +188,7 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const
   const auto delta = subraster.region().front - destination;
 
   /* Non-const line for CFitsIO */
-  const auto begin = &subraster[0]; // FIXME Subraster::operator[]
+  const auto begin = &subraster[0];
   const auto end = begin + dstSize;
   std::vector<std::decay_t<T>> line(begin, end);
 

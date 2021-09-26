@@ -26,6 +26,15 @@
 namespace Euclid {
 namespace FitsIO {
 
+// Implementation rules for overloads
+//
+// - Flow should go from names to indices: never call readName() internally, and call readIndex() once;
+// - Variadic methods should call TSeq methods through std::forward_as_tuple because TSec is more generic;
+// - TSeq&& should be forwarded as std::forward<TSeq>();
+// - Duplication should be minimal: when there are two ways with unavoidable duplication, choose the minimalist option.
+//
+// Exceptions to these rules must be explicitely justified.
+
 // readInfo
 
 template <typename T>
@@ -268,7 +277,7 @@ template <typename TSeq>
 void BintableColumns::writeSeq(TSeq&& columns) const {
   long rowCount = 0;
   seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-    rowCount = std::max(rowCount, c.rowCount());
+    rowCount = std::max(rowCount, c.rowCount()); // FIXME should all the sizes be equal?
   });
   writeSegmentSeq({ 0, rowCount - 1 }, columns);
 }

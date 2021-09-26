@@ -21,6 +21,36 @@
 
 #include <boost/test/unit_test.hpp>
 
+// Call graphs for sequences:
+//
+// readSegmentSeqTo (rows, indices, columns) -> loop on readSegmentTo (rows, index, column)
+// 	readSeqTo (indices, columns)
+// 		readSeq (indices...)
+// 			readSeq (names...) => TEST
+// 		readSeqTo (names, columns)
+// 			readSeqTo (columns)
+// 				readSeqTo (columns...) => TEST
+// 			readSeqTo (names, columns...) => TEST
+// 		readSeqTo (indices, columns...) => TEST
+// 	readSegmentSeq (rows, indices...)
+// 		readSegmentSeq (rows, names...) => TEST
+// 	readSegmentSeqTo (rows, names, columns)
+// 		readSegmentSeqTo (rows, columns)
+// 		readSegmentSeqTo (rows, names, columns...)
+// 			readSegmentSeqTo (rows, columns...) => TEST
+// 	readSegmentSeqTo (rows, indices, columns...) => TEST
+//
+// writeSegmentSeq (long firstRow, TSeq &&columns) -> loop on writeSegment (row, column)
+//   writeSeq (TSeq &&columns)
+//     writeSeq (const Column< Ts > &... columns) => TEST
+//   writeSegmentSeq (long firstRow, Column< Ts > &... columns) => TEST
+//
+// initSeq (TSeq &&infos, long index)
+//   initSeq (const ColumnInfo< Ts > &... infos, long index) => TEST
+//
+// removeSeq (const std::vector< long > &indices)
+//   removeSeq (const std::vector< std::string > &names) => TEST
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(BintableColumns_test)
