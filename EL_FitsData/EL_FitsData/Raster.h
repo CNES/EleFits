@@ -88,6 +88,18 @@ class Subraster;
  * std::vector<const float> cVec(&data[0], &data[6]);
  * VecRaster<const float> cVecRaster(shape, std::move(cVec));
  * \endcode
+ * 
+ * @note
+ * Why "raster" and not simply image or array?
+ * Mostly for disambiguation purpose:
+ * "image" refers to the extension type, while "array" has already several meanings in C/C++.
+ * `NdArray` would have been an option, but every related class should have been prefixed with `Nd` for homogeneity:
+ * `NdPosition`, `NdRegion`, `VecNdArray`...
+ * From the cathodic television era, raster also historically carries the concept of contiguous pixels,
+ * is very common in the field of Earth observation,
+ * and also belongs to the Java library.
+ * All in all, `Raster` seems to be a fair compromise.
+ * 
  * @see Position for details on the fixed- and variable-dimension cases.
  * @see makeRaster() for creation shortcuts.
  */
@@ -257,6 +269,7 @@ public:
 public:
   /**
    * @brief Raster shape, i.e. length along each axis.
+   * @warning Will be made private and accessed through method `shape()` in 4.0
    */
   Position<n> shape;
 };

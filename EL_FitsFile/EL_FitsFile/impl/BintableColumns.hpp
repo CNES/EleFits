@@ -86,26 +86,26 @@ VecColumn<T> BintableColumns::readSegment(const Segment& rows, const std::string
 template <typename T>
 VecColumn<T> BintableColumns::readSegment(const Segment& rows, long index) const {
   VecColumn<T> column(readInfo<T>(index), rows.size());
-  readSegmentTo<T>(rows, index, column);
+  readSegmentTo<T>(rows.first, index, column);
   return column;
 }
 
 // readSegmentTo
 
 template <typename T>
-void BintableColumns::readSegmentTo(const Segment& rows, Column<T>& column) const {
-  readSegmentTo<T>(rows, column.info.name, column);
+void BintableColumns::readSegmentTo(long firstRow, Column<T>& column) const {
+  readSegmentTo<T>(firstRow, column.info.name, column);
 }
 
 template <typename T>
-void BintableColumns::readSegmentTo(const Segment& rows, const std::string& name, Column<T>& column) const {
-  readSegmentTo<T>(rows, readIndex(name), column);
+void BintableColumns::readSegmentTo(long firstRow, const std::string& name, Column<T>& column) const {
+  readSegmentTo<T>(firstRow, readIndex(name), column);
 }
 
 template <typename T>
-void BintableColumns::readSegmentTo(const Segment& rows, long index, Column<T>& column) const {
+void BintableColumns::readSegmentTo(long firstRow, long index, Column<T>& column) const {
   m_touch();
-  const Segment cfitsioRows { rows.lower + 1, rows.upper + 1 }; // FIXME rows + 1
+  const auto cfitsioRows = Segment::fromSize(firstRow + 1, column.rowCount()); // 1-based
   Cfitsio::BintableIo::readColumnSegment<T>(m_fptr, cfitsioRows, index + 1, column);
 }
 
@@ -156,7 +156,7 @@ void BintableColumns::readSeqTo(const std::vector<std::string>& names, Column<Ts
 
 template <typename TSeq>
 void BintableColumns::readSeqTo(const std::vector<long>& indices, TSeq&& columns) const {
-  readSegmentSeqTo({ 0, readRowCount() - 1 }, indices, columns);
+  readSegmentSeqTo(0, indices, columns);
 }
 
 template <typename... Ts>
@@ -174,66 +174,67 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Indexed<Ts>&... indices) const {
   std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(indices), rows.size() }... };
-  readSegmentSeqTo(rows, { indices.index... }, columns);
+  readSegmentSeqTo(rows.first, { indices.index... }, columns);
   return columns;
 }
 
 // readSegmentSeqTo
 
 template <typename TSeq>
-void BintableColumns::readSegmentSeqTo(const Segment& rows, TSeq&& columns) const {
+void BintableColumns::readSegmentSeqTo(long firstRow, TSeq&& columns) const {
   const auto names = seqTransform<std::vector<std::string>>(std::forward<TSeq>(columns), [&](const auto& c) {
     return c.info.name;
   });
-  readSegmentSeqTo(rows, names, std::forward<TSeq>(columns));
+  readSegmentSeqTo(firstRow, names, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
-void BintableColumns::readSegmentSeqTo(const Segment& rows, Column<Ts>&... columns) const {
-  readSegmentSeqTo(rows, { columns.info.name... }, columns...);
+void BintableColumns::readSegmentSeqTo(long firstRow, Column<Ts>&... columns) const {
+  readSegmentSeqTo(firstRow, { columns.info.name... }, columns...);
   // Could forward_as_tuple but would be 1 more indirection for the same amount of lines
 }
 
 template <typename TSeq>
-void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<std::string>& names, TSeq&& columns)
-    const {
+void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, TSeq&& columns) const {
   std::vector<long> indices(names.size());
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
     return readIndex(n);
   });
-  readSegmentSeqTo(rows, indices, std::forward<TSeq>(columns));
+  readSegmentSeqTo(firstRow, indices, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
-void BintableColumns::readSegmentSeqTo(
-    const Segment& rows,
-    const std::vector<std::string>& names,
-    Column<Ts>&... columns) const {
-  readSegmentSeqTo(rows, names, std::forward_as_tuple(columns...));
+void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, Column<Ts>&... columns)
+    const {
+  readSegmentSeqTo(firstRow, names, std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
-void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<long>& indices, TSeq&& columns) const {
+void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<long>& indices, TSeq&& columns) const {
   const auto bufferSize = readBufferRowCount();
-  for (Segment src = Segment::fromSize(rows.lower, bufferSize), dst = Segment::fromSize(0, bufferSize);
-       src.lower <= rows.upper; // FIXME src += bufferSize, dst += bufferSize) {
-       src.lower += bufferSize, src.upper += bufferSize, dst.lower += bufferSize, dst.upper += bufferSize) {
-    if (src.upper > rows.upper) {
-      src.upper = rows.upper;
+  const long rowCount = columnsRowCount(std::forward<TSeq>(columns));
+  const long lastRow = firstRow + rowCount - 1;
+  for (Segment src = Segment::fromSize(firstRow, bufferSize), dst = Segment::fromSize(0, bufferSize);
+       src.first <= lastRow; // FIXME src += bufferSize, dst += bufferSize) {
+       src.first += bufferSize,
+               src.last += bufferSize,
+               dst.first += bufferSize,
+               dst.last += bufferSize) { // FIXME simplify src with only firstRow
+    if (dst.last >= rowCount) {
+      dst.last = rowCount - 1;
     }
     auto it = indices.begin();
     seqForeach(std::forward<TSeq>(columns), [&](auto& c) {
       auto subcolumn = c.subcolumn(dst);
-      readSegmentTo(src, *it, subcolumn);
+      readSegmentTo(firstRow, *it, subcolumn);
       ++it;
     });
   }
 }
 
 template <typename... Ts>
-void BintableColumns::readSegmentSeqTo(const Segment& rows, const std::vector<long>& indices, Column<Ts>&... columns)
-    const {
-  readSegmentSeqTo(rows, indices, std::forward_as_tuple(columns...));
+void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<long>& indices, Column<Ts>&... columns) const {
+  readSegmentSeqTo(firstRow, indices, std::forward_as_tuple(columns...));
 }
 
 // write
@@ -275,11 +276,7 @@ void BintableColumns::writeSegment(long firstRow, const Column<T>& column) const
 
 template <typename TSeq>
 void BintableColumns::writeSeq(TSeq&& columns) const {
-  long rowCount = 0;
-  seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-    rowCount = std::max(rowCount, c.rowCount()); // FIXME should all the sizes be equal?
-  });
-  writeSegmentSeq({ 0, rowCount - 1 }, columns);
+  writeSegmentSeq(0, columns);
 }
 
 template <typename... Ts>
@@ -334,23 +331,37 @@ void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const 
 // writeSegmentSeq
 
 template <typename TSeq>
-void BintableColumns::writeSegmentSeq(const Segment& rows, TSeq&& columns) const {
+void BintableColumns::writeSegmentSeq(long firstRow, TSeq&& columns) const {
   const auto bufferSize = readBufferRowCount();
-  for (auto dst = Segment::fromSize(rows.lower, bufferSize), src = Segment::fromSize(0, bufferSize);
-       dst.lower <= rows.upper; // FIXME src += bufferSize, dst += bufferSize) {
-       src.lower += bufferSize, src.upper += bufferSize, dst.lower += bufferSize, dst.upper += bufferSize) {
-    if (dst.upper > rows.upper) {
-      dst.upper = rows.upper;
+  const long lastRow = columnsRowCount(std::forward<TSeq>(columns)) - 1;
+  for (auto dst = Segment::fromSize(firstRow, bufferSize), src = Segment::fromSize(0, bufferSize);
+       dst.first <= lastRow; // FIXME src += bufferSize, dst += bufferSize) {
+       src.first += bufferSize, src.last += bufferSize, dst.first += bufferSize, dst.last += bufferSize) {
+    if (dst.last > lastRow) {
+      dst.last = lastRow;
     }
     seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-      writeSegment(dst.lower, c.subcolumn(src));
+      writeSegment(dst.first, c.subcolumn(src));
     });
   }
 }
 
 template <typename... Ts>
-void BintableColumns::writeSegmentSeq(const Segment& rows, const Column<Ts>&... columns) const {
-  writeSegmentSeq(rows, std::forward_as_tuple(columns...));
+void BintableColumns::writeSegmentSeq(long firstRow, const Column<Ts>&... columns) const {
+  writeSegmentSeq(firstRow, std::forward_as_tuple(columns...));
+}
+
+template <typename TSeq>
+long BintableColumns::columnsRowCount(TSeq&& columns) const {
+  long rows = -1;
+  seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
+    if (rows == -1) {
+      rows = c.rowCount();
+    } else if (c.rowCount() != rows) {
+      throw FitsIOError("Columns do not have the same number of rows."); // FIXME clean
+    }
+  });
+  return rows;
 }
 
 } // namespace FitsIO

@@ -95,12 +95,12 @@ T* Column<T>::data() {
 
 template <typename T>
 const PtrColumn<T> Column<T>::subcolumn(const Segment& rows) const {
-  return { info, rows.size(), data() + rows.lower };
+  return { info, rows.size(), data() + rows.first };
 }
 
 template <typename T>
 PtrColumn<T> Column<T>::subcolumn(const Segment& rows) {
-  return { info, rows.size(), data() + rows.lower };
+  return { info, rows.size(), data() + rows.first };
 }
 
 template <typename T>

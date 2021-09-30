@@ -135,6 +135,11 @@ public:
   long readIndex(const std::string& name) const;
 
   /**
+   * @brief Get the indices of the columns with given names.
+   */
+  std::vector<long> readIndices(const std::vector<std::string>& names) const;
+
+  /**
    * @brief Get the name of the column with given index.
    */
   std::string readName(long index) const;
@@ -248,6 +253,7 @@ public:
   /**
    * @brief Read the segment of a column specified by its name.
    * @param rows The included lower and upper bounds of the row indices to be read
+   * @param firstRow The lower bound of the row indices to be read
    * @param name The name of the column to be read
    * @param index The 0-based index of the column to be read
    * @param column The preexisting `Column` to be filled
@@ -285,21 +291,21 @@ public:
    * @copydetails readSegment()
    */
   template <typename T>
-  void readSegmentTo(const Segment& rows, Column<T>& column) const;
+  void readSegmentTo(long firstRow, Column<T>& column) const;
 
   /**
    * @brief Read the segment of a column specified by its name into an existing `Column`.
    * @copydetails readSegment()
    */
   template <typename T>
-  void readSegmentTo(const Segment& rows, const std::string& name, Column<T>& column) const;
+  void readSegmentTo(long firstRow, const std::string& name, Column<T>& column) const;
 
   /**
    * @brief Read the segment of a column specified by its index into an existing `Column`.
    * @copydetails readSegment()
    */
   template <typename T>
-  void readSegmentTo(const Segment& rows, long index, Column<T>& column) const;
+  void readSegmentTo(long firstRow, long index, Column<T>& column) const;
 
   /// @}
   /**
@@ -395,42 +401,42 @@ public:
    * @copydetails readSegmentSeq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(const Segment& rows, TSeq&& columns) const;
+  void readSegmentSeqTo(long firstRow, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename... Ts>
-  void readSegmentSeqTo(const Segment& rows, Column<Ts>&... columns) const;
+  void readSegmentSeqTo(long firstRow, Column<Ts>&... columns) const;
 
   /**
    * @brief Read segments of columns specified by their names into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(const Segment& rows, const std::vector<std::string>& names, TSeq&& columns) const;
+  void readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns specified by their names into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename... Ts>
-  void readSegmentSeqTo(const Segment& rows, const std::vector<std::string>& names, Column<Ts>&... columns) const;
+  void readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, Column<Ts>&... columns) const;
 
   /**
    * @brief Read segments of columns specified by their indices into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(const Segment& rows, const std::vector<long>& indices, TSeq&& columns) const;
+  void readSegmentSeqTo(long firstRow, const std::vector<long>& indices, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns specified by their indices into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename... Ts>
-  void readSegmentSeqTo(const Segment& rows, const std::vector<long>& indices, Column<Ts>&... columns) const;
+  void readSegmentSeqTo(long firstRow, const std::vector<long>& indices, Column<Ts>&... columns) const;
 
   /// @}
   /**
@@ -533,24 +539,32 @@ public:
 
   /**
    * @brief Write a sequence of segments.
-   * @param rows The destination rows of the first element of each column
+   * @param firstRow The destination row of the first element of each column, or -1 to append
    * @param columns The columns to be written
    * Segments can be written in already initialized columns with `writeSegmentSeq()`
    * or in new columns with `appendSegmentSeq()`.
    */
   template <typename TSeq>
-  void writeSegmentSeq(const Segment& rows, TSeq&& columns) const;
+  void writeSegmentSeq(long firstRow, TSeq&& columns) const;
 
   /**
    * @brief Write a sequence of segments.
    * @copydetails writeSegmentSeq
    */
   template <typename... Ts>
-  void writeSegmentSeq(const Segment& rows, const Column<Ts>&... columns) const;
+  void writeSegmentSeq(long firstRow, const Column<Ts>&... columns) const;
 
   /// @}
 
 private:
+  /**
+   * @brief The common number of rows of a sequence of columns.
+   * @details
+   * Throw if columns do not have the same size.
+   */
+  template <typename TSeq>
+  long columnsRowCount(TSeq&& columns) const;
+
   /**
    * @brief The fitsfile.
    */

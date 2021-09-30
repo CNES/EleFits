@@ -185,7 +185,7 @@ void readColumnSegment<std::string>(
       fptr,
       TypeCode<std::string>::forBintable(),
       static_cast<int>(index),
-      rows.lower,
+      rows.first,
       1, // firstelemn (1-based)
       data.size(), // nelements = number of rows for strings
       nullptr, // nulval

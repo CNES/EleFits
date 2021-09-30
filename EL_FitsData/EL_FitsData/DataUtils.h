@@ -74,31 +74,35 @@ struct Indexed {
 
 /**
  * @brief Bounds of a closed index interval.
+ * @details
+ * The lower and upper bounds are named `first` and `last`,
+ * which is more natural when working with table segments,
+ * where the first row is upward the last row.
  */
 struct Segment {
 
   /**
    * @brief Create a segment specified by a lower bound and size.
    */
-  static Segment fromSize(long lowerBound, long size) {
-    return Segment { lowerBound, lowerBound + size - 1 };
+  static Segment fromSize(long first, long size) {
+    return Segment { first, first + size - 1 };
   }
 
   /**
    * @brief The lower bound.
    */
-  long lower;
+  long first;
 
   /**
    * @brief The upper bound.
    */
-  long upper;
+  long last;
 
   /**
    * @brief Get the number of elements.
    */
   long size() const {
-    return upper - lower + 1;
+    return last - first + 1;
   }
 };
 
