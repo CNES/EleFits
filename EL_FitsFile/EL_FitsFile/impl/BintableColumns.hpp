@@ -44,7 +44,7 @@ ColumnInfo<T> BintableColumns::readInfo(const std::string& name) const {
 
 template <typename T>
 ColumnInfo<T> BintableColumns::readInfo(long index) const {
-  return Cfitsio::BintableIo::readColumnInfo<T>(m_fptr, index + 1);
+  return Cfitsio::BintableIo::readColumnInfo<T>(m_fptr, index + 1); // 1-based
 }
 
 // read
@@ -105,7 +105,8 @@ void BintableColumns::readSegmentTo(long firstRow, const std::string& name, Colu
 template <typename T>
 void BintableColumns::readSegmentTo(long firstRow, long index, Column<T>& column) const {
   m_touch();
-  const auto cfitsioRows = Segment::fromSize(firstRow + 1, column.rowCount()); // 1-based
+  const auto cfitsioFirstRow = firstRow == -1 ? readRowCount() + 1 : firstRow + 1; // 1-based
+  const auto cfitsioRows = Segment::fromSize(cfitsioFirstRow, column.rowCount());
   Cfitsio::BintableIo::readColumnSegment<T>(m_fptr, cfitsioRows, index + 1, column);
 }
 
@@ -269,7 +270,8 @@ void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
 template <typename T>
 void BintableColumns::writeSegment(long firstRow, const Column<T>& column) const {
   m_edit();
-  Cfitsio::BintableIo::writeColumnSegment(m_fptr, firstRow, column);
+  const auto cfitsioFirstRow = firstRow == -1 ? readRowCount() : firstRow + 1; // 1-based
+  Cfitsio::BintableIo::writeColumnSegment(m_fptr, cfitsioFirstRow, column);
 }
 
 // writeSeq
