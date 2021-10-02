@@ -220,7 +220,7 @@ void writeColumn<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>&
 }
 
 template <>
-void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column) {
+void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column) {
   long index = columnIndex(fptr, column.info.name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
@@ -232,7 +232,7 @@ void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<std:
       fptr,
       TypeCode<std::string>::forBintable(), // datatype
       static_cast<int>(index), // colnum // column indices are int
-      firstRow + 1, // firstrow (1-based)
+      firstRow, // firstrow (1-based)
       1, // firstelem (1-based)
       column.elementCount(), // nelements
       array.data(),

@@ -212,6 +212,7 @@ void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<std::str
 
 template <typename TSeq>
 void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<long>& indices, TSeq&& columns) const {
+  // FIXME support -1?
   const auto bufferSize = readBufferRowCount();
   const long rowCount = columnsRowCount(std::forward<TSeq>(columns));
   const long lastRow = firstRow + rowCount - 1;
@@ -334,16 +335,17 @@ void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const 
 
 template <typename TSeq>
 void BintableColumns::writeSegmentSeq(long firstRow, TSeq&& columns) const {
+  auto firstDstRow = firstRow == -1 ? readRowCount() : firstRow;
+  const long lastSrcRow = columnsRowCount(std::forward<TSeq>(columns)) - 1;
   const auto bufferSize = readBufferRowCount();
-  const long lastRow = columnsRowCount(std::forward<TSeq>(columns)) - 1;
-  for (auto dst = Segment::fromSize(firstRow, bufferSize), src = Segment::fromSize(0, bufferSize);
-       dst.first <= lastRow; // FIXME src += bufferSize, dst += bufferSize) {
-       src.first += bufferSize, src.last += bufferSize, dst.first += bufferSize, dst.last += bufferSize) {
-    if (dst.last > lastRow) {
-      dst.last = lastRow;
+  for (auto src = Segment::fromSize(0, bufferSize);
+       src.first <= lastSrcRow; // FIXME src += bufferSize, dst += bufferSize) {
+       src.first += bufferSize, src.last += bufferSize, firstDstRow += bufferSize) {
+    if (src.last > lastSrcRow) {
+      src.last = lastSrcRow;
     }
     seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-      writeSegment(dst.first, c.subcolumn(src));
+      writeSegment(firstDstRow, c.subcolumn(src));
     });
   }
 }
@@ -354,7 +356,7 @@ void BintableColumns::writeSegmentSeq(long firstRow, const Column<Ts>&... column
 }
 
 template <typename TSeq>
-long BintableColumns::columnsRowCount(TSeq&& columns) const {
+long columnsRowCount(TSeq&& columns) {
   long rows = -1;
   seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
     if (rows == -1) {

@@ -164,16 +164,6 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, FitsIO::Test::MinimalFile) {
   BOOST_TEST(radecs.vector() == table.radecs);
 }
 
-BOOST_FIXTURE_TEST_CASE(append_rows_test, FitsIO::Test::MinimalFile) {
-  using namespace FitsIO::Test;
-  const SmallTable table;
-  const auto initSize = table.names.size();
-  HduAccess::createBintableExtension(this->fptr, "TABLE", table.nameCol, table.radecCol);
-  BOOST_TEST(BintableIo::rowCount(this->fptr) == initSize);
-  BintableIo::writeColumns(this->fptr, table.nameCol, table.radecCol);
-  BOOST_TEST(BintableIo::rowCount(this->fptr) == initSize * 2);
-}
-
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

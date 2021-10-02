@@ -17,9 +17,13 @@
  *
  */
 
+#include "EL_FitsData/TestColumn.h"
 #include "EL_FitsFile/BintableColumns.h"
+#include "EL_FitsFile/FitsFileFixture.h"
 
 #include <boost/test/unit_test.hpp>
+
+using namespace Euclid::FitsIO;
 
 // Call graphs for sequences:
 //
@@ -57,9 +61,21 @@ BOOST_AUTO_TEST_SUITE(BintableColumns_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(example_test) {
+BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable) {
+  const auto rowCount = nums.size();
+  BOOST_TEST(names.size() == rowCount);
+  const auto columns = std::make_tuple(numCol, radecCol, nameCol, distMagCol);
+  BOOST_TEST(columnsRowCount(columns) == rowCount);
+}
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
+  const Test::SmallTable table;
+  const auto initSize = table.names.size();
+  const auto& ext = assignBintableExt("TABLE", table.nameCol, table.radecCol);
+  const auto columns = ext.columns();
+  BOOST_TEST(columns.readRowCount() == initSize);
+  columns.writeSegmentSeq(-1, table.nameCol, table.radecCol);
+  BOOST_TEST(columns.readRowCount() == initSize * 2);
 }
 
 //-----------------------------------------------------------------------------

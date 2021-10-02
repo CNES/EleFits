@@ -20,6 +20,8 @@
 #ifndef _EL_FITSDATA_POSITION_H
 #define _EL_FITSDATA_POSITION_H
 
+#include "EL_FitsData/FitsIOError.h"
+
 #include <algorithm> // transform
 #include <array>
 #include <functional> // plus, minus, multiplies

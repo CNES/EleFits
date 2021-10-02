@@ -314,7 +314,7 @@ void writeColumn(fitsfile* fptr, const FitsIO::Column<T>& column) {
  * @brief String specialization.
  */
 template <>
-void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column);
+void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column);
 
 template <typename T>
 void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<T>& column) {
@@ -327,7 +327,7 @@ void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<T>& 
       fptr,
       TypeCode<T>::forBintable(), // datatype
       static_cast<int>(index), // colnum
-      firstRow + 1, // firstrow (1-based)
+      firstRow, // firstrow (1-based)
       1, // firstelem (1-based)
       column.elementCount(), // nelements
       nonconstData.data(),

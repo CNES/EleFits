@@ -67,6 +67,15 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   BOOST_CHECK_THROW(column.at(0, -1 - repeatCount), FitsIOError);
 }
 
+BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
+  constexpr long rowCount = 17;
+  constexpr long repeatCount = 7;
+  VecColumn<std::string> column({ "STR", "", repeatCount }, rowCount);
+  BOOST_TEST(column.info.repeatCount == repeatCount);
+  BOOST_TEST(column.rowCount() == rowCount);
+  BOOST_TEST(column.elementCount() == rowCount);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

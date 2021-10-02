@@ -558,14 +558,6 @@ public:
 
 private:
   /**
-   * @brief The common number of rows of a sequence of columns.
-   * @details
-   * Throw if columns do not have the same size.
-   */
-  template <typename TSeq>
-  long columnsRowCount(TSeq&& columns) const;
-
-  /**
    * @brief The fitsfile.
    */
   fitsfile*& m_fptr;
@@ -579,8 +571,15 @@ private:
    * @brief The function to declare that the header was edited.
    */
   std::function<void(void)> m_edit;
+};
 
-}; // End of BintableColumns class
+/**
+ * @brief The common number of rows of a sequence of columns.
+ * @details
+ * Throw if columns do not have the same size.
+ */
+template <typename TSeq>
+long columnsRowCount(TSeq&& columns);
 
 } // namespace FitsIO
 } // namespace Euclid

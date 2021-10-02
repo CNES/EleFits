@@ -18,18 +18,17 @@
  */
 
 #include "EL_FitsData/Column.h"
+
 #include "ElementsKernel/Unused.h"
 
 namespace Euclid {
 namespace FitsIO {
 
-namespace Internal {
-
 template <>
-VecColumn<std::string>::VecColumn(ColumnInfo<std::string> info_, long rowCount) :
-    Column<std::string>(info_),
-    m_vec(rowCount) {
-}
+VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount) :
+    Column<std::string>(columnInfo), m_vec(rowCount) {}
+
+namespace Internal {
 
 template <>
 long rowCountDispatchImpl<std::string>(long elementCount, ELEMENTS_UNUSED long repeatCount) {
@@ -39,14 +38,14 @@ long rowCountDispatchImpl<std::string>(long elementCount, ELEMENTS_UNUSED long r
 } // namespace Internal
 
 #ifndef COMPILE_COLUMN_CLASSES
-#define COMPILE_COLUMN_CLASSES(type, unused) \
-  template struct ColumnInfo<type>; \
-  template class Column<type>; \
-  template class PtrColumn<type>; \
-  template class VecRefColumn<type>; \
-  template class VecColumn<type>;
+  #define COMPILE_COLUMN_CLASSES(type, unused) \
+    template struct ColumnInfo<type>; \
+    template class Column<type>; \
+    template class PtrColumn<type>; \
+    template class VecRefColumn<type>; \
+    template class VecColumn<type>;
 EL_FITSIO_FOREACH_COLUMN_TYPE(COMPILE_COLUMN_CLASSES)
-#undef COMPILE_COLUMN_CLASSES
+  #undef COMPILE_COLUMN_CLASSES
 #endif
 
 } // namespace FitsIO
