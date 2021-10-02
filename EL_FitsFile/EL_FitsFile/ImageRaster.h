@@ -33,6 +33,18 @@ namespace FitsIO {
  * @brief Reader-writer for the image data unit.
  * @tparam T The desired pixel type
  * @tparam n The desired raster dimension (or -1 for dynamic dimension)
+ * @details
+ * This handler provides methods to access image metadata (image-related keyword records) and data.
+ * 
+ * Data can be read and written region-wise.
+ * To specify the source and destination regions, three positions are required:
+ * - a source position,
+ * - a destination position,
+ * - a shape.
+ * 
+ * The position in the file is given as a method parameter.
+ * The destination position is 0 for rasters, or the front position of a subraster.
+ * The shape is either in a region parameter or is the size of a raster or subraster.
  * @warning
  * Filling or copying a subraster is much slower than filling or copying a raster,
  * because pixels in a subraster aren't stored contiguously.
@@ -127,13 +139,26 @@ public:
 
   /**
    * @brief Read a region as a new `VecRaster`.
+   * @param region The HDU region to be read
+   * @param frontPosition The front position of the HDU region to be read
+   * @param raster The destination raster
+   * @param subraster The destination subraster
    * @details
    * There are several options to read a region of the data unit:
    * - as a new `VecRaster` object;
    * - by filling an existing `Raster` object;
    * - by filling an existing `Subraster` object.
+   * In the last two cases, the region read in the file is deduced
+   * from the given front position and raster or subraster shape.
    * 
-   * In the last two cases, the raster or subraster is assumed to already have a conforming shape.
+   * For example, to read the HDU region from position (50, 80) to position (100, 120)
+   * into an existing raster at position (25, 40), do:
+   * \code
+   * const Region<2> hduRegion({50, 80}, {100, 120});
+   * const auto rasterRegion = Region<2>::fromShape({25, 40}, hduRegion.shape());
+   * image.readRegionTo(region.front, raster.subraster(rasterRegion));
+   * \endcode
+   * where `image` is the `ImageRaster` and `raster` is the `Raster`.
    */
   template <typename T, long n = 2>
   VecRaster<T, n> readRegion(const Region<n>& region) const;
@@ -143,14 +168,14 @@ public:
    * @copydetails readRegion()
    */
   template <typename T, long n = 2>
-  void readRegionTo(const Region<n>& region, Raster<T, n>& raster) const;
+  void readRegionTo(const Position<n>& frontPosition, Raster<T, n>& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
    * @copydetails readRegion()
    */
   template <typename T, long n = 2>
-  void readRegionTo(const Region<n>& region, Subraster<T, n>& subraster) const;
+  void readRegionTo(const Position<n>& frontPosition, Subraster<T, n>& subraster) const;
 
   /// @}
   /**
@@ -172,13 +197,16 @@ public:
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.
+   * @param frontPosition The front position of the HDU region to be written
+   * @param raster The raster to be written
+   * @param subraster The subraster to be written
    * @details
    * A raster or subraster can be written as a region of the data unit.
    * The given position is the front of the destination region.
    * The back of the destination region is deduced from its front and the raster or subraster shape.
    */
   template <typename T, long n = 2>
-  void writeRegion(const Raster<T, n>& raster, const Position<n>& destination);
+  void writeRegion(const Position<n>& frontPosition, const Raster<T, n>& raster);
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
@@ -192,7 +220,7 @@ public:
    * @copydetails writeRegion()
    */
   template <typename T, long n = 2>
-  void writeRegion(const Subraster<T, n>& subraster, const Position<n>& destination);
+  void writeRegion(const Position<n>& frontPosition, const Subraster<T, n>& subraster);
 
   /// @}
 

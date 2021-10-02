@@ -124,7 +124,7 @@ private:
     for (auto& f : m_followers) {
       f[0]++;
     }
-    for (std::size_t i = 0; i < m_current.size(); ++i) {
+    for (long i = 0; i < m_current.size(); ++i) {
       if (m_current[i] > m_region.back[i]) {
         m_current[i] = m_region.front[i];
         m_current[i + 1]++;

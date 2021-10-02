@@ -172,7 +172,9 @@ Position<n>::Position() : indices {} {
 
 template <long n>
 Position<n>::Position(long dim) : indices {} {
-  // TODO check dim
+  if (dim != n) {
+    throw FitsIOError("Dimension mismatch."); // TODO clarify
+  }
 }
 
 template <long n>

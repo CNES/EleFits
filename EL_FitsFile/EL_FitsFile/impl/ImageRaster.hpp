@@ -45,8 +45,9 @@ void ImageRaster::reinit(const Position<n>& shape) const {
 
 template <typename T, long n>
 VecRaster<T, n> ImageRaster::read() const {
-  m_touch();
-  return Cfitsio::ImageIo::readRaster<T, n>(m_fptr);
+  VecRaster<T, n> raster(readShape<n>());
+  readTo<T, n>(raster);
+  return raster;
 }
 
 template <typename T, long n>
@@ -63,20 +64,22 @@ void ImageRaster::readTo(Subraster<T, n>& subraster) const {
 
 template <typename T, long n>
 VecRaster<T, n> ImageRaster::readRegion(const Region<n>& region) const {
-  m_touch();
-  return Cfitsio::ImageIo::readRegion<T, n>(m_fptr, region);
+  VecRaster<T, n> raster(region.shape);
+  readRegionTo(region.front, raster);
+  return raster;
 }
 
 template <typename T, long n>
-void ImageRaster::readRegionTo(const Region<n>& region, Raster<T, n>& raster) const {
+void ImageRaster::readRegionTo(const Position<n>& frontPosition, Raster<T, n>& raster) const {
   m_touch();
-  Cfitsio::ImageIo::readRegionTo<T, n>(m_fptr, region, raster);
+  Cfitsio::ImageIo::readRegionTo<T, n>(m_fptr, frontPosition, raster);
 }
 
 template <typename T, long n>
-void ImageRaster::readRegionTo(const Region<n>& region, Subraster<T, n>& subraster) const {
+void ImageRaster::readRegionTo(const Position<n>& frontPosition, Subraster<T, n>& subraster) const {
   m_touch();
-  Cfitsio::ImageIo::readRegionTo<T, n>(m_fptr, region, subraster);
+  Cfitsio::ImageIo::readRegionTo<T, n>(m_fptr, frontPosition, subraster);
+  // FIXME move algo here, rely solely on readRegionTo(fitsfile, Position, Raster)
 }
 
 template <typename T, long n>
@@ -86,20 +89,21 @@ void ImageRaster::write(const Raster<T, n>& raster) const {
 }
 
 template <typename T, long n>
-void ImageRaster::writeRegion(const Raster<T, n>& raster, const Position<n>& destination) {
+void ImageRaster::writeRegion(const Position<n>& destination, const Raster<T, n>& raster) {
   m_edit();
   Cfitsio::ImageIo::writeRegion<T, n>(m_fptr, raster, destination);
 }
 
 template <typename T, long n>
 void ImageRaster::writeRegion(const Subraster<T, n>& subraster) {
-  writeRegion(subraster, subraster.region.front);
+  writeRegion(subraster.region.front, subraster);
 }
 
 template <typename T, long n>
-void ImageRaster::writeRegion(const Subraster<T, n>& subraster, const Position<n>& destination) {
+void ImageRaster::writeRegion(const Position<n>& destination, const Subraster<T, n>& subraster) {
   m_edit();
   Cfitsio::ImageIo::writeRegion<T, n>(m_fptr, subraster, destination);
+  // FIXME move algo here, rely solely on writeRegion(fitsfile, Raster, Position)
 }
 
 } // namespace FitsIO
