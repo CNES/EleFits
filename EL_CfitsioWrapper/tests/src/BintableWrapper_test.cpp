@@ -105,7 +105,7 @@ void checkVectorColumnIsReadBack<std::string>() {
 }
 
 #define VECTOR_COLUMN_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_vector_column_is_read_back_test_test) { \
+  BOOST_AUTO_TEST_CASE(name##_vector_column_is_read_back_test) { \
     checkVectorColumnIsReadBack<type>(); \
   }
 

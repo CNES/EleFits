@@ -31,6 +31,24 @@ BOOST_AUTO_TEST_SUITE(ImageRaster_test)
 
 //-----------------------------------------------------------------------------
 
+template <typename T>
+void checkRasterIsReadBack() {
+  Test::RandomRaster<T, 3> input({ 16, 9, 3 }); // FIXME more dimensions?
+  Test::TemporarySifFile f;
+  const auto& du = f.raster();
+  du.reinit<T>(input.shape);
+  du.write(input);
+  const auto output = du.read<T, 3>();
+  BOOST_TEST(output.vector() == input.vector());
+}
+
+#define RASTER_IS_READ_BACK_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_raster_is_read_back_test) { \
+    checkRasterIsReadBack<type>(); \
+  }
+
+EL_FITSIO_FOREACH_RASTER_TYPE(RASTER_IS_READ_BACK_TEST)
+
 BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
   const Position<2> shape { 7, 2 };
   const auto cData = Test::generateRandomVector<std::int16_t>(shapeSize(shape));

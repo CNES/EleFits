@@ -58,10 +58,13 @@ CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string&
 }
 
 std::string CfitsioError::message(int cfitsioStatus) {
+  float cfitsioVersion = 0;
+  fits_get_version(&cfitsioVersion);
   char cfitsioMessage[FLEN_ERRMSG];
   cfitsioMessage[0] = '\0';
   fits_get_errstatus(cfitsioStatus, cfitsioMessage);
-  std::string message = "CFitsIO error " + std::to_string(cfitsioStatus) + ": " + cfitsioMessage;
+  std::string message =
+      "CFitsIO v" + std::to_string(cfitsioVersion) + " error " + std::to_string(cfitsioStatus) + ": " + cfitsioMessage;
   return message;
 }
 

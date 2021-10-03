@@ -25,10 +25,14 @@ namespace Euclid {
 namespace FitsIO {
 
 SifFile::SifFile(const std::string& filename, FileMode permission) :
-    FitsFile(filename, permission), m_hdu(ImageHdu::Token {}, m_fptr, 0) {}
+    FitsFile(filename, permission), m_hdu(ImageHdu::Token {}, m_fptr, 0), m_raster(m_hdu.raster()) {}
 
 const Hdu& SifFile::header() const {
   return m_hdu.as<Hdu>();
+}
+
+const ImageRaster& SifFile::raster() const {
+  return m_raster;
 }
 
 } // namespace FitsIO

@@ -52,11 +52,16 @@ public:
   SifFile(const std::string& filename, Permission permission);
 
   /**
-   * @brief Access the header.
+   * @brief Access the header unit.
    * @warning
    * Return will be of type Header from version 4.0 on.
    */
   const Hdu& header() const; // FIXME return const Header& in 4.0
+
+  /**
+   * @brief Access the data unit.
+   */
+  const ImageRaster& raster() const;
 
   /**
    * @brief Read the raster.
@@ -71,8 +76,15 @@ public:
   void writeRaster(const Raster<T, n>& raster) const;
 
 private:
-  /** @brief The Primary (and only) HDU */
+  /**
+   * @brief The Primary (and only) HDU
+   */
   ImageHdu m_hdu;
+
+  /**
+   * @brief The Primary data unit.
+   */
+  ImageRaster m_raster;
 };
 
 } // namespace FitsIO
