@@ -186,6 +186,17 @@ void seqForeach(const std::vector<T>& vector, TFunc&& func);
 template <typename T, typename TFunc>
 void seqForeach(std::vector<T>&& vector, TFunc&& func);
 
+// FIXME use enable_if to dispatch based on the presence of get() or begin()
+
+template <typename T>
+class RecordVector; // FIXME rm
+
+template <typename T, typename TFunc>
+void seqForeach(const RecordVector<T>& vector, TFunc&& func);
+
+template <typename T, typename TFunc>
+void seqForeach(RecordVector<T>&& vector, TFunc&& func);
+
 template <typename TTuple, typename TFunc>
 void seqForeach(TTuple&& tuple, TFunc&& func) {
   Internal::tupleForeachImpl(
@@ -208,6 +219,20 @@ void seqForeach(std::vector<T>&& vector, TFunc&& func) {
   }
 }
 
+template <typename T, typename TFunc>
+void seqForeach(const RecordVector<T>& vector, TFunc&& func) {
+  for (const auto& element : vector) {
+    func(element);
+  }
+}
+
+template <typename T, typename TFunc>
+void seqForeach(RecordVector<T>&& vector, TFunc&& func) {
+  for (auto& element : vector) {
+    func(element);
+  }
+}
+
 /**
  * @brief Apply a transform to each element of a tuple and create a user-defined struct from the results.
  */
@@ -219,13 +244,17 @@ TReturn seqTransform(TTuple&& tuple, TFunc&& func) {
       Internal::tupleIndexSequence<TTuple>());
 }
 
-/**
- * @brief Apply a transform to each element of a tuple and create a user-defined struct from the results.
- */
 template <typename TReturn, typename T, typename TFunc>
 TReturn seqTransform(const std::vector<T>& vector, TFunc&& func) {
   TReturn res(vector.size);
   std::transform(vector.begin(), vector.end(), res.begin(), func);
+  return res;
+}
+
+template <typename TReturn, typename T, typename TFunc>
+TReturn seqTransform(const RecordVector<T>& vector, TFunc&& func) {
+  TReturn res(vector.size);
+  std::transform(std::begin(vector), std::end(vector), std::begin(res), func);
   return res;
 }
 

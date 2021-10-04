@@ -55,6 +55,10 @@ namespace FitsIO {
 template <typename T, long n>
 class Subraster;
 
+// Forward declaration for Raster::slice()
+template <typename T, long n>
+class PtrRaster;
+
 /**
  * @ingroup image_data_classes
  * @brief Raster of a _n_-dimensional image (2D by default).
@@ -254,6 +258,7 @@ public:
 
   /**
    * @brief Create a subraster from given region.
+   * @see slice()
    */
   const Subraster<T, n> subraster(const Region<n>& region) const;
 
@@ -262,7 +267,34 @@ public:
    */
   Subraster<T, n> subraster(const Region<n>& region);
 
-  // FIXME implement PtrRaster<T, m> slice<m>(const Region<n>& region) or similar
+  /**
+   * @brief Create a slice from a given region.
+   * @tparam m The dimension of the slice (cannot be -1)
+   * @details
+   * As opposed to a subraster, a slice is contiguous in memory.
+   * Therefore, the region must validate `isContiguous()`.
+   * For example, in a 3D raster, any plane orthogonal to the last axis is a slice.
+   * @see isContiguous()
+   */
+  template <long m = 2>
+  const PtrRaster<const T, m> slice(const Region<n>& region) const;
+
+  /**
+   * @copydoc slice()
+   */
+  template <long m = 2>
+  PtrRaster<T, m> slice(const Region<n>& region);
+
+  /**
+   * @brief Check whether a region is made of contiguous values in memory.
+   * @tparam m The actual region dimension
+   * @details
+   * A region is contiguous if and only if:
+   * - For `i` < `m-1`, `front[i]` = 0 and `back[i]` = -1;
+   * - For `i` > `m`, `front[i]` = `back[i]`.
+   */
+  template <long m = 2>
+  bool isContiguous(const Region<n>& region) const;
 
   /// @}
 

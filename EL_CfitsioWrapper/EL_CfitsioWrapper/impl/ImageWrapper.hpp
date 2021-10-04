@@ -65,7 +65,7 @@ FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr) {
   return raster;
 }
 
-template <typename T, long n = 2>
+template <typename T, long n>
 void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination) {
   int status = 0;
   const auto size = destination.size();
@@ -81,15 +81,21 @@ void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination) {
   CfitsioError::mayThrow(status, fptr, "Cannot read raster.");
 }
 
-template <typename T, long n = 2>
+template <typename T, long n>
 void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination) {
   const auto region = FitsIO::Region<n>::fromShape({}, readShape<n>(fptr)); // FIXME -1 specialization?
   readRegionTo(fptr, region, destination);
 }
 
-template <typename T, long n = 2>
+template <typename T, long n>
 FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region) {
   FitsIO::VecRaster<T, n> raster(region.shape());
+  readRegionTo(fptr, region, raster);
+  return raster;
+}
+
+template <typename T, long n>
+void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raster<T, n>& raster) {
   int status = 0;
   const std::size_t dim = region.dimension();
   FitsIO::Position<n> front = region.front; // Copy for const-correctness
@@ -110,12 +116,9 @@ FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& regi
       nullptr,
       &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
-  return raster;
 }
 
-// FIXME readRegionTo Raster
-
-template <typename T, long n = 2>
+template <typename T, long n>
 void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, n>& destination) {
 
   /* 1-based, flatten region (beginning of each line) */
@@ -185,21 +188,20 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const
 
   /* Screening positions */
   const auto dstSize = shape[0];
-  const auto delta = subraster.region().front - destination;
+  const auto delta = subraster.region().front - dstRegion.front; // FIXME isn't it destination instead?
 
   /* Non-const line for CFitsIO */
-  const auto begin = &subraster[0];
-  const auto end = begin + dstSize;
-  std::vector<std::decay_t<T>> line(begin, end);
 
   /* Process each line */
   int status = 0;
   FitsIO::Position<n> dstBack;
   FitsIO::Position<n> srcFront;
+  std::vector<std::decay_t<T>> line(dstSize);
   for (auto dstFront : dstRegion) {
     dstBack = dstFront;
     dstBack[0] += dstSize - 1;
     srcFront = dstFront + delta;
+    line.assign(&subraster[srcFront], &subraster[srcFront] + dstSize);
     fits_write_subset(fptr, TypeCode<T>::forImage(), dstFront.data(), dstBack.data(), line.data(), &status);
     CfitsioError::mayThrow(status, fptr, "Cannot write image region.");
   }

@@ -64,6 +64,12 @@ public:
   const ImageRaster& raster() const;
 
   /**
+   * @brief Write both the records and the raster.
+   */
+  template <typename T, long n = 2>
+  void writeAll(const RecordSeq& records, const Raster<T, n>& raster);
+
+  /**
    * @brief Read the raster.
    */
   template <typename T, long n = 2>

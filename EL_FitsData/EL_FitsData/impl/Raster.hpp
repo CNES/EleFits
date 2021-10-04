@@ -165,6 +165,55 @@ const Subraster<T, n> Raster<T, n>::subraster(const Region<n>& region) const {
   return Subraster<T, n> { *this, region };
 }
 
+template <typename T, long n>
+template <long m>
+const PtrRaster<const T, m> Raster<T, n>::slice(const Region<n>& region) const {
+  if (not isContiguous<m>(region)) {
+    throw FitsIOError("Cannot slice: Region is not contiguous."); // FIXME clarify
+  }
+  const auto& f = region.front;
+  const auto& b = region.back;
+  Position<m> reduced(m);
+  for (long i = 0; i < m; ++i) {
+    reduced[i] = b[i] - f[i] + 1;
+  }
+  return { reduced, &operator[](region.front) };
+}
+
+template <typename T, long n>
+template <long m>
+PtrRaster<T, m> Raster<T, n>::slice(const Region<n>& region) {
+  if (not isContiguous<m>(region)) {
+    throw FitsIOError("Cannot slice: Region is not contiguous."); // FIXME clarify
+  }
+  const auto& f = region.front;
+  const auto& b = region.back;
+  Position<m> reduced(m);
+  for (long i = 0; i < m; ++i) {
+    reduced[i] = b[i] - f[i] + 1;
+  }
+  // FIXME duplication
+  return { reduced, &operator[](region.front) };
+}
+
+template <typename T, long n>
+template <long m>
+bool Raster<T, n>::isContiguous(const Region<n>& region) const {
+  const auto f = region.front;
+  const auto b = region.back;
+  for (long i = 0; i < m - 1; ++i) {
+    if (f[i] != 0 || b[i] != shape[i] - 1) { // Doesn't span across the full axis => index jump
+      return false;
+    }
+  }
+  for (long i = m; i < dimension(); ++i) {
+    if (b[i] != f[i]) { // Not flat along axis i >= m => dimension >= m
+      return false;
+    }
+  }
+  return true;
+}
+
 // PtrRaster
 
 template <typename T, long n>

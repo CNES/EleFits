@@ -21,6 +21,7 @@
 #define _EL_FITSFILE_IMAGERASTER_H
 
 #include "EL_FitsData/Raster.h"
+#include "EL_FitsFile/MemFileRegions.h"
 
 #include <fitsio.h>
 #include <functional>
@@ -140,6 +141,7 @@ public:
   /**
    * @brief Read a region as a new `VecRaster`.
    * @param region The HDU region to be read
+   * @param regions The in-memory and in-file regions
    * @param frontPosition The front position of the HDU region to be read
    * @param raster The destination raster
    * @param subraster The destination subraster
@@ -148,20 +150,31 @@ public:
    * - as a new `VecRaster` object;
    * - by filling an existing `Raster` object;
    * - by filling an existing `Subraster` object.
-   * In the last two cases, the region read in the file is deduced
-   * from the given front position and raster or subraster shape.
+   * In the last two cases, the in-file and in-memory regions are given as a `MemFileRegions` object.
    * 
    * For example, to read the HDU region from position (50, 80) to position (100, 120)
    * into an existing raster at position (25, 40), do:
    * \code
-   * const Region<2> hduRegion({50, 80}, {100, 120});
-   * const auto rasterRegion = Region<2>::fromShape({25, 40}, hduRegion.shape());
-   * image.readRegionTo(region.front, raster.subraster(rasterRegion));
+   * const MemFileRegions<2> regions({25, 40}, {{50, 80}, {100, 120}});
+   * image.readRegionTo(regions, raster);
    * \endcode
    * where `image` is the `ImageRaster` and `raster` is the `Raster`.
+   * 
+   * In simpler cases, where the in-file or in-memory front position is 0,
+   * factories can be used, e.g. to read into position 0:
+   * \code
+   * image.readRegionTo(makeFileRegion({50, 80}, {100, 120}), raster);
+   * \endcode
    */
   template <typename T, long n = 2>
   VecRaster<T, n> readRegion(const Region<n>& region) const;
+
+  /**
+   * @brief Read a region of the data unit into a region of an existing `Raster`.
+   * @copydetails readRegion()
+   */
+  template <typename T, long m = 2, long n = 2>
+  void readRegionTo(const MemFileRegions<m>& regions, Raster<T, n>& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Raster`.
@@ -206,21 +219,21 @@ public:
    * The back of the destination region is deduced from its front and the raster or subraster shape.
    */
   template <typename T, long n = 2>
-  void writeRegion(const Position<n>& frontPosition, const Raster<T, n>& raster);
+  void writeRegion(const Position<n>& frontPosition, const Raster<T, n>& raster) const;
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
    * @copydetails writeRegion()
    */
   template <typename T, long n = 2>
-  void writeRegion(const Subraster<T, n>& subraster);
+  void writeRegion(const Subraster<T, n>& subraster) const;
 
   /**
    * @brief Write a `Subraster` at a given position of the data unit.
    * @copydetails writeRegion()
    */
   template <typename T, long n = 2>
-  void writeRegion(const Position<n>& frontPosition, const Subraster<T, n>& subraster);
+  void writeRegion(const Position<n>& frontPosition, const Subraster<T, n>& subraster) const;
 
   /// @}
 

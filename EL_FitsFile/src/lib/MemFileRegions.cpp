@@ -17,33 +17,4 @@
  *
  */
 
-#if defined(_EL_FITSFILE_SIFFILE_IMPL) || defined(CHECK_QUALITY)
-
-  #include "EL_FitsFile/SifFile.h"
-
-namespace Euclid {
-namespace FitsIO {
-
-template <typename T, long n>
-void SifFile::writeAll(const RecordSeq& records, const Raster<T, n>& raster) {
-  m_raster.reinit<T, n>(raster.shape);
-  m_hdu.header().writeSeq(records);
-  m_raster.write(raster);
-}
-
-template <typename T, long n>
-VecRaster<T, n> SifFile::readRaster() const {
-  return Cfitsio::ImageIo::readRaster<T, n>(m_fptr);
-}
-
-template <typename T, long n>
-void SifFile::writeRaster(const Raster<T, n>& raster) const {
-  Cfitsio::HduAccess::gotoPrimary(m_fptr);
-  Cfitsio::ImageIo::updateTypeShape<T, n>(m_fptr, raster.shape);
-  Cfitsio::ImageIo::writeRaster(m_fptr, raster);
-}
-
-} // namespace FitsIO
-} // namespace Euclid
-
-#endif
+#include "EL_FitsFile/MemFileRegions.h"

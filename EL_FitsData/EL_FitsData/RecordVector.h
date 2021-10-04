@@ -35,7 +35,7 @@ namespace FitsIO {
  * @see RecordCollection
  */
 template <typename T = VariantValue>
-class RecordVector {
+class RecordVector { // FIXME rename as RecordVec in 4.0
 
 public:
   /**
@@ -62,12 +62,28 @@ public:
    * @brief Create a RecordVector from a list of records.
    */
   template <typename... Ts>
-  explicit RecordVector(const Record<Ts>&... records);
+  RecordVector(const Record<Ts>&... records);
 
   /**
    * @brief The records.
    */
   std::vector<Record<T>> vector;
+
+  typename std::vector<Record<T>>::const_iterator begin() const { // FIXME clean
+    return vector.begin();
+  }
+
+  typename std::vector<Record<T>>::const_iterator end() const { // FIXME clean
+    return vector.end();
+  }
+
+  typename std::vector<Record<T>>::iterator begin() { // FIXME clean
+    return vector.begin();
+  }
+
+  typename std::vector<Record<T>>::iterator end() { // FIXME clean
+    return vector.end();
+  }
 
   /**
    * @brief Find the first record with given keyword.
@@ -94,6 +110,11 @@ public:
   template <typename TValue>
   Record<TValue> as(const std::string& keyword) const;
 };
+
+/**
+ * @brief A sequence of records.
+ */
+using RecordSeq = RecordVector<VariantValue>;
 
 } // namespace FitsIO
 } // namespace Euclid

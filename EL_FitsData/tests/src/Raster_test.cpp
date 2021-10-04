@@ -144,6 +144,45 @@ BOOST_AUTO_TEST_CASE(make_raster_test) {
   BOOST_TEST(rasterDyn.dimension() == 3);
   BOOST_TEST(constRasterDyn.dimension() == 3);
 }
+
+BOOST_AUTO_TEST_CASE(slicing_test) {
+
+  Test::RandomRaster<float, 3> raster({ 5, 3, 4 });
+
+  // Several x-y planes
+  Region<3> cube { { 0, 0, 1 }, { 4, 2, 2 } };
+  BOOST_TEST(raster.isContiguous<3>(cube));
+  const auto cubed = raster.slice<3>(cube);
+  BOOST_TEST((cubed.shape == Position<3>({ 5, 3, 2 })));
+  BOOST_TEST((cubed[{ 0, 0, 0 }] == raster[cube.front]));
+
+  // One full x-y plane
+  Region<3> plane { { 0, 0, 1 }, { 4, 2, 1 } };
+  BOOST_TEST(raster.isContiguous<2>(plane));
+  const auto planed = raster.slice<2>(plane);
+  BOOST_TEST((planed.shape == Position<2>({ 5, 3 })));
+  BOOST_TEST((planed[{ 0, 0 }] == raster[plane.front]));
+
+  // One partial x-y plane
+  Region<3> rectangle { { 0, 1, 1 }, { 4, 2, 1 } };
+  BOOST_TEST(raster.isContiguous<2>(rectangle));
+  const auto rectangled = raster.slice<2>(rectangle);
+  BOOST_TEST((rectangled.shape == Position<2>({ 5, 2 })));
+  BOOST_TEST((rectangled[{ 0, 0 }] == raster[rectangle.front]));
+
+  // One partial x line
+  Region<3> segment { { 1, 1, 1 }, { 3, 1, 1 } };
+  BOOST_TEST(raster.isContiguous<1>(segment));
+  const auto segmented = raster.slice<1>(segment);
+  BOOST_TEST((segmented.shape == Position<1>({ 3 })));
+  BOOST_TEST((segmented[{ 0 }] == raster[segment.front]));
+
+  // Non-contiguous region
+  Region<3> bad { { 1, 1, 1 }, { 2, 2, 2 } };
+  BOOST_TEST(not raster.isContiguous<3>(bad));
+  BOOST_CHECK_THROW(raster.slice<3>(bad), FitsIOError);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
