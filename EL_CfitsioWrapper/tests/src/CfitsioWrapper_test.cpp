@@ -61,8 +61,28 @@ BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::FitsIO::Test::M
   BOOST_TEST(status == 0);
   BOOST_TEST(output == signed_max);
   fits_read_key(fptr, TULONG, "UNSIGNED", &output, nullptr, &status);
-  BOOST_TEST(status != 0); // CFitsIO bug
+  BOOST_TEST(status == NUM_OVERFLOW); // CFitsIO bug
   BOOST_TEST(output != unsigned_max); // CFitsIO bug
+}
+
+BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::FitsIO::Test::MinimalFile) {
+  // Fixture creates file and empty primary of type uchar
+  int status = 0;
+  long naxes = 1;
+  fits_resize_img(fptr, BYTE_IMG, 1, &naxes, &status);
+  BOOST_TEST(status == 0);
+  fits_resize_img(fptr, SBYTE_IMG, 1, &naxes, &status);
+  BOOST_TEST(status == BAD_BITPIX); // CFitsIO bug
+}
+
+BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::FitsIO::Test::MinimalFile) {
+  // Fixture creates file and empty primary of type uchar
+  int status = 0;
+  long naxes = 1;
+  fits_resize_img(fptr, LONGLONG_IMG, 1, &naxes, &status);
+  BOOST_TEST(status == 0);
+  fits_resize_img(fptr, ULONGLONG_IMG, 1, &naxes, &status);
+  BOOST_TEST(status == BAD_BITPIX); // CFitsIO bug
 }
 
 //-----------------------------------------------------------------------------
