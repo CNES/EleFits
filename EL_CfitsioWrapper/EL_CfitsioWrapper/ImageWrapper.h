@@ -75,8 +75,8 @@ void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination);
 /**
  * @brief Read a region of the current image HDU.
  */
-template <typename T, long n = 2>
-FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region);
+template <typename T, long m, long n>
+FitsIO::VecRaster<T, m> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.
@@ -86,8 +86,8 @@ FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& regi
  * Similarly to a blit operation, this method reads the data line-by-line
  * directly in a destination raster.
  */
-template <typename T, long n = 2>
-void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raster<T, n>& destination);
+template <typename T, long m, long n>
+void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raster<T, m>& destination);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing subraster.
@@ -97,8 +97,8 @@ void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raste
  * Similarly to a blit operation, this method reads the data line-by-line
  * directly in a destination subraster.
  */
-template <typename T, long n = 2>
-void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, n>& destination);
+template <typename T, long m, long n>
+void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, m>& destination);
 
 /**
  * @brief Write a whole raster in the current image HDU.
@@ -111,15 +111,15 @@ void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
  * @param raster The raster to be written
  * @param destination The destination position (size is deduced from raster size)
  */
-template <typename T, long n = 2>
-void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, n>& raster, const FitsIO::Position<n>& destination);
+template <typename T, long m, long n>
+void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, m>& raster, const FitsIO::Position<n>& destination);
 
 /**
  * @brief Write a subraster into a region of the current image HDU.
  * @param subraster The subraster to be written
  * @param region The destination position (size is deduced from subraster size)
  */
-template <typename T, long n = 2>
+template <typename T, long m, long n>
 void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const FitsIO::Position<n>& destination);
 
 } // namespace ImageIo

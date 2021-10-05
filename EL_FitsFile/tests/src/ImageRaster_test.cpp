@@ -71,20 +71,20 @@ void checkRasterIsReadBack<std::uint64_t>() {
   }
 
 template <typename T>
-void checkRegionIsReadBack() {
+void checkSliceIsReadBack() {
   const Test::RandomRaster<T, 3> input({ 5, 6, 7 });
-  const Region<3> region { { 1, 1, 1 }, { 2, 3, 4 } };
-  const auto subinput = input.subraster(region);
+  const Region<3> slice3D { { 0, 0, 1 }, { 4, 5, 3 } };
+  const Region<3> slice2D { { 0, 0, 1 }, { 4, 5, 1 } };
   Test::TemporarySifFile f;
   const auto& du = f.raster();
-  du.reinit<T>(input.shape);
-  du.writeRegion(subinput);
-  const auto output = du.readRegion<T, 3>(region);
-  for (long z = 0; z < region.shape()[2]; ++z) {
-    for (long y = 0; y < region.shape()[1]; ++y) {
-      for (long x = 0; x < region.shape()[0]; ++x) {
+  du.reinit<T>(slice3D.shape());
+  du.writeRegion(makeMemRegion(slice3D), input);
+  const auto output = du.readRegion<T, 3>(slice3D);
+  for (long z = 0; z < slice3D.shape()[2]; ++z) {
+    for (long y = 0; y < slice3D.shape()[1]; ++y) {
+      for (long x = 0; x < slice3D.shape()[0]; ++x) {
         const auto o = output[{ x, y, z }];
-        const auto i = input[{ x + region.front[0], y + region.front[1], z + region.front[2] }];
+        const auto i = input[{ x + slice3D.front[0], y + slice3D.front[1], z + slice3D.front[2] }];
         BOOST_TEST(o == i);
       }
     }
@@ -92,21 +92,21 @@ void checkRegionIsReadBack() {
 }
 
 template <>
-void checkRegionIsReadBack<char>() {
+void checkSliceIsReadBack<char>() {
   // CFitsIO bug
 }
 
 template <>
-void checkRegionIsReadBack<std::uint64_t>() {
+void checkSliceIsReadBack<std::uint64_t>() {
   // CFitsIO bug
 }
 
-#define REGION_IS_READ_BACK_TEST(type, name) \
+#define SLICE_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_region_is_read_back_test) { \
-    checkRegionIsReadBack<type>(); \
+    checkSliceIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(REGION_IS_READ_BACK_TEST)
+EL_FITSIO_FOREACH_RASTER_TYPE(SLICE_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
   const Position<2> shape { 7, 2 };

@@ -17,4 +17,4 @@
  *
  */
 
-#include "EL_FitsFile/MemFileRegions.h"
+#include "EL_FitsFile/FileMemRegions.h"

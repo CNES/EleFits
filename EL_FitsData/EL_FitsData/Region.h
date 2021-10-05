@@ -44,6 +44,15 @@ struct Region {
   }
 
   /**
+   * @brief Create an unlimited region.
+   * @details
+   * Front and back bounds along each axis are respectively 0 and -1.
+   */
+  static Region<n> whole() {
+    return { Position<n>::zero(), Position<n>::max() };
+  }
+
+  /**
    * @brief Compute the region shape.
    */
   Position<n> shape() const {

@@ -87,15 +87,19 @@ void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination) {
   readRegionTo(fptr, region, destination);
 }
 
-template <typename T, long n>
-FitsIO::VecRaster<T, n> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region) {
-  FitsIO::VecRaster<T, n> raster(region.shape());
+template <typename T, long m, long n>
+FitsIO::VecRaster<T, m> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region) {
+  FitsIO::Position<m> shape; // FIXME shape = region.shape.slice<m>();
+  for (long i = 0; i < m; ++i) {
+    shape[i] = region.shape()[i];
+  }
+  FitsIO::VecRaster<T, m> raster(shape);
   readRegionTo(fptr, region, raster);
   return raster;
 }
 
-template <typename T, long n>
-void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raster<T, n>& raster) {
+template <typename T, long m, long n>
+void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raster<T, m>& raster) {
   int status = 0;
   const std::size_t dim = region.dimension();
   FitsIO::Position<n> front = region.front; // Copy for const-correctness
@@ -118,8 +122,8 @@ void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raste
   CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
 }
 
-template <typename T, long n>
-void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, n>& destination) {
+template <typename T, long m, long n>
+void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, m>& destination) {
 
   /* 1-based, flatten region (beginning of each line) */
   FitsIO::Region<n> srcRegion = region + 1;
@@ -168,29 +172,42 @@ void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster) {
   CfitsioError::mayThrow(status, fptr, "Cannot write image.");
 }
 
-template <typename T, long n>
-void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, n>& raster, const FitsIO::Position<n>& destination) {
+template <typename T, long m, long n>
+void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, m>& raster, const FitsIO::Position<n>& destination) {
   int status = 0;
   auto front = destination + 1;
-  auto back = destination + raster.shape; // = front + raster.shape - 1
-  auto data = raster.data();
-  fits_write_subset(fptr, TypeCode<T>::forImage(), front.data(), back.data(), data, &status);
+  FitsIO::Position<n> shape(destination.size()); // FIXME shape = raster.shape.extend(destination);
+  for (long i = 0; i < raster.dimension(); ++i) {
+    shape[i] = raster.shape[i];
+  }
+  for (long i = raster.dimension(); i < destination.size(); ++i) {
+    shape[i] = destination[i];
+  }
+  auto back = destination + shape; // = front + raster.shape - 1
+  const auto begin = raster.data();
+  const auto end = begin + raster.size();
+  std::vector<std::decay_t<T>> nonconstData(begin, end); // For const-correctness issue
+  fits_write_subset(fptr, TypeCode<T>::forImage(), front.data(), back.data(), nonconstData.data(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot write image region.");
 }
 
-template <typename T, long n>
-void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const FitsIO::Position<n>& destination) {
+template <typename T, long m, long n>
+void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, m>& subraster, const FitsIO::Position<n>& destination) {
 
   /* 1-based, flatten region (beginning of each line) */
-  const auto shape = subraster.shape();
+  FitsIO::Position<n> shape(destination.size()); // FIXME shape = subraster.shape().extend(destination)
+  for (long i = 0; i < subraster.shape().size(); ++i) {
+    shape[i] = subraster.shape()[i];
+  }
+  for (long i = subraster.shape().size(); i < destination.size(); ++i) {
+    shape[i] = destination[i];
+  }
   FitsIO::Region<n> dstRegion { destination + 1, destination + shape };
   dstRegion.back[0] = dstRegion.front[0];
 
   /* Screening positions */
   const auto dstSize = shape[0];
   const auto delta = subraster.region().front - dstRegion.front; // FIXME isn't it destination instead?
-
-  /* Non-const line for CFitsIO */
 
   /* Process each line */
   int status = 0;

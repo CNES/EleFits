@@ -59,13 +59,14 @@ struct Position {
 
   /**
    * @brief Create position 0.
+   * @deprecated Use `zero()` instead for better clarity.
    */
   Position();
 
   /**
    * @brief Create a position of given dimension.
    */
-  explicit Position(long dim);
+  explicit Position(long dim); // FIXME weird!
 
   /**
    * @brief Create a position from a brace-enclosed list of indices.
@@ -77,6 +78,38 @@ struct Position {
    */
   template <typename TIterator>
   Position(TIterator begin, TIterator end);
+
+  /**
+   * @brief Create position 0.
+   */
+  static Position<n> zero() {
+    return {};
+  }
+
+  /**
+   * @brief Create max position (full of -1's).
+   */
+  static Position<n> max() {
+    Position<n> res; // FIXME valid for n = -1?
+    for (auto& i : res) {
+      res[i] = -1;
+    }
+    return res;
+  }
+
+  /**
+   * @brief Check whether the position is zero.
+   */
+  bool isZero() const {
+    return *this == zero();
+  }
+
+  /**
+   * @brief Check whether the position is max.
+   */
+  bool isMax() const {
+    return *this == max();
+  }
 
   /**
    * @brief The number of indices.

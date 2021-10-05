@@ -21,7 +21,7 @@
 #define _EL_FITSFILE_IMAGERASTER_H
 
 #include "EL_FitsData/Raster.h"
-#include "EL_FitsFile/MemFileRegions.h"
+#include "EL_FitsFile/FileMemRegions.h"
 
 #include <fitsio.h>
 #include <functional>
@@ -140,9 +140,12 @@ public:
 
   /**
    * @brief Read a region as a new `VecRaster`.
-   * @param region The HDU region to be read
+   * @tparam T The desired raster type
+   * @tparam m The desired raster dimension, which can be smaller than the data dimension in file
+   * @tparam n The region dimension, which corresponds to the data dimension in file
+   * @param region The in-file region
    * @param regions The in-memory and in-file regions
-   * @param frontPosition The front position of the HDU region to be read
+   * @param frontPosition The in-file region front position
    * @param raster The destination raster
    * @param subraster The destination subraster
    * @details
@@ -150,12 +153,12 @@ public:
    * - as a new `VecRaster` object;
    * - by filling an existing `Raster` object;
    * - by filling an existing `Subraster` object.
-   * In the last two cases, the in-file and in-memory regions are given as a `MemFileRegions` object.
+   * In the last two cases, the in-file and in-memory regions are given as a `FileMemRegions` object.
    * 
    * For example, to read the HDU region from position (50, 80) to position (100, 120)
    * into an existing raster at position (25, 40), do:
    * \code
-   * const MemFileRegions<2> regions({25, 40}, {{50, 80}, {100, 120}});
+   * const FileMemRegions<2> regions({25, 40}, {{50, 80}, {100, 120}});
    * image.readRegionTo(regions, raster);
    * \endcode
    * where `image` is the `ImageRaster` and `raster` is the `Raster`.
@@ -166,29 +169,29 @@ public:
    * image.readRegionTo(makeFileRegion({50, 80}, {100, 120}), raster);
    * \endcode
    */
-  template <typename T, long n = 2>
-  VecRaster<T, n> readRegion(const Region<n>& region) const;
+  template <typename T, long m, long n>
+  VecRaster<T, m> readRegion(const Region<n>& region) const;
 
   /**
    * @brief Read a region of the data unit into a region of an existing `Raster`.
    * @copydetails readRegion()
    */
-  template <typename T, long m = 2, long n = 2>
-  void readRegionTo(const MemFileRegions<m>& regions, Raster<T, n>& raster) const;
+  template <typename T, long m, long n>
+  void readRegionTo(FileMemRegions<n> regions, Raster<T, m>& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Raster`.
    * @copydetails readRegion()
    */
-  template <typename T, long n = 2>
-  void readRegionTo(const Position<n>& frontPosition, Raster<T, n>& raster) const;
+  template <typename T, long m, long n>
+  void readRegionTo(const Position<n>& frontPosition, Raster<T, m>& raster) const; // FIXME private?
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
    * @copydetails readRegion()
    */
-  template <typename T, long n = 2>
-  void readRegionTo(const Position<n>& frontPosition, Subraster<T, n>& subraster) const;
+  template <typename T, long m, long n>
+  void readRegionTo(const Position<n>& frontPosition, Subraster<T, m>& subraster) const; // FIXME private?
 
   /// @}
   /**
@@ -199,7 +202,7 @@ public:
   /**
    * @brief Write the whole data unit.
    */
-  template <typename T, long n = 2>
+  template <typename T, long n>
   void write(const Raster<T, n>& raster) const;
 
   /// @}
@@ -210,6 +213,7 @@ public:
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.
+   * @param regions The in-memory and in-file regions
    * @param frontPosition The front position of the HDU region to be written
    * @param raster The raster to be written
    * @param subraster The subraster to be written
@@ -218,22 +222,28 @@ public:
    * The given position is the front of the destination region.
    * The back of the destination region is deduced from its front and the raster or subraster shape.
    */
-  template <typename T, long n = 2>
-  void writeRegion(const Position<n>& frontPosition, const Raster<T, n>& raster) const;
+  template <typename T, long m, long n>
+  void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const;
+
+  /**
+   * @brief Write a `Raster` at a given position of the data unit.
+   */
+  template <typename T, long m, long n>
+  void writeRegion(const Position<n>& frontPosition, const Raster<T, m>& raster) const; // FIXME private?
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
    * @copydetails writeRegion()
    */
-  template <typename T, long n = 2>
-  void writeRegion(const Subraster<T, n>& subraster) const;
+  template <typename T, long n>
+  void writeRegion(const Subraster<T, n>& subraster) const; // FIXME private?
 
   /**
    * @brief Write a `Subraster` at a given position of the data unit.
    * @copydetails writeRegion()
    */
-  template <typename T, long n = 2>
-  void writeRegion(const Position<n>& frontPosition, const Subraster<T, n>& subraster) const;
+  template <typename T, long m, long n>
+  void writeRegion(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const;
 
   /// @}
 
