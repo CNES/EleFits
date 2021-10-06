@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(ctor_test) {
   BOOST_TEST(region.file().shape() == shape);
   BOOST_TEST(region.file().front == file);
   BOOST_TEST(region.memory().shape() == shape);
-  BOOST_TEST(region.memory().front == file);
+  BOOST_TEST(region.memory().front == Position<2>::zero());
 }
 
 BOOST_AUTO_TEST_CASE(shift_test) {

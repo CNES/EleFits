@@ -207,7 +207,7 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, m>& subraster, const
 
   /* Screening positions */
   const auto dstSize = shape[0];
-  const auto delta = subraster.region().front - dstRegion.front; // FIXME isn't it destination instead?
+  const auto delta = subraster.region().front - dstRegion.front; // FIXME destination?
 
   /* Process each line */
   int status = 0;

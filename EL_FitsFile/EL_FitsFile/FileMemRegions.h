@@ -79,6 +79,22 @@ public:
     return m_memory;
   }
 
+  bool resolve(const Position<n>& fileShape, const Position<n>& memoryShape) {
+    for (auto fit = m_file.back.begin(),
+              fitEnd = m_file.back.end(),
+              mit = m_memory.back.begin(),
+              fsit = fileShape.begin(),
+              msit = memoryShape.begin();
+         fit != fitEnd;
+         ++fit, ++mit, ++fsit, ++msit) {
+      if (*fit == -1) {
+        *fit += fsit;
+      } else if (*mit == -1) {
+        *mit += msit;
+      }
+    }
+  }
+
   /**
    * @brief Update the back position of the file region if needed.
    * @return `true` if the back position was `max()`; `false` otherwise.
