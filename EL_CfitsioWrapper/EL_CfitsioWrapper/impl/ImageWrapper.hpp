@@ -89,11 +89,7 @@ void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination) {
 
 template <typename T, long m, long n>
 FitsIO::VecRaster<T, m> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region) {
-  FitsIO::Position<m> shape; // FIXME shape = region.shape.slice<m>();
-  for (long i = 0; i < m; ++i) {
-    shape[i] = region.shape()[i];
-  }
-  FitsIO::VecRaster<T, m> raster(shape);
+  FitsIO::VecRaster<T, m> raster(region.shape().template slice<m>());
   readRegionTo(fptr, region, raster);
   return raster;
 }
@@ -195,19 +191,13 @@ template <typename T, long m, long n>
 void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, m>& subraster, const FitsIO::Position<n>& destination) {
 
   /* 1-based, flatten region (beginning of each line) */
-  FitsIO::Position<n> shape(destination.size()); // FIXME shape = subraster.shape().extend(destination)
-  for (long i = 0; i < subraster.shape().size(); ++i) {
-    shape[i] = subraster.shape()[i];
-  }
-  for (long i = subraster.shape().size(); i < destination.size(); ++i) {
-    shape[i] = destination[i];
-  }
+  const auto shape = subraster.shape().extend(destination);
   FitsIO::Region<n> dstRegion { destination + 1, destination + shape };
   dstRegion.back[0] = dstRegion.front[0];
 
   /* Screening positions */
   const auto dstSize = shape[0];
-  const auto delta = subraster.region().front - dstRegion.front; // FIXME destination?
+  const auto delta = subraster.region().front.extend(dstRegion.front) - dstRegion.front; // FIXME destination?
 
   /* Process each line */
   int status = 0;
@@ -219,7 +209,8 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, m>& subraster, const
     dstBack[0] += dstSize - 1;
     srcFront = dstFront + delta;
     line.assign(&subraster[srcFront], &subraster[srcFront] + dstSize);
-    fits_write_subset(fptr, TypeCode<T>::forImage(), dstFront.data(), dstBack.data(), line.data(), &status);
+    fits_write_pix(fptr, TypeCode<T>::forImage(), dstFront.data(), dstSize, line.data(), &status);
+    // fits_write_subset(fptr, TypeCode<T>::forImage(), dstFront.data(), dstBack.data(), line.data(), &status);
     CfitsioError::mayThrow(status, fptr, "Cannot write image region.");
   }
 }

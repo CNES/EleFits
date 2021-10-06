@@ -61,17 +61,17 @@ BOOST_AUTO_TEST_CASE(shift_test) {
 }
 
 BOOST_AUTO_TEST_CASE(max_test) {
-  const auto region = Region<2>::whole();
-  FileMemRegions<2> mapping(region);
+  const auto region = Region<3>::whole();
+  FileMemRegions<3> mapping(region);
   BOOST_TEST((mapping.file() == region));
-  BOOST_TEST(mapping.memory().front == Position<2>::zero());
-  BOOST_TEST(mapping.memory().back == Position<2>::zero());
-  const Position<2> newBack { 1, 2 };
-  mapping.setFileBackIfMax(newBack);
-  BOOST_TEST(mapping.file().front == Position<2>::zero());
-  BOOST_TEST(mapping.file().back == newBack);
-  BOOST_TEST(mapping.memory().front == Position<2>::zero());
-  BOOST_TEST(mapping.memory().back != Position<2>::zero());
+  BOOST_TEST(mapping.memory().front == Position<3>::zero());
+  BOOST_TEST(mapping.memory().back == Position<3>::zero());
+  const Position<3> fileBack { 2, 8, 5 };
+  mapping.resolve(fileBack, Position<3>::zero());
+  BOOST_TEST(mapping.file().front == Position<3>::zero());
+  BOOST_TEST(mapping.file().back == fileBack);
+  BOOST_TEST(mapping.memory().front == Position<3>::zero());
+  BOOST_TEST(mapping.memory().back != Position<3>::zero());
 }
 
 //-----------------------------------------------------------------------------

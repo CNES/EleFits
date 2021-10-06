@@ -64,11 +64,7 @@ void ImageRaster::readTo(Subraster<T, n>& subraster) const {
 
 template <typename T, long m, long n>
 VecRaster<T, m> ImageRaster::readRegion(const Region<n>& region) const {
-  Position<m> shape(m);
-  for (long i = 0; i < m; ++i) {
-    shape[i] = region.shape()[i]; // FIXME as Position::slice<m>();
-  }
-  VecRaster<T, m> raster(shape); // FIXME region.shape().slice<m>());
+  VecRaster<T, m> raster(region.shape().template slice<m>());
   readRegionTo(region.front, raster);
   return raster;
 }
@@ -88,8 +84,8 @@ void ImageRaster::readRegionTo(const Position<n>& frontPosition, Raster<T, m>& r
   m_touch();
   Cfitsio::ImageIo::readRegionTo(
       m_fptr,
-      Region<n>::fromShape(frontPosition, raster.shape),
-      raster); // FIXME use frontPosition in ImageIo
+      Region<n>::fromShape(frontPosition, raster.shape), // FIXME use frontPosition in ImageIo
+      raster);
 }
 
 template <typename T, long m, long n>
@@ -97,8 +93,8 @@ void ImageRaster::readRegionTo(const Position<n>& frontPosition, Subraster<T, m>
   m_touch();
   Cfitsio::ImageIo::readRegionTo(
       m_fptr,
-      Region<n>::fromShape(frontPosition, subraster.shape()),
-      subraster); // FIXME use frontPosition in ImageIo
+      Region<n>::fromShape(frontPosition, subraster.shape()), // FIXME use frontPosition in ImageIo
+      subraster);
   // FIXME move algo here, rely solely on readRegionTo(fitsfile, Position, Raster)
 }
 
@@ -110,21 +106,16 @@ void ImageRaster::write(const Raster<T, n>& raster) const {
 
 template <typename T, long m, long n>
 void ImageRaster::writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const {
-  const bool memBackWasMax = regions.setMemoryBackIfMax(raster.domain().back);
-  if (not memBackWasMax && regions.file().back.isMax()) {
-    const auto fileBack = regions.file().front + readShape<n>() - 1;
-    regions.setFileBackIfMax(fileBack);
-  }
+  regions.resolve(readShape<n>() - 1, raster.shape - 1);
   if (raster.isContiguous(regions.memory())) {
-    writeRegion(regions.file().front, raster.slice(regions.memory()));
+    writeSlice(regions.file().front, raster.slice(regions.memory()));
   } else {
-    writeRegion(regions.file().front, raster.subraster(regions.memory()));
+    writeSubraster(regions.file().front, raster.subraster(regions.memory()));
   }
 }
 
 template <typename T, long m, long n>
-void ImageRaster::writeRegion(const Position<n>& frontPosition, const Raster<T, m>& raster) const {
-  m_edit();
+void ImageRaster::writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const {
   Cfitsio::ImageIo::writeRegion(m_fptr, raster, frontPosition);
 }
 
@@ -134,10 +125,22 @@ void ImageRaster::writeRegion(const Subraster<T, n>& subraster) const {
 }
 
 template <typename T, long m, long n>
-void ImageRaster::writeRegion(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const {
+void ImageRaster::writeSubraster(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const {
   m_edit();
-  Cfitsio::ImageIo::writeRegion(m_fptr, subraster, frontPosition);
-  // FIXME move algo here, rely solely on writeRegion(fitsfile, Raster, Position)
+  int status = 0;
+  auto locus = Region<m>::fromShape(Position<m>::zero(), subraster.shape());
+  locus.back[0] = locus.front[0];
+  const auto nelem = subraster.shape()[0];
+  const auto delta = frontPosition.template slice<m>();
+  auto target = frontPosition;
+  for (const auto& source : locus) {
+    target = (source + delta).extend(frontPosition) + 1; // 1-based
+    const auto begin = &subraster[source];
+    const auto end = begin + nelem;
+    std::vector<std::decay_t<T>> nonconstData(begin, end);
+    fits_write_pix(m_fptr, Cfitsio::TypeCode<T>::forImage(), target.data(), nelem, nonconstData.data(), &status);
+    // FIXME to ImageWrapper
+  }
 }
 
 } // namespace FitsIO

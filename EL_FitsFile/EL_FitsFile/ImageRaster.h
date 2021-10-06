@@ -229,7 +229,7 @@ public:
    * @brief Write a `Raster` at a given position of the data unit.
    */
   template <typename T, long m, long n>
-  void writeRegion(const Position<n>& frontPosition, const Raster<T, m>& raster) const; // FIXME private?
+  void writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const; // FIXME private?
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
@@ -243,7 +243,7 @@ public:
    * @copydetails writeRegion()
    */
   template <typename T, long m, long n>
-  void writeRegion(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const;
+  void writeSubraster(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const;
 
   /// @}
 

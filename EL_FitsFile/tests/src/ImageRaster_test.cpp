@@ -81,7 +81,6 @@ void checkSlice3DIsReadBack() {
   for (long z = 0; z < slice3D.shape()[2]; ++z) {
     for (long y = 0; y < slice3D.shape()[1]; ++y) {
       for (long x = 0; x < slice3D.shape()[0]; ++x) {
-        printf("%i, %i, %i\n", x, y, z); // FIXME rm
         const auto o = output[{ x, y, z }];
         const auto i = input[{ x + slice3D.front[0], y + slice3D.front[1], z + slice3D.front[2] }];
         BOOST_TEST(o == i);
@@ -96,6 +95,13 @@ void checkSlice3DIsReadBack<char>() {} // CFitsIO bug
 template <>
 void checkSlice3DIsReadBack<std::uint64_t>() {} // CFitsIO bug
 
+#define SLICE_3D_IS_READ_BACK_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_slice_3d_is_read_back_test) { \
+    checkSlice3DIsReadBack<type>(); \
+  }
+
+EL_FITSIO_FOREACH_RASTER_TYPE(SLICE_3D_IS_READ_BACK_TEST)
+
 template <typename T>
 void checkSlice2DIsReadBack() {
   VecRaster<T, 3> input({ 5, 6, 7 });
@@ -103,7 +109,7 @@ void checkSlice2DIsReadBack() {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }
   const Region<3> slice2D { { 0, 2, 1 }, { 4, 5, 1 } };
-  const Position<2> shape { 5, 3 }; // FIXME slice2D.shape().slice<2>()
+  const Position<2> shape = slice2D.shape().slice<2>();
   Test::TemporarySifFile f;
   const auto& du = f.raster();
   du.reinit<T>(shape);
@@ -138,7 +144,7 @@ void checkSubraster2DIsReadBack() {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }
   const Region<3> region2D { { 1, 2, 1 }, { 3, 5, 1 } };
-  const Position<2> shape { 3, 3 }; // FIXME region2D.shape().slice<2>()
+  const Position<2> shape = region2D.shape().slice<2>();
   Test::TemporarySifFile f;
   const auto& du = f.raster();
   du.reinit<T>(shape);
@@ -164,8 +170,7 @@ void checkSubraster2DIsReadBack<std::uint64_t>() {} // CFitsIO bug
     checkSubraster2DIsReadBack<type>(); \
   }
 
-SUBRASTER_2D_IS_READ_BACK_TEST(short, short)
-// EL_FITSIO_FOREACH_RASTER_TYPE(SUBRASTER_2D_IS_READ_BACK_TEST)
+EL_FITSIO_FOREACH_RASTER_TYPE(SUBRASTER_2D_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
   const Position<2> shape { 7, 2 };

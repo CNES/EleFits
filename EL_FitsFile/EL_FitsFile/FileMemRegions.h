@@ -31,10 +31,7 @@ namespace FitsIO {
  * for reading and writing data unit regions.
  * @warning
  * In-file and in-memory regions have the same shape.
- * Yet, if the back position of an input region is `Position::max()`,
- * then the other back position is conventionally set to `Position::zero()`.
- * This case has to be handled by users.
- * Both back positions cannot be `Position::max()` at the same time.
+ * Both back positions cannot be -1 at the same index at the same time.
  */
 template <long n = 2>
 class FileMemRegions {
@@ -79,52 +76,25 @@ public:
     return m_memory;
   }
 
-  bool resolve(const Position<n>& fileShape, const Position<n>& memoryShape) {
+  void resolve(const Position<n>& fileBack, const Position<n>& memoryBack) { // FIXME back or shape?
+    const auto ftom = fileToMemory();
     for (auto fit = m_file.back.begin(),
               fitEnd = m_file.back.end(),
               mit = m_memory.back.begin(),
-              fsit = fileShape.begin(),
-              msit = memoryShape.begin();
+              fbit = fileBack.begin(),
+              mbit = memoryBack.begin(),
+              ftomit = ftom.begin();
          fit != fitEnd;
-         ++fit, ++mit, ++fsit, ++msit) {
+         ++fit, ++mit, ++fbit, ++mbit, ++ftomit) {
+      // TODO check that fit and mit are not -1 at the same time? In Ctor?
       if (*fit == -1) {
-        *fit += fsit;
+        *fit = *fbit;
+        *mit = *fit + *ftomit;
       } else if (*mit == -1) {
-        *mit += msit;
+        *mit = *mbit;
+        *fit = *mit - *ftomit;
       }
     }
-  }
-
-  /**
-   * @brief Update the back position of the file region if needed.
-   * @return `true` if the back position was `max()`; `false` otherwise.
-   * @details
-   * The memory region is updated accordingly.
-   * If the back position was not `max()`, nothing is done.
-   */
-  bool setFileBackIfMax(const Position<n>& back) {
-    if (not m_file.back.isMax()) {
-      return false;
-    }
-    m_file.back = back;
-    m_memory.back = back + fileToMemory();
-    return true;
-  }
-
-  /**
-   * @brief Update the back position of the memory region if needed.
-   * @return `true` if the back position was `max()`; `false` otherwise.
-   * @details
-   * The file region is updated accordingly.
-   * If the back position was not `max()`, nothing is done.
-   */
-  bool setMemoryBackIfMax(const Position<n>& back) {
-    if (not m_memory.back.isMax()) {
-      return false;
-    }
-    m_memory.back = back;
-    m_file.back = back + memoryToFile();
-    return true;
   }
 
   /**

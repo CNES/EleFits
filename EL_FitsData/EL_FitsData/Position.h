@@ -92,7 +92,7 @@ struct Position {
   static Position<n> max() {
     Position<n> res; // FIXME valid for n = -1?
     for (auto& i : res) {
-      res[i] = -1;
+      i = -1;
     }
     return res;
   }
@@ -172,6 +172,37 @@ struct Position {
    */
   ConstIterator end() const {
     return indices.end();
+  }
+
+  /**
+   * @brief Create a position of lower dimension.
+   * @tparam m The new dimension; cannot be -1
+   * @details
+   * The indices up to dimension `m` are copied.
+   */
+  template <long m>
+  Position<m> slice() const {
+    Position<m> res; // TODO one-line with iterator?
+    for (long i = 0; i < m; ++i) {
+      res[i] = indices[i];
+    }
+    return res;
+  }
+
+  /**
+   * @brief Create a position of higher dimension.
+   * @tparam m The new dimension; cannot be -1
+   * @details
+   * The indices up to dimension `n` are copied.
+   * Those between dimensions `n` and `m` are taken from the given position.
+   */
+  template <long m>
+  Position<m> extend(const Position<m>& padding) const {
+    auto res = padding;
+    for (long i = 0; i < size(); ++i) { // TODO std::transform
+      res[i] = indices[i];
+    }
+    return res;
   }
 
   /**
