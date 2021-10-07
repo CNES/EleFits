@@ -183,6 +183,37 @@ BOOST_AUTO_TEST_CASE(slicing_test) {
   BOOST_CHECK_THROW(raster.slice<3>(bad), FitsIOError);
 }
 
+BOOST_AUTO_TEST_CASE(sectionning_test) {
+
+  const Test::RandomRaster<short, 3> raster3D({ 8, 9, 12 });
+
+  // 3D
+  const auto section3D = raster3D.section(3, 5);
+  BOOST_TEST((section3D.shape == Position<3> { 8, 9, 3 }));
+  for (const auto p : section3D.domain()) {
+    BOOST_TEST((section3D[p] == raster3D[p + Position<3> { 0, 0, 3 }]));
+  }
+
+  // 2D
+  const auto section2D = raster3D.section(3);
+  BOOST_TEST(section2D.shape == Position<2>({ 8, 9 }));
+  for (const auto p : section2D.domain()) {
+    BOOST_TEST((section2D[p] == raster3D[p.extend<3>({ 0, 0, 3 })]));
+  }
+
+  // 1D
+  const auto section1D = section2D.section(6);
+  BOOST_TEST(section1D.shape == Position<1> { 8 });
+  for (const auto p : section1D.domain()) {
+    BOOST_TEST((section1D[p] == raster3D[p.extend<3>({ 0, 6, 3 })]));
+  }
+
+  // 0D
+  const auto section0D = section1D.section(2);
+  BOOST_TEST(section0D.dimension() == 0);
+  BOOST_TEST((*section0D.data() == raster3D[{ 2, 6, 3 }]));
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -180,18 +180,17 @@ public:
   void readRegionTo(FileMemRegions<n> regions, Raster<T, m>& raster) const;
 
   /**
-   * @brief Read a region of the data unit into an existing `Raster`.
-   * @copydetails readRegion()
-   */
-  template <typename T, long m, long n>
-  void readRegionTo(const Position<n>& frontPosition, Raster<T, m>& raster) const; // FIXME private?
-
-  /**
    * @brief Read a region of the data unit into an existing `Subraster`.
-   * @copydetails readRegion()
+   * @details
+   * The region is that of the subraster.
+   * This function is equivalent to:
+   * \code
+   * readRegionTo({region, region}, raster);
+   * \endcode
+   * where `region` would be the subraster region, and `raster` the subraster parent.
    */
-  template <typename T, long m, long n>
-  void readRegionTo(const Position<n>& frontPosition, Subraster<T, m>& subraster) const; // FIXME private?
+  template <typename T, long n>
+  void readRegionTo(Subraster<T, n>& subraster) const;
 
   /// @}
   /**
@@ -213,34 +212,68 @@ public:
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.
-   * @param regions The in-memory and in-file regions
-   * @param frontPosition The front position of the HDU region to be written
+   * @param regions The in-file and in-memory regions
    * @param raster The raster to be written
-   * @param subraster The subraster to be written
    * @details
-   * A raster or subraster can be written as a region of the data unit.
-   * The given position is the front of the destination region.
-   * The back of the destination region is deduced from its front and the raster or subraster shape.
+   * In-file and in-memory (raster) regions are specified as the first parameter.
+   * Max bounds (-1) can be used in one, several, or all axes.
+   * Shortcuts offered by `FileMemRegions` and `Region` can be used to implement special cases:
+   * \code
+   * // Write the whole raster at position (10, 20, 30)
+   * du.writeRegion<3>({ 10, 20, 30 }, raster);
+   * 
+   * // Write the whole HDU with a region of the raster starting at (10, 20, 30)
+   * du.writeRegion<3>({ Region<3>::whole(), { 10, 20, 30 } }, raster);
+   * \endcode
+   * 
+   * Note that the raster dimension can be lower than the HDU dimension.
+   * For example, it is possible to write a 2D raster in a 3D HDU.
+   * \code
+   * // Write the 3rd plane of raster into the 5th plane of the HDU
+   * du.writeRegion<3>({ { 0, 0, 4 } }, raster.section(2));
+   * \endcode
+   * 
+   * In addition, `writeSubraster()` allows writing the in-file region corresponding to the subraster:
+   * \code
+   * du.writeSubraster(raster.subraster(region));
+   * 
+   * // Is equivalent to:
+   * du.writeSubraster({ region, region }, raster);
+   * \endcode
    */
   template <typename T, long m, long n>
-  void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const;
-
-  /**
-   * @brief Write a `Raster` at a given position of the data unit.
-   */
-  template <typename T, long m, long n>
-  void writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const; // FIXME private?
+  void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const; // FIXME return bool = isContiguous()?
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
    * @copydetails writeRegion()
    */
   template <typename T, long n>
-  void writeRegion(const Subraster<T, n>& subraster) const; // FIXME private?
+  void writeRegion(const Subraster<T, n>& subraster) const;
+
+private:
+  /**
+   * @brief Read a region of the data unit into an existing `Raster`.
+   * @copydetails readRegion()
+   */
+  template <typename T, long m, long n>
+  void readRegionToSlice(const Position<n>& frontPosition, Raster<T, m>& raster) const; // FIXME private?
+
+  /**
+   * @brief Read a region of the data unit into an existing `Subraster`.
+   * @copydetails readRegion()
+   */
+  template <typename T, long m, long n>
+  void readRegionToSubraster(const Position<n>& frontPosition, Subraster<T, m>& subraster) const; // FIXME private?
+
+  /**
+   * @brief Write a `Raster` at a given position of the data unit.
+   */
+  template <typename T, long m, long n>
+  void writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const;
 
   /**
    * @brief Write a `Subraster` at a given position of the data unit.
-   * @copydetails writeRegion()
    */
   template <typename T, long m, long n>
   void writeSubraster(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const;

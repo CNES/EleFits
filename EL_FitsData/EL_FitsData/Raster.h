@@ -93,6 +93,22 @@ class PtrRaster;
  * VecRaster<const float> cVecRaster(shape, std::move(cVec));
  * \endcode
  * 
+ * The raster data can be viewed region-wise through methods
+ * `subraster()`, `slice()` or `section()` depending on the region characteristics.
+ * - A subraster is defined as a region and a parent raster.
+ *   Its values are generally not contiguous in memory.
+ * - In contrast, a slice is a contiguous set of values.
+ *   It is represented as a `PtrRaster`.
+ * - Finally, a section is a specific case of slice:
+ *   its domain is exactly that of the raster, except along the last dimension.
+ *   Possibly, the dimension along the last axis is 1,
+ *   which means the section dimension is actually smaller than that of the raster.
+ * 
+ * For example, given a raster of shape (8, 4):
+ * - region (1, 1) to (4, 2) yields a subraster,
+ * - region (1, 1) to (4, 1) yields a slice,
+ * - region (0, 1) to (7, 1) yields a section.
+ * 
  * @note
  * Why "raster" and not simply image or array?
  * Mostly for disambiguation purpose:
@@ -252,13 +268,18 @@ public:
 
   /// @}
   /**
-   * @brief Views.
+   * @name Views.
    */
   /// @{
 
   /**
    * @brief Create a subraster from given region.
+   * @details
+   * A subraster is a view of the raster data contained in a region.
+   * As opposed to a slice or a section, a subraster is not necessarily contiguous in memory.
+   * @see isContiguous()
    * @see slice()
+   * @see section()
    */
   const Subraster<T, n> subraster(const Region<n>& region) const;
 
@@ -273,8 +294,9 @@ public:
    * @details
    * As opposed to a subraster, a slice is contiguous in memory.
    * Therefore, the region must validate `isContiguous()`.
-   * For example, in a 3D raster, any plane orthogonal to the last axis is a slice.
    * @see isContiguous()
+   * @see subraster()
+   * @see section()
    */
   template <long m = 2>
   const PtrRaster<const T, m> slice(const Region<n>& region) const;
@@ -284,6 +306,43 @@ public:
    */
   template <long m = 2>
   PtrRaster<T, m> slice(const Region<n>& region);
+
+  /**
+   * @brief Create a section at given index.
+   * @param front The section front index along the last axis
+   * @param back The section back index along the last axis
+   * @param index The section index along the last axis
+   * @details
+   * A section is a maximal slice of dimension `n` or `n`-1.
+   * For example, a 3D section of a 3D raster of shape (x, y, z)
+   * is a 3D raster of shape (x, y, t) where `t` < `z`,
+   * while a 2D section of it is a 2D raster of shape (x, y).
+   * 
+   * If needed, `section()` can be applied recursively,
+   * e.g. to get the x-line at `z` = 4 and `y` = 2:
+   * \code
+   * auto line = raster.section(4).section(2);
+   * \endcode
+   * 
+   * @see subraster()
+   * @see slice()
+   */
+  const PtrRaster<const T, n> section(long front, long back) const;
+
+  /**
+   * @copydoc section()
+   */
+  PtrRaster<T, n> section(long front, long back);
+
+  /**
+   * @copydoc section()
+   */
+  const PtrRaster<const T, n == -1 ? -1 : n - 1> section(long index) const;
+
+  /**
+   * @copydoc section()
+   */
+  PtrRaster<T, n == -1 ? -1 : n - 1> section(long index);
 
   /**
    * @brief Check whether a region is made of contiguous values in memory.

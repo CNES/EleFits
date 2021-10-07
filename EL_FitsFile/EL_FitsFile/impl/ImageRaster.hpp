@@ -73,14 +73,19 @@ template <typename T, long m, long n>
 void ImageRaster::readRegionTo(FileMemRegions<n> regions, Raster<T, m>& raster) const {
   const auto& memRegion = regions.inMemory();
   if (raster.isContiguous(memRegion)) {
-    readRegionTo(regions.inFile().front, raster.slice(memRegion));
+    readRegionToSlice(regions.inFile().front, raster.slice(memRegion));
   } else {
-    readRegionTo(regions.inFile().front, raster.subraster(memRegion));
+    readRegionToSubraster(regions.inFile().front, raster.subraster(memRegion));
   }
 }
 
+template <typename T, long n>
+void ImageRaster::readRegionTo(Subraster<T, n>& subraster) const {
+  readRegionToSubraster(subraster.region().front, subraster);
+}
+
 template <typename T, long m, long n>
-void ImageRaster::readRegionTo(const Position<n>& frontPosition, Raster<T, m>& raster) const {
+void ImageRaster::readRegionToSlice(const Position<n>& frontPosition, Raster<T, m>& raster) const {
   m_touch();
   Cfitsio::ImageIo::readRegionTo(
       m_fptr,
@@ -89,7 +94,7 @@ void ImageRaster::readRegionTo(const Position<n>& frontPosition, Raster<T, m>& r
 }
 
 template <typename T, long m, long n>
-void ImageRaster::readRegionTo(const Position<n>& frontPosition, Subraster<T, m>& subraster) const {
+void ImageRaster::readRegionToSubraster(const Position<n>& frontPosition, Subraster<T, m>& subraster) const {
   m_touch();
   Cfitsio::ImageIo::readRegionTo(
       m_fptr,
@@ -114,14 +119,14 @@ void ImageRaster::writeRegion(FileMemRegions<n> regions, const Raster<T, m>& ras
   }
 }
 
-template <typename T, long m, long n>
-void ImageRaster::writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const {
-  Cfitsio::ImageIo::writeRegion(m_fptr, raster, frontPosition);
-}
-
 template <typename T, long n>
 void ImageRaster::writeRegion(const Subraster<T, n>& subraster) const {
   writeRegion(subraster.region().front, subraster);
+}
+
+template <typename T, long m, long n>
+void ImageRaster::writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const {
+  Cfitsio::ImageIo::writeRegion(m_fptr, raster, frontPosition);
 }
 
 template <typename T, long m, long n>

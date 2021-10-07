@@ -168,6 +168,7 @@ const Subraster<T, n> Raster<T, n>::subraster(const Region<n>& region) const {
 template <typename T, long n>
 template <long m>
 const PtrRaster<const T, m> Raster<T, n>::slice(const Region<n>& region) const {
+  // FIXME resolve
   if (not isContiguous<m>(region)) {
     throw FitsIOError("Cannot slice: Region is not contiguous."); // FIXME clarify
   }
@@ -194,6 +195,44 @@ PtrRaster<T, m> Raster<T, n>::slice(const Region<n>& region) {
   }
   // FIXME duplication
   return { reduced, &operator[](region.front) };
+}
+
+template <typename T, long n>
+const PtrRaster<const T, n> Raster<T, n>::section(long front, long back) const {
+  auto region = domain();
+  const auto last = dimension() - 1;
+  region.front[last] = front;
+  region.back[last] = back;
+  return slice<n>(region);
+}
+
+template <typename T, long n>
+PtrRaster<T, n> Raster<T, n>::section(long front, long back) {
+  auto region = domain();
+  const auto last = dimension() - 1;
+  region.front[last] = front;
+  region.back[last] = back;
+  return slice<n>(region);
+}
+
+template <typename T, long n>
+const PtrRaster<const T, n == -1 ? -1 : n - 1> Raster<T, n>::section(long index) const {
+  auto region = domain();
+  const auto last = dimension() - 1;
+  region.front[last] = index;
+  region.back[last] = index;
+  return slice < n == -1 ? -1 : n - 1 > (region); // FIXME case -1
+  // FIXME duplication => return section(index, index).slice<n-1>(Region<n>::whole());
+}
+
+template <typename T, long n>
+PtrRaster<T, n == -1 ? -1 : n - 1> Raster<T, n>::section(long index) {
+  auto region = domain();
+  const auto last = dimension() - 1;
+  region.front[last] = index;
+  region.back[last] = index;
+  return slice < n == -1 ? -1 : n - 1 > (region); // FIXME case -1
+  // FIXME duplication
 }
 
 template <typename T, long n>
@@ -273,13 +312,13 @@ std::vector<std::decay_t<T>>& VecRaster<T, n>::moveTo(std::vector<std::decay_t<T
   #ifndef DECLARE_RASTER_CLASSES
     #define DECLARE_RASTER_CLASSES(type, unused) \
       extern template class Raster<type, -1>; \
-      extern template class VecRefRaster<type, -1>; \
+      extern template class PtrRaster<type, -1>; \
       extern template class VecRaster<type, -1>; \
       extern template class Raster<type, 2>; \
-      extern template class VecRefRaster<type, 2>; \
+      extern template class PtrRaster<type, 2>; \
       extern template class VecRaster<type, 2>; \
       extern template class Raster<type, 3>; \
-      extern template class VecRefRaster<type, 3>; \
+      extern template class PtrRaster<type, 3>; \
       extern template class VecRaster<type, 3>;
 EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
     #undef DECLARE_COLUMN_CLASSES
