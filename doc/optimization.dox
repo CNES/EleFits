@@ -9,8 +9,8 @@ namespace FitsIO {
 \section optim-intro Foreword
 
 
-The implementation focuses firstly on memory management, and secondly on performance.
-Much of its complexity is imputable to performance, like the heavy use of tuples which are not that fun to manipulates.
+The implementation of EL_FitsIO focuses firstly on memory management, secondly on user-friendlyness and finally on performance.
+Much of its complexity is imputable to performance choices, like the heavy use of tuples which are not that fun to manipulates.
 On user side, few operations would be very detrimental to performance.
 Yet, a few would be, and there are thus a few things to know if one wants to get the most out of EL_FitsIO.
 Although it's not possible to statically sort the following items w.r.t. performance gain,
@@ -71,7 +71,7 @@ to follow the HDU ordering, and to group operations in the header and then in th
 For example, read all the records you need to read from an HDU at once,
 or write all the columns you need to write in a table at once.
 
-Ultimate optimization when creating an HDU, is to complete the header unit first before writing the data unit:
+Ultimate optimization when creating an HDU is to complete the header unit first before writing the data unit:
 
 - Rely on the initialization services (as opposed to the assignment services);
 - Write all of the additional records;
@@ -82,14 +82,15 @@ Ultimate optimization when creating an HDU, is to complete the header unit first
 const auto &ext = f.initImageHdu<float, 3>(name);
 
 // Write user records
-ext.writeRecords(record1, record2, record3);
+ext.header().writeSeq(record1, record2, record3);
 
 // Write data unit
-ext.writeRaster(raster);
+ext.raster().write(data);
 \endcode
 
-For very large files, following the file ordering (HDU sequence and record sequence in the HDUs) can also make a difference.
+For very large files, following the in-file HDU ordering can also make a difference.
 
+\see primer
 \see iterators
 
 
@@ -131,27 +132,27 @@ to avoid passing through the data unit several times.
 \code
 // Good :)
 const auto &ext = f.access<BintableHdu>(index);
-const auto columns = ext.readColumns(
+const auto columns = ext.columns().readSeq(
     Named<std::string>("A"),
     Named<float>("B"),
     Named<std::int16_t>("C")); // Reads the whole data unit once
 
 // Bad :(
 const auto &ext = f.access<BintableHdu>(index);
-const auto columnA = ext.readColumn<std::string>("A"); // Reads the whole data unit
-const auto columnB = ext.readColumn<float>("B"); // Reads the whole data unit again!
-const auto columnC = ext.readColumn<std::int16_t>("C"); // Reads the whole data unit again and again...
+const auto columnA = ext.columns().read<std::string>("A"); // Reads the whole data unit
+const auto columnB = ext.columns().read<float>("B"); // Reads the whole data unit again!
+const auto columnC = ext.columns().read<std::int16_t>("C"); // Reads the whole data unit again and again...
 \endcode
 
 The strategy holds for record IOs too, yet with smaller improvements to be expected.
 
 \code
 // Good :)
-auto records = hdu.parseRecords<int, float>({ "INT", "FLOAT" });
+auto records = hdu.header().parse(Named<int>("INT"), Named<float>("FLOAT"));
 
 // Bad :(
-auto record1 = hdu.parseRecord<int>("INT");
-auto record2 = hdu.parseRecord<float>("FLOAT");
+auto record1 = hdu.header().parse<int>("INT");
+auto record2 = hdu.header().parse<float>("FLOAT");
 \endcode
 
 

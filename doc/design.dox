@@ -1,4 +1,5 @@
 namespace Euclid {
+namespace FitsIO {
 
 /**
 
@@ -34,38 +35,38 @@ which consists in C++ wrapper functions of selected CFitsIO functions, not inten
 
 The API is organized in namespaces as follows:
 
-- Euclid is the top level namespace, which contains everything;
-- Cfitsio corresponds to the low-level layer module:
-  - It is organized in thematic namespaces like Cfitsio::FileAccess or Cfitsio::ImageIo;
-- FitsIO is the end-user namespace:
+- `Euclid` is the top level namespace, which contains everything;
+- `Cfitsio` corresponds to the low-level layer module:
+  - It is organized in thematic namespaces like `Cfitsio::FileAccess` or `Cfitsio::ImageIo`;
+- `FitsIO` is the end-user namespace:
   - Data classes and service classes are implemented in it,
-  - FitsIO::Test contains test helper classes and functions like fixtures;
-- Whatever the level, Internal namespaces contain implementation details, not displayed to the end-user.
+  - `FitsIO::Test` contains test helper classes and functions like fixtures;
+- Whatever the level, `Internal` namespaces contain implementation details, not displayed to the end-user.
 
 \subsection design-modules Modules
 
 This translates into the following set of modules:
 
-- **EL_FitsData** contains basic **data-storage structures**:
+- `EL_FitsData` contains basic **data-storage structures**:
 Records, binary table columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
 See \ref data_classes for more details on their API and usage.
-- **EL_CfitsioWrapper** is the low-level layer:
+- `EL_CfitsioWrapper` is the low-level layer:
 The set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
 ease type handling through templates, and throw exceptions instead of returning error codes;
-Yet, this API is **not meant for end-users**: it exposes the fitsfile* type and is still a bit verbose and cumbersome.
-- **EL_FitsFile** exposes the end-user API:
+Yet, this API is **not meant for end-users**: it exposes the `fitsfile*` type and is still a bit verbose and cumbersome.
+- `EL_FitsFile` exposes the end-user API:
 It provides set of **read-write services** in dedicated classes;
 See \ref handlers for more details.
-- **EL_FitsIO_Examples** provides **examples**!
-Among others, the module compares CFitsIO, EL_CfitsioWrapper and EL_FitsFile implementations of the same program (see \ref apis_comp),
+- `EL_FitsIO_Examples` provides **examples**!
+Among others, the module compares CFitsIO, `EL_CfitsioWrapper` and `EL_FitsFile` implementations of the same program,
 which demonstrates the reading and writing of records, images and binary tables with the three APIs;
 Of course, this is also where the tutorial is implemented.
-- **EL_FitsIO_Validation** contains **validation executables**:
+- `EL_FitsIO_Validation` contains **validation executables**:
   - Generator programs allow creating dummy Fits files from scratch;
   - The performances of EL_FitsIO are compared to those of CFitsIO;
   - A validation script checks that all of the provided programs run smoothly.
 
-Satellite classes, like exceptions, which are useful to both EL_CfitsioWrapper and EL_FitsFile are implemented in EL_FitsData.
+Auxiliary classes, like exceptions, which are useful to both `EL_CfitsioWrapper` and `EL_FitsFile` are implemented in `EL_FitsData`.
 
 The general organization of the free functions, data classes and service classes in modules is illustrated below in the form of a class diagram.
 
@@ -75,11 +76,11 @@ The general organization of the free functions, data classes and service classes
 
 Inside each module, the source files are organized as follows:
 
-- The declarations are in files with .h extension in a folder named after the module;
-- The nline (inc. template) definitions are in files with .hpp extension in a subfolder impl of the header folder;
-- The other library definitions are in files with .cpp extension in the folder src/lib;
-- Tests are implemented in files with _test suffix and .cpp extension;
-- The programs are implemented in .cpp files in the folder src/program.
+- The declarations are in files with `.h` extension in a folder named after the module;
+- The inline (inc. template) definitions are in files with `.hpp` extension in a subfolder `impl` of the header folder;
+- The other library definitions are in files with `.cpp` extension in the folder `src/lib`;
+- Tests are implemented in the folder `tests/src`, in files with `_test` suffix and `.cpp` extension;
+- The programs are implemented in `.cpp` files in the folder `src/program`.
 
 \section design-types Type codes
 
@@ -96,14 +97,14 @@ half of them work with built-in types (e.g. CFitsIO type code `TSHORT` correspon
 and the other half with fixed types (e.g. CFitsIO type code `SHORT_IMG` corresponds to `std::int16_t`).
 Check the \ref type_map for more details.
 This makes the user responsible of knowing the underlying architecture,
-or to spend runtime in converting at each value reading and writing operation.
+or to spend runtime in conversions at each reading and writing operation.
 
 \subsection design-types-codes Type code handling
 
 One of the main purposes of EL_FitsIO is to abstract from type codes, and to provide homogeneous template functions.
 This is implemented as type traits in class `Cfitsio::TypeCode`, which provides one method per column of the \ref type_map.
 Template specialization are made with built-in types or fixed types depending on what the CFitsIO functions expect.
-For example, `TSHORT` is Cfitsio::TypeCode<short>::forImage() and `SHORT_IMG` is Cfitsio::TypeCode<std::int16_t>::bitpix().
+For example, `TSHORT` is `Cfitsio::TypeCode<short>::forImage()` and `SHORT_IMG` is `Cfitsio::TypeCode<std::int16_t>::bitpix()`.
 
 \note
 Internally, CFitsIO does the opposite when working with built-in types:
@@ -113,15 +114,21 @@ and avoid casting fixed types to built-ins and back.
 Yet, the runtime benefit is expected to be minimal for such a costly development effort
 (see benchmark results).
 
-\subsection design-types-string Specific types: `std::string`
+\subsection design-types-string Specific types: strings
 
 As stated above, strings are represented with `std::string`, while CFitsIO is using `const char *` or even `char *`.
 Most of the template functions are therefore specialized for `std::string`.
+It is thus required to specialize reading and writing methods for strings.
 Moreover, strings are treated very differently from other types in binary table columns:
 they are considered by CFitsIO like scalar columns with a repeat count greater than one.
-Therefore, FitsIO::Column methods are also specialized.
+Therefore, `FitsIO::Column` methods are also specialized.
 
-\subsection design-types-any Specific types: `VariantValue`
+One classical transform needed to interface with CFitsIO is to convert a sequence of strings (e.g. a `std::vector<std::string>`) into a `char **`.
+This must be done carefully to keep the memory clean.
+A class dedicated to the transform is implemented: `CStrArray`,
+which can be built from a sequence of strings and has a getter which returns a `char **`.
+
+\subsection design-types-any Specific types: variant values
 
 Another specific type is `VariantValue`, which is an alias for `boost::any` as of today (see note below).
 It was added to the library to handle large sets of heterogeneous records.
@@ -134,6 +141,7 @@ This cast is more complex than a mere `boost::any_cast` because the size of an i
 For example, 666 is read as a `short`, while 1,000,000 is read as an `int` or `long`.
 Since there is no way for the user to know the value and therefore the deduced type of a record,
 the casting service should allow to request an `int` when a `short` was read.
+Method `Record::cast()` is in charge of handling the various cases.
 
 \note
 A welcome improvement would be to switch from `boost::any` to `boost::variant` or `std::variant` (C++17).
@@ -145,39 +153,43 @@ This is the role of FitsIO::Record::cast.
 Reading and writing collections of heterogeneous objects, like columns of different types, requires using variadic templates
 (or abstraction classes like `VariantValue` which cost too much for thousands of values).
 
-\todo
-Variatic template design patterns:
+Variatic template design patterns to be documented:
 - recursive implementation
 - partial specialization
 - return parameters
 - packs vs. tuples
+- TSeq vs. variadic
+- use of forward and forward_as_tuple
+- seqForeach() and seqTransform()
 
 \section design-data_classes Data classes
 
-Data classes are one of Record, Raster, Column and their children or helpers (e.g. ColumnInfo).
+Data classes are `Record`, `Raster`, `Column` and their child or helper classes (e.g. `ColumnInfo`).
 
-To give as much freedom as possible to the user, Raster and Column are interfaces with as few requirements as possible.
-Implementations are provided to allow users working with them without writing themeselves child classes, although this is a possibility.
-Raster and Column come with three flavors:
-- PtrRaster and PtrColumn do not own the raw data array: they just now a pointer to it;
-- VecRefRaster and VecRefColumn work with `std::vector`s which they reference but do not own;
-- VecRaster and VecColumn own the data: such objects are returned by read services.
+To give as much freedom as possible to the user, `Raster` and `Column` are interfaces with as few requirements as possible.
+Implementations are provided to allow users working without writing their own implementations, although this is a possibility.
+`Raster` and `Column` are implemented as analogously as possible.
+Theycome with two flavors:
+- `PtrRaster` and `PtrColumn` do not own the raw data array: they just now a pointer to it;
+- `VecRaster` and `VecColumn` own the data: such objects are returned by read services.
 
 \section design-handlers File handlers
 
-\todo
-File operations
+File operations to be documented.
+
+Vector of HDUs to be documented.
 
 Nested classes are generally avoided, in order to simplify name resolution.
-Friend classes are preferred.
+The passkey idiom is preferred, to make constructors private.
 
 \section design-hdu-handlers HDU handlers
 
-\todo
-Handling of HDUs through vector of pointers
-HDU factory, inc. passkey idiom
-Access through const references
+To be documented:
+- Handling of HDUs through vector of pointers
+- HDU factory, inc. passkey idiom
+- Access through const references
 
 */
 
+}
 }

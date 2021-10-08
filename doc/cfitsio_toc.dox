@@ -7,7 +7,7 @@ namespace FitsIO {
 
 - Introduction: \ref index
 - Creating the EL_FitsIO package: \ref install_guide
-- A Fits primer: see the CFitsIO documentation ;)
+- A Fits primer: \ref primer
 - Programming guidelines
   - Definitions: *not relevant*
   - Current Header Data Unit (CHDU): *not relevant*
@@ -17,28 +17,28 @@ namespace FitsIO {
   - Implicit data type conversion: \ref types
   - Data scaling: \ref types
   - Support for IEEE special values: same as CFitsIO
-  - Error status values and the error message stack: *not relevant*
+  - Error status values and the error message stack: \ref exceptions
   - Variable-length arrays in binary tables: *not supported*
   - Multiple access to the same Fits file: same as CFitsIO
   - When the final size of the Fits HDU is unknown: *not relevant*
   - Size limitations: same as CFitsIO 
 - Basic and specialized services
-  - Exceptions: FitsIOError
-  - Fits file access: SifFile, MefFile
-  - HDU access and creation: MefFile
-  - Header keyword records read/write: Record, Hdu
-  - Primary array or image extension: Raster, ImageHdu
+  - Exceptions: \ref exceptions
+  - Fits file access: \ref file_handlers
+  - HDU access and creation: \ref file_handlers
+  - Header keyword records read/write: \ref header_handlers
+  - Primary array or image extension: \ref image_handlers
   - Image Compression: *not supported*
   - ASCII table extension: *not supported*
-  - Binary table extension: Column, BintableHdu
+  - Binary table extension: \ref bintable_handlers
 - The iterator function: *not supported*
-- World Coordinates System: *not supported*
+- World Coordinates System (deprecated): *not supported*
 - Hierarchical grouping: *not supported*
 - Extended file name syntax: *not supported*
 - Template Files: *not supported*
 - Local FITS Conventions
   - 64-bit long integers: *not relevant*
-  - Long string keyword record values: Hdu
+  - Long string keyword record values: Record
   - Arrays of fixed-length strings in binary tables: Column
   - Keyword record units strings: Record
   - HIERARCH convention for extended keyword record names: Record

@@ -5,7 +5,7 @@
 Legend:
 
 - Items in **bold** are available in the end-user API (Euclid::FitsIO namespace);
-- Items in *italic* are available in the internal API only (Euclid::Cfitsio namespace);
+- Items in *italic* are being implemented;
 - Other items are not available, they might be implemented on user requests.
 
 \section cfitsio-basic Basic CFitsIO Interface Routines 
@@ -64,7 +64,7 @@ Legend:
   - **Find the first column which matches a name template**
   - Read column type
   - **Read column dimension (vector columns)**
-  - Insert rows
+  - **Insert rows**
   - Delete rows
   - **Insert columns**
   - Delete columns
@@ -99,8 +99,9 @@ Partly supported: to be documented.
 
 - Const-correctness
 - Consistent type management (not mixing C types and Fits types)
+- Read/write non-contiguous in-memory image regions
 - Read/write several columns at once (with optimal usage of CFitsIO buffer: boosts I/Os)
-- Count the total number of HDUs (CFitsIO counting excludes empty or incomplete HDUs at write time)
-- Iterate over selected HDUs
+- Count the total number of HDUs (CFitsIO counting excludes empty or incomplete HDUs)
+- Filter and iterate over selected HDUs
 
 */

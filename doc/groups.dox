@@ -20,11 +20,11 @@
 
 \defgroup image_handlers Image data unit handlers
 \ingroup handlers
-\brief Read and write image data units.
+\brief Read and write image HDUs.
 
 \defgroup bintable_handlers Binary table data unit handlers
 \ingroup handlers
-\brief Read and write binary table data units.
+\brief Read and write binary table HDUs.
 
 \defgroup data_classes Data classes
 \brief Classes to represent the data stored in a Fits file.

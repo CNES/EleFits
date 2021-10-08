@@ -46,7 +46,7 @@ A comment can be appended, separated with a slash (`/`):
 KEYWORD = VALUE / comment
 \endverbatim
 
-A unit can also be inserted, between square brackets:
+A unit can be inserted inside the comment, enclosed in square brackets:
 
 \verbatim
 KEYWORD = VALUE / [unit] comment
@@ -68,16 +68,29 @@ The data unit of a SIF file is an _n_-dimensional array,
 like a 0D nothing, a 1D vector, a 2D image, a 3D data cube, a 4D color video,
 or whatever fancier array you wish (with _n_<1000, but this should not be a show-stopper in general).
 
+(Be patient, we'll explain the *Primary* word in the next section.)
+
 Pixels are stored contiguously, and the properties of the image are stored in the header unit as special records.
 For example, the size of the image is given by the values associated with keys `NAXIS1`, `NAXIS2`, `NAXIS3`...
 The pixel value type can be an 8- to 64-bit integer, or a 32- or 64-bit floating-point.
+The value type is again encoded in the header unit with keyword `BITPIX`.
+Here is a typical Primary header unit:
 
-(Be patient, we'll explain the *Primary* word in the next section.)
+\code
+SIMPLE  =                    T / file does conform to FITS standard             
+BITPIX  =                   16 / number of bits per data pixel                  
+NAXIS   =                    2 / number of data axes                            
+NAXIS1  =                 2048 / length of data axis 1                          
+NAXIS2  =                 2066 / length of data axis 2                          
+TELESCOP= 'EUCLID'             / telescope name                                 
+EXPTIME =               1500.0 / [s] exposure time                              
+END
+\endcode
 
 The class which represents a SIF file is `SifFile`.
 That which represents the header is `Header`, and that which represent the array is `ImageRaster`.
 In EL_FitsIO, a `SifFile` can therefore simply be seen like a structure made of a `Header` and an `ImageRaster`,
-accessed by getters `SifFile::header()` and `SifFile::array()`, respectively.
+accessed by getters `SifFile::header()` and `SifFile::raster()`, respectively.
 
 
 \section primer-mef Newer Fits: Extensions
@@ -124,50 +137,24 @@ and binary table data units are a sequence of rows which represent scalar or vec
 
 There is almost a 1-to-1 mapping of the Fits and EL_FitsIO structures:
 
-<table>
-<tr>
-<th>Fits</th><th>Service class</th><th>Data class</th>
-</tr>
-<tr>
-<td>SIF file = header unit + array</td>
-<td>`SifFile` = `Header` + `ImageRaster`</td>
-<td>`Record`s + `Raster`</td>
-</tr>
-<tr>
-<td>MEF file = image HDUs + binary table HDUs</td>
-<td>`MefFile` = `ImageHdu`s + `BintableHdu`s</td>
-<td>-</td>
-</tr>
-<tr>
-<td>Image HDU = header unit + array</td>
-<td>`ImageHdu` = `Header` + `ImageRaster`</td>
-<td>`Record`s + `Raster`</td>
-</tr>
-<tr>
-<td>Binary table HDU = header unit + columns or rows</td>
-<td>`BintableHdu` = `Header` + `BintableColumns` or `BintableRows`</td>
-<td>`Record`s + `Column`s</td>
-</tr>
-</table>
-
 <table class="markdownTable">
 <tr>
-<th>File structure</th><th>Class structure</th>
-</tr><tr>
+<th>File structure<th>Class structure
+<tr>
 <td>
 SIF file
 - header unit
   - records
 - data unit
   - array
-</td><td>
+<td>
 `SifFile`
 - `Header`
   - `Record`s
 - `ImageRaster`
   - `Raster`
-</td>
-</tr><tr>
+
+<tr>
 <td>
 MEF file
 - image HDUs
@@ -182,7 +169,7 @@ MEF file
     - columns
   - data unit (row-wise)
     - rows
-</td><td>
+<td>
 `MefFile`
 - `ImageHdu`s
   - `Header`
@@ -196,13 +183,11 @@ MEF file
     - `Column`s
   - `BintableRows`
     - User-defined objects
-</td>
-</tr>
 </table>
 
-Same goes for a SIF file, obviously, which is simply made of a header and array.
-
 For more details, head to the following pages:
+- <a href="https://fits.gsfc.nasa.gov/fits_primer.html">The primer of the Fits support office</a>
+- <a href="https://fits.gsfc.nasa.gov/fits_standard.html">The Fits standard</a>
 - \ref handlers
 - \ref data_classes
 - \ref tuto

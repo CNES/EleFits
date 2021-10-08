@@ -39,7 +39,9 @@ sudo make install
 Finally, install EL_FitsIO the same way:
 
 ```xml
-cd <root>/EL_FitsIO
+cd <root>
+git clone https://github.com/cnes/EleFits.git
+cd EL_FitsIO
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=<prefix> -DCMAKE_INCLUDE_PATH=<prefix> ..

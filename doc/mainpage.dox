@@ -47,8 +47,8 @@ instead of the all-in-one and flat `fitsfile` structure;
 
 Simplicity comes at the cost of completeness,
 and EL_FitsIO misses:
-- CFitsIO features that we found less important (like ASCII tables) or too complex (like streaming);
-- Features already well implemented in other Euclid libraries like iterators covered by EL_CatalogLib;
+- CFitsIO features that we found less important (like ASCII tables) or too complex (like "iterators");
+- Features already well implemented in other Euclid libraries like table filtering covered by EL_CatalogLib;
 - Features that we didn't have time to implement yet!
 
 For a clear overview of what's there and what's missing, see \ref cfitsio_cov.

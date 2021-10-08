@@ -26,7 +26,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @ingroup handlers
+ * @ingroup image_handlers
  * @brief Mapping between an in-file (Fits data unit) region and an in-memory (raster or column) region
  * for reading and writing data unit regions.
  * @warning
