@@ -3,6 +3,23 @@
 \defgroup primer  What's a Fits file?
 \brief The structure and contents of a Fits file, and how they relate to EL_FitsIO.
 
+
+\defgroup data_classes Data classes
+\brief Classes to represent the data stored in a Fits file.
+
+\defgroup header_data_classes Header data classes
+\ingroup data_classes
+\brief Classes to manipulate the data stored header units.
+
+\defgroup image_data_classes Image data classes
+\ingroup data_classes
+\brief Image data containers and tools.
+
+\defgroup bintable_data_classes Binary table data classes
+\ingroup data_classes
+\brief Binary table data containers and tools.
+
+
 \defgroup handlers File and HDU handlers
 \brief All the services you need!
 
@@ -26,20 +43,6 @@
 \ingroup handlers
 \brief Read and write binary table HDUs.
 
-\defgroup data_classes Data classes
-\brief Classes to represent the data stored in a Fits file.
-
-\defgroup header_data_classes Header data classes
-\ingroup data_classes
-\brief Classes to manipulate the data stored header units.
-
-\defgroup image_data_classes Image data classes
-\ingroup data_classes
-\brief Image data containers and tools.
-
-\defgroup bintable_data_classes Binary table data classes
-\ingroup data_classes
-\brief Binary table data containers and tools.
 
 \defgroup guidelines Development guidelines
 \brief What to do, what not to, and why!

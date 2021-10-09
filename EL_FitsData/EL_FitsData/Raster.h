@@ -93,21 +93,9 @@ class PtrRaster;
  * VecRaster<const float> cVecRaster(shape, std::move(cVec));
  * \endcode
  * 
- * The raster data can be viewed region-wise through methods
- * `subraster()`, `slice()` or `section()` depending on the region characteristics.
- * - A subraster is defined as a region and a parent raster.
- *   Its values are generally not contiguous in memory.
- * - In contrast, a slice is a contiguous set of values.
- *   It is represented as a `PtrRaster`.
- * - Finally, a section is a specific case of slice:
- *   its domain is exactly that of the raster, except along the last dimension.
- *   Possibly, the dimension along the last axis is 1,
- *   which means the section dimension is actually smaller than that of the raster.
- * 
- * For example, given a raster of shape (8, 4):
- * - region (1, 1) to (4, 2) yields a subraster,
- * - region (1, 1) to (4, 1) yields a slice,
- * - region (0, 1) to (7, 1) yields a section.
+ * The raster data can be viewed region-wise as a `PtrRaster`,
+ * given that the region is contiguous in memory.
+ * Reading and writing non contiguous region is possible: see `ImageRaster`.
  * 
  * @note
  * Why "raster" and not simply image or array?
@@ -125,6 +113,7 @@ class PtrRaster;
  */
 template <typename T, long n = 2>
 class Raster {
+  friend class ImageRaster; // FIXME rm
 
 public:
   /**
@@ -273,29 +262,9 @@ public:
   /// @{
 
   /**
-   * @brief Create a subraster from given region.
-   * @details
-   * A subraster is a view of the raster data contained in a region.
-   * As opposed to a slice or a section, a subraster is not necessarily contiguous in memory.
-   * @see isContiguous()
-   * @see slice()
-   * @see section()
-   */
-  const Subraster<T, n> subraster(const Region<n>& region) const;
-
-  /**
-   * @copydoc subraster().
-   */
-  Subraster<T, n> subraster(const Region<n>& region);
-
-  /**
    * @brief Create a slice from a given region.
    * @tparam m The dimension of the slice (cannot be -1)
-   * @details
-   * As opposed to a subraster, a slice is contiguous in memory.
-   * Therefore, the region must validate `isContiguous()`.
    * @see isContiguous()
-   * @see subraster()
    * @see section()
    */
   template <long m = 2>
@@ -324,7 +293,6 @@ public:
    * auto line = raster.section(4).section(2);
    * \endcode
    * 
-   * @see subraster()
    * @see slice()
    */
   const PtrRaster<const T, n> section(long front, long back) const;
@@ -356,6 +324,23 @@ public:
   bool isContiguous(const Region<n>& region) const;
 
   /// @}
+
+private:
+  /**
+   * @brief Create a subraster from given region.
+   * @details
+   * A subraster is a view of the raster data contained in a region.
+   * As opposed to a slice or a section, a subraster is not necessarily contiguous in memory.
+   * @see isContiguous()
+   * @see slice()
+   * @see section()
+   */
+  const Subraster<T, n> subraster(const Region<n>& region) const; // FIXME rm?
+
+  /**
+   * @copydoc subraster().
+   */
+  Subraster<T, n> subraster(const Region<n>& region); // FIXME rm?
 
 public:
   /**

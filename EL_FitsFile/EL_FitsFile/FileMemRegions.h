@@ -27,9 +27,9 @@ namespace FitsIO {
 
 /**
  * @ingroup image_handlers
- * @brief Mapping between an in-file (Fits data unit) region and an in-memory (raster or column) region
- * for reading and writing data unit regions.
- * @warning
+ * @brief Mapping between an in-file (Fits image data unit) region and an in-memory (raster) region
+ * for reading and writing image regions.
+ * @details
  * In-file and in-memory regions have the same shape.
  * Both back positions cannot be -1 at the same index at the same time.
  */
@@ -39,6 +39,9 @@ class FileMemRegions {
 public:
   /**
    * @brief Create a mapping from an in-file region and an in-memory position.
+   * @details
+   * The shape of the in-memory region is deduced from that of the in-file region.
+   * This constructor is not marked explicit, which allows casting from a `Region`.
    */
   FileMemRegions(const Region<n>& fileRegion, const Position<n>& memoryPosition = Position<n>::zero()) :
       m_file(fileRegion), m_memory(Region<n>::fromShape(memoryPosition, fileRegion.shape())) {
@@ -46,10 +49,12 @@ public:
       m_memory.back = Position<n>::zero();
     }
   }
-  // Not explicit to allow casting, e.g. readRegionTo(region, raster)
 
   /**
    * @brief Create a mapping from an in-file position and an in-memory region.
+   * @details
+   * The shape of the in-file region is deduced from that of the in-memory region.
+   * This constructor is not marked explicit, which allows casting from a `Position`.
    */
   FileMemRegions(const Position<n>& filePosition, const Region<n>& memoryRegion = Region<n>::whole()) :
       m_file(Region<n>::fromShape(filePosition, memoryRegion.shape())), m_memory(memoryRegion) {
@@ -60,8 +65,6 @@ public:
 
   /**
    * @brief Get the in-file region.
-   * @details
-   * See the warning at class level.
    */
   const Region<n>& file() const {
     return m_file;
@@ -69,14 +72,12 @@ public:
 
   /**
    * @brief Get the in-memory region.
-   * @details
-   * See the warning at class level.
    */
   const Region<n>& memory() const {
     return m_memory;
   }
 
-  void resolve(const Position<n>& fileBack, const Position<n>& memoryBack) { // FIXME back or shape?
+  void resolve(const Position<n>& fileBack, const Position<n>& memoryBack) {
     const auto ftom = fileToMemory();
     for (auto fit = m_file.back.begin(),
               fitEnd = m_file.back.end(),
@@ -124,8 +125,8 @@ private:
 };
 
 /**
- * @ingroup handlers
- * @brief Create a `FileMemRegions` with in-file region at origin.
+ * @ingroup image_handlers
+ * @brief Create a `FileMemRegions` with in-file position at origin.
  */
 template <long n>
 FileMemRegions<n> makeMemRegion(const Region<n>& memoryRegion) {
@@ -133,12 +134,12 @@ FileMemRegions<n> makeMemRegion(const Region<n>& memoryRegion) {
 }
 
 /**
- * @ingroup handlers
- * @brief Create a `FileMemRegions` with in-memory region at origin.
+ * @ingroup image_handlers
+ * @brief Create a `FileMemRegions` with whole in-file region.
  */
 template <long n>
-FileMemRegions<n> makeFileRegion(const Region<n>& fileRegion) {
-  return FileMemRegions<n>(fileRegion, Position<n>::zero());
+FileMemRegions<n> makeMemRegion(const Position<n>& memoryPosition) {
+  return FileMemRegions<n>(Region<n>::whole(), memoryPosition);
 }
 
 } // namespace FitsIO

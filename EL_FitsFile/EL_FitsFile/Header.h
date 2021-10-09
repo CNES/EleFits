@@ -54,7 +54,7 @@ enum class RecordMode
  * Several groups of methods are available:
  * - `read`-prefixed methods read the raw ASCII characters from the header unit as `std::string`s;
  * - In addition, `parse`-prefixed methods parse the values of the records;
- * - `write`-prefixed methods write provided values following a strategy defined as a RecordMode.
+ * - `write`-prefixed methods write provided values following a strategy defined as a `RecordMode` enumerator.
  * 
  * When reading or writing several records, it is recommended to use the `Seq`-suffixed methods
  * (e.g. one call to `writeSeq()` instead of several calls to `write()`), which are optimized.

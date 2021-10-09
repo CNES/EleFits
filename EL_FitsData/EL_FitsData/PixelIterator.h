@@ -23,6 +23,9 @@
 namespace Euclid {
 namespace FitsIO {
 
+/// @cond INTERNAL
+// FIXME remove PixelIterator?
+
 /**
  * @ingroup image_data_classes
  * @brief A helper class to screen a `Raster` or `Subraster`.
@@ -32,6 +35,8 @@ class PixelIterator {
 public:
 private:
 };
+
+/// @endcond
 
 } // namespace FitsIO
 } // namespace Euclid

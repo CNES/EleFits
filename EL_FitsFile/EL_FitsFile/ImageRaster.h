@@ -32,24 +32,14 @@ namespace FitsIO {
 /**
  * @ingroup image_handlers
  * @brief Reader-writer for the image data unit.
- * @tparam T The desired pixel type
- * @tparam n The desired raster dimension (or -1 for dynamic dimension)
  * @details
  * This handler provides methods to access image metadata (image-related keyword records) and data.
  * 
- * Data can be read and written region-wise.
- * To specify the source and destination regions, three positions are required:
- * - a source position,
- * - a destination position,
- * - a shape.
+ * Reading methods either return a `VecRaster` or fill an existing `Raster`.
  * 
- * The position in the file is given as a method parameter.
- * The destination position is 0 for rasters, or the front position of a subraster.
- * The shape is either in a region parameter or is the size of a raster or subraster.
- * @warning
- * Filling or copying a subraster is much slower than filling or copying a raster,
- * because pixels in a subraster aren't stored contiguously.
- * Use subraster-based methods with care!
+ * Data can be read and written region-wise.
+ * Source and destination regions are specified by a `FileMemRegions` object.
+ * 
  * @see Raster
  * @see Subraster
  */
@@ -158,15 +148,15 @@ public:
    * For example, to read the HDU region from position (50, 80) to position (100, 120)
    * into an existing raster at position (25, 40), do:
    * \code
-   * const FileMemRegions<2> regions({25, 40}, {{50, 80}, {100, 120}});
+   * const FileMemRegions<2> regions({ 25, 40 }, { { 50, 80 }, { 100, 120 } });
    * image.readRegionTo(regions, raster);
    * \endcode
    * where `image` is the `ImageRaster` and `raster` is the `Raster`.
    * 
    * In simpler cases, where the in-file or in-memory front position is 0,
-   * factories can be used, e.g. to read into position 0:
+   * factories can be used, e.g. to read into position 0 of the raster:
    * \code
-   * image.readRegionTo(makeFileRegion({50, 80}, {100, 120}), raster);
+   * image.readRegionTo<2>({ { 50, 80 }, { 100, 120 } }, raster);
    * \endcode
    */
   template <typename T, long m, long n>
@@ -178,19 +168,6 @@ public:
    */
   template <typename T, long m, long n>
   void readRegionTo(FileMemRegions<n> regions, Raster<T, m>& raster) const;
-
-  /**
-   * @brief Read a region of the data unit into an existing `Subraster`.
-   * @details
-   * The region is that of the subraster.
-   * This function is equivalent to:
-   * \code
-   * readRegionTo({region, region}, raster);
-   * \endcode
-   * where `region` would be the subraster region, and `raster` the subraster parent.
-   */
-  template <typename T, long n>
-  void readRegionTo(Subraster<T, n>& subraster) const;
 
   /// @}
   /**
@@ -257,14 +234,27 @@ private:
    * @copydetails readRegion()
    */
   template <typename T, long m, long n>
-  void readRegionToSlice(const Position<n>& frontPosition, Raster<T, m>& raster) const; // FIXME private?
+  void readRegionToSlice(const Position<n>& frontPosition, Raster<T, m>& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
    * @copydetails readRegion()
    */
   template <typename T, long m, long n>
-  void readRegionToSubraster(const Position<n>& frontPosition, Subraster<T, m>& subraster) const; // FIXME private?
+  void readRegionToSubraster(const Position<n>& frontPosition, Subraster<T, m>& subraster) const;
+
+  /**
+   * @brief Read a region of the data unit into an existing `Subraster`.
+   * @details
+   * The region is that of the subraster.
+   * This function is equivalent to:
+   * \code
+   * readRegionTo({region, region}, raster);
+   * \endcode
+   * where `region` would be the subraster region, and `raster` the subraster parent.
+   */
+  template <typename T, long n>
+  void readRegionTo(Subraster<T, n>& subraster) const;
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.

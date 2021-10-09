@@ -29,6 +29,8 @@
 namespace Euclid {
 namespace FitsIO {
 
+/// @cond INTERNAL
+
 /**
  * @ingroup image_data_classes
  * @brief A subraster as a view of a raster region.
@@ -131,6 +133,8 @@ private:
    */
   Region<n> m_region;
 };
+
+/// @endcond
 
 } // namespace FitsIO
 } // namespace Euclid

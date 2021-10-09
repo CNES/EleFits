@@ -35,14 +35,14 @@ namespace FitsIO {
 
 /**
  * @ingroup header_handlers
- * @brief Header reader-writer.
+ * @brief Base class for `ImageHdu` and `BintableHdu`.
  * @details
  * This class provides services common to all HDUs for reading and writing records.
  * Services exclusively applicable to MEF files (e.g. HDU name or type) are directly provided as methods,
- * while generic services are accessed through the header() method (refer to the documentation of the Header class).
+ * while generic services are accessed through the `header()` method (refer to the documentation of the `Header` class).
  *
  * @note
- * `Hdu`s are written as Image HDUs with NAXIS=0.
+ * `Hdu`s are written as Image HDUs with `NAXIS` = 0.
  */
 class Hdu {
 

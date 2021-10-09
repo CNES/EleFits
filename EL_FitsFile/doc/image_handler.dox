@@ -1,0 +1,37 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\addtogroup image_handlers
+
+
+There are two main classes to perform image HDU I/Os:
+- `ImageHdu` is dedicated to HDU-level tasks;
+  It roughly extends `Hdu` by providing a `raster()` method, to access the data unit,
+  as well as a few shortcuts like `readRaster()`.
+- `ImageRaster` focuses on services to read and write the data unit.
+
+In addition, `FileMemRegions` is a helper class to specify which regions to consider,
+both in the Fits file and in the `Raster` object,
+when reading or writing the data unit region-wise.
+
+For example, here is how to write the 2D region of a raster spanning from (8, 16) to (32, 48)
+into the HDU at position (144, 36):
+
+\code
+hdu.raster().writeRegion<2>({ { 144, 36 }, { { 8, 16 }, { 32, 48 } } }, data);
+\endcode
+
+where:
+- `hdu` is an `ImageHdu`
+- `raster()` returns an `ImageRaster`
+- The `FileMemRegions` is built inline through brace-enclosed initializer lists
+- data is a `Raster`
+
+\see Hdu
+
+*/
+
+}
+}

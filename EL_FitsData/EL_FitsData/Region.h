@@ -236,6 +236,9 @@ Region<n> operator-(const Region<n>& lhs, long rhs) {
   return res;
 }
 
+/// @cond INTERNAL
+// FIXME remove RegionScreener?
+
 /**
  * @ingroup image_data_classes
  * @brief A helper class to screen a `Region`.
@@ -311,6 +314,8 @@ private:
   std::vector<Position<n>> m_fronts;
   std::vector<Position<n>> m_followers;
 };
+
+/// @endcond
 
 } // namespace FitsIO
 } // namespace Euclid
