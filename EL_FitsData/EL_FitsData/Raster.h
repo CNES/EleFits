@@ -563,38 +563,30 @@ private:
 };
 
 /**
- * @brief Shortcut to create a raster from a shape and data without specifying the pixel type.
- * @tparam n The raster dimension (2 by default)
- * @tparam T The pixel type, should not be specified (deduced from `data`)
+ * @brief Shortcut to create a raster from a shape and data without specifying the template parameters.
+ * @tparam T The pixel type, should not be specified (automatically deduced)
+ * @tparam Longs The raster shape (automatically deduced)
+ * @param data The raster values, which can be either a pointer (or array) or a vector
  * @details
- * The pixel type is deduced from the `data` parameter.
- * The dimension cannot be deduced from a brace-enclosed list:
- * for example, a shape of `{ width, height, depth }` can be seen as a `Position<3>` or a `Position<-1>`.
- * Like for all raster-related classes and services, the default value is 2.
- * 
- * When using a pre-existing shape, the dimension can be skipped.
- * 
  * Example usages:
  * \code
- * auto raster = makeRaster({ width, height }, data); // n = 2 by default
- * auto raster = makeRaster<3>({ width, height, depth }, data);
- * auto raster = makeRaster<-1>({ width, height, depth }, data);
- * 
- * Position<3> shape { width, height, depth };
- * auto raster = makeRaster(shape, data); // n is deduced from shape
+ * auto ptrRaster2D = makeRaster(data, width, height);
+ * auto ptrRaster3D = makeRaster(data, width, height, depth);
+ * auto vecRaster3D = makeRaster(vec, width, height); // The vector is copied
+ * auto vecRaster3D = makeRaster(std::move(vec), width, height); // The vector is moved
  * \endcode
  */
-template <long n = 2, typename T>
-PtrRaster<T, n> makeRaster(const Position<n>& shape, T* data) {
-  return PtrRaster<T, n>(shape, data);
+template <typename T, typename... Longs>
+PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) {
+  return { { shape... }, data };
 }
 
 /**
  * @copydoc makeRaster
  */
-template <long n = 2, typename T>
-VecRaster<T, n> makeRaster(const Position<n>& shape, std::vector<T> data) {
-  return VecRaster<T, n>(shape, std::move(data));
+template <typename T, typename... Longs>
+VecRaster<T, sizeof...(Longs)> makeRaster(std::vector<T> data, Longs... shape) {
+  return { { shape... }, std::move(data) };
 }
 
 } // namespace FitsIO

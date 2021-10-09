@@ -131,18 +131,14 @@ BOOST_AUTO_TEST_CASE(make_raster_test) {
   const short constData2[width * height] = { 0 };
   float data3[width * height * depth] = { 0 };
   const float constData3[width * height * depth] = { 0 };
-  const auto raster2 = makeRaster({ width, height }, data2);
-  const auto constRaster2 = makeRaster({ width, height }, constData2);
-  const auto raster3 = makeRaster<3>({ width, height, depth }, data3);
-  const auto constRaster3 = makeRaster<3>({ width, height, depth }, constData3);
-  const auto rasterDyn = makeRaster<-1>({ width, height, depth }, data3);
-  const auto constRasterDyn = makeRaster<-1>({ width, height, depth }, constData3);
+  const auto raster2 = makeRaster(data2, width, height);
+  const auto constRaster2 = makeRaster(constData2, width, height);
+  const auto raster3 = makeRaster(data3, width, height, depth);
+  const auto constRaster3 = makeRaster(constData3, width, height, depth);
   BOOST_TEST(raster2.dimension() == 2);
   BOOST_TEST(constRaster2.dimension() == 2);
   BOOST_TEST(raster3.dimension() == 3);
   BOOST_TEST(constRaster3.dimension() == 3);
-  BOOST_TEST(rasterDyn.dimension() == 3);
-  BOOST_TEST(constRasterDyn.dimension() == 3);
 }
 
 BOOST_AUTO_TEST_CASE(slicing_test) {
