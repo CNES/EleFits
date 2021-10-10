@@ -101,6 +101,10 @@ elements_add_unit_test(FileMemRegions tests/src/FileMemRegions_test.cpp
                      EXECUTABLE EL_FitsFile_FileMemRegions_test
                      LINK_LIBRARIES EL_FitsFile
                      TYPE Boost)
+elements_add_unit_test(FileMemSegments tests/src/FileMemSegments_test.cpp 
+                     EXECUTABLE EL_FitsFile_FileMemSegments_test
+                     LINK_LIBRARIES EL_FitsFile
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

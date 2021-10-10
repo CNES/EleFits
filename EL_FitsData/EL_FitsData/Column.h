@@ -147,7 +147,7 @@ struct ColumnInfo {
   long repeatCount;
 };
 
-// Forward declaration for Column::subcolumn()
+// Forward declaration for Column::slice()
 template <typename T>
 class PtrColumn;
 
@@ -257,12 +257,12 @@ public:
   /**
    * @brief Get a view on contiguous rows.
    */
-  const PtrColumn<T> subcolumn(const Segment& rows) const;
+  const PtrColumn<T> slice(const Segment& rows) const;
 
   /**
-   * @copydoc subcolumn()
+   * @copydoc slice()
    */
-  PtrColumn<T> subcolumn(const Segment& rows);
+  PtrColumn<T> slice(const Segment& rows);
 
   /// @}
 

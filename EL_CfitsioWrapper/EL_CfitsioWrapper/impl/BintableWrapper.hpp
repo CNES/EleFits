@@ -270,7 +270,7 @@ void readColumnSegment(fitsfile* fptr, const FitsIO::Segment& rows, long index, 
       fptr,
       TypeCode<T>::forBintable(), // datatype
       static_cast<int>(index),
-      rows.first, // 1-based first row index
+      rows.front, // 1-based first row index
       1, // 1-based first element index
       rows.size() * column.info.repeatCount, // number of elements
       nullptr,

@@ -94,13 +94,13 @@ T* Column<T>::data() {
 }
 
 template <typename T>
-const PtrColumn<T> Column<T>::subcolumn(const Segment& rows) const {
-  return { info, rows.size(), data() + rows.first };
+const PtrColumn<T> Column<T>::slice(const Segment& rows) const {
+  return { info, rows.size(), data() + rows.front };
 }
 
 template <typename T>
-PtrColumn<T> Column<T>::subcolumn(const Segment& rows) {
-  return { info, rows.size(), data() + rows.first };
+PtrColumn<T> Column<T>::slice(const Segment& rows) {
+  return { info, rows.size(), data() + rows.front };
 }
 
 template <typename T>

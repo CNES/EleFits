@@ -77,6 +77,9 @@ public:
     return m_memory;
   }
 
+  /**
+   * @brief Resolve the unknown (-1) indices, given known in-file and in-memory back positions.
+   */
   void resolve(const Position<n>& fileBack, const Position<n>& memoryBack) {
     const auto ftom = fileToMemory();
     for (auto fit = m_file.back.begin(),

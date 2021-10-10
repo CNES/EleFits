@@ -209,14 +209,6 @@ public:
    * // Write the 3rd plane of raster into the 5th plane of the HDU
    * du.writeRegion<3>({ { 0, 0, 4 } }, raster.section(2));
    * \endcode
-   * 
-   * In addition, `writeSubraster()` allows writing the in-file region corresponding to the subraster:
-   * \code
-   * du.writeSubraster(raster.subraster(region));
-   * 
-   * // Is equivalent to:
-   * du.writeSubraster({ region, region }, raster);
-   * \endcode
    */
   template <typename T, long m, long n>
   void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const; // FIXME return bool = isContiguous()?
