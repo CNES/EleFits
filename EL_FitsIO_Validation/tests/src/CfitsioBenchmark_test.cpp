@@ -36,13 +36,19 @@ BOOST_AUTO_TEST_CASE(parameter_test) {
   factory.registerBenchmark<Test::CfitsioBenchmark>("optimal", 0);
   factory.registerBenchmark<Test::CfitsioBenchmark>("rowwise", 1);
 
-  const auto colwise = dynamic_cast<Test::CfitsioBenchmark*>(factory.createBenchmark("colwise", "file.fits").get());
-  const auto optimal = dynamic_cast<Test::CfitsioBenchmark*>(factory.createBenchmark("optimal", "file.fits").get());
-  const auto rowwise = dynamic_cast<Test::CfitsioBenchmark*>(factory.createBenchmark("rowwise", "file.fits").get());
+  // Store a reference to unique_ptr to avoid corresponding constructor to be called
+  const auto colwise = factory.createBenchmark("colwise", "file.fits");
+  const auto optimal = factory.createBenchmark("optimal", "file.fits");
+  const auto rowwise = factory.createBenchmark("rowwise", "file.fits");
 
-  BOOST_TEST(colwise->rowChunkSize() == -1);
-  BOOST_TEST(optimal->rowChunkSize() == 0);
-  BOOST_TEST(rowwise->rowChunkSize() == 1);
+  // Cast to raw pointers
+  const auto colwiseCPtr = dynamic_cast<Test::CfitsioBenchmark*>(colwise.get());
+  const auto optimalPtr = dynamic_cast<Test::CfitsioBenchmark*>(optimal.get());
+  const auto rowwisePtr = dynamic_cast<Test::CfitsioBenchmark*>(rowwise.get());
+
+  BOOST_TEST(colwiseCPtr->rowChunkSize() == -1);
+  BOOST_TEST(optimalPtr->rowChunkSize() == 0);
+  BOOST_TEST(rowwisePtr->rowChunkSize() == 1);
 }
 
 //-----------------------------------------------------------------------------
