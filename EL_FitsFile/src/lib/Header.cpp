@@ -55,7 +55,7 @@ std::string Header::readAll(KeywordCategory categories) const {
   return Cfitsio::HeaderIo::readHeader(m_fptr, incNonValues);
 }
 
-RecordVector<VariantValue> Header::parseAll(KeywordCategory categories) const {
+RecordSeq Header::parseAll(KeywordCategory categories) const {
   return parseSeq<VariantValue>(readKeywords(categories & ~KeywordCategory::Comment));
   // TODO return comments as string Records?
 }

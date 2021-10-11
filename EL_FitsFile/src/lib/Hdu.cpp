@@ -17,9 +17,10 @@
  *
  */
 
+#include "EL_FitsFile/Hdu.h"
+
 #include "EL_CfitsioWrapper/HduWrapper.h"
 #include "EL_CfitsioWrapper/HeaderWrapper.h"
-#include "EL_FitsFile/Hdu.h"
 
 namespace Euclid {
 namespace FitsIO {
@@ -101,7 +102,7 @@ bool Hdu::hasKeyword(const std::string& keyword) const {
   return Cfitsio::HeaderIo::hasKeyword(m_fptr, keyword);
 }
 
-RecordVector<VariantValue> Hdu::parseRecordCollection(const std::vector<std::string>& keywords) const {
+RecordSeq Hdu::parseRecordSeq(const std::vector<std::string>& keywords) const {
   return parseRecordVector<VariantValue>(keywords);
 }
 
@@ -139,7 +140,7 @@ EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
   #undef COMPILE_PARSE_RECORD
 #endif
 
-template RecordVector<VariantValue> Hdu::parseRecordVector(const std::vector<std::string>&) const;
+template RecordSeq Hdu::parseRecordVector(const std::vector<std::string>&) const;
 
 #ifndef COMPILE_WRITE_RECORD
   #define COMPILE_WRITE_RECORD(type, unused) template void Hdu::writeRecord(const Record<type>&) const;

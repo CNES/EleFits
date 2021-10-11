@@ -118,8 +118,8 @@ const Record<std::string>& RandomHeader::getRecord<std::string>() const {
   return str;
 }
 
-RecordVector<VariantValue> RandomHeader::allRecords() const {
-  return RecordVector<VariantValue>(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str);
+RecordSeq RandomHeader::allRecords() const {
+  return RecordSeq(b, c, s, i, l, ll, uc, us, ui, ul, ull, f, d, cf, cd, str);
 }
 
 } // namespace Test

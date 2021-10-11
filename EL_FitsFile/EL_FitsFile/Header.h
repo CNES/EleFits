@@ -82,7 +82,8 @@ enum class RecordMode
  * Relying on `VariantValue` is the way to go when types are not all known at compile time,
  * and can be the most comfortable option in many other cases.
  * Indeed, working with a tuple might become a nightmare with many values,
- * where `std::vector<VariantValue>` and `RecordVector<VariantValue>` can provide valuable help by reducing the boilerplate.
+ * where `std::vector<VariantValue>` and `RecordVector<VariantValue>` (aka `RecordSeq`)
+ * can provide valuable help by reducing the boilerplate.
  * The impact on runtime is negligible.
  * 
  * @note
@@ -152,7 +153,7 @@ public:
    * @warning
    * Comment records are not parsed, as of today.
    */
-  RecordVector<VariantValue> parseAll(KeywordCategory categories = KeywordCategory::All) const;
+  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const;
 
   /// @}
   /**
@@ -251,7 +252,7 @@ public:
    * auto vector = h.parseSeqOr(fallbacks);
    * 
    * // RecordVector to RecordVector
-   * RecordVector<VariantValue> fallbacks { { {"ONE", 1}, {"TWO", 2.0} } };
+   * RecordSeq fallbacks { { {"ONE", 1}, {"TWO", 2.0} } };
    * auto recVec = h.parseSeqOr(fallbacks);
    * 
    * // std::tuple to std::tuple
@@ -445,7 +446,7 @@ public:
    * h2.writeSeqIn<RecordMode::CreateNew>({"B", "C"}, records);
    * \endcode
    * where `h0`, `h1`, `h2` are headers of different HDUs and `records` is a sequence of records,
-   * like a `RecordVector<VariantValue>`.
+   * like a `RecordSeq`.
    * 
    * @tparam Mode The write mode
    * @tparam T The record value type for homogeneous sequences (automatically deduced)

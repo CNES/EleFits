@@ -30,7 +30,6 @@ BOOST_AUTO_TEST_SUITE(FileMemSegments_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(append_resolve_test) {
-  long fileFront = -2;
   long fileBack = 9;
   long memoryFront = 20;
   long memoryBack = 99;

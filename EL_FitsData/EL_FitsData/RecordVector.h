@@ -31,10 +31,11 @@ namespace FitsIO {
 /**
  * @ingroup header_data_classes
  * @brief A vector of records with find and conversion services.
- * @tparam T The value type of the records; can be VariantValue.
- * @see RecordCollection
+ * @tparam T The value type of the records
+ * @details
+ * Alias `RecordSeq` is provided for `T` = `VariantValue`.
  */
-template <typename T = VariantValue>
+template <typename T>
 class RecordVector { // FIXME rename as RecordVec in 4.0
 
 public:
@@ -69,19 +70,31 @@ public:
    */
   std::vector<Record<T>> vector;
 
-  typename std::vector<Record<T>>::const_iterator begin() const { // FIXME clean
+  /**
+   * @brief Get an iterator to the beginning.
+   */
+  typename std::vector<Record<T>>::const_iterator begin() const {
     return vector.begin();
   }
 
-  typename std::vector<Record<T>>::const_iterator end() const { // FIXME clean
+  /**
+   * @brief Get an iterator to the end.
+   */
+  typename std::vector<Record<T>>::const_iterator end() const {
     return vector.end();
   }
 
-  typename std::vector<Record<T>>::iterator begin() { // FIXME clean
+  /**
+   * @copydoc begin()
+   */
+  typename std::vector<Record<T>>::iterator begin() {
     return vector.begin();
   }
 
-  typename std::vector<Record<T>>::iterator end() { // FIXME clean
+  /**
+   * @copydoc end()
+   */
+  typename std::vector<Record<T>>::iterator end() {
     return vector.end();
   }
 
@@ -102,7 +115,7 @@ public:
    * Although the method returns a Record, it can itself be sliced as its value,
    * so the following works:
    * \code
-   * RecordVector<VariantValue> records;
+   * RecordSeq records; // Equivalent to RecordVector<VariantValue>
    * // ...
    * int i = records.as<int>("KEYWORD"); // Get the value as int
    * \endcode
@@ -112,7 +125,7 @@ public:
 };
 
 /**
- * @brief A sequence of records.
+ * @brief A sequence of records of any type.
  */
 using RecordSeq = RecordVector<VariantValue>;
 

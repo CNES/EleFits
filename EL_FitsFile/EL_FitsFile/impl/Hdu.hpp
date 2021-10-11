@@ -144,7 +144,7 @@ EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_PARSE_RECORD)
     #undef DECLARE_PARSE_RECORD
   #endif
 
-extern template RecordVector<VariantValue> Hdu::parseRecordVector(const std::vector<std::string>&) const;
+extern template RecordSeq Hdu::parseRecordVector(const std::vector<std::string>&) const;
 
   #ifndef DECLARE_WRITE_RECORD
     #define DECLARE_WRITE_RECORD(type, unused) extern template void Hdu::writeRecord(const Record<type>&) const;

@@ -333,16 +333,16 @@ public:
    * @brief Parse several heterogeneous records.
    * @details
    * The underlying type of each record is deduced from the value in the Fits file.
-   * Each record in the collection can later be cast with method RecordCollection::as<T>(),
+   * Each record in the collection can later be cast with method RecordSeq::as<T>(),
    * which returns a Record<T>, which can itself be sliced as its value.
    * For example:
    * \code
-   * auto records = f.parseRecordCollection({ "INT", "FLOAT", "DOUBLE", "BOOL" });
+   * auto records = f.parseRecordSeq({ "INT", "FLOAT", "DOUBLE", "BOOL" });
    * int value = records.as<int>("INT");
    * \endcode
    * @deprecated See header() and Header
    */
-  RecordVector<> parseRecordCollection(const std::vector<std::string>& keywords) const;
+  RecordSeq parseRecordSeq(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse all the records as a RecordVector.

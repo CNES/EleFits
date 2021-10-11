@@ -113,7 +113,7 @@ struct RandomHeader {
   /**
    * @brief Get all the records.
    */
-  RecordVector<VariantValue> allRecords() const;
+  RecordSeq allRecords() const;
 
   /** @brief The number of records. */
   static constexpr long recordCount = 16;

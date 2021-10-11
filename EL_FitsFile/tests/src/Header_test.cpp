@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   const Record<int> i("I", 1);
   const Record<float> f("F", 3.14);
   const auto t = std::make_tuple(i, f);
-  const auto v = RecordVector<> { i, f };
+  const auto v = RecordSeq { i, f };
   struct S {
     int i;
     float f;

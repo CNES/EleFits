@@ -342,7 +342,7 @@ void readRecords(const FitsIO::Hdu& hdu) {
 
   /* Read as VariantValue */
 
-  auto anyRecords = hdu.parseRecordCollection({ "INT", "COMPLEX" });
+  auto anyRecords = hdu.parseRecordSeq({ "INT", "COMPLEX" });
   auto complexRecord = anyRecords.as<std::complex<double>>("COMPLEX");
   logger.info() << "    " << complexRecord.keyword << " = " << complexRecord.value.real() << " + "
                 << complexRecord.value.imag() << "j " << complexRecord.unit;
