@@ -67,7 +67,7 @@ FitsIO::HduCategory currentType(fitsfile* fptr) {
   if (type == BINARY_TBL) {
     return FitsIO::HduCategory::Bintable;
   }
-  throw FitsIO::FitsIOError("Unknown HDU type (code " + std::to_string(type) + ").");
+  throw FitsIO::FitsError("Unknown HDU type (code " + std::to_string(type) + ").");
 }
 
 bool currentIsPrimary(fitsfile* fptr) {
@@ -96,7 +96,7 @@ bool gotoName(fitsfile* fptr, const std::string& name, long version, FitsIO::Hdu
   } else if (category == FitsIO::HduCategory::Bintable) {
     hdutype = BINARY_TBL;
   } else if (category != FitsIO::HduCategory::Any) {
-    throw FitsIO::FitsIOError("Invalid HduCategory; Only Any, Image and Bintable are supported.");
+    throw FitsIO::FitsError("Invalid HduCategory; Only Any, Image and Bintable are supported.");
   }
   fits_movnam_hdu(fptr, hdutype, toCharPtr(name).get(), version, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot move to HDU: " + name);

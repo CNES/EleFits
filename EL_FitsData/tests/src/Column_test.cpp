@@ -61,10 +61,10 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   BOOST_TEST(column.at(-rowCount) == vec[0]);
   BOOST_TEST(column.at(0, -1) == vec[repeatCount - 1]);
   BOOST_TEST(column.at(-1, -1) == vec[rowCount * repeatCount - 1]);
-  BOOST_CHECK_THROW(column.at(rowCount), FitsIOError);
-  BOOST_CHECK_THROW(column.at(-1 - rowCount), FitsIOError);
-  BOOST_CHECK_THROW(column.at(0, repeatCount), FitsIOError);
-  BOOST_CHECK_THROW(column.at(0, -1 - repeatCount), FitsIOError);
+  BOOST_CHECK_THROW(column.at(rowCount), FitsError);
+  BOOST_CHECK_THROW(column.at(-1 - rowCount), FitsError);
+  BOOST_CHECK_THROW(column.at(0, repeatCount), FitsError);
+  BOOST_CHECK_THROW(column.at(0, -1 - repeatCount), FitsError);
 }
 
 BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {

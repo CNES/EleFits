@@ -25,10 +25,10 @@
 namespace Euclid {
 namespace Cfitsio {
 
-CfitsioError::CfitsioError(int cfitsioStatus) : FitsIOError(message(cfitsioStatus)), status(cfitsioStatus) {}
+CfitsioError::CfitsioError(int cfitsioStatus) : FitsError(message(cfitsioStatus)), status(cfitsioStatus) {}
 
 CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string& context) :
-    FitsIOError(context), status(cfitsioStatus) {
+    FitsError(context), status(cfitsioStatus) {
   append("");
   if (not fptr) {
     append("CFitsIO fitsfile pointer is null.");

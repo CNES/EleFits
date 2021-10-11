@@ -21,7 +21,7 @@
 
   #include "EL_CfitsioWrapper/BintableWrapper.h"
   #include "EL_CfitsioWrapper/ErrorWrapper.h"
-  #include "EL_FitsData/FitsIOError.h"
+  #include "EL_FitsData/FitsError.h"
   #include "ElementsKernel/Unused.h"
 
   #include <algorithm> // transform
@@ -346,7 +346,7 @@ std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vect
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);
   if (chunkRows == 0) {
-    throw FitsIO::FitsIOError("Cannot compute the optimal number of rows to be read at once");
+    throw FitsIO::FitsError("Cannot compute the optimal number of rows to be read at once");
   }
   /* Read column data */
   for (long first = 1; first <= rows; first += chunkRows) {
@@ -379,7 +379,7 @@ void writeColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns) {
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status); // Tested with other values, e.g. 1 and 10; less efficient
   if (chunkRows == 0) {
-    throw FitsIO::FitsIOError("Cannot compute the optimal number of rows to be read at once");
+    throw FitsIO::FitsError("Cannot compute the optimal number of rows to be read at once");
   }
   /* Write column data */
   std::vector<long> indices { columnIndex(fptr, columns.info.name)... };

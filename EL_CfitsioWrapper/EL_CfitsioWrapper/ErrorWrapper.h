@@ -20,11 +20,10 @@
 #ifndef _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
 #define _EL_CFITSIOWRAPPER_ERRORWRAPPER_H
 
-#include <string>
+#include "EL_FitsData/FitsError.h"
 
 #include <fitsio.h>
-
-#include "EL_FitsData/FitsIOError.h"
+#include <string>
 
 namespace Euclid {
 namespace Cfitsio {
@@ -32,7 +31,7 @@ namespace Cfitsio {
 /**
  * @brief The error class which is thrown when an error occurs in a CFitsIO routine.
  */
-class CfitsioError : public FitsIO::FitsIOError {
+class CfitsioError : public FitsIO::FitsError {
 
 public:
   /**

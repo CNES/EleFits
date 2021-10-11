@@ -20,7 +20,7 @@
 #include "EL_FitsFile/FitsFile.h"
 
 #include "EL_CfitsioWrapper/FileWrapper.h"
-#include "EL_FitsData/FitsIOError.h"
+#include "EL_FitsData/FitsError.h"
 #include "ElementsKernel/Project.h"
 
 namespace Euclid {
@@ -30,7 +30,7 @@ std::string version() {
   return Elements::Project::versionString();
 }
 
-ReadOnlyError::ReadOnlyError(const std::string& prefix) : FitsIOError(prefix + ": Trying to write a read-only file.") {}
+ReadOnlyError::ReadOnlyError(const std::string& prefix) : FitsError(prefix + ": Trying to write a read-only file.") {}
 
 void ReadOnlyError::mayThrow(const std::string& prefix, FileMode mode) {
   if (mode == FileMode::Read) {
@@ -63,7 +63,7 @@ void FitsFile::reopen() {
         open(m_filename, Permission::Edit);
         break;
       case Permission::Temporary:
-        throw FitsIOError("Cannot reopen closed temporary file.");
+        throw FitsError("Cannot reopen closed temporary file.");
         break;
       default:
         open(m_filename, m_permission);
@@ -74,7 +74,7 @@ void FitsFile::reopen() {
 
 void FitsFile::open(const std::string& filename, Permission permission) {
   if (m_open) {
-    throw FitsIOError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
+    throw FitsError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
   }
   switch (permission) {
     case Permission::Read:

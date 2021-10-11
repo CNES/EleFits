@@ -20,7 +20,7 @@
 #ifndef _EL_FITSDATA_HDUCATEGORY_H
 #define _EL_FITSDATA_HDUCATEGORY_H
 
-#include "EL_FitsData/FitsIOError.h"
+#include "EL_FitsData/FitsError.h"
 
 #include <functional> // function
 #include <vector>
@@ -85,8 +85,8 @@ protected:
   };
 
 public:
-  struct IncompatibleTrits : public FitsIOError {
-    IncompatibleTrits() : FitsIOError("Cannot combine incompatible trits.") {}
+  struct IncompatibleTrits : public FitsError {
+    IncompatibleTrits() : FitsError("Cannot combine incompatible trits.") {}
   };
 
 protected:

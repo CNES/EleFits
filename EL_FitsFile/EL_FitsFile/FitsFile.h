@@ -20,7 +20,7 @@
 #ifndef _EL_FITSFILE_FITSFILE_H
 #define _EL_FITSFILE_FITSFILE_H
 
-#include "EL_FitsData/FitsIOError.h"
+#include "EL_FitsData/FitsError.h"
 
 #include <fitsio.h>
 #include <string>
@@ -73,7 +73,7 @@ enum class FileMode
  * @ingroup exceptions
  * @brief Exception thrown if trying to write a read-only file.
  */
-class ReadOnlyError : public FitsIOError {
+class ReadOnlyError : public FitsError {
 public:
   /**
    * @brief Constructor.

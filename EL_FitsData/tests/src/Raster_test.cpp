@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(slicing_test) {
   // Non-contiguous region
   Region<3> bad { { 1, 1, 1 }, { 2, 2, 2 } };
   BOOST_TEST(not raster.isContiguous<3>(bad));
-  BOOST_CHECK_THROW(raster.slice<3>(bad), FitsIOError);
+  BOOST_CHECK_THROW(raster.slice<3>(bad), FitsError);
 }
 
 BOOST_AUTO_TEST_CASE(sectionning_test) {

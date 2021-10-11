@@ -31,19 +31,19 @@ namespace FitsIO {
  * @ingroup exceptions
  * @brief Base of all exceptions thrown directly by the library.
  */
-class FitsIOError : public std::exception {
+class FitsError : public std::exception {
 
 public:
   /**
    * @brief Destructor.
    */
-  virtual ~FitsIOError() = default;
+  virtual ~FitsError() = default;
 
   /**
    * @brief Constructor.
    * @param message Input message
    */
-  explicit FitsIOError(const std::string& message);
+  explicit FitsError(const std::string& message);
 
   /**
    * @brief Output message.
@@ -63,10 +63,16 @@ private:
 };
 
 /**
+ * @brief Alias for backward compatibility.
+ * @deprecated
+ */
+using FitsIOError = FitsError;
+
+/**
  * @ingroup exceptions
  * @brief Exception thrown if a value lies out of given bounds.
  */
-class OutOfBoundsError : public FitsIOError {
+class OutOfBoundsError : public FitsError {
 public:
   /**
    * @brief Constructor.
@@ -85,7 +91,7 @@ public:
  * @ingroup exceptions
  * @brief Exception thrown if a checksum is missing or incorrect.
  */
-struct ChecksumError : public FitsIOError {
+struct ChecksumError : public FitsError {
 
   /**
    * @brief Status of a checksum stored in a header unit.
@@ -100,8 +106,7 @@ struct ChecksumError : public FitsIOError {
   /**
    * @brief Constructor.
    */
-  ChecksumError(Status hduStatus, Status dataStatus) :
-      FitsIOError("Checksum error: "), hdu(hduStatus), data(dataStatus) {
+  ChecksumError(Status hduStatus, Status dataStatus) : FitsError("Checksum error: "), hdu(hduStatus), data(dataStatus) {
     if (hdu == Missing) {
       append("Missing HDU checksum record. ");
     } else if (hdu == Incorrect) {

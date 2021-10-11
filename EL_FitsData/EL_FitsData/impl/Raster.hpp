@@ -19,7 +19,7 @@
 
 #if defined(_EL_FITSDATA_RASTER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EL_FitsData/FitsIOError.h"
+  #include "EL_FitsData/FitsError.h"
   #include "EL_FitsData/Raster.h"
 
   #include <functional> // multiplies
@@ -75,7 +75,7 @@ struct IndexRecursionImpl<-1, i> {
   static long index(const Position<-1>& shape, const Position<-1>& pos) {
     const auto n = shape.size();
     if (pos.size() != n) {
-      throw FitsIOError(
+      throw FitsError(
           "Dimension mismatch. Raster is of dimension " + std::to_string(n) + " while position is of dimension " +
           std::to_string(pos.size()));
     }
@@ -170,7 +170,7 @@ template <long m>
 const PtrRaster<const T, m> Raster<T, n>::slice(const Region<n>& region) const {
   // FIXME resolve
   if (not isContiguous<m>(region)) {
-    throw FitsIOError("Cannot slice: Region is not contiguous."); // FIXME clarify
+    throw FitsError("Cannot slice: Region is not contiguous."); // FIXME clarify
   }
   const auto& f = region.front;
   const auto& b = region.back;
@@ -185,7 +185,7 @@ template <typename T, long n>
 template <long m>
 PtrRaster<T, m> Raster<T, n>::slice(const Region<n>& region) {
   if (not isContiguous<m>(region)) {
-    throw FitsIOError("Cannot slice: Region is not contiguous."); // FIXME clarify
+    throw FitsError("Cannot slice: Region is not contiguous."); // FIXME clarify
   }
   const auto& f = region.front;
   const auto& b = region.back;

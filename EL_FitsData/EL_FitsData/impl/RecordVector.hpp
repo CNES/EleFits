@@ -19,7 +19,7 @@
 
 #if defined(_EL_FITSDATA_RECORDVECTOR_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EL_FitsData/FitsIOError.h"
+  #include "EL_FitsData/FitsError.h"
   #include "EL_FitsData/RecordVector.h"
 
   #include <algorithm> // find_if
@@ -46,7 +46,7 @@ const Record<T>& RecordVector<T>::operator[](const std::string& keyword) const {
     return r.keyword == keyword;
   });
   if (it == vector.end()) {
-    throw FitsIOError("Cannot find record: " + keyword);
+    throw FitsError("Cannot find record: " + keyword);
   }
   return *it;
 }

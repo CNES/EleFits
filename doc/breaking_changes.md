@@ -38,7 +38,7 @@ compatibility with 4.0 cannot be anticipated in code which depends on 3.2.
 
 * Find and replace word `EL_FitsIO` with `EleFits` in CMakeLists';
 * Find and replace prefix `EL_Fits` with `EleFits` in CMakeLists' and in includes;
-* Find and replace namespace `FitsIO` with `Fits` in sources;
+* Find and replace `FitsIO` (e.g. namespace `FitsIO` or class `FitsIOError`) with `Fits` in sources;
 * Remove underscores from program names in command lines.
 
 ### 3rd handler level

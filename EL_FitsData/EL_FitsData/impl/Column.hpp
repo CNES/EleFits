@@ -20,7 +20,7 @@
 #if defined(_EL_FITSDATA_COLUMN_IMPL) || defined(CHECK_QUALITY)
 
   #include "EL_FitsData/Column.h"
-  #include "EL_FitsData/FitsIOError.h"
+  #include "EL_FitsData/FitsError.h"
 
 namespace Euclid {
 namespace FitsIO {

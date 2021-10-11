@@ -529,7 +529,7 @@ private:
  * @ingroup exceptions
  * @brief Exception thrown when a keyword already exists.
  */
-struct KeywordExistsError : public FitsIOError {
+struct KeywordExistsError : public FitsError {
 
   /**
    * @brief Constructor.
@@ -556,7 +556,7 @@ struct KeywordExistsError : public FitsIOError {
  * @ingroup exceptions
  * @brief Exception thrown when a keyword is not found.
  */
-struct KeywordNotFoundError : public FitsIOError {
+struct KeywordNotFoundError : public FitsError {
 
   /**
    * @brief Constructor.

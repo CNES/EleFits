@@ -78,7 +78,7 @@ void Header::updateChecksums() const {
 }
 
 KeywordExistsError::KeywordExistsError(const std::string& existingKeyword) :
-    FitsIOError(std::string("Keyword already exists: ") + existingKeyword), keyword(existingKeyword) {}
+    FitsError(std::string("Keyword already exists: ") + existingKeyword), keyword(existingKeyword) {}
 
 void KeywordExistsError::mayThrow(const std::string& existingKeyword, const Header& header) {
   if (header.has(existingKeyword)) {
@@ -96,7 +96,7 @@ void KeywordExistsError::mayThrow(const std::vector<std::string>& existingKeywor
 }
 
 KeywordNotFoundError::KeywordNotFoundError(const std::string& missingKeyword) :
-    FitsIOError(std::string("Keyword not found: ") + missingKeyword), keyword(missingKeyword) {}
+    FitsError(std::string("Keyword not found: ") + missingKeyword), keyword(missingKeyword) {}
 
 void KeywordNotFoundError::mayThrow(const std::string& missingKeyword, const Header& header) {
   if (not header.has(missingKeyword)) {

@@ -58,14 +58,14 @@ const T& MefFile::access(const std::string& name, long version) {
     const bool cnvMatch = cnMatch && (version == 0 || hdu.readVersion() == version);
     if (cnvMatch) {
       if (hduPtr) {
-        throw FitsIOError("Several HDU matches."); // TODO specific exception?
+        throw FitsError("Several HDU matches."); // TODO specific exception?
       } else {
         hduPtr = &hdu;
       }
     }
   }
   if (not hduPtr) {
-    throw FitsIOError("No HDU match."); // TODO specific exception?
+    throw FitsError("No HDU match."); // TODO specific exception?
   }
   return hduPtr->as<T>();
 }

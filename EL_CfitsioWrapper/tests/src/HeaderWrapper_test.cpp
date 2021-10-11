@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(empty_value_test) {
 
 BOOST_AUTO_TEST_CASE(missing_keyword_test) {
   FitsIO::Test::MinimalFile file;
-  BOOST_CHECK_THROW(HeaderIo::parseRecord<std::string>(file.fptr, "MISSING"), FitsIO::FitsIOError);
+  BOOST_CHECK_THROW(HeaderIo::parseRecord<std::string>(file.fptr, "MISSING"), FitsIO::FitsError);
 }
 
 struct RecordList {

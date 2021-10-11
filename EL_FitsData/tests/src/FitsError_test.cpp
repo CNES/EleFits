@@ -17,7 +17,7 @@
  *
  */
 
-#include "EL_FitsData/FitsIOError.h"
+#include "EL_FitsData/FitsError.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -25,14 +25,14 @@ using namespace Euclid::FitsIO;
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_SUITE(FitsIOError_test)
+BOOST_AUTO_TEST_SUITE(FitsError_test)
 
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(message_test) {
   const std::string prefix = "FitsIO";
   const std::string message = "MESSAGE!";
-  FitsIOError error(message);
+  FitsError error(message);
   const std::string output = error.what();
   const auto prefixPos = output.find(prefix);
   BOOST_TEST(prefixPos != std::string::npos);

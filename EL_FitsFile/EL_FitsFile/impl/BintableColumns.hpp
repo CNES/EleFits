@@ -371,7 +371,7 @@ long columnsRowCount(TSeq&& columns) {
     if (rows == -1) {
       rows = c.rowCount();
     } else if (c.rowCount() != rows) {
-      throw FitsIOError("Columns do not have the same number of rows."); // FIXME clean
+      throw FitsError("Columns do not have the same number of rows."); // FIXME clean
     }
   });
   return rows;

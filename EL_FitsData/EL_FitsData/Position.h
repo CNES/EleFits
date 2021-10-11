@@ -20,7 +20,7 @@
 #ifndef _EL_FITSDATA_POSITION_H
 #define _EL_FITSDATA_POSITION_H
 
-#include "EL_FitsData/FitsIOError.h"
+#include "EL_FitsData/FitsError.h"
 
 #include <algorithm> // transform
 #include <array>
@@ -239,7 +239,7 @@ Position<n>::Position() : indices {} {
 template <long n>
 Position<n>::Position(long dim) : indices {} {
   if (dim != n) {
-    throw FitsIOError("Dimension mismatch."); // TODO clarify
+    throw FitsError("Dimension mismatch."); // TODO clarify
   }
 }
 

@@ -17,21 +17,19 @@
  *
  */
 
-#include "EL_FitsData/FitsIOError.h"
+#include "EL_FitsData/FitsError.h"
 
 namespace Euclid {
 namespace FitsIO {
 
-const std::string FitsIOError::m_prefix = "EL_FitsIO error: ";
+const std::string FitsError::m_prefix = "EL_FitsIO error: ";
 
-FitsIOError::FitsIOError(const std::string& message) : std::exception(), m_message(m_prefix + message) {
-}
+FitsError::FitsError(const std::string& message) : std::exception(), m_message(m_prefix + message) {}
 
 OutOfBoundsError::OutOfBoundsError(const std::string& prefix, long value, std::pair<long, long> bounds) :
-    FitsIOError(
+    FitsError(
         prefix + ": " + std::to_string(value) + " not in (" + std::to_string(bounds.first) + ", " +
-        std::to_string(bounds.second) + ")") {
-}
+        std::to_string(bounds.second) + ")") {}
 
 void OutOfBoundsError::mayThrow(const std::string& prefix, long value, std::pair<long, long> bounds) {
   if (value < bounds.first || value > bounds.second) {
@@ -39,11 +37,11 @@ void OutOfBoundsError::mayThrow(const std::string& prefix, long value, std::pair
   }
 }
 
-const char* FitsIOError::what() const noexcept {
+const char* FitsError::what() const noexcept {
   return m_message.c_str();
 }
 
-void FitsIOError::append(const std::string& text, std::size_t indent) {
+void FitsError::append(const std::string& text, std::size_t indent) {
   m_message += "\n";
   for (std::size_t i = 0; i < indent; ++i) {
     m_message += "  ";
