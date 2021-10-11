@@ -21,7 +21,7 @@
 #define _EL_FITSFILE_BINTABLECOLUMNS_H
 
 #include "EL_FitsData/Column.h"
-#include "EL_FitsData/DataUtils.h"
+#include "EL_FitsFile/FileMemSegments.h"
 
 #include <fitsio.h>
 #include <functional>
@@ -291,21 +291,21 @@ public:
    * @copydetails readSegment()
    */
   template <typename T>
-  void readSegmentTo(long firstRow, Column<T>& column) const;
+  void readSegmentTo(FileMemSegments rows, Column<T>& column) const;
 
   /**
    * @brief Read the segment of a column specified by its name into an existing `Column`.
    * @copydetails readSegment()
    */
   template <typename T>
-  void readSegmentTo(long firstRow, const std::string& name, Column<T>& column) const;
+  void readSegmentTo(FileMemSegments rows, const std::string& name, Column<T>& column) const;
 
   /**
    * @brief Read the segment of a column specified by its index into an existing `Column`.
    * @copydetails readSegment()
    */
   template <typename T>
-  void readSegmentTo(long firstRow, long index, Column<T>& column) const;
+  void readSegmentTo(FileMemSegments rows, long index, Column<T>& column) const;
 
   /// @}
   /**
@@ -401,42 +401,42 @@ public:
    * @copydetails readSegmentSeq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(long firstRow, TSeq&& columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename... Ts>
-  void readSegmentSeqTo(long firstRow, Column<Ts>&... columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, Column<Ts>&... columns) const;
 
   /**
    * @brief Read segments of columns specified by their names into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, TSeq&& columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, const std::vector<std::string>& names, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns specified by their names into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename... Ts>
-  void readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, Column<Ts>&... columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, const std::vector<std::string>& names, Column<Ts>&... columns) const;
 
   /**
    * @brief Read segments of columns specified by their indices into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(long firstRow, const std::vector<long>& indices, TSeq&& columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, const std::vector<long>& indices, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns specified by their indices into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename... Ts>
-  void readSegmentSeqTo(long firstRow, const std::vector<long>& indices, Column<Ts>&... columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, const std::vector<long>& indices, Column<Ts>&... columns) const;
 
   /// @}
   /**
@@ -486,7 +486,7 @@ public:
    * and `insertSegment()` otherwise.
    */
   template <typename T>
-  void writeSegment(long firstRow, const Column<T>& column) const;
+  void writeSegment(FileMemSegments rows, const Column<T>& column) const;
 
   /// @}
   /**
@@ -545,14 +545,14 @@ public:
    * or in new columns with `appendSegmentSeq()`.
    */
   template <typename TSeq>
-  void writeSegmentSeq(long firstRow, TSeq&& columns) const;
+  void writeSegmentSeq(FileMemSegments rows, TSeq&& columns) const;
 
   /**
    * @brief Write a sequence of segments.
    * @copydetails writeSegmentSeq
    */
   template <typename... Ts>
-  void writeSegmentSeq(long firstRow, const Column<Ts>&... columns) const;
+  void writeSegmentSeq(FileMemSegments rows, const Column<Ts>&... columns) const;
 
   /// @}
 

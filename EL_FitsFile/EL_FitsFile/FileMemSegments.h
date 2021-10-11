@@ -54,6 +54,11 @@ public:
   const Segment& memory() const;
 
   /**
+   * @brief Get the common segment size.
+   */
+  long size() const;
+
+  /**
    * @brief Resolve the unknown (-1) indices, given known in-file and in-memory back indices.
    */
   void resolve(long fileBack, long memoryBack);

@@ -93,21 +93,25 @@ VecColumn<T> BintableColumns::readSegment(const Segment& rows, long index) const
 // readSegmentTo
 
 template <typename T>
-void BintableColumns::readSegmentTo(long firstRow, Column<T>& column) const {
-  readSegmentTo<T>(firstRow, column.info.name, column);
+void BintableColumns::readSegmentTo(FileMemSegments rows, Column<T>& column) const {
+  readSegmentTo<T>(rows, column.info.name, column); // FIXME move?
 }
 
 template <typename T>
-void BintableColumns::readSegmentTo(long firstRow, const std::string& name, Column<T>& column) const {
-  readSegmentTo<T>(firstRow, readIndex(name), column);
+void BintableColumns::readSegmentTo(FileMemSegments rows, const std::string& name, Column<T>& column) const {
+  readSegmentTo<T>(rows, readIndex(name), column); // FIXME move?
 }
 
 template <typename T>
-void BintableColumns::readSegmentTo(long firstRow, long index, Column<T>& column) const {
+void BintableColumns::readSegmentTo(FileMemSegments rows, long index, Column<T>& column) const {
   m_touch();
-  const auto cfitsioFirstRow = firstRow == -1 ? readRowCount() + 1 : firstRow + 1; // 1-based
-  const auto cfitsioRows = Segment::fromSize(cfitsioFirstRow, column.rowCount());
-  Cfitsio::BintableIo::readColumnSegment<T>(m_fptr, cfitsioRows, index + 1, column);
+  rows.resolve(readRowCount() - 1, column.rowCount() - 1);
+  auto slice = column.slice(rows.memory());
+  Cfitsio::BintableIo::readColumnSegment<T>(
+      m_fptr,
+      Segment { rows.file().front + 1, rows.file().back + 1 }, // FIXME operator+
+      index + 1,
+      slice);
 }
 
 // readSeq
@@ -174,6 +178,7 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Indexed<Ts>&... indices) const {
+  // FIXME rows.resolve()
   std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(indices), rows.size() }... };
   readSegmentSeqTo(rows.front, { indices.index... }, columns);
   return columns;
@@ -182,61 +187,63 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
 // readSegmentSeqTo
 
 template <typename TSeq>
-void BintableColumns::readSegmentSeqTo(long firstRow, TSeq&& columns) const {
+void BintableColumns::readSegmentSeqTo(FileMemSegments rows, TSeq&& columns) const {
   const auto names = seqTransform<std::vector<std::string>>(std::forward<TSeq>(columns), [&](const auto& c) {
     return c.info.name;
   });
-  readSegmentSeqTo(firstRow, names, std::forward<TSeq>(columns));
+  readSegmentSeqTo(rows, names, std::forward<TSeq>(columns)); // FIXME move?
 }
 
 template <typename... Ts>
-void BintableColumns::readSegmentSeqTo(long firstRow, Column<Ts>&... columns) const {
-  readSegmentSeqTo(firstRow, { columns.info.name... }, columns...);
+void BintableColumns::readSegmentSeqTo(FileMemSegments rows, Column<Ts>&... columns) const {
+  readSegmentSeqTo(rows, { columns.info.name... }, columns...); // FIXME move?
   // Could forward_as_tuple but would be 1 more indirection for the same amount of lines
 }
 
 template <typename TSeq>
-void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, TSeq&& columns) const {
+void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<std::string>& names, TSeq&& columns)
+    const {
   std::vector<long> indices(names.size());
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
     return readIndex(n);
   });
-  readSegmentSeqTo(firstRow, indices, std::forward<TSeq>(columns));
+  readSegmentSeqTo(rows, indices, std::forward<TSeq>(columns)); // FIXME move?
 }
 
 template <typename... Ts>
-void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<std::string>& names, Column<Ts>&... columns)
-    const {
-  readSegmentSeqTo(firstRow, names, std::forward_as_tuple(columns...));
+void BintableColumns::readSegmentSeqTo(
+    FileMemSegments rows,
+    const std::vector<std::string>& names,
+    Column<Ts>&... columns) const {
+  readSegmentSeqTo(rows, names, std::forward_as_tuple(columns...)); // FIXME move?
 }
 
 template <typename TSeq>
-void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<long>& indices, TSeq&& columns) const {
-  // FIXME support -1?
+void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<long>& indices, TSeq&& columns) const {
   const auto bufferSize = readBufferRowCount();
   const long rowCount = columnsRowCount(std::forward<TSeq>(columns));
-  const long lastRow = firstRow + rowCount - 1;
-  for (Segment src = Segment::fromSize(firstRow, bufferSize), dst = Segment::fromSize(0, bufferSize);
-       src.front <= lastRow; // FIXME src += bufferSize, dst += bufferSize) {
-       src.front += bufferSize,
-               src.back += bufferSize,
-               dst.front += bufferSize,
-               dst.back += bufferSize) { // FIXME simplify src with only firstRow
-    if (dst.back >= rowCount) {
-      dst.back = rowCount - 1;
+  rows.resolve(readRowCount(), rowCount);
+  const long lastMemRow = rows.memory().back;
+  for (Segment file = Segment::fromSize(rows.file().front, bufferSize),
+               mem = Segment::fromSize(rows.memory().front, bufferSize);
+       mem.front <= lastMemRow; // FIXME file += bufferSize, mem += bufferSize) {
+       file.front += bufferSize, file.back += bufferSize, mem.front += bufferSize, mem.back += bufferSize) {
+    if (mem.back > lastMemRow) {
+      mem.back = lastMemRow;
     }
     auto it = indices.begin();
     seqForeach(std::forward<TSeq>(columns), [&](auto& c) {
-      auto slice = c.slice(dst);
-      readSegmentTo(firstRow, *it, slice);
+      auto slice = c.slice(mem);
+      readSegmentTo(file.front, *it, slice);
       ++it;
     });
   }
 }
 
 template <typename... Ts>
-void BintableColumns::readSegmentSeqTo(long firstRow, const std::vector<long>& indices, Column<Ts>&... columns) const {
-  readSegmentSeqTo(firstRow, indices, std::forward_as_tuple(columns...));
+void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<long>& indices, Column<Ts>&... columns)
+    const {
+  readSegmentSeqTo(rows, indices, std::forward_as_tuple(columns...)); // FIXME move?
 }
 
 // write
@@ -269,10 +276,10 @@ void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
 // writeSegment
 
 template <typename T>
-void BintableColumns::writeSegment(long firstRow, const Column<T>& column) const {
+void BintableColumns::writeSegment(FileMemSegments rows, const Column<T>& column) const {
   m_edit();
-  const auto cfitsioFirstRow = firstRow == -1 ? readRowCount() : firstRow + 1; // 1-based
-  Cfitsio::BintableIo::writeColumnSegment(m_fptr, cfitsioFirstRow, column);
+  rows.resolve(readRowCount(), column.rowCount());
+  Cfitsio::BintableIo::writeColumnSegment(m_fptr, rows.file().front + 1, column.slice(rows.memory()));
 }
 
 // writeSeq
@@ -334,25 +341,27 @@ void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const 
 // writeSegmentSeq
 
 template <typename TSeq>
-void BintableColumns::writeSegmentSeq(long firstRow, TSeq&& columns) const {
-  auto firstDstRow = firstRow == -1 ? readRowCount() : firstRow;
-  const long lastSrcRow = columnsRowCount(std::forward<TSeq>(columns)) - 1;
+void BintableColumns::writeSegmentSeq(FileMemSegments rows, TSeq&& columns) const {
+  const auto rowCount = columnsRowCount(std::forward<TSeq>(columns));
+  rows.resolve(readRowCount(), rowCount);
+  const long lastMemRow = rows.memory().back;
   const auto bufferSize = readBufferRowCount();
-  for (auto src = Segment::fromSize(0, bufferSize);
-       src.front <= lastSrcRow; // FIXME src += bufferSize, dst += bufferSize) {
-       src.front += bufferSize, src.back += bufferSize, firstDstRow += bufferSize) {
-    if (src.back > lastSrcRow) {
-      src.back = lastSrcRow;
+  for (auto mem = Segment::fromSize(rows.memory().front, bufferSize),
+            file = Segment::fromSize(rows.file().front, bufferSize);
+       mem.front <= lastMemRow; // FIXME mem += bufferSize, file += bufferSize) {
+       mem.front += bufferSize, mem.back += bufferSize, file.front += bufferSize, file.back += bufferSize) {
+    if (mem.back > lastMemRow) {
+      mem.back = lastMemRow;
     }
     seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-      writeSegment(firstDstRow, c.slice(src));
+      writeSegment(file.front, c.slice(mem));
     });
   }
 }
 
 template <typename... Ts>
-void BintableColumns::writeSegmentSeq(long firstRow, const Column<Ts>&... columns) const {
-  writeSegmentSeq(firstRow, std::forward_as_tuple(columns...));
+void BintableColumns::writeSegmentSeq(FileMemSegments rows, const Column<Ts>&... columns) const {
+  writeSegmentSeq(rows, std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
