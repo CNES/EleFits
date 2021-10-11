@@ -57,6 +57,7 @@ BOOST_AUTO_TEST_CASE(write_all_test) {
   f.writeAll({ i, s }, input);
   const auto records = f.header().parseAllRecords<VariantValue>();
   const auto output = f.raster().read<float>();
+  auto r = records.as<int>(i.keyword);
   BOOST_TEST((records.as<int>(i.keyword) == i));
   BOOST_TEST((records.as<std::string>(s.keyword) == s));
   BOOST_TEST(output.vector() == input.vector());

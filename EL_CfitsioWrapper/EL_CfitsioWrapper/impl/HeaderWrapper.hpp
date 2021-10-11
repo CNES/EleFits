@@ -205,7 +205,7 @@ void writeRecords(fitsfile* fptr, const std::vector<FitsIO::Record<T>>& records)
 template <typename T>
 void updateRecord(fitsfile* fptr, const FitsIO::Record<T>& record) {
   int status = 0;
-  std::string comment = record.comment;
+  std::string comment = record.rawComment();
   T value = record.value;
   fits_update_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
   CfitsioError::mayThrow(status, fptr, "Cannot update record: " + record.keyword);

@@ -218,7 +218,7 @@ void writeRecord<FitsIO::VariantValue>(fitsfile* fptr, const FitsIO::Record<Fits
 template <>
 void updateRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record) {
   int status = 0;
-  std::string comment = record.comment;
+  std::string comment = record.rawComment();
   int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
   fits_update_key(fptr, TypeCode<bool>::forRecord(), record.keyword.c_str(), &nonconstIntValue, &comment[0], &status);
   CfitsioError::mayThrow(status, fptr, "Cannot update Boolean record: " + record.keyword);
@@ -227,12 +227,13 @@ void updateRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record) {
 template <>
 void updateRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
   int status = 0;
+  std::string comment = record.rawComment();
   fits_update_key(
       fptr,
       TypeCode<std::string>::forRecord(),
       record.keyword.c_str(),
       &std::string(record.value)[0],
-      &record.comment[0],
+      &comment[0],
       &status);
   CfitsioError::mayThrow(status, fptr, "Cannot update string record: " + record.keyword);
 }
@@ -240,12 +241,13 @@ void updateRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>
 template <>
 void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
   int status = 0;
+  std::string comment = record.rawComment();
   fits_update_key(
       fptr,
       TypeCode<std::string>::forRecord(),
       record.keyword.c_str(),
       &std::string(record.value)[0],
-      &record.comment[0],
+      &comment[0],
       &status);
   CfitsioError::mayThrow(status, fptr, "Cannot update C string record: " + record.keyword);
 }
