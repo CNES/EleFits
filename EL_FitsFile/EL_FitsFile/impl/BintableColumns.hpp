@@ -222,7 +222,7 @@ template <typename TSeq>
 void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<long>& indices, TSeq&& columns) const {
   const auto bufferSize = readBufferRowCount();
   const long rowCount = columnsRowCount(std::forward<TSeq>(columns));
-  rows.resolve(readRowCount(), rowCount);
+  rows.resolve(readRowCount() - 1, rowCount - 1);
   const long lastMemRow = rows.memory().back;
   for (Segment file = Segment::fromSize(rows.file().front, bufferSize),
                mem = Segment::fromSize(rows.memory().front, bufferSize);
@@ -278,7 +278,7 @@ void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
 template <typename T>
 void BintableColumns::writeSegment(FileMemSegments rows, const Column<T>& column) const {
   m_edit();
-  rows.resolve(readRowCount(), column.rowCount());
+  rows.resolve(readRowCount() - 1, column.rowCount() - 1);
   Cfitsio::BintableIo::writeColumnSegment(m_fptr, rows.file().front + 1, column.slice(rows.memory()));
 }
 
@@ -343,7 +343,7 @@ void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const 
 template <typename TSeq>
 void BintableColumns::writeSegmentSeq(FileMemSegments rows, TSeq&& columns) const {
   const auto rowCount = columnsRowCount(std::forward<TSeq>(columns));
-  rows.resolve(readRowCount(), rowCount);
+  rows.resolve(readRowCount() - 1, rowCount - 1);
   const long lastMemRow = rows.memory().back;
   const auto bufferSize = readBufferRowCount();
   for (auto mem = Segment::fromSize(rows.memory().front, bufferSize),
