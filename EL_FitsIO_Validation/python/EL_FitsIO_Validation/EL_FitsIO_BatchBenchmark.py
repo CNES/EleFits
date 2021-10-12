@@ -25,6 +25,13 @@ import subprocess
 import ElementsKernel.Logging as log
 
 
+def scientificNotation(value):
+    b, e = f'{float(value):.2e}'.split('e')
+    if float(b)%1 == 0:
+        b = int(float(b))
+    return f'{b}e{int(e)}'
+
+
 def makeCommand(testCase, output, results, log_level):
     """Run a test case specified as a dictionary with following keys:
     "Test setup", "HDU type", "HDU count", "Value count / HDU"
@@ -69,14 +76,20 @@ def mainMethod(args):
         results = defaultdict(DataFrame)
         with open(args.res, 'r') as f:
             for testCase in csv.DictReader(f, delimiter='\t'):
-                testName = f'{testCase["Mode"]} {testCase["HDU type"]}\n({testCase["HDU count"]} HDUs x {testCase["Value count / HDU"]} values)'
+                hduType = testCase["HDU type"]
+                valueCount = int(testCase["Value count / HDU"])
+                if hduType == 'Image':
+                    shape = f'{scientificNotation(valueCount)} pixels'
+                else:
+                    shape = f'10 columns x {scientificNotation(valueCount/10)} rows'
+                testName = f'{testCase["Mode"]} {hduType}\n({testCase["HDU count"]} HDUs x {shape})'
                 testCaseSetup = testCase['Test setup']
                 data = [float(s) for s in testCase["Samples (ms)"].split(',')]
                 logger.debug(testName + ' ' + testCaseSetup + ': ' + str(data))
                 results[testName][testCaseSetup] = data
         cols = 2
         rows = (len(results) + cols - 1) // cols # Equivalent to ceil(len(results)/2) for ints
-        fig, axes = plt.subplots(ncols=cols, nrows=rows, figsize=(5 * cols, 3 * rows))
+        fig, axes = plt.subplots(ncols=cols, nrows=rows, figsize=(5 * cols, 3 * rows), sharex='col', sharey='row')
         i = False # left column, since cols = 2
         j = 0
         for k, v in results.items():
@@ -88,7 +101,13 @@ def mainMethod(args):
             else:
                 ax = axes[j, int(i)]
             ax.set_title(k)
-            v.boxplot(vert=False, ax=ax, whis=(5, 95)) # plots 5th, 25th, 50th, 75th, 95th percentiles + outliers
+            v.boxplot(vert=False, ax=ax, whis=(5, 95), showfliers=False)
+            # plots 5th, 25th, 50th, 75th, 95th percentiles without outliers
+            if j == rows - 1:
+                ax.set_xlabel('Time (ms)')
+            ax.set_xlim(left=0)
+            # if i > 0:
+            #     ax.set_yticklabels([])
             j += int(i)
             i = not i
         plt.tight_layout() # Avoids overlapping texts

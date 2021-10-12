@@ -1,7 +1,7 @@
 Test setup	HDU type	HDU count	Value count / HDU
-CFITSIO optimal	Image	30	100000000
-EleFits optimal	Image	30	100000000
-CFITSIO optimal	Binary table	30	10000000
-CFITSIO column-wise	Binary table	30	10000000
-EleFits optimal	Binary table	30	10000000
-EleFits column-wise	Binary table	30	10000000
+CFITSIO optimal	Image	100	16000000
+EleFits optimal	Image	100	16000000
+CFITSIO optimal	Binary table	100	10000000
+CFITSIO column-wise	Binary table	100	10000000
+EleFits optimal	Binary table	100	10000000
+EleFits column-wise	Binary table	100	10000000
