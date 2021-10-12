@@ -86,7 +86,7 @@ VecColumn<T> BintableColumns::readSegment(const Segment& rows, const std::string
 template <typename T>
 VecColumn<T> BintableColumns::readSegment(const Segment& rows, long index) const {
   VecColumn<T> column(readInfo<T>(index), rows.size());
-  readSegmentTo<T>(rows.front, index, column);
+  readSegmentTo<T>(rows, index, column);
   return column;
 }
 
@@ -106,7 +106,7 @@ template <typename T>
 void BintableColumns::readSegmentTo(FileMemSegments rows, long index, Column<T>& column) const {
   m_touch();
   rows.resolve(readRowCount() - 1, column.rowCount() - 1);
-  auto slice = column.slice(rows.memory());
+  auto slice = column.slice(rows.memory()); // TODO do we need a temporary variable?
   Cfitsio::BintableIo::readColumnSegment<T>(
       m_fptr,
       Segment { rows.file().front + 1, rows.file().back + 1 }, // FIXME operator+
@@ -161,7 +161,7 @@ void BintableColumns::readSeqTo(const std::vector<std::string>& names, Column<Ts
 
 template <typename TSeq>
 void BintableColumns::readSeqTo(const std::vector<long>& indices, TSeq&& columns) const {
-  readSegmentSeqTo(0, indices, columns);
+  readSegmentSeqTo(0, indices, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
@@ -191,12 +191,12 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, TSeq&& columns) con
   const auto names = seqTransform<std::vector<std::string>>(std::forward<TSeq>(columns), [&](const auto& c) {
     return c.info.name;
   });
-  readSegmentSeqTo(rows, names, std::forward<TSeq>(columns)); // FIXME move?
+  readSegmentSeqTo(rows, names, std::forward<TSeq>(columns)); // FIXME move rows?
 }
 
 template <typename... Ts>
 void BintableColumns::readSegmentSeqTo(FileMemSegments rows, Column<Ts>&... columns) const {
-  readSegmentSeqTo(rows, { columns.info.name... }, columns...); // FIXME move?
+  readSegmentSeqTo(rows, { columns.info.name... }, columns...); // FIXME move rows?
   // Could forward_as_tuple but would be 1 more indirection for the same amount of lines
 }
 
@@ -207,7 +207,7 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<s
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
     return readIndex(n);
   });
-  readSegmentSeqTo(rows, indices, std::forward<TSeq>(columns)); // FIXME move?
+  readSegmentSeqTo(rows, indices, std::forward<TSeq>(columns)); // FIXME move rows?
 }
 
 template <typename... Ts>
@@ -215,7 +215,7 @@ void BintableColumns::readSegmentSeqTo(
     FileMemSegments rows,
     const std::vector<std::string>& names,
     Column<Ts>&... columns) const {
-  readSegmentSeqTo(rows, names, std::forward_as_tuple(columns...)); // FIXME move?
+  readSegmentSeqTo(rows, names, std::forward_as_tuple(columns...)); // FIXME move rows?
 }
 
 template <typename TSeq>
@@ -224,8 +224,8 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<l
   const long rowCount = columnsRowCount(std::forward<TSeq>(columns));
   rows.resolve(readRowCount() - 1, rowCount - 1);
   const long lastMemRow = rows.memory().back;
-  for (Segment file = Segment::fromSize(rows.file().front, bufferSize),
-               mem = Segment::fromSize(rows.memory().front, bufferSize);
+  for (Segment file = Segment::fromSize(rows.file().front, bufferSize), // FIXME use a FileMemSegments
+       mem = Segment::fromSize(rows.memory().front, bufferSize);
        mem.front <= lastMemRow; // FIXME file += bufferSize, mem += bufferSize) {
        file.front += bufferSize, file.back += bufferSize, mem.front += bufferSize, mem.back += bufferSize) {
     if (mem.back > lastMemRow) {
@@ -233,8 +233,7 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<l
     }
     auto it = indices.begin();
     seqForeach(std::forward<TSeq>(columns), [&](auto& c) {
-      auto slice = c.slice(mem);
-      readSegmentTo(file.front, *it, slice);
+      readSegmentTo({ file.front, mem }, *it, c);
       ++it;
     });
   }
@@ -286,7 +285,7 @@ void BintableColumns::writeSegment(FileMemSegments rows, const Column<T>& column
 
 template <typename TSeq>
 void BintableColumns::writeSeq(TSeq&& columns) const {
-  writeSegmentSeq(0, columns);
+  writeSegmentSeq(0, std::forward<TSeq>(columns));
 }
 
 template <typename... Ts>
@@ -346,15 +345,15 @@ void BintableColumns::writeSegmentSeq(FileMemSegments rows, TSeq&& columns) cons
   rows.resolve(readRowCount() - 1, rowCount - 1);
   const long lastMemRow = rows.memory().back;
   const auto bufferSize = readBufferRowCount();
-  for (auto mem = Segment::fromSize(rows.memory().front, bufferSize),
-            file = Segment::fromSize(rows.file().front, bufferSize);
+  for (auto mem = Segment::fromSize(rows.memory().front, bufferSize), // FIXME use a FileMemSegments
+       file = Segment::fromSize(rows.file().front, bufferSize);
        mem.front <= lastMemRow; // FIXME mem += bufferSize, file += bufferSize) {
        mem.front += bufferSize, mem.back += bufferSize, file.front += bufferSize, file.back += bufferSize) {
     if (mem.back > lastMemRow) {
       mem.back = lastMemRow;
     }
     seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-      writeSegment(file.front, c.slice(mem));
+      writeSegment({ file.front, mem }, c); // TODO don't recalculate index
     });
   }
 }
