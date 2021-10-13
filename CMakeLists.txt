@@ -16,5 +16,5 @@ set(USE_SPHINX OFF
 #                         elements_project(MyProject 1.0 USE Element 3.9)
 #===============================================================================
 
-elements_project(EL_FitsIO 3.2 USE Elements 5.12.0
-        DESCRIPTION "A clean C++ API on top of CFitsIO")
+elements_project(EL_FitsIO 4.0 USE Elements 5.12.0
+        DESCRIPTION "A modern C++ API on top of CFitsIO")
