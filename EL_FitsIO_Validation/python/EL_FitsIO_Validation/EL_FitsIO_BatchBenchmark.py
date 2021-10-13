@@ -89,10 +89,12 @@ def mainMethod(args):
                 results[testName][testCaseSetup] = data
         cols = 2
         rows = (len(results) + cols - 1) // cols # Equivalent to ceil(len(results)/2) for ints
+        logger.info(f'Plotting {len(results)} graphs...')
         fig, axes = plt.subplots(ncols=cols, nrows=rows, figsize=(5 * cols, 3 * rows), sharex='col', sharey='row')
         i = False # left column, since cols = 2
         j = 0
         for k, v in results.items():
+            logger.info(f'- {k}')
             logger.debug(v.info())
             if cols == 1:
                 ax = axes[j]
@@ -105,7 +107,7 @@ def mainMethod(args):
             # plots 5th, 25th, 50th, 75th, 95th percentiles without outliers
             if j == rows - 1:
                 ax.set_xlabel('Time (ms)')
-            ax.set_xlim(left=0)
+            # ax.set_xlim(left=0)
             # if i > 0:
             #     ax.set_yticklabels([])
             j += int(i)
