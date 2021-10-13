@@ -80,7 +80,7 @@ test_program \
   EleCfitsioWrapperExample "wrapper.fits"
 
 test_program \
-  EleFitsFileExample "fitsfile.fits"
+  EleFitsExample "fitsfile.fits"
 
 test_program \
   EleFitsTutorial "tutorial.fits"

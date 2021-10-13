@@ -27,7 +27,7 @@ abstract class Column<T> {
 
 }
 
-package EleFitsFile {
+package EleFits {
 
 class FitsFile {
 + open(string)

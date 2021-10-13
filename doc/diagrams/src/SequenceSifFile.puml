@@ -1,6 +1,6 @@
 @startuml
 actor "Jean-René" as User
-box EleFitsFile
+box EleFits
 participant SifFile
 participant Hdu
 participant ImageHdu

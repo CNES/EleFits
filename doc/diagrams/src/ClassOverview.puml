@@ -14,7 +14,7 @@ class SomeDataClass {
 + data
 }
 }
-package EleFitsFile {
+package EleFits {
 class SomeServiceClass {
 + methods()
 }

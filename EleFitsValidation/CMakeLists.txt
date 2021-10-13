@@ -14,7 +14,7 @@ elements_subdir(EleFitsValidation)
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
-elements_depends_on_subdirs(EleFitsFile)
+elements_depends_on_subdirs(EleFits)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -32,8 +32,8 @@ elements_depends_on_subdirs(EleFitsFile)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EleFitsValidation src/lib/*.cpp
-                     INCLUDE_DIRS ElementsKernel EleFitsFile
-                     LINK_LIBRARIES ElementsKernel EleFitsFile
+                     INCLUDE_DIRS ElementsKernel EleFits
+                     LINK_LIBRARIES ElementsKernel EleFits
                      PUBLIC_HEADERS EleFitsValidation)
 
 #===============================================================================

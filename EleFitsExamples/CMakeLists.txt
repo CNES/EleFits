@@ -14,7 +14,7 @@ elements_subdir(EleFitsExamples)
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
-elements_depends_on_subdirs(EleFitsFile)
+elements_depends_on_subdirs(EleFits)
 elements_depends_on_subdirs(EleFitsUtils)
 
 #===============================================================================
@@ -41,17 +41,17 @@ elements_depends_on_subdirs(EleFitsUtils)
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
 elements_add_executable(EleCfitsioWrapperExample src/program/EleCfitsioWrapperExample.cpp
-                     LINK_LIBRARIES ElementsKernel EleFitsFile EleFitsUtils)
-elements_add_executable(EleFitsFileExample src/program/EleFitsFileExample.cpp
-                     LINK_LIBRARIES ElementsKernel EleFitsFile EleFitsUtils)
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+elements_add_executable(EleFitsExample src/program/EleFitsExample.cpp
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
 elements_add_executable(EleCfitsioExample src/program/EleCfitsioExample.cpp
-                     LINK_LIBRARIES ElementsKernel EleFitsFile EleFitsUtils)
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
 elements_add_executable(EleFitsGenerateAstroObj src/program/EleFitsGenerateAstroObj.cpp
-                     LINK_LIBRARIES ElementsKernel EleFitsFile EleFitsUtils)
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
 elements_add_executable(EleFitsTutorial src/program/EleFitsTutorial.cpp
-                     LINK_LIBRARIES ElementsKernel EleFitsFile EleFitsUtils)
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
 elements_add_executable(EleFitsGenerate2DMassFiles src/program/EleFitsGenerate2DMassFiles.cpp
-                     LINK_LIBRARIES ElementsKernel EleFitsFile EleFitsUtils)
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
 
 #===============================================================================
 # Declare the Boost tests here

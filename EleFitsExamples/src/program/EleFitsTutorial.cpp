@@ -31,7 +31,7 @@
 //! [Include fixtures]
 
 //! [Include]
-#include "EleFitsFile/MefFile.h"
+#include "EleFits/MefFile.h"
 
 using namespace Euclid;
 // EL_FitsIO classes are in the Euclid::FitsIO namespace.

@@ -831,7 +831,7 @@ INPUT                  = @PROJECT_SOURCE_DIR@/doc \
                          @PROJECT_SOURCE_DIR@/EleCfitsioWrapper \
                          @PROJECT_SOURCE_DIR@/EleFitsUtils \
                          @PROJECT_SOURCE_DIR@/EleFitsData \
-                         @PROJECT_SOURCE_DIR@/EleFitsFile \
+                         @PROJECT_SOURCE_DIR@/EleFits \
                          @PROJECT_SOURCE_DIR@/EleFitsExamples \
                          @PROJECT_SOURCE_DIR@/EleFitsValidation
 

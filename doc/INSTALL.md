@@ -51,7 +51,7 @@ sudo make install
 ```
 
 This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
-The end-user library is named EleFitsFile, while the low-level API is named EleCfitsioWrapper.
+The end-user library is named EleFits, while the low-level API is named EleCfitsioWrapper.
 
 ## Configure a project to depend on EL_FitsIO
 
@@ -68,33 +68,33 @@ elements_project(<project_name> <project_version>
     USE EL_FitsIO <EleFitsversion>)
 ```
 
-and to the EleFitsFile module in the `CMakeLists.txt` of each module which requires EL_FitsIO:
+and to the EleFits module in the `CMakeLists.txt` of each module which requires EL_FitsIO:
 
 ```xml
-elements_depends_on_subdirs(EleFitsFile)
+elements_depends_on_subdirs(EleFits)
 
 elements_add_executable(<program_name> src/program/<program_name>.cpp
-    LINK_LIBRARIES ElementsKernel EleFitsFile)
+    LINK_LIBRARIES ElementsKernel EleFits)
 
 elements_add_library(<library_name> src/Lib/*.cpp
-    LINK_LIBRARIES ElementsKernel EleFitsFile
-    INCLUDE_DIRS ElementsKernel EleFitsFile
+    LINK_LIBRARIES ElementsKernel EleFits
+    INCLUDE_DIRS ElementsKernel EleFits
     PUBLIC_HEADERS <library_name>)
 ```
 
 ### CMake project
 
-Here's a minimal `CMakeLists.txt` file to use the EleFitsFile library (end-user API):
+Here's a minimal `CMakeLists.txt` file to use the EleFits library (end-user API):
 
 ```xml
 CMAKE_MINIMUM_REQUIRED(VERSION <cmake_version>)
 project(<project_name>)
-find_package(EleFitsFile REQUIRED)
+find_package(EleFits REQUIRED)
 add_executable(<exe_name> <exe_source>)
-target_link_libraries(<exe_name> EleFitsFile)
+target_link_libraries(<exe_name> EleFits)
 ```
 
-The `find_package` command expects parent folder of the file `FindEleFitsFile.cmake` to be in the `CMAKE_MODULE_PATH`.
+The `find_package` command expects parent folder of the file `FindEleFits.cmake` to be in the `CMAKE_MODULE_PATH`.
 For now, it is located in the sources of EL_FitsIO, in `cmake/modules`
 (we'd like it to be installed in a more standard location in some future version).
 Here's an example to build the project:

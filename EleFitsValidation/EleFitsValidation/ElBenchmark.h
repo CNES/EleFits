@@ -20,7 +20,7 @@
 #ifndef _EL_FITSIO_VALIDATION_ELBENCHMARK_H
 #define _EL_FITSIO_VALIDATION_ELBENCHMARK_H
 
-#include "EleFitsFile/MefFile.h"
+#include "EleFits/MefFile.h"
 
 #include "EleFitsValidation/Benchmark.h"
 

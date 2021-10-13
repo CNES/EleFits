@@ -17,7 +17,7 @@ abstract class Raster<T> {
 
 }
 
-package EleFitsFile {
+package EleFits {
 
 class FitsFile {
 + open(string)
