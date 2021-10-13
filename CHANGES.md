@@ -2,12 +2,18 @@
 
 ## 3.2
 
-### Refactoring
+### Bug fixes
 
+* Column unit is written when appending a new column
+
+### Refactoring (backward compatible)
+
+* `RecordHdu` is renamed as `Hdu`
 * New handlers `Header`, `ImageRaster` and `BintableColumns` are responsible for reading and writing header and data units
 * Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
 * `FileMode` replaces `FitsFile::Permission`, `SifFile::Permission` and `MefFile::Permission`
 * Class `HduCategory` replaces enum `HduType`
+* `FitsIOError` is renamed as `FitsError`
 
 ### New features
 
@@ -18,29 +24,38 @@
 * All HDUs
   * `RecordMode` controls the behavior of record writing methods
   * HDU checksums can be computed and verified
+  * `RecordSeq` is a shortcut for `RecordVec<VariantValue>`
 * Image HDUs
   * Image regions can be read and written, classes `Region` and `FileMemRegions` are introduced
   * Image data can be read in place
   * `Position` has arithmetics operators
+  * `makeRaster` allows bypassing template parameters to build `Raster`s
 * Binary table HDUs
-  * Binary table column segments can be read and written, class `Segment` is introduced
+  * Binary table column segments can be read and written, classes `Segment` and `FileMemSegments` are introduced
+  * Rows can be appended in Binary table HDUs
   * Vectors of `Column`s can be read and written, in addition to tuples
   * Binary table data can be read in place
 
 ### Deprecated
 
-* Methods of `RecordHdu`, `ImageHdu` and `BintableHdu` to read and write records, rasters and columns are deprecated:
+* `RecordHdu` is a deprecated alias to `Hdu`
+* Methods of `Hdu`, `ImageHdu` and `BintableHdu` to read and write records, rasters and columns are deprecated:
 They should be replaced with analogous methods of `Header`, `ImageRaster` and `BintableColumns`
 * Explicit use of `boost::any`: should be replaced with `VariantValue`
 * `FitsFile::Permission` is a deprecated alias to `FileMode`
 * `HduType` is a deprecated alias to `HduCategory`
 * `VecRefRaster` and `VecRefColumn`
+* `FitsIOError` is a deprecated alias to `FitsError`
 
 ### Cleaning
 
 * `Raster` is refactored, and the value type can be const-qualified for read-only data
 * `Position` is a proper class, instead of a compile-time conditional alias
 * `KeywordCategory` is merged into `StandardKeyword` (named `KeywordCategory` analogously to `HduCategory`)
+* Nested `Cfitsio` namespaces are renamed to disambiguate documentation
+* Benchmark output is clearer
+* Fuctions `seqForeach()` and `seqTransform()` loop transparently over various sequences (`vector`, `tuple`, `array`...),
+  which simplifies top-level signatures
 
 ## 3.1
 

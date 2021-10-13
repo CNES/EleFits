@@ -125,9 +125,9 @@ A deprecated alias `HduType` is provided for backward compatibility.
 
 * Find and replace occurrences of word `HduType` with `HduCategory`.
 
-### MefFile::accessPrimary is not a template anymore
+### MefFile::accessPrimary() becomes MefFile::primary() and is not a template anymore
 
-An `ImageHdu` is always returned.
+An `ImageHdu` is always returned by `MefFile::primary()`.
 
 **Rationale**
 
@@ -136,13 +136,27 @@ An `ImageHdu` is always returned.
 
 **Status is version 3.2**
 
-Not implemented:
-compatibility with 4.0 cannot be anticipated in code which depends on 3.2.
+Both `MefFile::accessPrimary<T>()` and `MefFile::primary()` are implemented.
 
 **Impact on client code**
 
-* Remove template parameter if it is `ImageHdu`;
-* Use `accessPrimary().header()` instead of `accessPrimary<RecordHdu>()` when only the header unit is needed.
+* Replace `MefFile::accessPrimary<Hdu>()` and `MefFile::accessPrimary<ImageHdu>()` with `MefFile::access()`.
+
+### Raster::shape and Column::info become methods
+
+**Rationale**
+
+Data classes should ensure data integrity as much as possible.
+This is not possible with member variables.
+
+**Status in version 3.2**
+
+Not implemented.
+
+**Impact on client code**
+
+* For reading, replace `raster.shape` and `column.info` with `raster.shape()` and `column.info()`.
+* The values cannot be changed after construction (at least for now).
 
 
 ## Breaking changes in 3.0
