@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE(FitsError_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(message_test) {
-  const std::string prefix = "FitsIO";
+  const std::string prefix = "EleFits";
   const std::string message = "MESSAGE!";
   FitsError error(message);
   const std::string output = error.what();
