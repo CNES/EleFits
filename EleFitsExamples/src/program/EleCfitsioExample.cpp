@@ -55,7 +55,7 @@ class EleCfitsio_Example : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    Euclid::FitsIO::ProgramOptions options;
+    Euclid::Fits::ProgramOptions options;
     options.positional("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options.asPair();
   }

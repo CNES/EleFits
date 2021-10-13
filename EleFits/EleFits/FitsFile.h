@@ -50,7 +50,7 @@ namespace Euclid {
  * * Getters -- which do not imply reading from the Files but only working with class members -- are nouns:
  * for example, `Hdu::readName()` is a reading operation, while `Hdu::index()` is a simple getter.
  */
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @brief Version number of the EleFits project.
@@ -190,7 +190,7 @@ protected:
   bool m_open;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

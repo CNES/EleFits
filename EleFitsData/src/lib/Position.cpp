@@ -20,7 +20,7 @@
 #include "EleFitsData/Position.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <>
 Position<-1>::Position(long dim) : indices(dim) {}
@@ -28,5 +28,5 @@ Position<-1>::Position(long dim) : indices(dim) {}
 template <>
 Position<-1>::Position(std::initializer_list<long> posIndices) : indices(posIndices) {}
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

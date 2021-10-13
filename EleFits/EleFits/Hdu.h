@@ -31,7 +31,7 @@
 #include <memory>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup header_handlers
@@ -533,7 +533,7 @@ protected:
   fitsfile* m_dummyFptr = nullptr;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

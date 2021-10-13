@@ -31,7 +31,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup header_handlers
@@ -558,7 +558,7 @@ struct KeywordNotFoundError : public FitsError {
   std::string keyword;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 //// @cond INTERNAL

@@ -24,7 +24,7 @@
   #include "EleFits/BintableColumns.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 // Implementation rules for overloads
 //
@@ -376,7 +376,7 @@ long columnsRowCount(TSeq&& columns) {
   return rows;
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

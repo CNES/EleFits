@@ -27,7 +27,7 @@
 #include <functional>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup bintable_handlers
@@ -581,7 +581,7 @@ private:
 template <typename TSeq>
 long columnsRowCount(TSeq&& columns);
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

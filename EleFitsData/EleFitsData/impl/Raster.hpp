@@ -26,7 +26,7 @@
   #include <numeric> // accumulate
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /// @cond INTERNAL
 namespace Internal {
@@ -324,7 +324,7 @@ ELEFITS_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
     #undef DECLARE_COLUMN_CLASSES
   #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

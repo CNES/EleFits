@@ -20,7 +20,7 @@
 #include "EleFits/BintableHdu.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
     Hdu(token, fptr, index, HduCategory::Bintable, status), m_columns(
@@ -121,5 +121,5 @@ ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_WRITE_COLUMN)
   #undef COMPILE_WRITE_COLUMN
 #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

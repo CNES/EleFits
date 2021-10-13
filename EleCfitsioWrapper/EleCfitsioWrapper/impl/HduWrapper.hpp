@@ -28,7 +28,7 @@ namespace Cfitsio {
 namespace HduAccess {
 
 template <typename T, long n>
-void createImageExtension(fitsfile* fptr, const std::string& name, const FitsIO::Position<n>& shape) {
+void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<n>& shape) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   auto nonconstShape = shape; // const-correctness issue
@@ -38,14 +38,14 @@ void createImageExtension(fitsfile* fptr, const std::string& name, const FitsIO:
 }
 
 template <typename T, long n>
-void createImageExtension(fitsfile* fptr, const std::string& name, const FitsIO::Raster<T, n>& raster) {
+void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::Raster<T, n>& raster) {
   mayThrowReadonlyError(fptr);
   createImageExtension<T, n>(fptr, name, raster.shape);
   ImageIo::writeRaster<T, n>(fptr, raster);
 }
 
 template <typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::ColumnInfo<Ts>&... infos) {
+void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::ColumnInfo<Ts>&... infos) {
   constexpr long ncols = sizeof...(Ts);
   CStrArray colName { infos.name... };
   CStrArray colFormat { TypeCode<Ts>::tform(infos.repeatCount)... };
@@ -56,7 +56,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
 }
 
 template <typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::Column<Ts>&... columns) {
+void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<Ts>&... columns) {
   constexpr long ncols = sizeof...(Ts);
   CStrArray colName { columns.info.name... };
   CStrArray colFormat { TypeCode<Ts>::tform(columns.info.repeatCount)... };
@@ -86,7 +86,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Tupl
 }
 
 template <typename T>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::Column<T>& column) {
+void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<T>& column) {
   constexpr long columnCount = 1;
   std::string colName = column.info.name;
   char* cName = &colName[0];

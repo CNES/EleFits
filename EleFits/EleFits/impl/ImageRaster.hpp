@@ -23,7 +23,7 @@
   #include "EleFits/ImageRaster.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <long n>
 Position<n> ImageRaster::readShape() const {
@@ -148,7 +148,7 @@ void ImageRaster::writeSubraster(const Position<n>& frontPosition, const Subrast
   }
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

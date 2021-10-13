@@ -37,7 +37,7 @@ class EleCfitsioWrapper_Example : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    Euclid::FitsIO::ProgramOptions options;
+    Euclid::Fits::ProgramOptions options;
     options.positional("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
     return options.asPair();
   }
@@ -66,7 +66,7 @@ public:
     logger.info();
 
     logger.info() << "Creating binary table extension: SMALLTBL";
-    FitsIO::Test::SmallTable table; // Predefined table for testing purpose
+    Fits::Test::SmallTable table; // Predefined table for testing purpose
     //! [Create binary table ext]
     HduAccess::createBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create binary table ext]
@@ -74,14 +74,14 @@ public:
     logger.info();
 
     logger.info() << "Creating image extension: SMALLIMG";
-    FitsIO::Test::SmallRaster raster; // Predefined image raster for testing purpose
+    Fits::Test::SmallRaster raster; // Predefined image raster for testing purpose
     //! [Create image ext]
     HduAccess::createImageExtension(fptr, "SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
-    FitsIO::Record<std::string> strRecord("STRING", "string");
+    Fits::Record<std::string> strRecord("STRING", "string");
     logger.info() << "Writing record: INTEGER = 8";
-    FitsIO::Record<int> intRecord("INTEGER", 8);
+    Fits::Record<int> intRecord("INTEGER", 8);
     HeaderIo::writeRecords(fptr, strRecord, intRecord);
 
     logger.info();

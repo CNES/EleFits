@@ -20,7 +20,7 @@
 #include "EleFitsData/Record.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /*
  * 70 bytes minus opening and closing quotes
@@ -55,5 +55,5 @@ ELEFITS_FOREACH_RECORD_TYPE(COMPILE_RECORD_CLASS)
   #undef COMPILE_RECORD_CLASS
 #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

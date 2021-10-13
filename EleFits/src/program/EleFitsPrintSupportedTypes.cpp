@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 
-using namespace Euclid::FitsIO;
+using namespace Euclid::Fits;
 
 #define PRINT_SUPPORTED_TYPES(type, name) logger.info() << "  " << #type;
 

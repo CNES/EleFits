@@ -22,7 +22,7 @@
 #if defined(_ELEFITS_VALIDATION_ELBENCHMARK_IMPL) || defined(CHECK_QUALITY)
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <long i>
@@ -31,7 +31,7 @@ Indexed<typename std::tuple_element<i, BColumns>::type::Value> ElColwiseBenchmar
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

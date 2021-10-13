@@ -22,7 +22,7 @@
 #include "EleCfitsioWrapper/HduWrapper.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 MefFile::MefFile(const std::string& filename, Permission permission) :
     FitsFile(filename, permission), m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))) {
@@ -79,5 +79,5 @@ ELEFITS_FOREACH_RASTER_TYPE(COMPILE_ASSIGN_IMAGE_EXT)
   #undef COMPILE_ASSIGN_IMAGE_EXT
 #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

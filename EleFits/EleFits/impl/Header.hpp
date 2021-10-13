@@ -23,7 +23,7 @@
   #include "EleFits/Header.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <typename T>
 Record<T> Header::parse(const std::string& keyword) const {
@@ -183,7 +183,7 @@ void Header::writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records
   seqForeach(std::forward<TSeq>(records), func);
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

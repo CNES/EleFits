@@ -30,7 +30,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 // Forward declaration for MefFile::select()
 template <typename THdu>
@@ -245,7 +245,7 @@ protected:
   std::vector<std::unique_ptr<Hdu>> m_hdus;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #include "EleFits/HduIterator.h"

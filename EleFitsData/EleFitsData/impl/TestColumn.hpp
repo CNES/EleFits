@@ -26,7 +26,7 @@
 #include "EleFitsData/TestColumn.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <typename T>
@@ -82,7 +82,7 @@ RandomVectorColumn<T>::RandomVectorColumn(long repeatCount, long size, T min, T 
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

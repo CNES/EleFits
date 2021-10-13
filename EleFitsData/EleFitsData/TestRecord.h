@@ -29,7 +29,7 @@
 #include <string>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 /**
@@ -120,7 +120,7 @@ struct RandomHeader {
 };
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

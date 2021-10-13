@@ -36,7 +36,7 @@ namespace Euclid {
 
 /**
  * @brief Functions to use CFitsIO with a modern C++ API.
- * @see Euclid::FitsIO for an Object-Oriented API.
+ * @see Euclid::Fits for an Object-Oriented API.
  */
 namespace Cfitsio {}
 } // namespace Euclid

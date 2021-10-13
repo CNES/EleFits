@@ -24,7 +24,7 @@
   #include <algorithm>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <typename T>
 VecColumn<T> BintableHdu::readColumn(long index) const {
@@ -92,7 +92,7 @@ ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_WRITE_COLUMN)
     #undef DECLARE_WRITE_COLUMN
   #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

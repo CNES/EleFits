@@ -20,7 +20,7 @@
 #include "EleFitsData/TestColumn.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 #define GENERATE_COLUMN(type, name) getColumn<type>() = generateColumn<type>(#name, repeatCount, rowCount);
@@ -44,5 +44,5 @@ SmallTable::SmallTable() :
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

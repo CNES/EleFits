@@ -22,7 +22,7 @@
 #include "ElementsKernel/Unused.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <>
 VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount) :
@@ -48,5 +48,5 @@ ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_COLUMN_CLASSES)
   #undef COMPILE_COLUMN_CLASSES
 #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

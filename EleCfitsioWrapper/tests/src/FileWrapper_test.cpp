@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_SUITE(FileWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(file_operations_test, FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(file_operations_test, Fits::Test::MinimalFile) {
   BOOST_CHECK_THROW(FileAccess::createAndOpen(filename, FileAccess::CreatePolicy::CreateOnly), CfitsioError);
   BOOST_TEST(fptr);
   FileAccess::close(fptr);

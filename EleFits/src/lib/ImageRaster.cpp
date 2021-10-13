@@ -20,7 +20,7 @@
 #include "EleFits/ImageRaster.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 ImageRaster::ImageRaster(fitsfile*& fptr, std::function<void(void)> touchFunc, std::function<void(void)> editFunc) :
     m_fptr(fptr), m_touch(touchFunc), m_edit(editFunc) {}
@@ -34,5 +34,5 @@ long ImageRaster::readSize() const {
   return shapeSize(readShape());
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

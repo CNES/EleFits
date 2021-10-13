@@ -1,5 +1,5 @@
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
 
@@ -19,7 +19,7 @@ When implementation and usage are titghly coupled, links are provided to get the
 
 The package is split in two layers:
 
-- A high-level object-oriented layer (namespace FitsIO, see below)
+- A high-level object-oriented layer (namespace Fits, see below)
 which aims at handling Fits files and their contents with an as-simple-as-possible modern API:
   - The file structure is mapped to a class tree (file, HDUs, records and co. are represented by dedicated classes),
   - Data classes represent the data contents of the file,
@@ -38,9 +38,9 @@ The API is organized in namespaces as follows:
 - `Euclid` is the top level namespace, which contains everything;
 - `Cfitsio` corresponds to the low-level layer module:
   - It is organized in thematic namespaces like `Cfitsio::FileAccess` or `Cfitsio::ImageIo`;
-- `FitsIO` is the end-user namespace:
+- `Fits` is the end-user namespace:
   - Data classes and service classes are implemented in it,
-  - `FitsIO::Test` contains test helper classes and functions like fixtures;
+  - `Fits::Test` contains test helper classes and functions like fixtures;
 - Whatever the level, `Internal` namespaces contain implementation details, not displayed to the end-user.
 
 \subsection design-modules Modules
@@ -121,7 +121,7 @@ Most of the template functions are therefore specialized for `std::string`.
 It is thus required to specialize reading and writing methods for strings.
 Moreover, strings are treated very differently from other types in binary table columns:
 they are considered by CFitsIO like scalar columns with a repeat count greater than one.
-Therefore, `FitsIO::Column` methods are also specialized.
+Therefore, `Fits::Column` methods are also specialized.
 
 One classical transform needed to interface with CFitsIO is to convert a sequence of strings (e.g. a `std::vector<std::string>`) into a `char **`.
 This must be done carefully to keep the memory clean.
@@ -146,7 +146,7 @@ Method `Record::cast()` is in charge of handling the various cases.
 \note
 A welcome improvement would be to switch from `boost::any` to `boost::variant` or `std::variant` (C++17).
 This would allow relying on compile-time dispatch (visitor pattern) instead of runtime dispatch (switches).
-This is the role of FitsIO::Record::cast.
+This is the role of Fits::Record::cast.
 
 \section design-variadic Variadic templates
 

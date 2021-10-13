@@ -23,7 +23,7 @@
 #include "EleFitsData/DataUtils.h" // Segment
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup bintable_handlers
@@ -85,7 +85,7 @@ private:
   Segment m_memory;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

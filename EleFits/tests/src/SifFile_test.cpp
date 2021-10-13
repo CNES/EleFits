@@ -24,7 +24,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::FitsIO;
+using namespace Euclid::Fits;
 
 //-----------------------------------------------------------------------------
 

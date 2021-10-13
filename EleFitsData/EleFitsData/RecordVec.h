@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup header_data_classes
@@ -136,7 +136,7 @@ using RecordVector = RecordVec<T>;
  */
 using RecordSeq = RecordVec<VariantValue>;
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

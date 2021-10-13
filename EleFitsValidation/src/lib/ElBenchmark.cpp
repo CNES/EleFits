@@ -20,7 +20,7 @@
 #include "EleFitsValidation/ElBenchmark.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 ElColwiseBenchmark::ElColwiseBenchmark(const std::string& filename) :
@@ -122,5 +122,5 @@ BColumns ElBenchmark::readBintable(long index) {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

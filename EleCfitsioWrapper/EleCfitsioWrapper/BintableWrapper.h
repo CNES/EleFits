@@ -69,79 +69,79 @@ long columnIndex(fitsfile* fptr, const std::string& name);
  * @brief Read the metadata of a binary table column with given index.
  */
 template <typename T>
-FitsIO::ColumnInfo<T> readColumnInfo(fitsfile* fptr, long index);
+Fits::ColumnInfo<T> readColumnInfo(fitsfile* fptr, long index);
 
 /**
  * @brief Read the binary table column with given index.
  */
 template <typename T>
-FitsIO::VecColumn<T> readColumn(fitsfile* fptr, long index);
+Fits::VecColumn<T> readColumn(fitsfile* fptr, long index);
 
 /**
  * @brief Read the segment of a binary table column with given index.
  */
 template <typename T>
-void readColumnSegment(fitsfile* fptr, const FitsIO::Segment& rows, long index, FitsIO::Column<T>& column);
+void readColumnSegment(fitsfile* fptr, const Fits::Segment& rows, long index, Fits::Column<T>& column);
 
 /**
  * @brief Read a binary table column with given name.
  */
 template <typename T>
-FitsIO::VecColumn<T> readColumn(fitsfile* fptr, const std::string& name);
+Fits::VecColumn<T> readColumn(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Read several binary table columns with given indices.
  */
 template <typename... Ts>
-std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vector<long>& indices);
+std::tuple<Fits::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vector<long>& indices);
 
 /**
  * @brief Read several binary table columns with given names.
  */
 template <typename... Ts>
-std::tuple<FitsIO::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vector<std::string>& names);
+std::tuple<Fits::VecColumn<Ts>...> readColumns(fitsfile* fptr, const std::vector<std::string>& names);
 
 /**
  * @brief Write a binary table column.
  */
 template <typename T>
-void writeColumn(fitsfile* fptr, const FitsIO::Column<T>& column);
+void writeColumn(fitsfile* fptr, const Fits::Column<T>& column);
 
 /**
  * @brief Write a segment of a binary table column.
  */
 template <typename T>
-void writeColumnSegment(fitsfile* fptr, long firstRow, const FitsIO::Column<T>& column);
+void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::Column<T>& column);
 
 /**
  * @brief Write several binary table columns.
  */
 template <typename... Ts>
-void writeColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
+void writeColumns(fitsfile* fptr, const Fits::Column<Ts>&... columns);
 
 /**
  * @brief Insert a binary table column at given index.
  */
 template <typename T>
-void insertColumn(fitsfile* fptr, long index, const FitsIO::Column<T>& column);
+void insertColumn(fitsfile* fptr, long index, const Fits::Column<T>& column);
 
 /**
  * @brief Insert several binary table columns at given index.
  */
 template <typename... Ts>
-void insertColumns(fitsfile* fptr, long index, const FitsIO::Column<Ts>&... columns);
+void insertColumns(fitsfile* fptr, long index, const Fits::Column<Ts>&... columns);
 
 /**
  * @brief Append a binary table column.
  */
 template <typename T>
-void appendColumn(fitsfile* fptr, const FitsIO::Column<T>& column);
+void appendColumn(fitsfile* fptr, const Fits::Column<T>& column);
 
 /**
  * @brief Append several binary table columns.
  */
 template <typename... Ts>
-void appendColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
+void appendColumns(fitsfile* fptr, const Fits::Column<Ts>&... columns);
 
 } // namespace BintableIo
 } // namespace Cfitsio

@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace String {
 
 /**
@@ -56,7 +56,7 @@ std::string readFile(const std::string& filename);
 std::string readAuxFile(const std::string& filename);
 
 } // namespace String
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

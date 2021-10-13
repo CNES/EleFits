@@ -27,7 +27,7 @@
   #include <random> // default_random_engine, uniform_real_distribution
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <typename T>
@@ -138,7 +138,7 @@ template <>
 bool approx<std::complex<double>>(std::complex<double> test, std::complex<double> ref, double tol);
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

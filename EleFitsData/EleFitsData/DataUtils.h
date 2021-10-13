@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @brief A name and type.
@@ -283,7 +283,7 @@ void logArgs(TLogger&& logger, T0&& arg0, Ts&&... args) {
   (void)mockUnpack { 0, (void(std::forward<TLogger>(logger) << ", " << std::forward<Ts>(args)), 0)... };
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

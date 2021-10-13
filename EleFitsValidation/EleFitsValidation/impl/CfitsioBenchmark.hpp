@@ -22,7 +22,7 @@
 #if defined(_ELEFITS_VALIDATION_CFITSIOBENCHMARK_IMPL) || defined(CHECK_QUALITY)
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <std::size_t i>
@@ -91,7 +91,7 @@ void CfitsioBenchmark::readColumn(BColumns& columns, long firstRow, long rowCoun
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

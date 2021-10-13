@@ -23,7 +23,7 @@
   #include "EleFitsData/FitsError.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <typename T>
 ColumnInfo<T>::ColumnInfo(const std::string& columnName, const std::string& columnUnit, long columnRepeatCount) :
@@ -203,7 +203,7 @@ ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
     #undef DECLARE_COLUMN_CLASSES
   #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

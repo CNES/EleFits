@@ -22,7 +22,7 @@
   #include "EleFits/SifFile.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <typename T, long n>
 void SifFile::writeAll(const RecordSeq& records, const Raster<T, n>& raster) {
@@ -43,7 +43,7 @@ void SifFile::writeRaster(const Raster<T, n>& raster) const {
   Cfitsio::ImageIo::writeRaster(m_fptr, raster);
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

@@ -26,7 +26,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup iterators
@@ -363,7 +363,7 @@ inline HduFilter operator-(HduCategory rhs) {
   return HduFilter({}, { rhs });
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

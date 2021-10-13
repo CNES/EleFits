@@ -28,7 +28,7 @@
 #include "EleFitsData/TestUtils.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 /**
@@ -197,7 +197,7 @@ public:
 };
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

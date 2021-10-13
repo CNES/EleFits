@@ -29,7 +29,7 @@
 using boost::program_options::value;
 
 using namespace Euclid;
-using namespace FitsIO;
+using namespace Fits;
 
 void writeMeta(MefFile& f, int objIndex) {
   std::string extname = std::to_string(objIndex) + "_META";
@@ -83,7 +83,7 @@ class EleFitsGenerateAstroObj : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    Euclid::FitsIO::ProgramOptions options("Generate a random AstroObj file, as specified in the SpectrumLib.");
+    Euclid::Fits::ProgramOptions options("Generate a random AstroObj file, as specified in the SpectrumLib.");
     options.positional("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file");
     options.named("nobj", value<int>()->default_value(1), "AstroObj count");
     options.named("nbin", value<int>()->default_value(1000), "Wavelength bin count");

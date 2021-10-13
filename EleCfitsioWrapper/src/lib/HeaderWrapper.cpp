@@ -45,7 +45,7 @@ std::string readHeader(fitsfile* fptr, bool incNonValued) {
   return headerString;
 }
 
-std::vector<std::string> listKeywords(fitsfile* fptr, FitsIO::KeywordCategory categories) {
+std::vector<std::string> listKeywords(fitsfile* fptr, Fits::KeywordCategory categories) {
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
@@ -54,14 +54,14 @@ std::vector<std::string> listKeywords(fitsfile* fptr, FitsIO::KeywordCategory ca
   char value[FLEN_KEYWORD];
   for (int i = 0; i < count; ++i) {
     fits_read_keyn(fptr, i + 1, keyword, value, nullptr, &status);
-    if (FitsIO::KeywordCategory::belongsCategories(keyword, categories)) {
+    if (Fits::KeywordCategory::belongsCategories(keyword, categories)) {
       keywords.emplace_back(keyword);
     }
   }
   return keywords;
 }
 
-std::map<std::string, std::string> listKeywordsValues(fitsfile* fptr, FitsIO::KeywordCategory categories) {
+std::map<std::string, std::string> listKeywordsValues(fitsfile* fptr, Fits::KeywordCategory categories) {
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
@@ -70,7 +70,7 @@ std::map<std::string, std::string> listKeywordsValues(fitsfile* fptr, FitsIO::Ke
   char value[FLEN_KEYWORD];
   for (int i = 0; i < count; ++i) {
     fits_read_keyn(fptr, i + 1, keyword, value, nullptr, &status);
-    if (FitsIO::KeywordCategory::belongsCategories(keyword, categories)) {
+    if (Fits::KeywordCategory::belongsCategories(keyword, categories)) {
       records[keyword] = value;
     }
   }
@@ -89,7 +89,7 @@ bool hasKeyword(fitsfile* fptr, const std::string& keyword) {
 }
 
 template <>
-FitsIO::Record<bool> parseRecord<bool>(fitsfile* fptr, const std::string& keyword) { // TODO rm duplication
+Fits::Record<bool> parseRecord<bool>(fitsfile* fptr, const std::string& keyword) { // TODO rm duplication
   int status = 0;
   /* Read value and comment */
   int nonconstIntValue; // TLOGICAL is for int in CFitsIO
@@ -100,7 +100,7 @@ FitsIO::Record<bool> parseRecord<bool>(fitsfile* fptr, const std::string& keywor
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot parse Boolean record: " + keyword);
   /* Build Record */
-  FitsIO::Record<bool> record(keyword, nonconstIntValue, std::string(unit), std::string(comment));
+  Fits::Record<bool> record(keyword, nonconstIntValue, std::string(unit), std::string(comment));
   /* Separate comment and unit */
   if (record.comment == record.unit) {
     record.comment == "";
@@ -115,7 +115,7 @@ FitsIO::Record<bool> parseRecord<bool>(fitsfile* fptr, const std::string& keywor
 }
 
 template <>
-FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::string& keyword) {
+Fits::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::string& keyword) {
   // TODO rm duplication
   int status = 0;
   int length = 0;
@@ -136,7 +136,7 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::
     strValue = "";
     status = 0;
   }
-  FitsIO::Record<std::string> record(keyword, strValue, std::string(unit), std::string(comment));
+  Fits::Record<std::string> record(keyword, strValue, std::string(unit), std::string(comment));
   free(value);
   CfitsioError::mayThrow(status, fptr, "Cannot parse string record: " + keyword);
   if (record.comment == record.unit) {
@@ -153,18 +153,18 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::
 
 #define PARSE_RECORD_ANY_FOR_TYPE(type, unused) \
   if (id == typeid(type)) { \
-    return FitsIO::Record<FitsIO::VariantValue>(parseRecord<type>(fptr, keyword)); \
+    return Fits::Record<Fits::VariantValue>(parseRecord<type>(fptr, keyword)); \
   }
 
 template <>
-FitsIO::Record<FitsIO::VariantValue> parseRecord<FitsIO::VariantValue>(fitsfile* fptr, const std::string& keyword) {
+Fits::Record<Fits::VariantValue> parseRecord<Fits::VariantValue>(fitsfile* fptr, const std::string& keyword) {
   const auto& id = recordTypeid(fptr, keyword);
   ELEFITS_FOREACH_RECORD_TYPE(PARSE_RECORD_ANY_FOR_TYPE)
-  throw FitsIO::FitsError("Cannot deduce type for record: " + keyword);
+  throw Fits::FitsError("Cannot deduce type for record: " + keyword);
 }
 
 template <>
-void writeRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record) {
+void writeRecord<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int status = 0;
   int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
   fits_write_key(
@@ -178,7 +178,7 @@ void writeRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record) {
 }
 
 template <>
-void writeRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
+void writeRecord<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record) {
   int status = 0;
   if (record.hasLongStringValue()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
@@ -188,7 +188,7 @@ void writeRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>&
 }
 
 template <>
-void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
+void writeRecord<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
   int status = 0;
   if (record.hasLongStringValue()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
@@ -198,7 +198,7 @@ void writeRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>&
 }
 
 template <typename T>
-void writeRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record) {
+void writeRecordAnyImpl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
   writeRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
 }
 
@@ -208,15 +208,15 @@ void writeRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValu
   }
 
 template <>
-void writeRecord<FitsIO::VariantValue>(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record) {
+void writeRecord<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
   const auto& id = record.value.type();
   ELEFITS_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
   WRITE_RECORD_ANY_FOR_TYPE(const char*, C_str)
-  throw FitsIO::FitsError("Cannot deduce type for record: " + record.keyword);
+  throw Fits::FitsError("Cannot deduce type for record: " + record.keyword);
 }
 
 template <>
-void updateRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record) {
+void updateRecord<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int status = 0;
   std::string comment = record.rawComment();
   int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
@@ -225,7 +225,7 @@ void updateRecord<bool>(fitsfile* fptr, const FitsIO::Record<bool>& record) {
 }
 
 template <>
-void updateRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>& record) {
+void updateRecord<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record) {
   int status = 0;
   std::string comment = record.rawComment();
   fits_update_key(
@@ -239,7 +239,7 @@ void updateRecord<std::string>(fitsfile* fptr, const FitsIO::Record<std::string>
 }
 
 template <>
-void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>& record) {
+void updateRecord<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
   int status = 0;
   std::string comment = record.rawComment();
   fits_update_key(
@@ -253,7 +253,7 @@ void updateRecord<const char*>(fitsfile* fptr, const FitsIO::Record<const char*>
 }
 
 template <typename T>
-void updateRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record) {
+void updateRecordAnyImpl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
   updateRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
 }
 
@@ -263,11 +263,11 @@ void updateRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantVal
   }
 
 template <>
-void updateRecord<FitsIO::VariantValue>(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record) {
+void updateRecord<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
   const auto& id = record.value.type();
   ELEFITS_FOREACH_RECORD_TYPE(UPDATE_RECORD_ANY_FOR_TYPE)
   UPDATE_RECORD_ANY_FOR_TYPE(const char*, C_str)
-  throw FitsIO::FitsError("Cannot deduce type for record: " + record.keyword);
+  throw Fits::FitsError("Cannot deduce type for record: " + record.keyword);
 }
 
 void deleteRecord(fitsfile* fptr, const std::string& keyword) {
@@ -351,7 +351,7 @@ const std::type_info& complexRecordTypeidImpl(const std::string& value) {
   const std::size_t imBegin = reEnd + 2; // 2 for ", "
   const std::size_t imEnd = value.find(")");
   if (reEnd == std::string::npos || imEnd == std::string::npos) {
-    throw FitsIO::FitsError("Cannot parse complex value: " + value);
+    throw Fits::FitsError("Cannot parse complex value: " + value);
   }
   const std::string re = value.substr(reBegin, reEnd - reBegin);
   if (floatRecordTypeidImpl(re) == typeid(double)) {
@@ -391,7 +391,7 @@ const std::type_info& recordTypeid(fitsfile* fptr, const std::string& keyword) {
     case 'X':
       return Internal::complexRecordTypeidImpl(value);
     default:
-      throw FitsIO::FitsError("Cannot deduce type code of record: " + keyword);
+      throw Fits::FitsError("Cannot deduce type code of record: " + keyword);
   }
 }
 

@@ -29,7 +29,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup image_data_classes
@@ -589,7 +589,7 @@ VecRaster<T, sizeof...(Longs)> makeRaster(std::vector<T> data, Longs... shape) {
   return { { shape... }, std::move(data) };
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #include "EleFitsData/PositionIterator.h"

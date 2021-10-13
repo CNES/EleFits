@@ -26,7 +26,7 @@
 #include "EleFitsData/TestUtils.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <typename T>
@@ -113,7 +113,7 @@ Record<T>& RandomHeader::getRecord() {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

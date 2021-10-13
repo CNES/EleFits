@@ -34,8 +34,8 @@
 #include "EleFits/MefFile.h"
 
 using namespace Euclid;
-// EleFits classes are in the Euclid::FitsIO namespace.
-// We could have be using namespace Euclid::FitsIO instead,
+// EleFits classes are in the Euclid::Fits namespace.
+// We could have be using namespace Euclid::Fits instead,
 // but things would have been less obvious in the snippets.
 //! [Include]
 
@@ -51,26 +51,26 @@ static Elements::Logging logger = Elements::Logging::getLogger("EleFitsTutorial"
 
 //! [Tuto records]
 struct TutoRecords {
-  FitsIO::Record<std::string> stringRecord;
-  FitsIO::Record<int> intRecord;
-  FitsIO::Record<float> floatRecord;
-  FitsIO::Record<std::complex<double>> complexRecord;
+  Fits::Record<std::string> stringRecord;
+  Fits::Record<int> intRecord;
+  Fits::Record<float> floatRecord;
+  Fits::Record<std::complex<double>> complexRecord;
 };
 //! [Tuto records]
 
 //! [Tuto rasters]
 struct TutoRasters {
-  FitsIO::VecRaster<std::int16_t, 2> int16Raster2D;
-  FitsIO::VecRaster<std::int32_t, 3> int32Raster3D;
-  FitsIO::VecRaster<std::int64_t, 4> int64Raster4D;
+  Fits::VecRaster<std::int16_t, 2> int16Raster2D;
+  Fits::VecRaster<std::int32_t, 3> int32Raster3D;
+  Fits::VecRaster<std::int64_t, 4> int64Raster4D;
 };
 //! [Tuto rasters]
 
 //! [Tuto columns]
 struct TutoColumns {
-  FitsIO::VecColumn<std::string> stringColumn;
-  FitsIO::VecColumn<std::int32_t> int32Column;
-  FitsIO::VecColumn<float> float32Column;
+  Fits::VecColumn<std::string> stringColumn;
+  Fits::VecColumn<std::int32_t> int32Column;
+  Fits::VecColumn<float> float32Column;
 };
 //! [Tuto columns]
 
@@ -80,10 +80,10 @@ TutoColumns createColumns();
 
 void writeMefFile(const std::string& filename);
 void readMefFile(const std::string& filename);
-void writeRecords(const FitsIO::Hdu& hdu);
-void readRecords(const FitsIO::Hdu& hdu);
-void readRaster(const FitsIO::ImageHdu& hdu);
-void readColumns(const FitsIO::BintableHdu& hdu);
+void writeRecords(const Fits::Hdu& hdu);
+void readRecords(const Fits::Hdu& hdu);
+void readRaster(const Fits::ImageHdu& hdu);
+void readColumns(const Fits::BintableHdu& hdu);
 
 ///////////////////
 // DATA CLASSES //
@@ -97,20 +97,20 @@ TutoRecords createRecords() {
 
   /* Create a record with unit and comment */
 
-  FitsIO::Record<std::string> stringRecord("STRING", "VALUE", "unit", "comment");
+  Fits::Record<std::string> stringRecord("STRING", "VALUE", "unit", "comment");
 
   /* Create a record with keyword and value only */
 
-  FitsIO::Record<int> intRecord("INT", 0);
+  Fits::Record<int> intRecord("INT", 0);
 
   /* Create a record from an initialization list */
 
-  FitsIO::Record<float> floatRecord { "FLOAT", 3.14F, "", "A piece of Pi" };
+  Fits::Record<float> floatRecord { "FLOAT", 3.14F, "", "A piece of Pi" };
   // This is often used as a shortcut to create records as function parameters.
 
   /* Generate a random record */
 
-  auto complexRecord = FitsIO::Test::generateRandomRecord<std::complex<double>>("COMPLEX");
+  auto complexRecord = Fits::Test::generateRandomRecord<std::complex<double>>("COMPLEX");
 
   //! [Create records]
 
@@ -125,7 +125,7 @@ TutoRasters createRasters() {
 
   /* Initialize and later fill a raster */
 
-  FitsIO::VecRaster<std::int16_t, 2> int16Raster2D({ 4, 3 });
+  Fits::VecRaster<std::int16_t, 2> int16Raster2D({ 4, 3 });
   for (long y = 0; y < int16Raster2D.length<1>(); ++y) {
     for (long x = 0; x < int16Raster2D.length<0>(); ++x) {
       int16Raster2D[{ x, y }] = x + y;
@@ -136,13 +136,13 @@ TutoRasters createRasters() {
 
   std::vector<std::int32_t> int32Vec(16 * 9 * 3);
   // ... do what you have to do with the vector, and then move it to the raster ...
-  FitsIO::VecRaster<std::int32_t, 3> int32Raster3D({ 16, 9, 3 }, std::move(int32Vec));
+  Fits::VecRaster<std::int32_t, 3> int32Raster3D({ 16, 9, 3 }, std::move(int32Vec));
   // Instead of moving a vector, it's also possible to work with
   // a raw pointer with the PtrRaster class.
 
   /* Generate a random raster */
 
-  auto int64Raster4D = FitsIO::Test::RandomRaster<std::int64_t, 4>({ 17, 9, 3, 24 });
+  auto int64Raster4D = Fits::Test::RandomRaster<std::int64_t, 4>({ 17, 9, 3, 24 });
 
   //! [Create rasters]
 
@@ -157,7 +157,7 @@ TutoColumns createColumns() {
 
   /* Initialize and later fill a column */
 
-  FitsIO::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
+  Fits::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
   // String columns must be wide-enough to hold each character.
   for (long i = 0; i < stringColumn.rowCount(); ++i) {
     stringColumn.vector()[i] = std::to_string(i);
@@ -167,12 +167,12 @@ TutoColumns createColumns() {
 
   std::vector<std::int32_t> int32Vec(100);
   // ... do what you have to do with the vector, and then move it to the column ...
-  FitsIO::VecColumn<std::int32_t> int32Column({ "INT32", "", 1 }, std::move(int32Vec));
+  Fits::VecColumn<std::int32_t> int32Column({ "INT32", "", 1 }, std::move(int32Vec));
   // Analogously to rasters, columns can be managed with the VecRefColumn and PtrColumn classes.
 
   /* Generate a random column */
 
-  auto float32Column = FitsIO::Test::RandomVectorColumn<float>(8, 100);
+  auto float32Column = Fits::Test::RandomVectorColumn<float>(8, 100);
 
   //! [Create columns]
 
@@ -189,7 +189,7 @@ void writeMefFile(const std::string& filename) {
 
   logger.info("Creating a MEF file...");
 
-  FitsIO::MefFile f(filename, FitsIO::FileMode::Create);
+  Fits::MefFile f(filename, Fits::FileMode::Create);
 
   //! [Create a MEF file]
 
@@ -244,7 +244,7 @@ void writeMefFile(const std::string& filename) {
   // File is closed at destruction of f.
 }
 
-void writeRecords(const FitsIO::Hdu& hdu) {
+void writeRecords(const Fits::Hdu& hdu) {
 
   const auto records = createRecords();
 
@@ -282,7 +282,7 @@ void readMefFile(const std::string& filename) {
 
   logger.info("Reading the MEF file...");
 
-  FitsIO::MefFile f(filename, FitsIO::FileMode::Read);
+  Fits::MefFile f(filename, Fits::FileMode::Read);
 
   //! [Open a MEF file]
 
@@ -292,19 +292,19 @@ void readMefFile(const std::string& filename) {
 
   /* Access the Primary HDU */
 
-  const auto& primary = f.accessPrimary<FitsIO::Hdu>();
+  const auto& primary = f.accessPrimary<Fits::Hdu>();
   // Our primary contains only metadata, which is why we request a Hdu.
   logger.info() << "    Primary index: " << primary.index();
-  // Indices are 0-based in the FitsIO namespace.
+  // Indices are 0-based in the Fits namespace.
 
   /* Access an HDU by its index */
 
-  const auto& image2 = f.access<FitsIO::ImageHdu>(2);
+  const auto& image2 = f.access<Fits::ImageHdu>(2);
   logger.info() << "    Name of the second extension: " << image2.readName();
 
   /* Access an HDU by its name */
 
-  const auto& table1 = f.accessFirst<FitsIO::BintableHdu>("TABLE1");
+  const auto& table1 = f.accessFirst<Fits::BintableHdu>("TABLE1");
   // If several HDUs have the same name, the first one is returned.
   logger.info() << "    Index of the 'TABLE1' extension: " << table1.index();
 
@@ -315,7 +315,7 @@ void readMefFile(const std::string& filename) {
   readColumns(table1);
 }
 
-void readRecords(const FitsIO::Hdu& hdu) {
+void readRecords(const Fits::Hdu& hdu) {
 
   //! [Read records]
 
@@ -333,10 +333,10 @@ void readRecords(const FitsIO::Hdu& hdu) {
   /* Read several records */
 
   auto someRecords = hdu.parseRecords(
-      FitsIO::Named<std::string>("STRING"),
-      FitsIO::Named<int>("INT"),
-      FitsIO::Named<float>("FLOAT"),
-      FitsIO::Named<std::complex<double>>("COMPLEX"));
+      Fits::Named<std::string>("STRING"),
+      Fits::Named<int>("INT"),
+      Fits::Named<float>("FLOAT"),
+      Fits::Named<std::complex<double>>("COMPLEX"));
   auto thirdRecord = std::get<2>(someRecords);
   logger.info() << "    " << thirdRecord.keyword << " = " << thirdRecord.value << " " << thirdRecord.unit;
 
@@ -350,17 +350,17 @@ void readRecords(const FitsIO::Hdu& hdu) {
   /* Read as a user-defined structure */
 
   auto tutoRecords = hdu.parseRecordsAs<TutoRecords>(
-      FitsIO::Named<std::string>("STRING"),
-      FitsIO::Named<int>("INT"),
-      FitsIO::Named<float>("FLOAT"),
-      FitsIO::Named<std::complex<double>>("COMPLEX"));
+      Fits::Named<std::string>("STRING"),
+      Fits::Named<int>("INT"),
+      Fits::Named<float>("FLOAT"),
+      Fits::Named<std::complex<double>>("COMPLEX"));
   auto stringRecord = tutoRecords.stringRecord;
   logger.info() << "    " << stringRecord.keyword << " = " << stringRecord.value << " " << stringRecord.unit;
 
   //! [Read records]
 }
 
-void readRaster(const FitsIO::ImageHdu& hdu) {
+void readRaster(const Fits::ImageHdu& hdu) {
 
   //! [Read a raster]
 
@@ -378,7 +378,7 @@ void readRaster(const FitsIO::ImageHdu& hdu) {
   //! [Read a raster]
 }
 
-void readColumns(const FitsIO::BintableHdu& hdu) {
+void readColumns(const Fits::BintableHdu& hdu) {
 
   //! [Read columns]
 
@@ -390,12 +390,12 @@ void readColumns(const FitsIO::BintableHdu& hdu) {
 
   /* Read several columns by their name */
 
-  const auto byName = hdu.readColumns(FitsIO::Named<std::string>("STRING"), FitsIO::Named<std::int32_t>("INT32"));
+  const auto byName = hdu.readColumns(Fits::Named<std::string>("STRING"), Fits::Named<std::int32_t>("INT32"));
   const auto& stringColumn = std::get<0>(byName);
 
   /* Read several columns by their index */
 
-  const auto byIndex = hdu.readColumns(FitsIO::Indexed<std::string>(0), FitsIO::Indexed<std::int32_t>(1));
+  const auto byIndex = hdu.readColumns(Fits::Indexed<std::string>(0), Fits::Indexed<std::int32_t>(1));
   const auto& intColumn = std::get<1>(byIndex);
 
   /* Use values */
@@ -417,7 +417,7 @@ class EleFitsTutorial : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = FitsIO::ProgramOptions::fromAuxFile("Tutorial.txt");
+    auto options = Fits::ProgramOptions::fromAuxFile("Tutorial.txt");
     options.positional("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
     return options.asPair();
   }
@@ -427,7 +427,7 @@ public:
     const std::string filename = args["output"].as<std::string>();
 
     logger.info() << "---";
-    logger.info() << "Hello, EleFits " << FitsIO::version() << "!";
+    logger.info() << "Hello, EleFits " << Fits::version() << "!";
     logger.info() << "---";
 
     writeMefFile(filename);

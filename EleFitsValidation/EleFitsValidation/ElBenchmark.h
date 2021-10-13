@@ -25,7 +25,7 @@
 #include "EleFitsValidation/Benchmark.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 /**
@@ -115,7 +115,7 @@ public:
 };
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #define _ELEFITS_VALIDATION_ELBENCHMARK_IMPL

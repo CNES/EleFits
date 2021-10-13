@@ -22,7 +22,7 @@
 #include "EleFits/ImageHdu.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 SifFile::SifFile(const std::string& filename, FileMode permission) :
     FitsFile(filename, permission), m_hdu(ImageHdu::Token {}, m_fptr, 0), m_raster(m_hdu.raster()) {}
@@ -43,5 +43,5 @@ void SifFile::updateChecksums() const {
   m_hdu.updateChecksums();
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

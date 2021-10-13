@@ -20,7 +20,7 @@
 #include "EleFits/MefFile.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 HduIterator<> begin(MefFile& f) {
   return { f, 0 };
@@ -30,5 +30,5 @@ HduIterator<> end(MefFile& f) {
   return { f, f.hduCount() };
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

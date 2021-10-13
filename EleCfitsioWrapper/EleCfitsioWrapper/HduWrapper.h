@@ -80,7 +80,7 @@ long currentVersion(fitsfile* fptr);
  * }
  * \endcode
  */
-FitsIO::HduCategory currentType(fitsfile* fptr);
+Fits::HduCategory currentType(fitsfile* fptr);
 
 /**
  * @brief Check whether current HDU is the Primary HDU.
@@ -100,7 +100,7 @@ bool gotoName(
     fitsfile* fptr,
     const std::string& name,
     long version = 0,
-    FitsIO::HduCategory category = FitsIO::HduCategory::Any);
+    Fits::HduCategory category = Fits::HduCategory::Any);
 
 /**
  * @brief Go to an HDU specified by incrementing the index by a given amount.
@@ -136,25 +136,25 @@ void createMetadataExtension(fitsfile* fptr, const std::string& name);
  * @brief Create a new image HDU with given name, pixel type and shape.
  */
 template <typename T, long n = 2>
-void createImageExtension(fitsfile* fptr, const std::string& name, const FitsIO::Position<n>& shape);
+void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<n>& shape);
 
 /**
  * @brief Write a Raster in a new image HDU.
  */
 template <typename T, long n = 2>
-void createImageExtension(fitsfile* fptr, const std::string& name, const FitsIO::Raster<T, n>& raster);
+void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::Raster<T, n>& raster);
 
 /**
  * @brief Create a new binary table HDU with given name and column infos.
  */
 template <typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::ColumnInfo<Ts>&... infos);
+void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::ColumnInfo<Ts>&... infos);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.
  */
 template <typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const FitsIO::Column<Ts>&... columns);
+void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<Ts>&... columns);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.

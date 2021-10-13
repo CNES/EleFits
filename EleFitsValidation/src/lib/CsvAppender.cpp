@@ -20,7 +20,7 @@
 #include "EleFitsValidation/CsvAppender.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 CsvAppender::CsvAppender(const std::string& filename, const std::vector<std::string>& header, const std::string& sep) :
@@ -47,5 +47,5 @@ CsvAppender& CsvAppender::operator<<(std::ostream& (*pf)(std::ostream&)) {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

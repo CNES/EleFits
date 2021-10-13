@@ -23,7 +23,7 @@
 #include "EleFitsData/Region.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup image_data_classes
@@ -170,7 +170,7 @@ PositionIterator<n> end(const Region<n>& region) {
   return PositionIterator<n>(pastTheLast);
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

@@ -23,7 +23,7 @@
 #include <numeric> // accumulate
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
     Hdu(token, fptr, index, HduCategory::Image, status), m_raster(
@@ -92,5 +92,5 @@ ELEFITS_FOREACH_RASTER_TYPE(COMPILE_WRITE_RASTER)
   #undef COMPILE_WRITE_RASTER
 #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

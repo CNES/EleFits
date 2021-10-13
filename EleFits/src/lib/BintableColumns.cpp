@@ -20,7 +20,7 @@
 #include "EleFits/BintableColumns.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 BintableColumns::BintableColumns(
     fitsfile*& fptr,
@@ -113,5 +113,5 @@ void BintableColumns::removeSeq(const std::vector<long>& indices) const {
   }
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

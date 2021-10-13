@@ -25,7 +25,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup iterators
@@ -191,7 +191,7 @@ private:
   int m_category;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

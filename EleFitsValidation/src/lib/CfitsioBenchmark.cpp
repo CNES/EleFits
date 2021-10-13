@@ -20,7 +20,7 @@
 #include "EleFitsValidation/CfitsioBenchmark.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 CfitsioBenchmark::~CfitsioBenchmark() {
@@ -197,5 +197,5 @@ void CfitsioBenchmark::mayThrow(const std::string& context) const {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

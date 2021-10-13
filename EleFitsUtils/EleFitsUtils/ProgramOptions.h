@@ -23,7 +23,7 @@
 #include <boost/program_options.hpp>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @brief Helper class to declare positional and named options, and help message.
@@ -136,7 +136,7 @@ private:
 
 }; // End of Program class
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

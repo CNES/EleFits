@@ -94,7 +94,7 @@ template <> // TODO clean
 void readColumnInfoImpl<std::string>(
     fitsfile* fptr,
     long index,
-    FitsIO::VecColumn<std::string>& column,
+    Fits::VecColumn<std::string>& column,
     long rowCount) {
   column.info = readColumnInfo<std::string>(fptr, index);
   column.vector() = std::vector<std::string>(rowCount);
@@ -104,7 +104,7 @@ template <> // TODO clean
 void readColumnChunkImpl<std::string>(
     fitsfile* fptr,
     long index,
-    FitsIO::VecColumn<std::string>& column,
+    Fits::VecColumn<std::string>& column,
     long firstRow,
     long rowCount) {
   int status = 0;
@@ -144,7 +144,7 @@ template <>
 void writeColumnChunkImpl<std::string>(
     fitsfile* fptr,
     long index,
-    const FitsIO::Column<std::string>& column,
+    const Fits::Column<std::string>& column,
     long firstRow,
     long rowCount) {
   int status = 0;
@@ -173,9 +173,9 @@ void writeColumnChunkImpl<std::string>(
 template <>
 void readColumnSegment<std::string>(
     fitsfile* fptr,
-    const FitsIO::Segment& rows,
+    const Fits::Segment& rows,
     long index,
-    FitsIO::Column<std::string>& column) {
+    Fits::Column<std::string>& column) {
   std::vector<char*> data(rows.size());
   std::generate(data.begin(), data.end(), [&]() {
     return (char*)malloc(column.info.repeatCount);
@@ -201,7 +201,7 @@ void readColumnSegment<std::string>(
 }
 
 template <>
-void writeColumn<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>& column) {
+void writeColumn<std::string>(fitsfile* fptr, const Fits::Column<std::string>& column) {
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
   CStrArray array(begin, end);
@@ -220,7 +220,7 @@ void writeColumn<std::string>(fitsfile* fptr, const FitsIO::Column<std::string>&
 }
 
 template <>
-void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const FitsIO::Column<std::string>& column) {
+void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::Column<std::string>& column) {
   long index = columnIndex(fptr, column.info.name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();

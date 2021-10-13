@@ -22,7 +22,7 @@
   #include "EleFits/ImageHdu.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <long n>
 Position<n> ImageHdu::readShape() const {
@@ -62,7 +62,7 @@ ELEFITS_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
     #undef DECLARE_WRITE_RASTER
   #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

@@ -24,7 +24,7 @@
 #include "ElementsKernel/Project.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 std::string version() {
   return Elements::Project::versionString();
@@ -119,5 +119,5 @@ void FitsFile::closeAndDelete() {
   m_open = false;
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

@@ -31,7 +31,7 @@ namespace Cfitsio {
 /**
  * @brief The error class which is thrown when an error occurs in a CFitsIO routine.
  */
-class CfitsioError : public FitsIO::FitsError {
+class CfitsioError : public Fits::FitsError {
 
 public:
   /**

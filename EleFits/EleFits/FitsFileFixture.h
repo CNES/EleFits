@@ -25,7 +25,7 @@
 #include "ElementsKernel/Temporary.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 /**
@@ -72,7 +72,7 @@ public:
 };
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

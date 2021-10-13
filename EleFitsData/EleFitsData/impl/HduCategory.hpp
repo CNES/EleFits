@@ -22,7 +22,7 @@
   #include "EleFitsData/HduCategory.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 class Hdu;
 class ImageHdu;
@@ -37,7 +37,7 @@ HduCategory HduCategory::forClass<ImageHdu>();
 template <>
 HduCategory HduCategory::forClass<BintableHdu>();
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

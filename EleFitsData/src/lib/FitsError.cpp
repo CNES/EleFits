@@ -20,7 +20,7 @@
 #include "EleFitsData/FitsError.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 const std::string FitsError::m_prefix = "EleFits error: ";
 
@@ -49,5 +49,5 @@ void FitsError::append(const std::string& text, std::size_t indent) {
   m_message += text;
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

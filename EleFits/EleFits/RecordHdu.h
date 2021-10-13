@@ -23,7 +23,7 @@
 #include "EleFits/Hdu.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @brief Deprecated alias for backward compatibility.
@@ -31,7 +31,7 @@ namespace FitsIO {
  */
 using RecordHdu = Hdu;
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

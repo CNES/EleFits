@@ -25,7 +25,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @brief Test-related classes and functions.
@@ -79,7 +79,7 @@ template <typename T>
 bool approx(T test, T ref, double tol = 0.01);
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

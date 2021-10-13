@@ -57,17 +57,17 @@ long currentVersion(fitsfile* fptr) {
   return 1;
 }
 
-FitsIO::HduCategory currentType(fitsfile* fptr) {
+Fits::HduCategory currentType(fitsfile* fptr) {
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
   if (type == IMAGE_HDU) {
-    return FitsIO::HduCategory::Image;
+    return Fits::HduCategory::Image;
   }
   if (type == BINARY_TBL) {
-    return FitsIO::HduCategory::Bintable;
+    return Fits::HduCategory::Bintable;
   }
-  throw FitsIO::FitsError("Unknown HDU type (code " + std::to_string(type) + ").");
+  throw Fits::FitsError("Unknown HDU type (code " + std::to_string(type) + ").");
 }
 
 bool currentIsPrimary(fitsfile* fptr) {
@@ -85,18 +85,18 @@ bool gotoIndex(fitsfile* fptr, long index) {
   return true;
 }
 
-bool gotoName(fitsfile* fptr, const std::string& name, long version, FitsIO::HduCategory category) {
+bool gotoName(fitsfile* fptr, const std::string& name, long version, Fits::HduCategory category) {
   if (name == "") {
     return false;
   }
   int status = 0;
   int hdutype = ANY_HDU;
-  if (category == FitsIO::HduCategory::Image) {
+  if (category == Fits::HduCategory::Image) {
     hdutype = IMAGE_HDU;
-  } else if (category == FitsIO::HduCategory::Bintable) {
+  } else if (category == Fits::HduCategory::Bintable) {
     hdutype = BINARY_TBL;
-  } else if (category != FitsIO::HduCategory::Any) {
-    throw FitsIO::FitsError("Invalid HduCategory; Only Any, Image and Bintable are supported.");
+  } else if (category != Fits::HduCategory::Any) {
+    throw Fits::FitsError("Invalid HduCategory; Only Any, Image and Bintable are supported.");
   }
   fits_movnam_hdu(fptr, hdutype, toCharPtr(name).get(), version, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot move to HDU: " + name);
@@ -130,7 +130,7 @@ bool updateName(fitsfile* fptr, const std::string& name) {
   if (name == "") {
     return false;
   }
-  HeaderIo::updateRecord(fptr, FitsIO::Record<std::string>("EXTNAME", name));
+  HeaderIo::updateRecord(fptr, Fits::Record<std::string>("EXTNAME", name));
   return true;
 }
 
@@ -138,12 +138,12 @@ bool updateVersion(fitsfile* fptr, long version) {
   if (version == 0) {
     return false;
   }
-  HeaderIo::updateRecord(fptr, FitsIO::Record<long>("EXTVER", version));
+  HeaderIo::updateRecord(fptr, Fits::Record<long>("EXTVER", version));
   return true;
 }
 
 void createMetadataExtension(fitsfile* fptr, const std::string& name) {
-  createImageExtension<unsigned char, 0>(fptr, name, FitsIO::Position<0>());
+  createImageExtension<unsigned char, 0>(fptr, name, Fits::Position<0>());
 }
 
 void deleteHdu(fitsfile* fptr, long index) {

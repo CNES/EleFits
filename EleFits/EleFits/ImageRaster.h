@@ -27,7 +27,7 @@
 #include <functional>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup image_handlers
@@ -279,7 +279,7 @@ private:
   std::function<void(void)> m_edit;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

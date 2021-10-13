@@ -46,37 +46,37 @@ const std::type_info& readTypeid(fitsfile* fptr);
  * @brief Read the shape of the current image HDU.
  */
 template <long n = 2>
-FitsIO::Position<n> readShape(fitsfile* fptr);
+Fits::Position<n> readShape(fitsfile* fptr);
 
 /**
  * @brief Reshape the current image HDU.
  */
 template <typename T, long n = 2>
-void updateShape(fitsfile* fptr, const FitsIO::Position<n>& shape);
+void updateShape(fitsfile* fptr, const Fits::Position<n>& shape);
 
 /**
  * @brief Read the whole raster of the current image HDU.
  */
 template <typename T, long n = 2>
-FitsIO::VecRaster<T, n> readRaster(fitsfile* fptr);
+Fits::VecRaster<T, n> readRaster(fitsfile* fptr);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing raster.
  */
 template <typename T, long n = 2>
-void readRasterTo(fitsfile* fptr, FitsIO::Raster<T, n>& destination);
+void readRasterTo(fitsfile* fptr, Fits::Raster<T, n>& destination);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing subraster.
  */
 template <typename T, long n = 2>
-void readRasterTo(fitsfile* fptr, FitsIO::Subraster<T, n>& destination);
+void readRasterTo(fitsfile* fptr, Fits::Subraster<T, n>& destination);
 
 /**
  * @brief Read a region of the current image HDU.
  */
 template <typename T, long m, long n>
-FitsIO::VecRaster<T, m> readRegion(fitsfile* fptr, const FitsIO::Region<n>& region);
+Fits::VecRaster<T, m> readRegion(fitsfile* fptr, const Fits::Region<n>& region);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.
@@ -87,7 +87,7 @@ FitsIO::VecRaster<T, m> readRegion(fitsfile* fptr, const FitsIO::Region<n>& regi
  * directly in a destination raster.
  */
 template <typename T, long m, long n>
-void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raster<T, m>& destination);
+void readRegionTo(fitsfile* fptr, const Fits::Region<n>& region, Fits::Raster<T, m>& destination);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing subraster.
@@ -98,13 +98,13 @@ void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Raste
  * directly in a destination subraster.
  */
 template <typename T, long m, long n>
-void readRegionTo(fitsfile* fptr, const FitsIO::Region<n>& region, FitsIO::Subraster<T, m>& destination);
+void readRegionTo(fitsfile* fptr, const Fits::Region<n>& region, Fits::Subraster<T, m>& destination);
 
 /**
  * @brief Write a whole raster in the current image HDU.
  */
 template <typename T, long n = 2>
-void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
+void writeRaster(fitsfile* fptr, const Fits::Raster<T, n>& raster);
 
 /**
  * @brief Write a whole raster into a region of the current image HDU.
@@ -112,7 +112,7 @@ void writeRaster(fitsfile* fptr, const FitsIO::Raster<T, n>& raster);
  * @param destination The destination position (size is deduced from raster size)
  */
 template <typename T, long m, long n>
-void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, m>& raster, const FitsIO::Position<n>& destination);
+void writeRegion(fitsfile* fptr, const Fits::Raster<T, m>& raster, const Fits::Position<n>& destination);
 
 /**
  * @brief Write a subraster into a region of the current image HDU.
@@ -120,7 +120,7 @@ void writeRegion(fitsfile* fptr, const FitsIO::Raster<T, m>& raster, const FitsI
  * @param region The destination position (size is deduced from subraster size)
  */
 template <typename T, long m, long n>
-void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const FitsIO::Position<n>& destination);
+void writeRegion(fitsfile* fptr, const Fits::Subraster<T, n>& subraster, const Fits::Position<n>& destination);
 
 } // namespace ImageIo
 } // namespace Cfitsio

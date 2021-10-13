@@ -64,12 +64,12 @@ void checkClose(std::complex<double> value, std::complex<double> expected) {
 
 template <typename T>
 void checkRecordIsReadBack(const std::string& label) {
-  FitsIO::Test::MinimalFile file;
-  T value = FitsIO::Test::generateRandomValue<T>();
+  Fits::Test::MinimalFile file;
+  T value = Fits::Test::generateRandomValue<T>();
   std::string keyword = label.substr(0, 8);
   std::string unit = label.substr(0, 1);
   std::string comment = label.substr(0, 10);
-  HeaderIo::writeRecord(file.fptr, FitsIO::Record<T>(keyword, value, unit, comment));
+  HeaderIo::writeRecord(file.fptr, Fits::Record<T>(keyword, value, unit, comment));
   const auto parsed = HeaderIo::parseRecord<T>(file.fptr, keyword);
   checkClose(parsed.value, value);
   BOOST_TEST(parsed.unit == unit);
@@ -90,23 +90,23 @@ void checkRecordIsReadBack<unsigned long>(const std::string& label) {
 ELEFITS_FOREACH_RECORD_TYPE(RECORD_IS_READ_BACK_TEST)
 
 BOOST_AUTO_TEST_CASE(empty_value_test) {
-  FitsIO::Test::MinimalFile file;
-  FitsIO::Record<std::string> empty("EMPTY", "", "", "");
+  Fits::Test::MinimalFile file;
+  Fits::Record<std::string> empty("EMPTY", "", "", "");
   HeaderIo::writeRecord(file.fptr, empty);
   const auto output = HeaderIo::parseRecord<std::string>(file.fptr, empty.keyword);
   BOOST_TEST(output.value == "");
 }
 
 BOOST_AUTO_TEST_CASE(missing_keyword_test) {
-  FitsIO::Test::MinimalFile file;
-  BOOST_CHECK_THROW(HeaderIo::parseRecord<std::string>(file.fptr, "MISSING"), FitsIO::FitsError);
+  Fits::Test::MinimalFile file;
+  BOOST_CHECK_THROW(HeaderIo::parseRecord<std::string>(file.fptr, "MISSING"), Fits::FitsError);
 }
 
 struct RecordList {
-  FitsIO::Record<bool> b;
-  FitsIO::Record<int> i;
-  FitsIO::Record<double> d;
-  FitsIO::Record<std::string> s;
+  Fits::Record<bool> b;
+  Fits::Record<int> i;
+  Fits::Record<double> d;
+  Fits::Record<std::string> s;
 };
 
 struct ValueList {
@@ -122,7 +122,7 @@ void checkContains(const std::vector<std::string>& list, const std::vector<std::
   }
 }
 
-BOOST_FIXTURE_TEST_CASE(struct_io_test, FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(struct_io_test, Fits::Test::MinimalFile) {
   RecordList input { { "BOOL", true }, { "INT", 2 }, { "DOUBLE", 3. }, { "STRING", "four" } };
   HeaderIo::writeRecords<bool, int, double, std::string>(
       this->fptr,
@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, FitsIO::Test::MinimalFile) {
       { "DOUBLE", 3. },
       { "STRING", "four" });
   std::vector<std::string> keywords { "BOOL", "INT", "DOUBLE", "STRING" };
-  const auto categories = ~Euclid::FitsIO::KeywordCategory::Comment;
+  const auto categories = ~Euclid::Fits::KeywordCategory::Comment;
   const auto found = HeaderIo::listKeywords(this->fptr, categories);
   checkContains(found, keywords);
   auto records = HeaderIo::parseRecordsAs<RecordList, bool, int, double, std::string>(this->fptr, keywords);
@@ -146,11 +146,11 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, FitsIO::Test::MinimalFile) {
   BOOST_TEST(values.s == input.s.value);
 }
 
-BOOST_FIXTURE_TEST_CASE(several_records_test, FitsIO::Test::MinimalFile) {
-  FitsIO::Record<std::string> strRecord { "STR", "VALUE" };
-  FitsIO::Record<bool> boolRecord { "BOOL", true };
-  FitsIO::Record<int> intRecord { "INT", 42 };
-  FitsIO::Record<float> floatRecord { "FLOAT", 3.14F };
+BOOST_FIXTURE_TEST_CASE(several_records_test, Fits::Test::MinimalFile) {
+  Fits::Record<std::string> strRecord { "STR", "VALUE" };
+  Fits::Record<bool> boolRecord { "BOOL", true };
+  Fits::Record<int> intRecord { "INT", 42 };
+  Fits::Record<float> floatRecord { "FLOAT", 3.14F };
   auto records = std::make_tuple(intRecord, floatRecord);
   HeaderIo::writeRecords(this->fptr, strRecord, boolRecord);
   BOOST_TEST(HeaderIo::parseRecord<std::string>(this->fptr, "STR").value == "VALUE");
@@ -172,8 +172,8 @@ BOOST_FIXTURE_TEST_CASE(several_records_test, FitsIO::Test::MinimalFile) {
 
 template <typename T>
 void checkRecordTypeid(T value, const std::vector<std::size_t>& validTypeCodes) {
-  FitsIO::Test::MinimalFile f;
-  FitsIO::Record<T> record { "KEYWORD", value };
+  Fits::Test::MinimalFile f;
+  Fits::Record<T> record { "KEYWORD", value };
   HeaderIo::writeRecord(f.fptr, record);
   const auto& id = HeaderIo::recordTypeid(f.fptr, "KEYWORD").hash_code();
   const auto& it = std::find(validTypeCodes.begin(), validTypeCodes.end(), id);
@@ -182,12 +182,12 @@ void checkRecordTypeid(T value, const std::vector<std::size_t>& validTypeCodes) 
 
 template <typename T>
 void checkRecordTypeidMin(const std::vector<std::size_t>& validTypeCodes) {
-  checkRecordTypeid(FitsIO::Test::almostMin<T>(), validTypeCodes);
+  checkRecordTypeid(Fits::Test::almostMin<T>(), validTypeCodes);
 }
 
 template <typename T>
 void checkRecordTypeidMax(const std::vector<std::size_t>& validTypeCodes) {
-  checkRecordTypeid(FitsIO::Test::almostMax<T>(), validTypeCodes);
+  checkRecordTypeid(Fits::Test::almostMax<T>(), validTypeCodes);
 }
 
 BOOST_AUTO_TEST_CASE(record_type_test) {
@@ -198,10 +198,10 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypeidMin<long>({ typeid(int).hash_code(), typeid(long).hash_code() });
   checkRecordTypeidMin<long long>({ typeid(long).hash_code(), typeid(long long).hash_code() });
   checkRecordTypeidMin<float>({ typeid(float).hash_code() });
-  checkRecordTypeid<double>(FitsIO::Test::halfMin<double>(), { typeid(double).hash_code() });
+  checkRecordTypeid<double>(Fits::Test::halfMin<double>(), { typeid(double).hash_code() });
   checkRecordTypeidMin<std::complex<float>>({ typeid(std::complex<float>).hash_code() });
   checkRecordTypeid<std::complex<double>>(
-      FitsIO::Test::halfMin<std::complex<double>>(),
+      Fits::Test::halfMin<std::complex<double>>(),
       { typeid(std::complex<double>).hash_code() });
   checkRecordTypeid<std::string>("VALUE", { typeid(std::string).hash_code() });
   checkRecordTypeidMax<bool>({ typeid(bool).hash_code() });
@@ -212,17 +212,17 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypeidMax<unsigned long long>(
       { typeid(unsigned long).hash_code(), typeid(unsigned long long).hash_code() });
   checkRecordTypeidMax<float>({ typeid(float).hash_code() });
-  checkRecordTypeid<double>(FitsIO::Test::halfMax<double>(), { typeid(double).hash_code() });
+  checkRecordTypeid<double>(Fits::Test::halfMax<double>(), { typeid(double).hash_code() });
   checkRecordTypeidMax<std::complex<float>>({ typeid(std::complex<float>).hash_code() });
   checkRecordTypeid<std::complex<double>>(
-      FitsIO::Test::halfMax<std::complex<double>>(),
+      Fits::Test::halfMax<std::complex<double>>(),
       { typeid(std::complex<double>).hash_code() });
 }
 
-BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, FitsIO::Test::MinimalFile) {
-  FitsIO::Record<short> shortRecord("SHORT", 0);
-  FitsIO::Record<long> longRecord("LONG", 1);
-  FitsIO::Record<long long> longlongRecord("LONGLONG", 2);
+BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, Fits::Test::MinimalFile) {
+  Fits::Record<short> shortRecord("SHORT", 0);
+  Fits::Record<long> longRecord("LONG", 1);
+  Fits::Record<long long> longlongRecord("LONGLONG", 2);
   HeaderIo::writeRecords(this->fptr, shortRecord, longRecord, longlongRecord);
   const auto records = HeaderIo::parseRecordVec<long long>(this->fptr, { "SHORT", "LONG", "LONGLONG" });
   BOOST_TEST(records["SHORT"].value == shortRecord);

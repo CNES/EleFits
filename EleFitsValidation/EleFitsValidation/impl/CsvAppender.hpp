@@ -22,7 +22,7 @@
 #if defined(_ELEFITS_VALIDATION_CSVAPPENDER_IMPL) || defined(CHECK_QUALITY)
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <typename T>
@@ -40,7 +40,7 @@ CsvAppender& CsvAppender::writeRow(const Ts&... values) {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

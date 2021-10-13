@@ -22,7 +22,7 @@
 #include <algorithm> // copy_if, find_if
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 const KeywordCategory KeywordCategory::Mandatory { 0b0001 };
 const KeywordCategory KeywordCategory::Reserved { 0b0010 };
@@ -120,5 +120,5 @@ bool KeywordCategory::matchesOneOf(const std::string& keyword, const std::vector
   return pos != refs.end();
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

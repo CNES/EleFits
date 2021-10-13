@@ -29,7 +29,7 @@
 using boost::program_options::value;
 
 using namespace Euclid;
-using namespace FitsIO;
+using namespace Fits;
 
 /**
  * @brief Generate a random scalar column without unit.
@@ -104,7 +104,7 @@ class EleFitsGenerate2DMassFiles : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    Euclid::FitsIO::ProgramOptions options("Generate random 2DMASS-like outputs.");
+    Euclid::Fits::ProgramOptions options("Generate random 2DMASS-like outputs.");
     options.named("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
     options.named("rows", value<long>()->default_value(10), "Binary table row count");
     options.named("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");

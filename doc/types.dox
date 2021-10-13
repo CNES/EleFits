@@ -1,5 +1,5 @@
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
 
@@ -11,7 +11,7 @@ namespace FitsIO {
 
 \section types-indices Indices
 
-Indices in the FitsIO namespace are 0-based `long`s.
+Indices in the Fits namespace are 0-based `long`s.
 Here is why.
 
 There is no way to make everybody happy:

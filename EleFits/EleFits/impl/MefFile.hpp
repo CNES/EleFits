@@ -22,7 +22,7 @@
   #include "EleFits/MefFile.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <class T>
 const T& MefFile::access(long index) {
@@ -129,7 +129,7 @@ ELEFITS_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
     #undef DECLARE_ASSIGN_IMAGE_EXT
   #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

@@ -34,7 +34,7 @@
 
 using boost::program_options::value;
 
-using namespace Euclid::FitsIO;
+using namespace Euclid::Fits;
 
 Test::BenchmarkFactory initFactory() {
   Test::BenchmarkFactory factory;

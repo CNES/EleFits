@@ -1,5 +1,5 @@
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
 
@@ -12,7 +12,7 @@ This page compares the basic CFitsIO operations performed with the following API
 
 - Native CFitsIO API;
 - Module EleCfitsioWrapper API (Cfitsio namespace);
-- Module EleFits API (FitsIO namespace).
+- Module EleFits API (Fits namespace).
 
 The snippets below are taken respectively from the EleCfitsio_Example, EleCfitsioWrapper_Example and EleFits_Example programs.
 Some statements from the EleCfitsio_Example are are skipped because they do not convey much information, like for memory management.

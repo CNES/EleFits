@@ -23,7 +23,7 @@
 #include <cstdlib>
 #include <thread>
 
-using namespace Euclid::FitsIO;
+using namespace Euclid::Fits;
 
 struct ChronoFixture : public Test::Chronometer<std::chrono::milliseconds> {
   ChronoFixture(std::chrono::milliseconds chronoOffset = std::chrono::milliseconds { std::rand() }) :

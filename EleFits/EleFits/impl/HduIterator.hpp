@@ -22,7 +22,7 @@
   #include "EleFits/HduIterator.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <typename THdu>
 HduIterator<THdu>::HduIterator(MefFile& f, long index, HduFilter filter) :
@@ -91,7 +91,7 @@ HduIterator<THdu> end(HduSelector<THdu>& selector) {
   return { selector.mef, selector.mef.hduCount(), selector.filter };
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

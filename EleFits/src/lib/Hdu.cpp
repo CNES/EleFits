@@ -23,7 +23,7 @@
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 Hdu::Hdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
     m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_header(
@@ -167,5 +167,5 @@ ELEFITS_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
 
 template void Hdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

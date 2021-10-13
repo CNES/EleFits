@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_SUITE(BintableWrapper_test)
 
 template <typename T>
 void checkScalarColumnIsReadBack() {
-  using namespace FitsIO::Test;
+  using namespace Fits::Test;
   RandomScalarColumn<T> input;
   MinimalFile file;
   try {
@@ -72,7 +72,7 @@ ELEFITS_FOREACH_COLUMN_TYPE(SCALAR_COLUMN_IS_READ_BACK_TEST)
 
 template <typename T>
 void checkVectorColumnIsReadBack() {
-  using namespace FitsIO::Test;
+  using namespace Fits::Test;
   constexpr long rowCount = 3;
   constexpr long repeatCount = 2;
   RandomVectorColumn<T> input(repeatCount, rowCount);
@@ -111,8 +111,8 @@ void checkVectorColumnIsReadBack<std::string>() {
 
 ELEFITS_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
 
-BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
-  using namespace FitsIO::Test;
+BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
+  using namespace Fits::Test;
   SmallTable input;
   HduAccess::createBintableExtension(
       this->fptr,
@@ -131,8 +131,8 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
   BOOST_TEST(outputDistsMags.vector() == input.distMagCol.vector());
 }
 
-BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
-  using namespace FitsIO::Test;
+BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
+  using namespace Fits::Test;
   constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full
   RandomScalarColumn<int> i(rowCount);
   i.info.name = "I";
@@ -151,8 +151,8 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, FitsIO::Test::MinimalFile) {
   BOOST_TEST(std::get<2>(table).vector() == d.vector());
 }
 
-BOOST_FIXTURE_TEST_CASE(append_columns_test, FitsIO::Test::MinimalFile) {
-  using namespace FitsIO::Test;
+BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
+  using namespace Fits::Test;
   SmallTable table;
   HduAccess::createBintableExtension(this->fptr, "TABLE", table.nameCol);
   const auto names = BintableIo::readColumn<SmallTable::Name>(fptr, table.nameCol.info.name);

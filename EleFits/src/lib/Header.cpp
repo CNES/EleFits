@@ -23,7 +23,7 @@
 #include <algorithm> // find
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 Header::Header(fitsfile*& fptr, std::function<void(void)> touchFunction, std::function<void(void)> editFunction) :
     m_fptr(fptr), m_touch(touchFunction), m_edit(editFunction) {}
@@ -96,5 +96,5 @@ void KeywordNotFoundError::mayThrow(const std::vector<std::string>& missingKeywo
   }
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

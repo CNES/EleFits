@@ -26,7 +26,7 @@
 #include "EleFits/ImageRaster.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup image_handlers
@@ -130,7 +130,7 @@ private:
   ImageRaster m_raster;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

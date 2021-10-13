@@ -20,7 +20,7 @@
 #include "EleFitsData/Raster.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 #ifndef COMPILE_RASTER_CLASSES
   #define COMPILE_RASTER_CLASSES(type, unused) \
@@ -37,5 +37,5 @@ ELEFITS_FOREACH_RASTER_TYPE(COMPILE_RASTER_CLASSES)
   #undef COMPILE_COLUMN_CLASSES
 #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

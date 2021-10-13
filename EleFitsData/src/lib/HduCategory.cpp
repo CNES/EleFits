@@ -22,7 +22,7 @@
 #include <algorithm> // transform
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 HduCategory::HduCategory() :
     m_mask(static_cast<std::size_t>(HduCategory::TritPosition::TritCount), HduCategory::Trit::Unconstrained) {}
@@ -246,5 +246,5 @@ bool HduFilter::accepts(const HduCategory& input) const {
   return false;
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

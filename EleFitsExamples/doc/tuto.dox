@@ -1,5 +1,5 @@
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
 
@@ -49,7 +49,7 @@ For the headers and namespace, here's the only thing you'll have to do:
 There are other headers and namespaces, but those probably cover 90% of the use cases.
 Refer to the API documentation for more details.
 
-\see Euclid::FitsIO
+\see Euclid::Fits
 
 
 \section tuto-data-classes Data classes
@@ -262,12 +262,12 @@ This will return a VecColumn:
 
 
 A picture is worth a thousand words; below is the class diagram of what we've just learned
-(i.e. the Euclid::FitsIO namespace contents).
+(i.e. the Euclid::Fits namespace contents).
 
 To go further or out of curiosity, head to the other [documentation pages](pages.html).
 Specifically, data classes and service classes are described in more details in
 \ref data_classes and \ref handlers.
-To practice or test your own code, you can also browse the Euclid::FitsIO::Test namespace,
+To practice or test your own code, you can also browse the Euclid::Fits::Test namespace,
 which provides ready-to-use functions and classes, such as random records, rasters and columns.
 
 \image html doc/diagrams/out/FitsData.png

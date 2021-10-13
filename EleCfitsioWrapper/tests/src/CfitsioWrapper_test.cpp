@@ -38,15 +38,15 @@ BOOST_AUTO_TEST_CASE(smoke_test) {
   using namespace Cfitsio;
   fitsfile* fptr;
   (void)fptr;
-  using FitsIO::Column;
-  using FitsIO::Raster;
-  using FitsIO::Record;
+  using Fits::Column;
+  using Fits::Raster;
+  using Fits::Record;
 }
 
 /**
  * Check that CFitsIO is not able to read unsigned long records if greater than max(long).
  */
-BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::Fits::Test::MinimalFile) {
   /* Write */
   int status = 0;
   unsigned long signed_max = std::numeric_limits<long>::max();
@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::FitsIO::Test::M
   BOOST_TEST(output != unsigned_max); // CFitsIO bug
 }
 
-BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::Fits::Test::MinimalFile) {
   // Fixture creates file and empty primary of type uchar
   int status = 0;
   long naxes = 1;
@@ -75,7 +75,7 @@ BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::FitsIO::Test::M
   BOOST_TEST(status == BAD_BITPIX); // CFitsIO bug
 }
 
-BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::FitsIO::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::Fits::Test::MinimalFile) {
   // Fixture creates file and empty primary of type uchar
   int status = 0;
   long naxes = 1;

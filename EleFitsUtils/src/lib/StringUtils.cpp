@@ -22,7 +22,7 @@
 #include <boost/algorithm/string.hpp>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace String {
 
 std::vector<std::string> split(const std::string& input, const std::string& delimiters) {
@@ -52,5 +52,5 @@ std::string readAuxFile(const std::string& filename) {
 }
 
 } // namespace String
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

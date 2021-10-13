@@ -20,7 +20,7 @@
 #include "EleFitsValidation/Benchmark.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 Benchmark::Benchmark(const std::string& filename) :
@@ -111,5 +111,5 @@ std::vector<std::string> BenchmarkFactory::keys() const {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

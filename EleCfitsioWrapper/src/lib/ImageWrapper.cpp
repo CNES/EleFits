@@ -36,15 +36,15 @@ const std::type_info& readTypeid(fitsfile* fptr) {
   fits_get_img_equivtype(fptr, &bitpix, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read image type");
   ELEFITS_FOREACH_RASTER_TYPE(RETURN_TYPEID_IF_MATCH)
-  throw FitsIO::FitsError("Unknown BITPIX: " + std::to_string(bitpix));
+  throw Fits::FitsError("Unknown BITPIX: " + std::to_string(bitpix));
 }
 
 template <>
-FitsIO::Position<-1> readShape<-1>(fitsfile* fptr) {
+Fits::Position<-1> readShape<-1>(fitsfile* fptr) {
   int status = 0;
   int naxis = 0;
   fits_get_img_dim(fptr, &naxis, &status);
-  FitsIO::Position<-1> shape(naxis);
+  Fits::Position<-1> shape(naxis);
   fits_get_img_size(fptr, naxis, &shape[0], &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read raster shape");
   return shape;

@@ -23,7 +23,7 @@
 #include "EleFitsData/Position.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup image_data_classes
@@ -317,7 +317,7 @@ private:
 
 /// @endcond
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

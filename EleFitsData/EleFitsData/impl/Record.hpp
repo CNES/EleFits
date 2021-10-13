@@ -24,7 +24,7 @@
   #include <type_traits> // enable_if & co
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /// @cond INTERNAL
 namespace Internal {
@@ -265,7 +265,7 @@ ELEFITS_FOREACH_RECORD_TYPE(DECLARE_RECORD_CLASS)
     #undef DECLARE_RECORD_CLASS
   #endif
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

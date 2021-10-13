@@ -22,7 +22,7 @@
 #include "EleCfitsioWrapper/FileWrapper.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 MinimalFile::MinimalFile() : tmp(), filename(tmp.path().string()), fptr(nullptr) {
@@ -34,5 +34,5 @@ MinimalFile::~MinimalFile() {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

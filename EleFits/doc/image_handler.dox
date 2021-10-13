@@ -1,5 +1,5 @@
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
 

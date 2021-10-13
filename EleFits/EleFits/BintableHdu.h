@@ -27,7 +27,7 @@
 #include <string>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup bintable_handlers
@@ -197,7 +197,7 @@ private:
   BintableColumns m_columns;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

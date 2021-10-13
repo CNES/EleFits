@@ -25,7 +25,7 @@
 #include <string>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup header_data_classes
@@ -247,7 +247,7 @@ bool operator!=(const Record<T>& lhs, const Record<T>& rhs) {
   return not(lhs == rhs);
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

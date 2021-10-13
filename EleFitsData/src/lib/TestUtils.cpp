@@ -20,7 +20,7 @@
 #include "EleFitsData/TestUtils.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <>
@@ -153,5 +153,5 @@ bool approx<std::complex<double>>(std::complex<double> test, std::complex<double
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

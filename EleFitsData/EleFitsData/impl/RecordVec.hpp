@@ -25,7 +25,7 @@
   #include <algorithm> // find_if
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <typename T>
 RecordVec<T>::RecordVec(std::size_t size) : vector(size) {}
@@ -62,7 +62,7 @@ Record<TValue> RecordVec<T>::as(const std::string& keyword) const {
   return Record<TValue>(operator[](keyword));
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

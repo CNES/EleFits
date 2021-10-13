@@ -25,7 +25,7 @@
 #include <utility>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup exceptions
@@ -153,7 +153,7 @@ struct ChecksumError : public FitsError {
   Status data;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

@@ -28,7 +28,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup bintable_data_classes
@@ -507,7 +507,7 @@ private:
   std::vector<T> m_vec;
 };
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

@@ -20,7 +20,7 @@
 #include "EleFitsData/TestRaster.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
@@ -37,5 +37,5 @@ bool SmallRaster::approx(const Raster<float>& other, double tol) const {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

@@ -20,7 +20,7 @@
 #include "EleFitsData/TestRecord.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 constexpr long RandomHeader::recordCount;
@@ -123,5 +123,5 @@ RecordSeq RandomHeader::allRecords() const {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

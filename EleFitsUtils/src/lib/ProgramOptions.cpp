@@ -22,7 +22,7 @@
 #include "EleFitsUtils/StringUtils.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 ProgramOptions::ProgramOptions(const std::string& helpMessage) :
     m_named { makeDesc(helpMessage) }, m_add { m_named.add_options() }, m_positional {} {}
@@ -57,5 +57,5 @@ std::string ProgramOptions::makeDesc(const std::string& helpMessage) {
   return optionsGroup;
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

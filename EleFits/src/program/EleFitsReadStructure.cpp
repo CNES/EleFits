@@ -28,7 +28,7 @@
 #include <string>
 
 using boost::program_options::value;
-using namespace Euclid::FitsIO;
+using namespace Euclid::Fits;
 
 #define RETURN_TYPENAME_IF_MATCH(type, name) \
   if (typeid(type) == id) { \

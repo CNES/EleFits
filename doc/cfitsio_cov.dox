@@ -4,7 +4,7 @@
 
 Legend:
 
-- Items in **bold** are available in the end-user API (Euclid::FitsIO namespace);
+- Items in **bold** are available in the end-user API (Euclid::Fits namespace);
 - Items in *italic* are being implemented;
 - Other items are not available, they might be implemented on user requests.
 

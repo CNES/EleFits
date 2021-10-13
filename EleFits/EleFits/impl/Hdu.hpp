@@ -24,7 +24,7 @@
   #include "EleFits/Hdu.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 template <typename T>
 const T& Hdu::as() const {
@@ -154,7 +154,7 @@ ELEFITS_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
 
 extern template void Hdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

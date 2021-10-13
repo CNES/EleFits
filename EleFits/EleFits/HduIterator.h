@@ -25,7 +25,7 @@
 #include <iterator>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup iterators
@@ -162,7 +162,7 @@ HduIterator<THdu> begin(HduSelector<THdu>& selector);
 template <typename THdu = Hdu>
 HduIterator<THdu> end(HduSelector<THdu>& selector);
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

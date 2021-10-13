@@ -21,7 +21,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::FitsIO;
+using namespace Euclid::Fits;
 
 struct ParamBenchmark : Test::Benchmark {
   ParamBenchmark(const std::string& filename, int i, double d) : Test::Benchmark(filename), m_i(i), m_d(d) {}

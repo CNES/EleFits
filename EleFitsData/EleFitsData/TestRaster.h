@@ -28,7 +28,7 @@
 #include "EleFitsData/TestUtils.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 /**
@@ -91,7 +91,7 @@ template <typename T, long n>
 bool rasterApprox(const Raster<T, n>& test, const Raster<T, n>& ref, double tol = 0.01);
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 /// @cond INTERNAL

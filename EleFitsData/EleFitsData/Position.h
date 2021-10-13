@@ -31,7 +31,7 @@
 #include <vector>
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup image_data_classes
@@ -446,7 +446,7 @@ Position<n> operator/(const Position<n>& lhs, long rhs) {
   return res;
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

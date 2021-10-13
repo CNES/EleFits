@@ -20,7 +20,7 @@
 #include "EleFits/FileMemSegments.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 FileMemSegments::FileMemSegments(const Segment& fileSegment, long memoryIndex) :
     m_file(fileSegment), m_memory(Segment::fromSize(memoryIndex, fileSegment.size())) {
@@ -72,5 +72,5 @@ long FileMemSegments::memoryToFile() const {
   return m_file.front - m_memory.front;
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid

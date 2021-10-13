@@ -23,7 +23,7 @@
 #include "EleFitsData/Region.h"
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /**
  * @ingroup image_handlers
@@ -145,7 +145,7 @@ FileMemRegions<n> makeMemRegion(const Position<n>& memoryPosition) {
   return FileMemRegions<n>(Region<n>::whole(), memoryPosition);
 }
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

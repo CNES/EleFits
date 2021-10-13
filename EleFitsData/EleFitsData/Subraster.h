@@ -27,7 +27,7 @@
 #include <functional> // multiplies
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 
 /// @cond INTERNAL
 
@@ -136,7 +136,7 @@ private:
 
 /// @endcond
 
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif

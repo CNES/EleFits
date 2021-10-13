@@ -26,7 +26,7 @@
 #include <numeric> // inner_product
 
 namespace Euclid {
-namespace FitsIO {
+namespace Fits {
 namespace Test {
 
 template <typename TUnit>
@@ -106,7 +106,7 @@ double Chronometer<TUnit>::max() const {
 }
 
 } // namespace Test
-} // namespace FitsIO
+} // namespace Fits
 } // namespace Euclid
 
 #endif
