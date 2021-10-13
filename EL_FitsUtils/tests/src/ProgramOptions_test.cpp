@@ -27,9 +27,9 @@ BOOST_AUTO_TEST_SUITE(ProgramOptions_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(example_test) {
-
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+BOOST_AUTO_TEST_CASE(bypass_test) {
+  // The class was moved to Elements, where it is unit tested,
+  // and is validated through the validation script already
 }
 
 //-----------------------------------------------------------------------------
