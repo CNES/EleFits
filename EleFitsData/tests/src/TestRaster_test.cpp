@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(small_raster_equals_itself_test) {
     checkRandomRasterEqualsItself<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
+ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
 
 template <typename T, long n>
 void checkRastersWithDifferentShapesDiffer(const Raster<T, n>& raster) {
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(small_rasters_with_different_shapes_differ_test) {
     checkRandomRastersWithDifferentShapesDiffer<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
+ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 
 template <typename T, long n>
 void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n>& raster) {
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(small_rasters_with_different_values_differ_test) {
     checkRandomRastersWithDifferentValuesDiffer<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(RASTERS_WITH_DIFFERENT_VALUES_DIFFER_TEST)
+ELEFITS_FOREACH_RASTER_TYPE(RASTERS_WITH_DIFFERENT_VALUES_DIFFER_TEST)
 
 //-----------------------------------------------------------------------------
 

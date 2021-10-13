@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSDATA_RASTER_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSDATA_RASTER_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFitsData/FitsError.h"
   #include "EleFitsData/Raster.h"
@@ -320,7 +320,7 @@ std::vector<std::decay_t<T>>& VecRaster<T, n>::moveTo(std::vector<std::decay_t<T
       extern template class Raster<type, 3>; \
       extern template class PtrRaster<type, 3>; \
       extern template class VecRaster<type, 3>;
-EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
+ELEFITS_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
     #undef DECLARE_COLUMN_CLASSES
   #endif
 

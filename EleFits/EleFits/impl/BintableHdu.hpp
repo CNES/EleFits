@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSFILE_BINTABLEHDU_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_BINTABLEHDU_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFits/BintableHdu.h"
 
@@ -82,13 +82,13 @@ void BintableHdu::appendColumns(const Column<Ts>&... columns) const {
   #ifndef DECLARE_READ_COLUMN
     #define DECLARE_READ_COLUMN(type, unused) \
       extern template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
-EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_READ_COLUMN)
+ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_READ_COLUMN)
     #undef DECLARE_READ_COLUMN
   #endif
 
   #ifndef DECLARE_WRITE_COLUMN
     #define DECLARE_WRITE_COLUMN(type, unused) extern template void BintableHdu::writeColumn(const Column<type>&) const;
-EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_WRITE_COLUMN)
+ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_WRITE_COLUMN)
     #undef DECLARE_WRITE_COLUMN
   #endif
 

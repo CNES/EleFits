@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_FITSIOERROR_H
-#define _EL_FITSDATA_FITSIOERROR_H
+#ifndef _ELEFITSDATA_FITSIOERROR_H
+#define _ELEFITSDATA_FITSIOERROR_H
 
 #include <stdexcept>
 #include <string>

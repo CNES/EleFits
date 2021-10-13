@@ -33,7 +33,7 @@ namespace FitsIO {
     template class Raster<type, 3>; \
     template class PtrRaster<type, 3>; \
     template class VecRaster<type, 3>;
-EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_RASTER_CLASSES)
+ELEFITS_FOREACH_RASTER_TYPE(COMPILE_RASTER_CLASSES)
   #undef COMPILE_COLUMN_CLASSES
 #endif
 

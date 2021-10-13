@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSIO_VALIDATION_ELBENCHMARK_H
-#define _EL_FITSIO_VALIDATION_ELBENCHMARK_H
+#ifndef _ELEFITS_VALIDATION_ELBENCHMARK_H
+#define _ELEFITS_VALIDATION_ELBENCHMARK_H
 
 #include "EleFits/MefFile.h"
 
@@ -29,7 +29,7 @@ namespace FitsIO {
 namespace Test {
 
 /**
- * @brief EL_FitsIO without column I/O buffering.
+ * @brief EleFits without column I/O buffering.
  * @details
  * Tests on image HDUs are not supported (use ElBenchmark instead).
  */
@@ -79,7 +79,7 @@ protected:
 };
 
 /**
- * @brief Standard EL_FitsIO.
+ * @brief Standard EleFits.
  */
 class ElBenchmark : public ElColwiseBenchmark {
 public:
@@ -118,8 +118,8 @@ public:
 } // namespace FitsIO
 } // namespace Euclid
 
-#define _EL_FITSIO_VALIDATION_ELBENCHMARK_IMPL
+#define _ELEFITS_VALIDATION_ELBENCHMARK_IMPL
 #include "EleFitsValidation/impl/ElBenchmark.hpp"
-#undef _EL_FITSIO_VALIDATION_ELBENCHMARK_IMPL
+#undef _ELEFITS_VALIDATION_ELBENCHMARK_IMPL
 
 #endif

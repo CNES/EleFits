@@ -31,7 +31,7 @@ LIGHT = 3.0E8 / [m/s] speed of light
 \endverbatim
 
 In the Fits definition, it is unclear if the "comment" encompasses only `speed of light` or `[m/s] speed of light`.
-In EL_FitsIO, the former is named comment, while the latter is the raw comment.
+In EleFits, the former is named comment, while the latter is the raw comment.
 The raw comment can be get as `Record::rawComment()`.
 
 Such a `Record` can be cast to `double` (records of value type `T` can be cast to `T`),

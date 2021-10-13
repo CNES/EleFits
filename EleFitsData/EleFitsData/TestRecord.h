@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_TESTRECORD_H
-#define _EL_FITSDATA_TESTRECORD_H
+#ifndef _ELEFITSDATA_TESTRECORD_H
+#define _ELEFITSDATA_TESTRECORD_H
 
 #include "EleFitsData/Record.h"
 #include "EleFitsData/RecordVec.h"
@@ -124,9 +124,9 @@ struct RandomHeader {
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_TESTRECORD_IMPL
+#define _ELEFITSDATA_TESTRECORD_IMPL
 #include "EleFitsData/impl/TestRecord.hpp"
-#undef _EL_FITSDATA_TESTRECORD_IMPL
+#undef _ELEFITSDATA_TESTRECORD_IMPL
 /// @endcond
 
 #endif

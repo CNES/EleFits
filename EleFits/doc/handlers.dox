@@ -12,7 +12,7 @@ namespace FitsIO {
 \section handlers-intro General concepts
 
 
-`EL_FitsIO` is split into service classes, known as handlers, in the package `EleFits`, and data classes in `EleFitsData`.
+`EleFits` is split into service classes, known as handlers, in the package `EleFits`, and data classes in `EleFitsData`.
 
 File handlers (`MefFile` and `SifFile`) store the index and type of the HDUs, access and create HDUs.
 HDU handlers (`Hdu`, `ImageHdu`, `BintableHdu`, `Header`, `ImageRaster`, `BintableColumns` and `BintableRows`)

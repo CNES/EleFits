@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELECFITSIOWRAPPER_BINTABLEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleCfitsioWrapper/BintableWrapper.h"
   #include "EleCfitsioWrapper/ErrorWrapper.h"

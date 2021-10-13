@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_RASTER_H
-#define _EL_FITSDATA_RASTER_H
+#ifndef _ELEFITSDATA_RASTER_H
+#define _ELEFITSDATA_RASTER_H
 
 #include "EleFitsData/Position.h"
 #include "EleFitsData/Region.h"
@@ -36,10 +36,10 @@ namespace FitsIO {
  * @brief Loop over supported raster types.
  * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
  * @see Program EleFitsPrintSupportedTypes to display all supported types
- * @see EL_FITSIO_FOREACH_RECORD_TYPE
- * @see EL_FITSIO_FOREACH_COLUMN_TYPE
+ * @see ELEFITS_FOREACH_RECORD_TYPE
+ * @see ELEFITS_FOREACH_COLUMN_TYPE
  */
-#define EL_FITSIO_FOREACH_RASTER_TYPE(MACRO) \
+#define ELEFITS_FOREACH_RASTER_TYPE(MACRO) \
   MACRO(char, char) \
   MACRO(std::int16_t, int16) \
   MACRO(std::int32_t, int32) \
@@ -596,9 +596,9 @@ VecRaster<T, sizeof...(Longs)> makeRaster(std::vector<T> data, Longs... shape) {
 #include "EleFitsData/Subraster.h"
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_RASTER_IMPL
+#define _ELEFITSDATA_RASTER_IMPL
 #include "EleFitsData/impl/Raster.hpp"
-#undef _EL_FITSDATA_RASTER_IMPL
+#undef _ELEFITSDATA_RASTER_IMPL
 /// @endcond
 
 #endif

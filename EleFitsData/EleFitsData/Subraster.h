@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_SUBRASTER_H
-#define _EL_FITSDATA_SUBRASTER_H
+#ifndef _ELEFITSDATA_SUBRASTER_H
+#define _ELEFITSDATA_SUBRASTER_H
 
 #include "EleFitsData/Raster.h"
 #include "EleFitsData/Region.h"

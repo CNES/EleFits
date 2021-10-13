@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_HDU_H
-#define _EL_FITSFILE_HDU_H
+#ifndef _ELEFITS_HDU_H
+#define _ELEFITS_HDU_H
 
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/HduCategory.h"
@@ -504,7 +504,7 @@ protected:
   /**
    * @brief The 1-based CFitsIO HDU index.
    * @warning
-   * EL_FitsIO HDUs are 0-based in the public API and 1-based in the CfitsioWrapper namespace
+   * EleFits HDUs are 0-based in the public API and 1-based in the CfitsioWrapper namespace
    * because CFitsIO indices are 1-based.
    */
   long m_cfitsioIndex;
@@ -537,9 +537,9 @@ protected:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_HDU_IMPL
+#define _ELEFITS_HDU_IMPL
 #include "EleFits/impl/Hdu.hpp"
-#undef _EL_FITSFILE_HDU_IMPL
+#undef _ELEFITS_HDU_IMPL
 /// @endcond
 
 #endif

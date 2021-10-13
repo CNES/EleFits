@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_POSITION_H
-#define _EL_FITSDATA_POSITION_H
+#ifndef _ELEFITSDATA_POSITION_H
+#define _ELEFITSDATA_POSITION_H
 
 #include "EleFitsData/FitsError.h"
 

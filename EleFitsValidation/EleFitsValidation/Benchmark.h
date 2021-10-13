@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSIO_VALIDATION_BENCHMARK_H
-#define _EL_FITSIO_VALIDATION_BENCHMARK_H
+#ifndef _ELEFITS_VALIDATION_BENCHMARK_H
+#define _ELEFITS_VALIDATION_BENCHMARK_H
 
 #include "EleFitsData/Column.h"
 #include "EleFitsData/DataUtils.h"

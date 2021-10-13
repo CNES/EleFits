@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_REGION_H
-#define _EL_FITSDATA_REGION_H
+#ifndef _ELEFITSDATA_REGION_H
+#define _ELEFITSDATA_REGION_H
 
 #include "EleFitsData/Position.h"
 

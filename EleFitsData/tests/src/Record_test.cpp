@@ -75,7 +75,7 @@ void checkRecordCopy(const std::string& keyword) {
     checkRecordCopy<type>(#name); \
   }
 
-EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_COPY_TEST)
+ELEFITS_FOREACH_RECORD_TYPE(RECORD_COPY_TEST)
 
 BOOST_AUTO_TEST_CASE(raw_comment_test) {
 
@@ -121,7 +121,7 @@ void checkRecordSlicing() {
     checkRecordSlicing<type>(); \
   }
 
-EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_SLICING_TEST)
+ELEFITS_FOREACH_RECORD_TYPE(RECORD_SLICING_TEST)
 
 BOOST_AUTO_TEST_CASE(long_string_values_are_detected_test) {
   const std::string shortString = "XS";

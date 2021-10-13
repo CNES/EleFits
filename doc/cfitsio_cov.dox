@@ -1,6 +1,6 @@
 /**
 
-\page cfitsio_cov CFitsIO routines covered by EL_FitsIO
+\page cfitsio_cov CFitsIO routines covered by EleFits
 
 Legend:
 
@@ -24,7 +24,7 @@ Legend:
   - **Move to the HDU with given index**
   - **Move to the next HDU**
   - **Move to the first HDU with given name**
-  - **HDU count** (flawed in CFitsIO, fixed in EL_FitsIO)
+  - **HDU count** (flawed in CFitsIO, fixed in EleFits)
   - **HDU index**
   - **HDU type**
   - Copy HDUs
@@ -95,7 +95,7 @@ Not supported.
 
 Partly supported: to be documented.
 
-\section cfitsio-missing EL_FitsIO features not implemented in CFitsIO
+\section cfitsio-missing EleFits features not implemented in CFitsIO
 
 - Const-correctness
 - Consistent type management (not mixing C types and Fits types)

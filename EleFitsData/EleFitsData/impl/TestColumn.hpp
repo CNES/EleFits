@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSDATA_TESTCOLUMN_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSDATA_TESTCOLUMN_IMPL) || defined(CHECK_QUALITY)
 
 #include <algorithm>
 

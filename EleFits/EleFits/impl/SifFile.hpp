@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSFILE_SIFFILE_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_SIFFILE_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFits/SifFile.h"
 

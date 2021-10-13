@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSDATA_TESTUTILS_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSDATA_TESTUTILS_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFitsData/TestUtils.h"
   #include "ElementsKernel/Unused.h"

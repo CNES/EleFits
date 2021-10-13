@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSFILE_HEADER_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_HEADER_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleCfitsioWrapper/HeaderWrapper.h"
   #include "EleFits/Header.h"

@@ -26,7 +26,7 @@ namespace Test {
 #define GENERATE_COLUMN(type, name) getColumn<type>() = generateColumn<type>(#name, repeatCount, rowCount);
 
 RandomTable::RandomTable(long repeatCount, long rowCount) : columns {} {
-  EL_FITSIO_FOREACH_COLUMN_TYPE(GENERATE_COLUMN)
+  ELEFITS_FOREACH_COLUMN_TYPE(GENERATE_COLUMN)
 }
 
 constexpr long RandomTable::columnCount;

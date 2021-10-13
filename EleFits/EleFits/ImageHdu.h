@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_IMAGEHDU_H
-#define _EL_FITSFILE_IMAGEHDU_H
+#ifndef _ELEFITS_IMAGEHDU_H
+#define _ELEFITS_IMAGEHDU_H
 
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleFitsData/Raster.h"
@@ -33,7 +33,7 @@ namespace FitsIO {
  * @brief Image HDU reader-writer.
  * @details
  * The Fits format can accommodate images of any dimension.
- * EL_FitsIO stores them in _n_-dimensional containers: Raster objects.
+ * EleFits stores them in _n_-dimensional containers: Raster objects.
  * This is visible in the ImageHdu services as a template parameter `n`.
  *
  * When the dimension is known at compile time and fixed,
@@ -54,7 +54,7 @@ namespace FitsIO {
  * @see
  * Position for details on the handling of fixed- and variable-dimension arrays.
  * @see
- * EL_FITSIO_FOREACH_RASTER_TYPE and program EleFitsPrintSupportedTypes for the list of supported pixel types.
+ * ELEFITS_FOREACH_RASTER_TYPE and program EleFitsPrintSupportedTypes for the list of supported pixel types.
  */
 class ImageHdu : public Hdu {
 
@@ -134,9 +134,9 @@ private:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_IMAGEHDU_IMPL
+#define _ELEFITS_IMAGEHDU_IMPL
 #include "EleFits/impl/ImageHdu.hpp"
-#undef _EL_FITSFILE_IMAGEHDU_IMPL
+#undef _ELEFITS_IMAGEHDU_IMPL
 /// @endcond
 
 #endif

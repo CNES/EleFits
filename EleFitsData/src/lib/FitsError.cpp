@@ -22,7 +22,7 @@
 namespace Euclid {
 namespace FitsIO {
 
-const std::string FitsError::m_prefix = "EL_FitsIO error: ";
+const std::string FitsError::m_prefix = "EleFits error: ";
 
 FitsError::FitsError(const std::string& message) : std::exception(), m_message(m_prefix + message) {}
 

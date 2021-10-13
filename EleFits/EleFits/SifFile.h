@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_SIFFILE_H
-#define _EL_FITSFILE_SIFFILE_H
+#ifndef _ELEFITS_SIFFILE_H
+#define _ELEFITS_SIFFILE_H
 
 #include "EleFits/FitsFile.h"
 #include "EleFits/ImageHdu.h"
@@ -107,9 +107,9 @@ private:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_SIFFILE_IMPL
+#define _ELEFITS_SIFFILE_IMPL
 #include "EleFits/impl/SifFile.hpp"
-#undef _EL_FITSFILE_SIFFILE_IMPL
+#undef _ELEFITS_SIFFILE_IMPL
 /// @endcond
 
 #endif

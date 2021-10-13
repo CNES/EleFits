@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSFILE_HDU_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_HDU_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleCfitsioWrapper/HeaderWrapper.h"
   #include "EleFitsData/RecordVec.h"
@@ -140,7 +140,7 @@ void Hdu::updateRecords(const RecordVec<T>& records, const std::vector<std::stri
 
   #ifndef DECLARE_PARSE_RECORD
     #define DECLARE_PARSE_RECORD(type, unused) extern template Record<type> Hdu::parseRecord(const std::string&) const;
-EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_PARSE_RECORD)
+ELEFITS_FOREACH_RECORD_TYPE(DECLARE_PARSE_RECORD)
     #undef DECLARE_PARSE_RECORD
   #endif
 
@@ -148,7 +148,7 @@ extern template RecordSeq Hdu::parseRecordVector(const std::vector<std::string>&
 
   #ifndef DECLARE_WRITE_RECORD
     #define DECLARE_WRITE_RECORD(type, unused) extern template void Hdu::writeRecord(const Record<type>&) const;
-EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
+ELEFITS_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
     #undef DECLARE_WRITE_RECORD
   #endif
 

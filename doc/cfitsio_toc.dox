@@ -6,7 +6,7 @@ namespace FitsIO {
 \page cfitsio_toc CFitsIO-like table of contents
 
 - Introduction: \ref index
-- Creating the EL_FitsIO package: \ref install_guide
+- Creating the EleFits package: \ref install_guide
 - A Fits primer: \ref primer
 - Programming guidelines
   - Definitions: *not relevant*

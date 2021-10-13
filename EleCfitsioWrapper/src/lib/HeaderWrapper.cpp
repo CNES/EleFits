@@ -159,7 +159,7 @@ FitsIO::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::
 template <>
 FitsIO::Record<FitsIO::VariantValue> parseRecord<FitsIO::VariantValue>(fitsfile* fptr, const std::string& keyword) {
   const auto& id = recordTypeid(fptr, keyword);
-  EL_FITSIO_FOREACH_RECORD_TYPE(PARSE_RECORD_ANY_FOR_TYPE)
+  ELEFITS_FOREACH_RECORD_TYPE(PARSE_RECORD_ANY_FOR_TYPE)
   throw FitsIO::FitsError("Cannot deduce type for record: " + keyword);
 }
 
@@ -210,7 +210,7 @@ void writeRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValu
 template <>
 void writeRecord<FitsIO::VariantValue>(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record) {
   const auto& id = record.value.type();
-  EL_FITSIO_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
+  ELEFITS_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
   WRITE_RECORD_ANY_FOR_TYPE(const char*, C_str)
   throw FitsIO::FitsError("Cannot deduce type for record: " + record.keyword);
 }
@@ -265,7 +265,7 @@ void updateRecordAnyImpl(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantVal
 template <>
 void updateRecord<FitsIO::VariantValue>(fitsfile* fptr, const FitsIO::Record<FitsIO::VariantValue>& record) {
   const auto& id = record.value.type();
-  EL_FITSIO_FOREACH_RECORD_TYPE(UPDATE_RECORD_ANY_FOR_TYPE)
+  ELEFITS_FOREACH_RECORD_TYPE(UPDATE_RECORD_ANY_FOR_TYPE)
   UPDATE_RECORD_ANY_FOR_TYPE(const char*, C_str)
   throw FitsIO::FitsError("Cannot deduce type for record: " + record.keyword);
 }

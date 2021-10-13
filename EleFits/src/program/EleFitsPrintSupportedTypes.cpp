@@ -52,15 +52,15 @@ public:
     logger.info("----------------------------");
     logger.info("Supported Record value types");
     logger.info("----------------------------");
-    EL_FITSIO_FOREACH_RECORD_TYPE(PRINT_SUPPORTED_TYPES)
+    ELEFITS_FOREACH_RECORD_TYPE(PRINT_SUPPORTED_TYPES)
     logger.info("----------------------------");
     logger.info("Supported Raster value types");
     logger.info("----------------------------");
-    EL_FITSIO_FOREACH_RASTER_TYPE(PRINT_SUPPORTED_TYPES)
+    ELEFITS_FOREACH_RASTER_TYPE(PRINT_SUPPORTED_TYPES)
     logger.info("----------------------------");
     logger.info("Supported Column value types");
     logger.info("----------------------------");
-    EL_FITSIO_FOREACH_COLUMN_TYPE(PRINT_SUPPORTED_TYPES)
+    ELEFITS_FOREACH_COLUMN_TYPE(PRINT_SUPPORTED_TYPES)
     logger.info("----------------------------");
     return Elements::ExitCode::OK;
   }

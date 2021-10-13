@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_IMAGEWRAPPER_H
-#define _EL_CFITSIOWRAPPER_IMAGEWRAPPER_H
+#ifndef _ELECFITSIOWRAPPER_IMAGEWRAPPER_H
+#define _ELECFITSIOWRAPPER_IMAGEWRAPPER_H
 
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/FileWrapper.h"
@@ -127,9 +127,9 @@ void writeRegion(fitsfile* fptr, const FitsIO::Subraster<T, n>& subraster, const
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_CFITSIOWRAPPER_IMAGEWRAPPER_IMPL
+#define _ELECFITSIOWRAPPER_IMAGEWRAPPER_IMPL
 #include "EleCfitsioWrapper/impl/ImageWrapper.hpp"
-#undef _EL_CFITSIOWRAPPER_IMAGEWRAPPER_IMPL
+#undef _ELECFITSIOWRAPPER_IMAGEWRAPPER_IMPL
 /// @endcond
 
 #endif

@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSFILE_HDUITERATOR_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_HDUITERATOR_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFits/HduIterator.h"
 

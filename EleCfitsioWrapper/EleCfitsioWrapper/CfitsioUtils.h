@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_CFITSIOUTILS_H
-#define _EL_CFITSIOWRAPPER_CFITSIOUTILS_H
+#ifndef _ELECFITSIOWRAPPER_CFITSIOUTILS_H
+#define _ELECFITSIOWRAPPER_CFITSIOUTILS_H
 
 #include <cstring>
 #include <memory>
@@ -100,9 +100,9 @@ struct CStrArray {
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_CFITSIOWRAPPER_CFITSIOUTILS_IMPL
+#define _ELECFITSIOWRAPPER_CFITSIOUTILS_IMPL
 #include "EleCfitsioWrapper/impl/CfitsioUtils.hpp"
-#undef _EL_CFITSIOWRAPPER_CFITSIOUTILS_IMPL
+#undef _ELECFITSIOWRAPPER_CFITSIOUTILS_IMPL
 /// @endcond
 
 #endif

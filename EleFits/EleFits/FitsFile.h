@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_FITSFILE_H
-#define _EL_FITSFILE_FITSFILE_H
+#ifndef _ELEFITS_FITSFILE_H
+#define _ELEFITS_FITSFILE_H
 
 #include "EleFitsData/FitsError.h"
 
@@ -53,7 +53,7 @@ namespace Euclid {
 namespace FitsIO {
 
 /**
- * @brief Version number of the EL_FitsIO project.
+ * @brief Version number of the EleFits project.
  */
 std::string version();
 

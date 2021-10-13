@@ -34,7 +34,7 @@
 #include "EleFits/MefFile.h"
 
 using namespace Euclid;
-// EL_FitsIO classes are in the Euclid::FitsIO namespace.
+// EleFits classes are in the Euclid::FitsIO namespace.
 // We could have be using namespace Euclid::FitsIO instead,
 // but things would have been less obvious in the snippets.
 //! [Include]
@@ -427,7 +427,7 @@ public:
     const std::string filename = args["output"].as<std::string>();
 
     logger.info() << "---";
-    logger.info() << "Hello, EL_FitsIO " << FitsIO::version() << "!";
+    logger.info() << "Hello, EleFits " << FitsIO::version() << "!";
     logger.info() << "---";
 
     writeMefFile(filename);

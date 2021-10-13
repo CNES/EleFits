@@ -1,5 +1,5 @@
 This tutorial program demonstrates the usage
-of some basic functionalities of EL_FitsIO.
+of some basic functionalities of EleFits.
 
 It contists in creating a Fits file made of:
 - A Primary HDU with some custom records,

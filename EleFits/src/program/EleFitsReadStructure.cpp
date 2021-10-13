@@ -37,7 +37,7 @@ using namespace Euclid::FitsIO;
 
 std::string readBitpixName(const ImageHdu& hdu) {
   const auto& id = hdu.readTypeid();
-  EL_FITSIO_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
+  ELEFITS_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
   return "UNKNOWN TYPE";
 }
 

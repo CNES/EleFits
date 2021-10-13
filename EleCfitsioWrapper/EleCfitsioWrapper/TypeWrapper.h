@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
-#define _EL_CFITSIOWRAPPER_TYPEWRAPPER_H
+#ifndef _ELECFITSIOWRAPPER_TYPEWRAPPER_H
+#define _ELECFITSIOWRAPPER_TYPEWRAPPER_H
 
 #include <complex>
 #include <fitsio.h>
@@ -69,9 +69,9 @@ struct TypeCode {
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_CFITSIOWRAPPER_TYPEWRAPPER_IMPL
+#define _ELECFITSIOWRAPPER_TYPEWRAPPER_IMPL
 #include "EleCfitsioWrapper/impl/TypeWrapper.hpp"
-#undef _EL_CFITSIOWRAPPER_TYPEWRAPPER_IMPL
+#undef _ELECFITSIOWRAPPER_TYPEWRAPPER_IMPL
 /// @endcond
 
 #endif

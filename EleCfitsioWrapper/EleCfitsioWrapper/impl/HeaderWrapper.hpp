@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELECFITSIOWRAPPER_HEADERWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleCfitsioWrapper/HeaderWrapper.h"
 

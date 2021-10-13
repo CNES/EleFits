@@ -27,7 +27,7 @@ so that you can easily map the execution log to the following explanations.
 You can already run the program and watch the resulting file:
 
 \code
-ERun EL_FitsIO EleFitsTutorial --output tuto.fits
+ERun EleFits EleFitsTutorial --output tuto.fits
 fv tuto.fits
 \endcode
 
@@ -40,7 +40,7 @@ We'll first discover the data classes, then use them to create a MEF file, and f
 \section tuto-setup Setup
 
 
-First things first, we have to declare the dependency to EL_FitsIO and to use the right headers and namespaces.
+First things first, we have to declare the dependency to EleFits and to use the right headers and namespaces.
 For the first part, head to the \ref install_guide.
 For the headers and namespace, here's the only thing you'll have to do:
 

@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_RECORDHDU_H
-#define _EL_FITSFILE_RECORDHDU_H
+#ifndef _ELEFITS_RECORDHDU_H
+#define _ELEFITS_RECORDHDU_H
 
 #include "EleFits/Hdu.h"
 

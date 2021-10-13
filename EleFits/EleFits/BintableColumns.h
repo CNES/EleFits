@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_BINTABLECOLUMNS_H
-#define _EL_FITSFILE_BINTABLECOLUMNS_H
+#ifndef _ELEFITS_BINTABLECOLUMNS_H
+#define _ELEFITS_BINTABLECOLUMNS_H
 
 #include "EleFitsData/Column.h"
 #include "EleFits/FileMemSegments.h"
@@ -585,9 +585,9 @@ long columnsRowCount(TSeq&& columns);
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_BINTABLECOLUMNS_IMPL
+#define _ELEFITS_BINTABLECOLUMNS_IMPL
 #include "EleFits/impl/BintableColumns.hpp"
-#undef _EL_FITSFILE_BINTABLECOLUMNS_IMPL
+#undef _ELEFITS_BINTABLECOLUMNS_IMPL
 /// @endcond
 
 #endif

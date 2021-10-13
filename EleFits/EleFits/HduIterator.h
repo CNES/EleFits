@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_HDUITERATOR_H
-#define _EL_FITSFILE_HDUITERATOR_H
+#ifndef _ELEFITS_HDUITERATOR_H
+#define _ELEFITS_HDUITERATOR_H
 
 #include "EleFits/Hdu.h"
 
@@ -166,9 +166,9 @@ HduIterator<THdu> end(HduSelector<THdu>& selector);
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_HDUITERATOR_IMPL
+#define _ELEFITS_HDUITERATOR_IMPL
 #include "EleFits/impl/HduIterator.hpp"
-#undef _EL_FITSFILE_HDUITERATOR_IMPL
+#undef _ELEFITS_HDUITERATOR_IMPL
 /// @endcond
 
 #endif

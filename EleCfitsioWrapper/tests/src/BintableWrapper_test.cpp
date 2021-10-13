@@ -68,7 +68,7 @@ void checkScalarColumnIsReadBack() {
     checkScalarColumnIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_COLUMN_TYPE(SCALAR_COLUMN_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_COLUMN_TYPE(SCALAR_COLUMN_IS_READ_BACK_TEST)
 
 template <typename T>
 void checkVectorColumnIsReadBack() {
@@ -109,7 +109,7 @@ void checkVectorColumnIsReadBack<std::string>() {
     checkVectorColumnIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(small_table_test, FitsIO::Test::MinimalFile) {
   using namespace FitsIO::Test;

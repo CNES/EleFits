@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_H
-#define _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_H
+#ifndef _ELECFITSIOWRAPPER_BINTABLEWRAPPER_H
+#define _ELECFITSIOWRAPPER_BINTABLEWRAPPER_H
 
 #include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
@@ -148,9 +148,9 @@ void appendColumns(fitsfile* fptr, const FitsIO::Column<Ts>&... columns);
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
+#define _ELECFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
 #include "EleCfitsioWrapper/impl/BintableWrapper.hpp"
-#undef _EL_CFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
+#undef _ELECFITSIOWRAPPER_BINTABLEWRAPPER_IMPL
 /// @endcond
 
 #endif

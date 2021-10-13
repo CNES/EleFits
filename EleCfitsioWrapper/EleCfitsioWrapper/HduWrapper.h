@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_HDUWRAPPER_H
-#define _EL_CFITSIOWRAPPER_HDUWRAPPER_H
+#ifndef _ELECFITSIOWRAPPER_HDUWRAPPER_H
+#define _ELECFITSIOWRAPPER_HDUWRAPPER_H
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleCfitsioWrapper/CfitsioUtils.h"
@@ -176,9 +176,9 @@ void deleteHdu(fitsfile* fptr, long index);
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
+#define _ELECFITSIOWRAPPER_HDUWRAPPER_IMPL
 #include "EleCfitsioWrapper/impl/HduWrapper.hpp"
-#undef _EL_CFITSIOWRAPPER_HDUWRAPPER_IMPL
+#undef _ELECFITSIOWRAPPER_HDUWRAPPER_IMPL
 /// @endcond
 
 #endif

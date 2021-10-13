@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_FILEMEMSEGMENTS_H
-#define _EL_FITSFILE_FILEMEMSEGMENTS_H
+#ifndef _ELEFITS_FILEMEMSEGMENTS_H
+#define _ELEFITS_FILEMEMSEGMENTS_H
 
 #include "EleFitsData/DataUtils.h" // Segment
 

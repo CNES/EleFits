@@ -79,7 +79,7 @@ HduCategory ImageHdu::readCategory() const {
     template VecRaster<type, -1> ImageHdu::readRaster() const; \
     template VecRaster<type, 2> ImageHdu::readRaster() const; \
     template VecRaster<type, 3> ImageHdu::readRaster() const;
-EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_READ_RASTER)
+ELEFITS_FOREACH_RASTER_TYPE(COMPILE_READ_RASTER)
   #undef COMPILE_READ_RASTER
 #endif
 
@@ -88,7 +88,7 @@ EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_READ_RASTER)
     template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
     template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
     template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
-EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_WRITE_RASTER)
+ELEFITS_FOREACH_RASTER_TYPE(COMPILE_WRITE_RASTER)
   #undef COMPILE_WRITE_RASTER
 #endif
 

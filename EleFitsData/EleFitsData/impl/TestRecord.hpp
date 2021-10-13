@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSDATA_TESTRECORD_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSDATA_TESTRECORD_IMPL) || defined(CHECK_QUALITY)
 
 #include <algorithm> // transform
 #include <cctype> // toupper

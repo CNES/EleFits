@@ -9,7 +9,7 @@ namespace FitsIO {
 
 \section design-purpose Purpose and scope
 
-The purpose of this page is to describe the internal implementation of EL_FitsIO.
+The purpose of this page is to describe the internal implementation of EleFits.
 Usage of the API is described in the main pages of this documentation.
 When implementation and usage are titghly coupled, links are provided to get the user point-of-view.
 
@@ -63,7 +63,7 @@ which demonstrates the reading and writing of records, images and binary tables 
 Of course, this is also where the tutorial is implemented.
 - `EleFitsValidation` contains **validation executables**:
   - Generator programs allow creating dummy Fits files from scratch;
-  - The performances of EL_FitsIO are compared to those of CFitsIO;
+  - The performances of EleFits are compared to those of CFitsIO;
   - A validation script checks that all of the provided programs run smoothly.
 
 Auxiliary classes, like exceptions, which are useful to both `EleCfitsioWrapper` and `EleFits` are implemented in `EleFitsData`.
@@ -101,7 +101,7 @@ or to spend runtime in conversions at each reading and writing operation.
 
 \subsection design-types-codes Type code handling
 
-One of the main purposes of EL_FitsIO is to abstract from type codes, and to provide homogeneous template functions.
+One of the main purposes of EleFits is to abstract from type codes, and to provide homogeneous template functions.
 This is implemented as type traits in class `Cfitsio::TypeCode`, which provides one method per column of the \ref type_map.
 Template specialization are made with built-in types or fixed types depending on what the CFitsIO functions expect.
 For example, `TSHORT` is `Cfitsio::TypeCode<short>::forImage()` and `SHORT_IMG` is `Cfitsio::TypeCode<std::int16_t>::bitpix()`.

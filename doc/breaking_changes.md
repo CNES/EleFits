@@ -19,7 +19,8 @@ and how to adapt the client code.
 ### EL_FitsIO becomes EleFits and associated changes
 
 Namespace `FitsIO` becomes `Fits`.
-Prefix `EL_Fits` becomes `EleFits`.
+Prefix `EL_Fits` (resp. `EL_FITSIO`) becomes `EleFits` (resp. `ELEFITS`).
+`EL_FitsFile` becomes `EleFits`.
 Underscores in program names are removed.
 
 **Rationale**
@@ -38,6 +39,7 @@ compatibility with 4.0 cannot be anticipated in code which depends on 3.2.
 
 * Find and replace word `EL_FitsIO` with `EleFits` in CMakeLists';
 * Find and replace prefix `EL_Fits` with `EleFits` in CMakeLists' and in includes;
+* Find and replace prefix `EL_FITSIO` with `ELEFITS` in macros;
 * Find and replace `FitsIO` (e.g. namespace `FitsIO` or class `FitsIOError`) with `Fits` in sources;
 * Remove underscores from program names in command lines.
 

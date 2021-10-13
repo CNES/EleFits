@@ -50,14 +50,14 @@ void checkFieldsAreAllDifferent(const Test::RandomHeader& header) {
     checkFieldsAreAllSet<type>(*this); \
   }
 
-EL_FITSIO_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_SET_TEST)
+ELEFITS_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_SET_TEST)
 
 #define FIELDS_ARE_ALL_DIFFERENT_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_fields_are_all_different_test) { \
     checkFieldsAreAllDifferent<type>(*this); \
   }
 
-EL_FITSIO_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_DIFFERENT_TEST)
+ELEFITS_FOREACH_RECORD_TYPE(FIELDS_ARE_ALL_DIFFERENT_TEST)
 
 BOOST_AUTO_TEST_CASE(keywords_are_all_different_test) {
   const auto v = allRecords().vector;

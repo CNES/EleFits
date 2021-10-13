@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSDATA_RECORDVECTOR_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSDATA_RECORDVECTOR_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFitsData/FitsError.h"
   #include "EleFitsData/RecordVec.h"

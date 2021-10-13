@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_CFITSIOWRAPPER_CFITSIOUTILS_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELECFITSIOWRAPPER_CFITSIOUTILS_IMPL) || defined(CHECK_QUALITY)
 
 #include <algorithm>
 

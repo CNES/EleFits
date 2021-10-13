@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_HDUCATEGORY_H
-#define _EL_FITSDATA_HDUCATEGORY_H
+#ifndef _ELEFITSDATA_HDUCATEGORY_H
+#define _ELEFITSDATA_HDUCATEGORY_H
 
 #include "EleFitsData/FitsError.h"
 
@@ -367,9 +367,9 @@ inline HduFilter operator-(HduCategory rhs) {
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_HDUCATEGORY_IMPL
+#define _ELEFITSDATA_HDUCATEGORY_IMPL
 #include "EleFitsData/impl/HduCategory.hpp"
-#undef _EL_FITSDATA_HDUCATEGORY_IMPL
+#undef _ELEFITSDATA_HDUCATEGORY_IMPL
 /// @endcond
 
 #endif

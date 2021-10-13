@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_H
-#define _EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_H
+#ifndef _ELEFITS_VALIDATION_CFITSIOBENCHMARK_H
+#define _ELEFITS_VALIDATION_CFITSIOBENCHMARK_H
 
 #include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
@@ -142,8 +142,8 @@ private:
 } // namespace FitsIO
 } // namespace Euclid
 
-#define _EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_IMPL
+#define _ELEFITS_VALIDATION_CFITSIOBENCHMARK_IMPL
 #include "EleFitsValidation/impl/CfitsioBenchmark.hpp"
-#undef _EL_FITSIO_VALIDATION_CFITSIOBENCHMARK_IMPL
+#undef _ELEFITS_VALIDATION_CFITSIOBENCHMARK_IMPL
 
 #endif

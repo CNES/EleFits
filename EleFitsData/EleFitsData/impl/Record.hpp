@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSDATA_RECORD_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSDATA_RECORD_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFitsData/Record.h"
 
@@ -129,7 +129,7 @@ CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cas
 /*
  * TODO
  * This function only handles a subset of the supported types (scalar types),
- * therefore macro EL_FITSIO_FOREACH_RECORD_TYPE cannot be used straightforwardly:
+ * therefore macro ELEFITS_FOREACH_RECORD_TYPE cannot be used straightforwardly:
  * ifScalar could be used.
  * Another option is to rely on a map<typeid, function>
  */
@@ -261,7 +261,7 @@ bool Record<VariantValue>::hasLongStringValue() const;
 
   #ifndef DECLARE_RECORD_CLASS
     #define DECLARE_RECORD_CLASS(type, unused) extern template struct Record<type>;
-EL_FITSIO_FOREACH_RECORD_TYPE(DECLARE_RECORD_CLASS)
+ELEFITS_FOREACH_RECORD_TYPE(DECLARE_RECORD_CLASS)
     #undef DECLARE_RECORD_CLASS
   #endif
 

@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_RECORDVECTOR_H
-#define _EL_FITSDATA_RECORDVECTOR_H
+#ifndef _ELEFITSDATA_RECORDVECTOR_H
+#define _ELEFITSDATA_RECORDVECTOR_H
 
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/Record.h"
@@ -140,9 +140,9 @@ using RecordSeq = RecordVec<VariantValue>;
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_RECORDVECTOR_IMPL
+#define _ELEFITSDATA_RECORDVECTOR_IMPL
 #include "EleFitsData/impl/RecordVec.hpp"
-#undef _EL_FITSDATA_RECORDVECTOR_IMPL
+#undef _ELEFITSDATA_RECORDVECTOR_IMPL
 /// @endcond
 
 #endif

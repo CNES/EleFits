@@ -61,7 +61,7 @@ class EleFitsBenchmark : public Elements::Program {
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
     ProgramOptions options;
-    options.named("setup", value<std::string>()->default_value("EL_FitsIO"), "Test setup to be benchmarked");
+    options.named("setup", value<std::string>()->default_value("EleFits"), "Test setup to be benchmarked");
     options.named("images", value<int>()->default_value(0), "Number of image extensions");
     options.named("pixels", value<int>()->default_value(1), "Number of pixels");
     options.named("tables", value<int>()->default_value(0), "Number of binary table extensions");

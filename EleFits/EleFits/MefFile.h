@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_MEFFILE_H
-#define _EL_FITSFILE_MEFFILE_H
+#ifndef _ELEFITS_MEFFILE_H
+#define _ELEFITS_MEFFILE_H
 
 #include "EleFits/BintableHdu.h"
 #include "EleFits/FitsFile.h"
@@ -251,9 +251,9 @@ protected:
 #include "EleFits/HduIterator.h"
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_MEFFILE_IMPL
+#define _ELEFITS_MEFFILE_IMPL
 #include "EleFits/impl/MefFile.hpp"
-#undef _EL_FITSFILE_MEFFILE_IMPL
+#undef _ELEFITS_MEFFILE_IMPL
 /// @endcond
 
 #endif

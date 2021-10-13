@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_CFITSIOWRAPPER_H
-#define _EL_CFITSIOWRAPPER_CFITSIOWRAPPER_H
+#ifndef _ELECFITSIOWRAPPER_CFITSIOWRAPPER_H
+#define _ELECFITSIOWRAPPER_CFITSIOWRAPPER_H
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleCfitsioWrapper/CfitsioUtils.h"

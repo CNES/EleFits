@@ -58,7 +58,7 @@ The value can be:
 - a complex number (a pair of floating-point numbers),
 - a string.
 
-In EL_FitsIO, keyword records are instantiated as `Record` objects, templated with the value type.
+In EleFits, keyword records are instantiated as `Record` objects, templated with the value type.
 
 
 \subsection primer-sif-data Primary data unit
@@ -89,7 +89,7 @@ END
 
 The class which represents a SIF file is `SifFile`.
 That which represents the header is `Header`, and that which represent the array is `ImageRaster`.
-In EL_FitsIO, a `SifFile` can therefore simply be seen like a structure made of a `Header` and an `ImageRaster`,
+In EleFits, a `SifFile` can therefore simply be seen like a structure made of a `Header` and an `ImageRaster`,
 accessed by getters `SifFile::header()` and `SifFile::raster()`, respectively.
 
 
@@ -112,7 +112,7 @@ There are two types of table HDUs: ASCII tables and binary tables.
 Binary table columns can be scalar (one value per cell) or vector (several values per cell).
 A more recent addition to the standard is binary tables with vector columns of varying size,
 i.e. the cells of a single column have different value counts.
-ASCII tables are generally no more used, and are not supported at all by EL_FitsIO.
+ASCII tables are generally no more used, and are not supported at all by EleFits.
 Only binary tables with columns of fixed width are available.
 
 Fits files with extensions are known as *Multi-Extension Fits* (MEF) files.
@@ -135,7 +135,7 @@ The following HDUs are named extensions, and they may be images or binary tables
 Header units are a sequence of records, image data units are _n_-D arrays,
 and binary table data units are a sequence of rows which represent scalar or vector columns.
 
-There is almost a 1-to-1 mapping of the Fits and EL_FitsIO structures:
+There is almost a 1-to-1 mapping of the Fits and EleFits structures:
 
 <table class="markdownTable">
 <tr>

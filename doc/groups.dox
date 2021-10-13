@@ -1,7 +1,7 @@
 /**
 
 \defgroup primer  What's a Fits file?
-\brief The structure and contents of a Fits file, and how they relate to EL_FitsIO.
+\brief The structure and contents of a Fits file, and how they relate to EleFits.
 
 
 \defgroup data_classes Data classes
@@ -57,6 +57,6 @@
 
 \defgroup exceptions Exceptions
 \ingroup guidelines
-\brief All the exception classes directly thrown by EL_FitsIO.
+\brief All the exception classes directly thrown by EleFits.
 
 */

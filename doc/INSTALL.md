@@ -2,21 +2,21 @@
 
 ## Introduction
 
-EL_FitsIO depends on Elements, a Euclid-developed build framework based on CMake.
-As such, EL_FitsIO can be used either from an Elements project or from a CMake project.
+EleFits depends on Elements, a Euclid-developed build framework based on CMake.
+As such, EleFits can be used either from an Elements project or from a CMake project.
 Euclid developers benefit from the continuous delivery of EDEN (Euclid development environment) and have nothing to install.
-Others must install EL_FitsIO (and Elements) before they configure their project.
+Others must install EleFits (and Elements) before they configure their project.
 
-## Install and test EL_FitsIO
+## Install and test EleFits
 
 ### EDEN users
 
-Nothing to install: all versions of EL_FitsIO are already part of EDEN.
+Nothing to install: all versions of EleFits are already part of EDEN.
 Jump to the configuration section.
 
 ### Non-EDEN users
 
-In the remaining, we assume that you're putting the source code of Elements and EL_FitsIO in some `<root>` directory.
+In the remaining, we assume that you're putting the source code of Elements and EleFits in some `<root>` directory.
 
 You'll first need to get Elements:
 
@@ -36,12 +36,12 @@ cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
 sudo make install
 ```
 
-Finally, install EL_FitsIO the same way:
+Finally, install EleFits the same way:
 
 ```xml
 cd <root>
 git clone https://github.com/cnes/EleFits.git
-cd EL_FitsIO
+cd EleFits
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=<prefix> -DCMAKE_INCLUDE_PATH=<prefix> ..
@@ -53,7 +53,7 @@ sudo make install
 This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
 The end-user library is named EleFits, while the low-level API is named EleCfitsioWrapper.
 
-## Configure a project to depend on EL_FitsIO
+## Configure a project to depend on EleFits
 
 ### Elements project
 
@@ -61,14 +61,14 @@ An Elements project is made of modules.
 The project contains a root `CMakeLists.txt`, and each module contains a `CMakeLists.txt`.
 For more information, please refer to the [Elements documentation](https://euclid.roe.ac.uk/projects/codeen-users/wiki/User_Bui_Too).
 
-Using the package means declaring the dependency to the EL_FitsIO project in the root `CMakeLists.txt`:
+Using the package means declaring the dependency to the EleFits project in the root `CMakeLists.txt`:
 
 ```xml
 elements_project(<project_name> <project_version>
-    USE EL_FitsIO <EleFitsversion>)
+    USE EleFits <EleFitsversion>)
 ```
 
-and to the EleFits module in the `CMakeLists.txt` of each module which requires EL_FitsIO:
+and to the EleFits module in the `CMakeLists.txt` of each module which requires EleFits:
 
 ```xml
 elements_depends_on_subdirs(EleFits)
@@ -95,7 +95,7 @@ target_link_libraries(<exe_name> EleFits)
 ```
 
 The `find_package` command expects parent folder of the file `FindEleFits.cmake` to be in the `CMAKE_MODULE_PATH`.
-For now, it is located in the sources of EL_FitsIO, in `cmake/modules`
+For now, it is located in the sources of EleFits, in `cmake/modules`
 (we'd like it to be installed in a more standard location in some future version).
 Here's an example to build the project:
 
@@ -103,5 +103,5 @@ Here's an example to build the project:
 cd <root>/<project_name>
 mkdir build
 cd build
-cmake -DCMAKE_MODULE_PATH=<root>/EL_FitsIO/cmake/modules ..
+cmake -DCMAKE_MODULE_PATH=<root>/EleFits/cmake/modules ..
 ```

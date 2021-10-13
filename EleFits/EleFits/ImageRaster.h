@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_IMAGERASTER_H
-#define _EL_FITSFILE_IMAGERASTER_H
+#ifndef _ELEFITS_IMAGERASTER_H
+#define _ELEFITS_IMAGERASTER_H
 
 #include "EleFitsData/Raster.h"
 #include "EleFits/FileMemRegions.h"
@@ -283,9 +283,9 @@ private:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_IMAGERASTER_IMPL
+#define _ELEFITS_IMAGERASTER_IMPL
 #include "EleFits/impl/ImageRaster.hpp"
-#undef _EL_FITSFILE_IMAGERASTER_IMPL
+#undef _ELEFITS_IMAGERASTER_IMPL
 /// @endcond
 
 #endif

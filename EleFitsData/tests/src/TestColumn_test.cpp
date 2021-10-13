@@ -34,14 +34,14 @@ BOOST_FIXTURE_TEST_SUITE(TestColumn_test, Test::RandomTable)
     BOOST_TEST(getColumn<type>().rowCount() > 2); \
   }
 
-EL_FITSIO_FOREACH_COLUMN_TYPE(COLUMN_HAS_MORE_THAN_2_ROWS_TEST)
+ELEFITS_FOREACH_COLUMN_TYPE(COLUMN_HAS_MORE_THAN_2_ROWS_TEST)
 
 #define PUSH_BACK_NAME(type, unused) names.push_back(getColumn<type>().info.name);
 
 BOOST_AUTO_TEST_CASE(names_are_all_different_test) {
   BOOST_TEST(std::tuple_size<decltype(columns)>::value == columnCount);
   std::vector<std::string> names;
-  EL_FITSIO_FOREACH_COLUMN_TYPE(PUSH_BACK_NAME)
+  ELEFITS_FOREACH_COLUMN_TYPE(PUSH_BACK_NAME)
   BOOST_TEST(names.size() == columnCount);
   for (long lhs = 0; lhs < columnCount; ++lhs) {
     const auto& vlhs = names[lhs];

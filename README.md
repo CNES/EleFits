@@ -1,12 +1,12 @@
 # Read me!
 
-EL_FitsIO: A clean, object-oriented, template API on top of CFitsIO.
+EleFits: A clean, object-oriented, template API on top of CFitsIO.
 
 ## Purpose and scope
 
 To provide a *user-friendly and efficient* API to read and write Fits files.
 
-EL_FitsIO merely consists in a CFitsIO wrapper; there is no intelligence inside.
+EleFits merely consists in a CFitsIO wrapper; there is no intelligence inside.
 The actual reading and writing are delegated to CFitsIO, with as few indirections as possible, to be as close as possible to CFitsIO performances.
 
 As compared to CFitsIO API, the main benefits are those of C++ over C:

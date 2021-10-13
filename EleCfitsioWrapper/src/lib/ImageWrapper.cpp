@@ -19,7 +19,7 @@
 
 #include "EleCfitsioWrapper/ImageWrapper.h"
 
-#include "EleFitsData/Raster.h" // EL_FITSIO_FOREACH_RASTER_TYPE
+#include "EleFitsData/Raster.h" // ELEFITS_FOREACH_RASTER_TYPE
 
 namespace Euclid {
 namespace Cfitsio {
@@ -35,7 +35,7 @@ const std::type_info& readTypeid(fitsfile* fptr) {
   int bitpix = 0;
   fits_get_img_equivtype(fptr, &bitpix, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read image type");
-  EL_FITSIO_FOREACH_RASTER_TYPE(RETURN_TYPEID_IF_MATCH)
+  ELEFITS_FOREACH_RASTER_TYPE(RETURN_TYPEID_IF_MATCH)
   throw FitsIO::FitsError("Unknown BITPIX: " + std::to_string(bitpix));
 }
 

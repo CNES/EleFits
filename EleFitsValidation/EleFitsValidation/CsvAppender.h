@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSIO_VALIDATION_CSVAPPENDER_H
-#define _EL_FITSIO_VALIDATION_CSVAPPENDER_H
+#ifndef _ELEFITS_VALIDATION_CSVAPPENDER_H
+#define _ELEFITS_VALIDATION_CSVAPPENDER_H
 
 #include <fstream>
 #include <string>
@@ -76,9 +76,9 @@ private:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSIO_VALIDATION_CSVAPPENDER_IMPL
+#define _ELEFITS_VALIDATION_CSVAPPENDER_IMPL
 #include "EleFitsValidation/impl/CsvAppender.hpp"
-#undef _EL_FITSIO_VALIDATION_CSVAPPENDER_IMPL
+#undef _ELEFITS_VALIDATION_CSVAPPENDER_IMPL
 /// @endcond
 
 #endif

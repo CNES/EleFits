@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_CFITSIOWRAPPER_HEADERWRAPPER_H
-#define _EL_CFITSIOWRAPPER_HEADERWRAPPER_H
+#ifndef _ELECFITSIOWRAPPER_HEADERWRAPPER_H
+#define _ELECFITSIOWRAPPER_HEADERWRAPPER_H
 
 #include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
@@ -164,9 +164,9 @@ void writeHistory(fitsfile* fptr, const std::string& history);
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
+#define _ELECFITSIOWRAPPER_HEADERWRAPPER_IMPL
 #include "EleCfitsioWrapper/impl/HeaderWrapper.hpp"
-#undef _EL_CFITSIOWRAPPER_HEADERWRAPPER_IMPL
+#undef _ELECFITSIOWRAPPER_HEADERWRAPPER_IMPL
 /// @endcond
 
 #endif

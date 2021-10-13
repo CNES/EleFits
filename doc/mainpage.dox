@@ -27,11 +27,11 @@ and one developed for the Rubin Observatory: <a href=https://github.com/lsst/afw
 Fits++ has been briefly described previously but is not publicly available.
 In addition, many C++ developers rely on the historical C library <a href=https://heasarc.gsfc.nasa.gov/fitsio/>CFitsIO</a>.
 
-The main motivation to develop EL_FitsIO (Euclid libraries and executables for Fits) was that none of these alternatives provided a fully consistent type management.
+The main motivation to develop EleFits (Euclid libraries and executables for Fits) was that none of these alternatives provided a fully consistent type management.
 In the worst cases, users needed to know the underlying architecture to ensure integer data can be read or written using given C++ types.
 In the best cases, silent casts and copies were performed, which would be too costly for large data sets.
 
-The purpose of EL_FitsIO is to provide a -- sorted by priority -- (1) safe, (2) user-friendly, and (3) efficient library.
+The purpose of EleFits is to provide a -- sorted by priority -- (1) safe, (2) user-friendly, and (3) efficient library.
 The package merely consists in a thin CFitsIO wrapper:
 There is no intelligence inside.
 The actual reading and writing are delegated to CFitsIO, with as few indirections as possible to minimize overhead.
@@ -46,7 +46,7 @@ instead of the all-in-one and flat `fitsfile` structure;
 - A concise and **clear API** instead of the cluttered and verbose one of CFITSIO.
 
 Simplicity comes at the cost of completeness,
-and EL_FitsIO misses:
+and EleFits misses:
 - CFitsIO features that we found less important (like ASCII tables) or too complex (like "iterators");
 - Features already well implemented in other Euclid libraries like table filtering covered by EL_CatalogLib;
 - Features that we didn't have time to implement yet!
@@ -54,7 +54,7 @@ and EL_FitsIO misses:
 For a clear overview of what's there and what's missing, see \ref cfitsio_cov.
 
 
-\section build Install and depend on EL_FitsIO
+\section build Install and depend on EleFits
 
 
 See the \ref install_guide.
@@ -64,7 +64,7 @@ See the \ref install_guide.
 
 
 To go further, check the <a href="modules.html">Modules tab</a>, which is the main entry point for usage documentation.
-Each so-called module addresses a specific topic to learn how to use EL_FitsIO and understand why it is designed the way it is.
+Each so-called module addresses a specific topic to learn how to use EleFits and understand why it is designed the way it is.
 The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.
 
 To go even further, many other topics are discussed in the <a href="pages.html">Related pages</a>, as unordered documents.

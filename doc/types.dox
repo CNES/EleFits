@@ -40,7 +40,7 @@ This way, the user code only copes with 0-based indices.
 
 
 As shown in the \ref type_map, handling data types right with CFitsIO can be very cumbersome.
-EL_FitsIO aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFitsIO implementation.
+EleFits aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFitsIO implementation.
 Template functions and methods are provided to simply let the user set the desired type, e.g.:
 
 \code
@@ -59,7 +59,7 @@ and read on a system where it is encoded as a 32-bit integer, values will be cor
 This is avoided by using `std::int32_t` instead.
 
 The Fits format doesn't natively support unsigned integers or signed bytes.
-Yet, CFitsIO and EL_FitsIO rely on the scaling mechanism to support them:
+Yet, CFitsIO and EleFits rely on the scaling mechanism to support them:
 an unsigned integer value will be internally offset to get a signed integer in the file.
 The offset is written in the file as a `BZERO` (image HDU) or `TZERO` (binary table HDU) keyword record,
 used to correctly recover the value at reading.
@@ -71,7 +71,7 @@ Yet, a few sevices are overloaded with `const char*` for convenience.
 
 \subsection types-data-variant VariantValue
 
-In addition to CFitsIO data types, EL_FitsIO provides some of the services for `VariantValue` (e.g., to read records).
+In addition to CFitsIO data types, EleFits provides some of the services for `VariantValue` (e.g., to read records).
 In this case, the underlying type is wrapped in a `VariantValue` object, which can be cast later.
 
 Development efforts have been put to allow the user to get whatever compatible type from the `VariantValue` object.

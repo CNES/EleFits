@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_FILEMEMREGIONS_H
-#define _EL_FITSFILE_FILEMEMREGIONS_H
+#ifndef _ELEFITS_FILEMEMREGIONS_H
+#define _ELEFITS_FILEMEMREGIONS_H
 
 #include "EleFitsData/Region.h"
 

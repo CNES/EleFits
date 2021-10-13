@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSIO_VALIDATION_CHRONOMETER_H
-#define _EL_FITSIO_VALIDATION_CHRONOMETER_H
+#ifndef _ELEFITS_VALIDATION_CHRONOMETER_H
+#define _ELEFITS_VALIDATION_CHRONOMETER_H
 
 #include <chrono>
 #include <cmath> // sqrt
@@ -145,9 +145,9 @@ private:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSIO_VALIDATION_CHRONOMETER_IMPL
+#define _ELEFITS_VALIDATION_CHRONOMETER_IMPL
 #include "EleFitsValidation/impl/Chronometer.hpp"
-#undef _EL_FITSIO_VALIDATION_CHRONOMETER_IMPL
+#undef _ELEFITS_VALIDATION_CHRONOMETER_IMPL
 /// @endcond
 
 #endif

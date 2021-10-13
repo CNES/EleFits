@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_BINTABLEHDU_H
-#define _EL_FITSFILE_BINTABLEHDU_H
+#ifndef _ELEFITS_BINTABLEHDU_H
+#define _ELEFITS_BINTABLEHDU_H
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleFits/BintableColumns.h"
@@ -201,9 +201,9 @@ private:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSFILE_BINTABLEHDU_IMPL
+#define _ELEFITS_BINTABLEHDU_IMPL
 #include "EleFits/impl/BintableHdu.hpp"
-#undef _EL_FITSFILE_BINTABLEHDU_IMPL
+#undef _ELEFITS_BINTABLEHDU_IMPL
 /// @endcond
 
 #endif

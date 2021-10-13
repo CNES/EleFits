@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_FITSFILEFIXTURE_H
-#define _EL_FITSFILE_FITSFILEFIXTURE_H
+#ifndef _ELEFITS_FITSFILEFIXTURE_H
+#define _ELEFITS_FITSFILEFIXTURE_H
 
 #include "EleFits/MefFile.h"
 #include "EleFits/SifFile.h"

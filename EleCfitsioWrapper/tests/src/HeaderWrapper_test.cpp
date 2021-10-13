@@ -87,7 +87,7 @@ void checkRecordIsReadBack<unsigned long>(const std::string& label) {
     checkRecordIsReadBack<type>(#name); \
   }
 
-EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_RECORD_TYPE(RECORD_IS_READ_BACK_TEST)
 
 BOOST_AUTO_TEST_CASE(empty_value_test) {
   FitsIO::Test::MinimalFile file;

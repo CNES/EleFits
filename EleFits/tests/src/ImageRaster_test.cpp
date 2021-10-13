@@ -100,7 +100,7 @@ void checkSlice3DIsReadBack<std::uint64_t>() {} // CFitsIO bug
     checkSlice3DIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(SLICE_3D_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_RASTER_TYPE(SLICE_3D_IS_READ_BACK_TEST)
 
 template <typename T>
 void checkSlice2DIsReadBack() {
@@ -135,7 +135,7 @@ void checkSlice2DIsReadBack<std::uint64_t>() {} // CFitsIO bug
     checkSlice2DIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(SLICE_2D_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_RASTER_TYPE(SLICE_2D_IS_READ_BACK_TEST)
 
 template <typename T>
 void checkSubraster2DIsReadBack() {
@@ -170,7 +170,7 @@ void checkSubraster2DIsReadBack<std::uint64_t>() {} // CFitsIO bug
     checkSubraster2DIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(SUBRASTER_2D_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_RASTER_TYPE(SUBRASTER_2D_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
   const Position<2> shape { 7, 2 };

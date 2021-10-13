@@ -19,7 +19,7 @@
 
 #include "EleFitsValidation/CsvAppender.h"
 
-#if defined(_EL_FITSIO_VALIDATION_CSVAPPENDER_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_VALIDATION_CSVAPPENDER_IMPL) || defined(CHECK_QUALITY)
 
 namespace Euclid {
 namespace FitsIO {

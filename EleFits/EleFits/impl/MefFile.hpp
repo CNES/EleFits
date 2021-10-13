@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSFILE_MEFFILE_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_MEFFILE_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFits/MefFile.h"
 
@@ -125,7 +125,7 @@ const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Tup
       extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
       extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
       extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
-EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
+ELEFITS_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
     #undef DECLARE_ASSIGN_IMAGE_EXT
   #endif
 

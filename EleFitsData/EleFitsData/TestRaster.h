@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_TESTRASTER_H
-#define _EL_FITSDATA_TESTRASTER_H
+#ifndef _ELEFITSDATA_TESTRASTER_H
+#define _ELEFITSDATA_TESTRASTER_H
 
 #include <algorithm>
 #include <complex>
@@ -95,9 +95,9 @@ bool rasterApprox(const Raster<T, n>& test, const Raster<T, n>& ref, double tol 
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_TESTRASTER_IMPL
+#define _ELEFITSDATA_TESTRASTER_IMPL
 #include "EleFitsData/impl/TestRaster.hpp"
-#undef _EL_FITSDATA_TESTRASTER_IMPL
+#undef _ELEFITSDATA_TESTRASTER_IMPL
 /// @endcond
 
 #endif

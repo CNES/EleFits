@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_COLUMN_H
-#define _EL_FITSDATA_COLUMN_H
+#ifndef _ELEFITSDATA_COLUMN_H
+#define _ELEFITSDATA_COLUMN_H
 
 #include "EleFitsData/DataUtils.h"
 
@@ -35,10 +35,10 @@ namespace FitsIO {
  * @brief Loop over supported column types.
  * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
  * @see Program EleFitsPrintSupportedTypes to display all supported types.
- * @see EL_FITSIO_FOREACH_RECORD_TYPE
- * @see EL_FITSIO_FOREACH_RASTER_TYPE
+ * @see ELEFITS_FOREACH_RECORD_TYPE
+ * @see ELEFITS_FOREACH_RASTER_TYPE
  */
-#define EL_FITSIO_FOREACH_COLUMN_TYPE(MACRO) \
+#define ELEFITS_FOREACH_COLUMN_TYPE(MACRO) \
   /* MACRO(bool, bool) // TODO Could be supported at some point */ \
   MACRO(char, char) \
   MACRO(std::int16_t, int16) \
@@ -103,9 +103,9 @@ namespace FitsIO {
  * CFitsIO uses an internal buffer, which can be exploited to optimize reading and writing.
  * This is generally handled through the "iterator function" provided by CFitsIO.
  * @note
- * Fortunately, this complexity is already embedded in EL_FitsIO internals:
+ * Fortunately, this complexity is already embedded in EleFits internals:
  * the buffer is used optimally when reading and writing several columns.
- * In general, it is nearly as fast to read and write scalar columns as vector columns with EL_FitsIO.
+ * In general, it is nearly as fast to read and write scalar columns as vector columns with EleFits.
  * Therefore, users are encouraged to consider the repeat count as a meaningful value,
  * rather than as an optimization trick.
  *
@@ -511,9 +511,9 @@ private:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_COLUMN_IMPL
+#define _ELEFITSDATA_COLUMN_IMPL
 #include "EleFitsData/impl/Column.hpp"
-#undef _EL_FITSDATA_COLUMN_IMPL
+#undef _ELEFITSDATA_COLUMN_IMPL
 /// @endcond
 
 #endif

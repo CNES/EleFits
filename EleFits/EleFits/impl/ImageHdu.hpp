@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSFILE_IMAGEHDU_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITS_IMAGEHDU_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFits/ImageHdu.h"
 
@@ -49,7 +49,7 @@ void ImageHdu::writeRaster(const Raster<T, n>& data) const {
       extern template VecRaster<type, -1> ImageHdu::readRaster() const; \
       extern template VecRaster<type, 2> ImageHdu::readRaster() const; \
       extern template VecRaster<type, 3> ImageHdu::readRaster() const;
-EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
+ELEFITS_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
     #undef DECLARE_READ_RASTER
   #endif
 
@@ -58,7 +58,7 @@ EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
       extern template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
       extern template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
       extern template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
-EL_FITSIO_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
+ELEFITS_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
     #undef DECLARE_WRITE_RASTER
   #endif
 

@@ -51,7 +51,7 @@ void checkRandom3DRasterIsReadBack() {
     checkRandom3DRasterIsReadBack<type>(); \
   }
 
-EL_FITSIO_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(region_is_read_back, FitsIO::Test::MinimalFile) {
   FitsIO::VecRaster<long, 3> input({ 3, 4, 5 });

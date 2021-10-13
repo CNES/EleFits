@@ -153,7 +153,7 @@ void Hdu::editThisHdu() const {
 
 #ifndef COMPILE_PARSE_RECORD
   #define COMPILE_PARSE_RECORD(type, unused) template Record<type> Hdu::parseRecord(const std::string&) const;
-EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
+ELEFITS_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
   #undef COMPILE_PARSE_RECORD
 #endif
 
@@ -161,7 +161,7 @@ template RecordSeq Hdu::parseRecordVector(const std::vector<std::string>&) const
 
 #ifndef COMPILE_WRITE_RECORD
   #define COMPILE_WRITE_RECORD(type, unused) template void Hdu::writeRecord(const Record<type>&) const;
-EL_FITSIO_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
+ELEFITS_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
   #undef COMPILE_WRITE_RECORD
 #endif
 

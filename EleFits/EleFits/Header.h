@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSFILE_HEADER_H
-#define _EL_FITSFILE_HEADER_H
+#ifndef _ELEFITS_HEADER_H
+#define _ELEFITS_HEADER_H
 
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/KeywordCategory.h"
@@ -562,9 +562,9 @@ struct KeywordNotFoundError : public FitsError {
 } // namespace Euclid
 
 //// @cond INTERNAL
-#define _EL_FITSFILE_HEADER_IMPL
+#define _ELEFITS_HEADER_IMPL
 #include "EleFits/impl/Header.hpp"
-#undef _EL_FITSFILE_HEADER_IMPL
+#undef _ELEFITS_HEADER_IMPL
 //// @endcond
 
 #endif

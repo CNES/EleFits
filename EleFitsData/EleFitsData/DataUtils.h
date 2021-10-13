@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_DATAUTILS_H
-#define _EL_FITSDATA_DATAUTILS_H
+#ifndef _ELEFITSDATA_DATAUTILS_H
+#define _ELEFITSDATA_DATAUTILS_H
 
 #include <algorithm> // transform
 #include <string>

@@ -75,7 +75,7 @@ const long MefFile::primaryIndex;
     template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
     template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
     template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
-EL_FITSIO_FOREACH_RASTER_TYPE(COMPILE_ASSIGN_IMAGE_EXT)
+ELEFITS_FOREACH_RASTER_TYPE(COMPILE_ASSIGN_IMAGE_EXT)
   #undef COMPILE_ASSIGN_IMAGE_EXT
 #endif
 

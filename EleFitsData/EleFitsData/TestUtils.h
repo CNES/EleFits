@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_TESTUTILS_H
-#define _EL_FITSDATA_TESTUTILS_H
+#ifndef _ELEFITSDATA_TESTUTILS_H
+#define _ELEFITSDATA_TESTUTILS_H
 
 #include <complex>
 #include <string>
@@ -83,9 +83,9 @@ bool approx(T test, T ref, double tol = 0.01);
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_TESTUTILS_IMPL
+#define _ELEFITSDATA_TESTUTILS_IMPL
 #include "EleFitsData/impl/TestUtils.hpp"
-#undef _EL_FITSDATA_TESTUTILS_IMPL
+#undef _ELEFITSDATA_TESTUTILS_IMPL
 /// @endcond
 
 #endif

@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_RECORD_H
-#define _EL_FITSDATA_RECORD_H
+#ifndef _ELEFITSDATA_RECORD_H
+#define _ELEFITSDATA_RECORD_H
 
 #include <boost/any.hpp>
 #include <complex>
@@ -32,10 +32,10 @@ namespace FitsIO {
  * @brief Loop over supported record types.
  * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
  * @see Program EleFitsPrintSupportedTypes to display all supported types
- * @see EL_FITSIO_FOREACH_RASTER_TYPE
- * @see EL_FITSIO_FOREACH_COLUMN_TYPE
+ * @see ELEFITS_FOREACH_RASTER_TYPE
+ * @see ELEFITS_FOREACH_COLUMN_TYPE
  */
-#define EL_FITSIO_FOREACH_RECORD_TYPE(MACRO) \
+#define ELEFITS_FOREACH_RECORD_TYPE(MACRO) \
   MACRO(bool, bool) \
   MACRO(char, char) \
   MACRO(short, short) \
@@ -90,7 +90,7 @@ using VariantValue = boost::any;
  * to warn the file user about the CFitsIO convention.
  *
  * @see \ref data_classes
- * @see EL_FITSIO_FOREACH_RECORD_TYPE for the list of supported value types.
+ * @see ELEFITS_FOREACH_RECORD_TYPE for the list of supported value types.
  */
 template <typename T>
 struct Record {
@@ -251,9 +251,9 @@ bool operator!=(const Record<T>& lhs, const Record<T>& rhs) {
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_RECORD_IMPL
+#define _ELEFITSDATA_RECORD_IMPL
 #include "EleFitsData/impl/Record.hpp"
-#undef _EL_FITSDATA_RECORD_IMPL
+#undef _ELEFITSDATA_RECORD_IMPL
 /// @endcond
 
 #endif

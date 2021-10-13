@@ -17,7 +17,7 @@
  *
  */
 
-#if defined(_EL_FITSDATA_COLUMN_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSDATA_COLUMN_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleFitsData/Column.h"
   #include "EleFitsData/FitsError.h"
@@ -199,7 +199,7 @@ std::vector<T>& VecColumn<T>::vector() {
       extern template class PtrColumn<type>; \
       extern template class VecRefColumn<type>; \
       extern template class VecColumn<type>;
-EL_FITSIO_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
+ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
     #undef DECLARE_COLUMN_CLASSES
   #endif
 

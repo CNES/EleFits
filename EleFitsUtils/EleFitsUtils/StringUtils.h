@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSUTILS_STRINGUTILS_H
-#define _EL_FITSUTILS_STRINGUTILS_H
+#ifndef _ELEFITSUTILS_STRINGUTILS_H
+#define _ELEFITSUTILS_STRINGUTILS_H
 
 #include "ElementsKernel/Auxiliary.h"
 

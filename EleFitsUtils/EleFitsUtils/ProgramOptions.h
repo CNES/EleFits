@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSIO_UTILS_PROGRAM_H
-#define _EL_FITSIO_UTILS_PROGRAM_H
+#ifndef _ELEFITS_UTILS_PROGRAM_H
+#define _ELEFITS_UTILS_PROGRAM_H
 
 #include <boost/program_options.hpp>
 

@@ -1,5 +1,5 @@
 For each data structure (Record, Raster, Column), this program
-prints the list of types supported by EL_FitsIO.
+prints the list of types supported by EleFits.
 
 Record values are stored as ASCII strings in the Fits file.
 Machine types (short, int, long...) are therefore adequate.

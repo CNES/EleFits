@@ -63,7 +63,7 @@ void checkRecordWithFallbackIsReadBack<unsigned long>(const Hdu& h, const std::s
     checkRecordWithFallbackIsReadBack<type>(this->header(), std::string(#name).substr(0, 8)); \
   }
 
-EL_FITSIO_FOREACH_RECORD_TYPE(RECORD_WITH_FALLBACK_IS_READ_BACK_TEST)
+ELEFITS_FOREACH_RECORD_TYPE(RECORD_WITH_FALLBACK_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::TemporarySifFile) {
   Record<short> written("SHORT", 1);

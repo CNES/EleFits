@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef _EL_FITSDATA_TESTCOLUMN_H
-#define _EL_FITSDATA_TESTCOLUMN_H
+#ifndef _ELEFITSDATA_TESTCOLUMN_H
+#define _ELEFITSDATA_TESTCOLUMN_H
 
 #include <complex>
 #include <string>
@@ -201,9 +201,9 @@ public:
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define _EL_FITSDATA_TESTCOLUMN_IMPL
+#define _ELEFITSDATA_TESTCOLUMN_IMPL
 #include "EleFitsData/impl/TestColumn.hpp"
-#undef _EL_FITSDATA_TESTCOLUMN_IMPL
+#undef _ELEFITSDATA_TESTCOLUMN_IMPL
 /// @endcond
 
 #endif
