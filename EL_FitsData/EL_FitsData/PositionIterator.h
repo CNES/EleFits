@@ -32,7 +32,6 @@ namespace FitsIO {
  * Some current position is updated with increment operators.
  * The move is such that the corresponding offset in a `Raster` is always increasing.
  * In particular, when screening a whole `Raster`, the pixels are visited in the storage order.
- * @see PixelIterator to get the pixel value along with its position
  */
 template <long n = 2>
 class PositionIterator : public std::iterator<std::input_iterator_tag, Position<n>> {

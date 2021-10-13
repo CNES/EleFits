@@ -592,7 +592,6 @@ VecRaster<T, sizeof...(Longs)> makeRaster(std::vector<T> data, Longs... shape) {
 } // namespace FitsIO
 } // namespace Euclid
 
-#include "EL_FitsData/PixelIterator.h"
 #include "EL_FitsData/PositionIterator.h"
 #include "EL_FitsData/Subraster.h"
 
