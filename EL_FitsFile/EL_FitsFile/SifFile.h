@@ -81,6 +81,16 @@ public:
   template <typename T, long n>
   void writeRaster(const Raster<T, n>& raster) const;
 
+  /**
+   * @copydoc Hdu::verifyChecksums()
+   */
+  void verifyChecksums() const;
+
+  /**
+   * @copydoc Hdu::updateChecksums()
+   */
+  void updateChecksums() const;
+
 private:
   /**
    * @brief The Primary (and only) HDU

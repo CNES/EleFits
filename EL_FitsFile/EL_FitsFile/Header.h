@@ -486,27 +486,6 @@ public:
   void writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records) const;
 
   /// @}
-  /**
-   * @name Handle checksums
-   */
-  /// @{
-
-  /**
-   * @brief Compute the HDU and data checksums and compare them to the values in the header.
-   * @throw ChecksumError if checksums values in header are missing or incorrect
-   * @see updateChecksums()
-   */
-  void verifyChecksums() const; // FIXME to Hdu and SifFile
-
-  /**
-   * @brief Compute and write (or update) the HDU and data checksums.
-   * @details
-   * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`).
-   * @see verifyChecksums()
-   */
-  void updateChecksums() const; // FIXME to Hdu and SifFile
-
-  /// @}
 
 private:
   /**

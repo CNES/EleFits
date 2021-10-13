@@ -463,6 +463,21 @@ public:
    */
   void deleteRecord(const std::string& keyword) const;
 
+  /**
+   * @brief Compute the HDU and data checksums and compare them to the values in the header.
+   * @throw ChecksumError if checksums values in header are missing or incorrect
+   * @see updateChecksums()
+   */
+  void verifyChecksums() const;
+
+  /**
+   * @brief Compute and write (or update) the HDU and data checksums.
+   * @details
+   * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`).
+   * @see verifyChecksums()
+   */
+  void updateChecksums() const;
+
 protected:
   /**
    * @brief Set the current HDU to this one.

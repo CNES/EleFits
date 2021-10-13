@@ -88,15 +88,6 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.parseSeq<VariantValue>({ "I", "F" });
 }
 
-BOOST_AUTO_TEST_CASE(checksum_test) {
-  const auto& h = header().header();
-  BOOST_CHECK_THROW(h.verifyChecksums(), ChecksumError);
-  h.updateChecksums();
-  BOOST_CHECK_NO_THROW(h.verifyChecksums());
-  h.write("DATASUM", std::string(""));
-  BOOST_CHECK_THROW(h.verifyChecksums(), ChecksumError);
-}
-
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

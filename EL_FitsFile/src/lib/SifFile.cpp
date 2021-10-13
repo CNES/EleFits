@@ -35,5 +35,13 @@ const ImageRaster& SifFile::raster() const {
   return m_raster;
 }
 
+void SifFile::verifyChecksums() const {
+  m_hdu.verifyChecksums();
+}
+
+void SifFile::updateChecksums() const {
+  m_hdu.updateChecksums();
+}
+
 } // namespace FitsIO
 } // namespace Euclid

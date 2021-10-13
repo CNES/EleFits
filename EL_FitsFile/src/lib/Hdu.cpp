@@ -122,6 +122,23 @@ void Hdu::deleteRecord(const std::string& keyword) const {
   Cfitsio::HeaderIo::deleteRecord(m_fptr, keyword);
 }
 
+void Hdu::verifyChecksums() const {
+  touchThisHdu();
+  int status = 0;
+  int datastatus;
+  int hdustatus;
+  fits_verify_chksum(m_fptr, &datastatus, &hdustatus, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
+  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
+}
+
+void Hdu::updateChecksums() const {
+  editThisHdu();
+  int status = 0;
+  fits_write_chksum(m_fptr, &status);
+  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
+}
+
 void Hdu::touchThisHdu() const {
   Cfitsio::HduAccess::gotoIndex(m_fptr, m_cfitsioIndex);
   if (m_status == HduCategory::Untouched) {

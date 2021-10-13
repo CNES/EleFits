@@ -63,6 +63,14 @@ BOOST_AUTO_TEST_CASE(write_all_test) {
   BOOST_TEST(output.vector() == input.vector());
 }
 
+BOOST_FIXTURE_TEST_CASE(checksum_test, Test::TemporarySifFile) {
+  BOOST_CHECK_THROW(this->verifyChecksums(), ChecksumError);
+  this->updateChecksums();
+  BOOST_CHECK_NO_THROW(this->verifyChecksums());
+  this->header().header().write("DATASUM", std::string(""));
+  BOOST_CHECK_THROW(this->verifyChecksums(), ChecksumError);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

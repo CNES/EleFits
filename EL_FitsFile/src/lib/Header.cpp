@@ -60,23 +60,6 @@ RecordSeq Header::parseAll(KeywordCategory categories) const {
   // TODO return comments as string Records?
 }
 
-void Header::verifyChecksums() const {
-  m_touch();
-  int status = 0;
-  int datastatus;
-  int hdustatus;
-  fits_verify_chksum(m_fptr, &datastatus, &hdustatus, &status);
-  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
-  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
-}
-
-void Header::updateChecksums() const {
-  m_edit();
-  int status = 0;
-  fits_write_chksum(m_fptr, &status);
-  // FIXME wrap in EL_CfitsioWrapper and throw if needs be
-}
-
 KeywordExistsError::KeywordExistsError(const std::string& existingKeyword) :
     FitsError(std::string("Keyword already exists: ") + existingKeyword), keyword(existingKeyword) {}
 
