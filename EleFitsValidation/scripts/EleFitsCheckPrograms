@@ -1,0 +1,100 @@
+#!/bin/sh
+#
+# Copyright (C) 2012-2020 Euclid Science Ground Segment
+#
+# This library is free software; you can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation; either version 3.0 of the License, or (at your option)
+# any later version.
+#
+# This library is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+#
+
+# Here!
+home_dir=${PWD}
+
+# Create unique directory
+tmp_dir=$(mktemp -dq -t temp.XXXXXX)
+
+status=0
+log_name=EleFitsCheckPrograms.log
+log_file="$tmp_dir/$log_name"
+
+# Clean and exit
+local_clean_exit() {
+  cd $home_dir
+  if [ $1 -gt 0 ]; then
+    mv $log_file $log_name
+    echo "Log file saved as: $log_name"
+  fi
+  rm -rf $tmp_dir
+  exit $1
+}
+
+# Test a simple command
+test_command() {
+  echo $1
+  echo "
+$1
+" >>$log_file
+  $1 >>$log_file 2>&1
+  cmd_exit=$?
+  if [ $cmd_exit == 0 ];
+  then
+    echo -e "\e[1;32m    Passed \e[m"
+  else
+    echo -e "\e[1;31m    Failed \e[m"
+    status=`expr $status + 1`
+  fi
+}
+
+# Test a program with an input or output file name
+# as first positional option, and additional options
+test_program_with_options() {
+  output="$tmp_dir/$2"
+  cmd="$1 $output $3"
+  test_command "$cmd"
+}
+
+# Test a program with an input or output file name
+# as first positional option
+test_program() {
+  test_program_with_options $1 $2 ""
+}
+
+if [ -f $log_file ]; then
+  rm $log_file
+fi
+
+test_program \
+  EleCfitsioExample "cfitsio.fits"
+
+test_program \
+  EleCfitsioWrapperExample "wrapper.fits"
+
+test_program \
+  EleFitsFileExample "fitsfile.fits"
+
+test_program \
+  EleFitsTutorial "tutorial.fits"
+
+test_program \
+  EleFitsGenerateAstroObj "astroobj.fits"
+
+test_command \
+  "EleFitsGenerate2DMassFiles --bintable $tmp_dir/bintable.fits --image $tmp_dir/image.fits"
+
+test_command \
+  EleFitsPrintSupportedTypes
+
+test_program_with_options \
+  EleFitsReadStructure "fitsfile.fits" "-K ru"
+
+local_clean_exit $status

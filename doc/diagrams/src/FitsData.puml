@@ -1,6 +1,6 @@
 @startuml
 
-package EL_FitsData {
+package EleFitsData {
 
 Raster <|-- VecRaster
 Raster *- Position

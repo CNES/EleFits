@@ -3,18 +3,18 @@ class CFitsIO {
 + functions()
 }
 hide CFitsIO circle
-package EL_CfitsioWrapper {
+package EleCfitsioWrapper {
 class SomeNamespace {
 + functions()
 }
 }
 hide SomeNamespace circle
-package EL_FitsData {
+package EleFitsData {
 class SomeDataClass {
 + data
 }
 }
-package EL_FitsFile {
+package EleFitsFile {
 class SomeServiceClass {
 + methods()
 }

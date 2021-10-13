@@ -47,26 +47,26 @@ The API is organized in namespaces as follows:
 
 This translates into the following set of modules:
 
-- `EL_FitsData` contains basic **data-storage structures**:
+- `EleFitsData` contains basic **data-storage structures**:
 Records, binary table columns and image rasters are implemented as light structures to abstract from CFitsIO (void) raw pointers;
 See \ref data_classes for more details on their API and usage.
-- `EL_CfitsioWrapper` is the low-level layer:
+- `EleCfitsioWrapper` is the low-level layer:
 The set of CFitsIO functions are wrapped in C++ functions to secure memory usage,
 ease type handling through templates, and throw exceptions instead of returning error codes;
 Yet, this API is **not meant for end-users**: it exposes the `fitsfile*` type and is still a bit verbose and cumbersome.
-- `EL_FitsFile` exposes the end-user API:
+- `EleFitsFile` exposes the end-user API:
 It provides set of **read-write services** in dedicated classes;
 See \ref handlers for more details.
-- `EL_FitsIO_Examples` provides **examples**!
-Among others, the module compares CFitsIO, `EL_CfitsioWrapper` and `EL_FitsFile` implementations of the same program,
+- `EleFitsExamples` provides **examples**!
+Among others, the module compares CFitsIO, `EleCfitsioWrapper` and `EleFitsFile` implementations of the same program,
 which demonstrates the reading and writing of records, images and binary tables with the three APIs;
 Of course, this is also where the tutorial is implemented.
-- `EL_FitsIO_Validation` contains **validation executables**:
+- `EleFitsValidation` contains **validation executables**:
   - Generator programs allow creating dummy Fits files from scratch;
   - The performances of EL_FitsIO are compared to those of CFitsIO;
   - A validation script checks that all of the provided programs run smoothly.
 
-Auxiliary classes, like exceptions, which are useful to both `EL_CfitsioWrapper` and `EL_FitsFile` are implemented in `EL_FitsData`.
+Auxiliary classes, like exceptions, which are useful to both `EleCfitsioWrapper` and `EleFitsFile` are implemented in `EleFitsData`.
 
 The general organization of the free functions, data classes and service classes in modules is illustrated below in the form of a class diagram.
 

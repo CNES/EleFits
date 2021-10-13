@@ -1,0 +1,25 @@
+Read the main properties of each HDU, and optionally some keyword records.
+
+Usage: 
+  EleFitsReadStructure <input> [-K [<filter>]]
+
+<input> is the path to the input file.
+
+Option -K (or --keywords) allows filtering the records.
+- Omitting -K, records are not read at all.
+- Using -K with no argument, all the records are read.
+- Using -K <filter>, only records of specified categories are read.
+
+The following character flags are used:
+- m for Mandatory records (aka Required, e.g. NAXIS),
+- r for Reserved records (e.g. EXPTIME),
+- c for Comment records (COMMENT or HISTORY),
+- u for User records (all other records).
+
+For example:
+- Read HDU properties:
+    EleFitsReadStructure input.fits
+- Read HDU properties and all records
+    EleFitsReadStructure input.fits -K
+- Read HDU properties and Required and User records
+    EleFitsReadStructure input.fits -K ru

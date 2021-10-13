@@ -1,0 +1,135 @@
+namespace Euclid {
+namespace FitsIO {
+
+/**
+
+\page apis_comp APIs compared
+
+
+\section apis-intro Introduction
+
+This page compares the basic CFitsIO operations performed with the following APIs:
+
+- Native CFitsIO API;
+- Module EleCfitsioWrapper API (Cfitsio namespace);
+- Module EleFitsFile API (FitsIO namespace).
+
+The snippets below are taken respectively from the EleCfitsio_Example, EleCfitsioWrapper_Example and EleFitsFile_Example programs.
+Some statements from the EleCfitsio_Example are are skipped because they do not convey much information, like for memory management.
+
+
+\section apis-file File management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EleCfitsioWrapper<th>EleFitsFile
+<tr>
+<td>Create a Fits file
+<td>\snippet EleCfitsio_Example.cpp Create Fits
+The call to fits_create_img ensures that the file is valid;
+It is generally omitted.
+<td>\snippet EleCfitsioWrapper_Example.cpp Create Fits
+<td>\snippet EleFitsFile_Example.cpp Create Fits
+<tr>
+<td>Open a Fits file
+<td>\snippet EleCfitsio_Example.cpp Open Fits
+<td>\snippet EleCfitsioWrapper_Example.cpp Open Fits
+<td>\snippet EleFitsFile_Example.cpp Open Fits
+<tr>
+<td>Close a Fits file
+<td>\snippet EleCfitsio_Example.cpp Close Fits
+<td>\snippet EleCfitsioWrapper_Example.cpp Close Fits
+<td>File is closed by destructor
+</table>
+
+
+\section apis-hdu HDU management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EleCfitsioWrapper<th>EleFitsFile
+<tr>
+<td>Access an HDU by index
+<td>\snippet EleCfitsio_Example.cpp Find HDU by index
+<td>\snippet EleCfitsioWrapper_Example.cpp Find HDU by index
+<td>\snippet EleFitsFile_Example.cpp Find HDU by index
+<tr>
+<td>Access an HDU by name
+<td>\snippet EleCfitsio_Example.cpp Find HDU by name
+<td>\snippet EleCfitsioWrapper_Example.cpp Find HDU by name
+<td>\snippet EleFitsFile_Example.cpp Find HDU by name
+<tr>
+<td>Get an HDU index
+<td>\snippet EleCfitsio_Example.cpp Get HDU index
+<td>\snippet EleCfitsioWrapper_Example.cpp Get HDU index
+<td>\snippet EleFitsFile_Example.cpp Get HDU index
+<tr>
+<td>Get an HDU name
+<td>\snippet EleCfitsio_Example.cpp Get HDU name
+<td>\snippet EleCfitsioWrapper_Example.cpp Get HDU name
+<td>\snippet EleFitsFile_Example.cpp Get HDU name
+</table>
+
+
+\section apis-record Record management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EleCfitsioWrapper<th>EleFitsFile
+<tr>
+<td>Write a record
+<td>\snippet EleCfitsio_Example.cpp Write record
+<td>\snippet EleCfitsioWrapper_Example.cpp Write record
+<td>\snippet EleFitsFile_Example.cpp Write record
+<tr>
+<td>Update a record value
+<td>\snippet EleCfitsio_Example.cpp Update record
+<td>\snippet EleCfitsioWrapper_Example.cpp Update record
+<td>\snippet EleFitsFile_Example.cpp Update record
+<tr>
+<td>Read a record value
+<td>\snippet EleCfitsio_Example.cpp Read record
+<td>\snippet EleCfitsioWrapper_Example.cpp Read record
+<td>\snippet EleFitsFile_Example.cpp Read record
+Several records can be read at once, as a tuple or custom structure.
+Refer to the \ref tuto for more details.
+</table>
+
+\section apis-table Binary table management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EleCfitsioWrapper<th>EleFitsFile
+<tr>
+<td>Create a binary table HDU
+<td>\snippet EleCfitsio_Example.cpp Create binary table ext
+<td>\snippet EleCfitsioWrapper_Example.cpp Create binary table ext
+<td>\snippet EleFitsFile_Example.cpp Create binary table ext
+<tr>
+<td>Read a column data
+<td>\snippet EleCfitsio_Example.cpp Read column
+<td>\snippet EleCfitsioWrapper_Example.cpp Read column
+<td>\snippet EleFitsFile_Example.cpp Read column
+</table>
+
+
+\section apis-image Image management
+
+<table>
+<tr><th>Operation<th>CFitsIO<th>EleCfitsioWrapper<th>EleFitsFile
+<tr>
+<td>Create an image HDU
+<td>\snippet EleCfitsio_Example.cpp Create image ext
+<td>\snippet EleCfitsioWrapper_Example.cpp Create image ext
+<td>\snippet EleFitsFile_Example.cpp Create image ext
+<tr>
+<td>Read an image data
+<td>\snippet EleCfitsio_Example.cpp Read raster
+<td>\snippet EleCfitsioWrapper_Example.cpp Read raster
+<td>\snippet EleFitsFile_Example.cpp Read raster
+</table>
+
+\example EleCfitsio_Example.cpp
+\example EleCfitsioWrapper_Example.cpp
+\example EleFitsFile_Example.cpp
+
+*/
+
+}
+}

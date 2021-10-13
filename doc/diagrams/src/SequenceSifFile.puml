@@ -1,14 +1,14 @@
 @startuml
 actor "Jean-René" as User
-box EL_FitsFile
+box EleFitsFile
 participant SifFile
 participant Hdu
 participant ImageHdu
 endbox
-box EL_CfitsioWrapper
+box EleCfitsioWrapper
 participant "Cfitsio namespace" as CfitsioWrapper
 endbox
-box EL_FitsData
+box EleFitsData
 participant Record
 participant Raster
 endbox

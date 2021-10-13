@@ -1,5 +1,5 @@
 @startuml
-package EL_FitsData {
+package EleFitsData {
 
 class Record<T> {
 + keyword : string
@@ -17,7 +17,7 @@ abstract class Raster<T> {
 
 }
 
-package EL_FitsFile {
+package EleFitsFile {
 
 class FitsFile {
 + open(string)

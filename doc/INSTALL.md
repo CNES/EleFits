@@ -51,7 +51,7 @@ sudo make install
 ```
 
 This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
-The end-user library is named EL_FitsFile, while the low-level API is named EL_CfitsioWrapper.
+The end-user library is named EleFitsFile, while the low-level API is named EleCfitsioWrapper.
 
 ## Configure a project to depend on EL_FitsIO
 
@@ -65,36 +65,36 @@ Using the package means declaring the dependency to the EL_FitsIO project in the
 
 ```xml
 elements_project(<project_name> <project_version>
-    USE EL_FitsIO <EL_FitsIO_version>)
+    USE EL_FitsIO <EleFitsversion>)
 ```
 
-and to the EL_FitsFile module in the `CMakeLists.txt` of each module which requires EL_FitsIO:
+and to the EleFitsFile module in the `CMakeLists.txt` of each module which requires EL_FitsIO:
 
 ```xml
-elements_depends_on_subdirs(EL_FitsFile)
+elements_depends_on_subdirs(EleFitsFile)
 
 elements_add_executable(<program_name> src/program/<program_name>.cpp
-    LINK_LIBRARIES ElementsKernel EL_FitsFile)
+    LINK_LIBRARIES ElementsKernel EleFitsFile)
 
 elements_add_library(<library_name> src/Lib/*.cpp
-    LINK_LIBRARIES ElementsKernel EL_FitsFile
-    INCLUDE_DIRS ElementsKernel EL_FitsFile
+    LINK_LIBRARIES ElementsKernel EleFitsFile
+    INCLUDE_DIRS ElementsKernel EleFitsFile
     PUBLIC_HEADERS <library_name>)
 ```
 
 ### CMake project
 
-Here's a minimal `CMakeLists.txt` file to use the EL_FitsFile library (end-user API):
+Here's a minimal `CMakeLists.txt` file to use the EleFitsFile library (end-user API):
 
 ```xml
 CMAKE_MINIMUM_REQUIRED(VERSION <cmake_version>)
 project(<project_name>)
-find_package(EL_FitsFile REQUIRED)
+find_package(EleFitsFile REQUIRED)
 add_executable(<exe_name> <exe_source>)
-target_link_libraries(<exe_name> EL_FitsFile)
+target_link_libraries(<exe_name> EleFitsFile)
 ```
 
-The `find_package` command expects parent folder of the file `FindEL_FitsFile.cmake` to be in the `CMAKE_MODULE_PATH`.
+The `find_package` command expects parent folder of the file `FindEleFitsFile.cmake` to be in the `CMAKE_MODULE_PATH`.
 For now, it is located in the sources of EL_FitsIO, in `cmake/modules`
 (we'd like it to be installed in a more standard location in some future version).
 Here's an example to build the project:

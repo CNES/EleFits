@@ -1,4 +1,4 @@
-# - Locate EL_FitsFile library
+# - Locate EleFitsFile library
 # Defines:
 #
 #  EL_FITSFILE_FOUND
@@ -9,11 +9,11 @@
 
 if(NOT EL_FITSFILE_FOUND)
 
-  find_path(EL_FITSFILE_INCLUDE_DIR EL_FITSFILE/EL_FitsFile/MefFile.h
+  find_path(EL_FITSFILE_INCLUDE_DIR EL_FITSFILE/EleFitsFile/MefFile.h
             HINTS ENV EL_FITSFILE_ROOT_DIR EL_FITSFILE_INSTALL_DIR
             PATH_SUFFIXES include)
 
-  find_library(EL_FITSFILE_LIBRARY EL_FitsFile
+  find_library(EL_FITSFILE_LIBRARY EleFitsFile
                HINTS ENV EL_FITSFILE_ROOT_DIR EL_FITSFILE_INSTALL_DIR
                PATH_SUFFIXES lib)
 

@@ -656,11 +656,11 @@ WARN_LOGFILE =
 # with spaces.
 
 INPUT = @PROJECT_SOURCE_DIR@/doc \
-@PROJECT_SOURCE_DIR@/EL_CfitsioWrapper \
-@PROJECT_SOURCE_DIR@/EL_FitsData \
-@PROJECT_SOURCE_DIR@/EL_FitsFile \
-@PROJECT_SOURCE_DIR@/EL_FitsIO_Examples \
-@PROJECT_SOURCE_DIR@/EL_FitsIO_Validation
+@PROJECT_SOURCE_DIR@/EleCfitsioWrapper \
+@PROJECT_SOURCE_DIR@/EleFitsData \
+@PROJECT_SOURCE_DIR@/EleFitsFile \
+@PROJECT_SOURCE_DIR@/EleFitsExamples \
+@PROJECT_SOURCE_DIR@/EleFitsValidation
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -726,7 +726,7 @@ EXCLUDE_SYMBOLS =
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH = @PROJECT_SOURCE_DIR@/EL_FitsIO_Examples
+EXAMPLE_PATH = @PROJECT_SOURCE_DIR@/EleFitsExamples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
