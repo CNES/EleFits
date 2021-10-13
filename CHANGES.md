@@ -1,5 +1,25 @@
 # Change log
 
+## 4.0
+
+### Renaming
+
+* Project
+  * `EL_FitsIO` -> `EleFits`
+* Modules:
+  * `EL_CfitsioWrapper` -> `EleCfitsioWrapper`
+  * `EL_FitsUtils` -> `EleFitsUtils`
+  * `EL_FitsData` -> `EleFitsData`
+  * `EL_FitsFile` -> `EleFits`
+  * `EL_FitsIO_Examples` -> `EleFitsExamples`
+  * `EL_FitsIO_Validation` -> `EleFitsValidation`
+* Programs:
+  * According to module renaming, with additional underscores removed
+* Namespace:
+  * `FitsIO` -> `Fits`
+* Macros:
+  * `EL_FITSIO` prefix -> `ELEFITS`
+
 ## 3.2
 
 ### Bug fixes
