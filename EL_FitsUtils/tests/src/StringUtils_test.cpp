@@ -21,15 +21,24 @@
 
 #include <boost/test/unit_test.hpp>
 
+using namespace Euclid::FitsIO;
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(StringUtils_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(example_test) {
+BOOST_AUTO_TEST_CASE(split_test) {
+  const std::string input = "\na\nb\nc\n\n";
+  const std::vector<std::string> expected = {"", "a", "b", "c", "", ""};
+  BOOST_TEST(String::split(input) == expected);
+}
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+BOOST_AUTO_TEST_CASE(trim_test) {
+  const std::string input = "\n\ta\n\tb\n c\n \n";
+  const std::string expected = "a\n\tb\n c";
+  BOOST_TEST(String::trim(input) == expected);
 }
 
 //-----------------------------------------------------------------------------
