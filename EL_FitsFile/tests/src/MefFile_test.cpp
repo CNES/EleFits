@@ -34,26 +34,26 @@ BOOST_AUTO_TEST_SUITE(MefFile_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::TemporaryMefFile) {
-  const auto& primary = this->accessPrimary<>();
+  const auto& primary = this->primary();
   BOOST_TEST(primary.index() == MefFile::primaryIndex);
 }
 
 BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   Test::SmallRaster input; // TODO RandomRaster
-  const auto& primary = this->accessPrimary<ImageHdu>();
+  const auto& primary = this->primary();
   primary.updateShape<float, 2>(input.shape);
   primary.writeRaster(input);
   this->close();
   // Reopen as read-only
   this->open(this->filename(), FileMode::Read);
-  const auto output = this->accessPrimary<ImageHdu>().readRaster<float, 2>();
+  const auto output = this->primary().readRaster<float, 2>();
   remove(this->filename().c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
   BOOST_TEST(this->hduCount() == 1); // 0 with CFitsIO
   Test::SmallRaster raster;
-  const auto& primary = this->accessPrimary<ImageHdu>();
+  const auto& primary = this->primary();
   primary.updateShape<float, 2>(raster.shape);
   BOOST_TEST(this->hduCount() == 1);
   const auto& ext = this->initImageExt<float, 2>("IMG", raster.shape);
@@ -81,10 +81,10 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile) {
-  const auto& firstlyAccessedPrimary = this->accessPrimary<>();
+  const auto& firstlyAccessedPrimary = this->primary();
   BOOST_CHECK_NO_THROW(firstlyAccessedPrimary.readName());
   this->initImageExt<float, 2>("IMG", {});
-  const auto& secondlyAccessedPrimary = this->accessPrimary<>();
+  const auto& secondlyAccessedPrimary = this->primary();
   BOOST_TEST(firstlyAccessedPrimary.readName() == secondlyAccessedPrimary.readName());
 }
 

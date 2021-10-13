@@ -57,6 +57,10 @@ const Hdu& MefFile::operator[](long index) {
   return access<Hdu>(index);
 }
 
+const ImageHdu& MefFile::primary() {
+  return access<ImageHdu>(0);
+}
+
 const Hdu& MefFile::initRecordExt(const std::string& name) {
   Cfitsio::HduAccess::createMetadataExtension(m_fptr, name);
   const auto size = m_hdus.size();

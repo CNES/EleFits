@@ -146,12 +146,16 @@ public:
 
   /**
    * @brief Access the Primary HDU.
-   * @see access
+   * @see deprecated, to be replaced with primary()
    */
   template <class T = Hdu>
   const T& accessPrimary();
-  // FIXME remove T in 4.0: Primary is necessarily an ImageHdu
-  // Hdu makes no sense anymore, now that header() and array() exist
+
+  /**
+   * @brief Access the Primary HDU.
+   * @see access()
+   */ 
+  const ImageHdu& primary();
 
   /**
    * @ingroup iterators
