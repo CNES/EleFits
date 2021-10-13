@@ -23,7 +23,7 @@
 #include "EL_FitsData/DataUtils.h"
 #include "EL_FitsData/KeywordCategory.h"
 #include "EL_FitsData/Record.h"
-#include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/RecordVec.h"
 
 #include <fitsio.h>
 #include <string>
@@ -63,7 +63,7 @@ enum class RecordMode
  * as well as their constant and reference counterparts:
  * - For homogeneous sequences:
  *   - `std::vector<Record<T>>` (where `T` can be `VariantValue`),
- *   - `RecordVector<T>` (where `T` can be `VariantValue`),
+ *   - `RecordVec<T>` (where `T` can be `VariantValue`),
  *   - `std::array<Record<T>>` (where `T` can be `VariantValue`);
  * - For heterogeneous sequences:
  *   - `Record<Ts>...`,
@@ -72,7 +72,7 @@ enum class RecordMode
  * For reading, the following return types are available:
  * - For homogeneous sequences:
  *   - `std::vector<Record<T>>` (where `T` can be `VariantValue`),
- *   - `RecordVector<T>` (where `T` can be `VariantValue`);
+ *   - `RecordVec<T>` (where `T` can be `VariantValue`);
  * - For heterogeneous sequences:
  *   - `std::tuple<Record<Ts>...>`,
  *   - User-defined structures which can be constructed from brace-enclosed heterogeneous lists.
@@ -82,7 +82,7 @@ enum class RecordMode
  * Relying on `VariantValue` is the way to go when types are not all known at compile time,
  * and can be the most comfortable option in many other cases.
  * Indeed, working with a tuple might become a nightmare with many values,
- * where `std::vector<VariantValue>` and `RecordVector<VariantValue>` (aka `RecordSeq`)
+ * where `std::vector<VariantValue>` and `RecordVec<VariantValue>` (aka `RecordSeq`)
  * can provide valuable help by reducing the boilerplate.
  * The impact on runtime is negligible.
  * 
@@ -251,7 +251,7 @@ public:
    * std::vector<Records<VariantValue>> fallbacks { {"ONE", 1}, {"TWO", 2.0} };
    * auto vector = h.parseSeqOr(fallbacks);
    * 
-   * // RecordVector to RecordVector
+   * // RecordVec to RecordVec
    * RecordSeq fallbacks { { {"ONE", 1}, {"TWO", 2.0} } };
    * auto recVec = h.parseSeqOr(fallbacks);
    * 
@@ -274,7 +274,7 @@ public:
    * @brief Parse a sequence of homogeneous records.
    */
   template <typename T = VariantValue>
-  RecordVector<T> parseSeq(const std::vector<std::string>& keywords) const;
+  RecordVec<T> parseSeq(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse a sequence of heterogeneous records.

@@ -13,6 +13,7 @@
 * Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
 * `FileMode` replaces `FitsFile::Permission`, `SifFile::Permission` and `MefFile::Permission`
 * Class `HduCategory` replaces enum `HduType`
+* `RecordVector` is renamed as `RecordVec`
 * `FitsIOError` is renamed as `FitsError`
 
 ### New features
@@ -45,6 +46,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 * `FitsFile::Permission` is a deprecated alias to `FileMode`
 * `HduType` is a deprecated alias to `HduCategory`
 * `VecRefRaster` and `VecRefColumn`
+* `RecordVector` is a deprecated alias to `RecordVec`
 * `FitsIOError` is a deprecated alias to `FitsError`
 
 ### Cleaning

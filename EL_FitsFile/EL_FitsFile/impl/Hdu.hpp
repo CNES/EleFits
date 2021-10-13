@@ -20,7 +20,7 @@
 #if defined(_EL_FITSFILE_HDU_IMPL) || defined(CHECK_QUALITY)
 
   #include "EL_CfitsioWrapper/HeaderWrapper.h"
-  #include "EL_FitsData/RecordVector.h"
+  #include "EL_FitsData/RecordVec.h"
   #include "EL_FitsFile/Hdu.h"
 
 namespace Euclid {
@@ -69,12 +69,12 @@ std::tuple<Record<Ts>...> Hdu::parseRecordsOr(const Record<Ts>&... fallbacks) co
 }
 
 template <typename T>
-RecordVector<T> Hdu::parseRecordVector(const std::vector<std::string>& keywords) const {
+RecordVec<T> Hdu::parseRecordVector(const std::vector<std::string>& keywords) const {
   return m_header.parseSeq<T>(keywords);
 }
 
 template <typename T>
-RecordVector<T> Hdu::parseAllRecords() const {
+RecordVec<T> Hdu::parseAllRecords() const {
   return m_header.parseSeq<T>(readKeywords(~KeywordCategory::Comment));
 }
 
@@ -104,7 +104,7 @@ void Hdu::writeRecords(const std::vector<Record<T>>& records) const {
 }
 
 template <typename T>
-void Hdu::writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
+void Hdu::writeRecords(const RecordVec<T>& records, const std::vector<std::string>& keywords) const {
   m_header.writeSeqIn<RecordMode::CreateNew>(keywords, records.vector);
 }
 
@@ -134,7 +134,7 @@ void Hdu::updateRecords(const std::vector<Record<T>>& records) const {
 }
 
 template <typename T>
-void Hdu::updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const {
+void Hdu::updateRecords(const RecordVec<T>& records, const std::vector<std::string>& keywords) const {
   m_header.writeSeqIn<RecordMode::CreateOrUpdate>(keywords, records.vector);
 }
 

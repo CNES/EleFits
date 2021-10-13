@@ -20,7 +20,7 @@
 #if defined(_EL_FITSDATA_RECORDVECTOR_IMPL) || defined(CHECK_QUALITY)
 
   #include "EL_FitsData/FitsError.h"
-  #include "EL_FitsData/RecordVector.h"
+  #include "EL_FitsData/RecordVec.h"
 
   #include <algorithm> // find_if
 
@@ -28,20 +28,20 @@ namespace Euclid {
 namespace FitsIO {
 
 template <typename T>
-RecordVector<T>::RecordVector(std::size_t size) : vector(size) {}
+RecordVec<T>::RecordVec(std::size_t size) : vector(size) {}
 
 template <typename T>
-RecordVector<T>::RecordVector(const std::vector<Record<T>>& records) : vector(records) {}
+RecordVec<T>::RecordVec(const std::vector<Record<T>>& records) : vector(records) {}
 
 template <typename T>
-RecordVector<T>::RecordVector(std::vector<Record<T>>&& records) : vector(std::move(records)) {}
+RecordVec<T>::RecordVec(std::vector<Record<T>>&& records) : vector(std::move(records)) {}
 
 template <typename T>
 template <typename... Ts>
-RecordVector<T>::RecordVector(const Record<Ts>&... records) : vector { Record<T>(records)... } {}
+RecordVec<T>::RecordVec(const Record<Ts>&... records) : vector { Record<T>(records)... } {}
 
 template <typename T>
-const Record<T>& RecordVector<T>::operator[](const std::string& keyword) const {
+const Record<T>& RecordVec<T>::operator[](const std::string& keyword) const {
   const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T>& r) {
     return r.keyword == keyword;
   });
@@ -52,13 +52,13 @@ const Record<T>& RecordVector<T>::operator[](const std::string& keyword) const {
 }
 
 template <typename T>
-Record<T>& RecordVector<T>::operator[](const std::string& keyword) {
-  return const_cast<Record<T>&>(const_cast<const RecordVector<T>*>(this)->operator[](keyword));
+Record<T>& RecordVec<T>::operator[](const std::string& keyword) {
+  return const_cast<Record<T>&>(const_cast<const RecordVec<T>*>(this)->operator[](keyword));
 }
 
 template <typename T>
 template <typename TValue>
-Record<TValue> RecordVector<T>::as(const std::string& keyword) const {
+Record<TValue> RecordVec<T>::as(const std::string& keyword) const {
   return Record<TValue>(operator[](keyword));
 }
 

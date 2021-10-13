@@ -162,8 +162,8 @@ Return parseRecordsAs(fitsfile* fptr, const std::vector<std::string>& keywords) 
 }
 
 template <typename T>
-FitsIO::RecordVector<T> parseRecordVector(fitsfile* fptr, const std::vector<std::string>& keywords) {
-  FitsIO::RecordVector<T> records(keywords.size());
+FitsIO::RecordVec<T> parseRecordVec(fitsfile* fptr, const std::vector<std::string>& keywords) {
+  FitsIO::RecordVec<T> records(keywords.size());
   std::transform(keywords.begin(), keywords.end(), records.vector.begin(), [&](const std::string& k) {
     return parseRecord<T>(fptr, k);
   });

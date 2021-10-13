@@ -21,7 +21,7 @@
 #define _EL_FITSDATA_TESTRECORD_H
 
 #include "EL_FitsData/Record.h"
-#include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/RecordVec.h"
 #include "EL_FitsData/TestUtils.h"
 
 #include <algorithm>

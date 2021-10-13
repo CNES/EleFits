@@ -24,7 +24,7 @@
 #include "EL_FitsData/HduCategory.h"
 #include "EL_FitsData/KeywordCategory.h"
 #include "EL_FitsData/Record.h"
-#include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/RecordVec.h"
 #include "EL_FitsFile/Header.h"
 
 #include <fitsio.h>
@@ -327,7 +327,7 @@ public:
    * @deprecated See header() and Header
    */
   template <typename T>
-  RecordVector<T> parseRecordVector(const std::vector<std::string>& keywords) const;
+  RecordVec<T> parseRecordVector(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse several heterogeneous records.
@@ -345,13 +345,13 @@ public:
   RecordSeq parseRecordSeq(const std::vector<std::string>& keywords) const;
 
   /**
-   * @brief Parse all the records as a RecordVector.
+   * @brief Parse all the records as a RecordVec.
    * @details
-   * This method is similar to parseRecordVector.
+   * This method is similar to parseRecordVec.
    * @deprecated See header() and Header
    */
   template <typename T>
-  RecordVector<T> parseAllRecords() const;
+  RecordVec<T> parseAllRecords() const;
 
   /**
    * @brief Write a record.
@@ -394,11 +394,11 @@ public:
   void writeRecords(const std::vector<Record<T>>& records) const;
 
   /**
-   * @brief Write a subset of a RecordVector.
+   * @brief Write a subset of a RecordVec.
    * @deprecated See header() and Header
    */
   template <typename T>
-  void writeRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
+  void writeRecords(const RecordVec<T>& records, const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Write a COMMENT record.
@@ -452,11 +452,11 @@ public:
   void updateRecords(const std::vector<Record<T>>& records) const;
 
   /**
-   * @brief Update a subset of a RecordVector.
+   * @brief Update a subset of a RecordVec.
    * @deprecated See header() and Header
    */
   template <typename T>
-  void updateRecords(const RecordVector<T>& records, const std::vector<std::string>& keywords) const;
+  void updateRecords(const RecordVec<T>& records, const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Delete a record.

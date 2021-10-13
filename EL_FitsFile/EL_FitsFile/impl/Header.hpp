@@ -49,9 +49,9 @@ Record<T> Header::parseOr(
 }
 
 template <typename T>
-RecordVector<T> Header::parseSeq(const std::vector<std::string>& keywords) const {
+RecordVec<T> Header::parseSeq(const std::vector<std::string>& keywords) const {
   m_touch();
-  RecordVector<T> res(keywords.size());
+  RecordVec<T> res(keywords.size());
   std::transform(keywords.begin(), keywords.end(), res.vector.begin(), [&](const std::string& k) {
     return Cfitsio::HeaderIo::parseRecord<T>(m_fptr, k);
   });

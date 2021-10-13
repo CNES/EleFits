@@ -197,13 +197,13 @@ void seqForeach(std::vector<T>&& vector, TFunc&& func);
 // FIXME use enable_if to dispatch based on the presence of get() or begin()
 
 template <typename T>
-class RecordVector; // FIXME rm
+class RecordVec; // FIXME rm
 
 template <typename T, typename TFunc>
-void seqForeach(const RecordVector<T>& vector, TFunc&& func);
+void seqForeach(const RecordVec<T>& vector, TFunc&& func);
 
 template <typename T, typename TFunc>
-void seqForeach(RecordVector<T>&& vector, TFunc&& func);
+void seqForeach(RecordVec<T>&& vector, TFunc&& func);
 
 template <typename TTuple, typename TFunc>
 void seqForeach(TTuple&& tuple, TFunc&& func) {
@@ -228,14 +228,14 @@ void seqForeach(std::vector<T>&& vector, TFunc&& func) {
 }
 
 template <typename T, typename TFunc>
-void seqForeach(const RecordVector<T>& vector, TFunc&& func) {
+void seqForeach(const RecordVec<T>& vector, TFunc&& func) {
   for (const auto& element : vector) {
     func(element);
   }
 }
 
 template <typename T, typename TFunc>
-void seqForeach(RecordVector<T>&& vector, TFunc&& func) {
+void seqForeach(RecordVec<T>&& vector, TFunc&& func) {
   for (auto& element : vector) {
     func(element);
   }
@@ -260,7 +260,7 @@ TReturn seqTransform(const std::vector<T>& vector, TFunc&& func) {
 }
 
 template <typename TReturn, typename T, typename TFunc>
-TReturn seqTransform(const RecordVector<T>& vector, TFunc&& func) {
+TReturn seqTransform(const RecordVec<T>& vector, TFunc&& func) {
   TReturn res(vector.size);
   std::transform(std::begin(vector), std::end(vector), std::begin(res), func);
   return res;

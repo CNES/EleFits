@@ -36,34 +36,34 @@ namespace FitsIO {
  * Alias `RecordSeq` is provided for `T` = `VariantValue`.
  */
 template <typename T>
-class RecordVector { // FIXME rename as RecordVec in 4.0
+class RecordVec { // FIXME rename as RecordVec in 4.0
 
 public:
   /**
    * @brief Destructor.
    */
-  ~RecordVector() = default;
+  ~RecordVec() = default;
 
   /**
-   * @brief Create a RecordVector with given number of records.
+   * @brief Create a RecordVec with given number of records.
    */
-  explicit RecordVector(std::size_t size);
+  explicit RecordVec(std::size_t size);
 
   /**
-   * @brief Create a RecordVector from a vector of records.
+   * @brief Create a RecordVec from a vector of records.
    */
-  RecordVector(const std::vector<Record<T>>& records);
+  RecordVec(const std::vector<Record<T>>& records);
 
   /**
-   * @brief Create a RecordVector from a vector of records.
+   * @brief Create a RecordVec from a vector of records.
    */
-  RecordVector(std::vector<Record<T>>&& records);
+  RecordVec(std::vector<Record<T>>&& records);
 
   /**
-   * @brief Create a RecordVector from a list of records.
+   * @brief Create a RecordVec from a list of records.
    */
   template <typename... Ts>
-  RecordVector(const Record<Ts>&... records);
+  RecordVec(const Record<Ts>&... records);
 
   /**
    * @brief The records.
@@ -115,7 +115,7 @@ public:
    * Although the method returns a Record, it can itself be sliced as its value,
    * so the following works:
    * \code
-   * RecordSeq records; // Equivalent to RecordVector<VariantValue>
+   * RecordSeq records; // Equivalent to RecordVec<VariantValue>
    * // ...
    * int i = records.as<int>("KEYWORD"); // Get the value as int
    * \endcode
@@ -125,16 +125,23 @@ public:
 };
 
 /**
+ * @brief Alias to `RecordVec` for backward compatibility.
+ * @deprecated
+ */
+template<typename T>
+using RecordVector = RecordVec<T>;
+
+/**
  * @brief A sequence of records of any type.
  */
-using RecordSeq = RecordVector<VariantValue>;
+using RecordSeq = RecordVec<VariantValue>;
 
 } // namespace FitsIO
 } // namespace Euclid
 
 /// @cond INTERNAL
 #define _EL_FITSDATA_RECORDVECTOR_IMPL
-#include "EL_FitsData/impl/RecordVector.hpp"
+#include "EL_FitsData/impl/RecordVec.hpp"
 #undef _EL_FITSDATA_RECORDVECTOR_IMPL
 /// @endcond
 

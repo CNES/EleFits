@@ -78,7 +78,7 @@ Here's a how they can be built:
 \snippet EL_FitsIO_Tutorial.cpp Create records
 
 \see Record
-\see RecordVector
+\see RecordVec
 \see Test::generateRandomRecord
 
 

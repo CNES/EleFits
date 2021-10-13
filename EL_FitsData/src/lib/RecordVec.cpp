@@ -17,6 +17,6 @@
  *
  */
 
-#include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/RecordVec.h"
 
 namespace EL_FitsData {} // namespace EL_FitsData

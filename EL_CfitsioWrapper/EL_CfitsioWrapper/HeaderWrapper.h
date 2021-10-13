@@ -26,7 +26,7 @@
 #include "EL_CfitsioWrapper/TypeWrapper.h"
 #include "EL_FitsData/KeywordCategory.h"
 #include "EL_FitsData/Record.h"
-#include "EL_FitsData/RecordVector.h"
+#include "EL_FitsData/RecordVec.h"
 
 #include <fitsio.h>
 #include <string>
@@ -89,7 +89,7 @@ TReturn parseRecordsAs(fitsfile* fptr, const std::vector<std::string>& keywords)
  * @brief Parse homogeneous records and store them in a vector.
  */
 template <typename T>
-FitsIO::RecordVector<T> parseRecordVector(fitsfile* fptr, const std::vector<std::string>& keywords);
+FitsIO::RecordVec<T> parseRecordVec(fitsfile* fptr, const std::vector<std::string>& keywords);
 
 /**
  * @brief Write a new record.
