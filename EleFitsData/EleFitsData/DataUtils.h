@@ -21,9 +21,11 @@
 #define _ELEFITSDATA_DATAUTILS_H
 
 #include <algorithm> // transform
+#include <array>
 #include <string>
 #include <tuple>
 #include <vector>
+#include <type_traits>
 
 namespace Euclid {
 namespace Fits {
@@ -86,7 +88,7 @@ struct Segment {
    * @brief Create a segment specified by a lower bound and size.
    */
   static Segment fromSize(long front, long size) {
-    return Segment { front, front + size - 1 };
+    return { front, front + size - 1 };
   }
 
   /**
@@ -161,7 +163,21 @@ TReturn tupleTransformImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is.
   return { func(std::get<Is>(tuple))... };
 }
 
+template <typename TSeq>
+struct IsTupleImpl : public std::false_type {};
+
+template <typename... Ts>
+struct IsTupleImpl<std::tuple<Ts...>> : public std::true_type {};
+
+template <typename T, std::size_t n>
+struct IsTupleImpl<std::array<T, n>> : public std::true_type {};
+
 } // namespace Internal
+
+template <typename TSeq>
+constexpr bool isTuple() {
+  return Internal::IsTupleImpl<std::decay_t<TSeq>>::value;
+}
 
 /**
  * @brief Convert a tuple to a custom structure.
@@ -172,8 +188,8 @@ TReturn tupleAs(TTuple&& tuple) {
 }
 
 /**
-   * @brief Apply a variadic function a tuple.
-   */
+ * @brief Apply a variadic function a tuple.
+ */
 template <typename TTuple, typename TFunc>
 constexpr decltype(auto) tupleApply(TTuple&& tuple, TFunc&& func) {
   return Internal::applyImpl(
@@ -182,30 +198,12 @@ constexpr decltype(auto) tupleApply(TTuple&& tuple, TFunc&& func) {
       Internal::tupleIndexSequence<TTuple>());
 }
 
-/**
-   * @brief Apply a void-returning function to each element of the tuple.
-   */
-template <typename TTuple, typename TFunc>
-void seqForeach(TTuple&& tuple, TFunc&& func);
-
-template <typename T, typename TFunc>
-void seqForeach(const std::vector<T>& vector, TFunc&& func);
-
-template <typename T, typename TFunc>
-void seqForeach(std::vector<T>&& vector, TFunc&& func);
-
 // FIXME use enable_if to dispatch based on the presence of get() or begin()
 
-template <typename T>
-class RecordVec; // FIXME rm
-
-template <typename T, typename TFunc>
-void seqForeach(const RecordVec<T>& vector, TFunc&& func);
-
-template <typename T, typename TFunc>
-void seqForeach(RecordVec<T>&& vector, TFunc&& func);
-
-template <typename TTuple, typename TFunc>
+/**
+ * @brief Apply a void-returning function to each element of the tuple.
+ */
+template <typename TTuple, typename TFunc, typename = std::enable_if_t<isTuple<TTuple>()>>
 void seqForeach(TTuple&& tuple, TFunc&& func) {
   Internal::tupleForeachImpl(
       std::forward<TTuple>(tuple),
@@ -226,6 +224,9 @@ void seqForeach(std::vector<T>&& vector, TFunc&& func) {
     func(element);
   }
 }
+
+template<typename T>
+class RecordVec; // FIXME rm once enable_if is used
 
 template <typename T, typename TFunc>
 void seqForeach(const RecordVec<T>& vector, TFunc&& func) {
@@ -255,14 +256,14 @@ TReturn seqTransform(TTuple&& tuple, TFunc&& func) {
 template <typename TReturn, typename T, typename TFunc>
 TReturn seqTransform(const std::vector<T>& vector, TFunc&& func) {
   TReturn res(vector.size);
-  std::transform(vector.begin(), vector.end(), res.begin(), func);
+  std::transform(vector.begin(), vector.end(), res.begin(), std::forward<TFunc>(func));
   return res;
 }
 
 template <typename TReturn, typename T, typename TFunc>
 TReturn seqTransform(const RecordVec<T>& vector, TFunc&& func) {
   TReturn res(vector.size);
-  std::transform(std::begin(vector), std::end(vector), std::begin(res), func);
+  std::transform(std::begin(vector), std::end(vector), std::begin(res), std::forward<TFunc>(func));
   return res;
 }
 

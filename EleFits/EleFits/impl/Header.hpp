@@ -42,10 +42,10 @@ Record<T> Header::parseOr(const Record<T>& fallback) const {
 template <typename T>
 Record<T> Header::parseOr(
     const std::string& keyword,
-    const T& fallbackValue,
+    T fallbackValue,
     const std::string& fallbackUnit,
     const std::string& fallbackComment) const {
-  return parseOr(Record<T>(keyword, fallbackValue, fallbackUnit, fallbackComment));
+  return parseOr<T>({ keyword, fallbackValue, fallbackUnit, fallbackComment });
 }
 
 template <typename T>
@@ -148,10 +148,37 @@ void Header::write(const Record<T>& record) const {
 }
 
 template <RecordMode Mode, typename T>
-void Header::write(const std::string& keyword, const T& value, const std::string& unit, const std::string& comment)
-    const {
-  return write<Mode, T>({ keyword, value, unit, comment });
+void Header::write(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
+  write<Mode, T>({ keyword, value, unit, comment });
 }
+
+template <>
+void Header::write<RecordMode::CreateOrUpdate, const char*>(
+    const std::string& keyword,
+    const char* value,
+    const std::string& unit,
+    const std::string& comment) const; // FIXME dispatch Mode
+
+template <>
+void Header::write<RecordMode::CreateUnique, const char*>(
+    const std::string& keyword,
+    const char* value,
+    const std::string& unit,
+    const std::string& comment) const; // FIXME dispatch Mode
+
+template <>
+void Header::write<RecordMode::CreateNew, const char*>(
+    const std::string& keyword,
+    const char* value,
+    const std::string& unit,
+    const std::string& comment) const; // FIXME dispatch Mode
+
+template <>
+void Header::write<RecordMode::UpdateExisting, const char*>(
+    const std::string& keyword,
+    const char* value,
+    const std::string& unit,
+    const std::string& comment) const; // FIXME dispatch Mode
 
 template <RecordMode Mode, typename... Ts>
 void Header::writeSeq(const Record<Ts>&... records) const {

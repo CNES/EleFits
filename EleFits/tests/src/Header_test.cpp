@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(keyword_error_test) {
 BOOST_AUTO_TEST_CASE(syntax_test) {
 
   /* Setup */
-  const auto& h = header().header();
+  const auto& h = header();
   const Record<int> i("I", 1);
   const Record<float> f("F", 3.14);
   const auto t = std::make_tuple(i, f);

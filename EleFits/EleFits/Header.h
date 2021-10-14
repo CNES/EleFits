@@ -217,7 +217,7 @@ public:
   template <typename T>
   Record<T> parseOr(
       const std::string& keyword,
-      const T& fallbackValue,
+      T fallbackValue,
       const std::string& fallbackUnit = "",
       const std::string& fallbackComment = "") const;
 
@@ -414,7 +414,7 @@ public:
    * @copydoc write()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
-  void write(const std::string& k, const T& v, const std::string& u = "", const std::string& c = "") const;
+  void write(const std::string& k, T v, const std::string& u = "", const std::string& c = "") const;
 
   /**
    * @brief Delete a record.
@@ -484,6 +484,22 @@ public:
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
   void writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records) const;
+
+  /// @}
+  /**
+   * @name Write comment records.
+   */
+  /// @{
+
+  /**
+   * @brief Write a `COMMENT` record.
+   */
+  void writeComment(const std::string& comment) const;
+
+  /**
+   * @brief Write a `HISTORY` record.
+   */
+  void writeHistory(const std::string& history) const;
 
   /// @}
 

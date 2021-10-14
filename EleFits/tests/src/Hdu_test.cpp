@@ -35,16 +35,16 @@ BOOST_AUTO_TEST_SUITE(Hdu_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkRecordWithFallbackIsReadBack(const Hdu& h, const std::string& keyword) {
-  BOOST_TEST(not h.hasKeyword(keyword));
-  BOOST_CHECK_THROW(h.parseRecord<T>(keyword), std::exception);
+void checkRecordWithFallbackIsReadBack(const Header& h, const std::string& keyword) {
+  BOOST_TEST(not h.has(keyword));
+  BOOST_CHECK_THROW(h.parse<T>(keyword), std::exception);
   const Record<T> fallback { keyword, Test::generateRandomValue<T>(), "", "FALLBACK" };
-  auto output = h.parseRecordOr<T>(fallback);
+  auto output = h.parseOr<T>(fallback);
   BOOST_TEST((output == fallback));
   const Record<T> input { keyword, Test::generateRandomValue<T>(), "", "INPUT" };
-  h.writeRecord(input);
+  h.write(input);
   BOOST_TEST((input != fallback)); // At least the comments differ
-  output = h.parseRecordOr<T>(fallback);
+  output = h.parseOr<T>(fallback);
   BOOST_TEST(output.keyword == input.keyword);
   BOOST_TEST(Test::approx(output.value, input.value));
   BOOST_TEST(output.unit == input.unit);
@@ -52,7 +52,14 @@ void checkRecordWithFallbackIsReadBack(const Hdu& h, const std::string& keyword)
 }
 
 template <>
-void checkRecordWithFallbackIsReadBack<unsigned long>(const Hdu& h, const std::string& keyword) {
+void checkRecordWithFallbackIsReadBack<unsigned long>(const Header& h, const std::string& keyword) {
+  // Wait for CFitsIO bug to be fixed
+  (void)h;
+  (void)keyword;
+}
+
+template <>
+void checkRecordWithFallbackIsReadBack<unsigned long long>(const Header& h, const std::string& keyword) {
   // Wait for CFitsIO bug to be fixed
   (void)h;
   (void)keyword;
@@ -69,12 +76,12 @@ BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::Temporar
   Record<short> written("SHORT", 1);
   Record<long> fallback("LONG", 10);
   const auto& header = this->header();
-  BOOST_TEST(not header.hasKeyword(written.keyword));
-  BOOST_TEST(not header.hasKeyword(fallback.keyword));
-  header.writeRecord(written);
+  BOOST_TEST(not header.has(written.keyword));
+  BOOST_TEST(not header.has(fallback.keyword));
+  header.write(written);
   written.value++;
   fallback.value++;
-  const auto output = header.parseRecordsOr(written, fallback);
+  const auto output = header.parseSeqOr(written, fallback);
   BOOST_TEST(std::get<0>(output).value == written.value - 1);
   BOOST_TEST(std::get<1>(output).value == fallback.value);
 }
@@ -86,22 +93,22 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
       "This is probably one of the longest strings "
       "that I have ever written in a serious code.";
   BOOST_TEST(longStr.length() > FLEN_VALUE);
-  h.writeRecord("SHORT", shortStr);
-  BOOST_TEST(not h.hasKeyword("LONGSTRN"));
-  h.writeRecord("LONG", longStr);
-  const auto output = h.parseRecord<std::string>("LONG");
-  h.parseRecord<std::string>("LONGSTRN");
+  h.write("SHORT", shortStr);
+  BOOST_TEST(not h.has("LONGSTRN"));
+  h.write("LONG", longStr);
+  const auto output = h.parse<std::string>("LONG");
+  BOOST_TEST(h.has("LONGSTRN"));
   BOOST_TEST(output.value == longStr);
   BOOST_TEST(output.hasLongStringValue());
 }
 
-void checkHierarchKeywordIsReadBack(const Hdu& h, const std::string& keyword) {
-  BOOST_TEST(h.readHeader(false).find("HIERARCH") == std::string::npos); // Not found
+void checkHierarchKeywordIsReadBack(const Header& h, const std::string& keyword) {
+  BOOST_TEST(h.readAll().find("HIERARCH") == std::string::npos); // Not found
   const Record<int> record(keyword, 10);
   BOOST_TEST(record.hasLongKeyword() == (keyword.length() > 8));
-  h.writeRecord(record);
-  BOOST_TEST(h.readHeader(false).find("HIERARCH") != std::string::npos); // Found
-  const auto output = h.parseRecord<int>(keyword);
+  h.write(record);
+  BOOST_TEST(h.readAll().find("HIERARCH") != std::string::npos); // Found
+  const auto output = h.parse<int>(keyword);
   BOOST_TEST(output.value == 10);
 }
 
@@ -123,17 +130,17 @@ BOOST_FIXTURE_TEST_CASE(hdu_is_renamed_test, Test::TemporaryMefFile) {
   BOOST_TEST(h.readName() == "A");
   h.updateName("B");
   BOOST_TEST(h.readName() == "B");
-  h.deleteRecord("EXTNAME");
+  h.header().remove("EXTNAME");
   BOOST_TEST(h.readName() == "");
 }
 
 BOOST_FIXTURE_TEST_CASE(c_str_record_is_read_back_as_string_record_test, Test::TemporarySifFile) {
   const auto& h = this->header();
-  h.writeRecord("C_STR", "1");
-  const auto output1 = h.parseRecord<std::string>("C_STR");
+  h.write("C_STR", "1");
+  const auto output1 = h.parse<std::string>("C_STR");
   BOOST_TEST(output1.value == "1");
-  h.updateRecord("C_STR", "2");
-  const auto output2 = h.parseRecord<std::string>("C_STR");
+  h.write<RecordMode::UpdateExisting>("C_STR", "2");
+  const auto output2 = h.parse<std::string>("C_STR");
   BOOST_TEST(output2.value == "2");
 }
 
@@ -142,14 +149,14 @@ BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::Tempor
   const Record<short> short_record { "SHORT", 1 };
   const Record<long> long_record { "LONG", 1000 };
   auto records = std::make_tuple(short_record, long_record);
-  h.writeRecords(records);
-  BOOST_TEST(h.parseRecord<short>("SHORT") == 1);
-  BOOST_TEST(h.parseRecord<long>("LONG") == 1000);
+  h.writeSeq(records);
+  BOOST_TEST(h.parse<short>("SHORT") == 1);
+  BOOST_TEST(h.parse<long>("LONG") == 1000);
   std::get<0>(records).value = 2;
   std::get<1>(records).value = 2000;
-  h.updateRecords(records);
-  BOOST_TEST(h.parseRecord<short>("SHORT") == 2);
-  BOOST_TEST(h.parseRecord<long>("LONG") == 2000);
+  h.writeSeq<RecordMode::UpdateExisting>(records);
+  BOOST_TEST(h.parse<short>("SHORT") == 2);
+  BOOST_TEST(h.parse<long>("LONG") == 2000);
 }
 
 BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
@@ -158,8 +165,8 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::Temporary
   records.push_back({ "STRING", std::string("WIDE") });
   records.push_back({ "FLOAT", 3.14F });
   records.push_back({ "INT", 666 });
-  h.writeRecords(records);
-  auto parsed = h.parseAllRecords<VariantValue>();
+  h.writeSeq(records);
+  auto parsed = h.parseAll();
   BOOST_TEST(parsed.as<std::string>("STRING").value == "WIDE");
   BOOST_TEST(parsed.as<int>("INT").value == 666);
   BOOST_CHECK_THROW(parsed.as<std::string>("INT"), std::exception);
@@ -171,29 +178,29 @@ BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test:
   records.vector[0].assign(Record<std::string>("STRING", "WIDE"));
   records.vector[1].assign(Record<float>("FLOAT", 3.14F));
   records.vector[2].assign(Record<int>("INT", 666));
-  h.writeRecords(records, { "FLOAT", "INT" });
-  BOOST_CHECK_THROW(h.parseRecord<VariantValue>("STRING"), std::exception);
-  auto parsed = h.parseRecordSeq({ "INT" });
+  h.writeSeqIn({ "FLOAT", "INT" }, records);
+  BOOST_CHECK_THROW(h.parse<VariantValue>("STRING"), std::exception);
+  auto parsed = h.parseSeq({ "INT" });
   BOOST_TEST(parsed.as<int>("INT").value == 666);
   BOOST_CHECK_THROW(parsed.as<float>("FLOAT"), std::exception);
 }
 
 BOOST_FIXTURE_TEST_CASE(brackets_in_comment_are_read_back_test, Test::TemporaryMefFile) {
-  const auto& primary = this->accessPrimary<>();
-  primary.writeRecord("PLAN_ID", 1, "", "[0:1] SOC Planning ID");
-  const auto intRecord = primary.parseRecord<int>("PLAN_ID");
+  const auto& primary = this->primary().header();
+  primary.write("PLAN_ID", 1, "", "[0:1] SOC Planning ID");
+  const auto intRecord = primary.parse<int>("PLAN_ID");
   BOOST_TEST(intRecord.unit == "0:1");
   BOOST_TEST(intRecord.comment == "SOC Planning ID");
-  primary.writeRecord("STRING", std::string("1"), "", "[0:1] SOC Planning ID");
-  const auto stringRecord = primary.parseRecord<std::string>("STRING");
+  primary.write("STRING", std::string("1"), "", "[0:1] SOC Planning ID");
+  const auto stringRecord = primary.parse<std::string>("STRING");
   BOOST_TEST(stringRecord.unit == "0:1");
   BOOST_TEST(stringRecord.comment == "SOC Planning ID");
-  primary.writeRecord("CSTR", "1", "", "[0:1] SOC Planning ID");
-  const auto cstrRecord = primary.parseRecord<std::string>("CSTR");
+  primary.write("CSTR", "1", "", "[0:1] SOC Planning ID");
+  const auto cstrRecord = primary.parse<std::string>("CSTR");
   BOOST_TEST(cstrRecord.unit == "0:1");
   BOOST_TEST(cstrRecord.comment == "SOC Planning ID");
-  primary.writeRecord("WEIRD", 2, "m", "[0:1] SOC Planning ID");
-  const auto weirdRecord = primary.parseRecord<std::string>("WEIRD");
+  primary.write("WEIRD", 2, "m", "[0:1] SOC Planning ID");
+  const auto weirdRecord = primary.parse<std::string>("WEIRD");
   BOOST_TEST(weirdRecord.unit == "m");
   BOOST_TEST(weirdRecord.comment == "[0:1] SOC Planning ID");
 }
@@ -204,13 +211,13 @@ BOOST_FIXTURE_TEST_CASE(comment_and_history_are_written, Test::TemporarySifFile)
   const std::string history = "BEAVER";
   header.writeComment(comment);
   header.writeHistory(history);
-  const auto contents = header.readHeader();
+  const auto contents = header.readAll();
   BOOST_TEST((contents.find(comment) != std::string::npos));
   BOOST_TEST((contents.find(history) != std::string::npos));
 }
 
 BOOST_FIXTURE_TEST_CASE(full_header_is_read_as_string_test, Test::TemporarySifFile) {
-  const auto header = this->header().readHeader(); // TODO check with false
+  const auto header = this->header().readAll(); // TODO test with categories
   BOOST_TEST(header.size() > 0);
   BOOST_TEST(header.size() % 80 == 0);
   // TODO check contents
@@ -225,12 +232,12 @@ BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFil
   };
   const auto& header = this->header();
   const MyHeader input { false, 1, 3.14F, "VAL" };
-  header.writeRecords(
+  header.writeSeq(
       Record<bool>("BOOL", input.b),
       Record<int>("INT", input.i),
       Record<float>("FLOAT", input.f),
       Record<std::string>("STRING", input.s));
-  const auto output = header.parseRecordsAs<MyHeader>(
+  const auto output = header.parseStruct<MyHeader>(
       Named<bool>("BOOL"),
       Named<int>("INT"),
       Named<float>("FLOAT"),

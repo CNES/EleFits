@@ -189,12 +189,7 @@ void writeRecord<std::string>(fitsfile* fptr, const Fits::Record<std::string>& r
 
 template <>
 void writeRecord<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
-  int status = 0;
-  if (record.hasLongStringValue()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
-    fits_write_key_longwarn(fptr, &status);
-  }
-  fits_write_key_longstr(fptr, record.keyword.c_str(), record.value, record.rawComment().c_str(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write C string record: " + record.keyword);
+  writeRecord<std::string>(fptr, { record.keyword, std::string(record.value), record.unit, record.comment });
 }
 
 template <typename T>
@@ -226,30 +221,29 @@ void updateRecord<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
 
 template <>
 void updateRecord<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record) {
-  int status = 0;
-  std::string comment = record.rawComment();
-  fits_update_key(
-      fptr,
-      TypeCode<std::string>::forRecord(),
-      record.keyword.c_str(),
-      &std::string(record.value)[0],
-      &comment[0],
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot update string record: " + record.keyword);
+  if (record.hasLongStringValue()) { // Cannot use fits_update_key for long string records
+    if (hasKeyword(fptr, record)) {
+      deleteRecord(fptr, record.keyword);
+    }
+    writeRecord(fptr, record);
+    // Keyword ordering is changed after deletion, but there is no better (simple) option
+  } else {
+    int status = 0;
+    std::string comment = record.rawComment();
+    fits_update_key(
+        fptr,
+        TypeCode<std::string>::forRecord(),
+        record.keyword.c_str(),
+        &std::string(record.value)[0],
+        &comment[0],
+        &status);
+    CfitsioError::mayThrow(status, fptr, "Cannot update string record: " + record.keyword);
+  }
 }
 
 template <>
 void updateRecord<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
-  int status = 0;
-  std::string comment = record.rawComment();
-  fits_update_key(
-      fptr,
-      TypeCode<std::string>::forRecord(),
-      record.keyword.c_str(),
-      &std::string(record.value)[0],
-      &comment[0],
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot update C string record: " + record.keyword);
+  updateRecord<std::string>(fptr, { record.keyword, std::string(record.value), record.unit, record.comment });
 }
 
 template <typename T>

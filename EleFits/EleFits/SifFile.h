@@ -56,7 +56,7 @@ public:
    * @warning
    * Return will be of type Header from version 4.0 on.
    */
-  const Hdu& header() const; // FIXME return const Header& in 4.0
+  const Header& header() const;
 
   /**
    * @brief Access the data unit.
@@ -98,9 +98,14 @@ private:
   ImageHdu m_hdu;
 
   /**
-   * @brief The Primary data unit.
+   * @brief The header unit.
    */
-  ImageRaster m_raster;
+  const Header& m_header;
+
+  /**
+   * @brief The data unit.
+   */
+  const ImageRaster& m_raster;
 };
 
 } // namespace Fits

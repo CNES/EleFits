@@ -27,7 +27,7 @@ namespace Fits {
 template <typename T, long n>
 void SifFile::writeAll(const RecordSeq& records, const Raster<T, n>& raster) {
   m_raster.reinit<T, n>(raster.shape);
-  m_hdu.header().writeSeq(records);
+  m_header.writeSeq(records);
   m_raster.write(raster);
 }
 
@@ -38,7 +38,7 @@ VecRaster<T, n> SifFile::readRaster() const {
 
 template <typename T, long n>
 void SifFile::writeRaster(const Raster<T, n>& raster) const {
-  Cfitsio::HduAccess::gotoPrimary(m_fptr);
+  Cfitsio::HduAccess::gotoPrimary(m_fptr); // FXME needed?
   Cfitsio::ImageIo::updateTypeShape<T, n>(m_fptr, raster.shape);
   Cfitsio::ImageIo::writeRaster(m_fptr, raster);
 }
