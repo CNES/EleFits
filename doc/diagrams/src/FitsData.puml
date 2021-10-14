@@ -1,51 +1,36 @@
 @startuml
-
 package EleFitsData {
 
-Raster <|-- VecRaster
-Raster *- Position
-Subraster *- Raster
-Subraster *- Region
-
-Record -[hidden] Record
-
 Column <|-- VecColumn
-Column <|-- VecRefColumn
 Column <|-- PtrColumn
 ColumnInfo -* Column
 
+Raster <|-- VecRaster
+Raster <|-- PtrRaster
+Position -* Raster
+
 class Position<n> {
++ indices
 }
 
 abstract class Raster<T, n> {
-+ shape
-+ {abstract} data ()
-+ operator [] (position)
-+ length<axis> ()
-+ size ()
-+ index (position)
++ shape()
++ length<axis>()
++ size()
++ {abstract} data()
++ operator[](position)
++ index(position)
 }
 
 class VecRaster<T, n> {
 - m_vec
-+ VecRaster (shape, vector)
-+ VecRaster (shape)
-+ VecRaster ()
-+ data ()
-+ vector ()
-}
-
-class VecRefRaster<T, n> {
-- m_ref
-+ VecRefRaster (shape, vector)
-+ data ()
-+ vector ()
++ data()
++ vector()
 }
 
 class PtrRaster<T, n> {
 - m_data
-+ PtrRaster (shape, data)
-+ data ()
++ data()
 }
 
 class Record<T> {
@@ -53,7 +38,6 @@ class Record<T> {
 + value
 + unit
 + comment
-+ operator T ()
 }
 
 class ColumnInfo<T> {
@@ -64,33 +48,21 @@ class ColumnInfo<T> {
 
 abstract class Column<T> {
 + info
-+ {abstract} data ()
-+ elementCount ()
-+ rowCount ()
++ {abstract} data()
++ elementCount()
++ rowCount()
 }
 
 class VecColumn<T> {
 - m_vec
-+ VecColumn (info, vector)
-+ VecColumn (info)
-+ VecColumn ()
-+ data ()
-+ vector ()
-}
-
-class VecRefColumn<T> {
-- m_ref
-+ VecRefColumn (info, vector)
-+ data ()
-+ vector ()
++ data()
++ vector()
 }
 
 class PtrColumn<T> {
 - m_data
-+ PtrColumn (info, rowCount, vector)
-+ data ()
++ data()
 }
 
 }
-
 @enduml
