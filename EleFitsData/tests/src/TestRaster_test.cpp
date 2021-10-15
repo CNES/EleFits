@@ -60,7 +60,7 @@ void checkRastersWithDifferentShapesDiffer(const Raster<T, n>& raster) {
   shape[0]++;
   VecRaster<T, n> other(shape);
   for (long i = 0; i < raster.size(); ++i) {
-    other.vector()[i] = *(raster.data() + i);
+    *(other.data() + i) = *(raster.data() + i);
   }
   BOOST_TEST(not Test::rasterApprox(other, raster));
 }

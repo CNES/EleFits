@@ -20,6 +20,13 @@
 * Macros:
   * `EL_FITSIO` prefix -> `ELEFITS`
 
+### Other breaking changes
+
+* `SifFile::header()` returns a `Header` instead of an `Hdu`
+* `Raster.data()` and `Column.data()` are not virtual anymore:
+  they are replaced by `dataImpl()` according to the NVI idiom
+* Deprecated items are removed
+
 ## 3.2
 
 ### Bug fixes

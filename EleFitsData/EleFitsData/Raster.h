@@ -217,12 +217,10 @@ public:
   /**
    * @brief Const pointer to the first data element.
    */
-  virtual const T* data() const = 0;
+  const T* data() const;
 
   /**
    * @brief Pointer to the first data element.
-   * @details
-   * If the Raster is read-only, returns `nullptr`.
    */
   T* data();
 
@@ -327,6 +325,11 @@ public:
 
 private:
   /**
+   * @brief Implementation of `data()`.
+   */
+  virtual const T* dataImpl() const = 0;
+
+  /**
    * @brief Create a subraster from given region.
    * @details
    * A subraster is a view of the raster data contained in a region.
@@ -388,17 +391,12 @@ public:
    */
   PtrRaster(Position<n> shape, T* data);
 
-  /**
-   * @copydoc Raster::data()
-   */
-  const T* data() const override;
-
-  /**
-   * @copydoc Raster::data()
-   */
-  using Raster<T, n>::data;
-
 private:
+  /**
+   * @copydoc Raster::dataImpl()
+   */
+  const T* dataImpl() const override;
+
   /**
    * @brief The data, possibly constant if `T` is `const`-qualified.
    */
@@ -458,33 +456,9 @@ public:
   VecRaster() = default;
 
   /**
-   * @copydoc Raster::data()
-   */
-  const T* data() const override;
-
-  /**
-   * @copydoc Raster::data()
-   */
-  using Raster<T, n>::data;
-
-  /**
    * @brief Const reference to the vector.
    */
   const std::vector<std::decay_t<T>>& vector() const;
-
-  /**
-   * @brief Non-const reference to the vector.
-   * @details
-   * This is especially useful to take ownership through move semantics.
-   * \code
-   * std::vector<T> v = std::move(raster.vector());
-   * \endcode
-   * @warning
-   * This method should not be used to assign the vector.
-   * Instead, a new `VecRaster` should be created.
-   * @deprecated Use moveTo() instead
-   */
-  std::vector<std::decay_t<T>>& vector();
 
   /**
    * @brief Move the vector outside the raster.
@@ -505,6 +479,14 @@ public:
   std::vector<std::decay_t<T>>& moveTo(std::vector<std::decay_t<T>>& destination);
 
 private:
+  /**
+   * @copydoc Raster::dataImpl()
+   */
+  const T* dataImpl() const override;
+
+  /**
+   * @brief The data vector.
+   */
   std::vector<std::decay_t<T>> m_vec;
 };
 

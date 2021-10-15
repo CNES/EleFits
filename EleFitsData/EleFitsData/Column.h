@@ -173,7 +173,7 @@ public:
   /**
    * @brief Create a column with given metadata.
    */
-  explicit Column(ColumnInfo<T> columnInfo);
+  explicit Column(ColumnInfo<std::decay_t<T>> columnInfo);
 
   /**
    * @brief Destructor.
@@ -208,13 +208,23 @@ public:
    * @details
    * Three methods are available to access elements:
    * 
+   * - Method data() returns a pointer to the first element.
    * - Methods operator()() provide access to the value at given row and repeat indices;
    * - Methods at() additionally perform bound checking and allows for backward (negative) indexing;
-   * - Method data() returns a pointer to the first element.
    * 
    * @param row The row index
    * @param repeat The repeat index
    */
+
+  /**
+   * @brief Const pointer to the first data element.
+   */
+  const T* data() const;
+
+  /**
+   * @brief Pointer to the first data element.
+   */
+  T* data();
 
   /**
    * @brief Access the value at given row and repeat indices.
@@ -236,18 +246,6 @@ public:
    */
   T& at(long row, long repeat = 0);
 
-  /**
-   * @copydoc operator()()
-   */
-  virtual const T* data() const = 0;
-
-  /**
-   * @brief Pointer to the first data element.
-   * @details
-   * If the Column is read-only, returns `nullptr`.
-   */
-  virtual T* data(); // TODO throw?
-
   /// @}
   /**
    * @name Slicing
@@ -257,7 +255,7 @@ public:
   /**
    * @brief Get a view on contiguous rows.
    */
-  const PtrColumn<T> slice(const Segment& rows) const;
+  const PtrColumn<const T> slice(const Segment& rows) const;
 
   /**
    * @copydoc slice()
@@ -266,11 +264,17 @@ public:
 
   /// @}
 
+private:
+  /**
+   * @brief Implementation of `data()`.
+   */
+  virtual const T* dataImpl() const = 0;
+
 public:
   /**
    * @brief Column metadata.
    */
-  ColumnInfo<T> info;
+  ColumnInfo<std::decay_t<T>> info;
 };
 
 /**
@@ -316,35 +320,27 @@ public:
    * which is the number of rows for scalar and string columns.
    * @param data Pointer to the first element of the data.
    */
-  PtrColumn(ColumnInfo<T> info, long elementCount, const T* data);
-
-  /**
-   * @brief Create a new column with given metadata and data.
-   * @param info The column metadata.
-   * @param elementCount The number of elements in the column,
-   * which is the number of rows for scalar and string columns.
-   * @param data Pointer to the first element of the data.
-   */
-  PtrColumn(ColumnInfo<T> info, long elementCount, T* data);
+  PtrColumn(ColumnInfo<std::decay_t<T>> info, long elementCount, T* data);
 
   /**
    * @copydoc Column::elementCount()
    */
   long elementCount() const override;
 
-  /**
-   * @copydoc Column::data() const
-   */
-  const T* data() const override;
-
-  /**
-   * @copydoc Column::data()
-   */
-  T* data() override;
-
 private:
+  /**
+   * @copydoc Column::dataImpl()
+   */
+  const T* dataImpl() const override;
+
+  /**
+   * @brief The number of elements.
+   */
   long m_nelements;
-  const T* m_cData;
+
+  /**
+   * @brief The data.
+   */
   T* m_data;
 };
 
@@ -397,12 +393,12 @@ public:
    * VecColumn column(info, std::move(vec));
    * \endcode
    */
-  VecColumn(ColumnInfo<T> info, std::vector<T> vec);
+  VecColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> vec);
 
   /**
    * @brief Create a VecColumn with given metadata.
    */
-  VecColumn(ColumnInfo<T> info, long rowCount);
+  VecColumn(ColumnInfo<std::decay_t<T>> info, long rowCount);
 
   /**
    * @copydoc Column::elementCount()
@@ -410,30 +406,39 @@ public:
   long elementCount() const override;
 
   /**
-   * @copydoc Column::data() const
-   */
-  const T* data() const override;
-
-  /**
-   * @brief Non-const pointer to the first data element.
-   */
-  T* data() override;
-
-  /**
    * @brief Const reference to the vector data.
    */
   const std::vector<T>& vector() const;
 
   /**
-   * @brief Non-const reference to the data, useful to take ownership through move semantics.
+   * @brief Move the vector outside the column.
+   * @details
+   * This method is used to take ownership on the data without copying it.
+   * The column info is untouched.
+   * Example usage:
    * \code
-   * std::vector<T> v = std::move(column.vector());
+   * VecColumn<float> column(...);
+   * std::vector<float> data;
+   * column.moveTo(data);
+   * // Values have been moved to data without copy.
+   * // column.vector() is empty now.
    * \endcode
+   * @warning
+   * The column data is not usable anymore after this call.
    */
-  std::vector<T>& vector();
+  std::vector<std::decay_t<T>>& moveTo(std::vector<std::decay_t<T>>& destination);
 
 private:
-  std::vector<T> m_vec;
+  /**
+   * @copydoc Column::dataImpl()
+   */
+  const T* dataImpl() const override;
+
+  /**
+   * @brief The data vector.
+   */
+  std::vector<std::decay_t<T>> m_vec;
+
 };
 
 } // namespace Fits

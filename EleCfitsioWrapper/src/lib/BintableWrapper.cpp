@@ -96,8 +96,7 @@ void readColumnInfoImpl<std::string>(
     long index,
     Fits::VecColumn<std::string>& column,
     long rowCount) {
-  column.info = readColumnInfo<std::string>(fptr, index);
-  column.vector() = std::vector<std::string>(rowCount);
+  column = Fits::VecColumn<std::string>(readColumnInfo<std::string>(fptr, index), std::vector<std::string>(rowCount));
 }
 
 template <> // TODO clean
@@ -133,7 +132,7 @@ void readColumnChunkImpl<std::string>(
       nullptr,
       &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read column chunk: #" + std::to_string(index - 1));
-  auto columnIt = column.vector().begin() + firstRow - 1;
+  auto columnIt = column.data() + firstRow - 1;
   for (auto dataIt = data.begin(); dataIt != data.end(); ++dataIt, ++columnIt) {
     *columnIt = std::string(*dataIt);
     free(*dataIt);

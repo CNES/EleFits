@@ -117,8 +117,13 @@ inline long Raster<T, n>::length() const {
 }
 
 template <typename T, long n>
+const T* Raster<T, n>::data() const {
+  return dataImpl();
+}
+
+template <typename T, long n>
 T* Raster<T, n>::data() {
-  return const_cast<T*>(const_cast<const Raster*>(this)->data());
+  return const_cast<T*>(const_cast<const Raster<T, n>*>(this)->data());
 }
 
 template <typename T, long n>
@@ -259,7 +264,7 @@ template <typename T, long n>
 PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, T* data) : Raster<T, n>(rasterShape), m_data(data) {}
 
 template <typename T, long n>
-const T* PtrRaster<T, n>::data() const {
+const T* PtrRaster<T, n>::dataImpl() const {
   return m_data;
 }
 
@@ -273,17 +278,12 @@ template <typename T, long n>
 VecRaster<T, n>::VecRaster(Position<n> rasterShape) : Raster<T, n>(rasterShape), m_vec(shapeSize(rasterShape)) {}
 
 template <typename T, long n>
-const T* VecRaster<T, n>::data() const {
+const T* VecRaster<T, n>::dataImpl() const {
   return m_vec.data();
 }
 
 template <typename T, long n>
 const std::vector<std::decay_t<T>>& VecRaster<T, n>::vector() const {
-  return m_vec;
-}
-
-template <typename T, long n>
-std::vector<std::decay_t<T>>& VecRaster<T, n>::vector() {
   return m_vec;
 }
 

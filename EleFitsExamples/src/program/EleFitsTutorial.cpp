@@ -160,7 +160,7 @@ TutoColumns createColumns() {
   Fits::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
   // String columns must be wide-enough to hold each character.
   for (long i = 0; i < stringColumn.rowCount(); ++i) {
-    stringColumn.vector()[i] = std::to_string(i);
+    *(stringColumn.data() + i) = std::to_string(i);
   }
 
   /* Create a column from a vector */

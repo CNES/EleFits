@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test) {
   VecColumn<int> column({ "DATA", "", 1 }, std::move(input));
   BOOST_TEST(column.vector()[1] == 5);
   BOOST_TEST(input.size() == 0);
-  input = std::move(column.vector());
+  column.moveTo(input);
   BOOST_TEST(input[1] == 5);
   BOOST_TEST(column.vector().size() == 0);
   BOOST_TEST(column.elementCount() == 0);

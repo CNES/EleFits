@@ -47,8 +47,9 @@ void readColumnInfoImpl<std::string>(fitsfile* fptr, long index, Fits::VecColumn
 
 template <typename T>
 void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long rowCount) {
-  column.info = readColumnInfo<T>(fptr, index);
-  column.vector() = std::vector<std::decay_t<T>>(column.info.repeatCount * rowCount);
+  column = Fits::VecColumn<T>(
+      readColumnInfo<T>(fptr, index),
+      std::vector<std::decay_t<T>>(column.info.repeatCount * rowCount));
 }
 
 /**
@@ -71,7 +72,7 @@ void readColumnChunkImpl<std::string>(
 template <typename T>
 void readColumnChunkImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long firstRow, long rowCount) {
   int status = 0;
-  auto begin = column.vector().data() + (firstRow - 1) * column.info.repeatCount;
+  auto begin = column.data() + (firstRow - 1) * column.info.repeatCount;
   fits_read_col(
       fptr,
       TypeCode<T>::forBintable(),

@@ -56,7 +56,7 @@ long rowCountDispatchImpl(long elementCount, long repeatCount) {
 /// @endcond
 
 template <typename T>
-Column<T>::Column(ColumnInfo<T> columnInfo) : info(columnInfo) {}
+Column<T>::Column(ColumnInfo<std::decay_t<T>> columnInfo) : info(columnInfo) {}
 
 template <typename T>
 long Column<T>::rowCount() const {
@@ -89,27 +89,30 @@ T& Column<T>::at(long row, long repeat) {
 }
 
 template <typename T>
-T* Column<T>::data() {
-  return nullptr;
+const T* Column<T>::data() const {
+  return dataImpl();
 }
 
 template <typename T>
-const PtrColumn<T> Column<T>::slice(const Segment& rows) const {
-  return { info, rows.size(), data() + rows.front };
+T* Column<T>::data() {
+  return const_cast<T*>(const_cast<const Column<T>*>(this)->data());
+}
+
+// PtrColumn
+
+template <typename T>
+const PtrColumn<const T> Column<T>::slice(const Segment& rows) const {
+  return { info, elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
 }
 
 template <typename T>
 PtrColumn<T> Column<T>::slice(const Segment& rows) {
-  return { info, rows.size(), data() + rows.front };
+  return { info, elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
 }
 
 template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, const T* data) :
-    Column<T>(columnInfo), m_nelements(elementCount), m_cData(data), m_data(nullptr) {}
-
-template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<T> columnInfo, long elementCount, T* data) :
-    Column<T>(columnInfo), m_nelements(elementCount), m_cData(data), m_data(data) {}
+PtrColumn<T>::PtrColumn(ColumnInfo<std::decay_t<T>> columnInfo, long elementCount, T* data) :
+    Column<T>(columnInfo), m_nelements(elementCount), m_data(data) {}
 
 template <typename T>
 long PtrColumn<T>::elementCount() const {
@@ -117,23 +120,21 @@ long PtrColumn<T>::elementCount() const {
 }
 
 template <typename T>
-const T* PtrColumn<T>::data() const {
-  return m_cData;
-}
-
-template <typename T>
-T* PtrColumn<T>::data() {
+const T* PtrColumn<T>::dataImpl() const {
   return m_data;
 }
+
+// VecColumn
 
 template <typename T>
 VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {}
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, std::vector<T> vec) : Column<T>(columnInfo), m_vec(vec) {}
+VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> columnInfo, std::vector<T> vec) :
+    Column<T>(columnInfo), m_vec(vec) {}
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<T> columnInfo, long rowCount) :
+VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> columnInfo, long rowCount) :
     Column<T>(columnInfo), m_vec(columnInfo.repeatCount * rowCount) {}
 
 template <>
@@ -145,23 +146,19 @@ long VecColumn<T>::elementCount() const {
 }
 
 template <typename T>
-const T* VecColumn<T>::data() const {
-  return m_vec.data();
-}
-
-template <typename T>
-T* VecColumn<T>::data() {
-  return const_cast<T*>(const_cast<const VecColumn*>(this)->data());
-}
-
-template <typename T>
 const std::vector<T>& VecColumn<T>::vector() const {
   return m_vec;
 }
 
 template <typename T>
-std::vector<T>& VecColumn<T>::vector() {
-  return m_vec;
+std::vector<std::decay_t<T>>& VecColumn<T>::moveTo(std::vector<std::decay_t<T>>& destination) {
+  destination = std::move(m_vec);
+  return destination;
+}
+
+template <typename T>
+const T* VecColumn<T>::dataImpl() const {
+  return m_vec.data();
 }
 
   #ifndef DECLARE_COLUMN_CLASSES

@@ -64,17 +64,14 @@ void CfitsioBenchmark::initColumn(BColumns& columns, long rowCount) {
   char ttype[FLEN_VALUE];
   char tunit[FLEN_VALUE];
   fits_get_bcolparms(m_fptr, colnum, ttype, tunit, nullptr, &repeat, nullptr, nullptr, nullptr, nullptr, &m_status);
-  col.info.name.assign(ttype);
-  col.info.unit.assign(tunit);
-  col.info.repeatCount = repeat;
-  col.vector().resize(rowCount * repeat);
+  col = { { ttype, tunit, repeat }, rowCount };
   mayThrow("Cannot initialize column");
 }
 
 template <std::size_t i>
 void CfitsioBenchmark::readColumn(BColumns& columns, long firstRow, long rowCount) {
   auto& col = std::get<i>(columns);
-  auto begin = &col.vector()[firstRow];
+  auto begin = col.data() + firstRow;
   using Value = typename std::decay_t<decltype(col)>::Value;
   fits_read_col(
       m_fptr,
