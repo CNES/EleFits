@@ -97,7 +97,7 @@ Raster<T, n>::Raster(Position<n> rasterShape) : shape(rasterShape) {}
 
 template <typename T, long n>
 Region<n> Raster<T, n>::domain() const {
-  return Region<n>::fromShape(Position<n>(), shape);
+  return Region<n>::fromShape(Position<n>::zero(), shape);
 }
 
 template <typename T, long n>

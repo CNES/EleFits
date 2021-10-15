@@ -58,8 +58,10 @@ struct Position {
   using ConstIterator = typename Indices::const_iterator;
 
   /**
-   * @brief Create position 0.
-   * @deprecated Use `zero()` instead for better clarity.
+   * @brief Default constructor.
+   * @warning
+   * The indices are unspecified.
+   * To create position 0, use `zero()` instead.
    */
   Position();
 
@@ -83,7 +85,11 @@ struct Position {
    * @brief Create position 0.
    */
   static Position<n> zero() {
-    return {};
+    Position<n> res; // FIXME valid for n = -1?
+    for (auto& i : res) {
+      i = 0;
+    }
+    return res;
   }
 
   /**
@@ -232,7 +238,7 @@ Position<-1>::Position(TIterator begin, TIterator end);
 template <long n>
 Position<n>::Position() : indices {} {
   for (auto& i : indices) {
-    i = 0;
+    i = 0; // FIXME not needed: indices are unspecified
   }
 }
 
