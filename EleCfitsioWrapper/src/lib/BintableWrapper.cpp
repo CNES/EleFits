@@ -239,6 +239,27 @@ void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::
   CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info.name);
 }
 
+template <>
+void writeColumnSegment<const std::string>(fitsfile* fptr, long firstRow, const Fits::Column<const std::string>& column) {
+  long index = columnIndex(fptr, column.info.name);
+  const auto begin = column.data();
+  const auto end = begin + column.elementCount();
+  CStrArray array(begin, end);
+  // CStrArray is the only deviation from the generic case;
+  // could we avoid specializing?
+  int status = 0;
+  fits_write_col(
+      fptr,
+      TypeCode<std::string>::forBintable(), // datatype
+      static_cast<int>(index), // colnum // column indices are int
+      firstRow, // firstrow (1-based)
+      1, // firstelem (1-based)
+      column.elementCount(), // nelements
+      array.data(),
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info.name);
+}
+
 } // namespace BintableIo
 } // namespace Cfitsio
 } // namespace Euclid
