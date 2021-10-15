@@ -60,7 +60,7 @@ Column<T>::Column(ColumnInfo<std::decay_t<T>> columnInfo) : info(columnInfo) {}
 
 template <typename T>
 long Column<T>::rowCount() const {
-  return Internal::rowCountDispatchImpl<T>(elementCount(), info.repeatCount);
+  return Internal::rowCountDispatchImpl<std::decay_t<T>>(elementCount(), info.repeatCount);
 }
 
 template <typename T>

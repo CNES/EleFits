@@ -53,27 +53,27 @@ BOOST_AUTO_TEST_CASE(index_test) {
   BOOST_TEST(variableIndex == fixedIndex);
 }
 
-BOOST_AUTO_TEST_CASE(raster_data_test) {
+BOOST_AUTO_TEST_CASE(ptrraster_data_test) {
   int data[] = { 0, 1, 2 };
   PtrRaster<int, 1> raster({ 3 }, data);
   BOOST_TEST(raster.data() != nullptr);
   BOOST_TEST(raster[{ 0 }] == 0);
 }
 
-BOOST_AUTO_TEST_CASE(const_raster_data_test) {
+BOOST_AUTO_TEST_CASE(const_ptrraster_data_test) {
   const int cData[] = { 3, 4, 5 };
   PtrRaster<const int, 1> cRaster({ 3 }, cData);
   BOOST_TEST(cRaster.data() != nullptr);
   BOOST_TEST(cRaster[{ 0 }] == 3);
 }
 
-BOOST_AUTO_TEST_CASE(vec_raster_data_test) {
+BOOST_AUTO_TEST_CASE(vecraster_data_test) {
   VecRaster<int, 1> vecRaster({ 3 });
   BOOST_TEST(vecRaster.data() != nullptr);
   BOOST_TEST(vecRaster[{ 0 }] == 0);
 }
 
-BOOST_AUTO_TEST_CASE(const_vec_raster_data_test) {
+BOOST_AUTO_TEST_CASE(const_vecraster_data_test) {
   const VecRaster<int, 1> cVecRaster({ 3 });
   BOOST_TEST(cVecRaster.data() != nullptr);
   BOOST_TEST(cVecRaster[{ 0 }] == 0);
