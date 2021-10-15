@@ -77,44 +77,6 @@ public:
   HduCategory readCategory() const override;
 
   /**
-   * @brief Check whether the HDU contains a given column.
-   * @warning This is a read operation.
-   */
-  bool hasColumn(const std::string& name) const;
-
-  /**
-   * @brief Check whether the HDU contains a given set of columns.
-   * @warning This is a read operation.
-   * @see hasColumn
-   */
-  std::vector<bool> hasColumns(const std::vector<std::string>& names) const;
-
-  /**
-   * @brief Get the index of the column with given name.
-   */
-  long readColumnIndex(const std::string& name) const;
-
-  /**
-   * @brief Get the name of the column with given index.
-   */
-  std::string readColumnName(long index) const;
-
-  /**
-   * @brief Get the names of all the columns.
-   */
-  std::vector<std::string> readColumnNames() const;
-
-  /**
-   * @brief Rename the column with given name.
-   */
-  void renameColumn(const std::string& name, const std::string& newName) const;
-
-  /**
-   * @brief Rename the column with given index.
-   */
-  void renameColumn(long index, const std::string& newName) const;
-
-  /**
    * @brief Read a column with given index.
    */
   template <typename T>
@@ -127,68 +89,10 @@ public:
   VecColumn<T> readColumn(const std::string& name) const;
 
   /**
-   * @brief Read several columns with given indices.
-   */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<long>& indices) const;
-
-  /**
-   * @brief Same as readColumns(const std::vector<long> &) with modified signature.
-   * @details
-   * This allows writing the type of each column next to its index, e.g.:
-   * \code
-   * auto columns = ext.readColumns(Indexed<int>(0), Indexed<float>(3), Indexed<std::string>(4));
-   * \endcode
-   */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const Indexed<Ts>&... indices) const;
-
-  /**
-   * @brief Read several columns with given names.
-   */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const std::vector<std::string>& names) const;
-
-  /**
-   * @brief Same as readColumns(const std::vector<std::string> &) with modified signature.
-   * @details
-   * This allows writing the type of each column next to its name, e.g.:
-   * \code
-   * auto columns = ext.readColumns(Named<int>("A"), Named<float>("B"), Named<std::string>("C"));
-   * \endcode
-   */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readColumns(const Named<Ts>&... names) const;
-
-  /**
    * @brief Write a column.
    */
   template <typename T>
   void writeColumn(const Column<T>& column) const;
-
-  /**
-   * @brief Write several columns.
-   * @warning
-   * All columns should have the same number of rows.
-   */
-  template <typename... Ts>
-  void writeColumns(const Column<Ts>&... columns) const;
-
-  /**
-   * @brief Append a column.
-   * @warning
-   * The column should have the same number of rows as the existing columns.
-   */
-  template <typename T>
-  void appendColumn(const Column<T>& column) const;
-
-  /**
-   * @brief Append several columns.
-   * @warning
-   * All new columns should have the same number of rows as the existing columns.
-   */
-  template <typename... Ts>
-  void appendColumns(const Column<Ts>&... columns) const;
 
 private:
   /**

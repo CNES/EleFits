@@ -104,7 +104,7 @@ public:
         const auto rowCount = hdu.as<BintableHdu>().readRowCount();
         logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << columnCount << " columns x " << rowCount << " rows";
-        const auto columnNames = hdu.as<BintableHdu>().readColumnNames();
+        const auto columnNames = hdu.as<BintableHdu>().columns().readAllNames();
         logger.info() << "    Columns:";
         for (const auto& n : columnNames) {
           logger.info() << "      " << n;

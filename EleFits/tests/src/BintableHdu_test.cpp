@@ -94,26 +94,23 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   Test::RandomScalarColumn<double> column2;
   column2.info.name = name2;
   const auto& ext = assignBintableExt("", column1, column2);
-  BOOST_TEST(ext.readColumnCount() == 2);
-  BOOST_TEST(ext.readRowCount() == column1.rowCount());
-  BOOST_TEST(ext.hasColumn(name1));
-  BOOST_TEST(ext.hasColumn(name2));
-  BOOST_TEST(not ext.hasColumn("NOTHERE"));
-  const auto presence = ext.hasColumns({ name1, name2, "NOTHERE" });
-  BOOST_TEST(presence.size() == 3);
-  BOOST_TEST(presence[0]);
-  BOOST_TEST(presence[1]);
-  BOOST_TEST(not presence[2]);
+  const auto& du = ext.columns();
+  BOOST_TEST(du.readColumnCount() == 2);
+  BOOST_TEST(du.readRowCount() == column1.rowCount());
+  BOOST_TEST(du.has(name1));
+  BOOST_TEST(du.has(name2));
+  BOOST_TEST(not du.has("NOTHERE"));
 }
 
 BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto intColumn = Test::RandomTable::generateColumn<int>("INT");
   const auto floatColumn = Test::RandomTable::generateColumn<float>("FLOAT");
   const auto& ext = assignBintableExt("", intColumn, floatColumn);
-  const auto byName = ext.readColumns(Named<int>(intColumn.info.name), Named<float>(floatColumn.info.name));
+  const auto& du = ext.columns();
+  const auto byName = du.readSeq(Named<int>(intColumn.info.name), Named<float>(floatColumn.info.name));
   BOOST_TEST(std::get<0>(byName).vector() == intColumn.vector());
   BOOST_TEST(std::get<1>(byName).vector() == floatColumn.vector());
-  const auto byIndex = ext.readColumns(Indexed<int>(0), Indexed<float>(1));
+  const auto byIndex = du.readSeq(Indexed<int>(0), Indexed<float>(1));
   BOOST_TEST(std::get<0>(byIndex).vector() == intColumn.vector());
   BOOST_TEST(std::get<1>(byIndex).vector() == floatColumn.vector());
 }
@@ -121,18 +118,19 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
 BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   std::vector<ColumnInfo<int>> header { { "A" }, { "B" }, { "C" } };
   const auto& ext = initBintableExt("TABLE", header[0], header[1], header[2]);
-  auto names = ext.readColumnNames();
+  const auto& du = ext.columns();
+  auto names = du.readAllNames();
   for (std::size_t i = 0; i < header.size(); ++i) {
-    BOOST_TEST(ext.readColumnName(i) == header[i].name);
+    BOOST_TEST(du.readName(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);
   }
   header[0].name = "A2";
   header[2].name = "C2";
-  ext.renameColumn(0, header[0].name);
-  ext.renameColumn("C", header[2].name);
-  names = ext.readColumnNames();
+  du.rename(0, header[0].name);
+  du.rename("C", header[2].name);
+  names = du.readAllNames();
   for (std::size_t i = 0; i < header.size(); ++i) {
-    BOOST_TEST(ext.readColumnName(i) == header[i].name);
+    BOOST_TEST(du.readName(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);
   }
 }

@@ -224,7 +224,7 @@ void writeMefFile(const std::string& filename) {
       columns.stringColumn.info,
       columns.int32Column.info,
       columns.float32Column.info);
-  table1.writeColumns(columns.stringColumn, columns.int32Column, columns.float32Column);
+  table1.columns().writeSeq(columns.stringColumn, columns.int32Column, columns.float32Column);
 
   /* Assign at creation */
 
@@ -388,12 +388,12 @@ void readColumns(const Fits::BintableHdu& hdu) {
 
   /* Read several columns by their name */
 
-  const auto byName = hdu.readColumns(Fits::Named<std::string>("STRING"), Fits::Named<std::int32_t>("INT32"));
+  const auto byName = hdu.columns().readSeq(Fits::Named<std::string>("STRING"), Fits::Named<std::int32_t>("INT32"));
   const auto& stringColumn = std::get<0>(byName);
 
   /* Read several columns by their index */
 
-  const auto byIndex = hdu.readColumns(Fits::Indexed<std::string>(0), Fits::Indexed<std::int32_t>(1));
+  const auto byIndex = hdu.columns().readSeq(Fits::Indexed<std::string>(0), Fits::Indexed<std::int32_t>(1));
   const auto& intColumn = std::get<1>(byIndex);
 
   /* Use values */

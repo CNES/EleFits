@@ -66,49 +66,6 @@ HduCategory BintableHdu::readCategory() const {
   return cat;
 }
 
-bool BintableHdu::hasColumn(const std::string& name) const {
-  touchThisHdu();
-  return Cfitsio::BintableIo::hasColumn(m_fptr, name);
-}
-
-std::vector<bool> BintableHdu::hasColumns(const std::vector<std::string>& names) const {
-  touchThisHdu();
-  const auto size = names.size();
-  std::vector<bool> counts(size);
-  std::transform(names.begin(), names.end(), counts.begin(), [&](const std::string& n) {
-    return Cfitsio::BintableIo::hasColumn(m_fptr, n);
-  });
-  return counts;
-}
-
-long BintableHdu::readColumnIndex(const std::string& name) const {
-  touchThisHdu();
-  return Cfitsio::BintableIo::columnIndex(m_fptr, name) - 1;
-}
-
-std::string BintableHdu::readColumnName(long index) const {
-  touchThisHdu();
-  return Cfitsio::BintableIo::columnName(m_fptr, index + 1);
-}
-
-std::vector<std::string> BintableHdu::readColumnNames() const {
-  const auto size = readColumnCount(); // calls touchThisHdu
-  std::vector<std::string> names(size);
-  for (long i = 0; i < size; ++i) {
-    names[i] = Cfitsio::BintableIo::columnName(m_fptr, i + 1);
-  }
-  return names;
-}
-
-void BintableHdu::renameColumn(const std::string& name, const std::string& newName) const {
-  renameColumn(readColumnIndex(name), newName);
-}
-
-void BintableHdu::renameColumn(long index, const std::string& newName) const {
-  editThisHdu();
-  Cfitsio::BintableIo::updateColumnName(m_fptr, index + 1, newName);
-}
-
 #ifndef COMPILE_READ_COLUMN
   #define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_READ_COLUMN)
