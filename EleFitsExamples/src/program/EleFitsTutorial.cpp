@@ -34,7 +34,7 @@
 #include "EleFits/MefFile.h"
 
 using namespace Euclid;
-// EleFits classes are in the Euclid::Fits namespace.
+// EleFits API is in the Euclid::Fits namespace.
 // We could have be using namespace Euclid::Fits instead,
 // but things would have been less obvious in the snippets.
 //! [Include]
@@ -126,15 +126,15 @@ TutoRasters createRasters() {
   /* Initialize and later fill a raster */
 
   Fits::VecRaster<std::int16_t, 2> int16Raster2D({ 4, 3 });
-  for (long y = 0; y < int16Raster2D.length<1>(); ++y) {
-    for (long x = 0; x < int16Raster2D.length<0>(); ++x) {
-      int16Raster2D[{ x, y }] = x + y;
-    }
+  for (const auto& position : int16Raster2D.domain()) {
+    int16Raster2D[position] = position[0] + position[1];
   }
+  // This demonstrates the iteration over positions;
+  // It is possible to use two nested loops instead.
 
   /* Create a raster from a vector */
 
-  std::vector<std::int32_t> int32Vec(16 * 9 * 3);
+  std::vector<std::int32_t> int32Vec(16 * 9 * 3, 0);
   // ... do what you have to do with the vector, and then move it to the raster ...
   Fits::VecRaster<std::int32_t, 3> int32Raster3D({ 16, 9, 3 }, std::move(int32Vec));
   // Instead of moving a vector, it's also possible to work with
@@ -160,8 +160,9 @@ TutoColumns createColumns() {
   Fits::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
   // String columns must be wide-enough to hold each character.
   for (long i = 0; i < stringColumn.rowCount(); ++i) {
-    *(stringColumn.data() + i) = std::to_string(i);
+    stringColumn(i) = std::to_string(i);
   }
+  // operator() takes two parameters: the row index, and repeat index (=0 by default)
 
   /* Create a column from a vector */
 
@@ -203,7 +204,7 @@ void writeMefFile(const std::string& filename) {
 
   const auto& image1 = f.initImageExt<std::int16_t, 2>("IMAGE1", rasters.int16Raster2D.shape);
   // ... do something with the extension ...
-  image1.writeRaster(rasters.int16Raster2D);
+  image1.raster().write(rasters.int16Raster2D);
 
   /* Assign at creation */
 
@@ -291,9 +292,8 @@ void readMefFile(const std::string& filename) {
   /* Access the Primary HDU */
 
   const auto& primary = f.primary();
-  // Our primary contains only metadata, which is why we request a Hdu.
   logger.info() << "    Primary index: " << primary.index();
-  // Indices are 0-based in the Fits namespace.
+  // Indices are 0-based.
 
   /* Access an HDU by its index */
 

@@ -24,7 +24,7 @@
 
 * `SifFile::header()` returns a `Header` instead of an `Hdu`
 * `Raster.data()` and `Column.data()` are not virtual anymore:
-  they are replaced by `dataImpl()` according to the NVI idiom
+  they call private virtual `dataImpl()` according to the NVI idiom
 * Deprecated items are removed
 
 ## 3.2

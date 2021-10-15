@@ -10,28 +10,34 @@ namespace Fits {
 
 
 In this tutorial, we will show how to read and write multi-extension Fits (MEF) files.
-This means understanding the usage of MefFile, Hdu, ImageHdu and BintableHdu service classes,
-as well as Record, Raster and Column data classes.
-We strongly recommend reading first the
-<a href=https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node18.html>Fits primer</a>
-or
-<a href=https://heasarc.gsfc.nasa.gov/docs/heasarc/fits_overview.html>Fits overview</a>
-if you don't already know the format.
+This means understanding the usage of the following service classes:
 
-At the end of the tutorial, you will be able to create a MEF file from scratch with unlimited number of various extensions,
+- `MefFile` at file level,
+- `ImageHdu` and `BintableHdu` at HDU level,
+- `ImageRaster` and `BintableColumns` at data unit level;
+
+as well as `Record`, `Raster` and `Column` data classes.
+
+We strongly recommend reading first \ref primer, even if you're familiar with the Fits format,
+because it introduces `EleFits`-specific wording.
+
+At the end of the tutorial, you will be able to create a MEF file from scratch
+with unlimited number of various extensions,
 and to read the metadata and data back!
 
 The tutorial is built together with an example program: \ref EleFitsTutorial.cpp.
-We've embedded the calls to the logger in the snippets below,
+We've embedded the calls to the logger in the code snippets below,
 so that you can easily map the execution log to the following explanations.
 You can already run the program and watch the resulting file:
 
 \code
-ERun EleFits EleFitsTutorial --output tuto.fits
+EleFitsTutorial --output tuto.fits
 fv tuto.fits
 \endcode
 
 We'll first discover the data classes, then use them to create a MEF file, and finally read the file and values back.
+
+\see To go further, at the end of each section, a link points to the reference page for the introduced topic.
 
 
 \tableofcontents
@@ -46,13 +52,16 @@ For the headers and namespace, here's the only thing you'll have to do:
 
 \snippet EleFitsTutorial.cpp Include
 
-There are other headers and namespaces, but those probably cover 90% of the use cases.
-Refer to the API documentation for more details.
-
-\see Euclid::Fits
-
 
 \section tuto-data-classes Data classes
+
+
+Data classes are the classes which hold the pieces of data read from and written to a Fits file.
+There are three main classes:
+
+- `Record` for header units,
+- `Raster` for data units of image HDUs,
+- `Column` for data units of binary table HDUs.
 
 
 \subsection tuto-record Record
@@ -68,7 +77,7 @@ A unit can be included in the comment as follows:
 KEYWORD = VALUE / [unit] comment
 \endcode
 
-Record is a simple template class which merely stores those fields.
+`Record` is a simple template class which merely stores those fields.
 For the purpose of the tutorial, we define a structure to hold our records:
 
 \snippet EleFitsTutorial.cpp Tuto records
@@ -77,22 +86,20 @@ Here's a how they can be built:
 
 \snippet EleFitsTutorial.cpp Create records
 
-\see Record
-\see RecordVec
-\see Test::generateRandomRecord
+\see \ref header_data_classes
 
 
 \subsection tuto-raster Raster
 
 
 Images in Fits are _n_-dimensional arrays.
-Raster is a class which represents this kind of data and provides constant time pixel accessors.
+`Raster` is a class which represents this kind of data and provides constant time pixel accessors.
 Template arguments are the pixel type and number of axes.
 There are two kinds of rasters:
 
-- VecRaster owns the data as an std::vector;
-- PtrRaster points to the data owned by another class, as an std::vector or raw pointer
-(be careful not to destroy the data while the column is alive).
+- `VecRaster` owns the data as an `std::vector`;
+- `PtrRaster` points to the data owned by another class, as a raw pointer
+  (be careful not to destroy the data while the column is alive).
 
 The rasters of this tutorial are stored in a dedicated structure:
 
@@ -102,21 +109,20 @@ Again, let's show an example of how to create rasters:
 
 \snippet EleFitsTutorial.cpp Create rasters
 
-\see Raster
-\see VecRaster
-\see PtrRaster
-\see Test::RandomRaster
+\see \ref image_data_classes
 
 
 \subsection tuto-column Column
 
 A binary table is made of columns which can be either scalar (each cell contains a value)
-or vector (each cell contains several values) columns.
+or vector (each cell contains several values).
 In the latter case, the number of values per cell is named repeat count.
 
-A Column is a mere structure which holds the column name, repeat number (=1 for scalar columns, >1 for vector columns), unit,
-and owns or references some data.
-Analogously to rasters, columns have several flavors: VecColumn and PtrColumn.
+For string columns, the repeat count must be greater than the longest string value.
+
+A `Column` is a simple structure which holds the column name,
+repeat count (=1 for scalar columns, >1 for vector columns), unit,
+and owns or references some data, respectively as a `VecColumn` or as a `PtrColumn`.
 
 The following structure stores the tutorial columns:
 
@@ -126,39 +132,34 @@ Here's a set of examples on how create them:
 
 \snippet EleFitsTutorial.cpp Create columns
 
-\see Column
-\see VecColumn
-\see PtrColumn
-\see Test::RandomScalarColumn
-\see Test::RandomVectorColumn
+\see \ref bintable_data_classes
 
 
 \section tuto-file Open (and close) a MEF file
 
 
-The first thing to do is to create a new file.
+Now that we have learned about the data classes, we can move to the service classes, or handlers.
+The first thing we can do is to create a new file.
 
-The MefFile class represents multi-extension Fits (MEF) files.
-It extends the FitsFile class, which is also the base class of SifFile for single-image Fits (SIF) files.
+The `MefFile` class represents multi-extension Fits (MEF) files.
+It extends the `FitsFile` class, which is also the base class of `SifFile` for single-image Fits (SIF) files.
 
-Creating a file simply done with the constructor of MefFile (or SifFile for SIF files!):
+Creating a file simply done with the constructor of `MefFile` (or `SifFile` for SIF files!):
 
 \snippet EleFitsTutorial.cpp Create a MEF file
 
-The so-called permission parameter controls the rights on the file.
+The mode parameter controls the access rights on the file.
 For example, for a read-only opening:
 
 \snippet EleFitsTutorial.cpp Open a MEF file
 
-The file is closed when the destructor of MefFile is called (although a FitsFile::close() method is provided just in case).
+The file is closed when the destructor of `MefFile` is called (although a `FitsFile::close()` method is provided just in case).
 
 When you open a MEF file, an empty Primary HDU is created.
 It can then be accessed and resized.
 
-\see FitsFile
-\see FitsFile::Permission
-\see SifFile
-\see MefFile
+\see \ref file_handlers
+
 
 \section tuto-write Write a MEF file
 
@@ -166,17 +167,20 @@ It can then be accessed and resized.
 \subsection tuto-write-ext Create extensions
 
 
-MefFile provides service to create and access extensions.
-There are three types of extensions:
+`MefFile` provides services to create and access extensions.
+Conceptually, `MefFile` is a `FitsFile` with a vector of HDUs
+(in contrast, `SifFile` is a `FitsFile` with a single HDU).
 
-- Hdu to read and write records;
-- ImageHdu to read and write images (extends Hdu);
-- BintableHdu to read and write binary tables (extends Hdu).
+HDUs are represented by two classes:
 
-Image and binary table HDUs can be considered record HDUs for header work.
-Metadata (i.e., header-only) HDUs are image HDUs with empty data.
+- `ImageHdu` to access image HDUs,
+- `BintableHdu` to access binary table HDUs.
 
-There are two kinds of services in MefFile for creating extensions:
+Both derive from parent class `Hdu`.
+
+To sum up, a `MefFile` is a vector of `Hdu`s, which can be a mix of `ImageHdu`s and `BintalbleHdu`s.
+
+There are two kinds of services in `MefFile` for creating extensions:
 They can be either initialized with header only or assigned directly with data.
 Here's an example of creating image HDUs:
 
@@ -186,21 +190,21 @@ And here's one of creating binary table HDUs:
 
 \snippet EleFitsTutorial.cpp Create binary table extensions
 
-\see ImageHdu
-\see BintableHdu
+\see file_handlers
 
 
 \subsection tuto-write-record Write records
 
 
-Records are read and written through Hdu services
-(remember ImageHdu and BintableHdu are Hdu).
-They can be written and updated one-by-one or by batches.
+Records are read and written through a `Header` object,
+which is accessible from an `ImageHdu` or a `BintableHdu`
+as `header()`.
+They can be written and updated one-by-one or by sequences.
 There are many ways of doing so; here are a few examples:
 
 \snippet EleFitsTutorial.cpp Write records
 
-\see Hdu
+\see header_data_classes
 
 
 \section tuto-read Read a MEF file
@@ -209,9 +213,9 @@ There are many ways of doing so; here are a few examples:
 \subsection tuto-access-hdu Access HDUs
 
 
-HDUs can be accessed with a set of methods, templated with the type of HDU: BintableHdu, ImageHdu, or Hdu.
+HDUs can be accessed with a set of methods, templated with the type of HDU: `BintableHdu`, `ImageHdu`, or `Hdu`.
 For metadata work, we don't need to know the type of HDU:
-whether this is an image or binary table HDU has no impact, and a Hdu will be returned by default.
+whether this is an image or binary table HDU has no impact, and a `Hdu` will be returned by default.
 
 HDUs are accessed either by their name (first HDU whose name matches argument is returned) or by their index,
 and a shortcut is provided for the primary HDU (which has index 0):
@@ -219,53 +223,53 @@ and a shortcut is provided for the primary HDU (which has index 0):
 \snippet EleFitsTutorial.cpp Access HDUs
 
 You've probably noticed that we use constant references to the HDU handlers.
-Indeed, HDU handlers are owned by the MefFile instance and are not modified by reading and writing services
-(this is possible because they do not themeselve store data).
+Indeed, HDU handlers are not modified by reading and writing services, only the `MefFile` is.
+Actually, HDU-level and data unit-level handlers are very light classes which aim at providing a clear interface.
 
-\see MefFile
+\see file_handlers
 
 
 \subsection tuto-read-record Parse records
 
 
-Records are parsed using Hdu services.
+`Record`s are parsed using `Header` services.
 Like for writing, you can parse several records at once:
 
 \snippet EleFitsTutorial.cpp Read records
 
-\see Hdu
+\see header_handlers
 
 
 \subsection tuto-read-image Read image values
 
 
-For images, a VecRaster is instantiated, and you can access the pixel values with the subscript operator:
+For images, a `VecRaster` is generally instantiated, and you can access the pixel values with the subscript operator `[]`:
 
 \snippet EleFitsTutorial.cpp Read a raster
 
-\see ImageHdu
+\see image_handlers
 
 \subsection tuto-read-bintable Read binary table values
 
 
-Once you have accessed a BintableHdu, you can read column-wise by giving the column name.
-This will return a VecColumn:
+Once you have accessed a `BintableHdu`, you can read column-wise thanks to the `columns()` method.
+Columns are generally read as `VecColumn`s, values of which are accessed with the call operator `()`:
 
 \snippet EleFitsTutorial.cpp Read columns
 
-\see BintableHdu
+\see bintable_handlers
 
 
 \section tuto-conclusion Wrap up
 
 
 A picture is worth a thousand words; below is the class diagram of what we've just learned
-(i.e. the Euclid::Fits namespace contents).
+(i.e. the `Euclid::Fits` namespace contents).
 
 To go further or out of curiosity, head to the other [documentation pages](pages.html).
 Specifically, data classes and service classes are described in more details in
 \ref data_classes and \ref handlers.
-To practice or test your own code, you can also browse the Euclid::Fits::Test namespace,
+To practice or test your own code, you can also browse the `Euclid::Fits::Test` namespace,
 which provides ready-to-use functions and classes, such as random records, rasters and columns.
 
 \image html doc/diagrams/out/FitsData.png
