@@ -406,60 +406,6 @@ private:
 };
 
 /**
- * @ingroup image_data_classes
- * @brief `Raster` which references some external `std::vector` data.
- * @deprecated Doesn't bring much added value. Use `Raster` instead.
- */
-template <typename T, long n = 2>
-class VecRefRaster : public Raster<T, n> {
-
-public:
-  /**
-   * @brief Destructor.
-   */
-  virtual ~VecRefRaster() = default;
-
-  /**
-   * @brief Copy constructor.
-   */
-  VecRefRaster(const VecRefRaster&) = default;
-
-  /**
-   * @brief Move constructor.
-   */
-  VecRefRaster(VecRefRaster&&) = default;
-
-  /**
-   * @brief Copy assignment.
-   */
-  VecRefRaster& operator=(const VecRefRaster&) = default;
-
-  /**
-   * @brief Move assignment.
-   */
-  VecRefRaster& operator=(VecRefRaster&&) = default;
-
-  /**
-   * @brief Create a raster with given shape and values.
-   */
-  VecRefRaster(Position<n> shape, std::vector<std::decay_t<T>>& vecRef);
-
-  /**
-   * @copydoc Raster::data()
-   */
-  const T* data() const override;
-
-  /**
-   * @brief Const reference to the vector.
-   */
-  const std::vector<T>& vector() const;
-
-private:
-  const std::vector<T>* m_cVecPtr;
-  std::vector<T>* m_vecPtr;
-};
-
-/**
  * @copydoc Raster
  */
 template <typename T, long n = 2>

@@ -263,22 +263,6 @@ const T* PtrRaster<T, n>::data() const {
   return m_data;
 }
 
-// VecRefRaster
-
-template <typename T, long n>
-VecRefRaster<T, n>::VecRefRaster(Position<n> rasterShape, std::vector<std::decay_t<T>>& vecRef) :
-    Raster<T, n>(rasterShape), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
-
-template <typename T, long n>
-const std::vector<T>& VecRefRaster<T, n>::vector() const {
-  return *m_cVecPtr;
-}
-
-template <typename T, long n>
-const T* VecRefRaster<T, n>::data() const {
-  return m_cVecPtr->data();
-}
-
 // VecRaster
 
 template <typename T, long n>

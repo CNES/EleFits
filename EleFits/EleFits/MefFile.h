@@ -24,7 +24,6 @@
 #include "EleFits/FitsFile.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageHdu.h"
-#include "EleFits/RecordHdu.h" // FIXME remove in 4.0
 
 #include <memory>
 #include <vector>
@@ -48,10 +47,6 @@ class HduSelector;
 class MefFile : public FitsFile {
 
 public:
-  /**
-   * @copydoc FitsFile::Permission
-   */
-  using FitsFile::Permission;
 
   /**
    * @copydoc FitsFile::~FitsFile

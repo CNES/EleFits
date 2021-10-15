@@ -84,44 +84,6 @@ void Hdu::updateVersion(long version) const {
   Cfitsio::HduAccess::updateVersion(m_fptr, version);
 }
 
-std::string Hdu::readHeader(bool incNonValued) const {
-  touchThisHdu();
-  return Cfitsio::HeaderIo::readHeader(m_fptr, incNonValued);
-}
-
-std::vector<std::string> Hdu::readKeywords(KeywordCategory categories) const {
-  return m_header.readKeywords(categories);
-}
-
-std::map<std::string, std::string> Hdu::readKeywordsValues(KeywordCategory categories) const {
-  return m_header.readKeywordsValues(categories);
-}
-
-bool Hdu::hasKeyword(const std::string& keyword) const {
-  touchThisHdu();
-  return Cfitsio::HeaderIo::hasKeyword(m_fptr, keyword);
-}
-
-RecordSeq Hdu::parseRecordSeq(const std::vector<std::string>& keywords) const {
-  return parseRecordVector<VariantValue>(keywords);
-}
-
-void Hdu::writeComment(const std::string& comment) const {
-  editThisHdu();
-  return Cfitsio::HeaderIo::writeComment(m_fptr, comment);
-}
-
-void Hdu::writeHistory(const std::string& history) const {
-  editThisHdu();
-  return Cfitsio::HeaderIo::writeHistory(m_fptr, history);
-}
-
-void Hdu::deleteRecord(const std::string& keyword) const {
-  editThisHdu();
-  KeywordNotFoundError::mayThrow(keyword, m_header);
-  Cfitsio::HeaderIo::deleteRecord(m_fptr, keyword);
-}
-
 void Hdu::verifyChecksums() const {
   touchThisHdu();
   int status = 0;
@@ -150,22 +112,6 @@ void Hdu::editThisHdu() const {
   touchThisHdu();
   m_status &= HduCategory::Edited;
 }
-
-#ifndef COMPILE_PARSE_RECORD
-  #define COMPILE_PARSE_RECORD(type, unused) template Record<type> Hdu::parseRecord(const std::string&) const;
-ELEFITS_FOREACH_RECORD_TYPE(COMPILE_PARSE_RECORD)
-  #undef COMPILE_PARSE_RECORD
-#endif
-
-template RecordSeq Hdu::parseRecordVector(const std::vector<std::string>&) const;
-
-#ifndef COMPILE_WRITE_RECORD
-  #define COMPILE_WRITE_RECORD(type, unused) template void Hdu::writeRecord(const Record<type>&) const;
-ELEFITS_FOREACH_RECORD_TYPE(COMPILE_WRITE_RECORD)
-  #undef COMPILE_WRITE_RECORD
-#endif
-
-template void Hdu::writeRecords(const std::vector<Record<VariantValue>>&) const;
 
 } // namespace Fits
 } // namespace Euclid

@@ -38,7 +38,7 @@ void ReadOnlyError::mayThrow(const std::string& prefix, FileMode mode) {
   }
 }
 
-FitsFile::FitsFile(const std::string& filename, Permission permission) :
+FitsFile::FitsFile(const std::string& filename, FileMode permission) :
     m_fptr(nullptr), m_filename(filename), m_permission(permission), m_open(false) {
   open(filename, permission);
 }
@@ -58,11 +58,11 @@ bool FitsFile::isOpen() const {
 void FitsFile::reopen() {
   if (not m_open) {
     switch (m_permission) {
-      case Permission::Create:
-      case Permission::Overwrite:
-        open(m_filename, Permission::Edit);
+      case FileMode::Create:
+      case FileMode::Overwrite:
+        open(m_filename, FileMode::Edit);
         break;
-      case Permission::Temporary:
+      case FileMode::Temporary:
         throw FitsError("Cannot reopen closed temporary file.");
         break;
       default:
@@ -72,24 +72,24 @@ void FitsFile::reopen() {
   }
 }
 
-void FitsFile::open(const std::string& filename, Permission permission) {
+void FitsFile::open(const std::string& filename, FileMode permission) {
   if (m_open) {
     throw FitsError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
   }
   switch (permission) {
-    case Permission::Read:
+    case FileMode::Read:
       m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadOnly);
       break;
-    case Permission::Edit:
+    case FileMode::Edit:
       m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadWrite);
       break;
-    case Permission::Create:
+    case FileMode::Create:
       m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
       break;
-    case Permission::Overwrite:
+    case FileMode::Overwrite:
       m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::OverWrite);
       break;
-    case Permission::Temporary:
+    case FileMode::Temporary:
       m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
   }
   m_filename = filename;
@@ -102,7 +102,7 @@ void FitsFile::close() {
     return;
   }
   switch (m_permission) {
-    case Permission::Temporary:
+    case FileMode::Temporary:
       closeAndDelete();
       break;
     default:

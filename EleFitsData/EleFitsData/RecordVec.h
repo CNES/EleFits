@@ -125,13 +125,6 @@ public:
 };
 
 /**
- * @brief Alias to `RecordVec` for backward compatibility.
- * @deprecated
- */
-template<typename T>
-using RecordVector = RecordVec<T>;
-
-/**
  * @brief A sequence of records of any type.
  */
 using RecordSeq = RecordVec<VariantValue>;

@@ -63,12 +63,6 @@ private:
 };
 
 /**
- * @brief Alias for backward compatibility.
- * @deprecated
- */
-using FitsIOError = FitsError;
-
-/**
  * @ingroup exceptions
  * @brief Exception thrown if a value lies out of given bounds.
  */

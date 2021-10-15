@@ -24,7 +24,7 @@
 namespace Euclid {
 namespace Fits {
 
-MefFile::MefFile(const std::string& filename, Permission permission) :
+MefFile::MefFile(const std::string& filename, FileMode permission) :
     FitsFile(filename, permission), m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))) {
 } // 1 for create, count() for open
 

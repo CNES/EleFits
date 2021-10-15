@@ -99,11 +99,6 @@ public:
 class FitsFile {
 
 public:
-  /**
-   * @brief Deprecated alias for backward compatibility.
-   * @deprecated Replaced with FileMode
-   */
-  using Permission = FileMode;
 
   /**
    * @brief Create a new Fits file handler with given filename and permission.

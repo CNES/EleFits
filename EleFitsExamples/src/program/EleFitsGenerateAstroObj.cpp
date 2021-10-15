@@ -34,7 +34,7 @@ using namespace Fits;
 void writeMeta(MefFile& f, int objIndex) {
   std::string extname = std::to_string(objIndex) + "_META";
   const auto& ext = f.initImageExt<unsigned char, 1>(extname, { 0 });
-  ext.writeRecords(
+  ext.header().writeSeq(
       Record<int>("DITH_NUM", 0), // TODO
       Record<int>("SOURC_ID", objIndex),
       Record<float>("RA_OBJ", float(2 * objIndex)),
@@ -47,15 +47,15 @@ void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
   auto qualityData = Test::generateRandomVector<char>(bins);
   auto varData = Test::generateRandomVector<float>(bins);
   const long repeatCount = 1;
-  VecRefColumn<float> wminCol({ "WMIN", "nm", repeatCount }, wminData);
-  VecRefColumn<float> signalCol({ "SIGNAL", "erg", repeatCount }, signalData);
-  VecRefColumn<char> qualityCol({ "QUALITY", "", repeatCount }, qualityData);
-  VecRefColumn<float> varCol({ "VAR", "erg^2", repeatCount }, varData);
+  PtrColumn<float> wminCol({ "WMIN", "nm", repeatCount }, bins, wminData.data());
+  PtrColumn<float> signalCol({ "SIGNAL", "erg", repeatCount }, bins, signalData.data());
+  PtrColumn<char> qualityCol({ "QUALITY", "", repeatCount }, bins, qualityData.data());
+  PtrColumn<float> varCol({ "VAR", "erg^2", repeatCount }, bins, varData.data());
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_SIGNAL";
   const auto& ext = f.assignBintableExt(extname, wminCol, signalCol);
   ext.appendColumn(qualityCol);
   ext.appendColumn(varCol);
-  ext.writeRecords(
+  ext.header().writeSeq(
       Record<float>("WMIN", 0.F),
       Record<float>("BINWIDTH", 1.F),
       Record<int>("BINCOUNT", bins),
@@ -66,7 +66,7 @@ void writeCombinedCov(MefFile& f, int objIndex, int bins) {
   Test::RandomRaster<float, 2> cov_raster({ bins, bins });
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_COV";
   const auto& ext = f.assignImageExt(extname, cov_raster);
-  ext.writeRecords(Record<int>("COV_SIDE", bins), Record<std::string>("CODEC", "IDENTITY"));
+  ext.header().writeSeq(Record<int>("COV_SIDE", bins), Record<std::string>("CODEC", "IDENTITY"));
 }
 
 void writeCombined(MefFile& f, int objIndex, int bins) {
@@ -101,8 +101,8 @@ public:
     logger.info() << "Creating Fits file: " << filename;
     MefFile f(filename, FileMode::Overwrite);
     logger.info() << "Writing metadata";
-    const auto& primary = f.accessPrimary<>();
-    primary.writeRecord("N_OBJ", nobj);
+    const auto& primary = f.primary();
+    primary.header().write("N_OBJ", nobj);
 
     for (int i = 0; i < nobj; ++i) {
       logger.info() << "Writing AstroObj " << i;

@@ -73,7 +73,7 @@ public:
     KeywordCategory categories = parseKeywordCategories(keywordFilter);
 
     /* Read file */
-    MefFile f(filename, FitsFile::Permission::Read);
+    MefFile f(filename, FileMode::Read);
     const auto hduCount = f.hduCount();
     logger.info() << "HDU count: " << hduCount;
 
@@ -113,7 +113,7 @@ public:
 
       /* Read keywords */
       if (categories) {
-        const auto records = hdu.readKeywordsValues(categories);
+        const auto records = hdu.header().readKeywordsValues(categories);
         if (records.size() == 0) {
           logger.info() << "  No keywords";
         } else {

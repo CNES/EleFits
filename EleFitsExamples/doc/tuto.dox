@@ -91,7 +91,7 @@ Template arguments are the pixel type and number of axes.
 There are two kinds of rasters:
 
 - VecRaster owns the data as an std::vector;
-- VecRefRaster and PtrRaster point to the data owned by another class, as an std::vector or raw pointer
+- PtrRaster points to the data owned by another class, as an std::vector or raw pointer
 (be careful not to destroy the data while the column is alive).
 
 The rasters of this tutorial are stored in a dedicated structure:
@@ -104,7 +104,6 @@ Again, let's show an example of how to create rasters:
 
 \see Raster
 \see VecRaster
-\see VecRefRaster
 \see PtrRaster
 \see Test::RandomRaster
 
@@ -117,7 +116,7 @@ In the latter case, the number of values per cell is named repeat count.
 
 A Column is a mere structure which holds the column name, repeat number (=1 for scalar columns, >1 for vector columns), unit,
 and owns or references some data.
-Analogously to rasters, columns have several flavors: VecColumn, VecRefColumn and PtrColumn.
+Analogously to rasters, columns have several flavors: VecColumn and PtrColumn.
 
 The following structure stores the tutorial columns:
 
@@ -129,7 +128,6 @@ Here's a set of examples on how create them:
 
 \see Column
 \see VecColumn
-\see VecRefColumn
 \see PtrColumn
 \see Test::RandomScalarColumn
 \see Test::RandomVectorColumn

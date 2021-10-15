@@ -127,34 +127,6 @@ T* PtrColumn<T>::data() {
 }
 
 template <typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, const std::vector<T>& vecRef) :
-    Column<T>(columnInfo), m_cVecPtr(&vecRef), m_vecPtr(nullptr) {}
-
-template <typename T>
-VecRefColumn<T>::VecRefColumn(ColumnInfo<T> columnInfo, std::vector<T>& vecRef) :
-    Column<T>(columnInfo), m_cVecPtr(&vecRef), m_vecPtr(&vecRef) {}
-
-template <typename T>
-long VecRefColumn<T>::elementCount() const {
-  return m_cVecPtr->size();
-}
-
-template <typename T>
-const T* VecRefColumn<T>::data() const {
-  return m_cVecPtr->data();
-}
-
-template <typename T>
-T* VecRefColumn<T>::data() {
-  return m_vecPtr->data();
-}
-
-template <typename T>
-const std::vector<T>& VecRefColumn<T>::vector() const {
-  return *m_cVecPtr;
-}
-
-template <typename T>
 VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {}
 
 template <typename T>
@@ -197,7 +169,6 @@ std::vector<T>& VecColumn<T>::vector() {
       extern template struct ColumnInfo<type>; \
       extern template class Column<type>; \
       extern template class PtrColumn<type>; \
-      extern template class VecRefColumn<type>; \
       extern template class VecColumn<type>;
 ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
     #undef DECLARE_COLUMN_CLASSES

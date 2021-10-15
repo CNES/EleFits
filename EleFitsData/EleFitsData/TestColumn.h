@@ -146,22 +146,22 @@ public:
   /**
    * @brief NUM column.
    */
-  VecRefColumn<Num> numCol;
+  PtrColumn<Num> numCol;
 
   /**
    * @brief RADEC column.
    */
-  VecRefColumn<Radec> radecCol;
+  PtrColumn<Radec> radecCol;
 
   /**
    * @brief NAME column.
    */
-  VecRefColumn<Name> nameCol;
+  PtrColumn<Name> nameCol;
 
   /**
    * @brief DIST_MAG column.
    */
-  VecRefColumn<DistMag> distMagCol;
+  PtrColumn<DistMag> distMagCol;
 };
 
 /**

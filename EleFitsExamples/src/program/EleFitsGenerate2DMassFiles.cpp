@@ -63,7 +63,7 @@ void writeBintable(const std::string& filename, long rows) {
  * We rely on VariantValue, but it would be possible to skip this abstraction and go with raw types
  * using a tuple instead of a vector.
  */
-void writeSomeRecords(const Hdu& hdu) {
+void writeSomeRecords(const Header& header) {
   std::vector<Record<VariantValue>> records = {
     { "WCSAXES", 2, "", "Number of axes in World Coordinate System" },
     { "CRPIX1", "", "", "Pixel coordinate of reference point" },
@@ -85,7 +85,7 @@ void writeSomeRecords(const Hdu& hdu) {
     { "RADESYS", "", "", "Equatorial coordinate system" },
     { "EQUINOX", "", "", "Equinox of celestial coordinate system (e.g. 2000)" }
   };
-  hdu.writeRecords(records);
+  header.writeSeq(records);
 }
 
 /**
@@ -97,7 +97,7 @@ void writeImage(const std::string& filename, const Position<3>& shape) {
   MefFile f(filename, FileMode::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
   const auto& ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
-  writeSomeRecords(ext);
+  writeSomeRecords(ext.header());
 }
 
 class EleFitsGenerate2DMassFiles : public Elements::Program {
@@ -143,7 +143,7 @@ public:
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");
-    const auto records = ext.parseAllRecords<VariantValue>();
+    const auto records = ext.header().parseAll();
     const auto intRecord = records.as<int>("CRVAL1");
     logger.info() << intRecord.comment << " = " << intRecord.value << " " << intRecord.unit;
     const auto strRecord = records.as<std::string>("CUNIT1");

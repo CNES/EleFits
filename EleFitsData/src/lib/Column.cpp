@@ -42,7 +42,6 @@ long rowCountDispatchImpl<std::string>(long elementCount, ELEMENTS_UNUSED long r
     template struct ColumnInfo<type>; \
     template class Column<type>; \
     template class PtrColumn<type>; \
-    template class VecRefColumn<type>; \
     template class VecColumn<type>;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_COLUMN_CLASSES)
   #undef COMPILE_COLUMN_CLASSES

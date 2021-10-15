@@ -57,11 +57,11 @@ public:
       const auto& primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
       logger.info() << "Writing new record: VALUE = 1";
       //! [Write record]
-      primary.writeRecord("VALUE", 1);
+      primary.header().write("VALUE", 1);
       //! [Write record]
       logger.info() << "Updating record: VALUE = 2";
       //! [Update record]
-      primary.updateRecord("VALUE", 2);
+      primary.header().write("VALUE", 2);
       //! [Update record]
 
       logger.info();
@@ -83,7 +83,7 @@ public:
       Record<std::string> strRecord("STRING", "string");
       logger.info() << "Writing record: INTEGER = 8";
       Record<int> intRecord("INTEGER", 8);
-      ext.writeRecords(strRecord, intRecord);
+      ext.header().writeSeq(strRecord, intRecord);
 
       logger.info();
 
@@ -100,7 +100,7 @@ public:
       MefFile f(filename, FileMode::Read);
       //! [Open Fits]
       //! [Read record]
-      const auto recordValue = f.accessPrimary<>().parseRecord<int>("VALUE");
+      const auto recordValue = f.primary().header().parse<int>("VALUE");
       //! [Read record]
       logger.info() << "Reading record: VALUE = " << recordValue;
 
@@ -115,11 +115,11 @@ public:
       //! [Get HDU index]
       logger.info() << "HDU index: " << index;
       //! [Read column]
-      const auto ids = bintableExt.readColumn<int>("ID").vector();
+      const auto ids = bintableExt.columns().read<int>("ID").vector();
       const auto firstCell = ids[0];
       //! [Read column]
       logger.info() << "First id: " << firstCell;
-      const auto names = bintableExt.readColumn<std::string>("NAME").vector();
+      const auto names = bintableExt.columns().read<std::string>("NAME").vector();
       logger.info() << "Last name: " << names[names.size() - 1];
 
       logger.info();
@@ -132,7 +132,7 @@ public:
       const auto extname = ext2.readName();
       //! [Get HDU name]
       logger.info() << "Name of HDU #3: " << extname;
-      const auto records = ext2.parseRecords<std::string, int>({ "STRING", "INTEGER" });
+      const auto records = ext2.header().parseSeq(Named<std::string>("STRING"), Named<int>("INTEGER"));
       logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
       logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
       const auto& imageExt = f.accessFirst<ImageHdu>("SMALLIMG");

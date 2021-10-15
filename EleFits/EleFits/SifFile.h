@@ -37,11 +37,6 @@ class SifFile : public FitsFile {
 
 public:
   /**
-   * @copydoc FitsFile::Permission
-   */
-  using FitsFile::Permission;
-
-  /**
    * @copydoc FitsFile::~FitsFile
    */
   virtual ~SifFile() = default;
@@ -49,7 +44,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  SifFile(const std::string& filename, Permission permission);
+  SifFile(const std::string& filename, FileMode permission);
 
   /**
    * @brief Access the header unit.

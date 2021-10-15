@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE(Column_test)
 
 BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test) {
   std::vector<int> input { 1, 2, 3 };
-  VecRefColumn<int> column({ "SHARED", "", 1 }, input);
+  PtrColumn<int> column({ "SHARED", "", 1 }, input.size(), input.data());
   BOOST_TEST(column.data()[1] == 2);
   input[1] = 4;
   BOOST_TEST(column.data()[1] == 4);

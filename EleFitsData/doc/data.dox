@@ -74,9 +74,8 @@ which is also nice sometimes but puts more responsibility on the shoulders of th
 as it should check that the returned dimension is acceptable.
 
 `Raster` is an abstract class, to be extended with an actual data container.
-Three such concrete classes are provided:
+Two such concrete classes are provided:
 - `PtrRaster` merely stores a pointer to the data array;
-- `VecRefRaster` references some external `std::vector` which owns the data;
 - `VecRaster` owns itself the data as an `std::vector`.
 
 You can create your own raster types by inheriting from `Raster`.
@@ -113,11 +112,10 @@ so that you are able to provide a raw pointer to the first element of the column
 The library comes with several ready-to-use implementations:
 
 - `PtrColumn` is the lightest structure: it just knows a pointer to the first element of the column;
-- `VecRefColumn` works with a `std::vector` and is similar to `PtrColumn` in that it does not own the data: just a reference to it;
 - `VecColumn` owns the data as an `std::vector` and is compatible with the move semantics.
 
 To write a column, any `Column` implementation works: you can even provide your own, e.g. some `EigenColumn`.
-`Columns` are always read as `VecColumn` instances.
+`Column`s are always read as `VecColumn` instances.
 If you want to give or steal the data to or from a `VecColumn`, you can exploit move semantics, as shown in the \ref tuto "":
 
 \snippet EleFitsTutorial.cpp Create columns

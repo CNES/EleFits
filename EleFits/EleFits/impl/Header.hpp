@@ -210,6 +210,20 @@ void Header::writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records
   seqForeach(std::forward<TSeq>(records), func);
 }
 
+  #ifndef DECLARE_PARSE
+    #define DECLARE_PARSE(type, unused) extern template Record<type> Header::parse(const std::string&) const;
+ELEFITS_FOREACH_RECORD_TYPE(DECLARE_PARSE)
+    #undef DECLARE_PARSE
+  #endif
+
+  #ifndef DECLARE_WRITE_RECORD
+    #define DECLARE_WRITE_RECORD(type, unused) extern template void Header::write(const Record<type>&) const;
+ELEFITS_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
+    #undef DECLARE_WRITE_RECORD
+  #endif
+
+// FIXME extern declare more
+
 } // namespace Fits
 } // namespace Euclid
 

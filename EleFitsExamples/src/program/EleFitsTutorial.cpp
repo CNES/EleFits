@@ -168,7 +168,7 @@ TutoColumns createColumns() {
   std::vector<std::int32_t> int32Vec(100);
   // ... do what you have to do with the vector, and then move it to the column ...
   Fits::VecColumn<std::int32_t> int32Column({ "INT32", "", 1 }, std::move(int32Vec));
-  // Analogously to rasters, columns can be managed with the VecRefColumn and PtrColumn classes.
+  // Analogously to rasters, columns can be managed with the lightweight PtrColumn classe.
 
   /* Generate a random column */
 
@@ -254,20 +254,18 @@ void writeRecords(const Fits::Hdu& hdu) {
 
   /* Write a single record */
 
-  hdu.writeRecord(records.stringRecord);
+  hdu.header().write(records.stringRecord);
 
   /* Write several records */
 
-  hdu.writeRecords(records.intRecord, records.floatRecord, records.complexRecord);
+  hdu.header().writeSeq(records.intRecord, records.floatRecord, records.complexRecord);
 
   /* Update using initialization lists */
 
-  hdu.updateRecords<int, float, std::complex<double>>(
-      { "INT", 1 },
-      { "FLOAT", 3.14159F, "", "A larger piece of Pi" },
-      { "COMPLEX", { 180., 90. } });
-  // With inititialization lists, template parameters must be explicit.
-  // Each "write" method has an "update" counterpart with the same signature.
+  hdu.header().writeSeq(
+      Fits::Record<int>("INT", 1),
+      Fits::Record<float>("FLOAT", 3.14159F, "", "A larger piece of Pi"),
+      Fits::Record<std::complex<double>>("COMPLEX", { 180., 90. }));
 
   //! [Write records]
 }
@@ -292,7 +290,7 @@ void readMefFile(const std::string& filename) {
 
   /* Access the Primary HDU */
 
-  const auto& primary = f.accessPrimary<Fits::Hdu>();
+  const auto& primary = f.primary();
   // Our primary contains only metadata, which is why we request a Hdu.
   logger.info() << "    Primary index: " << primary.index();
   // Indices are 0-based in the Fits namespace.
@@ -323,16 +321,16 @@ void readRecords(const Fits::Hdu& hdu) {
 
   /* Read a single record */
 
-  auto intRecord = hdu.parseRecord<int>("INT");
+  auto intRecord = hdu.header().parse<int>("INT");
   logger.info() << "    " << intRecord.keyword << " = " << intRecord.value << " " << intRecord.unit;
 
   // Records can be sliced as their value for immediate use:
-  int intValue = hdu.parseRecord<int>("INT");
+  int intValue = hdu.header().parse<int>("INT");
   logger.info() << "    INT value: " << intValue;
 
   /* Read several records */
 
-  auto someRecords = hdu.parseRecords(
+  auto someRecords = hdu.header().parseSeq(
       Fits::Named<std::string>("STRING"),
       Fits::Named<int>("INT"),
       Fits::Named<float>("FLOAT"),
@@ -342,14 +340,14 @@ void readRecords(const Fits::Hdu& hdu) {
 
   /* Read as VariantValue */
 
-  auto anyRecords = hdu.parseRecordSeq({ "INT", "COMPLEX" });
-  auto complexRecord = anyRecords.as<std::complex<double>>("COMPLEX");
+  auto variantRecords = hdu.header().parseSeq<>({ "INT", "COMPLEX" });
+  auto complexRecord = variantRecords.as<std::complex<double>>("COMPLEX");
   logger.info() << "    " << complexRecord.keyword << " = " << complexRecord.value.real() << " + "
                 << complexRecord.value.imag() << "j " << complexRecord.unit;
 
   /* Read as a user-defined structure */
 
-  auto tutoRecords = hdu.parseRecordsAs<TutoRecords>(
+  auto tutoRecords = hdu.header().parseStruct<TutoRecords>(
       Fits::Named<std::string>("STRING"),
       Fits::Named<int>("INT"),
       Fits::Named<float>("FLOAT"),

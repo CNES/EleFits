@@ -36,26 +36,26 @@ BOOST_AUTO_TEST_CASE(empty_file_test) {
   std::string filename = tmp.path().string();
   BOOST_TEST(not boost::filesystem::exists(filename));
 
-  FitsFile newFile(filename, FitsFile::Permission::Create);
+  FitsFile newFile(filename, FileMode::Create);
   BOOST_TEST(newFile.filename() == filename);
   BOOST_TEST(boost::filesystem::is_regular_file(filename));
   newFile.close();
 
-  BOOST_CHECK_THROW(FitsFile(filename, FitsFile::Permission::Create), std::exception);
+  BOOST_CHECK_THROW(FitsFile(filename, FileMode::Create), std::exception);
 
-  FitsFile overwrittenFile(filename, FitsFile::Permission::Overwrite);
+  FitsFile overwrittenFile(filename, FileMode::Overwrite);
   overwrittenFile.close();
 
-  FitsFile readonlyFile(filename, FitsFile::Permission::Read);
+  FitsFile readonlyFile(filename, FileMode::Read);
   BOOST_CHECK_THROW(readonlyFile.closeAndDelete(), std::exception);
   readonlyFile.close();
 
-  FitsFile editableFile(filename, FitsFile::Permission::Edit);
+  FitsFile editableFile(filename, FileMode::Edit);
   editableFile.closeAndDelete();
   BOOST_TEST(not boost::filesystem::exists(filename));
 
   {
-    FitsFile tempFile(filename, FitsFile::Permission::Temporary);
+    FitsFile tempFile(filename, FileMode::Temporary);
     BOOST_TEST(boost::filesystem::is_regular_file(filename));
   }
   BOOST_TEST(not boost::filesystem::exists(filename));

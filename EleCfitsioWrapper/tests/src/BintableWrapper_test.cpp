@@ -122,13 +122,13 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
       input.nameCol,
       input.distMagCol);
   const auto outputNums = BintableIo::readColumn<SmallTable::Num>(this->fptr, input.numCol.info.name);
-  BOOST_TEST(outputNums.vector() == input.numCol.vector());
+  BOOST_TEST(outputNums.vector() == input.nums);
   const auto outputRadecs = BintableIo::readColumn<SmallTable::Radec>(this->fptr, input.radecCol.info.name);
-  BOOST_TEST(outputRadecs.vector() == input.radecCol.vector());
+  BOOST_TEST(outputRadecs.vector() == input.radecs);
   const auto outputNames = BintableIo::readColumn<SmallTable::Name>(this->fptr, input.nameCol.info.name);
-  BOOST_TEST(outputNames.vector() == input.nameCol.vector());
+  BOOST_TEST(outputNames.vector() == input.names);
   const auto outputDistsMags = BintableIo::readColumn<SmallTable::DistMag>(this->fptr, input.distMagCol.info.name);
-  BOOST_TEST(outputDistsMags.vector() == input.distMagCol.vector());
+  BOOST_TEST(outputDistsMags.vector() == input.distsMags);
 }
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
