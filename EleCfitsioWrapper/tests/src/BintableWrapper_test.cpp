@@ -41,13 +41,13 @@ void checkScalarColumnIsReadBack() {
   MinimalFile file;
   try {
     HduAccess::createBintableExtension(file.fptr, "BINEXT", input);
-    const auto index = BintableIo::columnIndex(file.fptr, input.info.name);
+    const auto index = BintableIo::columnIndex(file.fptr, input.info().name);
     BOOST_TEST(index == 1);
     const auto info = BintableIo::readColumnInfo<T>(file.fptr, index);
-    BOOST_TEST(info.name == input.info.name);
-    BOOST_TEST(info.unit == input.info.unit);
-    BOOST_TEST(info.repeatCount == input.info.repeatCount);
-    const auto output = BintableIo::readColumn<T>(file.fptr, input.info.name);
+    BOOST_TEST(info.name == input.info().name);
+    BOOST_TEST(info.unit == input.info().unit);
+    BOOST_TEST(info.repeatCount == input.info().repeatCount);
+    const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
@@ -79,8 +79,8 @@ void checkVectorColumnIsReadBack() {
   MinimalFile file;
   try {
     HduAccess::createBintableExtension(file.fptr, "BINEXT", input);
-    const auto output = BintableIo::readColumn<T>(file.fptr, input.info.name);
-    BOOST_TEST(output.info.repeatCount == repeatCount);
+    const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
+    BOOST_TEST(output.info().repeatCount == repeatCount);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
@@ -121,13 +121,13 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
       input.radecCol,
       input.nameCol,
       input.distMagCol);
-  const auto outputNums = BintableIo::readColumn<SmallTable::Num>(this->fptr, input.numCol.info.name);
+  const auto outputNums = BintableIo::readColumn<SmallTable::Num>(this->fptr, input.numCol.info().name);
   BOOST_TEST(outputNums.vector() == input.nums);
-  const auto outputRadecs = BintableIo::readColumn<SmallTable::Radec>(this->fptr, input.radecCol.info.name);
+  const auto outputRadecs = BintableIo::readColumn<SmallTable::Radec>(this->fptr, input.radecCol.info().name);
   BOOST_TEST(outputRadecs.vector() == input.radecs);
-  const auto outputNames = BintableIo::readColumn<SmallTable::Name>(this->fptr, input.nameCol.info.name);
+  const auto outputNames = BintableIo::readColumn<SmallTable::Name>(this->fptr, input.nameCol.info().name);
   BOOST_TEST(outputNames.vector() == input.names);
-  const auto outputDistsMags = BintableIo::readColumn<SmallTable::DistMag>(this->fptr, input.distMagCol.info.name);
+  const auto outputDistsMags = BintableIo::readColumn<SmallTable::DistMag>(this->fptr, input.distMagCol.info().name);
   BOOST_TEST(outputDistsMags.vector() == input.distsMags);
 }
 
@@ -135,11 +135,11 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full
   RandomScalarColumn<int> i(rowCount);
-  i.info.name = "I";
+  i.rename("I");
   RandomScalarColumn<float> f(rowCount);
-  f.info.name = "F";
+  f.rename("F");
   RandomScalarColumn<double> d(rowCount);
-  d.info.name = "D";
+  d.rename("D");
   HduAccess::createBintableExtension(this->fptr, "BINEXT", i, f, d);
   const auto table = BintableIo::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });
   int status = 0;
@@ -155,12 +155,12 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   SmallTable table;
   HduAccess::createBintableExtension(this->fptr, "TABLE", table.nameCol);
-  const auto names = BintableIo::readColumn<SmallTable::Name>(fptr, table.nameCol.info.name);
+  const auto names = BintableIo::readColumn<SmallTable::Name>(fptr, table.nameCol.info().name);
   BOOST_TEST(names.vector() == table.names);
   BintableIo::appendColumns(fptr, table.distMagCol, table.radecCol);
-  const auto distsMags = BintableIo::readColumn<SmallTable::DistMag>(fptr, table.distMagCol.info.name);
+  const auto distsMags = BintableIo::readColumn<SmallTable::DistMag>(fptr, table.distMagCol.info().name);
   BOOST_TEST(distsMags.vector() == table.distsMags);
-  const auto radecs = BintableIo::readColumn<SmallTable::Radec>(fptr, table.radecCol.info.name);
+  const auto radecs = BintableIo::readColumn<SmallTable::Radec>(fptr, table.radecCol.info().name);
   BOOST_TEST(radecs.vector() == table.radecs);
 }
 

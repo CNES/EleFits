@@ -56,16 +56,41 @@ long rowCountDispatchImpl(long elementCount, long repeatCount) {
 /// @endcond
 
 template <typename T>
-Column<T>::Column(ColumnInfo<std::decay_t<T>> columnInfo) : info(columnInfo) {}
+Column<T>::Column(ColumnInfo<std::decay_t<T>> info) : m_info(info) {}
 
 template <typename T>
-long Column<T>::rowCount() const {
-  return Internal::rowCountDispatchImpl<std::decay_t<T>>(elementCount(), info.repeatCount);
+const ColumnInfo<std::decay_t<T>>& Column<T>::info() const {
+  return m_info;
 }
 
 template <typename T>
+void Column<T>::rename(const std::string& name) {
+  m_info.name = name;
+}
+
+template <typename T>
+void Column<T>::reshape(long repeatCount) {
+  // FIXME check that elementCount() % repeatCount = 0, but for strings!
+  m_info.repeatCount = repeatCount;
+}
+
+template <typename T>
+long Column<T>::rowCount() const {
+  return Internal::rowCountDispatchImpl<std::decay_t<T>>(elementCount(), m_info.repeatCount);
+}
+
+/**
+ * @brief String specialization.
+ */
+template<>
+const std::string& Column<std::string>::operator()(long row, long repeat) const;
+
+template<>
+const std::string& Column<const std::string>::operator()(long row, long repeat) const; // FIXME repetition;
+
+template <typename T>
 const T& Column<T>::operator()(long row, long repeat) const {
-  const long index = row * info.repeatCount + repeat;
+  const long index = row * m_info.repeatCount + repeat;
   return *(data() + index);
 }
 
@@ -77,9 +102,9 @@ T& Column<T>::operator()(long row, long repeat) {
 template <typename T>
 const T& Column<T>::at(long row, long repeat) const {
   OutOfBoundsError::mayThrow("Cannot access row index", row, { -rowCount(), rowCount() - 1 });
-  OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, { -info.repeatCount, info.repeatCount - 1 });
+  OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, { -m_info.repeatCount, m_info.repeatCount - 1 });
   const long boundedRow = row < 0 ? rowCount() + row : row;
-  const long boundedRepeat = repeat < 0 ? info.repeatCount + repeat : repeat;
+  const long boundedRepeat = repeat < 0 ? m_info.repeatCount + repeat : repeat;
   return operator()(boundedRow, boundedRepeat);
 }
 
@@ -98,21 +123,21 @@ T* Column<T>::data() {
   return const_cast<T*>(const_cast<const Column<T>*>(this)->data());
 }
 
-// PtrColumn
-
 template <typename T>
 const PtrColumn<const T> Column<T>::slice(const Segment& rows) const {
-  return { info, elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
+  return { info(), elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
 }
 
 template <typename T>
 PtrColumn<T> Column<T>::slice(const Segment& rows) {
-  return { info, elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
+  return { info(), elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
 }
 
+// PtrColumn
+
 template <typename T>
-PtrColumn<T>::PtrColumn(ColumnInfo<std::decay_t<T>> columnInfo, long elementCount, T* data) :
-    Column<T>(columnInfo), m_nelements(elementCount), m_data(data) {}
+PtrColumn<T>::PtrColumn(ColumnInfo<std::decay_t<T>> info, long elementCount, T* data) :
+    Column<T>(info), m_nelements(elementCount), m_data(data) {}
 
 template <typename T>
 long PtrColumn<T>::elementCount() const {
@@ -130,15 +155,15 @@ template <typename T>
 VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {}
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> columnInfo, std::vector<T> vec) :
-    Column<T>(columnInfo), m_vec(vec) {}
+VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> vec) :
+    Column<T>(info), m_vec(vec) {}
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> columnInfo, long rowCount) :
-    Column<T>(columnInfo), m_vec(columnInfo.repeatCount * rowCount) {}
+VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> info, long rowCount) :
+    Column<T>(info), m_vec(info.repeatCount * rowCount) {}
 
 template <>
-VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount);
+VecColumn<std::string>::VecColumn(ColumnInfo<std::string> info, long rowCount);
 
 template <typename T>
 long VecColumn<T>::elementCount() const {

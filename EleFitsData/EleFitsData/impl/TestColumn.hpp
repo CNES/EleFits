@@ -70,8 +70,8 @@ RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, 
     VecColumn<std::string>({ "SCALAR", "m", 1 }, generateRandomVector<std::string>(size, min, max)) {
   for (const auto& v : vector()) {
     long currentSize = static_cast<long>(v.length() + 1); // +1 for '\0'
-    if (currentSize > info.repeatCount) {
-      info.repeatCount = currentSize;
+    if (currentSize > info().repeatCount) {
+      m_info.repeatCount = currentSize;
     }
   }
 }

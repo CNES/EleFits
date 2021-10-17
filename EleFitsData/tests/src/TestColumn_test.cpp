@@ -36,7 +36,7 @@ BOOST_FIXTURE_TEST_SUITE(TestColumn_test, Test::RandomTable)
 
 ELEFITS_FOREACH_COLUMN_TYPE(COLUMN_HAS_MORE_THAN_2_ROWS_TEST)
 
-#define PUSH_BACK_NAME(type, unused) names.push_back(getColumn<type>().info.name);
+#define PUSH_BACK_NAME(type, unused) names.push_back(getColumn<type>().info().name);
 
 BOOST_AUTO_TEST_CASE(names_are_all_different_test) {
   BOOST_TEST(std::tuple_size<decltype(columns)>::value == columnCount);

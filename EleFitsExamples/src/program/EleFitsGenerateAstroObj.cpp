@@ -53,8 +53,8 @@ void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
   PtrColumn<float> varCol({ "VAR", "erg^2", repeatCount }, bins, varData.data());
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_SIGNAL";
   const auto& ext = f.assignBintableExt(extname, wminCol, signalCol);
-  ext.columns().init(qualityCol.info);
-  ext.columns().init(varCol.info);
+  ext.columns().init(qualityCol.info());
+  ext.columns().init(varCol.info());
   ext.columns().writeSeq(qualityCol, varCol);
   ext.header().writeSeq(
       Record<float>("WMIN", 0.F),

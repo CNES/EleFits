@@ -163,7 +163,7 @@ void writeColumnChunkImpl<std::string>(
   CfitsioError::mayThrow(
       status,
       fptr,
-      "Cannot write column chunk: " + column.info.name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
+      "Cannot write column chunk: " + column.info().name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
           std::to_string(firstRow - 1) + "-" + std::to_string(firstRow - 1 + rowCount - 1) + "]");
 }
 
@@ -177,7 +177,7 @@ void readColumnSegment<std::string>(
     Fits::Column<std::string>& column) {
   std::vector<char*> data(rows.size());
   std::generate(data.begin(), data.end(), [&]() {
-    return (char*)malloc(column.info.repeatCount);
+    return (char*)malloc(column.info().repeatCount);
   });
   int status = 0;
   fits_read_col(
@@ -204,7 +204,7 @@ void writeColumn<std::string>(fitsfile* fptr, const Fits::Column<std::string>& c
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
   CStrArray array(begin, end);
-  long index = columnIndex(fptr, column.info.name);
+  long index = columnIndex(fptr, column.info().name);
   int status = 0;
   fits_write_col(
       fptr,
@@ -215,12 +215,12 @@ void writeColumn<std::string>(fitsfile* fptr, const Fits::Column<std::string>& c
       column.elementCount(), // nelements
       array.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column: " + column.info.name);
+  CfitsioError::mayThrow(status, fptr, "Cannot write column: " + column.info().name);
 }
 
 template <>
 void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::Column<std::string>& column) {
-  long index = columnIndex(fptr, column.info.name);
+  long index = columnIndex(fptr, column.info().name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
   CStrArray array(begin, end);
@@ -236,12 +236,12 @@ void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::
       column.elementCount(), // nelements
       array.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info.name);
+  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info().name);
 }
 
 template <>
 void writeColumnSegment<const std::string>(fitsfile* fptr, long firstRow, const Fits::Column<const std::string>& column) {
-  long index = columnIndex(fptr, column.info.name);
+  long index = columnIndex(fptr, column.info().name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
   CStrArray array(begin, end);
@@ -257,7 +257,7 @@ void writeColumnSegment<const std::string>(fitsfile* fptr, long firstRow, const 
       column.elementCount(), // nelements
       array.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info.name);
+  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info().name);
 }
 
 } // namespace BintableIo

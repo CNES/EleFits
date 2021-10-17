@@ -19,19 +19,27 @@
 
 #include "EleFitsData/Column.h"
 
-#include "ElementsKernel/Unused.h"
-
 namespace Euclid {
 namespace Fits {
 
+template<>
+const std::string& Column<std::string>::operator()(long row, long) const {
+  return *(data() + row);
+}
+
+template<>
+const std::string& Column<const std::string>::operator()(long row, long) const {
+  return *(data() + row);
+}
+
 template <>
-VecColumn<std::string>::VecColumn(ColumnInfo<std::string> columnInfo, long rowCount) :
-    Column<std::string>(columnInfo), m_vec(rowCount) {}
+VecColumn<std::string>::VecColumn(ColumnInfo<std::string> info, long rowCount) :
+    Column<std::string>(info), m_vec(rowCount) {}
 
 namespace Internal {
 
 template <>
-long rowCountDispatchImpl<std::string>(long elementCount, ELEMENTS_UNUSED long repeatCount) {
+long rowCountDispatchImpl<std::string>(long elementCount, long) {
   return elementCount;
 }
 

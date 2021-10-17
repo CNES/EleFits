@@ -58,9 +58,9 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
 template <typename... Ts>
 void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<Ts>&... columns) {
   constexpr long ncols = sizeof...(Ts);
-  CStrArray colName { columns.info.name... };
-  CStrArray colFormat { TypeCode<Ts>::tform(columns.info.repeatCount)... };
-  CStrArray colUnit { columns.info.unit... };
+  CStrArray colName { columns.info().name... };
+  CStrArray colFormat { TypeCode<Ts>::tform(columns.info().repeatCount)... };
+  CStrArray colUnit { columns.info().unit... };
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
@@ -88,11 +88,11 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Tupl
 template <typename T>
 void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<T>& column) {
   constexpr long columnCount = 1;
-  std::string colName = column.info.name;
+  std::string colName = column.info().name;
   char* cName = &colName[0];
-  std::string colFormat = TypeCode<T>::tform(column.info.repeatCount);
+  std::string colFormat = TypeCode<T>::tform(column.info().repeatCount);
   char* cFormat = &colFormat[0];
-  std::string colUnit = column.info.unit;
+  std::string colUnit = column.info().unit;
   char* cUnit = &colUnit[0];
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, columnCount, &cName, &cFormat, &cUnit, name.c_str(), &status);

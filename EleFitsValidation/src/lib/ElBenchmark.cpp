@@ -40,16 +40,16 @@ BChronometer::Unit ElColwiseBenchmark::writeBintable(const BColumns& columns) {
   m_chrono.start();
   const auto& ext = m_f.initBintableExt(
       "",
-      std::get<0>(columns).info,
-      std::get<1>(columns).info,
-      std::get<2>(columns).info,
-      std::get<3>(columns).info,
-      std::get<4>(columns).info,
-      std::get<5>(columns).info,
-      std::get<6>(columns).info,
-      std::get<7>(columns).info,
-      std::get<8>(columns).info,
-      std::get<9>(columns).info);
+      std::get<0>(columns).info(),
+      std::get<1>(columns).info(),
+      std::get<2>(columns).info(),
+      std::get<3>(columns).info(),
+      std::get<4>(columns).info(),
+      std::get<5>(columns).info(),
+      std::get<6>(columns).info(),
+      std::get<7>(columns).info(),
+      std::get<8>(columns).info(),
+      std::get<9>(columns).info());
   ext.writeColumn(std::get<0>(columns));
   ext.writeColumn(std::get<1>(columns));
   ext.writeColumn(std::get<2>(columns));

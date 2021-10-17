@@ -39,7 +39,7 @@ void checkScalar() {
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, FileMode::Temporary);
   file.assignBintableExt("BINEXT", input);
-  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
+  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
   BOOST_TEST(output.vector() == input.vector());
 }
 
@@ -48,12 +48,12 @@ void checkVector() {
   constexpr long rowCount = 10;
   constexpr long repeatCount = 2;
   Test::RandomScalarColumn<T> input(rowCount * repeatCount);
-  input.info.repeatCount = repeatCount;
+  input.reshape(repeatCount);
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, FileMode::Temporary);
-  file.initBintableExt("BINEXT", input.info);
+  file.initBintableExt("BINEXT", input.info());
   file.accessFirst<BintableHdu>("BINEXT").writeColumn(input);
-  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info.name);
+  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
 }
 
 /**
@@ -76,8 +76,8 @@ BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
   VecColumn<float> input0({ "COL0", "", 1 }, std::vector<float>());
   Test::RandomScalarColumn<float> input1(1);
   Test::RandomScalarColumn<float> input2(2);
-  input1.info.name = "COL1";
-  input2.info.name = "COL2";
+  input1.rename("COL1");
+  input2.rename("COL2");
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, FileMode::Temporary);
   BOOST_CHECK_NO_THROW(file.assignBintableExt("0AND1", input0, input1));
@@ -89,10 +89,10 @@ BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
 BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   const std::string name1 = "COL1";
   Test::RandomScalarColumn<std::string> column1;
-  column1.info.name = name1;
+  column1.rename(name1);
   const std::string name2 = "COL2";
   Test::RandomScalarColumn<double> column2;
-  column2.info.name = name2;
+  column2.rename(name2);
   const auto& ext = assignBintableExt("", column1, column2);
   const auto& du = ext.columns();
   BOOST_TEST(du.readColumnCount() == 2);
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto floatColumn = Test::RandomTable::generateColumn<float>("FLOAT");
   const auto& ext = assignBintableExt("", intColumn, floatColumn);
   const auto& du = ext.columns();
-  const auto byName = du.readSeq(Named<int>(intColumn.info.name), Named<float>(floatColumn.info.name));
+  const auto byName = du.readSeq(Named<int>(intColumn.info().name), Named<float>(floatColumn.info().name));
   BOOST_TEST(std::get<0>(byName).vector() == intColumn.vector());
   BOOST_TEST(std::get<1>(byName).vector() == floatColumn.vector());
   const auto byIndex = du.readSeq(Indexed<int>(0), Indexed<float>(1));

@@ -173,7 +173,7 @@ public:
   /**
    * @brief Create a column with given metadata.
    */
-  explicit Column(ColumnInfo<std::decay_t<T>> columnInfo);
+  explicit Column(ColumnInfo<std::decay_t<T>> info);
 
   /**
    * @brief Destructor.
@@ -181,9 +181,26 @@ public:
   virtual ~Column() = default;
 
   /**
-   * @name Get properties
+   * @name Get/set properties.
    */
   /// @{
+
+  /**
+   * @brief Get the column metadata.
+   */
+  const ColumnInfo<std::decay_t<T>>& info() const;
+
+  /**
+   * @brief Change the column name.
+   */
+  void rename(const std::string& name);
+
+  /**
+   * @brief Change the column repeat count (fold/unfold).
+   * @details
+   * The repeat count must be a divisor of the columns size, except for string columns.
+   */
+  void reshape(long repeatCount = 1);
 
   /**
    * @brief Number of elements in the column, i.e. repeat count * number of rows.
@@ -191,7 +208,7 @@ public:
    * For string columns, CFitsIO requires elementCount to be just the number of rows,
    * although they are vector columns.
    */
-  virtual long elementCount() const = 0;
+  virtual long elementCount() const = 0; // FIXME implement NVI
 
   /**
    * @brief Number of rows in the column.
@@ -270,11 +287,11 @@ private:
    */
   virtual const T* dataImpl() const = 0;
 
-public:
+protected: // FIXME private?
   /**
    * @brief Column metadata.
    */
-  ColumnInfo<std::decay_t<T>> info;
+  ColumnInfo<std::decay_t<T>> m_info;
 };
 
 /**
