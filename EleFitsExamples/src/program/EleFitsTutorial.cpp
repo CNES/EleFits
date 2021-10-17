@@ -158,10 +158,8 @@ TutoColumns createColumns() {
   /* Initialize and later fill a column */
 
   Fits::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
-  logger.info() << "Repeat count = " << stringColumn.info().repeatCount;
   // String columns must be wide-enough to hold each character.
   for (long i = 0; i < stringColumn.rowCount(); ++i) {
-    logger.info() << "i = " << i;
     stringColumn(i) = std::to_string(i);
   }
   // operator() takes two parameters: the row index, and repeat index (=0 by default)

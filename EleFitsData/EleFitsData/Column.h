@@ -287,7 +287,6 @@ private:
    */
   virtual const T* dataImpl() const = 0;
 
-protected: // FIXME private?
   /**
    * @brief Column metadata.
    */
