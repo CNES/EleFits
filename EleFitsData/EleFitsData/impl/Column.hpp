@@ -75,6 +75,11 @@ void Column<T>::reshape(long repeatCount) {
 }
 
 template <typename T>
+long Column<T>::elementCount() const {
+  return elementCountImpl();
+}
+
+template <typename T>
 long Column<T>::rowCount() const {
   return Internal::rowCountDispatchImpl<std::decay_t<T>>(elementCount(), m_info.repeatCount);
 }
@@ -140,7 +145,7 @@ PtrColumn<T>::PtrColumn(ColumnInfo<std::decay_t<T>> info, long elementCount, T* 
     Column<T>(info), m_nelements(elementCount), m_data(data) {}
 
 template <typename T>
-long PtrColumn<T>::elementCount() const {
+long PtrColumn<T>::elementCountImpl() const {
   return m_nelements;
 }
 
@@ -166,11 +171,6 @@ template <>
 VecColumn<std::string>::VecColumn(ColumnInfo<std::string> info, long rowCount);
 
 template <typename T>
-long VecColumn<T>::elementCount() const {
-  return m_vec.size();
-}
-
-template <typename T>
 const std::vector<T>& VecColumn<T>::vector() const {
   return m_vec;
 }
@@ -179,6 +179,11 @@ template <typename T>
 std::vector<std::decay_t<T>>& VecColumn<T>::moveTo(std::vector<std::decay_t<T>>& destination) {
   destination = std::move(m_vec);
   return destination;
+}
+
+template <typename T>
+long VecColumn<T>::elementCountImpl() const {
+  return m_vec.size();
 }
 
 template <typename T>

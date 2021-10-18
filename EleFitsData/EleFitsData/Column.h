@@ -208,7 +208,7 @@ public:
    * For string columns, CFitsIO requires elementCount to be just the number of rows,
    * although they are vector columns.
    */
-  virtual long elementCount() const = 0; // FIXME implement NVI
+  long elementCount() const;
 
   /**
    * @brief Number of rows in the column.
@@ -283,6 +283,11 @@ public:
 
 private:
   /**
+   * @brief Implementation of `elementCount()`.
+   */
+  virtual long elementCountImpl() const = 0;
+
+  /**
    * @brief Implementation of `data()`.
    */
   virtual const T* dataImpl() const = 0;
@@ -338,12 +343,12 @@ public:
    */
   PtrColumn(ColumnInfo<std::decay_t<T>> info, long elementCount, T* data);
 
-  /**
-   * @copydoc Column::elementCount()
-   */
-  long elementCount() const override;
-
 private:
+  /**
+   * @copydoc Column::elementCountImpl()
+   */
+  long elementCountImpl() const override;
+
   /**
    * @copydoc Column::dataImpl()
    */
@@ -417,11 +422,6 @@ public:
   VecColumn(ColumnInfo<std::decay_t<T>> info, long rowCount);
 
   /**
-   * @copydoc Column::elementCount()
-   */
-  long elementCount() const override;
-
-  /**
    * @brief Const reference to the vector data.
    */
   const std::vector<T>& vector() const;
@@ -445,6 +445,11 @@ public:
   std::vector<std::decay_t<T>>& moveTo(std::vector<std::decay_t<T>>& destination);
 
 private:
+  /**
+   * @copydoc Column::elementCountImpl()
+   */
+  long elementCountImpl() const override;
+
   /**
    * @copydoc Column::dataImpl()
    */
