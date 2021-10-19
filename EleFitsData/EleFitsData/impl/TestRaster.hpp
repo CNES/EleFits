@@ -37,7 +37,7 @@ bool RandomRaster<T, n>::approx(const Raster<T, n>& other, double tol) const {
 
 template <typename T, long n>
 bool rasterApprox(const Raster<T, n>& test, const Raster<T, n>& ref, double tol) {
-  if (test.shape != ref.shape) {
+  if (test.shape() != ref.shape()) {
     return false;
   }
   for (long i = 0; i < test.size(); ++i) {

@@ -41,7 +41,7 @@ BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::TemporaryMefFile
 BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   Test::SmallRaster input; // TODO RandomRaster
   const auto& primary = this->primary();
-  primary.updateShape<float, 2>(input.shape);
+  primary.updateShape<float, 2>(input.shape());
   primary.writeRaster(input);
   this->close();
   // Reopen as read-only
@@ -54,9 +54,9 @@ BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
   BOOST_TEST(this->hduCount() == 1); // 0 with CFitsIO
   Test::SmallRaster raster;
   const auto& primary = this->primary();
-  primary.updateShape<float, 2>(raster.shape);
+  primary.updateShape<float, 2>(raster.shape());
   BOOST_TEST(this->hduCount() == 1);
-  const auto& ext = this->initImageExt<float, 2>("IMG", raster.shape);
+  const auto& ext = this->initImageExt<float, 2>("IMG", raster.shape());
   BOOST_TEST(this->hduCount() == 2); // 1 with CFitsIO
   ext.writeRaster(raster);
   BOOST_TEST(this->hduCount() == 2);

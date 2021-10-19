@@ -172,14 +172,14 @@ template <typename T, long m, long n>
 void writeRegion(fitsfile* fptr, const Fits::Raster<T, m>& raster, const Fits::Position<n>& destination) {
   int status = 0;
   auto front = destination + 1;
-  Fits::Position<n> shape(destination.size()); // FIXME shape = raster.shape.extend(destination);
+  Fits::Position<n> shape(destination.size()); // FIXME shape = raster.shape().extend(destination);
   for (long i = 0; i < raster.dimension(); ++i) {
-    shape[i] = raster.shape[i];
+    shape[i] = raster.shape()[i];
   }
   for (long i = raster.dimension(); i < destination.size(); ++i) {
     shape[i] = destination[i];
   }
-  auto back = destination + shape; // = front + raster.shape - 1
+  auto back = destination + shape; // = front + raster.shape() - 1
   const auto begin = raster.data();
   const auto end = begin + raster.size();
   std::vector<std::decay_t<T>> nonconstData(begin, end); // For const-correctness issue

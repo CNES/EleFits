@@ -174,7 +174,7 @@ public:
   // /**
   //  * @brief Get the raster shape.
   //  */
-  // const Position<n>& shape() const; // FIXME for 4.0
+  const Position<n>& shape() const;
 
   /**
    * @brief Get raster domain.
@@ -345,12 +345,11 @@ private:
    */
   Subraster<T, n> subraster(const Region<n>& region); // FIXME rm?
 
-public:
   /**
    * @brief Raster shape, i.e. length along each axis.
    * @warning Will be made private and accessed through method `shape()` in 4.0
    */
-  Position<n> shape;
+  Position<n> m_shape;
 };
 
 /**

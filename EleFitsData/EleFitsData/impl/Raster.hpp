@@ -93,27 +93,32 @@ struct IndexRecursionImpl<-1, i> {
 // Raster
 
 template <typename T, long n>
-Raster<T, n>::Raster(Position<n> rasterShape) : shape(rasterShape) {}
+Raster<T, n>::Raster(Position<n> rasterShape) : m_shape(rasterShape) {}
+
+template <typename T, long n>
+const Position<n>& Raster<T, n>::shape() const {
+  return m_shape;
+}
 
 template <typename T, long n>
 Region<n> Raster<T, n>::domain() const {
-  return Region<n>::fromShape(Position<n>::zero(), shape);
+  return Region<n>::fromShape(Position<n>::zero(), m_shape);
 }
 
 template <typename T, long n>
 inline long Raster<T, n>::dimension() const {
-  return shape.size();
+  return m_shape.size();
 }
 
 template <typename T, long n>
 inline long Raster<T, n>::size() const {
-  return shapeSize(shape);
+  return shapeSize(m_shape);
 }
 
 template <typename T, long n>
 template <long i>
 inline long Raster<T, n>::length() const {
-  return std::get<i>(shape.indices);
+  return std::get<i>(m_shape.indices);
 }
 
 template <typename T, long n>
@@ -128,7 +133,7 @@ T* Raster<T, n>::data() {
 
 template <typename T, long n>
 inline long Raster<T, n>::index(const Position<n>& pos) const {
-  return Internal::IndexRecursionImpl<n>::index(shape, pos);
+  return Internal::IndexRecursionImpl<n>::index(m_shape, pos);
 }
 
 template <typename T, long n>
@@ -146,7 +151,7 @@ inline const T& Raster<T, n>::at(const Position<n>& pos) const {
   auto boundedPos = pos;
   for (long i = 0; i < dimension(); ++i) {
     auto& b = boundedPos[i];
-    const auto& s = shape[i];
+    const auto& s = m_shape[i];
     OutOfBoundsError::mayThrow("pos[" + std::to_string(i) + "]", b, { -s, s - 1 });
     if (b < 0) {
       b += s;
@@ -246,7 +251,7 @@ bool Raster<T, n>::isContiguous(const Region<n>& region) const {
   const auto f = region.front;
   const auto b = region.back;
   for (long i = 0; i < m - 1; ++i) {
-    if (f[i] != 0 || b[i] != shape[i] - 1) { // Doesn't span across the full axis => index jump
+    if (f[i] != 0 || b[i] != m_shape[i] - 1) { // Doesn't span across the full axis => index jump
       return false;
     }
   }

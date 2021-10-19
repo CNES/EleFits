@@ -56,7 +56,7 @@ ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
 
 template <typename T, long n>
 void checkRastersWithDifferentShapesDiffer(const Raster<T, n>& raster) {
-  auto shape = raster.shape;
+  auto shape = raster.shape();
   shape[0]++;
   VecRaster<T, n> other(shape);
   for (long i = 0; i < raster.size(); ++i) {
@@ -86,7 +86,7 @@ ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 
 template <typename T, long n>
 void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n>& raster) {
-  VecRaster<T, n> other(raster.shape);
+  VecRaster<T, n> other(raster.shape());
   BOOST_TEST(not Test::rasterApprox(other, raster));
   BOOST_TEST(not Test::rasterApprox(raster, other));
 }

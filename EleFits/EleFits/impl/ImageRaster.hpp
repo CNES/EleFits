@@ -89,7 +89,7 @@ void ImageRaster::readRegionToSlice(const Position<n>& frontPosition, Raster<T, 
   m_touch();
   Cfitsio::ImageIo::readRegionTo(
       m_fptr,
-      Region<n>::fromShape(frontPosition, raster.shape), // FIXME use frontPosition in ImageIo
+      Region<n>::fromShape(frontPosition, raster.shape()), // FIXME use frontPosition in ImageIo
       raster);
 }
 
@@ -111,7 +111,7 @@ void ImageRaster::write(const Raster<T, n>& raster) const {
 
 template <typename T, long m, long n>
 void ImageRaster::writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const {
-  regions.resolve(readShape<n>() - 1, raster.shape - 1);
+  regions.resolve(readShape<n>() - 1, raster.shape() - 1);
   if (raster.isContiguous(regions.memory())) {
     writeSlice(regions.file().front, raster.slice(regions.memory()));
   } else {

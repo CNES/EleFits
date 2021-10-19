@@ -202,7 +202,7 @@ void writeMefFile(const std::string& filename) {
 
   /* Initialize HDU first and write raster later */
 
-  const auto& image1 = f.initImageExt<std::int16_t, 2>("IMAGE1", rasters.int16Raster2D.shape);
+  const auto& image1 = f.initImageExt<std::int16_t, 2>("IMAGE1", rasters.int16Raster2D.shape());
   // ... do something with the extension ...
   image1.raster().write(rasters.int16Raster2D);
 

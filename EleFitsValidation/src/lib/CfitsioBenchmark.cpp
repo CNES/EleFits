@@ -49,11 +49,11 @@ void CfitsioBenchmark::close() {
 
 BChronometer::Unit CfitsioBenchmark::writeImage(const BRaster& raster) {
   m_chrono.start();
-  auto nonconstShape = raster.shape;
+  auto nonconstShape = raster.shape();
   fits_create_img(
       m_fptr,
       Cfitsio::TypeCode<BRaster::Value>::bitpix(),
-      raster.shape.size(),
+      raster.shape().size(),
       nonconstShape.data(),
       &m_status);
   mayThrow("Cannot create image HDU");

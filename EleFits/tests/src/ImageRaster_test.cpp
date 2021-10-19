@@ -49,7 +49,7 @@ void checkRasterIsReadBack() {
   Test::RandomRaster<T, 3> input({ 16, 9, 3 });
   Test::TemporarySifFile f;
   const auto& du = f.raster();
-  du.reinit<T>(input.shape);
+  du.reinit<T>(input.shape());
   du.write(input);
   const auto output = du.read<T, 3>();
   BOOST_TEST(output.vector() == input.vector());

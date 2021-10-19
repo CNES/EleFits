@@ -40,7 +40,7 @@ void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::P
 template <typename T, long n>
 void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::Raster<T, n>& raster) {
   mayThrowReadonlyError(fptr);
-  createImageExtension<T, n>(fptr, name, raster.shape);
+  createImageExtension<T, n>(fptr, name, raster.shape());
   ImageIo::writeRaster<T, n>(fptr, raster);
 }
 

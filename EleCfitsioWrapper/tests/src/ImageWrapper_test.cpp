@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile) {
   HduAccess::createImageExtension(fptr, "EXT", input);
   const auto region = Fits::Region<3>::fromShape({ 1, 0, 1 }, { 2, 3, 3 });
   const auto view = ImageIo::readRegion<long, 3>(fptr, region);
-  BOOST_TEST(view.shape == region.shape());
+  BOOST_TEST(view.shape() == region.shape());
   for (long z = 0; z < view.length<2>(); ++z) {
     for (long y = 0; y < view.length<1>(); ++y) {
       for (long x = 0; x < view.length<0>(); ++x) {
