@@ -67,7 +67,7 @@ There are three main classes:
 \subsection tuto-record Record
 
 
-A keyword record as defined in the Fits standard is a triplet of keyword, value and comment rendered in the file as:
+A keyword record as defined in the Fits standard is a triplet of keyword, value and optional comment rendered in the file as:
 \code
 KEYWORD = VALUE / comment
 \endcode
@@ -76,6 +76,8 @@ A unit can be included in the comment as follows:
 \code
 KEYWORD = VALUE / [unit] comment
 \endcode
+
+The value can be a Boolean, an integer, real or complex number, or a string.
 
 `Record` is a simple template class which merely stores those fields.
 For the purpose of the tutorial, we define a structure to hold our records:
@@ -99,7 +101,7 @@ There are two kinds of rasters:
 
 - `VecRaster` owns the data as an `std::vector`;
 - `PtrRaster` points to the data owned by another class, as a raw pointer
-  (be careful not to destroy the data while the column is alive).
+  (be careful not to destroy the data while the raster is alive).
 
 The rasters of this tutorial are stored in a dedicated structure:
 

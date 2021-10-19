@@ -23,9 +23,11 @@
 ### Other breaking changes
 
 * `SifFile::header()` returns a `Header` instead of an `Hdu`
-* `Raster.data()` and `Column.data()` are not virtual anymore:
-  they call private virtual `dataImpl()` according to the NVI idiom
-* Deprecated items are removed
+* `Raster.shape` and `Column.info` become `Raster.shape()` and `Column.info()`
+* `Raster.data()`, `Column.data()` and `Column.elementCount()` are not virtual anymore:
+  they call private virtual `dataImpl()` and `Column.elementCountImpl()` according to the NVI idiom
+* Deprecated items are removed, most notably methods of `Hdu`, `ImageHdu` and `BintableHdu`
+  which were moved to `Header`, `ImageRaster` and `BintableColumns`
 
 ## 3.2
 

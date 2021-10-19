@@ -125,6 +125,7 @@ public:
 };
 
 /**
+ * @ingroup header_data_classes
  * @brief A sequence of records of any type.
  */
 using RecordSeq = RecordVec<VariantValue>;

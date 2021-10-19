@@ -353,9 +353,8 @@ private:
 };
 
 /**
- * @brief A raster which points to some existing data.
- * @details
- * The value type parameter `T` can be const-qualified for read-only rasters.
+ * @ingroup image_data_classes
+ * @copydoc Raster
  */
 template <typename T, long n = 2>
 class PtrRaster : public Raster<T, n> {
@@ -403,6 +402,7 @@ private:
 };
 
 /**
+ * @ingroup image_data_classes
  * @copydoc Raster
  */
 template <typename T, long n = 2>
