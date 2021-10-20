@@ -219,18 +219,33 @@ Here are a few examples:
 
 \subsection tuto-write-image Write image data
 
-TODO
+Remember that we have left `IMAGE2` extension without data?
+Filling it is done through the `ImageRaster` class, accessed as `ImageHdu::raster()`.
+For example, here is how to write all the pixels at once:
 
 \snippet EleFitsTutorial.cpp Write an image
+
+Many more options are available to write data region-wise.
+They are described in details in \ref image_handlers.
 
 \see image_handlers
 
 
 \subsection tuto-write-bintable Write binary table data
 
-TODO
+Analogously to `ImageRaster` for image HDUs,
+`BintableColumns` provides read/write services for the data unit of the binary table extension.
+
+As the name implies, data is stored, read and written column-wise, as opposed to the row-major ordering of the Fits file.
+This is to avoid working with very complex structures like tuples with holes, and rather rely on `Column`, `std::vector`, arrays...
+Yet, this also means that I/Os *could* be very inefficient!
+To workaround this, several columns can be written (and read) at a time.
+In this case, I/Os are internally performed chunk-wise, using some buffer, and performances drammatically improve.
 
 \snippet EleFitsTutorial.cpp Write columns
+
+Like for image HDUs, it is possible to write the data unit only partially,
+e.g. to append rows, using richer methods of `BintableColumns`.
 
 \see bintable_handlers
 
@@ -268,7 +283,7 @@ Like for writing, you can parse several records at once:
 \see header_handlers
 
 
-\subsection tuto-read-image Read image values
+\subsection tuto-read-image Read image data
 
 
 For images, a `VecRaster` is generally instantiated, and you can access the pixel values with the subscript operator `[]`:
@@ -277,7 +292,7 @@ For images, a `VecRaster` is generally instantiated, and you can access the pixe
 
 \see image_handlers
 
-\subsection tuto-read-bintable Read binary table values
+\subsection tuto-read-bintable Read binary table data
 
 
 Once you have accessed a `BintableHdu`, you can read column-wise thanks to the `columns()` method.
