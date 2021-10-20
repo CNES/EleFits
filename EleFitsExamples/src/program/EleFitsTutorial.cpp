@@ -200,17 +200,21 @@ void writeMefFile(const std::string& filename) {
 
   logger.info("  Writing image HDUs...");
 
-  /* Initialize HDU first and write raster later */
+  /* Fill the header and data units */
 
-  const auto& image1 = f.initImageExt<std::int16_t, 2>("IMAGE1", rasters.int16Raster2D.shape());
-  // ... do something with the extension ...
-  image1.raster().write(rasters.int16Raster2D);
+  const auto& image1 = f.assignImageExt("IMAGE1", rasters.int32Raster3D);
 
-  /* Assign at creation */
+  /* Fill the header only (for now) */
 
-  const auto& image2 = f.assignImageExt("IMAGE2", rasters.int32Raster3D);
+  const auto& image2 = f.initImageExt<std::int16_t>("IMAGE2", rasters.int16Raster2D.shape());
 
   //! [Create image extensions]
+
+  //! [Write an image]
+
+  image2.raster().write(rasters.int16Raster2D);
+
+  //! [Write an image]
 
   const auto columns = createColumns();
 
@@ -218,20 +222,31 @@ void writeMefFile(const std::string& filename) {
 
   logger.info("  Writing binary table HDUs...");
 
-  /* Initialize HDU first and write columns later */
+  /* Fill the header and data units */
 
-  const auto& table1 = f.initBintableExt<std::string, int, float>(
-      "TABLE1",
+  const auto& table1 = f.assignBintableExt("TABLE1", columns.stringColumn, columns.int32Column, columns.float32Column);
+
+  /* Fill the header unit only (for now) */
+
+  const auto& table2 = f.initBintableExt(
+      "TABLE2",
       columns.stringColumn.info(),
       columns.int32Column.info(),
       columns.float32Column.info());
-  table1.columns().writeSeq(columns.stringColumn, columns.int32Column, columns.float32Column);
-
-  /* Assign at creation */
-
-  const auto& table2 = f.assignBintableExt("TABLE2", columns.stringColumn, columns.int32Column, columns.float32Column);
 
   //! [Create binary table extensions]
+
+  //! [Write columns]
+
+  /* Write a single column */
+
+  table2.columns().write(columns.stringColumn);
+
+  /* Write several columns */
+
+  table2.columns().writeSeq(columns.int32Column, columns.float32Column);
+
+  //! [Write columns]
 
   /* Write records */
 
@@ -239,8 +254,8 @@ void writeMefFile(const std::string& filename) {
 
   /* Mute "unused variable" warnings */
 
-  (void)image2;
-  (void)table2;
+  (void)image1;
+  (void)table1;
 
   // File is closed at destruction of f.
 }
@@ -263,7 +278,7 @@ void writeRecords(const Fits::Hdu& hdu) {
 
   /* Update using initialization lists */
 
-  hdu.header().writeSeq(
+  hdu.header().writeSeq<Fits::RecordMode::UpdateExisting>(
       Fits::Record<int>("INT", 1),
       Fits::Record<float>("FLOAT", 3.14159F, "", "A larger piece of Pi"),
       Fits::Record<std::complex<double>>("COMPLEX", { 180., 90. }));
@@ -364,10 +379,10 @@ void readRaster(const Fits::ImageHdu& hdu) {
 
   logger.info("  Reading a raster...");
 
-  const auto image = hdu.readRaster<std::int32_t, 3>();
+  const auto image = hdu.raster().read<std::int16_t, 2>();
 
-  const auto& firstPixel = image[{ 0, 0, 0 }];
-  const auto& lastPixel = image.at({ -1, -1, -1 });
+  const auto& firstPixel = image[{ 0, 0 }];
+  const auto& lastPixel = image.at({ -1, -1 });
   // `operator[]` performs no bound checking, while `at` does and enables backward indexing.
 
   logger.info() << "    First pixel: " << firstPixel;

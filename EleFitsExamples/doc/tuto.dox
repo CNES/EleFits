@@ -146,19 +146,20 @@ The first thing we can do is to create a new file.
 The `MefFile` class represents multi-extension Fits (MEF) files.
 It extends the `FitsFile` class, which is also the base class of `SifFile` for single-image Fits (SIF) files.
 
-Creating a file simply done with the constructor of `MefFile` (or `SifFile` for SIF files!):
+Creating (or opening) a file is simply done with the constructor of `MefFile` (or `SifFile` for SIF files!):
 
 \snippet EleFitsTutorial.cpp Create a MEF file
 
+A newly created Fits file consists in an empty Primary,
+which can then be accessed and modified, but is never created by hand.
+
 The mode parameter controls the access rights on the file.
-For example, for a read-only opening:
+For example, an existing file can be opened with read-only mode:
 
 \snippet EleFitsTutorial.cpp Open a MEF file
 
-The file is closed when the destructor of `MefFile` is called (although a `FitsFile::close()` method is provided just in case).
-
-When you open a MEF file, an empty Primary HDU is created.
-It can then be accessed and resized.
+The file is closed when the destructor of `MefFile` is called
+(although a `FitsFile::close()` method is provided for convenience).
 
 \see \ref file_handlers
 
@@ -180,7 +181,7 @@ HDUs are represented by two classes:
 
 Both derive from parent class `Hdu`.
 
-To sum up, a `MefFile` is a vector of `Hdu`s, which can be a mix of `ImageHdu`s and `BintalbleHdu`s.
+To sum up, a `MefFile` is a vector of `Hdu`s, which can be a mix of `ImageHdu`s and `BintableHdu`s.
 
 There are two kinds of services in `MefFile` for creating extensions:
 They can be either initialized with header only or assigned directly with data.
@@ -202,11 +203,36 @@ Records are read and written through a `Header` object,
 which is accessible from an `ImageHdu` or a `BintableHdu`
 as `header()`.
 They can be written and updated one-by-one or by sequences.
-There are many ways of doing so; here are a few examples:
+
+An optional template parameter controls the write policy,
+e.g. what to do if the given keyword already exists.
+By default, a record is created if the keyword doesn't exists,
+or updated if the keyword already exists.
+
+Record writing functions have different overloards to allow calling them in different ways.
+Here are a few examples:
 
 \snippet EleFitsTutorial.cpp Write records
 
-\see header_data_classes
+\see header_handlers
+
+
+\subsection tuto-write-image Write image data
+
+TODO
+
+\snippet EleFitsTutorial.cpp Write an image
+
+\see image_handlers
+
+
+\subsection tuto-write-bintable Write binary table data
+
+TODO
+
+\snippet EleFitsTutorial.cpp Write columns
+
+\see bintable_handlers
 
 
 \section tuto-read Read a MEF file
