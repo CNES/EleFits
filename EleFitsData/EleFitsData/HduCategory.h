@@ -85,6 +85,9 @@ protected:
   };
 
 public:
+  /**
+   * @brief The exception thrown when trying to combine incompatible trits.
+   */
   struct IncompatibleTrits : public FitsError {
     IncompatibleTrits() : FitsError("Cannot combine incompatible trits.") {}
   };
@@ -206,7 +209,7 @@ private:
 
 public:
   /* Basic categories */
-  static const HduCategory Any; //< Any HDU
+  static const HduCategory Any; ///< Any HDU
   static const HduCategory Image; ///< Image HDU
   static const HduCategory Primary; ///< Primary image HDU
   static const HduCategory Metadata; ///< HDU without data

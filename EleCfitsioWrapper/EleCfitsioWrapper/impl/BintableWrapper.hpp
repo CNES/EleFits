@@ -316,6 +316,10 @@ void writeColumn(fitsfile* fptr, const Fits::Column<T>& column) {
  */
 template <>
 void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::Column<std::string>& column);
+
+/**
+ * @brief Const string specialization.
+ */
 template <>
 void writeColumnSegment<const std::string>(fitsfile* fptr, long firstRow, const Fits::Column<const std::string>& column);
 

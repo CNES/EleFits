@@ -34,6 +34,7 @@ namespace Test {
  * Tests on image HDUs are not supported (use ElBenchmark instead).
  */
 class ElColwiseBenchmark : public Benchmark {
+
 public:
   /**
    * @brief Destructor.
@@ -43,7 +44,7 @@ public:
   /**
    * @brief Constructor.
    */
-  ElColwiseBenchmark(const std::string& filename);
+  explicit ElColwiseBenchmark(const std::string& filename);
 
   /**
    * @brief Open file.
@@ -70,11 +71,16 @@ public:
   virtual BColumns readBintable(long index) override;
 
 protected:
+  /**
+   * @brief The type and index of the i-th column.
+   */
   template <long i>
   Indexed<typename std::tuple_element<i, BColumns>::type::Value> colIndexed() const;
 
 protected:
-  /** @brief The MEF file handler. */
+  /**
+   * @brief The MEF file handler.
+   */
   MefFile m_f;
 };
 
@@ -82,6 +88,7 @@ protected:
  * @brief Standard EleFits.
  */
 class ElBenchmark : public ElColwiseBenchmark {
+
 public:
   /**
    * @brief Destructor.
@@ -91,7 +98,7 @@ public:
   /**
    * @brief Constructor.
    */
-  ElBenchmark(const std::string& filename);
+  explicit ElBenchmark(const std::string& filename);
 
   /**
    * @copybrief Benchmark::writeImage
