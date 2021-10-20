@@ -1,4 +1,4 @@
 #!groovy
 @Library('integration-library@release-8') _
-pipelineElements(artifactId:"EleFits", groupId="EL", component:'eden.2.1', repository:'eden.2.1')
+pipelineElements(artifactId:"EleFits", groupId:"EL", component:'eden.2.1', repository:'eden.2.1')
 
