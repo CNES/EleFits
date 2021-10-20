@@ -253,7 +253,6 @@ public:
   /**
    * @brief Read the segment of a column specified by its name.
    * @param rows The included lower and upper bounds of the row indices to be read
-   * @param firstRow The lower bound of the row indices to be read
    * @param name The name of the column to be read
    * @param index The 0-based index of the column to be read
    * @param column The preexisting `Column` to be filled
@@ -539,7 +538,7 @@ public:
 
   /**
    * @brief Write a sequence of segments.
-   * @param firstRow The destination row of the first element of each column, or -1 to append
+   * @param rows The mapping between the in-file and in-memory rows
    * @param columns The columns to be written
    * Segments can be written in already initialized columns with `writeSegmentSeq()`
    * or in new columns with `appendSegmentSeq()`.
@@ -548,8 +547,7 @@ public:
   void writeSegmentSeq(FileMemSegments rows, TSeq&& columns) const;
 
   /**
-   * @brief Write a sequence of segments.
-   * @copydetails writeSegmentSeq
+   * @copydoc writeSegmentSeq
    */
   template <typename... Ts>
   void writeSegmentSeq(FileMemSegments rows, const Column<Ts>&... columns) const;

@@ -47,6 +47,7 @@ enum class RecordMode
 
 /**
  * @ingroup header_handlers
+ * 
  * @brief Reader-writer for the header unit.
  * 
  * @details
@@ -108,6 +109,8 @@ public:
   /**
    * @brief List keywords.
    * 
+   * @param categories The set of selected categories
+   * 
    * @details
    * Read or parse keywords or records
    * depending on their categories: mandatory, reserved, user, or comment.
@@ -126,15 +129,15 @@ public:
    * \endcode
    * where `h` is a `Header`.
    * 
-   * @param categories The set of selected categories
-   * 
    * @see KeywordCategory
    */
   std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief List keywords and their values.
+   * 
    * @copydetails readKeywords()
+   * 
    * @warning
    * If several records have the same keywords, the returned value is a line break-separated list.
    */
@@ -142,7 +145,6 @@ public:
 
   /**
    * @brief Read the whole header as a single string.
-   * @copydetails readKeywords()
    * @param categories Either `KeywordCategory::All`, or `~KeywordCategory::Comment` to skip COMMENT and HISTORY records
    */
   std::string readAll(KeywordCategory categories = KeywordCategory::All) const;
@@ -167,6 +169,12 @@ public:
   bool has(const std::string& keyword) const;
 
   /**
+   * @brief Parse a record.
+   * 
+   * @tparam T The record value type
+   * @param keyword The record keyword
+   * @param fallback The fallback record, keyword of which is looked for
+   * 
    * @details
    * There are two ways to parse a record: with or without a fallback,
    * that is, a record which is returned if the specified keyword is not found in the header.
@@ -192,14 +200,6 @@ public:
    * }
    * \endcode
    * where `h` is a `Header`.
-   * 
-   * @tparam T The record value type
-   * @param keyword The record keyword
-   * @param fallback The fallback record, keyword of which is looked for
-   */
-
-  /**
-   * @brief Parse a record.
    */
   template <typename T>
   Record<T> parse(const std::string& keyword) const;
@@ -228,6 +228,14 @@ public:
   /// @{
 
   /**
+   * @brief Parse a sequence of homogeneous records.
+   * 
+   * @tparam T The record value type for homogeneous sequences (automatically deduced with fallbacks)
+   * @tparam Ts... The record value types for heterogeneous sequences (automatically deduced with fallbacks)
+   * @tparam TSeq The record sequence type (automatically deduced)
+   * @param keywords The keywords
+   * @param fallbacks The fallback records, keywords of which are looked for
+   * 
    * @details
    * Like for single record reading, there are two ways to parse a sequence of records:
    * with or without fallbacks.
@@ -262,16 +270,6 @@ public:
    * // Variadic to std::tuple
    * auto tuple = h.parseSeqOr(Record<int>("INT", 0), Record<float>("FLOAT", 3.14));
    * \endcode
-   * 
-   * @tparam T The record value type for homogeneous sequences (automatically deduced with fallbacks)
-   * @tparam Ts... The record value types for heterogeneous sequences (automatically deduced with fallbacks)
-   * @tparam TSeq The record sequence type (automatically deduced)
-   * @param keywords The keywords
-   * @param fallbacks The fallback records, keywords of which are looked for
-   */
-
-  /** 
-   * @brief Parse a sequence of homogeneous records.
    */
   template <typename T = VariantValue>
   RecordVec<T> parseSeq(const std::vector<std::string>& keywords) const;
@@ -305,6 +303,10 @@ public:
 
   /**
    * @brief Parse a sequence of records.
+   * 
+   * @tparam TOut The return type
+   * @tparam Ts... The desired record value types (automatically deduced)
+   * @tparam TSeq The record sequence type (automatically deduced)
    * 
    * @details
    * Several methods are provided to return records or record values as a user-defined structure,
@@ -353,10 +355,6 @@ public:
    * std::cout << "Hello, " << body.name << "!" << std::endl;
    * std::cout << "Your BMI is: " << body.bmi() << std::endl;
    * \endcode
-   * 
-   * @tparam TOut The return type
-   * @tparam Ts... The desired record value types (automatically deduced)
-   * @tparam TSeq The record sequence type (automatically deduced)
    */
   template <typename TOut, typename... Ts>
   TOut parseStruct(const Named<Ts>&... keywords) const;
@@ -382,6 +380,12 @@ public:
   /// @{
 
   /**
+   * @brief Write a record.
+   * 
+   * @tparam Mode The write mode
+   * @tparam T The record value type (automatically deduced)
+   * @param record The record to be written
+   * 
    * @details
    * Methods to write records may have different behaviors,
    * according to the template parameter `Mode`.
@@ -397,15 +401,7 @@ public:
    * \endcode
    * where `h` is a `Header` and `record` is a `Record<T>`.
    * 
-   * @tparam Mode The write mode
-   * @tparam T The record value type (automatically deduced)
-   * @param record The record to be written
-   * 
    * @see RecordMode
-   */
-
-  /**
-   * @brief Write a record.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename T>
   void write(const Record<T>& record) const;
@@ -429,6 +425,15 @@ public:
   /// @{
 
   /**
+   * @brief Write a homogeneous sequence of records.
+   * 
+   * @tparam Mode The write mode
+   * @tparam T The record value type for homogeneous sequences (automatically deduced)
+   * @tparam Ts... The record value types for heterogeneous sequences (automatically deduced)
+   * @tparam TSeq The sequence type (automatically deduced)
+   * @param records The sequence of records
+   * @param keywords The selection to be written
+   * 
    * @details
    * Several methods allow write a sequence of records or subset of sequence of records.
    * Analogously to `write()`, template parameter `Mode` controls the writing behavior,
@@ -448,18 +453,7 @@ public:
    * where `h0`, `h1`, `h2` are headers of different HDUs and `records` is a sequence of records,
    * like a `RecordSeq`.
    * 
-   * @tparam Mode The write mode
-   * @tparam T The record value type for homogeneous sequences (automatically deduced)
-   * @tparam Ts... The record value types for heterogeneous sequences (automatically deduced)
-   * @tparam TSeq The sequence type (automatically deduced)
-   * @param records The sequence of records
-   * @param keywords The selection to be written
-   * 
    * @see RecordMode
-   */
-
-  /**
-   * @brief Write a homogeneous sequence of records.
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeSeq(const Record<Ts>&... records) const;

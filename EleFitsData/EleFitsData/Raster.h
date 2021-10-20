@@ -171,9 +171,9 @@ public:
    */
   /// \{
 
-  // /**
-  //  * @brief Get the raster shape.
-  //  */
+  /**
+   * @brief Get the raster shape.
+   */
   const Position<n>& shape() const;
 
   /**
@@ -494,6 +494,7 @@ private:
  * @tparam T The pixel type, should not be specified (automatically deduced)
  * @tparam Longs The raster shape (automatically deduced)
  * @param data The raster values, which can be either a pointer (or array) or a vector
+ * @param shape The shape as a comma-separated list of `long`s
  * @details
  * Example usages:
  * \code

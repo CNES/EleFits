@@ -134,10 +134,8 @@ public:
    * @tparam m The desired raster dimension, which can be smaller than the data dimension in file
    * @tparam n The region dimension, which corresponds to the data dimension in file
    * @param region The in-file region
-   * @param regions The in-memory and in-file regions
-   * @param frontPosition The in-file region front position
+   * @param regions The in-file and in-memory regions
    * @param raster The destination raster
-   * @param subraster The destination subraster
    * @details
    * There are several options to read a region of the data unit:
    * - as a new `VecRaster` object;
@@ -213,12 +211,7 @@ public:
   template <typename T, long m, long n>
   void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const; // FIXME return bool = isContiguous()?
 
-  /**
-   * @brief Write a `Subraster` at a corresponding position of the data unit.
-   * @copydetails writeRegion()
-   */
-  template <typename T, long n>
-  void writeRegion(const Subraster<T, n>& subraster) const;
+  /// @}
 
 private:
   /**
@@ -255,12 +248,17 @@ private:
   void writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const;
 
   /**
+   * @brief Write a `Subraster` at a corresponding position of the data unit.
+   * @copydetails writeRegion()
+   */
+  template <typename T, long n>
+  void writeRegion(const Subraster<T, n>& subraster) const;
+
+  /**
    * @brief Write a `Subraster` at a given position of the data unit.
    */
   template <typename T, long m, long n>
   void writeSubraster(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const;
-
-  /// @}
 
 private:
   /**

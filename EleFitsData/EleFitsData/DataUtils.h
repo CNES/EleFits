@@ -173,6 +173,7 @@ template <typename T, std::size_t n>
 struct IsTupleImpl<std::array<T, n>> : public std::true_type {};
 
 } // namespace Internal
+/// @endcond
 
 template <typename TSeq>
 constexpr bool isTuple() {

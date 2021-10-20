@@ -94,7 +94,7 @@ are instantiated by `BintableHdu::columns()` and `BintableHdu::rows()`.
 All of this is represented in the following class diagram.
 Again, many services are hidden for the sake of synthesis.
 
-\image html doc/diagrams/out/MefFile.png
+\image html doc/diagrams/out/FitsFile.png
 
 
 \section handlers-sif Single image Fits
@@ -117,8 +117,6 @@ For comparison with `MefFile`, here is are much simplified tree view and class d
 - access the data unit as `ImageRaster`
   - read pixels
   - write pixels
-
-\image html doc/diagrams/out/SifFile.png
 
 
 \section handlers-wrapup Wrap-up

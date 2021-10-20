@@ -5,17 +5,23 @@ namespace Fits {
 
 \page design Software design
 
+
 \tableofcontents
 
+
 \section design-purpose Purpose and scope
+
 
 The purpose of this page is to describe the internal implementation of EleFits.
 Usage of the API is described in the main pages of this documentation.
 When implementation and usage are titghly coupled, links are provided to get the user point-of-view.
 
+
 \section design-overview Library organization
 
+
 \subsection design-layers Layers
+
 
 The package is split in two layers:
 
@@ -31,7 +37,9 @@ which consists in C++ wrapper functions of selected CFitsIO functions, not inten
   - Templates wrap the CFitsIO type codes,
   - Exceptions wrap the CFitsIO error codes.
 
+
 \subsection design-namespace Namespaces
+
 
 The API is organized in namespaces as follows:
 
@@ -43,7 +51,9 @@ The API is organized in namespaces as follows:
   - `Fits::Test` contains test helper classes and functions like fixtures;
 - Whatever the level, `Internal` namespaces contain implementation details, not displayed to the end-user.
 
+
 \subsection design-modules Modules
+
 
 This translates into the following set of modules:
 
@@ -72,7 +82,9 @@ The general organization of the free functions, data classes and service classes
 
 \image html doc/diagrams/out/ClassOverview.png
 
+
 \subsection design-sources Source files
+
 
 Inside each module, the source files are organized as follows:
 
@@ -82,12 +94,15 @@ Inside each module, the source files are organized as follows:
 - Tests are implemented in the folder `tests/src`, in files with `_test` suffix and `.cpp` extension;
 - The programs are implemented in `.cpp` files in the folder `src/program`.
 
+
 \section design-types Type codes
+
 
 \subsection design-types-overview Overview
 
+
 Simple things first:
-- Indices and lengths are implemented as `long`s instead of `std::size_t`s (see \ref data-types rationale).
+- Indices and lengths are implemented as `long`s instead of `std::size_t`s (see \ref types rationale).
 - Strings are generally handled as `std::string`; additionally, a few shortcuts with `const char *` are provided;
 In the latter case, a `std::string` version is still provided.
 
@@ -99,12 +114,14 @@ Check the \ref type_map for more details.
 This makes the user responsible of knowing the underlying architecture,
 or to spend runtime in conversions at each reading and writing operation.
 
+
 \subsection design-types-codes Type code handling
+
 
 One of the main purposes of EleFits is to abstract from type codes, and to provide homogeneous template functions.
 This is implemented as type traits in class `Cfitsio::TypeCode`, which provides one method per column of the \ref type_map.
 Template specialization are made with built-in types or fixed types depending on what the CFitsIO functions expect.
-For example, `TSHORT` is `Cfitsio::TypeCode<short>::forImage()` and `SHORT_IMG` is `Cfitsio::TypeCode<std::int16_t>::bitpix()`.
+For example, `TSHORT` is `TypeCode<short>::forImage()` and `SHORT_IMG` is `TypeCode<std::int16_t>::bitpix()`.
 
 \note
 Internally, CFitsIO does the opposite when working with built-in types:
@@ -114,7 +131,9 @@ and avoid casting fixed types to built-ins and back.
 Yet, the runtime benefit is expected to be minimal for such a costly development effort
 (see benchmark results).
 
+
 \subsection design-types-string Specific types: strings
+
 
 As stated above, strings are represented with `std::string`, while CFitsIO is using `const char *` or even `char *`.
 Most of the template functions are therefore specialized for `std::string`.
@@ -128,7 +147,9 @@ This must be done carefully to keep the memory clean.
 A class dedicated to the transform is implemented: `CStrArray`,
 which can be built from a sequence of strings and has a getter which returns a `char **`.
 
+
 \subsection design-types-any Specific types: variant values
+
 
 Another specific type is `VariantValue`, which is an alias for `boost::any` as of today (see note below).
 It was added to the library to handle large sets of heterogeneous records.
@@ -148,7 +169,9 @@ A welcome improvement would be to switch from `boost::any` to `boost::variant` o
 This would allow relying on compile-time dispatch (visitor pattern) instead of runtime dispatch (switches).
 This is the role of Fits::Record::cast.
 
+
 \section design-variadic Variadic templates
+
 
 Reading and writing collections of heterogeneous objects, like columns of different types, requires using variadic templates
 (or abstraction classes like `VariantValue` which cost too much for thousands of values).
@@ -162,7 +185,9 @@ Variatic template design patterns to be documented:
 - use of forward and forward_as_tuple
 - seqForeach() and seqTransform()
 
-\section design-data_classes Data classes
+
+\section design-data-classes Data classes
+
 
 Data classes are `Record`, `Raster`, `Column` and their child or helper classes (e.g. `ColumnInfo`).
 
@@ -173,7 +198,9 @@ Theycome with two flavors:
 - `PtrRaster` and `PtrColumn` do not own the raw data array: they just now a pointer to it;
 - `VecRaster` and `VecColumn` own the data: such objects are returned by read services.
 
+
 \section design-handlers File handlers
+
 
 File operations to be documented.
 
@@ -182,7 +209,9 @@ Vector of HDUs to be documented.
 Nested classes are generally avoided, in order to simplify name resolution.
 The passkey idiom is preferred, to make constructors private.
 
+
 \section design-hdu-handlers HDU handlers
+
 
 To be documented:
 - Handling of HDUs through vector of pointers

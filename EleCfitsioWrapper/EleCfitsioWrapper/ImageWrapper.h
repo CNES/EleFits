@@ -117,7 +117,7 @@ void writeRegion(fitsfile* fptr, const Fits::Raster<T, m>& raster, const Fits::P
 /**
  * @brief Write a subraster into a region of the current image HDU.
  * @param subraster The subraster to be written
- * @param region The destination position (size is deduced from subraster size)
+ * @param destination The destination position (size is deduced from subraster size)
  */
 template <typename T, long m, long n>
 void writeRegion(fitsfile* fptr, const Fits::Subraster<T, n>& subraster, const Fits::Position<n>& destination);
