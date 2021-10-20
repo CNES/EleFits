@@ -91,9 +91,9 @@ void readColumns(const Fits::BintableHdu& hdu);
 
 TutoRecords createRecords() {
 
-  //! [Create records]
-
   logger.info("  Creating records...");
+
+  //! [Create records]
 
   /* Create a record with unit and comment */
 
@@ -119,9 +119,9 @@ TutoRecords createRecords() {
 
 TutoRasters createRasters() {
 
-  //! [Create rasters]
-
   logger.info("  Creating rasters...");
+
+  //! [Create rasters]
 
   /* Initialize and later fill a raster */
 
@@ -151,9 +151,9 @@ TutoRasters createRasters() {
 
 TutoColumns createColumns() {
 
-  //! [Create columns]
-
   logger.info("  Creating columns...");
+
+  //! [Create columns]
 
   /* Initialize and later fill a column */
 
@@ -186,9 +186,9 @@ TutoColumns createColumns() {
 
 void writeMefFile(const std::string& filename) {
 
-  //! [Create a MEF file]
-
   logger.info("Creating a MEF file...");
+
+  //! [Create a MEF file]
 
   Fits::MefFile f(filename, Fits::FileMode::Create);
 
@@ -196,9 +196,9 @@ void writeMefFile(const std::string& filename) {
 
   const auto rasters = createRasters();
 
-  //! [Create image extensions]
-
   logger.info("  Writing image HDUs...");
+
+  //! [Create image extensions]
 
   /* Fill the header and data units */
 
@@ -218,9 +218,9 @@ void writeMefFile(const std::string& filename) {
 
   const auto columns = createColumns();
 
-  //! [Create binary table extensions]
-
   logger.info("  Writing binary table HDUs...");
+
+  //! [Create binary table extensions]
 
   /* Fill the header and data units */
 
@@ -264,9 +264,9 @@ void writeRecords(const Fits::Hdu& hdu) {
 
   const auto records = createRecords();
 
-  //! [Write records]
-
   logger.info("  Writing records...");
+
+  //! [Write records]
 
   /* Write a single record */
 
@@ -292,36 +292,40 @@ void writeRecords(const Fits::Hdu& hdu) {
 
 void readMefFile(const std::string& filename) {
 
-  //! [Open a MEF file]
-
   logger.info("Reading the MEF file...");
+
+  //! [Open a MEF file]
 
   Fits::MefFile f(filename, Fits::FileMode::Read);
 
   //! [Open a MEF file]
 
-  //! [Access HDUs]
-
   logger.info("  Accessing HDUs...");
+
+  //! [Access HDUs]
 
   /* Access the Primary HDU */
 
   const auto& primary = f.primary();
-  logger.info() << "    Primary index: " << primary.index();
+  const auto primaryIndex = primary.index();
   // Indices are 0-based.
 
   /* Access an HDU by its index */
 
   const auto& image2 = f.access<Fits::ImageHdu>(2);
-  logger.info() << "    Name of the second extension: " << image2.readName();
+  const auto imageName = image2.readName();
 
   /* Access an HDU by its name */
 
   const auto& table1 = f.accessFirst<Fits::BintableHdu>("TABLE1");
+  const auto tableIndex = table1.index();
   // If several HDUs have the same name, the first one is returned.
-  logger.info() << "    Index of the 'TABLE1' extension: " << table1.index();
 
   //! [Access HDUs]
+
+  logger.info() << "    Primary index: " << primaryIndex;
+  logger.info() << "    Name of the second extension: " << imageName;
+  logger.info() << "    Index of the 'TABLE1' extension: " << tableIndex;
 
   readRecords(primary);
   readRaster(image2);
@@ -330,54 +334,55 @@ void readMefFile(const std::string& filename) {
 
 void readRecords(const Fits::Hdu& hdu) {
 
-  //! [Read records]
-
   logger.info("  Reading records...");
+
+  //! [Read records]
 
   /* Read a single record */
 
-  auto intRecord = hdu.header().parse<int>("INT");
-  logger.info() << "    " << intRecord.keyword << " = " << intRecord.value << " " << intRecord.unit;
+  const auto intRecord = hdu.header().parse<int>("INT");
 
   // Records can be sliced as their value for immediate use:
-  int intValue = hdu.header().parse<int>("INT");
-  logger.info() << "    INT value: " << intValue;
+  const int intValue = hdu.header().parse<int>("INT");
 
   /* Read several records */
 
-  auto someRecords = hdu.header().parseSeq(
+  const auto someRecords = hdu.header().parseSeq(
       Fits::Named<std::string>("STRING"),
       Fits::Named<int>("INT"),
       Fits::Named<float>("FLOAT"),
       Fits::Named<std::complex<double>>("COMPLEX"));
-  auto thirdRecord = std::get<2>(someRecords);
-  logger.info() << "    " << thirdRecord.keyword << " = " << thirdRecord.value << " " << thirdRecord.unit;
+  const auto& thirdRecord = std::get<2>(someRecords);
 
   /* Read as VariantValue */
 
-  auto variantRecords = hdu.header().parseSeq<>({ "INT", "COMPLEX" });
-  auto complexRecord = variantRecords.as<std::complex<double>>("COMPLEX");
-  logger.info() << "    " << complexRecord.keyword << " = " << complexRecord.value.real() << " + "
-                << complexRecord.value.imag() << "j " << complexRecord.unit;
+  const auto variantRecords = hdu.header().parseSeq<>({ "INT", "COMPLEX" });
+  const auto complexRecord = variantRecords.as<std::complex<double>>("COMPLEX");
 
   /* Read as a user-defined structure */
 
-  auto tutoRecords = hdu.header().parseStruct<TutoRecords>(
+  const auto tutoRecords = hdu.header().parseStruct<TutoRecords>(
       Fits::Named<std::string>("STRING"),
       Fits::Named<int>("INT"),
       Fits::Named<float>("FLOAT"),
       Fits::Named<std::complex<double>>("COMPLEX"));
-  auto stringRecord = tutoRecords.stringRecord;
-  logger.info() << "    " << stringRecord.keyword << " = " << stringRecord.value << " " << stringRecord.unit;
+  const auto& stringRecord = tutoRecords.stringRecord;
 
   //! [Read records]
+
+  logger.info() << "    " << intRecord.keyword << " = " << intRecord.value << " " << intRecord.unit;
+  logger.info() << "    INT value: " << intValue;
+  logger.info() << "    " << thirdRecord.keyword << " = " << thirdRecord.value << " " << thirdRecord.unit;
+  logger.info() << "    " << complexRecord.keyword << " = " << complexRecord.value.real() << " + "
+                << complexRecord.value.imag() << "j " << complexRecord.unit;
+  logger.info() << "    " << stringRecord.keyword << " = " << stringRecord.value << " " << stringRecord.unit;
 }
 
 void readRaster(const Fits::ImageHdu& hdu) {
 
-  //! [Read a raster]
-
   logger.info("  Reading a raster...");
+
+  //! [Read a raster]
 
   const auto image = hdu.raster().read<std::int16_t, 2>();
 
@@ -385,17 +390,17 @@ void readRaster(const Fits::ImageHdu& hdu) {
   const auto& lastPixel = image.at({ -1, -1 });
   // `operator[]` performs no bound checking, while `at` does and enables backward indexing.
 
+  //! [Read a raster]
+
   logger.info() << "    First pixel: " << firstPixel;
   logger.info() << "    Last pixel: " << lastPixel;
-
-  //! [Read a raster]
 }
 
 void readColumns(const Fits::BintableHdu& hdu) {
 
-  //! [Read columns]
-
   logger.info("  Reading columns...");
+
+  //! [Read columns]
 
   /* Read a single column */
 
@@ -413,13 +418,17 @@ void readColumns(const Fits::BintableHdu& hdu) {
 
   /* Use values */
 
-  logger.info() << "    First string: " << stringColumn(0);
-  logger.info() << "    First int: " << intColumn(0);
-  logger.info() << "    Last float: " << vectorColumn.at(-1, -1);
-  // There is no `operator[]` for columns, because vector columns require 2 indices (row and repeat).
-  // `operator()` performs no bound checking, while `at` does and enables backward indexing.
+  const auto& firstString = stringColumn(0);
+  const auto& firstInt = intColumn(0);
+  const auto& lastFloat = vectorColumn.at(-1, -1);
+  // There is no operator[]() for columns, because vector columns require 2 indices (row and repeat).
+  // operator()() performs no bound checking, while at() does and enables backward indexing.
 
   //! [Read columns]
+
+  logger.info() << "    First string: " << firstString;
+  logger.info() << "    First int: " << firstInt;
+  logger.info() << "    Last float: " << lastFloat;
 }
 
 //////////////
@@ -437,7 +446,7 @@ public:
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
 
-    const std::string filename = args["output"].as<std::string>();
+    const auto filename = args["output"].as<std::string>();
 
     logger.info() << "---";
     logger.info() << "Hello, EleFits " << Fits::version() << "!";

@@ -20,34 +20,34 @@ class FitsFile {
 }
 
 class SifFile {
-+ header() : Header
-+ raster() : ImageRaster
++ header() : Header&
++ raster() : ImageRaster&
 + verifyChecksums()
 + updateChecksums()
 }
 
 class MefFile {
 + hduCount() : long
-+ access(string) : Hdu
-+ access(long) : Hdu
-+ assignImageExt(string, Raster) : ImageHdu
-+ assignBintableExt(string, Column...) : BintableHdu
++ access(long) : Hdu&
++ accessFirst(string) : Hdu&
++ assignImageExt(string, Raster) : ImageHdu&
++ assignBintableExt(string, Column...) : BintableHdu&
 }
 
 class Hdu {
 + index() : long
 + name() : string
-+ header() : Header
++ header() : Header&
 + verifyChecksums()
 + updateChecksums()
 }
 
 class ImageHdu {
-+ raster() : ImageRaster
++ raster() : ImageRaster&
 }
 
 class BintableHdu {
-+ columns() : BintableColumns
++ columns() : BintableColumns&
 }
 
 class Header {

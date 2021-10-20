@@ -10,58 +10,57 @@ Raster <|-- PtrRaster
 Position -* Raster
 
 class Position<n> {
-+ indices
++ indices : long[]
 }
 
 abstract class Raster<T, n> {
-+ shape()
-+ length<axis>()
-+ size()
-+ {abstract} data()
-+ operator[](position)
-+ index(position)
++ shape() : Position<n>
++ size() : long
++ {abstract} data() : T*
++ operator[](Position) : T&
++ index(Position) : long
 }
 
 class VecRaster<T, n> {
-- m_vec
-+ data()
-+ vector()
+- m_vec : vector<T>
++ data() : T*
++ vector() : vector<T>&
 }
 
 class PtrRaster<T, n> {
-- m_data
-+ data()
+- m_data : T*
++ data() : T*
 }
 
 class Record<T> {
-+ keyword
-+ value
-+ unit
-+ comment
++ keyword : string
++ value : T
++ unit : string
++ comment : string
 }
 
 class ColumnInfo<T> {
-+ name
-+ unit
-+ repeatCount
++ name : string
++ unit : string
++ repeatCount : long
 }
 
 abstract class Column<T> {
-+ info
-+ {abstract} data()
-+ elementCount()
-+ rowCount()
++ info : ColumnInfo<T>
++ {abstract} data() : T*
++ elementCount() : long
++ rowCount() : long
 }
 
 class VecColumn<T> {
-- m_vec
-+ data()
-+ vector()
+- m_vec : vector<T>
++ data() : T*
++ vector() : vector<T>&
 }
 
 class PtrColumn<T> {
-- m_data
-+ data()
+- m_data : T*
++ data() : T*
 }
 
 }
