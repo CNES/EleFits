@@ -25,10 +25,6 @@
 namespace Euclid {
 namespace Fits {
 
-template <typename T>
-ColumnInfo<T>::ColumnInfo(const std::string& columnName, const std::string& columnUnit, long columnRepeatCount) :
-    name(columnName), unit(columnUnit), repeatCount(columnRepeatCount) {}
-
 /// @cond INTERNAL
 namespace Internal {
 

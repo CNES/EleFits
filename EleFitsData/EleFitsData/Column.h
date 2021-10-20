@@ -121,11 +121,6 @@ struct ColumnInfo {
   using Value = T;
 
   /**
-   * @brief Constructor.
-   */
-  ColumnInfo(const std::string& columnName, const std::string& columnUnit = "", long columnRepeatCount = 1);
-
-  /**
    * @brief Column name.
    */
   std::string name;
@@ -133,7 +128,7 @@ struct ColumnInfo {
   /**
    * @brief Column unit.
    */
-  std::string unit;
+  std::string unit = "";
 
   /**
    * @brief Repeat count of the column, i.e., number of values per cell.
@@ -144,7 +139,7 @@ struct ColumnInfo {
    * Their repeat count must be greater or equal to the longest string of the column
    * including the `\0` character.
    */
-  long repeatCount;
+  long repeatCount = 1;
 };
 
 // Forward declaration for Column::slice()
