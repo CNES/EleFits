@@ -26,7 +26,7 @@ git clone https://github.com/astrorama/Elements.git
 cd Elements
 git checkout 5.12.0
 mkdir build ; cd build
-cmake ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 sudo make install
 ```
 
@@ -37,11 +37,11 @@ cd <root>
 git clone https://github.com/cnes/EleFits.git
 cd EleFits
 mkdir build ; cd build
-cmake -DCMAKE_PREFIX_PATH=/usr/local ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local ..
 sudo make install
 ```
 
-This will install the the set of libraries in `/usr/local/lib`, headers in `/usr/local/include`, and executables in `/usr/local/bin`.
+This will install the the set of libraries in `/usr/local/lib` (or `usr/local/lib64`), headers in `/usr/local/include`, and executables in `/usr/local/bin`.
 The end-user library is named EleFits, while the low-level API is named EleCfitsioWrapper.
 
 ## Configure a project to depend on EleFits
@@ -92,7 +92,20 @@ Here's an example to build the project:
 
 ```xml
 cd <root>/<project_name>
-mkdir build
-cd build
+mkdir build ; cd build
 cmake -DCMAKE_MODULE_PATH=<root>/EleFits/cmake/modules ..
+make
+```
+
+Note that, to run executables, the EleFits library has to be in the library path.
+This can be done, for example, with:
+
+```xml
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64
+```
+
+which can be added to the `.bashrc`, e.g.:
+
+```xml
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64' >> ~/.bashrc
 ```
