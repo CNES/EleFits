@@ -53,9 +53,20 @@ struct Position {
    */
   using Indices = typename std::conditional<(n == -1), std::vector<long>, std::array<long, (std::size_t)n>>::type;
 
-  using Iterator = typename Indices::iterator;
+  /**
+   * @brief Standad-like alias to the value type for compatibility, e.g. with Boost.
+   */
+  using value_type = long;
 
-  using ConstIterator = typename Indices::const_iterator;
+  /**
+   * @brief Standad-like alias to the iterator type for compatibility, e.g. with Boost.
+   */
+  using iterator = typename Indices::iterator;
+
+  /**
+   * @brief Standad-like alias to the const iterator type for compatibility, e.g. with Boost.
+   */
+  using const_iterator = typename Indices::const_iterator;
 
   /**
    * @brief Default constructor.
@@ -155,28 +166,28 @@ struct Position {
   /**
    * @brief Iterator to the first element.
    */
-  Iterator begin() {
+  iterator begin() {
     return indices.begin();
   }
 
   /**
    * @copydoc begin()
    */
-  ConstIterator begin() const {
+  const_iterator begin() const {
     return indices.begin();
   }
 
   /**
    * @brief Iterator to the past-the-last element.
    */
-  Iterator end() {
+  iterator end() {
     return indices.end();
   }
 
   /**
    * @copydoc end()
    */
-  ConstIterator end() const {
+  const_iterator end() const {
     return indices.end();
   }
 
