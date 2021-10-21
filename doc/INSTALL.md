@@ -110,7 +110,7 @@ which can be added to the `.bashrc`, e.g.:
 echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64' >> ~/.bashrc
 ```
 
-For demonstration purpose, an example CMake project is provided in folder `CMakeExample`,
+For demonstration purpose, an example CMake project is provided in `EleFitsExample/doc/CMakeExample`,
 which depends on EleFits and produces an executable.
 
 It consists in:
@@ -120,7 +120,7 @@ It consists in:
 To use it, first build the project as described above:
 
 ```xml
-cd <root>/EleFits/CMakeExample
+cd <root>/EleFits/EleFitsExample/doc/CMakeExample
 mkdir build ; cd build
 cmake -DCMAKE_MODULE_PATH=<root>/EleFits/cmake/modules ..
 make
