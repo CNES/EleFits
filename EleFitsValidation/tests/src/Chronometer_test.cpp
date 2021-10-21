@@ -35,6 +35,8 @@ struct ChronoFixture : public Test::Chronometer<std::chrono::milliseconds> {
   static constexpr std::int64_t defaultWait = 10;
 };
 
+constexpr std::int64_t ChronoFixture::defaultWait;
+
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_SUITE(Chronometer_test, ChronoFixture)
