@@ -109,3 +109,28 @@ which can be added to the `.bashrc`, e.g.:
 ```xml
 echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64' >> ~/.bashrc
 ```
+
+For demonstration purpose, an example CMake project is provided in folder `CMakeExample`,
+which depends on EleFits and produces an executable.
+
+It consists in:
+* A `CMakeLists.txt` file which declares the dependency to EleFits and the program;
+* The program source file: `HelloFits.cpp`.
+
+To use it, first build the project as described above:
+
+```xml
+cd <root>/EleFits/CMakeExample
+mkdir build ; cd build
+cmake -DCMAKE_MODULE_PATH=<root>/EleFits/cmake/modules ..
+make
+```
+
+And to run it, don't forget to set the library path (unless already done in the `.bashrc`):
+
+```xml
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64
+./HelloFits <filename>
+```
+
+where `<filename>` is a Fits file.

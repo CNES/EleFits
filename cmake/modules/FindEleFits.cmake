@@ -9,13 +9,13 @@
 
 if(NOT ELEFITS_FOUND)
 
-  find_path(ELEFITS_INCLUDE_DIR EleFits/EleFits/MefFile.h
+  find_path(ELEFITS_INCLUDE_DIR EleFits/MefFile.h
             HINTS ENV ELEFITS_ROOT_DIR ELEFITS_INSTALL_DIR
             PATH_SUFFIXES include)
 
   find_library(ELEFITS_LIBRARY EleFits
                HINTS ENV ELEFITS_ROOT_DIR ELEFITS_INSTALL_DIR
-               PATH_SUFFIXES lib)
+               PATH_SUFFIXES lib lib64)
 
   set(ELEFITS_LIBRARIES ${ELEFITS_LIBRARY})
   set(ELEFITS_INCLUDE_DIRS ${ELEFITS_INCLUDE_DIR})
