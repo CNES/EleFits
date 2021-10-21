@@ -1,3 +1,5 @@
+![EleFits logo](doc/diagrams/out/elefits_square.svg)
+
 # Read me!
 
 EleFits: A clean, object-oriented, template API on top of CFitsIO.
