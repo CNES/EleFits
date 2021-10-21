@@ -144,7 +144,7 @@ void ImageRaster::writeSubraster(const Position<n>& frontPosition, const Subrast
     const auto end = begin + nelem;
     std::vector<std::decay_t<T>> nonconstData(begin, end);
     fits_write_pix(m_fptr, Cfitsio::TypeCode<T>::forImage(), target.data(), nelem, nonconstData.data(), &status);
-    // FIXME to ImageWrapper
+    // TODO to ImageWrapper
   }
 }
 

@@ -87,7 +87,7 @@ template<>
 const std::string& Column<std::string>::operator()(long row, long repeat) const;
 
 template<>
-const std::string& Column<const std::string>::operator()(long row, long repeat) const; // FIXME repetition;
+const std::string& Column<const std::string>::operator()(long row, long repeat) const; // FIXME duplication
 
 template <typename T>
 const T& Column<T>::operator()(long row, long repeat) const {

@@ -98,7 +98,7 @@ void BintableColumns::remove(long index) const {
   int status = 0;
   fits_delete_col(m_fptr, index + 1, &status);
   Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot remove column #" + std::to_string(index));
-  // FIXME to Cfitsio
+  // TODO to Cfitsio
 }
 
 void BintableColumns::removeSeq(const std::vector<std::string>& names) const {

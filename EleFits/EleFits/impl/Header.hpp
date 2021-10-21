@@ -157,28 +157,28 @@ void Header::write<RecordMode::CreateOrUpdate, const char*>(
     const std::string& keyword,
     const char* value,
     const std::string& unit,
-    const std::string& comment) const; // FIXME dispatch Mode
+    const std::string& comment) const; // TODO dispatch Mode
 
 template <>
 void Header::write<RecordMode::CreateUnique, const char*>(
     const std::string& keyword,
     const char* value,
     const std::string& unit,
-    const std::string& comment) const; // FIXME dispatch Mode
+    const std::string& comment) const; // TODO dispatch Mode
 
 template <>
 void Header::write<RecordMode::CreateNew, const char*>(
     const std::string& keyword,
     const char* value,
     const std::string& unit,
-    const std::string& comment) const; // FIXME dispatch Mode
+    const std::string& comment) const; // TODO dispatch Mode
 
 template <>
 void Header::write<RecordMode::UpdateExisting, const char*>(
     const std::string& keyword,
     const char* value,
     const std::string& unit,
-    const std::string& comment) const; // FIXME dispatch Mode
+    const std::string& comment) const; // TODO dispatch Mode
 
 template <RecordMode Mode, typename... Ts>
 void Header::writeSeq(const Record<Ts>&... records) const {

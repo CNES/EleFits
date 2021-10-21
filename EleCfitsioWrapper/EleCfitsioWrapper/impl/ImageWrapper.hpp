@@ -83,7 +83,7 @@ void readRasterTo(fitsfile* fptr, Fits::Raster<T, n>& destination) {
 
 template <typename T, long n>
 void readRasterTo(fitsfile* fptr, Fits::Subraster<T, n>& destination) {
-  const auto region = Fits::Region<n>::fromShape({}, readShape<n>(fptr)); // FIXME -1 specialization?
+  const auto region = Fits::Region<n>::fromShape(Fits::Position<n>::zero(), readShape<n>(fptr));
   readRegionTo(fptr, region, destination);
 }
 
@@ -172,13 +172,7 @@ template <typename T, long m, long n>
 void writeRegion(fitsfile* fptr, const Fits::Raster<T, m>& raster, const Fits::Position<n>& destination) {
   int status = 0;
   auto front = destination + 1;
-  Fits::Position<n> shape(destination.size()); // FIXME shape = raster.shape().extend(destination);
-  for (long i = 0; i < raster.dimension(); ++i) {
-    shape[i] = raster.shape()[i];
-  }
-  for (long i = raster.dimension(); i < destination.size(); ++i) {
-    shape[i] = destination[i];
-  }
+  const auto shape = raster.shape().extend(destination);
   auto back = destination + shape; // = front + raster.shape() - 1
   const auto begin = raster.data();
   const auto end = begin + raster.size();
@@ -197,7 +191,7 @@ void writeRegion(fitsfile* fptr, const Fits::Subraster<T, m>& subraster, const F
 
   /* Screening positions */
   const auto dstSize = shape[0];
-  const auto delta = subraster.region().front.extend(dstRegion.front) - dstRegion.front; // FIXME destination?
+  const auto delta = subraster.region().front.extend(dstRegion.front) - dstRegion.front;
 
   /* Process each line */
   int status = 0;

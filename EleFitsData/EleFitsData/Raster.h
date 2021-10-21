@@ -113,7 +113,7 @@ class PtrRaster;
  */
 template <typename T, long n = 2>
 class Raster {
-  friend class ImageRaster; // FIXME rm
+  friend class ImageRaster; // FIXME rm when Subraster is removed
 
 public:
   /**

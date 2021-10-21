@@ -90,15 +90,16 @@ void Hdu::verifyChecksums() const {
   int datastatus;
   int hdustatus;
   fits_verify_chksum(m_fptr, &datastatus, &hdustatus, &status);
-  // FIXME wrap in EleCfitsioWrapper and throw if needs be
   ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
+  // TODO wrap in EleCfitsioWrapper
 }
 
 void Hdu::updateChecksums() const {
   editThisHdu();
   int status = 0;
   fits_write_chksum(m_fptr, &status);
-  // FIXME wrap in EleCfitsioWrapper and throw if needs be
+  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot write checksums.");
+  // TODO wrap in EleCfitsioWrapper
 }
 
 void Hdu::touchThisHdu() const {

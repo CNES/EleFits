@@ -237,7 +237,7 @@ Region<n> operator-(const Region<n>& lhs, long rhs) {
 }
 
 /// @cond INTERNAL
-// FIXME remove RegionScreener?
+// FIXME replace RegionScreener with PositionIterator?
 
 /**
  * @ingroup image_data_classes

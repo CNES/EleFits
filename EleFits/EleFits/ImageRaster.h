@@ -209,7 +209,7 @@ public:
    * \endcode
    */
   template <typename T, long m, long n>
-  void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const; // FIXME return bool = isContiguous()?
+  void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const; // TODO return bool = isContiguous()?
 
   /// @}
 

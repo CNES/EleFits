@@ -238,7 +238,7 @@ Position<-1>::Position(TIterator begin, TIterator end);
 template <long n>
 Position<n>::Position() : indices {} {
   for (auto& i : indices) {
-    i = 0; // FIXME not needed: indices are unspecified
+    i = 0; // FIXME not needed: indices are unspecified; but should be tested for non-regression
   }
 }
 

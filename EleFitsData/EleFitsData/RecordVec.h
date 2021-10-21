@@ -36,7 +36,7 @@ namespace Fits {
  * Alias `RecordSeq` is provided for `T` = `VariantValue`.
  */
 template <typename T>
-class RecordVec { // FIXME rename as RecordVec in 4.0
+class RecordVec {
 
 public:
   /**

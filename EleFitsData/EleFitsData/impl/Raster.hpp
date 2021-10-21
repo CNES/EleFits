@@ -231,7 +231,7 @@ const PtrRaster<const T, n == -1 ? -1 : n - 1> Raster<T, n>::section(long index)
   const auto last = dimension() - 1;
   region.front[last] = index;
   region.back[last] = index;
-  return slice < n == -1 ? -1 : n - 1 > (region); // FIXME case -1
+  return slice < n == -1 ? -1 : n - 1 > (region);
   // FIXME duplication => return section(index, index).slice<n-1>(Region<n>::whole());
 }
 
@@ -241,7 +241,7 @@ PtrRaster<T, n == -1 ? -1 : n - 1> Raster<T, n>::section(long index) {
   const auto last = dimension() - 1;
   region.front[last] = index;
   region.back[last] = index;
-  return slice < n == -1 ? -1 : n - 1 > (region); // FIXME case -1
+  return slice < n == -1 ? -1 : n - 1 > (region);
   // FIXME duplication
 }
 
