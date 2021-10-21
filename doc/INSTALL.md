@@ -24,15 +24,9 @@ You'll first need to get Elements:
 cd <root>
 git clone https://github.com/astrorama/Elements.git
 cd Elements
-git checkout <Elements_version>
-```
-
-Then, install Elements with user-defined prefix which may be `/usr` or `/usr/local`:
-
-```xml
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=<prefix> ..
+git checkout 5.12.0
+mkdir build ; cd build
+cmake ..
 sudo make install
 ```
 
@@ -42,15 +36,12 @@ Finally, install EleFits the same way:
 cd <root>
 git clone https://github.com/cnes/EleFits.git
 cd EleFits
-mkdir build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=<prefix> -DCMAKE_INCLUDE_PATH=<prefix> ..
-make
-make test
+mkdir build ; cd build
+cmake -DCMAKE_PREFIX_PATH=/usr/local ..
 sudo make install
 ```
 
-This will install the the set of libraries in `<prefix>/lib`, headers in `<prefix>/include`, and executables in `<prefix>/bin`.
+This will install the the set of libraries in `/usr/local/lib`, headers in `/usr/local/include`, and executables in `/usr/local/bin`.
 The end-user library is named EleFits, while the low-level API is named EleCfitsioWrapper.
 
 ## Configure a project to depend on EleFits
@@ -65,7 +56,7 @@ Using the package means declaring the dependency to the EleFits project in the r
 
 ```xml
 elements_project(<project_name> <project_version>
-    USE EleFits <EleFitsversion>)
+    USE EleFits <EleFits_version>)
 ```
 
 and to the EleFits module in the `CMakeLists.txt` of each module which requires EleFits:

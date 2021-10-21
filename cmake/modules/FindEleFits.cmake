@@ -9,7 +9,7 @@
 
 if(NOT ELEFITS_FOUND)
 
-  find_path(ELEFITS_INCLUDE_DIR ELEFITS/EleFits/MefFile.h
+  find_path(ELEFITS_INCLUDE_DIR EleFits/EleFits/MefFile.h
             HINTS ENV ELEFITS_ROOT_DIR ELEFITS_INSTALL_DIR
             PATH_SUFFIXES include)
 
