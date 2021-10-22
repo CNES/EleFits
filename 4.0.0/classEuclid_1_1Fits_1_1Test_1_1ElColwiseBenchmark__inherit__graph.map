@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::Test::ElColwiseBenchmark" name="Euclid::Fits::Test::ElColwiseBenchmark">
+<area shape="rect" id="node1" title="EleFits without column I/O buffering." alt="" coords="5,97,171,138"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Test_1_1ElBenchmark.html" title="Standard EleFits." alt="" coords="25,187,151,229"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1Test_1_1Benchmark.html" title="The base class for all test cases of the benchmark." alt="" coords="25,6,151,47"/>
+</map>

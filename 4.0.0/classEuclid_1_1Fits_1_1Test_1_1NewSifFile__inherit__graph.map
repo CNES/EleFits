@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::Test::NewSifFile" name="Euclid::Fits::Test::NewSifFile">
+<area shape="rect" id="node1" title="SifFile with random name and create&#45;only policy." alt="" coords="13,155,139,197"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1SifFile.html" title="Single image Fits file handler." alt="" coords="7,80,145,107"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1FitsFile.html" title="Fits file reader&#45;writer." alt="" coords="5,5,147,32"/>
+</map>

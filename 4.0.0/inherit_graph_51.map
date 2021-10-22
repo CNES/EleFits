@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classEuclid_1_1Fits_1_1Test_1_1Benchmark.html" title="The base class for all test cases of the benchmark." alt="" coords="5,38,131,79"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1Test_1_1CfitsioBenchmark.html" title="Vanilla CFitsIO." alt="" coords="190,5,335,46"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Test_1_1ElColwiseBenchmark.html" title="EleFits without column I/O buffering." alt="" coords="179,70,346,111"/>
+<area shape="rect" id="node4" href="$classEuclid_1_1Fits_1_1Test_1_1ElBenchmark.html" title="Standard EleFits." alt="" coords="395,70,520,111"/>
+</map>

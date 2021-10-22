@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::Test::RandomScalarColumn&lt; T &gt;" name="Euclid::Fits::Test::RandomScalarColumn&lt; T &gt;">
+<area shape="rect" id="node1" title="A random scalar Column of given type." alt="" coords="5,155,216,197"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1VecColumn.html" title="Column which stores internally the data." alt="" coords="5,80,216,107"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Column.html" title="Binary table column data and metadata." alt="" coords="17,5,204,32"/>
+</map>

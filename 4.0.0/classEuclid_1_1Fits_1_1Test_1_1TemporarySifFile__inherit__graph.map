@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::Test::TemporarySifFile" name="Euclid::Fits::Test::TemporarySifFile">
+<area shape="rect" id="node1" title="Temporary SifFile with random name." alt="" coords="7,155,145,197"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1SifFile.html" title="Single image Fits file handler." alt="" coords="7,80,145,107"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1FitsFile.html" title="Fits file reader&#45;writer." alt="" coords="5,5,147,32"/>
+</map>

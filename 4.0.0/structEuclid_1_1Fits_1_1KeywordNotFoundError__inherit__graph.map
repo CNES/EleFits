@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::KeywordNotFoundError" name="Euclid::Fits::KeywordNotFoundError">
+<area shape="rect" id="node1" title="Exception thrown when a keyword is not found." alt="" coords="5,155,184,197"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1FitsError.html" title="Base of all exceptions thrown directly by the library." alt="" coords="19,80,171,107"/>
+<area shape="rect" id="node3" href="/home/user/Work/Projects/EleFits/build.x86_64-conda_cos6-gcc73-o2g/doc/doxygen/cppreference-doxygen-web.tag.xml$cpp/error/exception.html" title="STL class." alt="" coords="37,5,152,32"/>
+</map>

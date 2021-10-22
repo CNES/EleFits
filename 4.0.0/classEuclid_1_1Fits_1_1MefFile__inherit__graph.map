@@ -1,0 +1,6 @@
+<map id="Euclid::Fits::MefFile" name="Euclid::Fits::MefFile">
+<area shape="rect" id="node1" title="Multi&#45;Extension Fits file reader&#45;writer." alt="" coords="75,80,220,107"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Test_1_1NewMefFile.html" title="MefFile with random name and create&#45;only policy." alt="" coords="5,155,131,197"/>
+<area shape="rect" id="node4" href="$classEuclid_1_1Fits_1_1Test_1_1TemporaryMefFile.html" title="Temporary MefFile with random name." alt="" coords="155,155,300,197"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1FitsFile.html" title="Fits file reader&#45;writer." alt="" coords="77,5,219,32"/>
+</map>

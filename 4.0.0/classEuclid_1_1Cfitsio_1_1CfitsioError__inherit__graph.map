@@ -1,0 +1,5 @@
+<map id="Euclid::Cfitsio::CfitsioError" name="Euclid::Cfitsio::CfitsioError">
+<area shape="rect" id="node1" title="The error class which is thrown when an error occurs in a CFitsIO routine." alt="" coords="5,155,163,197"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1FitsError.html" title="Base of all exceptions thrown directly by the library." alt="" coords="8,80,160,107"/>
+<area shape="rect" id="node3" href="/home/user/Work/Projects/EleFits/build.x86_64-conda_cos6-gcc73-o2g/doc/doxygen/cppreference-doxygen-web.tag.xml$cpp/error/exception.html" title="STL class." alt="" coords="27,5,141,32"/>
+</map>
