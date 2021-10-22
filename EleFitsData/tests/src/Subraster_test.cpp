@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(singleton_subraster_test) {
   const Position<3> pos { 1, 2, 3 };
   const Region<3> region { pos, pos };
   const Subraster<float, 3> subraster(raster, region);
-  BOOST_TEST(subraster.size() = 1);
+  BOOST_TEST(subraster.size() == 1);
   BOOST_TEST((subraster[{ 0, 0, 0 }] == raster[pos]));
 }
 
