@@ -39,12 +39,12 @@ usage() {
     cat <<USAGE_TEXT
 Usage: ${script_name} [-h | --help] [-d | --build_dir] [-j | --parallel]
 DESCRIPTION
-    Installation script for Elefits (build Elements first then Elefits)
+    Installation script for Elefits (downloads, builds and installs Elements first, then builds and installs EleFits)
     OPTIONS:
     -h, --help
         Print this help and exit.
     -d, --build_dir
-        Build directory (/tmp by default).
+        Build directory (/tmp/build_elefits by default).
     -j, --parallel
         Specifies the number of jobs to run simultaneously.
 USAGE_TEXT
@@ -124,12 +124,11 @@ cd "${build_dir}"
 cd "${build_dir}"
 git clone https://github.com/astrorama/Elements.git
 cd Elements
-# EleFits depends on Elements 5.14.0
 git checkout 5.14.0
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 make -j "${parallel_build}"
-sudo make install
+make install
 
 
 cd "${build_dir}"
@@ -138,6 +137,6 @@ cd EleFits
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local ..
 make -j "${parallel_build}"
-sudo make install
+make install
 
 exit 0

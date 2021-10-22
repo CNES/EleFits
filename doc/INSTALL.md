@@ -16,6 +16,14 @@ Jump to the configuration section.
 
 ### Non-EDEN users
 
+**TL;DR:**
+
+```sh
+sudo install.sh
+```
+
+**More details:**
+
 In the remaining, we assume that you're putting the source code of Elements and EleFits in some `<root>` directory.
 
 You'll first need to get Elements:
@@ -43,6 +51,13 @@ sudo make install
 
 This will install the the set of libraries in `/usr/local/lib` (or `usr/local/lib64`), headers in `/usr/local/include`, and executables in `/usr/local/bin`.
 The end-user library is named EleFits, while the low-level API is named EleCfitsioWrapper.
+
+An install script is provided to perform all those steps, `install.sh`.
+Check the help as:
+
+```sh
+install.sh -h
+```
 
 ## Configure a project to depend on EleFits
 
