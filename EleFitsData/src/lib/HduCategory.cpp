@@ -67,7 +67,7 @@ bool HduCategory::operator!=(const HduCategory& rhs) const {
 bool HduCategory::isInstance(const HduCategory& model) const {
   try {
     return (*this & model) == *this;
-  } catch (IncompatibleTrits) {
+  } catch (IncompatibleTrits&) {
     return false;
   }
 }
