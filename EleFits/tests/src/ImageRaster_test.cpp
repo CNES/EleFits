@@ -178,7 +178,8 @@ BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifF
   const PtrRaster<const std::int16_t> cRaster(shape, cData.data());
   writeRaster(cRaster);
   const auto res = readRaster<std::int16_t>();
-  BOOST_TEST(res.vector() == cData);
+  const auto& vec = res.vector();
+  BOOST_TEST(vec == cData);
 }
 
 //-----------------------------------------------------------------------------
