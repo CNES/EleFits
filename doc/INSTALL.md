@@ -24,7 +24,7 @@ You'll first need to get Elements:
 cd <root>
 git clone https://github.com/astrorama/Elements.git
 cd Elements
-git checkout 5.12.0
+git checkout 5.14.0
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 sudo make install

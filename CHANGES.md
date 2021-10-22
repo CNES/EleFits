@@ -22,6 +22,7 @@
 
 ### Other breaking changes
 
+* Update to Elements 5.14.0
 * `SifFile::header()` returns a `Header` instead of an `Hdu`
 * `Raster.shape` and `Column.info` become `Raster.shape()` and `Column.info()`
 * `Raster.data()`, `Column.data()` and `Column.elementCount()` are not virtual anymore:
