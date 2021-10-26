@@ -81,7 +81,47 @@ $(function() {
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Binary table data containers and tools. </p>
-<table class="memberdecls">
+<h1><a class="anchor" id="bintable_data_classes-info"></a>
+ColumnInfo</h1>
+<p><code><a class="el" href="structEuclid_1_1Fits_1_1ColumnInfo.html" title="Column metadata, i.e. { name, unit, repeatCount } and the value type as the template parameter.">ColumnInfo</a></code> is the simple structure which stores the column metadata:</p><ul>
+<li>The value type as a template parameter;</li>
+<li>The name;</li>
+<li>The unit;</li>
+<li>The "repeat count".</li>
+</ul>
+<p>The repeat count represents the width of the column:</p><ul>
+<li>If =1, the column contains scalars;</li>
+<li>If &gt;1, the column contains vectors.</li>
+</ul>
+<h1><a class="anchor" id="bintable_data_classes-columns"></a>
+Column, PtrColumn, VecColumn</h1>
+<p>A <code><a class="el" href="classEuclid_1_1Fits_1_1Column.html" title="Binary table column data and metadata.">Column</a></code> is an abstract class composed of a <code><a class="el" href="structEuclid_1_1Fits_1_1ColumnInfo.html" title="Column metadata, i.e. { name, unit, repeatCount } and the value type as the template parameter.">ColumnInfo</a></code> and some contiguous data. Analogously to <code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html" title="Raster of a n-dimensional image (2D by default).">Raster</a></code>, two concrete classes are implemented, and others can be user-defined:</p><ul>
+<li><code><a class="el" href="classEuclid_1_1Fits_1_1PtrColumn.html" title="Column which references some external pointer data.">PtrColumn</a></code> is the lightest structure: it just knows a pointer to the first element of the column;</li>
+<li><code><a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html" title="Column which stores internally the data.">VecColumn</a></code> owns the data as an <code><a class="elRef" href="http://en.cppreference.com/w/cpp/container/vector.html" title="STL class.">std::vector</a></code> and is compatible with the move semantics.</li>
+</ul>
+<p>To write a column, any <code><a class="el" href="classEuclid_1_1Fits_1_1Column.html" title="Binary table column data and metadata.">Column</a></code> implementation works: you can even provide your own, e.g. some <code>EigenColumn</code>. <code><a class="el" href="classEuclid_1_1Fits_1_1Column.html" title="Binary table column data and metadata.">Column</a></code>s are always read as <code><a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html" title="Column which stores internally the data.">VecColumn</a></code> instances. If you want to give or steal the data to or from a <code><a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html" title="Column which stores internally the data.">VecColumn</a></code>, you can exploit move semantics, as shown in the <a class="el" href="tuto.html">Tutorial</a>:</p>
+<div class="fragment"><div class="line"> </div>
+<div class="line">  <span class="comment">/* Initialize and later fill a column */</span></div>
+<div class="line"> </div>
+<div class="line">  Fits::VecColumn&lt;std::string&gt; stringColumn({ <span class="stringliteral">&quot;STRING&quot;</span>, <span class="stringliteral">&quot;unit&quot;</span>, 3 }, 100);</div>
+<div class="line">  <span class="comment">// String columns must be wide-enough to hold each character.</span></div>
+<div class="line">  <span class="keywordflow">for</span> (<span class="keywordtype">long</span> i = 0; i &lt; stringColumn.rowCount(); ++i) {</div>
+<div class="line">    stringColumn(i) = <a class="codeRef" href="http://en.cppreference.com/w/cpp/string/basic_string/to_string.html">std::to_string</a>(i);</div>
+<div class="line">  }</div>
+<div class="line">  <span class="comment">// operator() takes two parameters: the row index, and repeat index (=0 by default)</span></div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/* Create a column from a vector */</span></div>
+<div class="line"> </div>
+<div class="line">  <a class="codeRef" href="http://en.cppreference.com/w/cpp/container/vector.html">std::vector&lt;std::int32_t&gt;</a> int32Vec(100);</div>
+<div class="line">  <span class="comment">// ... do what you have to do with the vector, and then move it to the column ...</span></div>
+<div class="line">  Fits::VecColumn&lt;std::int32_t&gt; int32Column({ <span class="stringliteral">&quot;INT32&quot;</span>, <span class="stringliteral">&quot;&quot;</span>, 1 }, <a class="codeRef" href="http://en.cppreference.com/w/cpp/utility/move.html">std::move</a>(int32Vec));</div>
+<div class="line">  <span class="comment">// Analogously to rasters, columns can be managed with the lightweight PtrColumn classe.</span></div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">/* Generate a random column */</span></div>
+<div class="line"> </div>
+<div class="line">  <span class="keyword">auto</span> float32Column = Fits::Test::RandomVectorColumn&lt;float&gt;(8, 100);</div>
+<div class="line"> </div>
+</div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEuclid_1_1Fits_1_1ColumnInfo.html">Euclid::Fits::ColumnInfo&lt; T &gt;</a></td></tr>
@@ -105,6 +145,9 @@ Macros</h2></td></tr>
 </table>
 </div><!-- contents -->
 <div class="ttc" id="abasic_string_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/string/basic_string.html">std::string</a></div><div class="ttdoc">STL class.</div></div>
+<div class="ttc" id="amove_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/utility/move.html">std::move</a></div><div class="ttdeci">T move(T... args)</div></div>
+<div class="ttc" id="avector_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/container/vector.html">std::vector</a></div><div class="ttdoc">STL class.</div></div>
+<div class="ttc" id="ato_string_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/string/basic_string/to_string.html">std::to_string</a></div><div class="ttdeci">T to_string(T... args)</div></div>
 <div class="ttc" id="ainteger_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/types/integer.html">std::int16_t</a></div></div>
 <div class="ttc" id="acomplex_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/numeric/complex.html">std::complex&lt; float &gt;</a></div></div>
 <!-- start footer part -->

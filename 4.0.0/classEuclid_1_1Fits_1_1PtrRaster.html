@@ -98,10 +98,17 @@ class Euclid::Fits::PtrRaster&lt; T, n &gt;</h3>
   </dd>
 </dl>
 <p>A raster is a contiguous container for the pixel data of an image. It features access and view services.</p>
-<p>Two implementations are provided:</p><ul>
+<p>This class is abstract, as the actual pixel container is not defined. Two concrete implementations are provided:</p><ul>
 <li><code><a class="el" href="classEuclid_1_1Fits_1_1PtrRaster.html" title="Raster of a n-dimensional image (2D by default).">PtrRaster</a></code> doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;</li>
-<li><code><a class="el" href="classEuclid_1_1Fits_1_1VecRaster.html" title="Copy constructor.">VecRaster</a></code> owns a <code>vector</code> (and is compatible with move semantics, which allows borrowing the <code>vector</code>).</li>
+<li><code><a class="el" href="classEuclid_1_1Fits_1_1VecRaster.html" title="Copy constructor.">VecRaster</a></code> owns an <code><a class="elRef" href="http://en.cppreference.com/w/cpp/container/vector.html" title="STL class.">std::vector</a></code> (and is compatible with move semantics, which allows borrowing the <code>vector</code>).</li>
 </ul>
+<p>There are two ways of defining the dimension of a <code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html" title="Raster of a n-dimensional image (2D by default).">Raster</a></code>:</p><ul>
+<li>when the dimension is knwon at compile-time, by giving the dimension parameter a positive or null value;</li>
+<li>when the dimension is known at run-time only, by assigning <code>n = -1</code>.</li>
+</ul>
+<p>In the former case, index and size computations are optimized, and the dimension is enforced. For example, it is not possible to read a 3D image HDU as a 2D <code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html" title="Raster of a n-dimensional image (2D by default).">Raster</a></code>. Which is nice, because an exception will be raised early! In contrast, it is possible to read a 2D image HDU as a 3D <code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html" title="Raster of a n-dimensional image (2D by default).">Raster</a></code> of third axis lenght =1.</p>
+<p>In the latter case, the dimension may vary or be deduced from the file, which is also nice sometimes but puts more responsibility on the shoulders of the user code, as it should check that the returned dimension is acceptable.</p>
+<p><code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html" title="Raster of a n-dimensional image (2D by default).">Raster</a></code> ensures constant-time access to elements, whatever the dimension of the data, through subscipt operator <code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html#a577800f837ff0b0054be1e7126772869" title="Pixel at given position.">Raster::operator[]()</a></code>. Bound checking and backward indexing (index &lt;0) are enabled in <code><a class="el" href="classEuclid_1_1Fits_1_1Raster_a01218345562cd9505b286af1d221d37d.html#a01218345562cd9505b286af1d221d37d" title="Access the value at given position.">Raster::at()</a></code>.</p>
 <p>Example usages: </p><div class="fragment"><div class="line">Position&lt;2&gt; shape { 2, 3 };</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Read/write Raster</span></div>
@@ -123,7 +130,7 @@ class Euclid::Fits::PtrRaster&lt; T, n &gt;</h3>
 <dl class="section note"><dt>Note</dt><dd>Why "raster" and not simply image or array? Mostly for disambiguation purpose: "image" refers to the extension type, while "array" has already several meanings in C/C++. <code>NdArray</code> would have been an option, but every related class should have been prefixed with <code>Nd</code> for homogeneity: <code>NdPosition</code>, <code>NdRegion</code>, <code>VecNdArray</code>... From the cathodic television era, raster also historically carries the concept of contiguous pixels, is very common in the field of Earth observation, and also belongs to the Java library. All in all, <code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html" title="Raster of a n-dimensional image (2D by default).">Raster</a></code> seems to be a fair compromise.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="structEuclid_1_1Fits_1_1Position.html" title="n-dimensional pixel position or image shape, i.e. set of integer coordinates.">Position</a> for details on the fixed- and variable-dimension cases. </dd>
 <dd>
-<a class="el" href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06" title="Shortcut to create a raster from a shape and data without specifying the template parameters.">makeRaster()</a> for creation shortcuts. </dd></dl>
+<a class="el" href="group__image__data__classes_gacf79db487de965e913b03340ebf58d06.html#gacf79db487de965e913b03340ebf58d06" title="Shortcut to create a raster from a shape and data without specifying the template parameters.">makeRaster()</a> for creation shortcuts. </dd></dl>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>

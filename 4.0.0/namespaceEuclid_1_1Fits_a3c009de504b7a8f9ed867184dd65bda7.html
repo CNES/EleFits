@@ -92,7 +92,7 @@ $(function() {
           <tr><td class="navtab"><a class="qindex" href="group__image__handlers.html#gadb7c72c1787c94350ea3c71cb9c30246">makeMemRegion</a></td></tr>
           <tr><td class="navtab"><a class="qindex" href="group__image__handlers.html#ga5c66937ec41312f36c7eec18effdaa1b">makeMemRegion</a></td></tr>
           <tr><td class="navtab"><a class="qindexHL" href="namespaceEuclid_1_1Fits_a3c009de504b7a8f9ed867184dd65bda7.html#a3c009de504b7a8f9ed867184dd65bda7">makeRaster</a></td></tr>
-          <tr><td class="navtab"><a class="qindex" href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">makeRaster</a></td></tr>
+          <tr><td class="navtab"><a class="qindex" href="group__image__data__classes_gacf79db487de965e913b03340ebf58d06.html#gacf79db487de965e913b03340ebf58d06">makeRaster</a></td></tr>
           <tr><td class="navtab"><a class="qindex" href="group__header__data__classes.html#ga72fc1a3ca2dc39a56a8a789454fb24a6">operator!=</a></td></tr>
           <tr><td class="navtab"><a class="qindex" href="namespaceEuclid_1_1Fits.html#a03e601b45dcfded0fbd09627069c3539">operator!=</a></td></tr>
           <tr><td class="navtab"><a class="qindex" href="namespaceEuclid_1_1Fits.html#a1f289c04627ce81fae4966c6d1b8183f">operator*</a></td></tr>
@@ -195,10 +195,10 @@ template&lt;typename T , typename... Longs&gt; </div>
   </table>
   </dd>
 </dl>
-<p>Example usages: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> ptrRaster2D = <a class="code" href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">makeRaster</a>(data, width, height);</div>
-<div class="line"><span class="keyword">auto</span> ptrRaster3D = <a class="code" href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">makeRaster</a>(data, width, height, depth);</div>
-<div class="line"><span class="keyword">auto</span> vecRaster3D = <a class="code" href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">makeRaster</a>(vec, width, height); <span class="comment">// The vector is copied</span></div>
-<div class="line"><span class="keyword">auto</span> vecRaster3D = <a class="code" href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">makeRaster</a>(<a class="codeRef" href="http://en.cppreference.com/w/cpp/utility/move.html">std::move</a>(vec), width, height); <span class="comment">// The vector is moved</span></div>
+<p>Example usages: </p><div class="fragment"><div class="line"><span class="keyword">auto</span> ptrRaster2D = <a class="code" href="group__image__data__classes_gacf79db487de965e913b03340ebf58d06.html#gacf79db487de965e913b03340ebf58d06">makeRaster</a>(data, width, height);</div>
+<div class="line"><span class="keyword">auto</span> ptrRaster3D = <a class="code" href="group__image__data__classes_gacf79db487de965e913b03340ebf58d06.html#gacf79db487de965e913b03340ebf58d06">makeRaster</a>(data, width, height, depth);</div>
+<div class="line"><span class="keyword">auto</span> vecRaster3D = <a class="code" href="group__image__data__classes_gacf79db487de965e913b03340ebf58d06.html#gacf79db487de965e913b03340ebf58d06">makeRaster</a>(vec, width, height); <span class="comment">// The vector is copied</span></div>
+<div class="line"><span class="keyword">auto</span> vecRaster3D = <a class="code" href="group__image__data__classes_gacf79db487de965e913b03340ebf58d06.html#gacf79db487de965e913b03340ebf58d06">makeRaster</a>(<a class="codeRef" href="http://en.cppreference.com/w/cpp/utility/move.html">std::move</a>(vec), width, height); <span class="comment">// The vector is moved</span></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -206,8 +206,8 @@ template&lt;typename T , typename... Longs&gt; </div>
   </tr>
 </table>
 </div><!-- contents -->
-<div class="ttc" id="anamespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06_html_acf79db487de965e913b03340ebf58d06"><div class="ttname"><a href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">Euclid::Fits::makeRaster</a></div><div class="ttdeci">PtrRaster&lt; T, sizeof...(Longs)&gt; makeRaster(T *data, Longs... shape)</div><div class="ttdoc">Shortcut to create a raster from a shape and data without specifying the template parameters.</div><div class="ttdef"><b>Definition:</b> Raster.h:508</div></div>
 <div class="ttc" id="amove_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/utility/move.html">std::move</a></div><div class="ttdeci">T move(T... args)</div></div>
+<div class="ttc" id="agroup__image__data__classes_gacf79db487de965e913b03340ebf58d06_html_gacf79db487de965e913b03340ebf58d06"><div class="ttname"><a href="group__image__data__classes_gacf79db487de965e913b03340ebf58d06.html#gacf79db487de965e913b03340ebf58d06">Euclid::Fits::makeRaster</a></div><div class="ttdeci">PtrRaster&lt; T, sizeof...(Longs)&gt; makeRaster(T *data, Longs... shape)</div><div class="ttdoc">Shortcut to create a raster from a shape and data without specifying the template parameters.</div><div class="ttdef"><b>Definition:</b> Raster.h:529</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.19
