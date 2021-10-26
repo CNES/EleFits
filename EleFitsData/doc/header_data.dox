@@ -1,0 +1,31 @@
+namespace Euclid {
+namespace Fits {
+
+/**
+
+\addtogroup header_data_classes
+
+
+\section header_data_classes-record Record
+
+
+\copydetails Record
+
+
+\section header_data_classes-recordvec RecordVec, RecordSeq
+
+
+Passing a large number of records around can be complex,
+all the more if the value types are different
+given how cumbersome it would be to use `std::tuple` of various `Record`s.
+
+Two record containers are provided to ease this:
+- `RecordVec` is a homogeneous container, i.e. the value type is the same for each contained record;
+- `RecordSeq` is an alias for `RecordVec<VariantValue>`, which represents a run-time tuple.
+
+Records in those containers are convertible thanks to an internal casting system.
+
+*/
+
+}
+}

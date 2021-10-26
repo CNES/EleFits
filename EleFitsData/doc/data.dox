@@ -6,49 +6,32 @@ namespace Fits {
 \addtogroup data_classes
 
 
-\tableofcontents
+\section data-intro Introduction
+
+
+Data classes represent the data which can be read or written in a Fits file.
+They are split into header, image, and binary table data classes.
+
+As a spoiler, here is a simplified class diagram:
+
+\image html doc/diagrams/out/FitsData.png
 
 
 \section data-record Records
 
 
 `Record` is a very basic template structure which holds the following four fields:
-- keyword,
-- value,
-- unit
-- comment.
+- `keyword`,
+- `value`,
+- `unit`,
+- `comment`.
 
 Its template parameter is the type of the value.
 
-Here's a record of type `double` with keyword `"LIGHT"`, value `3.0e8`, unit `"m/s"` and comment `"speed of light"`:
-\code
-Record<double> lightSpeed { "LIGHT", 3.0e8, "m/s", "speed of light" };
-\endcode
-
-In the Fits file, this record will appear in the header of an HDU as (padding blank spaces removed):
-\verbatim
-LIGHT = 3.0E8 / [m/s] speed of light
-\endverbatim
-
-In the Fits definition, it is unclear if the "comment" encompasses only `speed of light` or `[m/s] speed of light`.
-In EleFits, the former is named comment, while the latter is the raw comment.
-The raw comment can be get as `Record::rawComment()`.
-
-Such a `Record` can be cast to `double` (records of value type `T` can be cast to `T`),
-or more precisely, it can be sliced as its value.
-\code
-double milleniumFalconSpeed = 1.5 * lightSpeed;
-// Same as: 1.5 * lightSpeed.value
-\endcode
-
-This is also usefull when aiming at reading record values only, and skip the keyword, unit and comment:
-\code
-Record<int> theRecord = header.read<int>("KEYWORD");
-int theValue = header.read<int>("KEYWORD");
-\endcode
+\see header_data_classes
 
 
-\section data-raster Rasters
+\section data-raster Image HDU data classes
 
 
 `Raster`s are the in-memory representation of the _n_-D arrays of Fits.
@@ -58,40 +41,10 @@ A raster has:
 - a shape (of type `Position`, which is just an alias of `std::array` or `std::vector`),
 - some data, i.e. the pixel values, stored contiguously, for example in a `std::vector`.
 
-There are two ways of defining a `Raster`:
-- when the dimension is knwon at compile-time,
-by giving the dimensions parameter a positive or null value;
-- when the dimension is known at run-time only,
-by assigning -1 to the dimensions parameter.
-
-In the former case, index and size computations are optimized, and the dimension is enforced.
-For example, it is not possible to read a 3D image HDU as a 2D `Raster`.
-Which is nice, because an exception will be raise early!
-In contrast, it is possible to read a 2D image HDU as a 3D `Raster` of third axis lenght =1.
-
-In the latter case, the dimension may vary or be deduced from the file,
-which is also nice sometimes but puts more responsibility on the shoulders of the user code,
-as it should check that the returned dimension is acceptable.
-
-`Raster` is an abstract class, to be extended with an actual data container.
-Two such concrete classes are provided:
-- `PtrRaster` merely stores a pointer to the data array;
-- `VecRaster` owns itself the data as an `std::vector`.
-
-You can create your own raster types by inheriting from `Raster`.
-
-All functions which return a `Raster` really return a `VecRaster` (e.g. `ImageRaster::read()`).
-All methods which take a `Raster` as input accept whatever flavor of it.
-
-`Raster` ensures constant-time access to elements, whatever the dimension of the data,
-through subscipt operators `Raster::operator[]()`.
-Bound checking and backward indexing (index <0) are enabled in `Raster::at()`.
-Here is an excerpt of the \ref tuto giving a concrete usage example:
-
-\snippet EleFitsTutorial.cpp Create rasters
+\see image_data_classes
 
 
-\section data-column Columns
+\section data-column Binary table HDU data classes
 
 
 `Column`s represent the contents of the data unit of binary table HDUs.
@@ -100,39 +53,11 @@ They are made of two components:
 - metadata as a `ColumnInfo` instance,
 - data as a whatever-you-want!
 
-`ColumnInfo` looks like a `Record` without a comment:
-there is a template parameter for the value type, a name and a unit.
-Additionally, member `repeatCount` stores the width of the column:
-it is 1 for scalar columns and >1 for vector columns.
-
 In order to accommodate whatever-you-want kind of data container,
 `Column` is an abstract class whose only assumption is that elements are contiguous in memory,
-so that you are able to provide a raw pointer to the first element of the column.
+so that you just need to provide a raw pointer to the first element of the column.
 
-The library comes with several ready-to-use implementations:
-
-- `PtrColumn` is the lightest structure: it just knows a pointer to the first element of the column;
-- `VecColumn` owns the data as an `std::vector` and is compatible with the move semantics.
-
-To write a column, any `Column` implementation works: you can even provide your own, e.g. some `EigenColumn`.
-`Column`s are always read as `VecColumn` instances.
-If you want to give or steal the data to or from a `VecColumn`, you can exploit move semantics, as shown in the \ref tuto "":
-
-\snippet EleFitsTutorial.cpp Create columns
-
-
-\section data-wrapup Wrap-up
-
-We have just learnt the basics of the data classes.
-They are as-light-as-possible classes which store or reference data.
-They are the inputs and outputs of the read/write services described in \ref handlers.
-
-To see them in action, follow the \ref tuto.
-
-To better understand the class design and relationships, you might want to see a UML diagram.
-Here it is:
-
-\image html doc/diagrams/out/FitsData.png
+\see bintable_data_classes
 
 */
 
