@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.19"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>EleFits: Project Overview</title>
+<title>EleFits: Project overview</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -73,46 +73,111 @@ $(function() {
 
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Project Overview </div>  </div>
+<div class="title">Project overview </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="toc"><h3>Table of Contents</h3>
-<ul><li class="level1"><a href="#purpose">Purpose and scope</a></li>
-<li class="level1"><a href="#build">Install and depend on EleFits</a></li>
-<li class="level1"><a href="#next">Where to go next?</a></li>
-</ul>
-</div>
-<div class="textblock"><div class="image">
-<object type="image/svg+xml" data="elefits_square.svg" width="25%" style="pointer-events: none;"></object>
-</div>
-<h1><a class="anchor" id="purpose"></a>
+<div class="textblock"><p><a class="anchor" id="md_README"></a> <img src="elefits_square.svg" alt="" style="pointer-events: none;" class="inline" title="EleFits logo"/>   </p>
+<h1><a class="anchor" id="autotoc_md1"></a>
 Purpose and scope</h1>
-<p>The <a class="el" href="namespaceEuclid_1_1Fits.html" title="Wrapper classes to read and write Fits file contents.">Fits</a> format and C++ language are extremely popular among astronomers, and are at the heart of the <a class="el" href="namespaceEuclid.html" title="Euclid SGS namespace.">Euclid</a> ground segment. In this context, a library to read and write <a class="el" href="namespaceEuclid_1_1Fits.html" title="Wrapper classes to read and write Fits file contents.">Fits</a> files in C++ was needed. Several options existed already, but they did not completely fulfill our needs. Two C++ libraries are listed by the <a href="https://fits.gsfc.nasa.gov/fits_libraries.html">Fits support office</a>: <a href="https://heasarc.gsfc.nasa.gov/fitsio/CCfits/">CCfits</a> and <a href="https://www.cv.nrao.edu/fits/src">AIPS++</a> (apparently not supported anymore). Not listed in this page are a library developed by the Jaxa: <a href="https://www.ir.isas.jaxa.jp/~cyamauch/sli/">SFitsIO</a>, and one developed for the Rubin Observatory: <a href="https://github.com/lsst/afw">AFW</a>. Fits++ has been briefly described previously but is not publicly available. In addition, many C++ developers rely on the historical C library <a href="https://heasarc.gsfc.nasa.gov/fitsio/">CFitsIO</a>.</p>
-<p>The main motivation to develop EleFits (<a class="el" href="namespaceEuclid.html" title="Euclid SGS namespace.">Euclid</a> libraries and executables for <a class="el" href="namespaceEuclid_1_1Fits.html" title="Wrapper classes to read and write Fits file contents.">Fits</a>) was that none of these alternatives provided a fully consistent type management. In the worst cases, users needed to know the underlying architecture to ensure integer data can be read or written using given C++ types. In the best cases, silent casts and copies were performed, which would be too costly for large data sets.</p>
-<p>The purpose of EleFits is to provide a &ndash; sorted by priority &ndash; (1) safe, (2) user-friendly, and (3) efficient library. The package merely consists in a thin CFitsIO wrapper: There is no intelligence inside. The actual reading and writing are delegated to CFitsIO, with as few indirections as possible to minimize overhead. As compared to CFitsIO, the benefits are mainly those of C++ over C:</p>
+<p>EleFits (<a class="el" href="namespaceEuclid.html" title="Euclid SGS namespace.">Euclid</a> libraries and executables for Fits) is a modern C++ package to read and write Fits files which focuses on safety, user-friendliness, and performance. EleFits provides the only C++ Fits library which features a fully consistent and optimal internal type management system. Nevertheless, the API is templated and agnostic of the underlying architecture, which makes usage straightforward. EleFits is compact and involves as few parameters as possible, which makes it both simple and robust. As compared to CFitsIO, the benefits are mainly those of C++ over C:</p>
 <ul>
-<li>No more raw pointers for a <b>safe memory management</b>;</li>
-<li>No more type codes but <b>template traits classes</b> which handle architecture specifics;</li>
-<li>No more error codes but a proper <b>exception</b> handling;</li>
-<li>Structures dedicated to <b>data storage</b> instead of unstructured and redundant variables;</li>
-<li>A <b>lightweight class hierarchy</b> to represent the actual <a class="el" href="namespaceEuclid_1_1Fits.html" title="Wrapper classes to read and write Fits file contents.">Fits</a> organization (e.g. HDUs, records, columns...) instead of the all-in-one and flat <code>fitsfile</code> structure;</li>
-<li>A concise and <b>clear API</b> instead of the cluttered and verbose one of CFITSIO.</li>
+<li>No raw pointers for a safe memory management;</li>
+<li>No type codes but template traits classes which handle architecture specifics;</li>
+<li>No error codes but a proper exception handling;</li>
+<li>Structures dedicated to data storage;</li>
+<li>A lightweight class hierarchy to represent the actual Fits organization (e.g. HDUs, records, columns).</li>
 </ul>
-<p>Simplicity comes at the cost of completeness, and EleFits misses:</p><ul>
-<li>CFitsIO features that we found less important (like ASCII tables) or too complex (like "iterators");</li>
-<li>Features already well implemented in other <a class="el" href="namespaceEuclid.html" title="Euclid SGS namespace.">Euclid</a> libraries like table filtering covered by EL_CatalogLib;</li>
-<li>Features that we didn't have time to implement yet!</li>
-</ul>
-<p>For a clear overview of what's there and what's missing, see <a class="el" href="cfitsio_cov.html">CFitsIO routines covered by EleFits</a>.</p>
-<h1><a class="anchor" id="build"></a>
-Install and depend on EleFits</h1>
-<p>See the <a class="el" href="install_guide.html">Installation and configuration guide</a>.</p>
-<h1><a class="anchor" id="next"></a>
-Where to go next?</h1>
-<p>To go further, check the <a href="modules.html">Modules tab</a>, which is the main entry point for usage documentation. Each so-called module addresses a specific topic to learn how to use EleFits and understand why it is designed the way it is. The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.</p>
-<p>To go even further, many other topics are discussed in the <a href="pages.html">Related pages</a>, as unordered documents. Among others, you'll find there thoughts on CFitsIO, the tutorial, and some design documentation. </p>
+<p>Furthermore, exclusive features are provided, like HDU selectors and automatic buffering of binary tables.</p>
+<p>To maximize performance, EleFits is built as a CFitsIO wrapper as thin as possible. While the two libraries are generally equivalent, optimizations implemented internally make EleFits even faster in some classical cases, unless the CFitsIO user spends considerable development efforts.</p>
+<h1><a class="anchor" id="autotoc_md2"></a>
+Example usages</h1>
+<p>The EleFits API was specifically designed to be very fluent and compact. The following (a bit extreme) example shows how natural it is to read a column named "RA" in the 4th extension of a Multi-Extension Fits (MEF) file:</p>
+<div class="fragment"><div class="line"><span class="comment">// Given:</span></div>
+<div class="line"><span class="comment">// - string filename: The file name</span></div>
+<div class="line"> </div>
+<div class="line">MefFile f(filename, FileMode::READ);</div>
+<div class="line"><span class="keyword">auto</span> ra = f.access&lt;BintableHdu&gt;(4).columns().read&lt;<span class="keywordtype">double</span>&gt;(<span class="stringliteral">&quot;RA&quot;</span>);</div>
+</div><!-- fragment --><p>A more realistic example is creating a Single Image Fits (SIF) file with a keyword record and an array:</p>
+<div class="fragment"><div class="line"><span class="comment">// Given:</span></div>
+<div class="line"><span class="comment">// - string filename: The file name</span></div>
+<div class="line"><span class="comment">// - string keyword: The keyword record name</span></div>
+<div class="line"><span class="comment">// - int value: The keyword record value</span></div>
+<div class="line"><span class="comment">// - string comment: The keyword record comment</span></div>
+<div class="line"><span class="comment">// - long width, height: The image size</span></div>
+<div class="line"><span class="comment">// - float[width * height] data: The image values</span></div>
+<div class="line"> </div>
+<div class="line">SifFile f(filename, FileMode::CREATE);</div>
+<div class="line">f.header().write(keyword, value, <span class="stringliteral">&quot;&quot;</span>, comment);</div>
+<div class="line">f.raster().write(<a class="code" href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">makeRaster</a>(data, width, height));</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// For comparison, here is the same use case implemented with CCfits:</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">long</span> shape[] = { width, height };</div>
+<div class="line"><span class="keyword">auto</span> fits = std::make_unique&lt;FITS&gt;(filename, SHORT_IMG, 2, shape);</div>
+<div class="line"><span class="keyword">auto</span>&amp; primary = fits-&gt;pHDU();</div>
+<div class="line">primary.addKey(name, value, comment);</div>
+<div class="line">primary.write(1, width * height, data);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// And with CFitsIO:</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordtype">long</span> shape[] = { width, height };</div>
+<div class="line"><span class="keywordtype">int</span> status = 0;</div>
+<div class="line">fitsfile* fptr = <span class="keyword">nullptr</span>;</div>
+<div class="line">fits_create_file(&amp;fptr, filename.c_str(), &amp;status);</div>
+<div class="line">fits_create_img(fptr, SHORT_IMG, 2, shape, &amp;status);</div>
+<div class="line">fits_write_key(fptr, TDOUBLE, <a class="code" href="namespaceEuclid_1_1Cfitsio_1_1FileAccess.html#ace028f35c207bf1efa113c9e13273b98">name</a>.<a class="codeRef" href="http://en.cppreference.com/w/cpp/string/basic_string/c_str.html">c_str</a>(), &amp;value, comment.c_str(), &amp;status);</div>
+<div class="line">fits_write_img(fptr, TSHORT, 1, width * height, data, &amp;status);</div>
+</div><!-- fragment --><p>In addition, exclusive features are provided to simplify the implementation of classical use cases. A few examples are given below.</p>
+<p>Files are iterable, and selectors enable looping over filtered HDUs (here, newly created image HDUs):</p>
+<div class="fragment"><div class="line"><span class="comment">// Given:</span></div>
+<div class="line"><span class="comment">// - MefFile f: The MEF file handler</span></div>
+<div class="line"><span class="comment">// - processNewImage: The user-defined function</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; hdu : f.select&lt;ImageHdu&gt;(HduCategory::Created)) {</div>
+<div class="line">  processNewImage(hdu);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Heterogeneous collections of keyword records can be parsed and written, and a comprehensive type conversion system is provided:</p>
+<div class="fragment"><div class="line"><span class="comment">// Given:</span></div>
+<div class="line"><span class="comment">// - Header header: The header unit handler</span></div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">auto</span> records = header.parseAll(KeywordCategory::Reserved);</div>
+<div class="line"><span class="keyword">auto</span> instrument = records.as&lt;<a class="codeRef" href="http://en.cppreference.com/w/cpp/string/basic_string.html">std::string</a>&gt;(<span class="stringliteral">&quot;INSTRUME&quot;</span>);</div>
+<div class="line"><span class="keyword">auto</span> exptime = records.as&lt;<span class="keywordtype">double</span>&gt;(<span class="stringliteral">&quot;EXPTIME&quot;</span>);</div>
+</div><!-- fragment --><p>Images and tables can be read and written region-wise by mapping &ndash; possibly non-contiguous &ndash; in-file and in-memory regions, e.g.:</p>
+<div class="fragment"><div class="line"><span class="comment">// Given:</span></div>
+<div class="line"><span class="comment">// - ImageRaster raster: The image data unit handler</span></div>
+<div class="line"><span class="comment">// - Raster data: The image container</span></div>
+<div class="line"> </div>
+<div class="line">Region&lt;2&gt; inFile { { 32, 16 }, { 64, 32 } };</div>
+<div class="line">Position&lt;2&gt; inMemory { 8, 8 };</div>
+<div class="line">raster.readRegionTo({ inFile, inMemory }, data);</div>
+</div><!-- fragment --><p>For binary tables, multiple columns can be read or written at once to take advantage of an internal buffer:</p>
+<div class="fragment"><div class="line"><span class="comment">// Given:</span></div>
+<div class="line"><span class="comment">// - BintableColumns columns: The binary table data unit handler</span></div>
+<div class="line"><span class="comment">// - Column columnA, columnB, columnC: Column containers of various value types</span></div>
+<div class="line"> </div>
+<div class="line">columns.writeSeq(columnA, columnB, columnC);</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md3"></a>
+Licence</h1>
+<p>LGPL v3</p>
+<h1><a class="anchor" id="autotoc_md4"></a>
+Tutorial</h1>
+<p>The tutorial composed of an example program and <a href="https://cnes.github.io/EleFits/4.0.0/tuto.html">associated documentation</a> is probably the good entry point for newcomers.</p>
+<h1><a class="anchor" id="autotoc_md5"></a>
+Installation instructions</h1>
+<p>See <a class="el" href="install_guide.html#md_doc_INSTALL">the dedicated page</a>.</p>
+<h1><a class="anchor" id="autotoc_md6"></a>
+User documentation</h1>
+<p>See <a href="https://cnes.github.io/EleFits">the generated documentation</a>.</p>
+<h1><a class="anchor" id="autotoc_md7"></a>
+Feedbacks</h1>
+<p>Bug reports, reviews, change requests and other feedbacks are welcome! Feel free to <a href="https://github.com/CNES/EleFits/issues/new/choose">open issues</a> ;) </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
+<div class="ttc" id="abasic_string_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/string/basic_string.html">std::string</a></div><div class="ttdoc">STL class.</div></div>
+<div class="ttc" id="anamespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06_html_acf79db487de965e913b03340ebf58d06"><div class="ttname"><a href="namespaceEuclid_1_1Fits_acf79db487de965e913b03340ebf58d06.html#acf79db487de965e913b03340ebf58d06">Euclid::Fits::makeRaster</a></div><div class="ttdeci">PtrRaster&lt; T, sizeof...(Longs)&gt; makeRaster(T *data, Longs... shape)</div><div class="ttdoc">Shortcut to create a raster from a shape and data without specifying the template parameters.</div><div class="ttdef"><b>Definition:</b> Raster.h:508</div></div>
+<div class="ttc" id="ac_str_html"><div class="ttname"><a href="http://en.cppreference.com/w/cpp/string/basic_string/c_str.html">std::string::c_str</a></div><div class="ttdeci">T c_str(T... args)</div></div>
+<div class="ttc" id="anamespaceEuclid_1_1Cfitsio_1_1FileAccess_html_ace028f35c207bf1efa113c9e13273b98"><div class="ttname"><a href="namespaceEuclid_1_1Cfitsio_1_1FileAccess.html#ace028f35c207bf1efa113c9e13273b98">Euclid::Cfitsio::FileAccess::name</a></div><div class="ttdeci">std::string name(fitsfile *fptr)</div><div class="ttdoc">Get the file name.</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.19

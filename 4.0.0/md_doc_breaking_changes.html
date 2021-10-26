@@ -77,31 +77,31 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="toc"><h3>Table of Contents</h3>
-<ul><li class="level1"><a href="#autotoc_md1">Breaking changes in 4.0</a><ul><li class="level2"><a href="#autotoc_md2">Introduction</a></li>
-<li class="level2"><a href="#autotoc_md3">EL_FitsIO becomes EleFits and associated changes</a></li>
-<li class="level2"><a href="#autotoc_md4">3rd handler level</a></li>
-<li class="level2"><a href="#autotoc_md5">RecordHdu becomes Hdu</a></li>
-<li class="level2"><a href="#autotoc_md6">FitsFile::Permission becomes FileMode</a></li>
-<li class="level2"><a href="#autotoc_md7">HduType becomes HduCategory</a></li>
-<li class="level2"><a href="#autotoc_md8">MefFile::accessPrimary() becomes MefFile::primary() and is not a template anymore</a></li>
-<li class="level2"><a href="#autotoc_md9">Raster::shape and Column::info become methods</a></li>
+<ul><li class="level1"><a href="#autotoc_md9">Breaking changes in 4.0</a><ul><li class="level2"><a href="#autotoc_md10">Introduction</a></li>
+<li class="level2"><a href="#autotoc_md11">EL_FitsIO becomes EleFits and associated changes</a></li>
+<li class="level2"><a href="#autotoc_md12">3rd handler level</a></li>
+<li class="level2"><a href="#autotoc_md13">RecordHdu becomes Hdu</a></li>
+<li class="level2"><a href="#autotoc_md14">FitsFile::Permission becomes FileMode</a></li>
+<li class="level2"><a href="#autotoc_md15">HduType becomes HduCategory</a></li>
+<li class="level2"><a href="#autotoc_md16">MefFile::accessPrimary() becomes MefFile::primary() and is not a template anymore</a></li>
+<li class="level2"><a href="#autotoc_md17">Raster::shape and Column::info become methods</a></li>
 </ul>
 </li>
-<li class="level1"><a href="#autotoc_md10">Breaking changes in 3.0</a><ul><li class="level2"><a href="#autotoc_md11">All indices are 0-based</a></li>
+<li class="level1"><a href="#autotoc_md18">Breaking changes in 3.0</a><ul><li class="level2"><a href="#autotoc_md19">All indices are 0-based</a></li>
 </ul>
 </li>
-<li class="level1"><a href="#autotoc_md12">Breaking changes in 2.0</a><ul><li class="level2"><a href="#autotoc_md13">Method name change</a></li>
+<li class="level1"><a href="#autotoc_md20">Breaking changes in 2.0</a><ul><li class="level2"><a href="#autotoc_md21">Method name change</a></li>
 </ul>
 </li>
 </ul>
 </div>
-<div class="textblock"><h1><a class="anchor" id="autotoc_md1"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md9"></a>
 Breaking changes in 4.0</h1>
-<h2><a class="anchor" id="autotoc_md2"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Introduction</h2>
 <p>Version 4.0 introduces many changes to the API. Most of them are already in place in version 3.2, but with backward compatibility ensured by aliases. This is done to make transition smoother on client code side. Therefore, in 3.2, the user can use both 3.x and 4.x versions of the API. Items removed from the API in 4.0 are marked deprecated in 3.2.</p>
 <p>For each breaking change, this page details the underlying reasons, the status in version 3.2, and how to adapt the client code.</p>
-<h2><a class="anchor" id="autotoc_md3"></a>
+<h2><a class="anchor" id="autotoc_md11"></a>
 EL_FitsIO becomes EleFits and associated changes</h2>
 <p>Namespace <code>FitsIO</code> becomes <code>Fits</code>. Prefix <code>EL_Fits</code> (resp. <code>EL_FITSIO</code>) becomes <code>EleFits</code> (resp. <code>ELEFITS</code>). <code>EL_FitsFile</code> becomes <code>EleFits</code>. Underscores in program names are removed.</p>
 <p><b>Rationale</b></p>
@@ -120,7 +120,7 @@ EL_FitsIO becomes EleFits and associated changes</h2>
 <li>Find and replace <code>FitsIO</code> (e.g. namespace <code>FitsIO</code> or class <code>FitsIOError</code>) with <code>Fits</code> in sources;</li>
 <li>Remove underscores from program names in command lines.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md4"></a>
+<h2><a class="anchor" id="autotoc_md12"></a>
 3rd handler level</h2>
 <p>In addition to file- and HDU-level handlers, additional classes are defined at header or data level. For example, records are accessed through <code>MefFile</code>/<code>RecordHdu</code>/<code>Header</code> instead of <code>MefFile</code>/<code>RecordHdu</code>:</p>
 <div class="fragment"><div class="line"><span class="comment">// Until 4.0</span></div>
@@ -143,7 +143,7 @@ EL_FitsIO becomes EleFits and associated changes</h2>
 <li>Manual fix: 1 to 2 more calls in user code for each HDU;</li>
 <li>Negligible impact on runtime.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md5"></a>
+<h2><a class="anchor" id="autotoc_md13"></a>
 RecordHdu becomes Hdu</h2>
 <p><b>Rationale</b></p>
 <ul>
@@ -156,7 +156,7 @@ RecordHdu becomes Hdu</h2>
 <ul>
 <li>Find and replace word <code>RecordHdu</code> with <code>Hdu</code>, including in include directives.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md14"></a>
 FitsFile::Permission becomes FileMode</h2>
 <p><b>Rationale</b></p>
 <ul>
@@ -170,7 +170,7 @@ FitsFile::Permission becomes FileMode</h2>
 <ul>
 <li>Find and replace occurrences of <code>FitsFile::Permission</code>, <code>SifFile::Permission</code> and <code>MefFile::Permission</code> with <code>FileMode</code>.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md15"></a>
 HduType becomes HduCategory</h2>
 <p>And it is now a proper class instead of an enum.</p>
 <p><b>Rationale</b></p>
@@ -185,7 +185,7 @@ HduType becomes HduCategory</h2>
 <ul>
 <li>Find and replace occurrences of word <code>HduType</code> with <code>HduCategory</code>.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md16"></a>
 MefFile::accessPrimary() becomes MefFile::primary() and is not a template anymore</h2>
 <p>An <code>ImageHdu</code> is always returned by <code>MefFile::primary()</code>.</p>
 <p><b>Rationale</b></p>
@@ -199,7 +199,7 @@ MefFile::accessPrimary() becomes MefFile::primary() and is not a template anymor
 <ul>
 <li>Replace <code>MefFile::accessPrimary&lt;Hdu&gt;()</code> and <code>MefFile::accessPrimary&lt;ImageHdu&gt;()</code> with <code>MefFile::access()</code>.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md9"></a>
+<h2><a class="anchor" id="autotoc_md17"></a>
 Raster::shape and Column::info become methods</h2>
 <p><b>Rationale</b></p>
 <p>Data classes should ensure data integrity as much as possible. This is not possible with member variables.</p>
@@ -210,15 +210,15 @@ Raster::shape and Column::info become methods</h2>
 <li>For reading, replace <code>raster.shape</code> and <code>column.info</code> with <code>raster.shape()</code> and <code>column.info()</code>.</li>
 <li>The values cannot be changed after construction (at least for now).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md10"></a>
+<h1><a class="anchor" id="autotoc_md18"></a>
 Breaking changes in 3.0</h1>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<h2><a class="anchor" id="autotoc_md19"></a>
 All indices are 0-based</h2>
 <p>Most indices in 2.0 were 0-based (e.g. in <code>Raster</code> and <code>Column</code>). A notable exception was the HDU index, which used to follow the CFitsIO convention. Yet, the Fits standard doesn't set any convention for HDU indices (well, HDU indices are not even mentioned in the standard). Therefore, it was decided to homogeneize indexing, and follow the C++ convention instead.</p>
 <p>For more details, see <a class="el" href="group__types.html">On types</a>.</p>
-<h1><a class="anchor" id="autotoc_md12"></a>
+<h1><a class="anchor" id="autotoc_md20"></a>
 Breaking changes in 2.0</h1>
-<h2><a class="anchor" id="autotoc_md13"></a>
+<h2><a class="anchor" id="autotoc_md21"></a>
 Method name change</h2>
 <ul>
 <li>Method name case is now pascalCase, according to <a class="el" href="namespaceEuclid.html" title="Euclid SGS namespace.">Euclid</a> quality rules;</li>

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['indices_4252',['Indices',['../structEuclid_1_1Fits_1_1Position.html#a34fe1d765f8248b62d9194758bece4ce',1,'Euclid::Fits::Position']]],
-  ['iterator_4253',['iterator',['../structEuclid_1_1Fits_1_1Position.html#a1f6db14a464803192c77dea86ef1d52b',1,'Euclid::Fits::Position']]]
+  ['name_4158',['Name',['../classEuclid_1_1Fits_1_1Test_1_1SmallTable.html#a1f5dcfcf1e97020c4a271f7d34fe89b2',1,'Euclid::Fits::Test::SmallTable']]],
+  ['num_4159',['Num',['../classEuclid_1_1Fits_1_1Test_1_1SmallTable.html#a18f6f8c364509f0767b894a13b334a88',1,'Euclid::Fits::Test::SmallTable']]]
 ];

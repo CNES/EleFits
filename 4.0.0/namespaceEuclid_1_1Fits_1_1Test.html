@@ -77,10 +77,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Euclid::Fits::Test Namespace Reference</div>  </div>
 </div><!--header-->
@@ -88,44 +86,8 @@ $(function() {
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Test-related classes and functions. </p>
 </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:af0aae4680c182fdfbc5b74ea42cd9596"><td class="memItemLeft" align="right" valign="top"><a id="af0aae4680c182fdfbc5b74ea42cd9596"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceEuclid_1_1Fits_1_1Test.html#af0aae4680c182fdfbc5b74ea42cd9596">BRaster</a> = <a class="el" href="classEuclid_1_1Fits_1_1VecRaster.html">VecRaster</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/types/integer.html">std::int64_t</a>, 1 &gt;</td></tr>
-<tr class="memdesc:af0aae4680c182fdfbc5b74ea42cd9596"><td class="mdescLeft">&#160;</td><td class="mdescRight">The raster type used for benchmarking. <br /></td></tr>
-<tr class="separator:af0aae4680c182fdfbc5b74ea42cd9596"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11478bb303e3d97bfadf9615863d475b"><td class="memItemLeft" align="right" valign="top"><a id="a11478bb303e3d97bfadf9615863d475b"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceEuclid_1_1Fits_1_1Test.html#a11478bb303e3d97bfadf9615863d475b">BColumns</a> = <a class="elRef" href="http://en.cppreference.com/w/cpp/utility/tuple.html">std::tuple</a>&lt; <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; unsigned char &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/types/integer.html">std::int32_t</a> &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/types/integer.html">std::int64_t</a> &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; float &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; double &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/numeric/complex.html">std::complex</a>&lt; float &gt; &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/numeric/complex.html">std::complex</a>&lt; double &gt; &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; char &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/types/integer.html">std::uint32_t</a> &gt;, <a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">VecColumn</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/types/integer.html">std::uint64_t</a> &gt; &gt;</td></tr>
-<tr class="memdesc:a11478bb303e3d97bfadf9615863d475b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The column types used for benchmarking. <br /></td></tr>
-<tr class="separator:a11478bb303e3d97bfadf9615863d475b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabbe820ef85c8b0480b1d4e4115ce3aa"><td class="memItemLeft" align="right" valign="top"><a id="aabbe820ef85c8b0480b1d4e4115ce3aa"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceEuclid_1_1Fits_1_1Test.html#aabbe820ef85c8b0480b1d4e4115ce3aa">BChronometer</a> = <a class="el" href="classEuclid_1_1Fits_1_1Test_1_1Chronometer.html">Chronometer</a>&lt; <a class="elRef" href="http://en.cppreference.com/w/cpp/chrono/duration.html">std::chrono::milliseconds</a> &gt;</td></tr>
-<tr class="memdesc:aabbe820ef85c8b0480b1d4e4115ce3aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">The chronometer used for benchmarking. <br /></td></tr>
-<tr class="separator:aabbe820ef85c8b0480b1d4e4115ce3aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1Benchmark.html">Benchmark</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The base class for all test cases of the benchmark.  <a href="classEuclid_1_1Fits_1_1Test_1_1Benchmark.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1BenchmarkFactory.html">BenchmarkFactory</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract factory for the <a class="el" href="classEuclid_1_1Fits_1_1Test_1_1Benchmark.html" title="The base class for all test cases of the benchmark.">Benchmark</a> child classes.  <a href="classEuclid_1_1Fits_1_1Test_1_1BenchmarkFactory.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1CfitsioBenchmark.html">CfitsioBenchmark</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vanilla CFitsIO.  <a href="classEuclid_1_1Fits_1_1Test_1_1CfitsioBenchmark.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1Chronometer.html">Chronometer</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple chronometer with increment times and elapsed time caching.  <a href="classEuclid_1_1Fits_1_1Test_1_1Chronometer.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1CsvAppender.html">CsvAppender</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A CSV writer which creates a new file or appends rows to an existing file.  <a href="classEuclid_1_1Fits_1_1Test_1_1CsvAppender.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1ElBenchmark.html">ElBenchmark</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Standard EleFits.  <a href="classEuclid_1_1Fits_1_1Test_1_1ElBenchmark.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1ElColwiseBenchmark.html">ElColwiseBenchmark</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">EleFits without column I/O buffering.  <a href="classEuclid_1_1Fits_1_1Test_1_1ElColwiseBenchmark.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1MinimalFile.html">MinimalFile</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A minimal and temporary <a class="el" href="namespaceEuclid_1_1Fits.html" title="Wrapper classes to read and write Fits file contents.">Fits</a> file removed by destructor.  <a href="classEuclid_1_1Fits_1_1Test_1_1MinimalFile.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,9 +123,6 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1Test_1_1TemporarySifFile.html">TemporarySifFile</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temporary <a class="el" href="classEuclid_1_1Fits_1_1SifFile.html" title="Single image Fits file handler.">SifFile</a> with random name.  <a href="classEuclid_1_1Fits_1_1Test_1_1TemporarySifFile.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEuclid_1_1Fits_1_1Test_1_1TestCaseNotImplemented.html">TestCaseNotImplemented</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The exception which is thrown when a test case is not implemented.  <a href="structEuclid_1_1Fits_1_1Test_1_1TestCaseNotImplemented.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -219,13 +178,6 @@ template&lt;typename T &gt; </td></tr>
 <a class="elRef" href="http://en.cppreference.com/w/cpp/string/basic_string.html">std::string</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceEuclid_1_1Fits_1_1Test.html#a67448610c01784b1076d49c75b077e7e">temporaryFilename</a> ()</td></tr>
 <tr class="memdesc:a67448610c01784b1076d49c75b077e7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Valid name for temporary files. <br /></td></tr>
 <tr class="separator:a67448610c01784b1076d49c75b077e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:ad919f41e42b6a59aadba5dbd6f3f472a"><td class="memItemLeft" align="right" valign="top"><a id="ad919f41e42b6a59aadba5dbd6f3f472a"></a>
-constexpr <a class="elRef" href="http://en.cppreference.com/w/cpp/types/size_t.html">std::size_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceEuclid_1_1Fits_1_1Test.html#ad919f41e42b6a59aadba5dbd6f3f472a">columnCount</a> = std::tuple_size&lt;<a class="el" href="namespaceEuclid_1_1Fits_1_1Test.html#a11478bb303e3d97bfadf9615863d475b">BColumns</a>&gt;::value</td></tr>
-<tr class="memdesc:ad919f41e42b6a59aadba5dbd6f3f472a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of columns. <br /></td></tr>
-<tr class="separator:ad919f41e42b6a59aadba5dbd6f3f472a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

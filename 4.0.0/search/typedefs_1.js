@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['const_5fiterator_4250',['const_iterator',['../structEuclid_1_1Fits_1_1Position.html#a47744c1bd46cffa1e78a137757670b45',1,'Euclid::Fits::Position']]]
+  ['distmag_4155',['DistMag',['../classEuclid_1_1Fits_1_1Test_1_1SmallTable.html#a4ee238d4fc376efc816a0e8c861327f5',1,'Euclid::Fits::Test::SmallTable']]]
 ];

@@ -1,6 +1,0 @@
-<map id="Euclid::Fits::Test::Benchmark" name="Euclid::Fits::Test::Benchmark">
-<area shape="rect" id="node1" title="The base class for all test cases of the benchmark." alt="" coords="104,6,229,47"/>
-<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1Test_1_1CfitsioBenchmark.html" title="Vanilla CFitsIO." alt="" coords="5,97,149,138"/>
-<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Test_1_1ElColwiseBenchmark.html" title="EleFits without column I/O buffering." alt="" coords="174,97,340,138"/>
-<area shape="rect" id="node4" href="$classEuclid_1_1Fits_1_1Test_1_1ElBenchmark.html" title="Standard EleFits." alt="" coords="195,187,320,229"/>
-</map>
