@@ -17,7 +17,7 @@ As a spoiler, here is a simplified class diagram:
 \image html doc/diagrams/out/FitsData.png
 
 
-\section data-record Records
+\section data-record Header data classes
 
 
 `Record` is a very basic template structure which holds the following four fields:
@@ -31,7 +31,7 @@ Its template parameter is the type of the value.
 \see header_data_classes
 
 
-\section data-raster Image HDU data classes
+\section data-raster Image data classes
 
 
 `Raster`s are the in-memory representation of the _n_-D arrays of Fits.
@@ -44,7 +44,7 @@ A raster has:
 \see image_data_classes
 
 
-\section data-column Binary table HDU data classes
+\section data-column Binary table data classes
 
 
 `Column`s represent the contents of the data unit of binary table HDUs.

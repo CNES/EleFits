@@ -31,6 +31,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
+ * @ingroup data_classes
  * @brief A name and type.
  */
 template <typename T>
@@ -53,6 +54,7 @@ struct Named {
 };
 
 /**
+ * @ingroup data_classes
  * @brief An index and type.
  */
 template <typename T>
@@ -75,6 +77,7 @@ struct Indexed {
 };
 
 /**
+ * @ingroup bintable_data_classes
  * @brief Bounds of a closed index interval.
  * @details
  * The lower and upper bounds are named `front` and `back`
