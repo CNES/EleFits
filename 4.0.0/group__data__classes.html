@@ -73,7 +73,8 @@ $(function() {
 
 <div class="header">
   <div class="summary">
-<a href="#groups">Modules</a>  </div>
+<a href="#groups">Modules</a> &#124;
+<a href="#nested-classes">Classes</a>  </div>
   <div class="headertitle">
 <div class="title">Data classes</div>  </div>
 </div><!--header-->
@@ -88,7 +89,7 @@ Introduction</h1>
 <img src="FitsData.png" alt=""/>
 </div>
 <h1><a class="anchor" id="data-record"></a>
-Records</h1>
+Header data classes</h1>
 <p><code><a class="el" href="structEuclid_1_1Fits_1_1Record.html" title="Keyword-value pair with optional unit and comment.">Record</a></code> is a very basic template structure which holds the following four fields:</p><ul>
 <li><code>keyword</code>,</li>
 <li><code>value</code>,</li>
@@ -98,7 +99,7 @@ Records</h1>
 <p>Its template parameter is the type of the value.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__header__data__classes.html" title="Classes to manipulate the data stored header units.">Header data classes</a></dd></dl>
 <h1><a class="anchor" id="data-raster"></a>
-Image HDU data classes</h1>
+Image data classes</h1>
 <p><code><a class="el" href="classEuclid_1_1Fits_1_1Raster.html" title="Raster of a n-dimensional image (2D by default).">Raster</a></code>s are the in-memory representation of the <em>n</em>-D arrays of <a class="el" href="namespaceEuclid_1_1Fits.html" title="Wrapper classes to read and write Fits file contents.">Fits</a>. A raster has:</p><ul>
 <li>a dimension (number of axes) as a template parameter,</li>
 <li>a value type as a template parameter,</li>
@@ -107,7 +108,7 @@ Image HDU data classes</h1>
 </ul>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="group__image__data__classes.html" title="Image data containers and tools.">Image data classes</a></dd></dl>
 <h1><a class="anchor" id="data-column"></a>
-Binary table HDU data classes</h1>
+Binary table data classes</h1>
 <p><code><a class="el" href="classEuclid_1_1Fits_1_1Column.html" title="Binary table column data and metadata.">Column</a></code>s represent the contents of the data unit of binary table HDUs. They are made of two components:</p>
 <ul>
 <li>metadata as a <code><a class="el" href="structEuclid_1_1Fits_1_1ColumnInfo.html" title="Column metadata, i.e. { name, unit, repeatCount } and the value type as the template parameter.">ColumnInfo</a></code> instance,</li>
@@ -126,6 +127,15 @@ Modules</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:group__bintable__data__classes"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__bintable__data__classes.html">Binary table data classes</a></td></tr>
 <tr class="memdesc:group__bintable__data__classes"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binary table data containers and tools. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEuclid_1_1Fits_1_1Named.html">Euclid::Fits::Named&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A name and type.  <a href="structEuclid_1_1Fits_1_1Named.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEuclid_1_1Fits_1_1Indexed.html">Euclid::Fits::Indexed&lt; T &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An index and type.  <a href="structEuclid_1_1Fits_1_1Indexed.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->

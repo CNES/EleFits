@@ -121,7 +121,18 @@ Column, PtrColumn, VecColumn</h1>
 <div class="line"> </div>
 <div class="line">  <span class="keyword">auto</span> float32Column = Fits::Test::RandomVectorColumn&lt;float&gt;(8, 100);</div>
 <div class="line"> </div>
-</div><!-- fragment --><table class="memberdecls">
+</div><!-- fragment --><h1><a class="anchor" id="bintable_data_classes-helpers"></a>
+Segment, Indexed, Named</h1>
+<p>The following helpers are defined:</p><ul>
+<li><code><a class="el" href="structEuclid_1_1Fits_1_1Segment.html" title="Bounds of a closed index interval.">Segment</a></code> is just a pair of <code>long</code>s used to specify a chunk of a <code><a class="el" href="classEuclid_1_1Fits_1_1Column.html" title="Binary table column data and metadata.">Column</a></code>, e.g. for partial reading and writing of binary table HDUs;</li>
+<li><code><a class="el" href="structEuclid_1_1Fits_1_1Indexed.html" title="An index and type.">Indexed</a></code> and <code><a class="el" href="structEuclid_1_1Fits_1_1Named.html" title="A name and type.">Named</a></code> are typed wrappers of <code>long</code> and <code><a class="elRef" href="http://en.cppreference.com/w/cpp/string/basic_string.html" title="STL class.">std::string</a></code>, respectively: They are used to specify a column in a binary table HDU.</li>
+</ul>
+<p>The latter two classes are very useful to specify which columns to read as which types. For example, to read several columns of different types, do:</p>
+<div class="fragment"><div class="line">columns.readSeq(Indexed&lt;int&gt;(1), Indexed&lt;float&gt;(3), Indexed&lt;std::string&gt;(8));</div>
+</div><!-- fragment --><p>instead of:</p>
+<div class="fragment"><div class="line">columns.readSeq&lt;int, float, <a class="codeRef" href="http://en.cppreference.com/w/cpp/string/basic_string.html">std::string</a>&gt;({ 1, 3, 8 });</div>
+</div><!-- fragment --><p>which would be error-prone when reading many columns. </p>
+<table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEuclid_1_1Fits_1_1ColumnInfo.html">Euclid::Fits::ColumnInfo&lt; T &gt;</a></td></tr>
@@ -135,6 +146,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classEuclid_1_1Fits_1_1VecColumn.html">Euclid::Fits::VecColumn&lt; T &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classEuclid_1_1Fits_1_1Column.html" title="Binary table column data and metadata.">Column</a> which stores internally the data.  <a href="classEuclid_1_1Fits_1_1VecColumn.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEuclid_1_1Fits_1_1Segment.html">Euclid::Fits::Segment</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounds of a closed index interval.  <a href="structEuclid_1_1Fits_1_1Segment.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>

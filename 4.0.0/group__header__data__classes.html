@@ -108,7 +108,15 @@ RecordVec, RecordSeq</h1>
 <li><code><a class="el" href="classEuclid_1_1Fits_1_1RecordVec.html" title="A vector of records with find and conversion services.">RecordVec</a></code> is a homogeneous container, i.e. the value type is the same for each contained record;</li>
 <li><code>RecordSeq</code> is an alias for <code><a class="el" href="classEuclid_1_1Fits_1_1RecordVec.html" title="A vector of records with find and conversion services.">RecordVec</a>&lt;VariantValue&gt;</code>, which represents a run-time tuple.</li>
 </ul>
-<p>Records in those containers are convertible thanks to an internal casting system. </p>
+<p>Records in those containers are convertible thanks to an internal casting system.</p>
+<h1><a class="anchor" id="header_data_classes-helpers"></a>
+Named</h1>
+<p><code><a class="el" href="structEuclid_1_1Fits_1_1Named.html" title="A name and type.">Named</a></code> is a tool used to robustify the API, for more safety when reading a record (or a column). It conveys alone both the name and type of the record (or the column).</p>
+<p>In this context, it is used to write the type close to the name of the record in the function call, that is, writing:</p>
+<div class="fragment"><div class="line">header.parseSeq(Named&lt;int&gt;(<span class="stringliteral">&quot;A&quot;</span>), Named&lt;float&gt;(<span class="stringliteral">&quot;B&quot;</span>), Named&lt;std::string&gt;(<span class="stringliteral">&quot;C&quot;</span>));</div>
+</div><!-- fragment --><p>instead of:</p>
+<div class="fragment"><div class="line">header.parseSeq&lt;int, float, <a class="codeRef" href="http://en.cppreference.com/w/cpp/string/basic_string.html">std::string</a>&gt;({ <span class="stringliteral">&quot;A&quot;</span>, <span class="stringliteral">&quot;B&quot;</span>, <span class="stringliteral">&quot;C&quot;</span> });</div>
+</div><!-- fragment --><p>which would be error-prone when reading many records. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
