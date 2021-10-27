@@ -19,7 +19,7 @@ Jump to the configuration section.
 **TL;DR:**
 
 ```sh
-sudo install.sh
+sudo ./install.sh
 ```
 
 **More details:**
