@@ -1,4 +1,4 @@
-# Installation and configuration guide {#install_guide}
+# Installation and configuration guide
 
 ## Introduction
 
