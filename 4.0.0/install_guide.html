@@ -81,15 +81,20 @@ $(function() {
 Introduction</h1>
 <p>EleFits depends on Elements, a Euclid-developed build framework based on CMake. As such, EleFits can be used either from an Elements project or from a CMake project. <a class="el" href="namespaceEuclid.html" title="Euclid SGS namespace.">Euclid</a> developers benefit from the continuous delivery of EDEN (<a class="el" href="namespaceEuclid.html" title="Euclid SGS namespace.">Euclid</a> development environment) and have nothing to install. Others must install EleFits (and Elements) before they configure their project.</p>
 <h1><a class="anchor" id="autotoc_md23"></a>
-Install and test EleFits</h1>
+Download, install and test EleFits</h1>
 <h2><a class="anchor" id="autotoc_md24"></a>
 EDEN users</h2>
 <p>Nothing to install: all versions of EleFits are already part of EDEN. Jump to the configuration section.</p>
 <h2><a class="anchor" id="autotoc_md25"></a>
 Non-EDEN users</h2>
-<p><b>TL;DR:</b></p>
-<div class="fragment"><div class="line">sudo ./install.sh</div>
-</div><!-- fragment --><p><b>More details:</b></p>
+<h3><a class="anchor" id="autotoc_md26"></a>
+TL;DR</h3>
+<p>Download and run <a href="https://raw.githubusercontent.com/CNES/EleFits/4.0.0/install.sh">the installation script</a>:</p>
+<div class="fragment"><div class="line">wget https://raw.githubusercontent.com/CNES/EleFits/4.0.0/install.sh</div>
+<div class="line">chmod +x install.sh</div>
+<div class="line">sudo ./install.sh</div>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md27"></a>
+More details</h3>
 <p>In the remaining, we assume that you're putting the source code of Elements and EleFits in some <code>&lt;root&gt;</code> directory.</p>
 <p>You'll first need to get Elements:</p>
 <div class="fragment"><div class="line"><span class="keyword">cd</span> &lt;<span class="keywordtype">root</span>&gt;</div>
@@ -105,13 +110,14 @@ Non-EDEN users</h2>
 <div class="line"><span class="keyword">cd</span> <span class="keyword">EleFits</span></div>
 <div class="line"><span class="keyword">mkdir</span> <span class="keyword">build</span> ; <span class="keyword">cd</span> <span class="keyword">build</span></div>
 <div class="line"><span class="keyword">cmake</span> -<span class="keyword">DCMAKE_INSTALL_PREFIX</span>=/<span class="keyword">usr</span>/<span class="keyword">local</span> -<span class="keyword">DCMAKE_PREFIX_PATH</span>=/<span class="keyword">usr</span>/<span class="keyword">local</span> ..</div>
+<div class="line"><span class="keyword">make</span> <span class="keyword">tests</span></div>
 <div class="line"><span class="keyword">sudo</span> <span class="keyword">make</span> <span class="keyword">install</span></div>
 </div><!-- fragment --><p>This will install the the set of libraries in <code>/usr/local/lib</code> (or <code>usr/local/lib64</code>), headers in <code>/usr/local/include</code>, and executables in <code>/usr/local/bin</code>. The end-user library is named EleFits, while the low-level API is named EleCfitsioWrapper.</p>
 <p>An install script is provided to perform all those steps, <code>install.sh</code>. Check the help as:</p>
 <div class="fragment"><div class="line">install.sh -h</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md26"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md28"></a>
 Configure a project to depend on EleFits</h1>
-<h2><a class="anchor" id="autotoc_md27"></a>
+<h2><a class="anchor" id="autotoc_md29"></a>
 Elements project</h2>
 <p>An Elements project is made of modules. The project contains a root <code>CMakeLists.txt</code>, and each module contains a <code>CMakeLists.txt</code>. For more information, please refer to the <a href="https://euclid.roe.ac.uk/projects/codeen-users/wiki/User_Bui_Too">Elements documentation</a>.</p>
 <p>Using the package means declaring the dependency to the EleFits project in the root <code>CMakeLists.txt</code>:</p>
@@ -127,7 +133,7 @@ Elements project</h2>
 <div class="line">    <span class="keyword">LINK_LIBRARIES</span> <span class="keyword">ElementsKernel</span> <span class="keyword">EleFits</span></div>
 <div class="line">    <span class="keyword">INCLUDE_DIRS</span> <span class="keyword">ElementsKernel</span> <span class="keyword">EleFits</span></div>
 <div class="line">    <span class="keyword">PUBLIC_HEADERS</span> &lt;<span class="keywordtype">library_name</span>&gt;)</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md28"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md30"></a>
 CMake project</h2>
 <p>Here's a minimal <code>CMakeLists.txt</code> file to use the EleFits library (end-user API):</p>
 <div class="fragment"><div class="line"><span class="keyword">CMAKE_MINIMUM_REQUIRED</span>(<span class="keyword">VERSION</span> &lt;<span class="keywordtype">cmake_version</span>&gt;)</div>
@@ -144,6 +150,7 @@ CMake project</h2>
 <div class="fragment"><div class="line"><span class="keyword">export</span> <span class="keyword">LD_LIBRARY_PATH</span>=$<span class="keyword">LD_LIBRARY_PATH:</span>/<span class="keyword">usr</span>/<span class="keyword">local</span>/<span class="keyword">lib:</span>/<span class="keyword">usr</span>/<span class="keyword">local</span>/<span class="keyword">lib64</span></div>
 </div><!-- fragment --><p>which can be added to the <code>.bashrc</code>, e.g.:</p>
 <div class="fragment"><div class="line"><span class="keyword">echo</span> <span class="stringliteral">&#39;export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64&#39;</span> &gt;&gt; ~/.<span class="keyword">bashrc</span></div>
+<div class="line"><span class="keyword">source</span> ~/.<span class="keyword">bashrc</span></div>
 </div><!-- fragment --> </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
