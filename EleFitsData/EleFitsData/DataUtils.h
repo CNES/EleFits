@@ -166,34 +166,22 @@ TReturn tupleTransformImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is.
   return { func(std::get<Is>(tuple))... };
 }
 
-/**
- * @brief Traits class to test wether a sequence is a tuple.
- */
-template <typename TSeq>
-struct IsTupleImpl : public std::false_type {};
-
-/**
- * @brief Tuple specialization.
- */
-template <typename... Ts>
-struct IsTupleImpl<std::tuple<Ts...>> : public std::true_type {};
-
-/**
- * @brief Array specialization.
- */
-template <typename T, std::size_t n>
-struct IsTupleImpl<std::array<T, n>> : public std::true_type {};
-
 } // namespace Internal
 /// @endcond
 
 /**
- * @brief Check whether a type is a tuple.
+ * @brief Traits class to test wether a sequence is a tuple.
+ * @details
+ * Use `isTuple<T>::value` to get a `bool`.
  */
-template <typename TSeq>
-constexpr bool isTuple() {
-  return Internal::IsTupleImpl<std::decay_t<TSeq>>::value;
-}
+template<typename TSeq>
+struct isTuple : std::false_type {};
+
+/**
+ * @copydoc isTuple
+ */
+template<typename... Ts>
+struct isTuple<std::tuple<Ts...>> : std::true_type {};
 
 /**
  * @brief Convert a tuple to a custom structure.
@@ -214,25 +202,25 @@ constexpr decltype(auto) tupleApply(TTuple&& tuple, TFunc&& func) {
       Internal::tupleIndexSequence<TTuple>());
 }
 
-// FIXME use enable_if to dispatch based on the presence of get() or begin()
-
 /**
  * @brief Apply a void-returning function to each element of a sequence.
  */
-template <typename TTuple, typename TFunc, typename = std::enable_if_t<isTuple<TTuple>()>>
-void seqForeach(TTuple&& tuple, TFunc&& func) {
+template <typename TSeq, typename TFunc>
+std::enable_if_t<isTuple<std::decay_t<TSeq>>::value>
+seqForeach(TSeq&& seq, TFunc&& func) {
   Internal::tupleForeachImpl(
-      std::forward<TTuple>(tuple),
+      std::forward<TSeq>(seq),
       std::forward<TFunc>(func),
-      Internal::tupleIndexSequence<TTuple>());
+      Internal::tupleIndexSequence<TSeq>());
 }
 
 /**
  * @copydoc seqForeach()
  */
-template <typename T, typename TFunc>
-void seqForeach(const std::vector<T>& vector, TFunc&& func) {
-  for (const auto& element : vector) {
+template <typename TSeq, typename TFunc>
+std::enable_if_t<not isTuple<std::decay_t<TSeq>>::value>
+seqForeach(const TSeq& seq, TFunc&& func) {
+  for (const auto& element : seq) {
     func(element);
   }
 }
@@ -240,32 +228,10 @@ void seqForeach(const std::vector<T>& vector, TFunc&& func) {
 /**
  * @copydoc seqForeach()
  */
-template <typename T, typename TFunc>
-void seqForeach(std::vector<T>&& vector, TFunc&& func) {
-  for (auto& element : vector) {
-    func(element);
-  }
-}
-
-template<typename T>
-class RecordVec; // FIXME rm once enable_if is used
-
-/**
- * @copydoc seqForeach()
- */
-template <typename T, typename TFunc>
-void seqForeach(const RecordVec<T>& vector, TFunc&& func) {
-  for (const auto& element : vector) {
-    func(element);
-  }
-}
-
-/**
- * @copydoc seqForeach()
- */
-template <typename T, typename TFunc>
-void seqForeach(RecordVec<T>&& vector, TFunc&& func) {
-  for (auto& element : vector) {
+template <typename TSeq, typename TFunc>
+std::enable_if_t<not isTuple<std::decay_t<TSeq>>::value>
+seqForeach(TSeq& seq, TFunc&& func) {
+  for (auto& element : seq) {
     func(element);
   }
 }
@@ -273,31 +239,23 @@ void seqForeach(RecordVec<T>&& vector, TFunc&& func) {
 /**
  * @brief Apply a transform to each element of a sequence and create a user-defined struct from the results.
  */
-template <typename TReturn, typename TTuple, typename TFunc>
-TReturn seqTransform(TTuple&& tuple, TFunc&& func) {
+template <typename TReturn, typename TSeq, typename TFunc>
+std::enable_if_t<isTuple<std::decay_t<TSeq>>::value, TReturn>
+seqTransform(TSeq&& seq, TFunc&& func) {
   return Internal::tupleTransformImpl<TReturn>(
-      std::forward<TTuple>(tuple),
+      std::forward<TSeq>(seq),
       std::forward<TFunc>(func),
-      Internal::tupleIndexSequence<TTuple>());
+      Internal::tupleIndexSequence<TSeq>());
 }
 
 /**
  * @copydoc seqTransform()
  */
-template <typename TReturn, typename T, typename TFunc>
-TReturn seqTransform(const std::vector<T>& vector, TFunc&& func) {
-  TReturn res(vector.size);
-  std::transform(vector.begin(), vector.end(), res.begin(), std::forward<TFunc>(func));
-  return res;
-}
-
-/**
- * @copydoc seqTransform()
- */
-template <typename TReturn, typename T, typename TFunc>
-TReturn seqTransform(const RecordVec<T>& vector, TFunc&& func) {
-  TReturn res(vector.size);
-  std::transform(std::begin(vector), std::end(vector), std::begin(res), std::forward<TFunc>(func));
+template <typename TReturn, typename TSeq, typename TFunc>
+std::enable_if_t<not isTuple<std::decay_t<TSeq>>::value, TReturn>
+seqTransform(const TSeq& seq, TFunc&& func) {
+  TReturn res(seq.size);
+  std::transform(seq.begin(), seq.end(), res.begin(), std::forward<TFunc>(func));
   return res;
 }
 

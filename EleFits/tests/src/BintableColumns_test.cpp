@@ -149,11 +149,6 @@ void checkVectorWriteRead<std::string>(const BintableColumns& du) {
 
 ELEFITS_FOREACH_COLUMN_TYPE(SEQ_WRITE_READ_TEST)
 
-BOOST_FIXTURE_TEST_CASE(tuple_write_read_test, Test::NewMefFile) {
-  const auto& fromTuple = this->initBintableExt("TUPLE");
-  checkTupleWriteRead<float>(fromTuple.columns());
-}
-
 // BOOST_FIXTURE_TEST_CASE(vector_write_read_test, Test::TemporaryMefFile) {
 //   const auto& fromVector = this->initBintableExt("VECTOR");
 //   checkVectorWriteRead<float>(fromVector.columns());
