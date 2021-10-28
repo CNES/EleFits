@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_CASE(minimal_file_has_accessible_primary_test, Fits::Test::Mi
 BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   SmallRaster input;
-  HduAccess::createImageExtension(this->fptr, "IMGEXT", input);
+  HduAccess::assignImageExtension(this->fptr, "IMGEXT", input);
   BOOST_TEST(HduAccess::currentIndex(this->fptr) == 2);
   BOOST_TEST((HduAccess::currentType(this->fptr) == Fits::HduCategory::Image));
   HduAccess::gotoNext(this->fptr, -1);
@@ -57,10 +57,10 @@ BOOST_FIXTURE_TEST_CASE(access_hdu_by_type, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   const std::string name = "NAME";
   constexpr long primaryIndex = 1;
-  HduAccess::createImageExtension(this->fptr, name, SmallRaster());
+  HduAccess::assignImageExtension(this->fptr, name, SmallRaster());
   constexpr long imageIndex = primaryIndex + 1;
   BOOST_TEST(HduAccess::currentIndex(this->fptr) == imageIndex);
-  HduAccess::createBintableExtension(this->fptr, name, SmallTable().nameCol);
+  HduAccess::assignBintableExtension(this->fptr, name, SmallTable().nameCol);
   constexpr long bintableIndex = imageIndex + 1;
   BOOST_TEST(HduAccess::currentIndex(this->fptr) == bintableIndex);
   HduAccess::gotoName(this->fptr, name);

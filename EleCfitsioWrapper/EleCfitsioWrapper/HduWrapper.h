@@ -136,25 +136,25 @@ void createMetadataExtension(fitsfile* fptr, const std::string& name);
  * @brief Create a new image HDU with given name, pixel type and shape.
  */
 template <typename T, long n = 2>
-void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<n>& shape);
+void initImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<n>& shape);
 
 /**
  * @brief Write a Raster in a new image HDU.
  */
 template <typename T, long n = 2>
-void createImageExtension(fitsfile* fptr, const std::string& name, const Fits::Raster<T, n>& raster);
+void assignImageExtension(fitsfile* fptr, const std::string& name, const Fits::Raster<T, n>& raster);
 
 /**
  * @brief Create a new binary table HDU with given name and column infos.
  */
 template <typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::ColumnInfo<Ts>&... infos);
+void initBintableExtension(fitsfile* fptr, const std::string& name, const Fits::ColumnInfo<Ts>&... infos);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.
  */
 template <typename... Ts>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<Ts>&... columns);
+void assignBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<Ts>&... columns);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.
@@ -164,7 +164,7 @@ void createBintableExtension(fitsfile* fptr, const std::string& name, const Fits
  * Should we provide more DoFs, like an offset or a full list of indices?
  */
 template <typename Tuple, std::size_t size = std::tuple_size<Tuple>::value>
-void createBintableExtension(fitsfile* fptr, const std::string& name, const Tuple& table);
+void assignBintableExtension(fitsfile* fptr, const std::string& name, const Tuple& table);
 
 /**
  * @brief Delete the HDU at given index.

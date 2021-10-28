@@ -143,7 +143,7 @@ bool updateVersion(fitsfile* fptr, long version) {
 }
 
 void createMetadataExtension(fitsfile* fptr, const std::string& name) {
-  createImageExtension<unsigned char, 0>(fptr, name, Fits::Position<0>());
+  initImageExtension<unsigned char, 0>(fptr, name, Fits::Position<0>());
 }
 
 void deleteHdu(fitsfile* fptr, long index) {

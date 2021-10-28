@@ -49,8 +49,8 @@ using namespace Euclid::Fits;
 //     writeSeq (const Column< Ts > &... columns) => TEST
 //   writeSegmentSeq (long firstRow, Column< Ts > &... columns) => TEST
 //
-// initSeq (TSeq &&infos, long index)
-//   initSeq (const ColumnInfo< Ts > &... infos, long index) => TEST
+// initSeq (long index, TSeq &&infos)
+//   initSeq (long index, const ColumnInfo< Ts > &... infos) => TEST
 //
 // removeSeq (const std::vector< long > &indices)
 //   removeSeq (const std::vector< std::string > &names) => TEST
@@ -77,6 +77,87 @@ BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
   columns.writeSegmentSeq(-1, table.nameCol, table.radecCol);
   BOOST_TEST(columns.readRowCount() == initSize * 2);
 }
+
+template<typename T>
+void checkTupleWriteRead(const BintableColumns& du) {
+  const long rowCount = 10000;
+  const long repeatCount = 3;
+  Test::RandomScalarColumn<T> scalar(rowCount);
+  Test::RandomVectorColumn<T> vector(repeatCount, rowCount);
+  du.initSeq(0, vector.info(), scalar.info()); // Inverted for robustness test
+  du.writeSeq(scalar, vector);
+  BOOST_TEST(du.readRowCount() == rowCount);
+  const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1));
+  const auto& res0 = std::get<0>(res);
+  const auto& res1 = std::get<1>(res);
+  BOOST_TEST((res0.info() == vector.info()));
+  BOOST_TEST((res1.info() == scalar.info()));
+  BOOST_TEST(res1.info().name == scalar.info().name);
+  BOOST_TEST(res1.info().unit == scalar.info().unit);
+  BOOST_TEST(res1.info().repeatCount == scalar.info().repeatCount);
+  BOOST_TEST(res0.vector() == vector.vector());
+  BOOST_TEST(res1.vector() == scalar.vector());
+}
+
+template<>
+void checkTupleWriteRead<std::string>(const BintableColumns& du) {
+  // FIXME (cannot use RandomVectorColumn)
+  (void)du;
+}
+
+template<>
+void checkTupleWriteRead<std::uint64_t>(const BintableColumns& du) {
+  // FIXME CFitsIO bug?
+  (void)du;
+}
+
+template<typename T>
+void checkVectorWriteRead(const BintableColumns& du) {
+  const long rowCount = 10000;
+  const long repeatCount = 3;
+  std::vector<ColumnInfo<T>> infos { { "VECTOR", "m", repeatCount }, { "SCALAR", "s", 1 } }; // Inverted for robustness test
+  std::vector<VecColumn<T>> seq {
+      { infos[1], Test::generateRandomVector<T>(rowCount) },
+      { infos[0], Test::generateRandomVector<T>(repeatCount * rowCount) }
+  };
+  du.initSeq(0, infos);
+  du.writeSeq(seq);
+  const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1)); // TODO readSeq<T>({ 0, 1 })
+  const auto& res0 = std::get<0>(res);
+  const auto& res1 = std::get<1>(res);
+  BOOST_TEST((res0.info() == seq[1].info()));
+  BOOST_TEST((res1.info() == seq[0].info()));
+  BOOST_TEST(res0.vector() == seq[1].vector());
+  BOOST_TEST(res0.vector() == seq[0].vector());
+}
+
+template<>
+void checkVectorWriteRead<std::string>(const BintableColumns& du) {
+  // FIXME (cannot use RandomVectorColumn)
+  (void)du;
+}
+
+#define SEQ_WRITE_READ_TEST(type, name) \
+  BOOST_FIXTURE_TEST_CASE(name##_tuple_write_read_test, Test::TemporaryMefFile) { \
+    const auto& fromTuple = this->initBintableExt("TUPLE"); \
+    checkTupleWriteRead<type>(fromTuple.columns()); \
+  } \
+  // BOOST_FIXTURE_TEST_CASE(name##_vector_write_read_test, Test::TemporaryMefFile) { \
+  //   const auto& fromVector = this->initBintableExt("VECTOR"); \
+  //   checkVectorWriteRead<type>(fromVector.columns()); \
+  // }
+
+ELEFITS_FOREACH_COLUMN_TYPE(SEQ_WRITE_READ_TEST)
+
+BOOST_FIXTURE_TEST_CASE(tuple_write_read_test, Test::NewMefFile) {
+  const auto& fromTuple = this->initBintableExt("TUPLE");
+  checkTupleWriteRead<float>(fromTuple.columns());
+}
+
+// BOOST_FIXTURE_TEST_CASE(vector_write_read_test, Test::TemporaryMefFile) {
+//   const auto& fromVector = this->initBintableExt("VECTOR");
+//   checkVectorWriteRead<float>(fromVector.columns());
+// }
 
 //-----------------------------------------------------------------------------
 
