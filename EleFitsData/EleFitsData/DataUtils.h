@@ -254,7 +254,7 @@ seqTransform(TSeq&& seq, TFunc&& func) {
 template <typename TReturn, typename TSeq, typename TFunc>
 std::enable_if_t<not isTuple<std::decay_t<TSeq>>::value, TReturn>
 seqTransform(const TSeq& seq, TFunc&& func) {
-  TReturn res(seq.size);
+  TReturn res(seq.size());
   std::transform(seq.begin(), seq.end(), res.begin(), std::forward<TFunc>(func));
   return res;
 }

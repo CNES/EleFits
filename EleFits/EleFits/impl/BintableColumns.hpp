@@ -296,19 +296,21 @@ void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
 template <typename TSeq>
 void BintableColumns::initSeq(long index, TSeq&& infos) const {
   m_edit();
-  auto names = seqTransform<Cfitsio::CStrArray>(infos, [&](const auto& info) {
+  const auto nameVec = seqTransform<std::vector<std::string>>(std::forward<TSeq>(infos), [&](const auto& info) {
     return info.name;
   });
-  auto tforms = seqTransform<Cfitsio::CStrArray>(infos, [&](const auto& info) {
+  Cfitsio::CStrArray names(nameVec);
+  const auto tformVec = seqTransform<std::vector<std::string>>(std::forward<TSeq>(infos), [&](const auto& info) {
     using Value = typename std::decay_t<decltype(info)>::Value;
     return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeatCount);
   });
+  Cfitsio::CStrArray tforms(tformVec);
   int status = 0;
   int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_cols(m_fptr, cfitsioIndex, names.size(), names.data(), tforms.data(), &status);
   // TODO to Cfitsio
   long i = cfitsioIndex;
-  seqForeach(infos, [&](const auto& info) { // FIXME duplication
+  seqForeach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
       const Record<std::string> record { "TUNIT" + std::to_string(i), info.unit, "", "physical unit of field" };
       Cfitsio::HeaderIo::updateRecord(m_fptr, record);
