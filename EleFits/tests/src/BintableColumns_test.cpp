@@ -30,7 +30,7 @@ using namespace Euclid::Fits;
 // readSegmentSeqTo (rows, indices, columns) -> loop on readSegmentTo (rows, index, column)
 // 	readSeqTo (indices, columns)
 // 		readSeq (indices...)
-// 			readSeq (names...) => TEST
+// 			readSeq (names...) => SEQ_WRITE_READ_TEST
 // 		readSeqTo (names, columns)
 // 			readSeqTo (columns)
 // 				readSeqTo (columns...) => TEST
@@ -45,12 +45,12 @@ using namespace Euclid::Fits;
 // 	readSegmentSeqTo (rows, indices, columns...) => TEST
 //
 // writeSegmentSeq (long firstRow, TSeq &&columns) -> loop on writeSegment (row, column)
-//   writeSeq (TSeq &&columns)
-//     writeSeq (const Column< Ts > &... columns) => TEST
+//   writeSeq (TSeq &&columns) => SEQ_WRITE_READ_TEST
+//     writeSeq (const Column< Ts > &... columns) => SEQ_WRITE_READ_TEST
 //   writeSegmentSeq (long firstRow, Column< Ts > &... columns) => TEST
 //
-// initSeq (long index, TSeq &&infos)
-//   initSeq (long index, const ColumnInfo< Ts > &... infos) => TEST
+// initSeq (long index, TSeq &&infos) => SEQ_WRITE_READ_TEST
+//   initSeq (long index, const ColumnInfo< Ts > &... infos) => SEQ_WRITE_READ_TEST
 //
 // removeSeq (const std::vector< long > &indices)
 //   removeSeq (const std::vector< std::string > &names) => TEST
@@ -87,7 +87,7 @@ void checkTupleWriteRead(const BintableColumns& du) {
   du.initSeq(0, vector.info(), scalar.info()); // Inverted for robustness test
   du.writeSeq(scalar, vector);
   BOOST_TEST(du.readRowCount() == rowCount);
-  const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1));
+  const auto res = du.readSeq(Named<T>(vector.info().name), Named<T>(scalar.info().name));
   const auto& res0 = std::get<0>(res);
   const auto& res1 = std::get<1>(res);
   BOOST_TEST((res0.info() == vector.info()));
@@ -122,7 +122,7 @@ void checkVectorWriteRead(const BintableColumns& du) {
   };
   du.initSeq(0, infos);
   du.writeSeq(seq);
-  const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1)); // TODO readSeq<T>({ 0, 1 })
+  const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1)); // TODO readSeq<T>({ 0, 1 }) and idem with strings?
   const auto& res0 = std::get<0>(res);
   const auto& res1 = std::get<1>(res);
   BOOST_TEST((res0.info() == seq[1].info()));

@@ -1,5 +1,16 @@
 # Change log
 
+## 4.0.1
+
+### Bug fix
+
+* `BintableColumns::initSeq()` was ill-formed
+
+### New features
+
+* Empty binary table HDUs can be created
+* Homogeneous sequences of columns can be read and written (not only tuples)
+
 ## 4.0
 
 ### Renaming
