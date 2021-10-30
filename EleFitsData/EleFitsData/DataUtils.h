@@ -24,8 +24,8 @@
 #include <array>
 #include <string>
 #include <tuple>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 namespace Euclid {
 namespace Fits {
@@ -166,22 +166,36 @@ TReturn tupleTransformImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is.
   return { func(std::get<Is>(tuple))... };
 }
 
+/**
+ * @brief Traits class to test wether a sequence is a tuple.
+ * @details
+ * Use `IsTupleImpl<T>::value` to get a `bool`.
+ */
+template <typename TSeq>
+struct IsTupleImpl : std::false_type {};
+
+/**
+ * @copydoc IsTupleImpl
+ */
+template <typename... Ts>
+struct IsTupleImpl<std::tuple<Ts...>> : std::true_type {};
+
+/**
+ * @copydoc IsTupleImpl
+ */
+template <typename T, std::size_t N>
+struct IsTupleImpl<std::array<T, N>> : std::true_type {};
+
 } // namespace Internal
 /// @endcond
 
 /**
- * @brief Traits class to test wether a sequence is a tuple.
- * @details
- * Use `isTuple<T>::value` to get a `bool`.
+ * @brief Test whether a sequence is a tuple.
  */
-template<typename TSeq>
-struct isTuple : std::false_type {};
-
-/**
- * @copydoc isTuple
- */
-template<typename... Ts>
-struct isTuple<std::tuple<Ts...>> : std::true_type {};
+template <typename TSeq>
+constexpr bool isTuple() {
+  return Internal::IsTupleImpl<std::decay_t<TSeq>>::value;
+}
 
 /**
  * @brief Convert a tuple to a custom structure.
@@ -206,20 +220,15 @@ constexpr decltype(auto) tupleApply(TTuple&& tuple, TFunc&& func) {
  * @brief Apply a void-returning function to each element of a sequence.
  */
 template <typename TSeq, typename TFunc>
-std::enable_if_t<isTuple<std::decay_t<TSeq>>::value>
-seqForeach(TSeq&& seq, TFunc&& func) {
-  Internal::tupleForeachImpl(
-      std::forward<TSeq>(seq),
-      std::forward<TFunc>(func),
-      Internal::tupleIndexSequence<TSeq>());
+std::enable_if_t<isTuple<TSeq>()> seqForeach(TSeq&& seq, TFunc&& func) {
+  Internal::tupleForeachImpl(std::forward<TSeq>(seq), std::forward<TFunc>(func), Internal::tupleIndexSequence<TSeq>());
 }
 
 /**
  * @copydoc seqForeach()
  */
 template <typename TSeq, typename TFunc>
-std::enable_if_t<not isTuple<std::decay_t<TSeq>>::value>
-seqForeach(const TSeq& seq, TFunc&& func) {
+std::enable_if_t<not isTuple<TSeq>()> seqForeach(const TSeq& seq, TFunc&& func) {
   for (const auto& element : seq) {
     func(element);
   }
@@ -229,8 +238,7 @@ seqForeach(const TSeq& seq, TFunc&& func) {
  * @copydoc seqForeach()
  */
 template <typename TSeq, typename TFunc>
-std::enable_if_t<not isTuple<std::decay_t<TSeq>>::value>
-seqForeach(TSeq& seq, TFunc&& func) {
+std::enable_if_t<not isTuple<TSeq>()> seqForeach(TSeq& seq, TFunc&& func) {
   for (auto& element : seq) {
     func(element);
   }
@@ -240,8 +248,7 @@ seqForeach(TSeq& seq, TFunc&& func) {
  * @brief Apply a transform to each element of a sequence and create a user-defined struct from the results.
  */
 template <typename TReturn, typename TSeq, typename TFunc>
-std::enable_if_t<isTuple<std::decay_t<TSeq>>::value, TReturn>
-seqTransform(TSeq&& seq, TFunc&& func) {
+std::enable_if_t<isTuple<TSeq>(), TReturn> seqTransform(TSeq&& seq, TFunc&& func) {
   return Internal::tupleTransformImpl<TReturn>(
       std::forward<TSeq>(seq),
       std::forward<TFunc>(func),
@@ -252,8 +259,7 @@ seqTransform(TSeq&& seq, TFunc&& func) {
  * @copydoc seqTransform()
  */
 template <typename TReturn, typename TSeq, typename TFunc>
-std::enable_if_t<not isTuple<std::decay_t<TSeq>>::value, TReturn>
-seqTransform(const TSeq& seq, TFunc&& func) {
+std::enable_if_t<not isTuple<TSeq>(), TReturn> seqTransform(const TSeq& seq, TFunc&& func) {
   TReturn res(seq.size());
   std::transform(seq.begin(), seq.end(), res.begin(), std::forward<TFunc>(func));
   return res;
