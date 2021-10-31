@@ -178,9 +178,12 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Indexed<Ts>&... indices) const {
-  // FIXME rows.resolve()
-  std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(indices), rows.size() }... };
-  readSegmentSeqTo(rows.front, { indices.index... }, columns);
+  auto resolvedRows = rows;
+  if (rows.back == -1) {
+    resolvedRows.back = readRowCount() - 1;
+  }
+  std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(indices), resolvedRows.size() }... };
+  readSegmentSeqTo(resolvedRows, { indices.index... }, columns);
   return columns;
 }
 

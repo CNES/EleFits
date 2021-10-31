@@ -80,23 +80,39 @@ BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
 
 template <typename T>
 void checkTupleWriteRead(const BintableColumns& du) {
+
+  /* Generate */
   const long rowCount = 10000;
   const long repeatCount = 3;
   Test::RandomScalarColumn<T> scalar(rowCount);
   Test::RandomVectorColumn<T> vector(repeatCount, rowCount);
+
+  /* Write */
   du.initSeq(0, vector.info(), scalar.info()); // Inverted for robustness test
   du.writeSeq(scalar, vector);
   BOOST_TEST(du.readRowCount() == rowCount);
+
+  /* Read */
   const auto res = du.readSeq(Named<T>(vector.info().name), Named<T>(scalar.info().name));
   const auto& res0 = std::get<0>(res);
   const auto& res1 = std::get<1>(res);
   BOOST_TEST((res0.info() == vector.info()));
   BOOST_TEST((res1.info() == scalar.info()));
-  BOOST_TEST(res1.info().name == scalar.info().name);
-  BOOST_TEST(res1.info().unit == scalar.info().unit);
-  BOOST_TEST(res1.info().repeatCount == scalar.info().repeatCount);
   BOOST_TEST(res0.vector() == vector.vector());
   BOOST_TEST(res1.vector() == scalar.vector());
+
+  /* Append */
+  du.writeSegmentSeq(-1, scalar, vector);
+  BOOST_TEST(du.readRowCount() == rowCount * 2);
+
+  /* Read */
+  const auto res2 = du.readSegmentSeq({ rowCount, -1 }, Named<T>(vector.info().name), Named<T>(scalar.info().name));
+  const auto& res20 = std::get<0>(res2);
+  const auto& res21 = std::get<1>(res2);
+  BOOST_TEST((res20.info() == vector.info()));
+  BOOST_TEST((res21.info() == scalar.info()));
+  BOOST_TEST(res20.vector() == vector.vector());
+  BOOST_TEST(res21.vector() == scalar.vector());
 }
 
 template <>
