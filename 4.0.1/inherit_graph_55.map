@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="/home/user/Work/Projects/EleFits/build.x86_64-conda_cos6-gcc73-o2g/doc/doxygen/cppreference-doxygen-web.tag.xml$cpp/error/exception.html" title="STL class." alt="" coords="5,195,120,221"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1FitsError.html" title="Base of all exceptions thrown directly by the library." alt="" coords="168,195,320,221"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Cfitsio_1_1CfitsioError.html" title="The error class which is thrown when an error occurs in a CFitsIO routine." alt="" coords="389,5,547,46"/>
+<area shape="rect" id="node4" href="$structEuclid_1_1Fits_1_1ChecksumError.html" title="Exception thrown if a checksum is missing or incorrect." alt="" coords="369,71,567,97"/>
+<area shape="rect" id="node5" href="$structEuclid_1_1Fits_1_1HduCategory_1_1IncompatibleTrits.html" title="The exception thrown when trying to combine incompatible trits." alt="" coords="376,122,560,163"/>
+<area shape="rect" id="node6" href="$structEuclid_1_1Fits_1_1KeywordExistsError.html" title="Exception thrown when a keyword already exists." alt="" coords="371,187,565,229"/>
+<area shape="rect" id="node7" href="$structEuclid_1_1Fits_1_1KeywordNotFoundError.html" title="Exception thrown when a keyword is not found." alt="" coords="379,253,557,294"/>
+<area shape="rect" id="node8" href="$classEuclid_1_1Fits_1_1OutOfBoundsError.html" title="Exception thrown if a value lies out of given bounds." alt="" coords="375,318,561,359"/>
+<area shape="rect" id="node9" href="$classEuclid_1_1Fits_1_1ReadOnlyError.html" title="Exception thrown if trying to write a read&#45;only file." alt="" coords="372,384,564,411"/>
+</map>

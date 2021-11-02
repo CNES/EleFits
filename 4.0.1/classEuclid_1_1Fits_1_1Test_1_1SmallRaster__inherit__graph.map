@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::Test::SmallRaster" name="Euclid::Fits::Test::SmallRaster">
+<area shape="rect" id="node1" title="A 2D image Raster of floats." alt="" coords="24,187,149,229"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1VecRaster.html" title=" " alt="" coords="5,97,168,138"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Raster.html" title=" " alt="" coords="16,6,157,47"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::ReadOnlyError" name="Euclid::Fits::ReadOnlyError">
+<area shape="rect" id="node1" title="Exception thrown if trying to write a read&#45;only file." alt="" coords="5,155,197,181"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1FitsError.html" title="Base of all exceptions thrown directly by the library." alt="" coords="25,80,177,107"/>
+<area shape="rect" id="node3" href="/home/user/Work/Projects/EleFits/build.x86_64-conda_cos6-gcc73-o2g/doc/doxygen/cppreference-doxygen-web.tag.xml$cpp/error/exception.html" title="STL class." alt="" coords="44,5,159,32"/>
+</map>

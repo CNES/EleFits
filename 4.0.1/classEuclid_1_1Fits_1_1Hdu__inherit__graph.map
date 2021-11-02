@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::Hdu" name="Euclid::Fits::Hdu">
+<area shape="rect" id="node1" title="Base class for ImageHdu and BintableHdu." alt="" coords="131,5,256,32"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1BintableHdu.html" title="Binary table HDU reader&#45;writer." alt="" coords="5,80,184,107"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1ImageHdu.html" title="Image HDU reader&#45;writer." alt="" coords="209,80,375,107"/>
+</map>

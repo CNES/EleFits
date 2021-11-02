@@ -1,0 +1,9 @@
+<map id="Euclid::Fits::FitsFile" name="Euclid::Fits::FitsFile">
+<area shape="rect" id="node1" title="Fits file reader&#45;writer." alt="" coords="6,111,149,137"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1MefFile.html" title="Multi&#45;Extension Fits file reader&#45;writer." alt="" coords="198,77,343,104"/>
+<area shape="rect" id="node5" href="$classEuclid_1_1Fits_1_1SifFile.html" title="Single image Fits file handler." alt="" coords="201,143,340,169"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Test_1_1NewMefFile.html" title="MefFile with random name and create&#45;only policy." alt="" coords="403,5,528,46"/>
+<area shape="rect" id="node4" href="$classEuclid_1_1Fits_1_1Test_1_1TemporaryMefFile.html" title="Temporary MefFile with random name." alt="" coords="393,70,538,111"/>
+<area shape="rect" id="node6" href="$classEuclid_1_1Fits_1_1Test_1_1NewSifFile.html" title="SifFile with random name and create&#45;only policy." alt="" coords="403,135,528,177"/>
+<area shape="rect" id="node7" href="$classEuclid_1_1Fits_1_1Test_1_1TemporarySifFile.html" title="Temporary SifFile with random name." alt="" coords="396,201,535,242"/>
+</map>

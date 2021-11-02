@@ -1,0 +1,5 @@
+<map id="Euclid::Fits::Raster&lt; T, n &gt;" name="Euclid::Fits::Raster&lt; T, n &gt;">
+<area shape="rect" id="node1" title="Raster of a n&#45;dimensional image (2D by default)." alt="" coords="24,6,165,47"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1VecRaster.html" title=" " alt="" coords="24,96,165,123"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Test_1_1RandomRaster.html" title="A random Raster of given type and shape." alt="" coords="5,171,184,213"/>
+</map>
