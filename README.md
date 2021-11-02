@@ -127,7 +127,7 @@ LGPL v3
 
 ## Tutorial
 
-The tutorial composed of an example program and [associated documentation](https://cnes.github.io/EleFits/4.0.0/tuto.html) is probably the good entry point for newcomers.
+The tutorial composed of an example program and [associated documentation](https://cnes.github.io/EleFits/4.0.1/tuto.html) is probably the good entry point for newcomers.
 
 ## Installation instructions
 
@@ -135,11 +135,11 @@ See [the dedicated page](doc/INSTALL.md).
 
 ## User documentation
 
-The [Modules page](https://cnes.github.io/EleFits/4.0.0/modules.html) is the main entry point for usage documentation.
+The [Modules page](https://cnes.github.io/EleFits/4.0.1/modules.html) is the main entry point for usage documentation.
 Each so-called documentation module addresses a specific topic to learn how to use EleFits and understand why it is designed the way it is.
 The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.
 
-To go further, many other topics are discussed in the [Related pages](https://cnes.github.io/EleFits/4.0.0/pages.html), as unordered documents.
+To go further, many other topics are discussed in the [Related pages](https://cnes.github.io/EleFits/4.0.1/pages.html), as unordered documents.
 Among others, you'll find there thoughts on CFitsIO, the tutorial, and some design documentation. 
 
 ## Feedbacks

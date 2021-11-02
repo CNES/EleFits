@@ -18,10 +18,10 @@ Jump to the configuration section.
 
 #### TL;DR
 
-Download and run [the installation script](https://raw.githubusercontent.com/CNES/EleFits/4.0.0/install.sh):
+Download and run [the installation script](https://raw.githubusercontent.com/CNES/EleFits/4.0.1/install.sh):
 
 ```sh
-wget https://raw.githubusercontent.com/CNES/EleFits/4.0.0/install.sh
+wget https://raw.githubusercontent.com/CNES/EleFits/4.0.1/install.sh
 chmod +x install.sh
 sudo ./install.sh
 ```

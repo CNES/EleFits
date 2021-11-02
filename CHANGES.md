@@ -10,7 +10,7 @@
 
 * Empty binary table HDUs can be created
 
-## 4.0
+## 4.0.0
 
 ### Renaming
 

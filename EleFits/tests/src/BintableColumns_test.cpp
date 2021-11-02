@@ -37,9 +37,9 @@ using namespace Euclid::Fits;
 // 			readSeqTo (names, columns...) => TEST
 // 		readSeqTo (indices, columns...) => TEST
 // 	readSegmentSeq (rows, indices...)
-// 		readSegmentSeq (rows, names...) => TEST
+// 		readSegmentSeq (rows, names...) => SEQ_WRITE_READ_TEST
 // 	readSegmentSeqTo (rows, names, columns)
-// 		readSegmentSeqTo (rows, columns)
+// 		readSegmentSeqTo (rows, columns) => TEST
 // 		readSegmentSeqTo (rows, names, columns...)
 // 			readSegmentSeqTo (rows, columns...) => TEST
 // 	readSegmentSeqTo (rows, indices, columns...) => TEST
@@ -47,7 +47,7 @@ using namespace Euclid::Fits;
 // writeSegmentSeq (long firstRow, TSeq &&columns) -> loop on writeSegment (row, column)
 //   writeSeq (TSeq &&columns) => SEQ_WRITE_READ_TEST
 //     writeSeq (const Column< Ts > &... columns) => SEQ_WRITE_READ_TEST
-//   writeSegmentSeq (long firstRow, Column< Ts > &... columns) => TEST
+//   writeSegmentSeq (long firstRow, Column< Ts > &... columns) => SEQ_WRITE_READ_TEST
 //
 // initSeq (long index, TSeq &&infos) => SEQ_WRITE_READ_TEST
 //   initSeq (long index, const ColumnInfo< Ts > &... infos) => SEQ_WRITE_READ_TEST
