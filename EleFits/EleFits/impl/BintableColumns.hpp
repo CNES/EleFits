@@ -125,7 +125,7 @@ template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
   m_touch();
   const auto rowCount = readRowCount();
-  std::tuple<VecColumn<Ts>...> res { VecColumn<Ts>(readInfo<Ts>(indices), std::vector<Ts>(rowCount))... };
+  std::tuple<VecColumn<Ts>...> res { VecColumn<Ts>(readInfo<Ts>(indices), rowCount)... };
   readSeqTo({ indices... }, res);
   return res;
 }
@@ -178,9 +178,12 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Indexed<Ts>&... indices) const {
-  // FIXME rows.resolve()
-  std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(indices), rows.size() }... };
-  readSegmentSeqTo(rows.front, { indices.index... }, columns);
+  auto resolvedRows = rows;
+  if (rows.back == -1) {
+    resolvedRows.back = readRowCount() - 1;
+  }
+  std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(indices), resolvedRows.size() }... };
+  readSegmentSeqTo(resolvedRows, { indices.index... }, columns);
   return columns;
 }
 
@@ -294,31 +297,35 @@ void BintableColumns::writeSeq(const Column<Ts>&... columns) const {
 }
 
 template <typename TSeq>
-void BintableColumns::initSeq(TSeq&& infos, long index) const {
+void BintableColumns::initSeq(long index, TSeq&& infos) const {
   m_edit();
-  auto names = seqTransform<Cfitsio::CStrArray>(infos, [&](const auto& info) {
+  const auto nameVec = seqTransform<std::vector<std::string>>(std::forward<TSeq>(infos), [&](const auto& info) {
     return info.name;
   });
-  auto tforms = seqTransform<Cfitsio::CStrArray>(infos, [&](const auto& info) {
-    return Cfitsio::TypeCode<typename decltype(info)::Value>::tform(info.repeatCount);
+  Cfitsio::CStrArray names(nameVec);
+  const auto tformVec = seqTransform<std::vector<std::string>>(std::forward<TSeq>(infos), [&](const auto& info) {
+    using Value = typename std::decay_t<decltype(info)>::Value;
+    return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeatCount);
   });
+  Cfitsio::CStrArray tforms(tformVec);
   int status = 0;
   int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_cols(m_fptr, cfitsioIndex, names.size(), names.data(), tforms.data(), &status);
   // TODO to Cfitsio
   long i = cfitsioIndex;
-  seqForeach(infos, [&](const auto& info) {
+  seqForeach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
       const Record<std::string> record { "TUNIT" + std::to_string(i), info.unit, "", "physical unit of field" };
       Cfitsio::HeaderIo::updateRecord(m_fptr, record);
     }
+    ++i;
   });
   // TODO to Cfitsio
 }
 
 template <typename... Ts>
-void BintableColumns::initSeq(const ColumnInfo<Ts>&... infos, long index) const {
-  initSeq(std::forward_as_tuple(infos...), index);
+void BintableColumns::initSeq(long index, const ColumnInfo<Ts>&... infos) const {
+  initSeq(index, std::forward_as_tuple(infos...));
 }
 
 // writeSegmentSeq
@@ -351,9 +358,10 @@ template <typename TSeq>
 long columnsRowCount(TSeq&& columns) {
   long rows = -1;
   seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
+    const auto cRows = c.rowCount();
     if (rows == -1) {
-      rows = c.rowCount();
-    } else if (c.rowCount() != rows) {
+      rows = cRows;
+    } else if (cRows != rows) {
       throw FitsError("Columns do not have the same number of rows."); // FIXME clean
     }
   });

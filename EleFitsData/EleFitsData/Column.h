@@ -142,6 +142,22 @@ struct ColumnInfo {
   long repeatCount = 1;
 };
 
+/**
+ * @brief `ColumnInfo` equality operator.
+ */
+template<typename T>
+bool operator==(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
+  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount == rhs.repeatCount;
+}
+
+/**
+ * @brief `ColumnInfo` unequality operator.
+ */
+template<typename T>
+bool operator!=(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
+  return not (lhs == rhs);
+}
+
 // Forward declaration for Column::slice()
 template <typename T>
 class PtrColumn;

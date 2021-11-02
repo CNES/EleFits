@@ -40,7 +40,7 @@ void checkScalarColumnIsReadBack() {
   RandomScalarColumn<T> input;
   MinimalFile file;
   try {
-    HduAccess::createBintableExtension(file.fptr, "BINEXT", input);
+    HduAccess::assignBintableExtension(file.fptr, "BINEXT", input);
     const auto index = BintableIo::columnIndex(file.fptr, input.info().name);
     BOOST_TEST(index == 1);
     const auto info = BintableIo::readColumnInfo<T>(file.fptr, index);
@@ -78,7 +78,7 @@ void checkVectorColumnIsReadBack() {
   RandomVectorColumn<T> input(repeatCount, rowCount);
   MinimalFile file;
   try {
-    HduAccess::createBintableExtension(file.fptr, "BINEXT", input);
+    HduAccess::assignBintableExtension(file.fptr, "BINEXT", input);
     const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
     BOOST_TEST(output.info().repeatCount == repeatCount);
     BOOST_TEST(output.vector() == input.vector());
@@ -114,7 +114,7 @@ ELEFITS_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
 BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   SmallTable input;
-  HduAccess::createBintableExtension(
+  HduAccess::assignBintableExtension(
       this->fptr,
       "IMGEXT",
       input.numCol,
@@ -140,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   f.rename("F");
   RandomScalarColumn<double> d(rowCount);
   d.rename("D");
-  HduAccess::createBintableExtension(this->fptr, "BINEXT", i, f, d);
+  HduAccess::assignBintableExtension(this->fptr, "BINEXT", i, f, d);
   const auto table = BintableIo::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });
   int status = 0;
   long chunkRows = 0;
@@ -154,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
 BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   SmallTable table;
-  HduAccess::createBintableExtension(this->fptr, "TABLE", table.nameCol);
+  HduAccess::assignBintableExtension(this->fptr, "TABLE", table.nameCol);
   const auto names = BintableIo::readColumn<SmallTable::Name>(fptr, table.nameCol.info().name);
   BOOST_TEST(names.vector() == table.names);
   BintableIo::appendColumns(fptr, table.distMagCol, table.radecCol);

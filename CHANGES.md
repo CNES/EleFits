@@ -1,6 +1,16 @@
 # Change log
 
-## 4.0
+## 4.0.1
+
+### Bug fixes
+
+* `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
+
+### New features
+
+* Empty binary table HDUs can be created
+
+## 4.0.0
 
 ### Renaming
 

@@ -68,9 +68,29 @@ class PtrRaster;
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.
  * 
- * Two implementations are provided:
+ * This class is abstract, as the actual pixel container is not defined.
+ * Two concrete implementations are provided:
  * - `PtrRaster` doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;
- * - `VecRaster` owns a `vector` (and is compatible with move semantics, which allows borrowing the `vector`).
+ * - `VecRaster` owns an `std::vector` (and is compatible with move semantics, which allows borrowing the `vector`).
+ * 
+ * There are two ways of defining the dimension of a `Raster`:
+ * - when the dimension is knwon at compile-time,
+ *   by giving the dimension parameter a positive or null value;
+ * - when the dimension is known at run-time only,
+ *   by assigning `n = -1`.
+ * 
+ * In the former case, index and size computations are optimized, and the dimension is enforced.
+ * For example, it is not possible to read a 3D image HDU as a 2D `Raster`.
+ * Which is nice, because an exception will be raised early!
+ * In contrast, it is possible to read a 2D image HDU as a 3D `Raster` of third axis lenght =1.
+ * 
+ * In the latter case, the dimension may vary or be deduced from the file,
+ * which is also nice sometimes but puts more responsibility on the shoulders of the user code,
+ * as it should check that the returned dimension is acceptable.
+ * 
+ * `Raster` ensures constant-time access to elements, whatever the dimension of the data,
+ * through subscipt operator `Raster::operator[]()`.
+ * Bound checking and backward indexing (index <0) are enabled in `Raster::at()`.
  * 
  * Example usages:
  * \code
@@ -490,18 +510,24 @@ private:
 };
 
 /**
+ * @ingroup image_data_classes
  * @brief Shortcut to create a raster from a shape and data without specifying the template parameters.
  * @tparam T The pixel type, should not be specified (automatically deduced)
- * @tparam Longs The raster shape (automatically deduced)
- * @param data The raster values, which can be either a pointer (or array) or a vector
+ * @tparam Longs The axes lengths, should not be specified (automatically deduced)
+ * @param data The raster values, which can be either a pointer (or C array) or a vector
  * @param shape The shape as a comma-separated list of `long`s
  * @details
  * Example usages:
  * \code
- * auto ptrRaster2D = makeRaster(data, width, height);
- * auto ptrRaster3D = makeRaster(data, width, height, depth);
- * auto vecRaster3D = makeRaster(vec, width, height); // The vector is copied
- * auto vecRaster3D = makeRaster(std::move(vec), width, height); // The vector is moved
+ * Given:
+ * - long width, height, depth: The axes lengths;
+ * - float* ptr: The pixel values as a pointer;
+ * - std::vector<float> vec: The pixel values as a vector;
+ * 
+ * auto ptrRaster2D = makeRaster(ptr, width, height);
+ * auto ptrRaster3D = makeRaster(ptr, width, height, depth);
+ * auto vecRaster2D = makeRaster(vec, width, height); // The vector is copied
+ * auto vecRaster3D = makeRaster(std::move(vec), width, height, depth); // The vector is moved
  * \endcode
  */
 template <typename T, typename... Longs>
@@ -510,6 +536,7 @@ PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) {
 }
 
 /**
+ * @ingroup image_data_classes
  * @copydoc makeRaster
  */
 template <typename T, typename... Longs>

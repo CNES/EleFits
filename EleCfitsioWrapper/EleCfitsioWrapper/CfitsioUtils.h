@@ -69,7 +69,7 @@ struct CStrArray {
   /**
    * @brief Create from an initializer_list.
    */
-  explicit CStrArray(const std::initializer_list<std::string>& data);
+  CStrArray(const std::initializer_list<std::string>& data); // FIXME explicit?
 
   /**
    * @brief The number of elements.

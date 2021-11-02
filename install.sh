@@ -39,7 +39,7 @@ usage() {
     cat <<USAGE_TEXT
 Usage: ${script_name} [-h | --help] [-d | --build_dir] [-j | --parallel]
 DESCRIPTION
-    Installation script for Elefits (downloads, builds and installs Elements first, then builds and installs EleFits)
+    Installation script for Elefits (downloads, builds and installs Elements first, then EleFits)
     OPTIONS:
     -h, --help
         Print this help and exit.

@@ -1,4 +1,4 @@
-# Installation and configuration guide {#install_guide}
+# Installation and configuration guide
 
 ## Introduction
 
@@ -7,7 +7,7 @@ As such, EleFits can be used either from an Elements project or from a CMake pro
 Euclid developers benefit from the continuous delivery of EDEN (Euclid development environment) and have nothing to install.
 Others must install EleFits (and Elements) before they configure their project.
 
-## Install and test EleFits
+## Download, install and test EleFits
 
 ### EDEN users
 
@@ -16,13 +16,17 @@ Jump to the configuration section.
 
 ### Non-EDEN users
 
-**TL;DR:**
+#### TL;DR
+
+Download and run [the installation script](https://raw.githubusercontent.com/CNES/EleFits/4.0.1/install.sh):
 
 ```sh
-sudo install.sh
+wget https://raw.githubusercontent.com/CNES/EleFits/4.0.1/install.sh
+chmod +x install.sh
+sudo ./install.sh
 ```
 
-**More details:**
+#### More details
 
 In the remaining, we assume that you're putting the source code of Elements and EleFits in some `<root>` directory.
 
@@ -46,6 +50,7 @@ git clone https://github.com/cnes/EleFits.git
 cd EleFits
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local ..
+make tests
 sudo make install
 ```
 
@@ -123,4 +128,5 @@ which can be added to the `.bashrc`, e.g.:
 
 ```xml
 echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib:/usr/local/lib64' >> ~/.bashrc
+source ~/.bashrc
 ```

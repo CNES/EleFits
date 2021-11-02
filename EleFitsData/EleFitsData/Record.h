@@ -65,22 +65,45 @@ using VariantValue = boost::any;
 /**
  * @ingroup header_data_classes
  * @brief Keyword-value pair with optional unit and comment.
- * @tparam T The value type;
- * Can be an integer, floating point, complex, `std::string`, `const char *` or `VariantValue`.
+ * @tparam T The value type,
+ * which can be an integer, floating point, complex, `std::string`, `const char *`,
+ * or `VariantValue` for run-time type deduction.
  *
  * @details
- * A record is meant to be used to read and write Fits headers.
- * The record in the Fits file is rendered as:
- * \verbatim keyword = value / [unit] comment \endverbatim
- * if the unit is provided, or:
- * \verbatim keyword = value / comment \endverbatim
- * otherwise.
+ * Here's a record of type `double` with keyword `"LIGHT"`, value `3.0e8`, unit `"m/s"` and comment `"speed of light"`:
+ * \code
+ * Record<double> lightSpeed { "LIGHT", 3.0e8, "m/s", "speed of light" };
+ * \endcode
+ *
+ * In the Fits file, this record will appear in the header of an HDU as (padding blank spaces removed):
+ * \code
+ * LIGHT = 3.0E8 / [m/s] speed of light
+ * \endcode
+ *
+ * In the Fits definition, it is unclear if the "comment" encompasses only: `speed of light`, or also the unit, as: `[m/s] speed of light`.
+ * In EleFits, the former is named comment, while the latter is the raw comment.
+ * The raw comment can be get as `Record::rawComment()`.
+ * 
+ * Such a `Record` can be cast to `double` (records of value type `T` can be cast to `T`),
+ * or more precisely, it can be sliced as its value.
+ * \code
+ * double milleniumFalconSpeed = 1.5 * lightSpeed;
+ * // Same as: 1.5 * lightSpeed.value
+ * \endcode
+ *
+ * This is also usefull when aiming at reading record values only, and skip the keyword, unit and comment:
+ * \code
+ * Record<int> theRecord = header.read<int>("KEYWORD");
+ * int theValue = header.read<int>("KEYWORD");
+ * \endcode
  *
  * The "HIERARCH" convention for extended keywords is supported.
  * It occurs when the keyword is longer than 8 characters,
  * or contains non-standard characters like spaces or symbols.
  * Such records are read and written transparently as:
- * \verbatim HIERARCH the_long_keyword = value / [unit] comment \endverbatim
+ * \code
+ * HIERARCH the_long_keyword = value / [unit] comment
+ * \endcode
  * The maximum length of such a keyword is 67 characters, which gives room for a 1-byte long value.
  *
  * CFitsIO convention on long string values (more than 68 characters) is supported.
@@ -88,9 +111,6 @@ using VariantValue = boost::any;
  * and each new line starts with the CONTINUE keyword.
  * An additional "LONGSTRN" record is written to the file,
  * to warn the file user about the CFitsIO convention.
- *
- * @see \ref data_classes
- * @see ELEFITS_FOREACH_RECORD_TYPE for the list of supported value types.
  */
 template <typename T>
 struct Record {

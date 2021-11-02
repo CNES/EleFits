@@ -508,17 +508,17 @@ public:
 
   /**
    * @brief Append or insert a sequence of columns, which were not previously initialized.
-   * @param info The column infos
    * @param index The 0-based index of the first column to be added, which may be >= 0 or -1 to append the columns at the end
+   * @param info The column infos
    */
   template <typename TSeq>
-  void initSeq(TSeq&& infos, long index) const;
+  void initSeq(long index, TSeq&& infos) const;
 
   /**
    * @copydoc initSeq
    */
   template <typename... Ts>
-  void initSeq(const ColumnInfo<Ts>&... infos, long index) const;
+  void initSeq(long index, const ColumnInfo<Ts>&... infos) const;
 
   /**
    * @brief Remove a sequence of columns specified by their names.

@@ -1,0 +1,64 @@
+namespace Euclid {
+namespace Fits {
+
+/**
+
+\addtogroup bintable_data_classes
+
+
+\section bintable_data_classes-info ColumnInfo
+
+
+`ColumnInfo` is the simple structure which stores the column metadata:
+- The value type as a template parameter;
+- The name;
+- The unit;
+- The "repeat count".
+
+The repeat count represents the width of the column:
+- If =1, the column contains scalars;
+- If >1, the column contains vectors.
+
+
+\section bintable_data_classes-columns Column, PtrColumn, VecColumn
+
+
+A `Column` is an abstract class composed of a `ColumnInfo` and some contiguous data.
+Analogously to `Raster`, two concrete classes are implemented, and others can be user-defined:
+- `PtrColumn` is the lightest structure: it just knows a pointer to the first element of the column;
+- `VecColumn` owns the data as an `std::vector` and is compatible with the move semantics.
+
+To write a column, any `Column` implementation works: you can even provide your own, e.g. some `EigenColumn`.
+`Column`s are always read as `VecColumn` instances.
+If you want to give or steal the data to or from a `VecColumn`, you can exploit move semantics, as shown in the \ref tuto "":
+
+\snippet EleFitsTutorial.cpp Create columns
+
+
+\section bintable_data_classes-helpers Segment, Indexed, Named
+
+The following helpers are defined:
+- `Segment` is just a pair of `long`s used to specify a chunk of a `Column`,
+  e.g. for partial reading and writing of binary table HDUs;
+- `Indexed` and `Named` are typed wrappers of `long` and `std::string`, respectively:
+  They are used to specify a column in a binary table HDU.
+
+The latter two classes are very useful to specify which columns to read as which types.
+For example, to read several columns of different types, do:
+
+\code
+columns.readSeq(Indexed<int>(1), Indexed<float>(3), Indexed<std::string>(8));
+\endcode
+
+instead of:
+
+\code
+columns.readSeq<int, float, std::string>({ 1, 3, 8 });
+\endcode
+
+which would be error-prone when reading many columns.
+
+*/
+
+}
+}

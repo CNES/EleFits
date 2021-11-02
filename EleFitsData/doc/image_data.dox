@@ -1,0 +1,48 @@
+namespace Euclid {
+namespace Fits {
+
+/**
+
+\addtogroup image_data_classes
+
+
+\section image_data_classes-rasters Raster, VecRaster, PtrRaster
+
+
+The central class for image data representation is `Raster`.
+It is the in-memory representation of the _n_-D arrays of Fits.
+A raster is defined by:
+- A dimension (number of axes) as template parameter `n`;
+- A value type as template parameter `T`;
+- A shape, of type `Position<n>`, which is a sequence of indices,
+  and can be viewed as an alias of `std::array<n, long>` or `std::vector<long>`;
+- Some data, i.e. the pixel values, stored contiguously, for example in a `std::vector`.
+
+`Raster` is an abstract class, to be extended with an actual data container.
+Two such concrete classes are provided:
+- `PtrRaster` merely stores a pointer to the data array;
+- `VecRaster` owns itself the data as an `std::vector`.
+
+You can create your own raster types by inheriting from `Raster`.
+
+All functions which return a `Raster` really return a `VecRaster` (e.g. `ImageRaster::read()`).
+All methods which take a `Raster` as input accept whatever flavor of it.
+
+For convenience, `makeRaster` functions enable raster creation
+without template parameters.
+
+
+\section image_data_classes-helpers Position, Region, PositionIterator
+
+
+In addition, a few helper classes are defined:
+- `Position`, which was already mentioned, represents the shape of the raster,
+  as well as the pixel positions;
+- `Region` is a pair of `Position`s used for example to represent the raster domain
+  or to read and write image HDU regions;
+- `PositionIterator` is used to screen a region like.
+
+*/
+
+}
+}

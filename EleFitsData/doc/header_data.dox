@@ -1,0 +1,53 @@
+namespace Euclid {
+namespace Fits {
+
+/**
+
+\addtogroup header_data_classes
+
+
+\section header_data_classes-record Record
+
+
+\copydetails Record
+
+
+\section header_data_classes-recordvec RecordVec, RecordSeq
+
+
+Passing a large number of records around can be complex,
+all the more if the value types are different
+given how cumbersome it would be to use `std::tuple` of various `Record`s.
+
+Two record containers are provided to ease this:
+- `RecordVec` is a homogeneous container, i.e. the value type is the same for each contained record;
+- `RecordSeq` is an alias for `RecordVec<VariantValue>`, which represents a run-time tuple.
+
+Records in those containers are convertible thanks to an internal casting system.
+
+
+\section header_data_classes-helpers Named
+
+
+`Named` is a tool used to robustify the API, for more safety when reading a record (or a column).
+It conveys alone both the name and type of the record (or the column).
+
+In this context, it is used to write the type close to the name of the record in the function call,
+that is, writing:
+
+\code
+header.parseSeq(Named<int>("A"), Named<float>("B"), Named<std::string>("C"));
+\endcode
+
+instead of:
+
+\code
+header.parseSeq<int, float, std::string>({ "A", "B", "C" });
+\endcode
+
+which would be error-prone when reading many records.
+
+*/
+
+}
+}

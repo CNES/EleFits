@@ -68,7 +68,7 @@ public:
     logger.info() << "Creating binary table extension: SMALLTBL";
     Fits::Test::SmallTable table; // Predefined table for testing purpose
     //! [Create binary table ext]
-    HduAccess::createBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
+    HduAccess::assignBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create binary table ext]
 
     logger.info();
@@ -76,7 +76,7 @@ public:
     logger.info() << "Creating image extension: SMALLIMG";
     Fits::Test::SmallRaster raster; // Predefined image raster for testing purpose
     //! [Create image ext]
-    HduAccess::createImageExtension(fptr, "SMALLIMG", raster);
+    HduAccess::assignImageExtension(fptr, "SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     Fits::Record<std::string> strRecord("STRING", "string");
