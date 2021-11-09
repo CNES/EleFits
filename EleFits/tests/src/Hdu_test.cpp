@@ -17,11 +17,11 @@
  *
  */
 
-#include "EleFitsData/TestRecord.h"
 #include "EleFits/FitsFileFixture.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/MefFile.h"
 #include "EleFits/SifFile.h"
+#include "EleFitsData/TestRecord.h"
 #include "ElementsKernel/Temporary.h"
 
 #include <boost/test/unit_test.hpp>

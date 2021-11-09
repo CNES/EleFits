@@ -20,8 +20,8 @@
 #ifndef _ELEFITS_BINTABLECOLUMNS_H
 #define _ELEFITS_BINTABLECOLUMNS_H
 
-#include "EleFitsData/Column.h"
 #include "EleFits/FileMemSegments.h"
+#include "EleFitsData/Column.h"
 
 #include <fitsio.h>
 #include <functional>

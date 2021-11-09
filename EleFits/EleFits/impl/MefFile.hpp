@@ -60,7 +60,7 @@ const T& MefFile::access(const std::string& name, long version) {
       if (hduPtr) {
         throw FitsError("Several HDU matches."); // TODO specific exception?
       } else {
-        hduPtr = &hdu;
+        hduPtr = &hdu; // FIXME Cppcheck reports "Using object that is out of scope."
       }
     }
   }

@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
 }
 
 BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
-  
+
   constexpr long rowCount = 17;
   constexpr long repeatCount = 7;
 

@@ -20,11 +20,10 @@
 #ifndef _ELECFITSIOWRAPPER_CFITSIOFIXTURE_H
 #define _ELECFITSIOWRAPPER_CFITSIOFIXTURE_H
 
-#include <string>
+#include "ElementsKernel/Temporary.h"
 
 #include <fitsio.h>
-
-#include "ElementsKernel/Temporary.h"
+#include <string>
 
 namespace Euclid {
 namespace Fits {

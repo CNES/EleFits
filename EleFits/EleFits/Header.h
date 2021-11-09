@@ -26,6 +26,7 @@
 #include "EleFitsData/RecordVec.h"
 
 #include <fitsio.h>
+#include <functional>
 #include <string>
 #include <tuple>
 #include <vector>

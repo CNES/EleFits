@@ -137,12 +137,12 @@ void ImageRaster::writeSubraster(const Position<n>& frontPosition, const Subrast
   locus.back[0] = locus.front[0];
   const auto nelem = subraster.shape()[0];
   const auto delta = frontPosition.template slice<m>();
-  auto target = frontPosition;
+  Position<n> target;
   for (const auto& source : locus) {
     target = (source + delta).extend(frontPosition) + 1; // 1-based
-    const auto begin = &subraster[source];
-    const auto end = begin + nelem;
-    std::vector<std::decay_t<T>> nonconstData(begin, end);
+    const auto b = &subraster[source];
+    const auto e = b + nelem;
+    std::vector<std::decay_t<T>> nonconstData(b, e);
     fits_write_pix(m_fptr, Cfitsio::TypeCode<T>::forImage(), target.data(), nelem, nonconstData.data(), &status);
     // TODO to ImageWrapper
   }

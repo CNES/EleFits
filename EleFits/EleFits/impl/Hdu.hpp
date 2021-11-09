@@ -20,8 +20,8 @@
 #if defined(_ELEFITS_HDU_IMPL) || defined(CHECK_QUALITY)
 
   #include "EleCfitsioWrapper/HeaderWrapper.h"
-  #include "EleFitsData/RecordVec.h"
   #include "EleFits/Hdu.h"
+  #include "EleFitsData/RecordVec.h"
 
 namespace Euclid {
 namespace Fits {

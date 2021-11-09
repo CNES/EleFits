@@ -46,9 +46,9 @@ std::vector<std::pair<std::string, long>> MefFile::readHduNamesVersions() {
   std::vector<std::pair<std::string, long>> namesVersions(count);
   for (long i = 0; i < count; ++i) {
     const auto& hdu = access<>(i);
-    const auto name = hdu.readName();
-    const auto version = hdu.readVersion();
-    namesVersions[i] = std::make_pair(name, version);
+    const auto n = hdu.readName();
+    const auto v = hdu.readVersion();
+    namesVersions[i] = std::make_pair(n, v);
   }
   return namesVersions;
 }

@@ -19,9 +19,9 @@
 
 #if defined(_ELECFITSIOWRAPPER_CFITSIOUTILS_IMPL) || defined(CHECK_QUALITY)
 
-#include <algorithm>
+  #include "EleCfitsioWrapper/CfitsioUtils.h"
 
-#include "EleCfitsioWrapper/CfitsioUtils.h"
+  #include <algorithm>
 
 namespace Euclid {
 namespace Cfitsio {

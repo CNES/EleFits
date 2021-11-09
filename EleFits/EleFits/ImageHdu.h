@@ -21,9 +21,9 @@
 #define _ELEFITS_IMAGEHDU_H
 
 #include "EleCfitsioWrapper/ImageWrapper.h"
-#include "EleFitsData/Raster.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageRaster.h"
+#include "EleFitsData/Raster.h"
 
 namespace Euclid {
 namespace Fits {

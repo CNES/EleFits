@@ -17,8 +17,8 @@
  *
  */
 
-#include "EleFitsData/TestRaster.h"
 #include "EleFits/MefFile.h"
+#include "EleFitsData/TestRaster.h"
 #include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
 

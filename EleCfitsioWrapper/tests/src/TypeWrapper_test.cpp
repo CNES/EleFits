@@ -17,13 +17,12 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
+#include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/TestColumn.h" // Macro to loop on types
 #include "EleFitsData/TestRaster.h" // Macro to loop on types
 #include "EleFitsData/TestRecord.h" // Macro to loop on types
 
-#include "EleCfitsioWrapper/TypeWrapper.h"
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid;
 using namespace Cfitsio;

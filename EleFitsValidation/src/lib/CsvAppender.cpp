@@ -24,8 +24,7 @@ namespace Fits {
 namespace Test {
 
 CsvAppender::CsvAppender(const std::string& filename, const std::vector<std::string>& header, const std::string& sep) :
-    m_file(filename, std::ios::out | std::ios::app),
-    m_sep(sep) {
+    m_file(filename, std::ios::out | std::ios::app), m_sep(sep) {
   if (header.empty()) {
     return;
   }

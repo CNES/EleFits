@@ -52,8 +52,7 @@ std::string readHeader(fitsfile* fptr, bool incNonValued = true);
 /**
  * @brief List the keywords of selected categories.
  */
-std::vector<std::string>
-listKeywords(fitsfile* fptr, Fits::KeywordCategory categories = Fits::KeywordCategory::All);
+std::vector<std::string> listKeywords(fitsfile* fptr, Fits::KeywordCategory categories = Fits::KeywordCategory::All);
 
 /**
  * @brief List the keywords of selected categories, as well as their values.

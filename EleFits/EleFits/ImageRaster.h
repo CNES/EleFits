@@ -20,8 +20,8 @@
 #ifndef _ELEFITS_IMAGERASTER_H
 #define _ELEFITS_IMAGERASTER_H
 
-#include "EleFitsData/Raster.h"
 #include "EleFits/FileMemRegions.h"
+#include "EleFitsData/Raster.h"
 
 #include <fitsio.h>
 #include <functional>

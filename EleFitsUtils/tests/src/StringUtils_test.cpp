@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_SUITE(StringUtils_test)
 
 BOOST_AUTO_TEST_CASE(split_test) {
   const std::string input = "\na\nb\nc\n\n";
-  const std::vector<std::string> expected = {"", "a", "b", "c", "", ""};
+  const std::vector<std::string> expected = { "", "a", "b", "c", "", "" };
   BOOST_TEST(String::split(input) == expected);
 }
 

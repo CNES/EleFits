@@ -321,7 +321,10 @@ void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::
  * @brief Const string specialization.
  */
 template <>
-void writeColumnSegment<const std::string>(fitsfile* fptr, long firstRow, const Fits::Column<const std::string>& column);
+void writeColumnSegment<const std::string>(
+    fitsfile* fptr,
+    long firstRow,
+    const Fits::Column<const std::string>& column);
 
 template <typename T>
 void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::Column<T>& column) {

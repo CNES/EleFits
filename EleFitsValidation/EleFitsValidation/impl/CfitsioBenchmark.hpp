@@ -40,10 +40,10 @@ void CfitsioBenchmark::setupColumnInfo(
 template <std::size_t i>
 void CfitsioBenchmark::writeColumn(const BColumns& columns, long firstRow, long rowCount) {
   const auto& col = std::get<i>(columns);
-  const auto begin = col.vector().begin() + firstRow;
-  const auto end = begin + rowCount;
+  const auto b = col.vector().begin() + firstRow;
+  const auto e = b + rowCount;
   using Value = typename std::decay_t<decltype(col)>::Value;
-  std::vector<Value> nonconstVec(begin, end);
+  std::vector<Value> nonconstVec(b, e);
   fits_write_col(
       m_fptr,
       Cfitsio::TypeCode<Value>::forBintable(),
@@ -71,7 +71,7 @@ void CfitsioBenchmark::initColumn(BColumns& columns, long rowCount) {
 template <std::size_t i>
 void CfitsioBenchmark::readColumn(BColumns& columns, long firstRow, long rowCount) {
   auto& col = std::get<i>(columns);
-  auto begin = col.data() + firstRow;
+  auto data = col.data() + firstRow;
   using Value = typename std::decay_t<decltype(col)>::Value;
   fits_read_col(
       m_fptr,
@@ -81,7 +81,7 @@ void CfitsioBenchmark::readColumn(BColumns& columns, long firstRow, long rowCoun
       1,
       rowCount,
       nullptr,
-      begin,
+      data,
       nullptr,
       &m_status);
   mayThrow("Cannot read column");

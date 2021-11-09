@@ -20,12 +20,12 @@
 #ifndef _ELEFITSDATA_TESTRASTER_H
 #define _ELEFITSDATA_TESTRASTER_H
 
+#include "EleFitsData/Raster.h"
+#include "EleFitsData/TestUtils.h"
+
 #include <algorithm>
 #include <complex>
 #include <string>
-
-#include "EleFitsData/Raster.h"
-#include "EleFitsData/TestUtils.h"
 
 namespace Euclid {
 namespace Fits {

@@ -145,7 +145,7 @@ struct ColumnInfo {
 /**
  * @brief `ColumnInfo` equality operator.
  */
-template<typename T>
+template <typename T>
 bool operator==(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
   return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount == rhs.repeatCount;
 }
@@ -153,9 +153,9 @@ bool operator==(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
 /**
  * @brief `ColumnInfo` unequality operator.
  */
-template<typename T>
+template <typename T>
 bool operator!=(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
-  return not (lhs == rhs);
+  return not(lhs == rhs);
 }
 
 // Forward declaration for Column::slice()
@@ -470,7 +470,6 @@ private:
    * @brief The data vector.
    */
   std::vector<std::decay_t<T>> m_vec;
-
 };
 
 } // namespace Fits

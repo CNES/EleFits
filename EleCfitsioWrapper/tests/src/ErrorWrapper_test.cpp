@@ -17,9 +17,9 @@
  *
  */
 
-#include <boost/test/unit_test.hpp>
-
 #include "EleCfitsioWrapper/ErrorWrapper.h"
+
+#include <boost/test/unit_test.hpp>
 
 using namespace Euclid::Cfitsio;
 

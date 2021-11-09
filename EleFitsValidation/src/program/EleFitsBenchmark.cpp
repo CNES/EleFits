@@ -19,11 +19,11 @@
 
 #include "EleFitsData/TestColumn.h"
 #include "EleFitsData/TestRaster.h"
+#include "EleFitsUtils/ProgramOptions.h"
 #include "EleFitsValidation/Benchmark.h"
 #include "EleFitsValidation/CfitsioBenchmark.h"
 #include "EleFitsValidation/CsvAppender.h"
 #include "EleFitsValidation/ElBenchmark.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
 
 #include <boost/filesystem.hpp>

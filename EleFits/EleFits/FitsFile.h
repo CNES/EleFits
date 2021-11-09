@@ -99,7 +99,6 @@ public:
 class FitsFile {
 
 public:
-
   /**
    * @brief Create a new Fits file handler with given filename and permission.
    */

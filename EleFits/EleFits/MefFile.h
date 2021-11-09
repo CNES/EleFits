@@ -47,7 +47,6 @@ class HduSelector;
 class MefFile : public FitsFile {
 
 public:
-
   /**
    * @copydoc FitsFile::~FitsFile
    */
@@ -149,7 +148,7 @@ public:
   /**
    * @brief Access the Primary HDU.
    * @see access()
-   */ 
+   */
   const ImageHdu& primary();
 
   /**

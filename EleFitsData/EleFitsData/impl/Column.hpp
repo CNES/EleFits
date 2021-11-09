@@ -83,10 +83,10 @@ long Column<T>::rowCount() const {
 /**
  * @brief String specialization.
  */
-template<>
+template <>
 const std::string& Column<std::string>::operator()(long row, long repeat) const;
 
-template<>
+template <>
 const std::string& Column<const std::string>::operator()(long row, long repeat) const; // FIXME duplication
 
 template <typename T>
@@ -156,8 +156,7 @@ template <typename T>
 VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {}
 
 template <typename T>
-VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> vec) :
-    Column<T>(info), m_vec(vec) {}
+VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> vec) : Column<T>(info), m_vec(vec) {}
 
 template <typename T>
 VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> info, long rowCount) :

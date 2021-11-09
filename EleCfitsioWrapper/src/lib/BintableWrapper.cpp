@@ -91,11 +91,7 @@ long columnIndex(fitsfile* fptr, const std::string& name) {
 namespace Internal {
 
 template <> // TODO clean
-void readColumnInfoImpl<std::string>(
-    fitsfile* fptr,
-    long index,
-    Fits::VecColumn<std::string>& column,
-    long rowCount) {
+void readColumnInfoImpl<std::string>(fitsfile* fptr, long index, Fits::VecColumn<std::string>& column, long rowCount) {
   column = Fits::VecColumn<std::string>(readColumnInfo<std::string>(fptr, index), std::vector<std::string>(rowCount));
 }
 
@@ -240,7 +236,10 @@ void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::
 }
 
 template <>
-void writeColumnSegment<const std::string>(fitsfile* fptr, long firstRow, const Fits::Column<const std::string>& column) {
+void writeColumnSegment<const std::string>(
+    fitsfile* fptr,
+    long firstRow,
+    const Fits::Column<const std::string>& column) {
   long index = columnIndex(fptr, column.info().name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();

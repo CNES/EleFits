@@ -21,7 +21,6 @@
 #define _ELEFITS_VALIDATION_ELBENCHMARK_H
 
 #include "EleFits/MefFile.h"
-
 #include "EleFitsValidation/Benchmark.h"
 
 namespace Euclid {

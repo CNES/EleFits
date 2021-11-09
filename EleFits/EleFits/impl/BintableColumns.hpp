@@ -138,6 +138,7 @@ void BintableColumns::readSeqTo(TSeq&& columns) const {
     return c.info().name;
   });
   readSeqTo(names, std::forward<TSeq>(columns));
+  // FIXME Cannot forward twice because columns may have been moved the first time
 }
 
 template <typename... Ts>
@@ -195,6 +196,7 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, TSeq&& columns) con
     return c.info().name;
   });
   readSegmentSeqTo(rows, names, std::forward<TSeq>(columns)); // FIXME move rows?
+  // FIXME Cannot forward twice because columns may have been moved the first time
 }
 
 template <typename... Ts>
@@ -321,6 +323,7 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
     ++i;
   });
   // TODO to Cfitsio
+  // FIXME Cannot forward three times because infos may have been moved the first time
 }
 
 template <typename... Ts>

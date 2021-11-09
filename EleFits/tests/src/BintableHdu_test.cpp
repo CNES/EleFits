@@ -17,10 +17,10 @@
  *
  */
 
-#include "EleFitsData/TestColumn.h"
 #include "EleFits/BintableHdu.h"
 #include "EleFits/FitsFileFixture.h"
 #include "EleFits/MefFile.h"
+#include "EleFitsData/TestColumn.h"
 #include "ElementsKernel/Temporary.h"
 
 #include <boost/test/unit_test.hpp>

@@ -17,9 +17,9 @@
  *
  */
 
-#include "EleFitsData/TestRaster.h"
 #include "EleFits/FitsFileFixture.h"
 #include "EleFits/ImageRaster.h"
+#include "EleFitsData/TestRaster.h"
 
 #include <boost/test/unit_test.hpp>
 

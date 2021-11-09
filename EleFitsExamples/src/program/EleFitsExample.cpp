@@ -18,9 +18,9 @@
  */
 
 #include "EleCfitsioWrapper/CfitsioFixture.h"
+#include "EleFits/MefFile.h"
 #include "EleFitsData/TestColumn.h"
 #include "EleFitsData/TestRaster.h"
-#include "EleFits/MefFile.h"
 #include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
 
@@ -33,7 +33,7 @@ using boost::program_options::value;
 using namespace Euclid;
 using namespace Fits;
 
-class EleFits_Example : public Elements::Program {
+class EleFitsExample : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
@@ -44,7 +44,7 @@ public:
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
-    Elements::Logging logger = Elements::Logging::getLogger("EleFits_Example");
+    Elements::Logging logger = Elements::Logging::getLogger("EleFitsExample");
 
     const std::string filename = args["output"].as<std::string>();
 
@@ -155,4 +155,4 @@ public:
   }
 };
 
-MAIN_FOR(EleFits_Example)
+MAIN_FOR(EleFitsExample)

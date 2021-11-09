@@ -46,7 +46,6 @@ namespace Test {
 template <typename TUnit>
 class Chronometer {
 public:
-
   /**
    * @brief The time unit.
    */

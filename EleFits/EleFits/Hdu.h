@@ -20,12 +20,12 @@
 #ifndef _ELEFITS_HDU_H
 #define _ELEFITS_HDU_H
 
+#include "EleFits/Header.h"
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/HduCategory.h"
 #include "EleFitsData/KeywordCategory.h"
 #include "EleFitsData/Record.h"
 #include "EleFitsData/RecordVec.h"
-#include "EleFits/Header.h"
 
 #include <fitsio.h>
 #include <memory>

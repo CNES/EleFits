@@ -20,12 +20,12 @@
 #ifndef _ELEFITSDATA_TESTCOLUMN_H
 #define _ELEFITSDATA_TESTCOLUMN_H
 
+#include "EleFitsData/Column.h"
+#include "EleFitsData/TestUtils.h"
+
 #include <complex>
 #include <string>
 #include <tuple>
-
-#include "EleFitsData/Column.h"
-#include "EleFitsData/TestUtils.h"
 
 namespace Euclid {
 namespace Fits {

@@ -17,9 +17,9 @@
  *
  */
 
-#include "EleFitsData/TestRaster.h"
 #include "EleFits/ImageHdu.h"
 #include "EleFits/MefFile.h"
+#include "EleFitsData/TestRaster.h"
 #include "ElementsKernel/Temporary.h"
 
 #include <boost/test/unit_test.hpp>

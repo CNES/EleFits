@@ -51,7 +51,7 @@ struct SmallImage {
   float data[size] = { 0.0F, 0.1F, 1.0F, 1.1F, 2.0F, 2.1F };
 };
 
-class EleCfitsio_Example : public Elements::Program {
+class EleCfitsioExample : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
@@ -62,7 +62,7 @@ public:
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
-    Elements::Logging logger = Elements::Logging::getLogger("EleCfitsio_Example");
+    Elements::Logging logger = Elements::Logging::getLogger("EleCfitsioExample");
 
     const std::string filename = args["output"].as<std::string>();
 
@@ -235,4 +235,4 @@ public:
   }
 };
 
-MAIN_FOR(EleCfitsio_Example)
+MAIN_FOR(EleCfitsioExample)

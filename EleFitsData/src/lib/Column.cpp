@@ -22,12 +22,12 @@
 namespace Euclid {
 namespace Fits {
 
-template<>
+template <>
 const std::string& Column<std::string>::operator()(long row, long) const {
   return *(data() + row);
 }
 
-template<>
+template <>
 const std::string& Column<const std::string>::operator()(long row, long) const {
   return *(data() + row);
 }

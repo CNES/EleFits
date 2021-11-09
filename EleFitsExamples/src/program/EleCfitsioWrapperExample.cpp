@@ -33,7 +33,7 @@ using boost::program_options::value;
 using namespace Euclid;
 using namespace Cfitsio;
 
-class EleCfitsioWrapper_Example : public Elements::Program {
+class EleCfitsioWrapperExample : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
@@ -44,7 +44,7 @@ public:
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
-    Elements::Logging logger = Elements::Logging::getLogger("EleCfitsioWrapper_Example");
+    Elements::Logging logger = Elements::Logging::getLogger("EleCfitsioWrapperExample");
 
     const auto filename = args["output"].as<std::string>();
 
@@ -153,4 +153,4 @@ public:
   }
 };
 
-MAIN_FOR(EleCfitsioWrapper_Example)
+MAIN_FOR(EleCfitsioWrapperExample)

@@ -19,11 +19,10 @@
 
 #if defined(_ELEFITSDATA_TESTCOLUMN_IMPL) || defined(CHECK_QUALITY)
 
-#include <algorithm>
+  #include "EleFitsData/TestColumn.h"
+  #include "EleFitsData/TestUtils.h"
 
-#include "EleFitsData/TestUtils.h"
-
-#include "EleFitsData/TestColumn.h"
+  #include <algorithm>
 
 namespace Euclid {
 namespace Fits {
@@ -62,8 +61,7 @@ VecColumn<T>& RandomTable::getColumn() {
 
 template <typename T>
 RandomScalarColumn<T>::RandomScalarColumn(long size, T min, T max) :
-    VecColumn<T>({ "SCALAR", "m", 1 }, generateRandomVector<T>(size, min, max)) {
-}
+    VecColumn<T>({ "SCALAR", "m", 1 }, generateRandomVector<T>(size, min, max)) {}
 
 template <>
 RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, std::string max) :
@@ -78,8 +76,7 @@ RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, 
 
 template <typename T>
 RandomVectorColumn<T>::RandomVectorColumn(long repeatCount, long size, T min, T max) :
-    VecColumn<T>({ "VECTOR", "m", repeatCount }, generateRandomVector<T>(repeatCount * size, min, max)) {
-}
+    VecColumn<T>({ "VECTOR", "m", repeatCount }, generateRandomVector<T>(repeatCount * size, min, max)) {}
 
 } // namespace Test
 } // namespace Fits

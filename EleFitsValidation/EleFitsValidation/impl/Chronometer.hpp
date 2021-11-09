@@ -19,11 +19,11 @@
 
 #if defined(_ELEFITS_VALIDATION_CHRONOMETER_IMPL) || defined(CHECK_QUALITY)
 
-#include "EleFitsValidation/Chronometer.h"
+  #include "EleFitsValidation/Chronometer.h"
 
-#include <algorithm> // min_element, max_element
-#include <cmath> // sqrt
-#include <numeric> // inner_product
+  #include <algorithm> // min_element, max_element
+  #include <cmath> // sqrt
+  #include <numeric> // inner_product
 
 namespace Euclid {
 namespace Fits {
