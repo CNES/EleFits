@@ -61,7 +61,7 @@ std::vector<long> BintableColumns::readIndices(const std::vector<std::string>& n
   m_touch();
   std::vector<long> indices(names.size());
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
-    return Cfitsio::BintableIo::columnIndex(m_fptr, n);
+    return Cfitsio::BintableIo::columnIndex(m_fptr, n) - 1;
   });
   return indices;
 }

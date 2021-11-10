@@ -170,9 +170,9 @@ void checkVectorWriteRead(const BintableColumns& du) {
       {infos[0], Test::generateRandomVector<T>(repeatCount * rowCount)}};
   du.initSeq(0, infos);
   du.writeSeq(seq);
-  const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1)); // TODO readSeq<T>({ 0, 1 }) and idem with strings?
-  const auto& res0 = std::get<0>(res);
-  const auto& res1 = std::get<1>(res);
+  const auto res = du.readSeq<T>({std::string("VECTOR"), std::string("SCALAR")});
+  const auto& res0 = res[0];
+  const auto& res1 = res[1];
   BOOST_TEST((res0.info() == seq[1].info()));
   BOOST_TEST((res1.info() == seq[0].info()));
   BOOST_TEST(res0.vector() == seq[1].vector());

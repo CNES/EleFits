@@ -313,23 +313,39 @@ public:
   /// @{
 
   /**
-   * @brief Read the columns with given names.
+   * @brief Read a tuple of columns with given names.
    * @details
-   * Example usage:
+   * Example usages:
    * \code
    * auto columns = ext.readSeq(Named<int>("A"), Named<float>("B"), Named<std::string>("C"));
-   * auto columns = ext.read(Indexed<int>(0), Indexed<float>(3), Indexed<std::string>(4));
+   * auto columns = ext.readSeq(Indexed<int>(0), Indexed<float>(3), Indexed<std::string>(4));
+   * auto columns = ext.readSeq<int>({"A", "B", "C"});
+   * auto columns = ext.readSeq<int>({0, 3, 4});
    * \endcode
    */
   template <typename... Ts>
   std::tuple<VecColumn<Ts>...> readSeq(const Named<Ts>&... names) const;
 
   /**
-   * @brief Read the columns with given indices.
+   * @brief Read a tuple of columns with given indices.
    * @copydetails readSeq()
    */
   template <typename... Ts>
   std::tuple<VecColumn<Ts>...> readSeq(const Indexed<Ts>&... indices) const;
+
+  /**
+   * @brief Read a vector of columns with given names.
+   * @copydetails readSeq()
+   */
+  template <typename T>
+  std::vector<VecColumn<T>> readSeq(const std::vector<std::string>& names) const;
+
+  /**
+   * @brief Read a vector of columns with given indices.
+   * @copydetails readSeq()
+   */
+  template <typename T>
+  std::vector<VecColumn<T>> readSeq(const std::vector<long>& indices) const;
 
   /**
    * @brief Read a sequence of columns into existing `Column`s.

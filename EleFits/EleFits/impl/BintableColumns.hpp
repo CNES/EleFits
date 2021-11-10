@@ -123,10 +123,25 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Named<Ts>&... names)
 
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
-  m_touch();
   const auto rowCount = readRowCount();
   std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(indices), rowCount)...};
   readSeqTo({indices...}, res);
+  return res;
+}
+
+template <typename T>
+std::vector<VecColumn<T>> BintableColumns::readSeq(const std::vector<std::string>& names) const {
+  return readSeq<T>(readIndices(names));
+}
+
+template <typename T>
+std::vector<VecColumn<T>> BintableColumns::readSeq(const std::vector<long>& indices) const {
+  const auto rowCount = readRowCount();
+  std::vector<VecColumn<T>> res(indices.size());
+  std::transform(indices.begin(), indices.end(), res.begin(), [&](long i) {
+    return VecColumn<T>(readInfo<T>(i), rowCount);
+  });
+  readSeqTo(indices, res);
   return res;
 }
 
