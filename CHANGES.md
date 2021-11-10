@@ -1,16 +1,22 @@
 # Change log
 
-## 4.0.1
+## 4.1
 
 ### Bug fixes
 
 * `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
+* Fix `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 
 ### New features
 
 * Empty binary table HDUs can be created
+* Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `vector<VecColumn<T>>`)
 
-## 4.0.0
+### Cleaning
+
+* Review formatting
+
+## 4.0
 
 ### Renaming
 
