@@ -73,7 +73,7 @@ namespace Fits {
  * Here is an option:
  * \code
  * // Specs
- * const Segment rows { 11, 50 };
+ * const Segment rows {11, 50};
  * const long columnCount = 3;
  * const long rowCount = rows.size();
  * 
@@ -81,9 +81,9 @@ namespace Fits {
  * std::vector<float> data(rowCount * columnCount);
  * 
  * // Contiguous views
- * PtrColumn<float> one({ "ONE", "", 1 }, rowCount, &data[0]);
- * PtrColumn<float> two({ "TWO", "", 1 }, rowCount, &data[rowCount]);
- * PtrColumn<float> three({ "THREE", "", 1 }, rowCount, &data[rowCount * 2]);
+ * PtrColumn<float> one({"ONE", "", 1}, rowCount, &data[0]);
+ * PtrColumn<float> two({"TWO", "", 1}, rowCount, &data[rowCount]);
+ * PtrColumn<float> three({"THREE", "", 1}, rowCount, &data[rowCount * 2]);
  * 
  * // In-place reading
  * columnCount.readSegmentSeqTo(rows, one, two, three);
@@ -197,8 +197,8 @@ public:
    * // Concatenate two columns into an existing Column
    * long rowCount = readRowCount();
    * std::vector<float> values(rowCount * 2);
-   * PtrColumn<float> ra({ "RA", "deg", 1 }, rowCount, &values[0]);
-   * PtrColumn<float> dec({ "DEC", "deg", 1 }, rowCount, &values[rowCount]);
+   * PtrColumn<float> ra({"RA", "deg", 1}, rowCount, &values[0]);
+   * PtrColumn<float> dec({"DEC", "deg", 1}, rowCount, &values[rowCount]);
    * columns.readTo("RA", ra);
    * columns.readTo("DEC", dec);
    * \endcode
@@ -263,14 +263,14 @@ public:
    * Example usages:
    * \code
    * // Create a new Column
-   * auto segment = columns.readSegment<float>({ 10, 50 }, "NAME");
+   * auto segment = columns.readSegment<float>({10, 50}, "NAME");
    * 
    * // Read into an existing Column
    * // This is a more complex example which demonstrates the use of offsets
-   * Segment sourceBounds = { 10, 50 };
+   * Segment sourceBounds = {10, 50};
    * long destinationRow = 20;
    * std::vector<float> values(100);
-   * PtrColumn<float> segment({ "NAME", "m/s", 1 }, 20, &values[destinationRow]);
+   * PtrColumn<float> segment({"NAME", "m/s", 1}, 20, &values[destinationRow]);
    * columns.readSegmentTo(sourceBounds, "NAME", segment);
    * \endcode
    * @see read()

@@ -94,14 +94,14 @@ class PtrRaster;
  * 
  * Example usages:
  * \code
- * Position<2> shape { 2, 3 };
+ * Position<2> shape {2, 3};
  * 
  * // Read/write Raster
- * float data[] = { 1, 2, 3, 4, 5, 6 };
+ * float data[] = {1, 2, 3, 4, 5, 6};
  * Raster<float> raster(shape, data);
  * 
  * // Read-only Raster
- * const float cData[] = { 1, 2, 3, 4, 5, 6 };
+ * const float cData[] = {1, 2, 3, 4, 5, 6};
  * Raster<const float> cRaster(shape, cData);
  * 
  * // Read/write VecRaster

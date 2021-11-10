@@ -40,18 +40,18 @@ namespace Fits {
  * 
  * When a region is indeed contiguous, it is better to rely on a PtrRaster instead:
  * \code
- * VecRaster<char, 3> raster({ 800, 600, 3 });
+ * VecRaster<char, 3> raster({800, 600, 3});
  * 
  * // Good :)
- * auto region = Region<3>::fromOver({ 100, 100, 0 }, { 100, 100, 3 });
- * Subraster<char, 3> subraster { raster, region };
+ * auto region = Region<3>::fromOver({100, 100, 0}, {100, 100, 3});
+ * Subraster<char, 3> subraster {raster, region};
  * 
  * // Bad :(
- * auto slice = Region<3>::fromTo({ 0, 0, 1 }, { -1, -1, 1 });
- * Subraster<char, 3> contiguousSubraster { raster, slice };
+ * auto slice = Region<3>::fromTo({0, 0, 1}, {-1, -1, 1});
+ * Subraster<char, 3> contiguousSubraster {raster, slice};
  * 
  * // Good :)
- * PtrRaster<char, 2> ptrRaster({ 800, 600 }, &raster[{ 0, 0, 1 }]);
+ * PtrRaster<char, 2> ptrRaster({800, 600}, &raster[{0, 0, 1}]);
  * \endcode
  */
 template <typename T, long n = 2>

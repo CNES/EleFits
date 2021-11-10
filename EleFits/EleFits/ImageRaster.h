@@ -146,7 +146,7 @@ public:
    * For example, to read the HDU region from position (50, 80) to position (100, 120)
    * into an existing raster at position (25, 40), do:
    * \code
-   * const FileMemRegions<2> regions({ 25, 40 }, { { 50, 80 }, { 100, 120 } });
+   * const FileMemRegions<2> regions({25, 40}, {{50, 80}, {100, 120}});
    * image.readRegionTo(regions, raster);
    * \endcode
    * where `image` is the `ImageRaster` and `raster` is the `Raster`.
@@ -154,7 +154,7 @@ public:
    * In simpler cases, where the in-file or in-memory front position is 0,
    * factories can be used, e.g. to read into position 0 of the raster:
    * \code
-   * image.readRegionTo<2>({ { 50, 80 }, { 100, 120 } }, raster);
+   * image.readRegionTo<2>({{50, 80}, {100, 120}}, raster);
    * \endcode
    */
   template <typename T, long m, long n>
@@ -195,17 +195,17 @@ public:
    * Shortcuts offered by `FileMemRegions` and `Region` can be used to implement special cases:
    * \code
    * // Write the whole raster at position (10, 20, 30)
-   * du.writeRegion<3>({ 10, 20, 30 }, raster);
+   * du.writeRegion<3>({10, 20, 30}, raster);
    * 
    * // Write the whole HDU with a region of the raster starting at (10, 20, 30)
-   * du.writeRegion<3>({ Region<3>::whole(), { 10, 20, 30 } }, raster);
+   * du.writeRegion<3>({Region<3>::whole(), {10, 20, 30}}, raster);
    * \endcode
    * 
    * Note that the raster dimension can be lower than the HDU dimension.
    * For example, it is possible to write a 2D raster in a 3D HDU.
    * \code
    * // Write the 3rd plane of raster into the 5th plane of the HDU
-   * du.writeRegion<3>({ { 0, 0, 4 } }, raster.section(2));
+   * du.writeRegion<3>({{0, 0, 4}}, raster.section(2));
    * \endcode
    */
   template <typename T, long m, long n>

@@ -72,7 +72,7 @@ using VariantValue = boost::any;
  * @details
  * Here's a record of type `double` with keyword `"LIGHT"`, value `3.0e8`, unit `"m/s"` and comment `"speed of light"`:
  * \code
- * Record<double> lightSpeed { "LIGHT", 3.0e8, "m/s", "speed of light" };
+ * Record<double> lightSpeed {"LIGHT", 3.0e8, "m/s", "speed of light"};
  * \endcode
  *
  * In the Fits file, this record will appear in the header of an HDU as (padding blank spaces removed):

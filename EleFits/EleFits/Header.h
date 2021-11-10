@@ -248,7 +248,7 @@ public:
    * Example usages without fallbacks:
    * \code
    * // Homogeneous records
-   * auto vector = h.parseSeq<int>({ "A", "B", "C" });
+   * auto vector = h.parseSeq<int>({"A", "B", "C"});
    * 
    * // Heterogeneous records
    * auto tuple = h.parseSeq(Named<int>("INT"), Named<float>("FLOAT"));
@@ -257,11 +257,11 @@ public:
    * Example usages with fallbacks:
    * \code
    * // std::vector to std::vector
-   * std::vector<Records<VariantValue>> fallbacks { {"ONE", 1}, {"TWO", 2.0} };
+   * std::vector<Records<VariantValue>> fallbacks {{"ONE", 1}, {"TWO", 2.0}};
    * auto vector = h.parseSeqOr(fallbacks);
    * 
    * // RecordVec to RecordVec
-   * RecordSeq fallbacks { { {"ONE", 1}, {"TWO", 2.0} } };
+   * RecordSeq fallbacks {{{"ONE", 1}, {"TWO", 2.0}}};
    * auto recVec = h.parseSeqOr(fallbacks);
    * 
    * // std::tuple to std::tuple
@@ -338,14 +338,18 @@ public:
    * Example usage:
    * \code
    * struct Body {
+   * 
    *   std::string name;
    *   int age;
    *   float height;
    *   float mass;
-   *   float bmi() const { return mass / (height * height); }
+   * 
+   *   float bmi() const {
+   *     return mass / (height * height);
+   *   }
    * };
    * // Body can be constructed from a brace-enclosed list:
-   * // Body body { name, age, height, mass };
+   * // Body body {name, age, height, mass};
    *
    * auto body = hdu.parseStruct<Body>(
    *     Named<std::string>("NAME"),

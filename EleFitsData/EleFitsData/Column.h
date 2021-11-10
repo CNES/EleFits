@@ -71,8 +71,8 @@ namespace Fits {
  * </table>
  * For performance, the values are stored sequentially in a 1D array as follows:
  * \code
- * int repeat1[] = { 00, 10, 20, 30 };
- * int repeat3[] = { 00, 01, 02, 10, 11, 12, 20, 21, 22, 30, 31, 32 };
+ * int repeat1[] = {00, 10, 20, 30};
+ * int repeat3[] = {00, 01, 02, 10, 11, 12, 20, 21, 22, 30, 31, 32};
  * \endcode
  *
  * The only exception to this is string columns, which are vector columns
@@ -87,7 +87,7 @@ namespace Fits {
  * </table>
  * The data array is a simple array of `std::string`s:
  * \code
- * std::string data[] = { "ZERO", "ONE", "TWO", "THREE", };
+ * std::string data[] = {"ZERO", "ONE", "TWO", "THREE"};
  * \endcode
  * but the repeat count should be at least 6 (beware of the null terminating character).
  *
