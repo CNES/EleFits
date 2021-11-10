@@ -40,7 +40,7 @@ std::string trim(const std::string& input, const std::string& characters) {
 
 std::string readFile(const std::string& filename) {
   std::ifstream ifs(filename);
-  return { std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>() };
+  return {std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>()};
 }
 
 /**

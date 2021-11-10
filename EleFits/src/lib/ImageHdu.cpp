@@ -26,24 +26,26 @@ namespace Euclid {
 namespace Fits {
 
 ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
-    Hdu(token, fptr, index, HduCategory::Image, status), m_raster(
-                                                             m_fptr,
-                                                             [&]() {
-                                                               touchThisHdu();
-                                                             },
-                                                             [&]() {
-                                                               editThisHdu();
-                                                             }) {}
+    Hdu(token, fptr, index, HduCategory::Image, status),
+    m_raster(
+        m_fptr,
+        [&]() {
+          touchThisHdu();
+        },
+        [&]() {
+          editThisHdu();
+        }) {}
 
 ImageHdu::ImageHdu() :
-    Hdu(), m_raster(
-               m_fptr,
-               [&]() {
-                 touchThisHdu();
-               },
-               [&]() {
-                 editThisHdu();
-               }) {}
+    Hdu(),
+    m_raster(
+        m_fptr,
+        [&]() {
+          touchThisHdu();
+        },
+        [&]() {
+          editThisHdu();
+        }) {}
 
 const ImageRaster& ImageHdu::raster() const {
   return m_raster;
@@ -75,21 +77,21 @@ HduCategory ImageHdu::readCategory() const {
 }
 
 #ifndef COMPILE_READ_RASTER
-  #define COMPILE_READ_RASTER(type, unused) \
-    template VecRaster<type, -1> ImageHdu::readRaster() const; \
-    template VecRaster<type, 2> ImageHdu::readRaster() const; \
-    template VecRaster<type, 3> ImageHdu::readRaster() const;
+#define COMPILE_READ_RASTER(type, unused) \
+  template VecRaster<type, -1> ImageHdu::readRaster() const; \
+  template VecRaster<type, 2> ImageHdu::readRaster() const; \
+  template VecRaster<type, 3> ImageHdu::readRaster() const;
 ELEFITS_FOREACH_RASTER_TYPE(COMPILE_READ_RASTER)
-  #undef COMPILE_READ_RASTER
+#undef COMPILE_READ_RASTER
 #endif
 
 #ifndef COMPILE_WRITE_RASTER
-  #define COMPILE_WRITE_RASTER(type, unused) \
-    template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
-    template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
-    template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
+#define COMPILE_WRITE_RASTER(type, unused) \
+  template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
+  template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
+  template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
 ELEFITS_FOREACH_RASTER_TYPE(COMPILE_WRITE_RASTER)
-  #undef COMPILE_WRITE_RASTER
+#undef COMPILE_WRITE_RASTER
 #endif
 
 } // namespace Fits

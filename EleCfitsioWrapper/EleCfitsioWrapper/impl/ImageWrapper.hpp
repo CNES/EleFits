@@ -19,7 +19,7 @@
 
 #if defined(_ELECFITSIOWRAPPER_IMAGEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/ImageWrapper.h"
+#include "EleCfitsioWrapper/ImageWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -131,7 +131,7 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<n>& region, Fits::Subraster
   auto srcBack = srcFront;
   srcBack[0] += region.shape()[0] - 1;
   auto dstFront = destination.region().front;
-  Fits::RegionScreener<n> srcScreener(srcRegion, { srcBack, dstFront });
+  Fits::RegionScreener<n> srcScreener(srcRegion, {srcBack, dstFront});
 
   /* Step */
   std::vector<long> step(srcRegion.dimension(), 1L);
@@ -186,7 +186,7 @@ void writeRegion(fitsfile* fptr, const Fits::Subraster<T, m>& subraster, const F
 
   /* 1-based, flatten region (beginning of each line) */
   const auto shape = subraster.shape().extend(destination);
-  Fits::Region<n> dstRegion { destination + 1, destination + shape };
+  Fits::Region<n> dstRegion {destination + 1, destination + shape};
   dstRegion.back[0] = dstRegion.front[0];
 
   /* Screening positions */

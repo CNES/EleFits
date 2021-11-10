@@ -37,10 +37,10 @@ void checkRasterEqualsItself(const Raster<T, n>& raster) {
 template <typename T>
 void checkRandomRasterEqualsItself() {
   checkRasterEqualsItself(Test::RandomRaster<T, 0>({}));
-  checkRasterEqualsItself(Test::RandomRaster<T, 1>({ 2 }));
-  checkRasterEqualsItself(Test::RandomRaster<T, 2>({ 2, 3 }));
-  checkRasterEqualsItself(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
-  checkRasterEqualsItself(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+  checkRasterEqualsItself(Test::RandomRaster<T, 1>({2}));
+  checkRasterEqualsItself(Test::RandomRaster<T, 2>({2, 3}));
+  checkRasterEqualsItself(Test::RandomRaster<T, 3>({2, 3, 4}));
+  checkRasterEqualsItself(Test::RandomRaster<T, 4>({2, 3, 4, 5}));
 }
 
 BOOST_AUTO_TEST_CASE(small_raster_equals_itself_test) {
@@ -67,10 +67,10 @@ void checkRastersWithDifferentShapesDiffer(const Raster<T, n>& raster) {
 
 template <typename T>
 void checkRandomRastersWithDifferentShapesDiffer() {
-  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 1>({ 2 }));
-  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 2>({ 2, 3 }));
-  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
-  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 1>({2}));
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 2>({2, 3}));
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 3>({2, 3, 4}));
+  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 4>({2, 3, 4, 5}));
 }
 
 BOOST_AUTO_TEST_CASE(small_rasters_with_different_shapes_differ_test) {
@@ -93,10 +93,10 @@ void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n>& raster) {
 
 template <typename T>
 void checkRandomRastersWithDifferentValuesDiffer() {
-  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 1>({ 2 }));
-  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 2>({ 2, 3 }));
-  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 3>({ 2, 3, 4 }));
-  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 4>({ 2, 3, 4, 5 }));
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 1>({2}));
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 2>({2, 3}));
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 3>({2, 3, 4}));
+  checkRastersWithDifferentValuesDiffer(Test::RandomRaster<T, 4>({2, 3, 4, 5}));
 }
 
 BOOST_AUTO_TEST_CASE(small_rasters_with_different_values_differ_test) {

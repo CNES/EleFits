@@ -56,11 +56,11 @@ public:
     //! [Create Fits]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
-    HeaderIo::writeRecord<int>(fptr, { "VALUE", 1 });
+    HeaderIo::writeRecord<int>(fptr, {"VALUE", 1});
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
-    HeaderIo::updateRecord<int>(fptr, { "VALUE", 2 });
+    HeaderIo::updateRecord<int>(fptr, {"VALUE", 2});
     //! [Update record]
 
     logger.info();
@@ -130,14 +130,14 @@ public:
     const auto extname = HduAccess::currentName(fptr);
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
-    const auto records = HeaderIo::parseRecords<std::string, int>(fptr, { "STRING", "INTEGER" });
+    const auto records = HeaderIo::parseRecords<std::string, int>(fptr, {"STRING", "INTEGER"});
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
     HduAccess::gotoName(fptr, "SMALLIMG");
     //! [Read raster]
     const auto image = ImageIo::readRaster<float>(fptr);
-    const auto firstPixel = image[{ 0, 0 }];
-    const auto lastPixel = image.at({ -1, -1 }); // at() allows backward indexing
+    const auto firstPixel = image[{0, 0}];
+    const auto lastPixel = image.at({-1, -1}); // at() allows backward indexing
     //! [Read raster]
     logger.info() << "First pixel: " << firstPixel;
     logger.info() << "Last pixel: " << lastPixel;

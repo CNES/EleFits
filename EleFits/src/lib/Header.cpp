@@ -143,15 +143,15 @@ void KeywordNotFoundError::mayThrow(const std::vector<std::string>& missingKeywo
 }
 
 #ifndef COMPILE_PARSE
-  #define COMPILE_PARSE(type, unused) template Record<type> Header::parse(const std::string&) const;
+#define COMPILE_PARSE(type, unused) template Record<type> Header::parse(const std::string&) const;
 ELEFITS_FOREACH_RECORD_TYPE(COMPILE_PARSE)
-  #undef COMPILE_PARSE
+#undef COMPILE_PARSE
 #endif
 
 #ifndef COMPILE_WRITE
-  #define COMPILE_WRITE(type, unused) template void Header::write(const Record<type>&) const;
+#define COMPILE_WRITE(type, unused) template void Header::write(const Record<type>&) const;
 ELEFITS_FOREACH_RECORD_TYPE(COMPILE_WRITE)
-  #undef COMPILE_WRITE
+#undef COMPILE_WRITE
 #endif
 
 } // namespace Fits

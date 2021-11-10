@@ -19,8 +19,8 @@
 
 #if defined(_ELEFITSDATA_TESTRASTER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/TestRaster.h"
-  #include "EleFitsData/TestUtils.h"
+#include "EleFitsData/TestRaster.h"
+#include "EleFitsData/TestUtils.h"
 
 namespace Euclid {
 namespace Fits {

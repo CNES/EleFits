@@ -19,7 +19,7 @@
 
 #if defined(_ELEFITS_HDUITERATOR_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFits/HduIterator.h"
+#include "EleFits/HduIterator.h"
 
 namespace Euclid {
 namespace Fits {
@@ -83,12 +83,12 @@ void HduIterator<THdu>::next() {
 
 template <typename THdu>
 HduIterator<THdu> begin(HduSelector<THdu>& selector) {
-  return { selector.mef, 0, selector.filter };
+  return {selector.mef, 0, selector.filter};
 }
 
 template <typename THdu>
 HduIterator<THdu> end(HduSelector<THdu>& selector) {
-  return { selector.mef, selector.mef.hduCount(), selector.filter };
+  return {selector.mef, selector.mef.hduCount(), selector.filter};
 }
 
 } // namespace Fits

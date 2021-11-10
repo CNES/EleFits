@@ -33,7 +33,7 @@ using namespace Fits;
 
 void writeMeta(MefFile& f, int objIndex) {
   std::string extname = std::to_string(objIndex) + "_META";
-  const auto& ext = f.initImageExt<unsigned char, 1>(extname, { 0 });
+  const auto& ext = f.initImageExt<unsigned char, 1>(extname, {0});
   ext.header().writeSeq(
       Record<int>("DITH_NUM", 0), // TODO
       Record<int>("SOURC_ID", objIndex),
@@ -47,10 +47,10 @@ void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
   auto qualityData = Test::generateRandomVector<char>(bins);
   auto varData = Test::generateRandomVector<float>(bins);
   const long repeatCount = 1;
-  PtrColumn<float> wminCol({ "WMIN", "nm", repeatCount }, bins, wminData.data());
-  PtrColumn<float> signalCol({ "SIGNAL", "erg", repeatCount }, bins, signalData.data());
-  PtrColumn<char> qualityCol({ "QUALITY", "", repeatCount }, bins, qualityData.data());
-  PtrColumn<float> varCol({ "VAR", "erg^2", repeatCount }, bins, varData.data());
+  PtrColumn<float> wminCol({"WMIN", "nm", repeatCount}, bins, wminData.data());
+  PtrColumn<float> signalCol({"SIGNAL", "erg", repeatCount}, bins, signalData.data());
+  PtrColumn<char> qualityCol({"QUALITY", "", repeatCount}, bins, qualityData.data());
+  PtrColumn<float> varCol({"VAR", "erg^2", repeatCount}, bins, varData.data());
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_SIGNAL";
   const auto& ext = f.assignBintableExt(extname, wminCol, signalCol);
   ext.columns().init(qualityCol.info());
@@ -64,7 +64,7 @@ void writeCombinedSignal(MefFile& f, int objIndex, int bins) {
 }
 
 void writeCombinedCov(MefFile& f, int objIndex, int bins) {
-  Test::RandomRaster<float, 2> cov_raster({ bins, bins });
+  Test::RandomRaster<float, 2> cov_raster({bins, bins});
   std::string extname = std::to_string(objIndex) + "_COMBINED1D_COV";
   const auto& ext = f.assignImageExt(extname, cov_raster);
   ext.header().writeSeq(Record<int>("COV_SIDE", bins), Record<std::string>("CODEC", "IDENTITY"));

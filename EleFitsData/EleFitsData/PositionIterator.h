@@ -165,7 +165,7 @@ PositionIterator<n> begin(const Region<n>& region) {
 
 template <long n = 2>
 PositionIterator<n> end(const Region<n>& region) {
-  Region<n> pastTheLast { region.back, region.back };
+  Region<n> pastTheLast {region.back, region.back};
   pastTheLast.front[0]++;
   return PositionIterator<n>(pastTheLast);
 }

@@ -95,26 +95,26 @@ public:
     }
     Test::CsvAppender writer(
         results,
-        { "Date",
-          "Test setup",
-          "Mode",
-          "HDU type",
-          "HDU count",
-          "Value count / HDU",
-          "Total value count",
-          "File size (bytes)",
-          "Elapsed (ms)",
-          "Min (ms)",
-          "Max (ms)",
-          "Mean (ms)",
-          "Standard deviation (ms)",
-          "Samples (ms)" });
+        {"Date",
+         "Test setup",
+         "Mode",
+         "HDU type",
+         "HDU count",
+         "Value count / HDU",
+         "Total value count",
+         "File size (bytes)",
+         "Elapsed (ms)",
+         "Min (ms)",
+         "Max (ms)",
+         "Mean (ms)",
+         "Standard deviation (ms)",
+         "Samples (ms)"});
 
     if (imageCount) {
 
       logger.info("Generating raster...");
 
-      const Test::BRaster raster = Test::RandomRaster<std::int64_t, 1>({ pixelCount });
+      const Test::BRaster raster = Test::RandomRaster<std::int64_t, 1>({pixelCount});
 
       logger.info("Writing image HDUs...");
 

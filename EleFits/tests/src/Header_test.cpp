@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   const Record<int> i("I", 1);
   const Record<float> f("F", 3.14);
   const auto t = std::make_tuple(i, f);
-  const auto v = RecordSeq { i, f };
+  const auto v = RecordSeq {i, f};
   struct S {
     int i;
     float f;
@@ -60,14 +60,14 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   /* Heterogeneous write */
   h.writeSeq(i, f);
   h.writeSeq(t);
-  h.writeSeqIn({ "I" }, i, f);
-  h.writeSeqIn({ "F" }, t);
+  h.writeSeqIn({"I"}, i, f);
+  h.writeSeqIn({"F"}, t);
   h.writeSeq<RecordMode::CreateNew>(i, f);
   h.writeSeq<RecordMode::CreateNew>(t);
 
   /* Homogeneous write */
   h.writeSeq(v.vector);
-  h.writeSeqIn({ "I" }, v.vector);
+  h.writeSeqIn({"I"}, v.vector);
   h.writeSeq<RecordMode::CreateNew>(v.vector);
 
   /* Global read */
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.parseStruct<S>(Named<int>("I"), Named<float>("F"));
 
   /* Homogeneous read */
-  h.parseSeq<VariantValue>({ "I", "F" });
+  h.parseSeq<VariantValue>({"I", "F"});
 }
 
 //-----------------------------------------------------------------------------

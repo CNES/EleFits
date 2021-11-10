@@ -105,7 +105,7 @@ TutoRecords createRecords() {
 
   /* Create a record from an initialization list */
 
-  Fits::Record<float> floatRecord { "FLOAT", 3.14F, "", "A piece of Pi" };
+  Fits::Record<float> floatRecord {"FLOAT", 3.14F, "", "A piece of Pi"};
   // This is often used as a shortcut to create records as function parameters.
 
   /* Generate a random record */
@@ -114,7 +114,7 @@ TutoRecords createRecords() {
 
   //! [Create records]
 
-  return { stringRecord, intRecord, floatRecord, complexRecord };
+  return {stringRecord, intRecord, floatRecord, complexRecord};
 }
 
 TutoRasters createRasters() {
@@ -125,7 +125,7 @@ TutoRasters createRasters() {
 
   /* Initialize and later fill a raster */
 
-  Fits::VecRaster<std::int16_t, 2> int16Raster2D({ 4, 3 });
+  Fits::VecRaster<std::int16_t, 2> int16Raster2D({4, 3});
   for (const auto& position : int16Raster2D.domain()) {
     int16Raster2D[position] = position[0] + position[1];
   }
@@ -136,17 +136,17 @@ TutoRasters createRasters() {
 
   std::vector<std::int32_t> int32Vec(16 * 9 * 3, 0);
   // ... do what you have to do with the vector, and then move it to the raster ...
-  Fits::VecRaster<std::int32_t, 3> int32Raster3D({ 16, 9, 3 }, std::move(int32Vec));
+  Fits::VecRaster<std::int32_t, 3> int32Raster3D({16, 9, 3}, std::move(int32Vec));
   // Instead of moving a vector, it's also possible to work with
   // a raw pointer with the PtrRaster class.
 
   /* Generate a random raster */
 
-  auto int64Raster4D = Fits::Test::RandomRaster<std::int64_t, 4>({ 17, 9, 3, 24 });
+  auto int64Raster4D = Fits::Test::RandomRaster<std::int64_t, 4>({17, 9, 3, 24});
 
   //! [Create rasters]
 
-  return { int16Raster2D, int32Raster3D, int64Raster4D };
+  return {int16Raster2D, int32Raster3D, int64Raster4D};
 }
 
 TutoColumns createColumns() {
@@ -157,7 +157,7 @@ TutoColumns createColumns() {
 
   /* Initialize and later fill a column */
 
-  Fits::VecColumn<std::string> stringColumn({ "STRING", "unit", 3 }, 100);
+  Fits::VecColumn<std::string> stringColumn({"STRING", "unit", 3}, 100);
   // String columns must be wide-enough to hold each character.
   for (long i = 0; i < stringColumn.rowCount(); ++i) {
     stringColumn(i) = std::to_string(i);
@@ -168,7 +168,7 @@ TutoColumns createColumns() {
 
   std::vector<std::int32_t> int32Vec(100);
   // ... do what you have to do with the vector, and then move it to the column ...
-  Fits::VecColumn<std::int32_t> int32Column({ "INT32", "", 1 }, std::move(int32Vec));
+  Fits::VecColumn<std::int32_t> int32Column({"INT32", "", 1}, std::move(int32Vec));
   // Analogously to rasters, columns can be managed with the lightweight PtrColumn classe.
 
   /* Generate a random column */
@@ -177,7 +177,7 @@ TutoColumns createColumns() {
 
   //! [Create columns]
 
-  return { stringColumn, int32Column, float32Column };
+  return {stringColumn, int32Column, float32Column};
 }
 
 //////////////
@@ -281,7 +281,7 @@ void writeRecords(const Fits::Hdu& hdu) {
   hdu.header().writeSeq<Fits::RecordMode::UpdateExisting>(
       Fits::Record<int>("INT", 1),
       Fits::Record<float>("FLOAT", 3.14159F, "", "A larger piece of Pi"),
-      Fits::Record<std::complex<double>>("COMPLEX", { 180., 90. }));
+      Fits::Record<std::complex<double>>("COMPLEX", {180., 90.}));
 
   //! [Write records]
 }
@@ -356,7 +356,7 @@ void readRecords(const Fits::Hdu& hdu) {
 
   /* Read as VariantValue */
 
-  const auto variantRecords = hdu.header().parseSeq<>({ "INT", "COMPLEX" });
+  const auto variantRecords = hdu.header().parseSeq<>({"INT", "COMPLEX"});
   const auto complexRecord = variantRecords.as<std::complex<double>>("COMPLEX");
 
   /* Read as a user-defined structure */
@@ -386,8 +386,8 @@ void readRaster(const Fits::ImageHdu& hdu) {
 
   const auto image = hdu.raster().read<std::int16_t, 2>();
 
-  const auto& firstPixel = image[{ 0, 0 }];
-  const auto& lastPixel = image.at({ -1, -1 });
+  const auto& firstPixel = image[{0, 0}];
+  const auto& lastPixel = image.at({-1, -1});
   // `operator[]` performs no bound checking, while `at` does and enables backward indexing.
 
   //! [Read a raster]

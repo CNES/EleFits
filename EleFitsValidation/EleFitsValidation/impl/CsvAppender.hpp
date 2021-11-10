@@ -35,7 +35,7 @@ template <typename... Ts>
 CsvAppender& CsvAppender::writeRow(const Ts&... values) {
   // TODO check size
   using mockUnpack = int[];
-  (void)mockUnpack { (operator<<(values), 0)... };
+  (void)mockUnpack {(operator<<(values), 0)...};
   return operator<<(std::endl);
 }
 

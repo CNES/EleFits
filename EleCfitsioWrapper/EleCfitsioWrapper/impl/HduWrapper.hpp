@@ -19,9 +19,9 @@
 
 #if defined(_ELECFITSIOWRAPPER_HDUWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/HduWrapper.h"
+#include "EleCfitsioWrapper/HduWrapper.h"
 
-  #include <utility> // index_sequence, make_index_sequence
+#include <utility> // index_sequence, make_index_sequence
 
 namespace Euclid {
 namespace Cfitsio {
@@ -46,9 +46,9 @@ void assignImageExtension(fitsfile* fptr, const std::string& name, const Fits::R
 template <typename... Ts>
 void initBintableExtension(fitsfile* fptr, const std::string& name, const Fits::ColumnInfo<Ts>&... infos) {
   constexpr long ncols = sizeof...(Ts);
-  CStrArray colName { infos.name... };
-  CStrArray colFormat { TypeCode<Ts>::tform(infos.repeatCount)... };
-  CStrArray colUnit { infos.unit... };
+  CStrArray colName {infos.name...};
+  CStrArray colFormat {TypeCode<Ts>::tform(infos.repeatCount)...};
+  CStrArray colUnit {infos.unit...};
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);

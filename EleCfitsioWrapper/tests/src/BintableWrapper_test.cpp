@@ -141,7 +141,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   RandomScalarColumn<double> d(rowCount);
   d.rename("D");
   HduAccess::assignBintableExtension(this->fptr, "BINEXT", i, f, d);
-  const auto table = BintableIo::readColumns<int, float, double>(this->fptr, { "I", "F", "D" });
+  const auto table = BintableIo::readColumns<int, float, double>(this->fptr, {"I", "F", "D"});
   int status = 0;
   long chunkRows = 0;
   fits_get_rowsize(fptr, &chunkRows, &status);

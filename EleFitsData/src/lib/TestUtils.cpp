@@ -25,12 +25,12 @@ namespace Test {
 
 template <>
 std::complex<float> almostMin<std::complex<float>>() {
-  return { almostMin<float>(), almostMin<float>() };
+  return {almostMin<float>(), almostMin<float>()};
 }
 
 template <>
 std::complex<double> almostMin<std::complex<double>>() {
-  return { almostMin<double>(), almostMin<double>() };
+  return {almostMin<double>(), almostMin<double>()};
 }
 
 template <>
@@ -40,12 +40,12 @@ std::string almostMin<std::string>() {
 
 template <>
 std::complex<float> almostMax<std::complex<float>>() {
-  return { almostMax<float>(), almostMax<float>() };
+  return {almostMax<float>(), almostMax<float>()};
 }
 
 template <>
 std::complex<double> almostMax<std::complex<double>>() {
-  return { almostMax<double>(), almostMax<double>() };
+  return {almostMax<double>(), almostMax<double>()};
 }
 
 template <>
@@ -55,12 +55,12 @@ std::string almostMax<std::string>() {
 
 template <>
 std::complex<float> halfMin<std::complex<float>>() {
-  return { halfMin<float>(), halfMin<float>() };
+  return {halfMin<float>(), halfMin<float>()};
 }
 
 template <>
 std::complex<double> halfMin<std::complex<double>>() {
-  return { halfMin<double>(), halfMin<double>() };
+  return {halfMin<double>(), halfMin<double>()};
 }
 
 template <>
@@ -75,12 +75,12 @@ bool halfMax<bool>() {
 
 template <>
 std::complex<float> halfMax<std::complex<float>>() {
-  return { halfMax<float>(), halfMax<float>() };
+  return {halfMax<float>(), halfMax<float>()};
 }
 
 template <>
 std::complex<double> halfMax<std::complex<double>>() {
-  return { halfMax<double>(), halfMax<double>() };
+  return {halfMax<double>(), halfMax<double>()};
 }
 
 template <>
@@ -95,7 +95,7 @@ generateRandomVector<std::complex<float>>(long size, std::complex<float> min, st
   const auto imVec = generateRandomVector<float>(size, min.imag(), max.imag());
   std::vector<std::complex<float>> vec(size);
   for (long i = 0; i < size; ++i) {
-    vec[i] = { reVec[i], imVec[i] };
+    vec[i] = {reVec[i], imVec[i]};
   }
   return vec;
 }
@@ -107,7 +107,7 @@ generateRandomVector<std::complex<double>>(long size, std::complex<double> min, 
   const auto imVec = generateRandomVector<double>(size, min.imag(), max.imag());
   std::vector<std::complex<double>> vec(size);
   for (long i = 0; i < size; ++i) {
-    vec[i] = { reVec[i], imVec[i] };
+    vec[i] = {reVec[i], imVec[i]};
   }
   return vec;
 }

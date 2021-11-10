@@ -19,11 +19,11 @@
 
 #if defined(_ELEFITSDATA_RASTER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/FitsError.h"
-  #include "EleFitsData/Raster.h"
+#include "EleFitsData/FitsError.h"
+#include "EleFitsData/Raster.h"
 
-  #include <functional> // multiplies
-  #include <numeric> // accumulate
+#include <functional> // multiplies
+#include <numeric> // accumulate
 
 namespace Euclid {
 namespace Fits {
@@ -152,7 +152,7 @@ inline const T& Raster<T, n>::at(const Position<n>& pos) const {
   for (long i = 0; i < dimension(); ++i) {
     auto& b = boundedPos[i];
     const auto& s = m_shape[i];
-    OutOfBoundsError::mayThrow("pos[" + std::to_string(i) + "]", b, { -s, s - 1 });
+    OutOfBoundsError::mayThrow("pos[" + std::to_string(i) + "]", b, {-s, s - 1});
     if (b < 0) {
       b += s;
     }
@@ -167,12 +167,12 @@ inline T& Raster<T, n>::at(const Position<n>& pos) {
 
 template <typename T, long n>
 Subraster<T, n> Raster<T, n>::subraster(const Region<n>& region) {
-  return Subraster<T, n> { *this, region };
+  return Subraster<T, n> {*this, region};
 }
 
 template <typename T, long n>
 const Subraster<T, n> Raster<T, n>::subraster(const Region<n>& region) const {
-  return Subraster<T, n> { *this, region };
+  return Subraster<T, n> {*this, region};
 }
 
 template <typename T, long n>
@@ -188,7 +188,7 @@ const PtrRaster<const T, m> Raster<T, n>::slice(const Region<n>& region) const {
   for (long i = 0; i < m; ++i) {
     reduced[i] = b[i] - f[i] + 1;
   }
-  return { reduced, &operator[](region.front) };
+  return {reduced, &operator[](region.front)};
 }
 
 template <typename T, long n>
@@ -204,7 +204,7 @@ PtrRaster<T, m> Raster<T, n>::slice(const Region<n>& region) {
     reduced[i] = b[i] - f[i] + 1;
   }
   // FIXME duplication
-  return { reduced, &operator[](region.front) };
+  return {reduced, &operator[](region.front)};
 }
 
 template <typename T, long n>
@@ -298,20 +298,20 @@ std::vector<std::decay_t<T>>& VecRaster<T, n>::moveTo(std::vector<std::decay_t<T
   return destination;
 }
 
-  #ifndef DECLARE_RASTER_CLASSES
-    #define DECLARE_RASTER_CLASSES(type, unused) \
-      extern template class Raster<type, -1>; \
-      extern template class PtrRaster<type, -1>; \
-      extern template class VecRaster<type, -1>; \
-      extern template class Raster<type, 2>; \
-      extern template class PtrRaster<type, 2>; \
-      extern template class VecRaster<type, 2>; \
-      extern template class Raster<type, 3>; \
-      extern template class PtrRaster<type, 3>; \
-      extern template class VecRaster<type, 3>;
+#ifndef DECLARE_RASTER_CLASSES
+#define DECLARE_RASTER_CLASSES(type, unused) \
+  extern template class Raster<type, -1>; \
+  extern template class PtrRaster<type, -1>; \
+  extern template class VecRaster<type, -1>; \
+  extern template class Raster<type, 2>; \
+  extern template class PtrRaster<type, 2>; \
+  extern template class VecRaster<type, 2>; \
+  extern template class Raster<type, 3>; \
+  extern template class PtrRaster<type, 3>; \
+  extern template class VecRaster<type, 3>;
 ELEFITS_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
-    #undef DECLARE_COLUMN_CLASSES
-  #endif
+#undef DECLARE_COLUMN_CLASSES
+#endif
 
 } // namespace Fits
 } // namespace Euclid

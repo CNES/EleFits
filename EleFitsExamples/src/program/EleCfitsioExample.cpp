@@ -34,21 +34,21 @@ using Euclid::Cfitsio::CStrArray;
 struct SmallTable {
   static constexpr long cols = 4;
   static constexpr long rows = 3;
-  CStrArray colName { "ID", "RADEC", "NAME", "DIST_MAG" };
-  CStrArray colFormat { "1J", "1C", "68A", "2D" };
-  CStrArray colUnit { "", "deg", "", "kal" };
-  int ids[rows] = { 45, 7, 31 };
-  std::complex<float> radecs[rows] = { { 56.8500F, 24.1167F }, { 268.4667F, -34.7928F }, { 10.6833F, 41.2692F } };
-  CStrArray names { "Pleiades", "Ptolemy Cluster", "Ptolemy Cluster" };
-  std::vector<double> dist_mags[rows] = { { 0.44, 1.6 }, { 0.8, 3.3 }, { 2900., 3.4 } };
+  CStrArray colName {"ID", "RADEC", "NAME", "DIST_MAG"};
+  CStrArray colFormat {"1J", "1C", "68A", "2D"};
+  CStrArray colUnit {"", "deg", "", "kal"};
+  int ids[rows] = {45, 7, 31};
+  std::complex<float> radecs[rows] = {{56.8500F, 24.1167F}, {268.4667F, -34.7928F}, {10.6833F, 41.2692F}};
+  CStrArray names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
+  std::vector<double> dist_mags[rows] = {{0.44, 1.6}, {0.8, 3.3}, {2900., 3.4}};
 };
 
 struct SmallImage {
   static constexpr long naxis1 = 3;
   static constexpr long naxis2 = 2;
   static constexpr long size = naxis1 * naxis2;
-  long naxes[2] = { naxis1, naxis2 };
-  float data[size] = { 0.0F, 0.1F, 1.0F, 1.1F, 2.0F, 2.1F };
+  long naxes[2] = {naxis1, naxis2};
+  float data[size] = {0.0F, 0.1F, 1.0F, 1.1F, 2.0F, 2.1F};
 };
 
 class EleCfitsioExample : public Elements::Program {

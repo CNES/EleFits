@@ -19,11 +19,11 @@
 
 #if defined(_ELEFITSDATA_TESTRECORD_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/TestRecord.h"
-  #include "EleFitsData/TestUtils.h"
+#include "EleFitsData/TestRecord.h"
+#include "EleFitsData/TestUtils.h"
 
-  #include <algorithm> // transform
-  #include <cctype> // toupper
+#include <algorithm> // transform
+#include <cctype> // toupper
 
 namespace Euclid {
 namespace Fits {

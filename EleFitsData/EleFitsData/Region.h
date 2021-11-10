@@ -38,7 +38,7 @@ struct Region {
    * @brief Create a region from a front position and shape.
    */
   static Region<n> fromShape(Position<n> frontPosition, Position<n> shape) {
-    Region<n> region { frontPosition, frontPosition };
+    Region<n> region {frontPosition, frontPosition};
     region.back += shape - 1;
     return region;
   }
@@ -49,7 +49,7 @@ struct Region {
    * Front and back bounds along each axis are respectively 0 and -1.
    */
   static Region<n> whole() {
-    return { Position<n>::zero(), Position<n>::max() };
+    return {Position<n>::zero(), Position<n>::max()};
   }
 
   /**

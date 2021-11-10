@@ -261,7 +261,7 @@ Position<n>::Position(long dim) : indices {} {
 }
 
 template <long n>
-Position<n>::Position(std::initializer_list<long> posIndices) : Position<n> { posIndices.begin(), posIndices.end() } {}
+Position<n>::Position(std::initializer_list<long> posIndices) : Position<n> {posIndices.begin(), posIndices.end()} {}
 
 template <long n>
 template <typename TIterator>

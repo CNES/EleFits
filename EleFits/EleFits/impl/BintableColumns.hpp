@@ -19,9 +19,9 @@
 
 #if defined(_ELEFITS_BINTABLECOLUMNS_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/BintableWrapper.h"
-  #include "EleCfitsioWrapper/HeaderWrapper.h" // TODO rm when implementation of init(Seq) is in BintableWrapper
-  #include "EleFits/BintableColumns.h"
+#include "EleCfitsioWrapper/BintableWrapper.h"
+#include "EleCfitsioWrapper/HeaderWrapper.h" // TODO rm when implementation of init(Seq) is in BintableWrapper
+#include "EleFits/BintableColumns.h"
 
 namespace Euclid {
 namespace Fits {
@@ -56,7 +56,7 @@ VecColumn<T> BintableColumns::read(const std::string& name) const {
 
 template <typename T>
 VecColumn<T> BintableColumns::read(long index) const {
-  return readSegment<T>({ 0, readRowCount() - 1 }, index);
+  return readSegment<T>({0, readRowCount() - 1}, index);
 }
 
 // readTo
@@ -73,7 +73,7 @@ void BintableColumns::readTo(const std::string& name, Column<T>& column) const {
 
 template <typename T>
 void BintableColumns::readTo(long index, Column<T>& column) const {
-  readSegmentTo<T>({ 0, readRowCount() - 1 }, column);
+  readSegmentTo<T>({0, readRowCount() - 1}, column);
 }
 
 // readSegment
@@ -109,7 +109,7 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, long index, Column<T>&
   auto slice = column.slice(rows.memory()); // TODO do we need a temporary variable?
   Cfitsio::BintableIo::readColumnSegment<T>(
       m_fptr,
-      Segment { rows.file().front + 1, rows.file().back + 1 }, // TODO operator+
+      Segment {rows.file().front + 1, rows.file().back + 1}, // TODO operator+
       index + 1,
       slice);
 }
@@ -125,8 +125,8 @@ template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
   m_touch();
   const auto rowCount = readRowCount();
-  std::tuple<VecColumn<Ts>...> res { VecColumn<Ts>(readInfo<Ts>(indices), rowCount)... };
-  readSeqTo({ indices... }, res);
+  std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(indices), rowCount)...};
+  readSeqTo({indices...}, res);
   return res;
 }
 
@@ -183,8 +183,8 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
   if (rows.back == -1) {
     resolvedRows.back = readRowCount() - 1;
   }
-  std::tuple<VecColumn<Ts>...> columns { { readInfo<Ts>(indices), resolvedRows.size() }... };
-  readSegmentSeqTo(resolvedRows, { indices.index... }, columns);
+  std::tuple<VecColumn<Ts>...> columns {{readInfo<Ts>(indices), resolvedRows.size()}...};
+  readSegmentSeqTo(resolvedRows, {indices.index...}, columns);
   return columns;
 }
 
@@ -201,7 +201,7 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, TSeq&& columns) con
 
 template <typename... Ts>
 void BintableColumns::readSegmentSeqTo(FileMemSegments rows, Column<Ts>&... columns) const {
-  readSegmentSeqTo(rows, { columns.info().name... }, columns...); // FIXME move rows?
+  readSegmentSeqTo(rows, {columns.info().name...}, columns...); // FIXME move rows?
   // Could forward_as_tuple but would be 1 more indirection for the same amount of lines
 }
 
@@ -238,7 +238,7 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, const std::vector<l
     }
     auto it = indices.begin();
     seqForeach(std::forward<TSeq>(columns), [&](auto& c) {
-      readSegmentTo({ file.front, mem }, *it, c);
+      readSegmentTo({file.front, mem}, *it, c);
       ++it;
     });
   }
@@ -268,10 +268,7 @@ void BintableColumns::init(const ColumnInfo<T>& info, long index) const {
   fits_insert_col(m_fptr, cfitsioIndex, name.get(), tform.get(), &status);
   Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
   if (info.unit != "") {
-    const Record<std::string> record { "TUNIT" + std::to_string(cfitsioIndex),
-                                       info.unit,
-                                       "",
-                                       "physical unit of field" };
+    const Record<std::string> record {"TUNIT" + std::to_string(cfitsioIndex), info.unit, "", "physical unit of field"};
     Cfitsio::HeaderIo::updateRecord(m_fptr, record);
   }
   // TODO to Cfitsio
@@ -317,7 +314,7 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
   long i = cfitsioIndex;
   seqForeach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
-      const Record<std::string> record { "TUNIT" + std::to_string(i), info.unit, "", "physical unit of field" };
+      const Record<std::string> record {"TUNIT" + std::to_string(i), info.unit, "", "physical unit of field"};
       Cfitsio::HeaderIo::updateRecord(m_fptr, record);
     }
     ++i;
@@ -347,7 +344,7 @@ void BintableColumns::writeSegmentSeq(FileMemSegments rows, TSeq&& columns) cons
       mem.back = lastMemRow;
     }
     seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-      writeSegment({ file.front, mem }, c); // FIXME don't recalculate index
+      writeSegment({file.front, mem}, c); // FIXME don't recalculate index
     });
   }
 }

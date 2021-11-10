@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_SUITE(ImageHdu_test)
 
 template <typename T>
 void check_2d() {
-  Test::RandomRaster<T, 2> input({ 16, 9 });
+  Test::RandomRaster<T, 2> input({16, 9});
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, FileMode::Temporary);
   file.assignImageExt("IMGEXT", input);

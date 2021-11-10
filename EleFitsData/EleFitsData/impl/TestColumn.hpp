@@ -19,10 +19,10 @@
 
 #if defined(_ELEFITSDATA_TESTCOLUMN_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/TestColumn.h"
-  #include "EleFitsData/TestUtils.h"
+#include "EleFitsData/TestColumn.h"
+#include "EleFitsData/TestUtils.h"
 
-  #include <algorithm>
+#include <algorithm>
 
 namespace Euclid {
 namespace Fits {
@@ -46,7 +46,7 @@ VecColumn<T> RandomTable::generateColumn(const std::string& typeName, long repea
   std::transform(keyword.begin(), keyword.end(), keyword.begin(), [](unsigned char c) {
     return std::toupper(c);
   });
-  return { { keyword, prefixes + suffix[0], repeatCount }, generateRandomVector<T>(repeatCount * rowCount) };
+  return {{keyword, prefixes + suffix[0], repeatCount}, generateRandomVector<T>(repeatCount * rowCount)};
 }
 
 template <typename T>
@@ -61,11 +61,11 @@ VecColumn<T>& RandomTable::getColumn() {
 
 template <typename T>
 RandomScalarColumn<T>::RandomScalarColumn(long size, T min, T max) :
-    VecColumn<T>({ "SCALAR", "m", 1 }, generateRandomVector<T>(size, min, max)) {}
+    VecColumn<T>({"SCALAR", "m", 1}, generateRandomVector<T>(size, min, max)) {}
 
 template <>
 RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, std::string max) :
-    VecColumn<std::string>({ "SCALAR", "m", 1 }, generateRandomVector<std::string>(size, min, max)) {
+    VecColumn<std::string>({"SCALAR", "m", 1}, generateRandomVector<std::string>(size, min, max)) {
   for (const auto& v : vector()) {
     long currentSize = static_cast<long>(v.length() + 1); // +1 for '\0'
     if (currentSize > info().repeatCount) {
@@ -76,7 +76,7 @@ RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, 
 
 template <typename T>
 RandomVectorColumn<T>::RandomVectorColumn(long repeatCount, long size, T min, T max) :
-    VecColumn<T>({ "VECTOR", "m", repeatCount }, generateRandomVector<T>(repeatCount * size, min, max)) {}
+    VecColumn<T>({"VECTOR", "m", repeatCount}, generateRandomVector<T>(repeatCount * size, min, max)) {}
 
 } // namespace Test
 } // namespace Fits

@@ -19,8 +19,8 @@
 
 #if defined(_ELEFITS_HEADER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/HeaderWrapper.h"
-  #include "EleFits/Header.h"
+#include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleFits/Header.h"
 
 namespace Euclid {
 namespace Fits {
@@ -45,7 +45,7 @@ Record<T> Header::parseOr(
     T fallbackValue,
     const std::string& fallbackUnit,
     const std::string& fallbackComment) const {
-  return parseOr<T>({ keyword, fallbackValue, fallbackUnit, fallbackComment });
+  return parseOr<T>({keyword, fallbackValue, fallbackUnit, fallbackComment});
 }
 
 template <typename T>
@@ -79,12 +79,12 @@ std::tuple<Record<Ts>...> Header::parseSeqOr(const Record<Ts>&... fallbacks) con
 template <typename TReturn, typename... Ts>
 TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
   m_touch();
-  return { Cfitsio::HeaderIo::parseRecord<Ts>(m_fptr, keywords.name)... };
+  return {Cfitsio::HeaderIo::parseRecord<Ts>(m_fptr, keywords.name)...};
 }
 
 template <typename TReturn, typename... Ts>
 TReturn Header::parseStructOr(const Record<Ts>&... fallbacks) const {
-  return { parseOr<Ts>(fallbacks)... }; // TODO avoid calling touchThisHdu for each keyword
+  return {parseOr<Ts>(fallbacks)...}; // TODO avoid calling touchThisHdu for each keyword
 }
 
 template <typename TReturn, typename TSeq>
@@ -149,7 +149,7 @@ void Header::write(const Record<T>& record) const {
 
 template <RecordMode Mode, typename T>
 void Header::write(const std::string& keyword, T value, const std::string& unit, const std::string& comment) const {
-  write<Mode, T>({ keyword, value, unit, comment });
+  write<Mode, T>({keyword, value, unit, comment});
 }
 
 template <>
@@ -210,17 +210,17 @@ void Header::writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records
   seqForeach(std::forward<TSeq>(records), func);
 }
 
-  #ifndef DECLARE_PARSE
-    #define DECLARE_PARSE(type, unused) extern template Record<type> Header::parse(const std::string&) const;
+#ifndef DECLARE_PARSE
+#define DECLARE_PARSE(type, unused) extern template Record<type> Header::parse(const std::string&) const;
 ELEFITS_FOREACH_RECORD_TYPE(DECLARE_PARSE)
-    #undef DECLARE_PARSE
-  #endif
+#undef DECLARE_PARSE
+#endif
 
-  #ifndef DECLARE_WRITE_RECORD
-    #define DECLARE_WRITE_RECORD(type, unused) extern template void Header::write(const Record<type>&) const;
+#ifndef DECLARE_WRITE_RECORD
+#define DECLARE_WRITE_RECORD(type, unused) extern template void Header::write(const Record<type>&) const;
 ELEFITS_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
-    #undef DECLARE_WRITE_RECORD
-  #endif
+#undef DECLARE_WRITE_RECORD
+#endif
 
 // FIXME extern declare more
 

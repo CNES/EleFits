@@ -43,10 +43,11 @@ std::string readBitpixName(const ImageHdu& hdu) {
 
 KeywordCategory parseKeywordCategories(const std::string& filter) {
   auto categories = KeywordCategory::None;
-  static const std::map<char, KeywordCategory> mapping { { 'm', KeywordCategory::Mandatory },
-                                                         { 'r', KeywordCategory::Reserved },
-                                                         { 'c', KeywordCategory::Comment },
-                                                         { 'u', KeywordCategory::User } };
+  static const std::map<char, KeywordCategory> mapping {
+      {'m', KeywordCategory::Mandatory},
+      {'r', KeywordCategory::Reserved},
+      {'c', KeywordCategory::Comment},
+      {'u', KeywordCategory::User}};
   for (const auto& f : filter) {
     categories |= mapping.find(f)->second;
   }

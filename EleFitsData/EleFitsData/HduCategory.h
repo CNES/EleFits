@@ -342,28 +342,28 @@ private:
  * @brief Combine two accepted categories as a filter.
  */
 inline HduFilter operator+(HduCategory lhs, HduCategory rhs) {
-  return HduFilter({ lhs, rhs }, {});
+  return HduFilter({lhs, rhs}, {});
 }
 
 /**
  * @brief Combine an accepted and rejected categories as a filter.
  */
 inline HduFilter operator-(HduCategory lhs, HduCategory rhs) {
-  return HduFilter({ lhs }, { rhs });
+  return HduFilter({lhs}, {rhs});
 }
 
 /**
  * @brief Consider a category as a filter with only this category as the accepted category.
  */
 inline HduFilter operator+(HduCategory rhs) {
-  return HduFilter({ rhs }, {});
+  return HduFilter({rhs}, {});
 }
 
 /**
  * @brief Consider a category as a filter with only this category as the rejected category.
  */
 inline HduFilter operator-(HduCategory rhs) {
-  return HduFilter({}, { rhs });
+  return HduFilter({}, {rhs});
 }
 
 } // namespace Fits

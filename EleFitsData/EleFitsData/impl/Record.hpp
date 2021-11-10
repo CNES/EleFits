@@ -19,9 +19,9 @@
 
 #if defined(_ELEFITSDATA_RECORD_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/Record.h"
+#include "EleFitsData/Record.h"
 
-  #include <type_traits> // enable_if & co
+#include <type_traits> // enable_if & co
 
 namespace Euclid {
 namespace Fits {
@@ -123,7 +123,7 @@ TFrom CasterImpl<TFrom, TFrom, void>::cast(TFrom value) {
 template <typename TFrom, typename TTo>
 std::complex<TTo>
 CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cast(std::complex<TFrom> value) {
-  return { CasterImpl<TFrom, TTo>::cast(value.real()), CasterImpl<TFrom, TTo>::cast(value.imag()) };
+  return {CasterImpl<TFrom, TTo>::cast(value.real()), CasterImpl<TFrom, TTo>::cast(value.imag())};
 }
 
 /*
@@ -259,11 +259,11 @@ bool Record<const char*>::hasLongStringValue() const;
 template <>
 bool Record<VariantValue>::hasLongStringValue() const;
 
-  #ifndef DECLARE_RECORD_CLASS
-    #define DECLARE_RECORD_CLASS(type, unused) extern template struct Record<type>;
+#ifndef DECLARE_RECORD_CLASS
+#define DECLARE_RECORD_CLASS(type, unused) extern template struct Record<type>;
 ELEFITS_FOREACH_RECORD_TYPE(DECLARE_RECORD_CLASS)
-    #undef DECLARE_RECORD_CLASS
-  #endif
+#undef DECLARE_RECORD_CLASS
+#endif
 
 } // namespace Fits
 } // namespace Euclid

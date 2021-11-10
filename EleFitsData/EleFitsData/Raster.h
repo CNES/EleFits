@@ -532,7 +532,7 @@ private:
  */
 template <typename T, typename... Longs>
 PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) {
-  return { { shape... }, data };
+  return {{shape...}, data};
 }
 
 /**
@@ -541,7 +541,7 @@ PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) {
  */
 template <typename T, typename... Longs>
 VecRaster<T, sizeof...(Longs)> makeRaster(std::vector<T> data, Longs... shape) {
-  return { { shape... }, std::move(data) };
+  return {{shape...}, std::move(data)};
 }
 
 } // namespace Fits

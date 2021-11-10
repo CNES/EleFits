@@ -19,7 +19,7 @@
 
 #if defined(_ELEFITS_SIFFILE_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFits/SifFile.h"
+#include "EleFits/SifFile.h"
 
 namespace Euclid {
 namespace Fits {

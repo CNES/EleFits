@@ -38,10 +38,10 @@ template <typename T>
 void checkRecordWithFallbackIsReadBack(const Header& h, const std::string& keyword) {
   BOOST_TEST(not h.has(keyword));
   BOOST_CHECK_THROW(h.parse<T>(keyword), std::exception);
-  const Record<T> fallback { keyword, Test::generateRandomValue<T>(), "", "FALLBACK" };
+  const Record<T> fallback {keyword, Test::generateRandomValue<T>(), "", "FALLBACK"};
   auto output = h.parseOr<T>(fallback);
   BOOST_TEST((output == fallback));
-  const Record<T> input { keyword, Test::generateRandomValue<T>(), "", "INPUT" };
+  const Record<T> input {keyword, Test::generateRandomValue<T>(), "", "INPUT"};
   h.write(input);
   BOOST_TEST((input != fallback)); // At least the comments differ
   output = h.parseOr<T>(fallback);
@@ -146,8 +146,8 @@ BOOST_FIXTURE_TEST_CASE(c_str_record_is_read_back_as_string_record_test, Test::T
 
 BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::TemporarySifFile) {
   const auto& h = this->header();
-  const Record<short> short_record { "SHORT", 1 };
-  const Record<long> long_record { "LONG", 1000 };
+  const Record<short> short_record {"SHORT", 1};
+  const Record<long> long_record {"LONG", 1000};
   auto records = std::make_tuple(short_record, long_record);
   h.writeSeq(records);
   BOOST_TEST(h.parse<short>("SHORT") == 1);
@@ -162,9 +162,9 @@ BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::Tempor
 BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::TemporarySifFile) {
   const auto& h = this->header();
   std::vector<Record<VariantValue>> records;
-  records.push_back({ "STRING", std::string("WIDE") });
-  records.push_back({ "FLOAT", 3.14F });
-  records.push_back({ "INT", 666 });
+  records.push_back({"STRING", std::string("WIDE")});
+  records.push_back({"FLOAT", 3.14F});
+  records.push_back({"INT", 666});
   h.writeSeq(records);
   auto parsed = h.parseAll();
   BOOST_TEST(parsed.as<std::string>("STRING").value == "WIDE");
@@ -178,9 +178,9 @@ BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test:
   records.vector[0].assign(Record<std::string>("STRING", "WIDE"));
   records.vector[1].assign(Record<float>("FLOAT", 3.14F));
   records.vector[2].assign(Record<int>("INT", 666));
-  h.writeSeqIn({ "FLOAT", "INT" }, records);
+  h.writeSeqIn({"FLOAT", "INT"}, records);
   BOOST_CHECK_THROW(h.parse<VariantValue>("STRING"), std::exception);
-  auto parsed = h.parseSeq({ "INT" });
+  auto parsed = h.parseSeq({"INT"});
   BOOST_TEST(parsed.as<int>("INT").value == 666);
   BOOST_CHECK_THROW(parsed.as<float>("FLOAT"), std::exception);
 }
@@ -231,7 +231,7 @@ BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFil
     std::string s;
   };
   const auto& header = this->header();
-  const MyHeader input { false, 1, 3.14F, "VAL" };
+  const MyHeader input {false, 1, 3.14F, "VAL"};
   header.writeSeq(
       Record<bool>("BOOL", input.b),
       Record<int>("INT", input.i),

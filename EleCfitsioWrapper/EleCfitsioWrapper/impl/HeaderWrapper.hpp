@@ -19,9 +19,9 @@
 
 #if defined(_ELECFITSIOWRAPPER_HEADERWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleCfitsioWrapper/HeaderWrapper.h"
 
-  #include <utility> // index_sequence, make_index_sequence
+#include <utility> // index_sequence, make_index_sequence
 
 namespace Euclid {
 namespace Cfitsio {
@@ -101,7 +101,7 @@ namespace Internal {
  */
 template <class TReturn, typename... Ts, std::size_t... Is>
 TReturn parseRecordsAsImpl(fitsfile* fptr, const std::vector<std::string>& keywords, std::index_sequence<Is...>) {
-  return { parseRecord<Ts>(fptr, keywords[Is])... };
+  return {parseRecord<Ts>(fptr, keywords[Is])...};
 }
 
 /**
@@ -110,7 +110,7 @@ TReturn parseRecordsAsImpl(fitsfile* fptr, const std::vector<std::string>& keywo
 template <typename... Ts, std::size_t... Is>
 void writeRecordsImpl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>) {
   using mockUnpack = int[];
-  (void)mockUnpack { (writeRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
+  (void)mockUnpack {(writeRecord<Ts>(fptr, std::get<Is>(records)), 0)...};
 }
 
 /**
@@ -119,7 +119,7 @@ void writeRecordsImpl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& rec
 template <typename... Ts, std::size_t... Is>
 void updateRecordsImpl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>) {
   using mockUnpack = int[];
-  (void)mockUnpack { (updateRecord<Ts>(fptr, std::get<Is>(records)), 0)... };
+  (void)mockUnpack {(updateRecord<Ts>(fptr, std::get<Is>(records)), 0)...};
 }
 
 } // namespace Internal
@@ -187,7 +187,7 @@ void writeRecord(fitsfile* fptr, const Fits::Record<T>& record) {
 template <typename... Ts>
 void writeRecords(fitsfile* fptr, const Fits::Record<Ts>&... records) {
   using mockUnpack = int[];
-  (void)mockUnpack { (writeRecord(fptr, records), 0)... };
+  (void)mockUnpack {(writeRecord(fptr, records), 0)...};
 }
 
 template <typename... Ts>
@@ -214,7 +214,7 @@ void updateRecord(fitsfile* fptr, const Fits::Record<T>& record) {
 template <typename... Ts>
 void updateRecords(fitsfile* fptr, const Fits::Record<Ts>&... records) {
   using mockUnpack = int[];
-  (void)mockUnpack { (updateRecord(fptr, records), 0)... };
+  (void)mockUnpack {(updateRecord(fptr, records), 0)...};
 }
 
 template <typename... Ts>

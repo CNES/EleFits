@@ -29,8 +29,8 @@ Benchmark::Benchmark(const std::string& filename) :
 const BChronometer& Benchmark::writeImages(long count, const BRaster& raster) {
   open();
   m_chrono.reset();
-  m_logger.debug() << "First pixel: " << raster.at({ 0 });
-  m_logger.debug() << "Last pixel: " << raster.at({ -1 });
+  m_logger.debug() << "First pixel: " << raster.at({0});
+  m_logger.debug() << "Last pixel: " << raster.at({-1});
   for (long i = 0; i < count; ++i) {
     const auto inc = writeImage(raster);
     m_logger.debug() << i + 1 << "/" << count << ": " << inc.count() << "ms";
@@ -62,8 +62,8 @@ const BChronometer& Benchmark::readImages(long first, long count) {
   for (long i = 0; i < count; ++i) {
     const auto raster = readImage(first + i);
     m_logger.debug() << i + 1 << "/" << count << ": " << m_chrono.last().count() << "ms";
-    m_logger.debug() << "\tFirst pixel: " << raster.at({ 0 });
-    m_logger.debug() << "\tLast pixel: " << raster.at({ -1 });
+    m_logger.debug() << "\tFirst pixel: " << raster.at({0});
+    m_logger.debug() << "\tLast pixel: " << raster.at({-1});
   }
   const auto total = m_chrono.elapsed();
   m_logger.debug() << "TOTAL: " << total.count() << "ms";

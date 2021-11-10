@@ -50,9 +50,9 @@ bool Record<VariantValue>::hasLongStringValue() const {
 }
 
 #ifndef COMPILE_RECORD_CLASS
-  #define COMPILE_RECORD_CLASS(type, unused) template struct Record<type>;
+#define COMPILE_RECORD_CLASS(type, unused) template struct Record<type>;
 ELEFITS_FOREACH_RECORD_TYPE(COMPILE_RECORD_CLASS)
-  #undef COMPILE_RECORD_CLASS
+#undef COMPILE_RECORD_CLASS
 #endif
 
 } // namespace Fits

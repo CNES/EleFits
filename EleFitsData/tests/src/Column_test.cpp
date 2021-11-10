@@ -31,16 +31,16 @@ BOOST_AUTO_TEST_SUITE(Column_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test) {
-  std::vector<int> input { 1, 2, 3 };
-  PtrColumn<int> column({ "SHARED", "", 1 }, input.size(), input.data());
+  std::vector<int> input {1, 2, 3};
+  PtrColumn<int> column({"SHARED", "", 1}, input.size(), input.data());
   BOOST_TEST(column.data()[1] == 2);
   input[1] = 4;
   BOOST_TEST(column.data()[1] == 4);
 }
 
 BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test) {
-  std::vector<int> input { 4, 5, 6 };
-  VecColumn<int> column({ "DATA", "", 1 }, std::move(input));
+  std::vector<int> input {4, 5, 6};
+  VecColumn<int> column({"DATA", "", 1}, std::move(input));
   BOOST_TEST(column.vector()[1] == 5);
   BOOST_TEST(input.size() == 0);
   column.moveTo(input);
@@ -73,25 +73,25 @@ BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
   constexpr long repeatCount = 7;
 
   /* VecColumn */
-  VecColumn<std::string> vecColumn({ "STR", "", repeatCount }, rowCount);
+  VecColumn<std::string> vecColumn({"STR", "", repeatCount}, rowCount);
   BOOST_TEST(vecColumn.info().repeatCount == repeatCount);
   BOOST_TEST(vecColumn.rowCount() == rowCount);
   BOOST_TEST(vecColumn.elementCount() == rowCount);
 
   /* PtrColumn */
-  PtrColumn<std::string> ptrColumn({ "STR", "", repeatCount }, rowCount, vecColumn.data());
+  PtrColumn<std::string> ptrColumn({"STR", "", repeatCount}, rowCount, vecColumn.data());
   BOOST_TEST(ptrColumn.info().repeatCount == repeatCount);
   BOOST_TEST(ptrColumn.rowCount() == rowCount);
   BOOST_TEST(ptrColumn.elementCount() == rowCount);
 
   /* Constant VecColumn */
-  const VecColumn<std::string> cVecColumn({ "STR", "", repeatCount }, rowCount);
+  const VecColumn<std::string> cVecColumn({"STR", "", repeatCount}, rowCount);
   BOOST_TEST(cVecColumn.info().repeatCount == repeatCount);
   BOOST_TEST(cVecColumn.rowCount() == rowCount);
   BOOST_TEST(cVecColumn.elementCount() == rowCount);
 
   /* Constant PtrColumn */
-  const PtrColumn<const std::string> cPtrColumn({ "STR", "", repeatCount }, rowCount, cVecColumn.data());
+  const PtrColumn<const std::string> cPtrColumn({"STR", "", repeatCount}, rowCount, cVecColumn.data());
   BOOST_TEST(cPtrColumn.info().repeatCount == repeatCount);
   BOOST_TEST(cPtrColumn.rowCount() == rowCount);
   BOOST_TEST(cPtrColumn.elementCount() == rowCount);

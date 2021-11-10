@@ -71,12 +71,12 @@ const Hdu& MefFile::initRecordExt(const std::string& name) {
 const long MefFile::primaryIndex;
 
 #ifndef COMPILE_ASSIGN_IMAGE_EXT
-  #define COMPILE_ASSIGN_IMAGE_EXT(type, unused) \
-    template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
-    template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
-    template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
+#define COMPILE_ASSIGN_IMAGE_EXT(type, unused) \
+  template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
+  template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
+  template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
 ELEFITS_FOREACH_RASTER_TYPE(COMPILE_ASSIGN_IMAGE_EXT)
-  #undef COMPILE_ASSIGN_IMAGE_EXT
+#undef COMPILE_ASSIGN_IMAGE_EXT
 #endif
 
 } // namespace Fits

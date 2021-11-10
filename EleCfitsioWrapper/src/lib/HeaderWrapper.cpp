@@ -39,7 +39,7 @@ std::string readHeader(fitsfile* fptr, bool incNonValued) {
       &header,
       &recordCount,
       &status);
-  std::string headerString { header };
+  std::string headerString {header};
   fits_free_memory(header, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read the complete header");
   return headerString;
@@ -122,7 +122,7 @@ Fits::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::st
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot find string record: " + keyword);
   if (length == 0) {
-    return { keyword, "" };
+    return {keyword, ""};
   }
   char* value = nullptr; // That's almost the only function in which CFitsIO allocates itself!
   char unit[FLEN_COMMENT];
@@ -189,12 +189,12 @@ void writeRecord<std::string>(fitsfile* fptr, const Fits::Record<std::string>& r
 
 template <>
 void writeRecord<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
-  writeRecord<std::string>(fptr, { record.keyword, std::string(record.value), record.unit, record.comment });
+  writeRecord<std::string>(fptr, {record.keyword, std::string(record.value), record.unit, record.comment});
 }
 
 template <typename T>
 void writeRecordAnyImpl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
-  writeRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
+  writeRecord<T>(fptr, {record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment});
 }
 
 #define WRITE_RECORD_ANY_FOR_TYPE(type, unused) \
@@ -243,12 +243,12 @@ void updateRecord<std::string>(fitsfile* fptr, const Fits::Record<std::string>& 
 
 template <>
 void updateRecord<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
-  updateRecord<std::string>(fptr, { record.keyword, std::string(record.value), record.unit, record.comment });
+  updateRecord<std::string>(fptr, {record.keyword, std::string(record.value), record.unit, record.comment});
 }
 
 template <typename T>
 void updateRecordAnyImpl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
-  updateRecord<T>(fptr, { record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment });
+  updateRecord<T>(fptr, {record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment});
 }
 
 #define UPDATE_RECORD_ANY_FOR_TYPE(type, unused) \

@@ -26,14 +26,15 @@ namespace Euclid {
 namespace Fits {
 
 Hdu::Hdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
-    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type), m_header(
-                                                               m_fptr,
-                                                               [&]() {
-                                                                 touchThisHdu();
-                                                               },
-                                                               [&]() {
-                                                                 editThisHdu();
-                                                               }),
+    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type),
+    m_header(
+        m_fptr,
+        [&]() {
+          touchThisHdu();
+        },
+        [&]() {
+          editThisHdu();
+        }),
     m_status(status) {}
 
 Hdu::Hdu() : Hdu(Token(), m_dummyFptr, 0, HduCategory::Image, HduCategory::Untouched) {}

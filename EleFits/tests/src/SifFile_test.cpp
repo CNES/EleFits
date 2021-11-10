@@ -51,10 +51,10 @@ BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile) {
 
 BOOST_AUTO_TEST_CASE(write_all_test) {
   Test::SmallRaster input;
-  const Record<int> i { "INT", 1, "i", "integer" };
-  const Record<std::string> s { "STR", "TWO", "s", "text" };
+  const Record<int> i {"INT", 1, "i", "integer"};
+  const Record<std::string> s {"STR", "TWO", "s", "text"};
   SifFile f(Elements::TempPath().path().string(), FileMode::Temporary);
-  f.writeAll({ i, s }, input);
+  f.writeAll({i, s}, input);
   const auto records = f.header().parseAll();
   const auto output = f.raster().read<float>();
   auto r = records.as<int>(i.keyword);

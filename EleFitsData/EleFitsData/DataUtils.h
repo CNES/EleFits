@@ -91,14 +91,14 @@ struct Segment {
    * @brief Create a segment specified by a lower bound and size.
    */
   static Segment fromSize(long front, long size) {
-    return { front, front + size - 1 };
+    return {front, front + size - 1};
   }
 
   /**
    * @brief Create a maximal segment (from index 0 to max).
    */
   static Segment whole() {
-    return { 0, -1 };
+    return {0, -1};
   }
 
   /**
@@ -135,7 +135,7 @@ constexpr decltype(auto) tupleIndexSequence() {
  */
 template <typename TReturn, typename TTuple, std::size_t... Is>
 TReturn tupleAsImpl(TTuple&& tuple, std::index_sequence<Is...>) {
-  return { std::get<Is>(tuple)... };
+  return {std::get<Is>(tuple)...};
 }
 
 /**
@@ -152,10 +152,11 @@ constexpr decltype(auto) applyImpl(TTuple&& tuple, TFunc&& func, std::index_sequ
 template <typename TTuple, typename TFunc, std::size_t... Is>
 void tupleForeachImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
   using mockUnpack = int[];
-  (void)mockUnpack { 0, // Ensure there is at least one element
-                     (func(std::get<Is>(tuple)), // Use comma operator to return an int even if func doesn't
-                      void(), // Add void() in case where the return type of func would define a comma-operator
-                      0)... };
+  (void)mockUnpack {
+      0, // Ensure there is at least one element
+      (func(std::get<Is>(tuple)), // Use comma operator to return an int even if func doesn't
+       void(), // Add void() in case where the return type of func would define a comma-operator
+       0)...};
 }
 
 /**
@@ -163,7 +164,7 @@ void tupleForeachImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) 
  */
 template <typename TReturn, typename TTuple, typename TFunc, std::size_t... Is>
 TReturn tupleTransformImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
-  return { func(std::get<Is>(tuple))... };
+  return {func(std::get<Is>(tuple))...};
 }
 
 /**
@@ -279,7 +280,7 @@ template <typename TLogger, typename T0, typename... Ts>
 void logArgs(TLogger&& logger, T0&& arg0, Ts&&... args) {
   logger << std::forward<T0>(arg0);
   using mockUnpack = int[];
-  (void)mockUnpack { 0, (void(std::forward<TLogger>(logger) << ", " << std::forward<Ts>(args)), 0)... };
+  (void)mockUnpack {0, (void(std::forward<TLogger>(logger) << ", " << std::forward<Ts>(args)), 0)...};
 }
 
 } // namespace Fits

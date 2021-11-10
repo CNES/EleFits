@@ -42,11 +42,11 @@ BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile) {
-  ColumnInfo<float> info { "COL", "", 1 };
-  std::vector<std::string> names { "", "BINTABLE1", "BINTABLE2", "IMAGE" };
+  ColumnInfo<float> info {"COL", "", 1};
+  std::vector<std::string> names {"", "BINTABLE1", "BINTABLE2", "IMAGE"};
   this->initBintableExt(names[1], info);
   this->initBintableExt(names[2], info);
-  this->initImageExt<float, 2>(names[3], { 1, 1 });
+  this->initImageExt<float, 2>(names[3], {1, 1});
 
   int count = 0;
   std::vector<std::string> readNames;

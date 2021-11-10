@@ -74,7 +74,7 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   const auto& ext2 = this->assignImageExt("IMG2", raster);
   BOOST_TEST(ext2.index() == 2);
   BOOST_TEST(this->hduCount() == 3);
-  std::vector<std::string> inputNames { "", "IMG1", "IMG2" };
+  std::vector<std::string> inputNames {"", "IMG1", "IMG2"};
   const auto outputNames = this->readHduNames();
   BOOST_TEST(outputNames == inputNames);
   remove(this->filename().c_str());

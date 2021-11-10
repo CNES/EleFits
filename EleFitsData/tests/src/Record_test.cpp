@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE(Record_test)
 
 BOOST_AUTO_TEST_CASE(full_init_test) {
 
-  Record<int> full { "FULL", 4, "m", "Full" };
+  Record<int> full {"FULL", 4, "m", "Full"};
 
   BOOST_TEST(full.keyword == "FULL");
   BOOST_TEST(full.value == 4);
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(full_init_test) {
 
 BOOST_AUTO_TEST_CASE(unit_init_test) {
 
-  Record<int> unit { "UNIT", 3, "m" };
+  Record<int> unit {"UNIT", 3, "m"};
 
   BOOST_TEST(unit.keyword == "UNIT");
   BOOST_TEST(unit.value == 3);
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(unit_init_test) {
 
 BOOST_AUTO_TEST_CASE(mini_init_test) {
 
-  Record<int> mini { "MINI", 2 };
+  Record<int> mini {"MINI", 2};
 
   BOOST_TEST(mini.keyword == "MINI");
   BOOST_TEST(mini.value == 2);
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(mini_init_test) {
 
 template <typename T>
 void checkRecordCopy(const std::string& keyword) {
-  Record<T> original { keyword, Test::generateRandomValue<T>() };
+  Record<T> original {keyword, Test::generateRandomValue<T>()};
   Record<T> copy(original);
   Record<T> assigned;
   assigned = original;
@@ -79,9 +79,9 @@ ELEFITS_FOREACH_RECORD_TYPE(RECORD_COPY_TEST)
 
 BOOST_AUTO_TEST_CASE(raw_comment_test) {
 
-  Record<int> noUnit { "V", 1, "", "Speed" };
-  Record<int> unit { "V", 1, "m", "Speed" };
-  Record<int> unitInComment { "V", 1, "", "[m] Speed" };
+  Record<int> noUnit {"V", 1, "", "Speed"};
+  Record<int> unit {"V", 1, "m", "Speed"};
+  Record<int> unitInComment {"V", 1, "", "[m] Speed"};
 
   BOOST_TEST(noUnit.rawComment() == "Speed");
   BOOST_TEST(unit.rawComment() == "[m] Speed");
@@ -187,7 +187,7 @@ void checkAnyEqual(VariantValue value, T expected) {
 BOOST_AUTO_TEST_CASE(vector_of_any_is_built_and_cast_back_test) {
   Record<std::string> str_record("STRING", "HEY!");
   Record<bool> boo_record("BOOL", false);
-  Record<std::complex<float>> com_record("COMPLEX", { 1.F, 2.F });
+  Record<std::complex<float>> com_record("COMPLEX", {1.F, 2.F});
   std::vector<Record<VariantValue>> vec;
   vec.emplace_back(str_record);
   vec.emplace_back(boo_record);

@@ -19,8 +19,8 @@
 
 #if defined(_ELEFITS_IMAGERASTER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/ImageWrapper.h"
-  #include "EleFits/ImageRaster.h"
+#include "EleCfitsioWrapper/ImageWrapper.h"
+#include "EleFits/ImageRaster.h"
 
 namespace Euclid {
 namespace Fits {

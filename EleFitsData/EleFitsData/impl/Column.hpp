@@ -19,8 +19,8 @@
 
 #if defined(_ELEFITSDATA_COLUMN_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/Column.h"
-  #include "EleFitsData/FitsError.h"
+#include "EleFitsData/Column.h"
+#include "EleFitsData/FitsError.h"
 
 namespace Euclid {
 namespace Fits {
@@ -102,8 +102,8 @@ T& Column<T>::operator()(long row, long repeat) {
 
 template <typename T>
 const T& Column<T>::at(long row, long repeat) const {
-  OutOfBoundsError::mayThrow("Cannot access row index", row, { -rowCount(), rowCount() - 1 });
-  OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, { -m_info.repeatCount, m_info.repeatCount - 1 });
+  OutOfBoundsError::mayThrow("Cannot access row index", row, {-rowCount(), rowCount() - 1});
+  OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, {-m_info.repeatCount, m_info.repeatCount - 1});
   const long boundedRow = row < 0 ? rowCount() + row : row;
   const long boundedRepeat = repeat < 0 ? m_info.repeatCount + repeat : repeat;
   return operator()(boundedRow, boundedRepeat);
@@ -126,12 +126,12 @@ T* Column<T>::data() {
 
 template <typename T>
 const PtrColumn<const T> Column<T>::slice(const Segment& rows) const {
-  return { info(), elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
+  return {info(), elementCount() / rowCount() * rows.size(), &operator()(rows.front)}; // FIXME repeatCount?
 }
 
 template <typename T>
 PtrColumn<T> Column<T>::slice(const Segment& rows) {
-  return { info(), elementCount() / rowCount() * rows.size(), &operator()(rows.front) }; // FIXME repeatCount?
+  return {info(), elementCount() / rowCount() * rows.size(), &operator()(rows.front)}; // FIXME repeatCount?
 }
 
 // PtrColumn
@@ -153,7 +153,7 @@ const T* PtrColumn<T>::dataImpl() const {
 // VecColumn
 
 template <typename T>
-VecColumn<T>::VecColumn() : Column<T>({ "", "", 1 }), m_vec() {}
+VecColumn<T>::VecColumn() : Column<T>({"", "", 1}), m_vec() {}
 
 template <typename T>
 VecColumn<T>::VecColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> vec) : Column<T>(info), m_vec(vec) {}
@@ -186,15 +186,15 @@ const T* VecColumn<T>::dataImpl() const {
   return m_vec.data();
 }
 
-  #ifndef DECLARE_COLUMN_CLASSES
-    #define DECLARE_COLUMN_CLASSES(type, unused) \
-      extern template struct ColumnInfo<type>; \
-      extern template class Column<type>; \
-      extern template class PtrColumn<type>; \
-      extern template class VecColumn<type>;
+#ifndef DECLARE_COLUMN_CLASSES
+#define DECLARE_COLUMN_CLASSES(type, unused) \
+  extern template struct ColumnInfo<type>; \
+  extern template class Column<type>; \
+  extern template class PtrColumn<type>; \
+  extern template class VecColumn<type>;
 ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
-    #undef DECLARE_COLUMN_CLASSES
-  #endif
+#undef DECLARE_COLUMN_CLASSES
+#endif
 
 } // namespace Fits
 } // namespace Euclid

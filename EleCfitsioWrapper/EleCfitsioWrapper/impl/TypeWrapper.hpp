@@ -19,12 +19,12 @@
 
 #if defined(_ELECFITSIOWRAPPER_TYPEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/TypeWrapper.h"
+#include "EleCfitsioWrapper/TypeWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {
 
-  /*
+/*
  * From CFitsIO documentation "Keyword Reading Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node38.html
  *
@@ -32,16 +32,16 @@ namespace Cfitsio {
  * TSTRING, TLOGICAL (== int), TBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG,
  * TULONG, TLONGLONG, TFLOAT, TDOUBLE, TCOMPLEX, and TDBLCOMPLEX
  */
-  #ifndef DEF_RECORD_TYPE_CODE
-    #define DEF_RECORD_TYPE_CODE(type, code) \
-      template <> \
-      inline int TypeCode<type>::forRecord() { \
-        return code; \
-      } \
-      template <> \
-      inline int TypeCode<const type>::forRecord() { \
-        return code; \
-      }
+#ifndef DEF_RECORD_TYPE_CODE
+#define DEF_RECORD_TYPE_CODE(type, code) \
+  template <> \
+  inline int TypeCode<type>::forRecord() { \
+    return code; \
+  } \
+  template <> \
+  inline int TypeCode<const type>::forRecord() { \
+    return code; \
+  }
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
 DEF_RECORD_TYPE_CODE(short, TSHORT)
@@ -58,10 +58,10 @@ DEF_RECORD_TYPE_CODE(unsigned short, TUSHORT)
 DEF_RECORD_TYPE_CODE(unsigned int, TUINT)
 DEF_RECORD_TYPE_CODE(unsigned long, TULONG)
 DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
-    #undef DEF_RECORD_TYPE_CODE
-  #endif
+#undef DEF_RECORD_TYPE_CODE
+#endif
 
-  /*
+/*
  * From CFitsIO documentation "Read and Write Column Data Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node46.html
  *
@@ -70,16 +70,16 @@ DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
  * TULONG, TULONGLONG, TFLOAT, TDOUBLE Additional types for binary tables:
  * TLOGICAL (internally mapped to the `char' data type), TCOMPLEX, TDBLCOMPLEX
  */
-  #ifndef DEF_TABLE_TYPE_CODE
-    #define DEF_TABLE_TYPE_CODE(type, code) \
-      template <> \
-      inline int TypeCode<type>::forBintable() { \
-        return code; \
-      } \
-      template <> \
-      inline int TypeCode<const type>::forBintable() { \
-        return code; \
-      }
+#ifndef DEF_TABLE_TYPE_CODE
+#define DEF_TABLE_TYPE_CODE(type, code) \
+  template <> \
+  inline int TypeCode<type>::forBintable() { \
+    return code; \
+  } \
+  template <> \
+  inline int TypeCode<const type>::forBintable() { \
+    return code; \
+  }
 DEF_TABLE_TYPE_CODE(bool, TBIT)
 DEF_TABLE_TYPE_CODE(char, TSBYTE)
 DEF_TABLE_TYPE_CODE(short, TSHORT)
@@ -95,10 +95,10 @@ DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
 DEF_TABLE_TYPE_CODE(unsigned long, TULONG)
 DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
-    #undef DEF_TABLE_TYPE_CODE
-  #endif
+#undef DEF_TABLE_TYPE_CODE
+#endif
 
-  /*
+/*
  * From Fits standard and CFitsIO documentation "Read and Write Column Data
  * Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
@@ -110,16 +110,16 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
  * - `W' for a 64-bit unsigned integer column, and
  * - 'S' for a signed byte column.
  */
-  #ifndef DEF_TABLE_TFORM
-    #define DEF_TABLE_TFORM(type, code) \
-      template <> \
-      inline std::string TypeCode<type>::tform(long repeatCount) { \
-        return std::to_string(repeatCount) + code; \
-      } \
-      template <> \
-      inline std::string TypeCode<const type>::tform(long repeatCount) { \
-        return std::to_string(repeatCount) + code; \
-      }
+#ifndef DEF_TABLE_TFORM
+#define DEF_TABLE_TFORM(type, code) \
+  template <> \
+  inline std::string TypeCode<type>::tform(long repeatCount) { \
+    return std::to_string(repeatCount) + code; \
+  } \
+  template <> \
+  inline std::string TypeCode<const type>::tform(long repeatCount) { \
+    return std::to_string(repeatCount) + code; \
+  }
 DEF_TABLE_TFORM(bool, 'X')
 DEF_TABLE_TFORM(char, 'S')
 DEF_TABLE_TFORM(std::int16_t, 'I')
@@ -134,10 +134,10 @@ DEF_TABLE_TFORM(unsigned char, 'B')
 DEF_TABLE_TFORM(std::uint16_t, 'U')
 DEF_TABLE_TFORM(std::uint32_t, 'V')
 DEF_TABLE_TFORM(std::uint64_t, 'W')
-    #undef DEF_TABLE_TFORM
-  #endif
+#undef DEF_TABLE_TFORM
+#endif
 
-  /*
+/*
  * From CFitsIO documentation "Primary Array or Image Extension I/O Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node40.html
  *
@@ -145,16 +145,16 @@ DEF_TABLE_TFORM(std::uint64_t, 'W')
  * TBYTE, TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG,
  * TULONGLONG, TFLOAT, TDOUBLE
  */
-  #ifndef DEF_IMAGE_TYPE_CODE
-    #define DEF_IMAGE_TYPE_CODE(type, code) \
-      template <> \
-      inline int TypeCode<type>::forImage() { \
-        return code; \
-      } \
-      template <> \
-      inline int TypeCode<const type>::forImage() { \
-        return code; \
-      }
+#ifndef DEF_IMAGE_TYPE_CODE
+#define DEF_IMAGE_TYPE_CODE(type, code) \
+  template <> \
+  inline int TypeCode<type>::forImage() { \
+    return code; \
+  } \
+  template <> \
+  inline int TypeCode<const type>::forImage() { \
+    return code; \
+  }
 DEF_IMAGE_TYPE_CODE(char, TSBYTE)
 DEF_IMAGE_TYPE_CODE(short, TSHORT)
 DEF_IMAGE_TYPE_CODE(int, TINT)
@@ -167,26 +167,26 @@ DEF_IMAGE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_IMAGE_TYPE_CODE(unsigned int, TUINT)
 DEF_IMAGE_TYPE_CODE(unsigned long, TULONG)
 DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
-    #undef DEF_IMAGE_TYPE_CODE
-  #endif
+#undef DEF_IMAGE_TYPE_CODE
+#endif
 
-  /*
+/*
  * From CFitsIO documentation? //TODO link
  *
  * Allowed types:
  * BYTE_IMG, SHORT_IMG, LONG_IMG, LONGLONG_IMG, FLOAT_IMG, DOUBLE_IMG
  * SBYTE_IMG, USHORT_IMG, ULONG_IMG, ULONGLONG_IMG
  */
-  #ifndef DEF_IMAGE_BITPIX
-    #define DEF_IMAGE_BITPIX(type, code) \
-      template <> \
-      inline int TypeCode<type>::bitpix() { \
-        return code; \
-      } \
-      template <> \
-      inline int TypeCode<const type>::bitpix() { \
-        return code; \
-      }
+#ifndef DEF_IMAGE_BITPIX
+#define DEF_IMAGE_BITPIX(type, code) \
+  template <> \
+  inline int TypeCode<type>::bitpix() { \
+    return code; \
+  } \
+  template <> \
+  inline int TypeCode<const type>::bitpix() { \
+    return code; \
+  }
 DEF_IMAGE_BITPIX(char, SBYTE_IMG)
 DEF_IMAGE_BITPIX(std::int16_t, SHORT_IMG)
 DEF_IMAGE_BITPIX(std::int32_t, LONG_IMG)
@@ -197,8 +197,8 @@ DEF_IMAGE_BITPIX(unsigned char, BYTE_IMG)
 DEF_IMAGE_BITPIX(std::uint16_t, USHORT_IMG)
 DEF_IMAGE_BITPIX(std::uint32_t, ULONG_IMG)
 DEF_IMAGE_BITPIX(std::uint64_t, ULONGLONG_IMG)
-    #undef DEF_IMAGE_BITPIX
-  #endif
+#undef DEF_IMAGE_BITPIX
+#endif
 
 } // namespace Cfitsio
 } // namespace Euclid

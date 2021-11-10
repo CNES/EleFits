@@ -19,10 +19,10 @@
 
 #if defined(_ELEFITSDATA_RECORDVECTOR_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/FitsError.h"
-  #include "EleFitsData/RecordVec.h"
+#include "EleFitsData/FitsError.h"
+#include "EleFitsData/RecordVec.h"
 
-  #include <algorithm> // find_if
+#include <algorithm> // find_if
 
 namespace Euclid {
 namespace Fits {
@@ -38,7 +38,7 @@ RecordVec<T>::RecordVec(std::vector<Record<T>>&& records) : vector(std::move(rec
 
 template <typename T>
 template <typename... Ts>
-RecordVec<T>::RecordVec(const Record<Ts>&... records) : vector { Record<T>(records)... } {}
+RecordVec<T>::RecordVec(const Record<Ts>&... records) : vector {Record<T>(records)...} {}
 
 template <typename T>
 const Record<T>& RecordVec<T>::operator[](const std::string& keyword) const {

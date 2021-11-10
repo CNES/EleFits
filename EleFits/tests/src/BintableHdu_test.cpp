@@ -67,13 +67,13 @@ BOOST_AUTO_TEST_CASE(float_test) {
 
 BOOST_AUTO_TEST_CASE(empty_column_test) {
   const std::string filename = Elements::TempFile().path().string();
-  VecColumn<float> input({ "NAME", "", 1 }, std::vector<float>());
+  VecColumn<float> input({"NAME", "", 1}, std::vector<float>());
   MefFile file(filename, FileMode::Temporary);
   file.assignBintableExt("BINEXT", input);
 }
 
 BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
-  VecColumn<float> input0({ "COL0", "", 1 }, std::vector<float>());
+  VecColumn<float> input0({"COL0", "", 1}, std::vector<float>());
   Test::RandomScalarColumn<float> input1(1);
   Test::RandomScalarColumn<float> input2(2);
   input1.rename("COL1");
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
-  std::vector<ColumnInfo<int>> header { { "A" }, { "B" }, { "C" } };
+  std::vector<ColumnInfo<int>> header {{"A"}, {"B"}, {"C"}};
   const auto& ext = initBintableExt("TABLE", header[0], header[1], header[2]);
   const auto& du = ext.columns();
   auto names = du.readAllNames();

@@ -19,11 +19,11 @@
 
 #if defined(_ELEFITS_VALIDATION_CHRONOMETER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsValidation/Chronometer.h"
+#include "EleFitsValidation/Chronometer.h"
 
-  #include <algorithm> // min_element, max_element
-  #include <cmath> // sqrt
-  #include <numeric> // inner_product
+#include <algorithm> // min_element, max_element
+#include <cmath> // sqrt
+#include <numeric> // inner_product
 
 namespace Euclid {
 namespace Fits {
@@ -65,7 +65,7 @@ bool Chronometer<TUnit>::isRunning() const {
 
 template <typename TUnit>
 TUnit Chronometer<TUnit>::last() const {
-  return TUnit { typename TUnit::rep(m_incs[m_incs.size() - 1]) };
+  return TUnit {typename TUnit::rep(m_incs[m_incs.size() - 1])};
 }
 
 template <typename TUnit>

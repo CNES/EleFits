@@ -19,7 +19,7 @@
 
 #if defined(_ELEFITS_IMAGEHDU_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFits/ImageHdu.h"
+#include "EleFits/ImageHdu.h"
 
 namespace Euclid {
 namespace Fits {
@@ -44,23 +44,23 @@ void ImageHdu::writeRaster(const Raster<T, n>& data) const {
   m_raster.write(data);
 }
 
-  #ifndef DECLARE_READ_RASTER
-    #define DECLARE_READ_RASTER(type, unused) \
-      extern template VecRaster<type, -1> ImageHdu::readRaster() const; \
-      extern template VecRaster<type, 2> ImageHdu::readRaster() const; \
-      extern template VecRaster<type, 3> ImageHdu::readRaster() const;
+#ifndef DECLARE_READ_RASTER
+#define DECLARE_READ_RASTER(type, unused) \
+  extern template VecRaster<type, -1> ImageHdu::readRaster() const; \
+  extern template VecRaster<type, 2> ImageHdu::readRaster() const; \
+  extern template VecRaster<type, 3> ImageHdu::readRaster() const;
 ELEFITS_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
-    #undef DECLARE_READ_RASTER
-  #endif
+#undef DECLARE_READ_RASTER
+#endif
 
-  #ifndef DECLARE_WRITE_RASTER
-    #define DECLARE_WRITE_RASTER(type, unused) \
-      extern template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
-      extern template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
-      extern template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
+#ifndef DECLARE_WRITE_RASTER
+#define DECLARE_WRITE_RASTER(type, unused) \
+  extern template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
+  extern template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
+  extern template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
 ELEFITS_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
-    #undef DECLARE_WRITE_RASTER
-  #endif
+#undef DECLARE_WRITE_RASTER
+#endif
 
 } // namespace Fits
 } // namespace Euclid

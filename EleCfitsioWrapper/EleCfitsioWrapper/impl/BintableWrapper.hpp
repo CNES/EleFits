@@ -19,12 +19,12 @@
 
 #if defined(_ELECFITSIOWRAPPER_BINTABLEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleCfitsioWrapper/BintableWrapper.h"
-  #include "EleCfitsioWrapper/ErrorWrapper.h"
-  #include "EleFitsData/FitsError.h"
-  #include "ElementsKernel/Unused.h"
+#include "EleCfitsioWrapper/BintableWrapper.h"
+#include "EleCfitsioWrapper/ErrorWrapper.h"
+#include "EleFitsData/FitsError.h"
+#include "ElementsKernel/Unused.h"
 
-  #include <algorithm> // transform
+#include <algorithm> // transform
 
 namespace Euclid {
 namespace Cfitsio {
@@ -241,14 +241,14 @@ Fits::ColumnInfo<T> readColumnInfo(fitsfile* fptr, long index) {
       nullptr, // tdisp
       &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read column info: #" + std::to_string(index - 1));
-  return { name, unit, repeatCount };
+  return {name, unit, repeatCount};
 }
 
 template <typename T>
 Fits::VecColumn<T> readColumn(fitsfile* fptr, long index) {
   const long rows = rowCount(fptr);
   Fits::VecColumn<T> column(readColumnInfo<T>(fptr, index), rows);
-  readColumnSegment<T>(fptr, { 1, rows }, index, column);
+  readColumnSegment<T>(fptr, {1, rows}, index, column);
   return column;
 }
 
@@ -392,7 +392,7 @@ void writeColumns(fitsfile* fptr, const Fits::Column<Ts>&... columns) {
     throw Fits::FitsError("Cannot compute the optimal number of rows to be read at once");
   }
   /* Write column data */
-  std::vector<long> indices { columnIndex(fptr, columns.info().name)... };
+  std::vector<long> indices {columnIndex(fptr, columns.info().name)...};
   for (long first = 1; first <= rows; first += chunkRows) {
     long last = first + chunkRows - 1;
     if (last > rows) {
@@ -414,8 +414,8 @@ void insertColumn(fitsfile* fptr, long index, const Fits::Column<T>& column) {
 
 template <typename... Ts>
 void insertColumns(fitsfile* fptr, long index, const Fits::Column<Ts>&... columns) {
-  auto names = CStrArray({ columns.info().name... });
-  auto tforms = CStrArray({ TypeCode<Ts>::tform(columns.info().repeatCount)... });
+  auto names = CStrArray({columns.info().name...});
+  auto tforms = CStrArray({TypeCode<Ts>::tform(columns.info().repeatCount)...});
   // FIXME write unit
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(Ts), names.data(), tforms.data(), &status);

@@ -19,7 +19,7 @@
 
 #if defined(_ELEFITS_MEFFILE_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFits/MefFile.h"
+#include "EleFits/MefFile.h"
 
 namespace Euclid {
 namespace Fits {
@@ -77,7 +77,7 @@ const T& MefFile::accessPrimary() {
 
 template <typename THdu>
 HduSelector<THdu> MefFile::select(const HduFilter& filter) {
-  return { *this, filter * HduCategory::forClass<THdu>() };
+  return {*this, filter * HduCategory::forClass<THdu>()};
 }
 
 template <typename T, long n>
@@ -120,14 +120,14 @@ const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Tup
   return m_hdus[size]->as<BintableHdu>();
 }
 
-  #ifndef DECLARE_ASSIGN_IMAGE_EXT
-    #define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
-      extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
-      extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
-      extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
+#ifndef DECLARE_ASSIGN_IMAGE_EXT
+#define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
 ELEFITS_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
-    #undef DECLARE_ASSIGN_IMAGE_EXT
-  #endif
+#undef DECLARE_ASSIGN_IMAGE_EXT
+#endif
 
 } // namespace Fits
 } // namespace Euclid

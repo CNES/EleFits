@@ -26,7 +26,7 @@
 using namespace Euclid::Fits;
 
 struct ChronoFixture : public Test::Chronometer<std::chrono::milliseconds> {
-  ChronoFixture(std::chrono::milliseconds chronoOffset = std::chrono::milliseconds { std::rand() }) :
+  ChronoFixture(std::chrono::milliseconds chronoOffset = std::chrono::milliseconds {std::rand()}) :
       Test::Chronometer<std::chrono::milliseconds>(chronoOffset), offset(chronoOffset) {}
   void wait(std::int64_t ms = defaultWait) {
     std::this_thread::sleep_for(Unit(ms));

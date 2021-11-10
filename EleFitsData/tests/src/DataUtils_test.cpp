@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(typed_test) {
 }
 
 BOOST_AUTO_TEST_CASE(tuple_as_test) {
-  const std::tuple<std::string, int, float, float> tuple { "TODO", 20, 1.8, 75 };
+  const std::tuple<std::string, int, float, float> tuple {"TODO", 20, 1.8, 75};
   const auto body = tupleAs<Body>(tuple);
   BOOST_TEST(body.name == "TODO");
   BOOST_TEST(body.age == 20);
@@ -121,13 +121,13 @@ BOOST_AUTO_TEST_CASE(tuple_as_test) {
 }
 
 BOOST_AUTO_TEST_CASE(tuple_apply_test) {
-  std::tuple<std::string, int, float, float> guy { "GUY", 18, 1.7, 55 };
+  std::tuple<std::string, int, float, float> guy {"GUY", 18, 1.7, 55};
   const auto repr = tupleApply(guy, toString);
   BOOST_TEST(not repr.empty());
 }
 
 BOOST_AUTO_TEST_CASE(tuple_transform_test) {
-  std::tuple<std::string, int, float, float> jo { "JO", 40, 1.6, 85 };
+  std::tuple<std::string, int, float, float> jo {"JO", 40, 1.6, 85};
   auto twice = [](const auto& e) {
     return e + e;
   };
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(tuple_transform_test) {
 }
 
 BOOST_AUTO_TEST_CASE(tuple_foreach_test) {
-  std::tuple<std::string, int, float, float> me { "ME", 32, 1.75, 65 };
+  std::tuple<std::string, int, float, float> me {"ME", 32, 1.75, 65};
   auto twice = [](auto& e) {
     e += e;
   };
@@ -151,11 +151,11 @@ BOOST_AUTO_TEST_CASE(tuple_foreach_test) {
 }
 
 BOOST_AUTO_TEST_CASE(seq_dispatch_test) {
-  const std::tuple<int, float> t { 1, 3.14 };
-  const std::vector<int> v { 1, 2 };
+  const std::tuple<int, float> t {1, 3.14};
+  const std::vector<int> v {1, 2};
   dispatchSeq(t, true);
   dispatchSeq(v, false);
-  dispatchSeq(std::vector<float> { 1, 3.14 }, false);
+  dispatchSeq(std::vector<float> {1, 3.14}, false);
 }
 
 //-----------------------------------------------------------------------------

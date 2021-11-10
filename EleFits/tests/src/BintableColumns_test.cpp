@@ -106,7 +106,7 @@ void checkTupleWriteRead(const BintableColumns& du) {
   BOOST_TEST(du.readRowCount() == rowCount * 2);
 
   /* Read */
-  const auto res2 = du.readSegmentSeq({ rowCount, -1 }, Named<T>(vector.info().name), Named<T>(scalar.info().name));
+  const auto res2 = du.readSegmentSeq({rowCount, -1}, Named<T>(vector.info().name), Named<T>(scalar.info().name));
   const auto& res20 = std::get<0>(res2);
   const auto& res21 = std::get<1>(res2);
   BOOST_TEST((res20.info() == vector.info()));
@@ -131,10 +131,12 @@ template <typename T>
 void checkArrayWriteRead(const BintableColumns& du) {
   const long rowCount = 10000;
   const long repeatCount = 3;
-  std::array<ColumnInfo<T>, 2> infos { ColumnInfo<T> { "VECTOR", "m", repeatCount },
-                                       ColumnInfo<T> { "SCALAR", "s", 1 } }; // Inverted for robustness test
-  std::array<VecColumn<T>, 2> seq { VecColumn<T> { infos[1], Test::generateRandomVector<T>(rowCount) },
-                                    VecColumn<T> { infos[0], Test::generateRandomVector<T>(repeatCount * rowCount) } };
+  std::array<ColumnInfo<T>, 2> infos {
+      ColumnInfo<T> {"VECTOR", "m", repeatCount},
+      ColumnInfo<T> {"SCALAR", "s", 1}}; // Inverted for robustness test
+  std::array<VecColumn<T>, 2> seq {
+      VecColumn<T> {infos[1], Test::generateRandomVector<T>(rowCount)},
+      VecColumn<T> {infos[0], Test::generateRandomVector<T>(repeatCount * rowCount)}};
   du.initSeq(0, infos);
   du.writeSeq(seq);
   const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1)); // TODO readSeq<T>({ 0, 1 }) and idem with strings?
@@ -162,10 +164,10 @@ template <typename T>
 void checkVectorWriteRead(const BintableColumns& du) {
   const long rowCount = 10000;
   const long repeatCount = 3;
-  std::vector<ColumnInfo<T>> infos { { "VECTOR", "m", repeatCount },
-                                     { "SCALAR", "s", 1 } }; // Inverted for robustness test
-  std::vector<VecColumn<T>> seq { { infos[1], Test::generateRandomVector<T>(rowCount) },
-                                  { infos[0], Test::generateRandomVector<T>(repeatCount * rowCount) } };
+  std::vector<ColumnInfo<T>> infos {{"VECTOR", "m", repeatCount}, {"SCALAR", "s", 1}}; // Inverted for robustness test
+  std::vector<VecColumn<T>> seq {
+      {infos[1], Test::generateRandomVector<T>(rowCount)},
+      {infos[0], Test::generateRandomVector<T>(repeatCount * rowCount)}};
   du.initSeq(0, infos);
   du.writeSeq(seq);
   const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1)); // TODO readSeq<T>({ 0, 1 }) and idem with strings?

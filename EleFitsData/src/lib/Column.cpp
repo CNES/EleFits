@@ -46,13 +46,13 @@ long rowCountDispatchImpl<std::string>(long elementCount, long) {
 } // namespace Internal
 
 #ifndef COMPILE_COLUMN_CLASSES
-  #define COMPILE_COLUMN_CLASSES(type, unused) \
-    template struct ColumnInfo<type>; \
-    template class Column<type>; \
-    template class PtrColumn<type>; \
-    template class VecColumn<type>;
+#define COMPILE_COLUMN_CLASSES(type, unused) \
+  template struct ColumnInfo<type>; \
+  template class Column<type>; \
+  template class PtrColumn<type>; \
+  template class VecColumn<type>;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_COLUMN_CLASSES)
-  #undef COMPILE_COLUMN_CLASSES
+#undef COMPILE_COLUMN_CLASSES
 #endif
 
 } // namespace Fits

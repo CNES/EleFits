@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE(CfitsioUtils_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(c_str_array_test) {
-  std::vector<std::string> vec { "Fievre", "Chat", "Bebe", "Passe-miroir" };
+  std::vector<std::string> vec {"Fievre", "Chat", "Bebe", "Passe-miroir"};
   CStrArray arr(vec);
   for (std::size_t row = 0; row < vec.size(); ++row) {
     for (std::size_t letter = 0; letter < vec[row].length(); ++letter) {

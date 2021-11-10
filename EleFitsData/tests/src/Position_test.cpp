@@ -31,9 +31,9 @@ BOOST_AUTO_TEST_SUITE(Position_test)
 
 BOOST_AUTO_TEST_CASE(vector_init_test) {
 
-  const std::vector<long> indices { 1, 2, 3 };
+  const std::vector<long> indices {1, 2, 3};
 
-  Position<-1> braceList { indices[0], indices[1], indices[2] };
+  Position<-1> braceList {indices[0], indices[1], indices[2]};
   BOOST_TEST(braceList.size() == indices.size());
 
   Position<-1> iterators(indices.begin(), indices.end());
@@ -53,9 +53,9 @@ BOOST_AUTO_TEST_CASE(vector_init_test) {
 
 BOOST_AUTO_TEST_CASE(array_init_test) {
 
-  const std::array<long, 3> indices { 1, 2, 3 };
+  const std::array<long, 3> indices {1, 2, 3};
 
-  Position<3> braceList { indices[0], indices[1], indices[2] };
+  Position<3> braceList {indices[0], indices[1], indices[2]};
   BOOST_TEST(braceList.size() == indices.size());
 
   Position<3> iterators(indices.begin(), indices.end());
@@ -75,9 +75,9 @@ BOOST_AUTO_TEST_CASE(array_init_test) {
 
 BOOST_AUTO_TEST_CASE(arithmetics_test) {
 
-  const Position<4> indices { 0, 1, 2, 3 };
-  const Position<4> evens { 0, 2, 4, 6 };
-  const Position<4> positives { 1, 2, 3, 4 };
+  const Position<4> indices {0, 1, 2, 3};
+  const Position<4> evens {0, 2, 4, 6};
+  const Position<4> positives {1, 2, 3, 4};
 
   const auto plus = indices + indices;
   BOOST_TEST(plus == evens);

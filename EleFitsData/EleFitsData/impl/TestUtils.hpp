@@ -19,12 +19,12 @@
 
 #if defined(_ELEFITSDATA_TESTUTILS_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/TestUtils.h"
-  #include "ElementsKernel/Unused.h"
+#include "EleFitsData/TestUtils.h"
+#include "ElementsKernel/Unused.h"
 
-  #include <algorithm> // generate
-  #include <chrono> // chrono
-  #include <random> // default_random_engine, uniform_real_distribution
+#include <algorithm> // generate
+#include <chrono> // chrono
+#include <random> // default_random_engine, uniform_real_distribution
 
 namespace Euclid {
 namespace Fits {

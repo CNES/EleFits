@@ -25,7 +25,7 @@ namespace Euclid {
 namespace Fits {
 
 ProgramOptions::ProgramOptions(const std::string& helpMessage) :
-    m_named { makeDesc(helpMessage) }, m_add { m_named.add_options() }, m_positional {} {}
+    m_named {makeDesc(helpMessage)}, m_add {m_named.add_options()}, m_positional {} {}
 
 ProgramOptions ProgramOptions::fromAuxFile(const std::string& helpFile) {
   return ProgramOptions(String::readAuxFile(helpFile));

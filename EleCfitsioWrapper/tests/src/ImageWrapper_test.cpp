@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_SUITE(ImageWrapper_test)
 template <typename T>
 void checkRandom3DRasterIsReadBack() {
   using namespace Fits::Test;
-  RandomRaster<T, 3> input({ 2, 3, 4 });
+  RandomRaster<T, 3> input({2, 3, 4});
   MinimalFile file;
   HduAccess::assignImageExtension(file.fptr, "IMGEXT", input);
   const auto fixedOutput = ImageIo::readRaster<T, 3>(file.fptr);
@@ -54,35 +54,35 @@ void checkRandom3DRasterIsReadBack() {
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile) {
-  Fits::VecRaster<long, 3> input({ 3, 4, 5 });
+  Fits::VecRaster<long, 3> input({3, 4, 5});
   for (long z = 0; z < input.length<2>(); ++z) {
     for (long y = 0; y < input.length<1>(); ++y) {
       for (long x = 0; x < input.length<0>(); ++x) {
-        input[{ x, y, z }] = x * 100 + y * 10 + z;
+        input[{x, y, z}] = x * 100 + y * 10 + z;
       }
     }
   }
   HduAccess::assignImageExtension(fptr, "EXT", input);
-  const auto region = Fits::Region<3>::fromShape({ 1, 0, 1 }, { 2, 3, 3 });
+  const auto region = Fits::Region<3>::fromShape({1, 0, 1}, {2, 3, 3});
   const auto view = ImageIo::readRegion<long, 3>(fptr, region);
   BOOST_TEST(view.shape() == region.shape());
   for (long z = 0; z < view.length<2>(); ++z) {
     for (long y = 0; y < view.length<1>(); ++y) {
       for (long x = 0; x < view.length<0>(); ++x) {
-        const auto& v = view[{ x, y, z }];
-        const auto& i = input[{ x + 1, y + 0, z + 1 }]; // TODO no hardcoded offsets
+        const auto& v = view[{x, y, z}];
+        const auto& i = input[{x + 1, y + 0, z + 1}]; // TODO no hardcoded offsets
         BOOST_TEST(v == i);
       }
     }
   }
-  Fits::VecRaster<long, 3> output({ 3, 4, 5 });
-  Fits::Subraster<long, 3> dst { output, region }; // TODO don't use the same region
+  Fits::VecRaster<long, 3> output({3, 4, 5});
+  Fits::Subraster<long, 3> dst {output, region}; // TODO don't use the same region
   ImageIo::readRegionTo<long, 3>(fptr, region, dst);
   for (long z = region.front[2]; z <= region.back[2]; ++z) {
     for (long y = region.front[1]; y <= region.back[1]; ++y) {
       for (long x = region.front[0]; x <= region.back[0]; ++x) {
-        const auto& o = output[{ x, y, z }];
-        const auto& i = input[{ x, y, z }];
+        const auto& o = output[{x, y, z}];
+        const auto& i = input[{x, y, z}];
         BOOST_TEST(o == i);
       }
     }

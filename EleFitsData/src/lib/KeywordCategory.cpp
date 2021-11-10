@@ -24,30 +24,27 @@
 namespace Euclid {
 namespace Fits {
 
-const KeywordCategory KeywordCategory::Mandatory { 0b0001 };
-const KeywordCategory KeywordCategory::Reserved { 0b0010 };
-const KeywordCategory KeywordCategory::Comment { 0b0100 };
-const KeywordCategory KeywordCategory::User { 0b1000 };
-const KeywordCategory KeywordCategory::None { 0b0000 };
-const KeywordCategory KeywordCategory::All { ~None };
+const KeywordCategory KeywordCategory::Mandatory {0b0001};
+const KeywordCategory KeywordCategory::Reserved {0b0010};
+const KeywordCategory KeywordCategory::Comment {0b0100};
+const KeywordCategory KeywordCategory::User {0b1000};
+const KeywordCategory KeywordCategory::None {0b0000};
+const KeywordCategory KeywordCategory::All {~None};
 
-const std::vector<std::string> KeywordCategory::m_mandatories = { "SIMPLE",   "BITPIX", "NAXIS",  "NAXISn", "END",
-                                                                  "XTENSION", "PCOUNT", "GCOUNT", "EXTEND" };
+const std::vector<std::string> KeywordCategory::m_mandatories =
+    {"SIMPLE", "BITPIX", "NAXIS", "NAXISn", "END", "XTENSION", "PCOUNT", "GCOUNT", "EXTEND"};
 
 const std::vector<std::string> KeywordCategory::m_reserveds = {
-  "AUTHOR",  "BLANK",    "BLOCKED", "BSCALE",   "BUNIT",  "BZERO",    "CDELTn",  "CROTAn",  "CRPIXn",
-  "CRVALn",  "CTYPEn",   "DATAMAX", "DATAMIN",  "DATE",   "DATE-OBS", "EPOCH",   "EQUINOX", "EXTLEVEL",
-  "EXTNAME", "EXTVER",   "GROUPS",  "INSTRUME", "OBJECT", "OBSERVER", "ORIGIN",  "PSCALn",  "PTYPEn",
-  "PZEROn",  "REFERENC", "TBCOLn",  "TDIMn",    "TDISPn", "TELESCOP", "TFIELDS", "TFORMn",  "THEAP",
-  "TNULLn",  "TSCALn",   "TTYPEn",  "TUNITn",   "TZEROn"
-};
+    "AUTHOR",  "BLANK",    "BLOCKED", "BSCALE",   "BUNIT",  "BZERO",    "CDELTn",  "CROTAn",  "CRPIXn",
+    "CRVALn",  "CTYPEn",   "DATAMAX", "DATAMIN",  "DATE",   "DATE-OBS", "EPOCH",   "EQUINOX", "EXTLEVEL",
+    "EXTNAME", "EXTVER",   "GROUPS",  "INSTRUME", "OBJECT", "OBSERVER", "ORIGIN",  "PSCALn",  "PTYPEn",
+    "PZEROn",  "REFERENC", "TBCOLn",  "TDIMn",    "TDISPn", "TELESCOP", "TFIELDS", "TFORMn",  "THEAP",
+    "TNULLn",  "TSCALn",   "TTYPEn",  "TUNITn",   "TZEROn"};
 
-const std::vector<std::string> KeywordCategory::m_comments = { "COMMENT", "HISTORY" };
+const std::vector<std::string> KeywordCategory::m_comments = {"COMMENT", "HISTORY"};
 
 const std::map<int, const std::vector<std::string>&> KeywordCategory::byCategory() {
-  return { { Mandatory.m_category, m_mandatories },
-           { Reserved.m_category, m_reserveds },
-           { Comment.m_category, m_comments } };
+  return {{Mandatory.m_category, m_mandatories}, {Reserved.m_category, m_reserveds}, {Comment.m_category, m_comments}};
 }
 
 KeywordCategory::KeywordCategory(int category) : m_category(category) {}

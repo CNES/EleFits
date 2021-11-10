@@ -36,7 +36,7 @@ using namespace Fits;
  */
 template <typename T>
 VecColumn<T> randomColumn(const std::string& name, long rows) {
-  return VecColumn<T>({ name, "", 1 }, Test::generateRandomVector<T>(rows, T(0), T(1)));
+  return VecColumn<T>({name, "", 1}, Test::generateRandomVector<T>(rows, T(0), T(1)));
 }
 
 /**
@@ -65,26 +65,25 @@ void writeBintable(const std::string& filename, long rows) {
  */
 void writeSomeRecords(const Header& header) {
   std::vector<Record<VariantValue>> records = {
-    { "WCSAXES", 2, "", "Number of axes in World Coordinate System" },
-    { "CRPIX1", "", "", "Pixel coordinate of reference point" },
-    { "CRPIX2", "", "", "Pixel coordinate of reference point" },
-    { "PC1_1", 0, "", "Coordinate transformation matrix element" },
-    { "PC1_2", 0, "", "Coordinate transformation matrix element" },
-    { "PC2_1", 0, "", "Coordinate transformation matrix element" },
-    { "PC2_2", 0, "", "Coordinate transformation matrix element" },
-    { "CDELT1", "", "deg", "Coordinate increment at reference point" },
-    { "CDELT2", "", "deg", "Coordinate increment at reference point" },
-    { "CUNIT1", "deg", "", "Unit of the first coordinate value" },
-    { "CUNIT2", "deg", "", "Unit of the second coordinate value" },
-    { "CTYPE1", "RA---TAN", "", "Right ascension, gnomonic projection" },
-    { "CTYPE2", "DEC--TAN", "", "Declination, gnomonic projection" },
-    { "CRVAL1", 0, "deg", "Coordinate value at reference point" },
-    { "CRVAL2", 0, "deg", "Coordinate value at reference point" },
-    { "LONPOLE", "", "deg", "Native longitude of celestial pole" },
-    { "LATPOLE", "", "deg", "Native latitude of celestial pole" },
-    { "RADESYS", "", "", "Equatorial coordinate system" },
-    { "EQUINOX", "", "", "Equinox of celestial coordinate system (e.g. 2000)" }
-  };
+      {"WCSAXES", 2, "", "Number of axes in World Coordinate System"},
+      {"CRPIX1", "", "", "Pixel coordinate of reference point"},
+      {"CRPIX2", "", "", "Pixel coordinate of reference point"},
+      {"PC1_1", 0, "", "Coordinate transformation matrix element"},
+      {"PC1_2", 0, "", "Coordinate transformation matrix element"},
+      {"PC2_1", 0, "", "Coordinate transformation matrix element"},
+      {"PC2_2", 0, "", "Coordinate transformation matrix element"},
+      {"CDELT1", "", "deg", "Coordinate increment at reference point"},
+      {"CDELT2", "", "deg", "Coordinate increment at reference point"},
+      {"CUNIT1", "deg", "", "Unit of the first coordinate value"},
+      {"CUNIT2", "deg", "", "Unit of the second coordinate value"},
+      {"CTYPE1", "RA---TAN", "", "Right ascension, gnomonic projection"},
+      {"CTYPE2", "DEC--TAN", "", "Declination, gnomonic projection"},
+      {"CRVAL1", 0, "deg", "Coordinate value at reference point"},
+      {"CRVAL2", 0, "deg", "Coordinate value at reference point"},
+      {"LONPOLE", "", "deg", "Native longitude of celestial pole"},
+      {"LATPOLE", "", "deg", "Native latitude of celestial pole"},
+      {"RADESYS", "", "", "Equatorial coordinate system"},
+      {"EQUINOX", "", "", "Equinox of celestial coordinate system (e.g. 2000)"}};
   header.writeSeq(records);
 }
 
@@ -120,7 +119,7 @@ public:
     const std::string bintable = args["bintable"].as<std::string>();
     const long rows = args["rows"].as<long>();
     const std::string image = args["image"].as<std::string>();
-    const Position<3> shape { args["width"].as<long>(), args["height"].as<long>(), 3 };
+    const Position<3> shape {args["width"].as<long>(), args["height"].as<long>(), 3};
 
     logger.info("Writing binary table...");
     writeBintable(bintable, rows);
@@ -139,7 +138,7 @@ public:
     MefFile i(image, FileMode::Read);
     const auto& ext = i.accessFirst<ImageHdu>("KAPPA_PATCH");
     const auto raster = ext.readRaster<float, 3>();
-    const Position<3> center { raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2 };
+    const Position<3> center {raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2};
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");

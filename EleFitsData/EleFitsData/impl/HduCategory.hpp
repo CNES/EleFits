@@ -19,7 +19,7 @@
 
 #if defined(_ELEFITSDATA_HDUCATEGORY_IMPL) || defined(CHECK_QUALITY)
 
-  #include "EleFitsData/HduCategory.h"
+#include "EleFitsData/HduCategory.h"
 
 namespace Euclid {
 namespace Fits {

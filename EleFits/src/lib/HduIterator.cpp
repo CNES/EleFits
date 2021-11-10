@@ -23,11 +23,11 @@ namespace Euclid {
 namespace Fits {
 
 HduIterator<> begin(MefFile& f) {
-  return { f, 0 };
+  return {f, 0};
 }
 
 HduIterator<> end(MefFile& f) {
-  return { f, f.hduCount() };
+  return {f, f.hduCount()};
 }
 
 } // namespace Fits

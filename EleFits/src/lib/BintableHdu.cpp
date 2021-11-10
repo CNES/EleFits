@@ -23,24 +23,26 @@ namespace Euclid {
 namespace Fits {
 
 BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
-    Hdu(token, fptr, index, HduCategory::Bintable, status), m_columns(
-                                                                m_fptr,
-                                                                [&]() {
-                                                                  touchThisHdu();
-                                                                },
-                                                                [&]() {
-                                                                  editThisHdu();
-                                                                }) {}
+    Hdu(token, fptr, index, HduCategory::Bintable, status),
+    m_columns(
+        m_fptr,
+        [&]() {
+          touchThisHdu();
+        },
+        [&]() {
+          editThisHdu();
+        }) {}
 
 BintableHdu::BintableHdu() :
-    Hdu(), m_columns(
-               m_fptr,
-               [&]() {
-                 touchThisHdu();
-               },
-               [&]() {
-                 editThisHdu();
-               }) {}
+    Hdu(),
+    m_columns(
+        m_fptr,
+        [&]() {
+          touchThisHdu();
+        },
+        [&]() {
+          editThisHdu();
+        }) {}
 
 const BintableColumns& BintableHdu::columns() const {
   return m_columns;
@@ -67,15 +69,15 @@ HduCategory BintableHdu::readCategory() const {
 }
 
 #ifndef COMPILE_READ_COLUMN
-  #define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
+#define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_READ_COLUMN)
-  #undef COMPILE_READ_COLUMN
+#undef COMPILE_READ_COLUMN
 #endif
 
 #ifndef COMPILE_WRITE_COLUMN
-  #define COMPILE_WRITE_COLUMN(type, unused) template void BintableHdu::writeColumn(const Column<type>&) const;
+#define COMPILE_WRITE_COLUMN(type, unused) template void BintableHdu::writeColumn(const Column<type>&) const;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_WRITE_COLUMN)
-  #undef COMPILE_WRITE_COLUMN
+#undef COMPILE_WRITE_COLUMN
 #endif
 
 } // namespace Fits

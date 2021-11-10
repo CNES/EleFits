@@ -138,8 +138,8 @@ public:
       const auto& imageExt = f.accessFirst<ImageHdu>("SMALLIMG");
       //! [Read raster]
       const auto image = imageExt.readRaster<float>();
-      const auto firstPixel = image[{ 0, 0 }];
-      const auto lastPixel = image.at({ -1, -1 }); // at() allows backward indexing
+      const auto firstPixel = image[{0, 0}];
+      const auto lastPixel = image.at({-1, -1}); // at() allows backward indexing
       //! [Read raster]
       logger.info() << "First pixel: " << firstPixel;
       logger.info() << "Last pixel: " << lastPixel;
