@@ -86,6 +86,9 @@ test_program \
   EleFitsTutorial "tutorial.fits"
 
 test_program \
+  EleFitsGenerateLife "life.fits"
+
+test_program \
   EleFitsGenerateAstroObj "astroobj.fits"
 
 test_command \

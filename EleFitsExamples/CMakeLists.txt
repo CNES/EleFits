@@ -32,6 +32,10 @@ elements_depends_on_subdirs(EleFitsUtils)
 #                     INCLUDE_DIRS Boost ElementsKernel
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
+elements_add_library(EleFitsExamples src/lib/*.cpp
+                     INCLUDE_DIRS ElementsKernel
+                     LINK_LIBRARIES ElementsKernel
+                     PUBLIC_HEADERS EleFitsExamples)
 
 #===============================================================================
 # Declare the executables here
@@ -52,6 +56,8 @@ elements_add_executable(EleFitsTutorial src/program/EleFitsTutorial.cpp
                      LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
 elements_add_executable(EleFitsGenerate2DMassFiles src/program/EleFitsGenerate2DMassFiles.cpp
                      LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+elements_add_executable(EleFitsGenerateLife src/program/EleFitsGenerateLife.cpp
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -61,6 +67,10 @@ elements_add_executable(EleFitsGenerate2DMassFiles src/program/EleFitsGenerate2D
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
+elements_add_unit_test(GameOfLife tests/src/GameOfLife_test.cpp 
+                     EXECUTABLE EleFitsExamples_GameOfLife_test
+                     LINK_LIBRARIES EleFitsExamples
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:
