@@ -27,22 +27,18 @@ using namespace Euclid::Fits;
 
 // Call graphs for sequences:
 //
-// readSegmentSeqTo (rows, indices, columns) -> loop on readSegmentTo (rows, index, column)
-// 	readSeqTo (indices, columns)
+// readSegmentSeqTo (rows, keys, columns) -> loop on readSegmentTo (rows, key, column)
+// 	readSeqTo (keys, columns)
 // 		readSeq (indices...)
 // 			readSeq (names...) => SEQ_WRITE_READ_TEST
-// 		readSeqTo (names, columns)
-// 			readSeqTo (columns)
-// 				readSeqTo (columns...) => TEST
-// 			readSeqTo (names, columns...) => TEST
-// 		readSeqTo (indices, columns...) => TEST
+// 		readSeqTo (columns)
+// 			readSeqTo (columns...) => TEST
+// 		readSeqTo (keys, columns...) => TEST
 // 	readSegmentSeq (rows, indices...)
 // 		readSegmentSeq (rows, names...) => SEQ_WRITE_READ_TEST
-// 	readSegmentSeqTo (rows, names, columns)
+// 	readSegmentSeqTo (rows, keys, columns)
 // 		readSegmentSeqTo (rows, columns) => TEST
-// 		readSegmentSeqTo (rows, names, columns...)
 // 			readSegmentSeqTo (rows, columns...) => TEST
-// 	readSegmentSeqTo (rows, indices, columns...) => TEST
 //
 // writeSegmentSeq (long firstRow, TSeq &&columns) -> loop on writeSegment (row, column)
 //   writeSeq (TSeq &&columns) => SEQ_WRITE_READ_TEST
@@ -52,8 +48,7 @@ using namespace Euclid::Fits;
 // initSeq (long index, TSeq &&infos) => SEQ_WRITE_READ_TEST
 //   initSeq (long index, const ColumnInfo< Ts > &... infos) => SEQ_WRITE_READ_TEST
 //
-// removeSeq (const std::vector< long > &indices)
-//   removeSeq (const std::vector< std::string > &names) => TEST
+// removeSeq (keys) => TEST
 
 //-----------------------------------------------------------------------------
 
@@ -143,7 +138,7 @@ void checkArrayWriteRead(const BintableColumns& du) {
   /* Write */
   du.initSeq(0, infos);
   du.writeSeq(seq);
-  const auto res = du.readSeq<T>({0L, 1L});
+  const auto res = du.readSeq<T>({0, 1});
 
   /* Read */
   const auto& res0 = res[0];
@@ -154,8 +149,7 @@ void checkArrayWriteRead(const BintableColumns& du) {
   BOOST_TEST(res1.vector() == seq[0].vector());
 
   /* Remove */
-  std::vector<long> indices = {1L, 0L};
-  du.removeSeq(indices); // Inverted for robustness test
+  du.removeSeq({1, 0}); // Inverted for robustness test
   BOOST_TEST(not du.has("VECTOR"));
   BOOST_TEST(not du.has("SCALAR"));
 }

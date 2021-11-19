@@ -296,19 +296,11 @@ public:
   std::tuple<VecColumn<Ts>...> readSeq(const Indexed<Ts>&... indices) const;
 
   /**
-   * @brief Read a vector of columns with given names.
+   * @brief Read a vector of columns with given names or indices.
    * @copydetails readSeq()
    */
   template <typename T>
-  std::vector<VecColumn<T>> readSeq(const std::vector<std::string>& names) const;
-
-  /**
-   * @brief Read a vector of columns with given indices.
-   * @copydetails readSeq()
-   */
-  template <typename T>
-  std::vector<VecColumn<T>> readSeq(const std::vector<long>& indices) const;
-
+  std::vector<VecColumn<T>> readSeq(std::vector<ColumnKey> keys) const;
   /**
    * @brief Read a sequence of columns into existing `Column`s.
    * @copydetails readSeq()
@@ -324,32 +316,18 @@ public:
   void readSeqTo(Column<Ts>&... columns) const;
 
   /**
-   * @brief Read a sequence of columns with given names into existing `Column`s.
+   * @brief Read a sequence of columns with given names or indices into existing `Column`s.
    * @copydetails readSeq()
    */
   template <typename TSeq>
-  void readSeqTo(const std::vector<std::string>& names, TSeq&& columns) const;
+  void readSeqTo(std::vector<ColumnKey> keys, TSeq&& columns) const;
 
   /**
-   * @brief Read a sequence of columns with given names into existing `Column`s.
+   * @brief Read a sequence of columns with given names or indices into existing `Column`s.
    * @copydetails readSeq()
    */
   template <typename... Ts>
-  void readSeqTo(const std::vector<std::string>& names, Column<Ts>&... columns) const;
-
-  /**
-   * @brief Read a sequence of columns with given indices into existing `Column`s.
-   * @copydetails readSeq()
-   */
-  template <typename TSeq>
-  void readSeqTo(const std::vector<long>& indices, TSeq&& columns) const;
-
-  /**
-   * @brief Read a sequence of columns with given indices into existing `Column`s.
-   * @copydetails readSeq()
-   */
-  template <typename... Ts>
-  void readSeqTo(const std::vector<long>& indices, Column<Ts>&... columns) const;
+  void readSeqTo(std::vector<ColumnKey> keys, Column<Ts>&... columns) const;
 
   /// @}
   /**
@@ -388,32 +366,18 @@ public:
   void readSegmentSeqTo(FileMemSegments rows, Column<Ts>&... columns) const;
 
   /**
-   * @brief Read segments of columns specified by their names into existing `Column`s.
+   * @brief Read segments of columns specified by their names or indices into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(FileMemSegments rows, const std::vector<std::string>& names, TSeq&& columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const;
 
   /**
-   * @brief Read segments of columns specified by their names into existing `Column`s.
+   * @brief Read segments of columns specified by their names or indices into existing `Column`s.
    * @copydetails readSegmentSeq()
    */
   template <typename... Ts>
-  void readSegmentSeqTo(FileMemSegments rows, const std::vector<std::string>& names, Column<Ts>&... columns) const;
-
-  /**
-   * @brief Read segments of columns specified by their indices into existing `Column`s.
-   * @copydetails readSegmentSeq()
-   */
-  template <typename TSeq>
-  void readSegmentSeqTo(FileMemSegments rows, const std::vector<long>& indices, TSeq&& columns) const;
-
-  /**
-   * @brief Read segments of columns specified by their indices into existing `Column`s.
-   * @copydetails readSegmentSeq()
-   */
-  template <typename... Ts>
-  void readSegmentSeqTo(FileMemSegments rows, const std::vector<long>& indices, Column<Ts>&... columns) const;
+  void readSegmentSeqTo(FileMemSegments rows, std::vector<ColumnKey> keys, Column<Ts>&... columns) const;
 
   /// @}
   /**
@@ -441,7 +405,7 @@ public:
   /**
    * @brief Remove a column specified by its name or index.
    */
-  void remove(const ColumnKey key) const;
+  void remove(ColumnKey key) const;
 
   /// @}
   /**
@@ -494,14 +458,9 @@ public:
   void initSeq(long index, const ColumnInfo<Ts>&... infos) const;
 
   /**
-   * @brief Remove a sequence of columns specified by their names.
+   * @brief Remove a sequence of columns specified by their names or indices.
    */
-  void removeSeq(const std::vector<std::string>& names) const;
-
-  /**
-   * @brief Remove a sequence of columns specified by their indices.
-   */
-  void removeSeq(const std::vector<long>& indices) const;
+  void removeSeq(std::vector<ColumnKey> keys) const;
 
   /// @}
   /**

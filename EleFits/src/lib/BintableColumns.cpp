@@ -93,15 +93,10 @@ void BintableColumns::remove(ColumnKey key) const {
   // TODO to Cfitsio
 }
 
-void BintableColumns::removeSeq(const std::vector<std::string>& names) const {
-  for (const auto& n : names) {
-    remove(n);
-  }
-}
-
-void BintableColumns::removeSeq(const std::vector<long>& indices) const {
-  for (const auto& i : indices) {
-    remove(i);
+void BintableColumns::removeSeq(std::vector<ColumnKey> keys) const {
+  // FIXME Order indices in descending order
+  for (auto& k : keys) {
+    remove(std::move(k)); // TODO Scans the whole HDU at every loop
   }
 }
 
