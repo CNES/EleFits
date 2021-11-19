@@ -105,6 +105,10 @@ elements_add_unit_test(FileMemSegments tests/src/FileMemSegments_test.cpp
                      EXECUTABLE EleFits_FileMemSegments_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
+elements_add_unit_test(ColumnKey tests/src/ColumnKey_test.cpp 
+                     EXECUTABLE EleFits_ColumnKey_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:
