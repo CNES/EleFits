@@ -14,8 +14,7 @@ elements_subdir(EleFitsExamples)
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
-elements_depends_on_subdirs(EleFits)
-elements_depends_on_subdirs(EleFitsUtils)
+elements_depends_on_subdirs(EleFits EleFitsUtils)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -33,8 +32,8 @@ elements_depends_on_subdirs(EleFitsUtils)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EleFitsExamples src/lib/*.cpp
-                     INCLUDE_DIRS ElementsKernel
-                     LINK_LIBRARIES ElementsKernel
+                     INCLUDE_DIRS ElementsKernel EleFits EleFitsUtils
+                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils
                      PUBLIC_HEADERS EleFitsExamples)
 
 #===============================================================================
@@ -45,19 +44,19 @@ elements_add_library(EleFitsExamples src/lib/*.cpp
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
 elements_add_executable(EleCfitsioWrapperExample src/program/EleCfitsioWrapperExample.cpp
-                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsExample src/program/EleFitsExample.cpp
-                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleCfitsioExample src/program/EleCfitsioExample.cpp
-                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsGenerateAstroObj src/program/EleFitsGenerateAstroObj.cpp
-                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsTutorial src/program/EleFitsTutorial.cpp
-                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsGenerate2DMassFiles src/program/EleFitsGenerate2DMassFiles.cpp
-                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsGenerateLife src/program/EleFitsGenerateLife.cpp
-                     LINK_LIBRARIES ElementsKernel EleFits EleFitsUtils)
+                     LINK_LIBRARIES EleFitsExamples)
 
 #===============================================================================
 # Declare the Boost tests here
