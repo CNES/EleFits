@@ -80,24 +80,16 @@ std::vector<std::string> BintableColumns::readAllNames() const {
   return names;
 }
 
-void BintableColumns::rename(const std::string& name, const std::string& newName) const {
-  rename(readIndex(name), newName);
-}
-
-void BintableColumns::rename(long index, const std::string& newName) const {
+void BintableColumns::rename(ColumnKey key, const std::string& newName) const {
   m_edit();
-  Cfitsio::BintableIo::updateColumnName(m_fptr, index + 1, newName);
+  Cfitsio::BintableIo::updateColumnName(m_fptr, key.index(*this) + 1, newName);
 }
 
-void BintableColumns::remove(const std::string& name) const {
-  remove(readIndex(name));
-}
-
-void BintableColumns::remove(long index) const {
+void BintableColumns::remove(ColumnKey key) const {
   m_edit();
   int status = 0;
-  fits_delete_col(m_fptr, index + 1, &status);
-  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot remove column #" + std::to_string(index));
+  fits_delete_col(m_fptr, key.index(*this) + 1, &status);
+  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot remove column #" + std::to_string(key.index(*this)));
   // TODO to Cfitsio
 }
 

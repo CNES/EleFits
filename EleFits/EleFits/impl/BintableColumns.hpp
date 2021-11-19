@@ -38,25 +38,15 @@ namespace Fits {
 // readInfo
 
 template <typename T>
-ColumnInfo<T> BintableColumns::readInfo(const std::string& name) const {
-  return readInfo<T>(readIndex(name));
-}
-
-template <typename T>
-ColumnInfo<T> BintableColumns::readInfo(long index) const {
-  return Cfitsio::BintableIo::readColumnInfo<T>(m_fptr, index + 1); // 1-based
+ColumnInfo<T> BintableColumns::readInfo(ColumnKey key) const {
+  return Cfitsio::BintableIo::readColumnInfo<T>(m_fptr, key.index(*this) + 1); // 1-based
 }
 
 // read
 
 template <typename T>
-VecColumn<T> BintableColumns::read(const std::string& name) const {
-  return read<T>(readIndex(name));
-}
-
-template <typename T>
-VecColumn<T> BintableColumns::read(long index) const {
-  return readSegment<T>({0, readRowCount() - 1}, index);
+VecColumn<T> BintableColumns::read(ColumnKey key) const {
+  return readSegment<T>({0, readRowCount() - 1}, key); // FIXME useless readRowCount()
 }
 
 // readTo
@@ -67,24 +57,15 @@ void BintableColumns::readTo(Column<T>& column) const {
 }
 
 template <typename T>
-void BintableColumns::readTo(const std::string& name, Column<T>& column) const {
-  readTo<T>(readIndex(name), column);
-}
-
-template <typename T>
-void BintableColumns::readTo(long index, Column<T>& column) const {
-  readSegmentTo<T>({0, readRowCount() - 1}, column);
+void BintableColumns::readTo(ColumnKey key, Column<T>& column) const {
+  readSegmentTo<T>({0, readRowCount() - 1}, key, column);
 }
 
 // readSegment
 
 template <typename T>
-VecColumn<T> BintableColumns::readSegment(const Segment& rows, const std::string& name) const {
-  return readSegment<T>(rows, readIndex(name));
-}
-
-template <typename T>
-VecColumn<T> BintableColumns::readSegment(const Segment& rows, long index) const {
+VecColumn<T> BintableColumns::readSegment(const Segment& rows, ColumnKey key) const {
+  const auto index = key.index(*this);
   VecColumn<T> column(readInfo<T>(index), rows.size());
   readSegmentTo<T>(rows, index, column);
   return column;
@@ -98,19 +79,14 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, Column<T>& column) con
 }
 
 template <typename T>
-void BintableColumns::readSegmentTo(FileMemSegments rows, const std::string& name, Column<T>& column) const {
-  readSegmentTo<T>(rows, readIndex(name), column); // FIXME move rows?
-}
-
-template <typename T>
-void BintableColumns::readSegmentTo(FileMemSegments rows, long index, Column<T>& column) const {
+void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, Column<T>& column) const {
   m_touch();
   rows.resolve(readRowCount() - 1, column.rowCount() - 1);
   auto slice = column.slice(rows.memory()); // TODO do we need a temporary variable?
   Cfitsio::BintableIo::readColumnSegment<T>(
       m_fptr,
       Segment {rows.file().front + 1, rows.file().back + 1}, // TODO operator+
-      index + 1,
+      key.index(*this) + 1,
       slice);
 }
 
@@ -124,7 +100,7 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Named<Ts>&... names)
 template <typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
   const auto rowCount = readRowCount();
-  std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(indices), rowCount)...};
+  std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(indices.index), rowCount)...};
   readSeqTo({indices...}, res);
   return res;
 }
@@ -198,7 +174,7 @@ std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows
   if (rows.back == -1) {
     resolvedRows.back = readRowCount() - 1;
   }
-  std::tuple<VecColumn<Ts>...> columns {{readInfo<Ts>(indices), resolvedRows.size()}...};
+  std::tuple<VecColumn<Ts>...> columns {{readInfo<Ts>(indices.index), resolvedRows.size()}...};
   readSegmentSeqTo(resolvedRows, {indices.index...}, columns);
   return columns;
 }

@@ -20,6 +20,7 @@
 #ifndef _ELEFITS_BINTABLECOLUMNS_H
 #define _ELEFITS_BINTABLECOLUMNS_H
 
+#include "EleFits/ColumnKey.h"
 #include "EleFits/FileMemSegments.h"
 #include "EleFitsData/Column.h"
 
@@ -150,16 +151,12 @@ public:
   std::vector<std::string> readAllNames() const;
 
   /**
-   * @brief Rename the column with given name.
+   * @brief Rename the column with given name or index.
+   * @param key The name or 0-based index of the column to be read
+   * @param newName The name to be given
    * @warning This is a write operation.
    */
-  void rename(const std::string& name, const std::string& newName) const;
-
-  /**
-   * @brief Rename the column with given index.
-   * @warning This is a write operation.
-   */
-  void rename(long index, const std::string& newName) const;
+  void rename(ColumnKey key, const std::string& newName) const;
 
   /// @}
   /**
@@ -169,18 +166,14 @@ public:
 
   /**
    * @brief Read the info of a column.
+   * @param key The name or 0-based index of the column to be read
    */
   template <typename T>
-  ColumnInfo<T> readInfo(const std::string& name) const;
+  ColumnInfo<T> readInfo(ColumnKey key) const;
 
   /**
-   * @copydoc readInfo
-   */
-  template <typename T>
-  ColumnInfo<T> readInfo(long index) const;
-
-  /**
-   * @brief Read the column with given name.
+   * @brief Read the column with given name or index.
+   * @param key The name or 0-based index of the column to be read
    * @details
    * There are several ways to read a column, which can be specified either by its name or 0-based index.
    * The simplest way is to read the whole column as a new `VecColumn` with methods `read()`.
@@ -207,14 +200,7 @@ public:
    * Methods `readTo()` do not allocate memory: the user must ensure that enough space has been allocated previously.
    */
   template <typename T>
-  VecColumn<T> read(const std::string& name) const;
-
-  /**
-   * @brief Read the column with given index.
-   * @copydetails read()
-   */
-  template <typename T>
-  VecColumn<T> read(long index) const;
+  VecColumn<T> read(ColumnKey key) const;
 
   /**
    * @brief Read a column into an existing `Column`.
@@ -226,23 +212,14 @@ public:
   void readTo(Column<T>& column) const;
 
   /**
-   * @brief Read the column with given name into an existing `Column`.
-   * @param name The name of the column to be read
+   * @brief Read the column with given name or index into an existing `Column`.
+   * @param key The name or 0-based index of the column to be read
    * @param column The `Column` object to which data should be written
    * (`column.name` is not used by the method and can be different from the `name` parameter)
    * @copydetails read()
    */
   template <typename T>
-  void readTo(const std::string& name, Column<T>& column) const;
-
-  /**
-   * @brief Read the column with given index into an existing `Column`.
-   * @param index The index of the column to be read
-   * @param column The `Column` object to which data should be written
-   * @copydetails read()
-   */
-  template <typename T>
-  void readTo(long index, Column<T>& column) const;
+  void readTo(ColumnKey key, Column<T>& column) const;
 
   /// @}
   /**
@@ -251,10 +228,9 @@ public:
   /// @{
 
   /**
-   * @brief Read the segment of a column specified by its name.
+   * @brief Read the segment of a column specified by its name or index.
    * @param rows The included lower and upper bounds of the row indices to be read
-   * @param name The name of the column to be read
-   * @param index The 0-based index of the column to be read
+   * @param key The name or 0-based index of the column to be read
    * @param column The preexisting `Column` to be filled
    * @details
    * Methods to read column segments are similar to methods to read complete columns (see `read()`).
@@ -276,14 +252,7 @@ public:
    * @see read()
    */
   template <typename T>
-  VecColumn<T> readSegment(const Segment& rows, const std::string& name) const;
-
-  /**
-   * @brief Read the segment of a column specified by its index.
-   * @copydetails readSegment()
-   */
-  template <typename T>
-  VecColumn<T> readSegment(const Segment& rows, long index) const;
+  VecColumn<T> readSegment(const Segment& rows, ColumnKey key) const;
 
   /**
    * @brief Read the segment of a column into an existing `Column`.
@@ -293,18 +262,11 @@ public:
   void readSegmentTo(FileMemSegments rows, Column<T>& column) const;
 
   /**
-   * @brief Read the segment of a column specified by its name into an existing `Column`.
+   * @brief Read the segment of a column specified by its name or index into an existing `Column`.
    * @copydetails readSegment()
    */
   template <typename T>
-  void readSegmentTo(FileMemSegments rows, const std::string& name, Column<T>& column) const;
-
-  /**
-   * @brief Read the segment of a column specified by its index into an existing `Column`.
-   * @copydetails readSegment()
-   */
-  template <typename T>
-  void readSegmentTo(FileMemSegments rows, long index, Column<T>& column) const;
+  void readSegmentTo(FileMemSegments rows, ColumnKey key, Column<T>& column) const;
 
   /// @}
   /**
@@ -477,14 +439,9 @@ public:
   void init(const ColumnInfo<T>& info, long index = -1) const;
 
   /**
-   * @brief Remove a column specified by its name.
+   * @brief Remove a column specified by its name or index.
    */
-  void remove(const std::string& name) const;
-
-  /**
-   * @brief Remove a column specified by its index.
-   */
-  void remove(long index) const;
+  void remove(const ColumnKey key) const;
 
   /// @}
   /**
