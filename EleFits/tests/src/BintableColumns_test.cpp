@@ -129,6 +129,8 @@ void checkTupleWriteRead<std::uint64_t>(const BintableColumns& du) {
 
 template <typename T>
 void checkArrayWriteRead(const BintableColumns& du) {
+
+  /* Generate */
   const long rowCount = 10000;
   const long repeatCount = 3;
   std::array<ColumnInfo<T>, 2> infos {
@@ -137,15 +139,25 @@ void checkArrayWriteRead(const BintableColumns& du) {
   std::array<VecColumn<T>, 2> seq {
       VecColumn<T> {infos[1], Test::generateRandomVector<T>(rowCount)},
       VecColumn<T> {infos[0], Test::generateRandomVector<T>(repeatCount * rowCount)}};
+
+  /* Write */
   du.initSeq(0, infos);
   du.writeSeq(seq);
-  const auto res = du.readSeq(Indexed<T>(0), Indexed<T>(1)); // TODO readSeq<T>({ 0, 1 }) and idem with strings?
-  const auto& res0 = std::get<0>(res);
-  const auto& res1 = std::get<1>(res);
+  const auto res = du.readSeq<T>({0L, 1L});
+
+  /* Read */
+  const auto& res0 = res[0];
+  const auto& res1 = res[1];
   BOOST_TEST((res0.info() == seq[1].info()));
   BOOST_TEST((res1.info() == seq[0].info()));
   BOOST_TEST(res0.vector() == seq[1].vector());
   BOOST_TEST(res1.vector() == seq[0].vector());
+
+  /* Remove */
+  std::vector<long> indices = {1L, 0L};
+  du.removeSeq(indices); // Inverted for robustness test
+  BOOST_TEST(not du.has("VECTOR"));
+  BOOST_TEST(not du.has("SCALAR"));
 }
 
 template <>
@@ -162,21 +174,32 @@ void checkArrayWriteRead<std::uint64_t>(const BintableColumns& du) {
 
 template <typename T>
 void checkVectorWriteRead(const BintableColumns& du) {
+
+  /* Generate */
   const long rowCount = 10000;
   const long repeatCount = 3;
   std::vector<ColumnInfo<T>> infos {{"VECTOR", "m", repeatCount}, {"SCALAR", "s", 1}}; // Inverted for robustness test
   std::vector<VecColumn<T>> seq {
       {infos[1], Test::generateRandomVector<T>(rowCount)},
       {infos[0], Test::generateRandomVector<T>(repeatCount * rowCount)}};
+
+  /* Write */
   du.initSeq(0, infos);
   du.writeSeq(seq);
   const auto res = du.readSeq<T>({std::string("VECTOR"), std::string("SCALAR")});
+
+  /* Read */
   const auto& res0 = res[0];
   const auto& res1 = res[1];
   BOOST_TEST((res0.info() == seq[1].info()));
   BOOST_TEST((res1.info() == seq[0].info()));
   BOOST_TEST(res0.vector() == seq[1].vector());
   BOOST_TEST(res1.vector() == seq[0].vector());
+
+  /* Remove */
+  du.removeSeq({std::string("SCALAR"), std::string("VECTOR")}); // Inverted for robustness test
+  BOOST_TEST(not du.has("VECTOR"));
+  BOOST_TEST(not du.has("SCALAR"));
 }
 
 template <>
