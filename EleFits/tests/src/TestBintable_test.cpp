@@ -17,46 +17,19 @@
  *
  */
 
-#include "EleFits/ColumnKey.h"
 #include "EleFits/TestBintable.h"
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE(TestBintable_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_SUITE(ColumnKey_test, Test::TestBintable<float>)
+BOOST_AUTO_TEST_CASE(example_test) {
 
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE(from_resolved_index_test) {
-  ColumnKey key(0);
-  BOOST_TEST(key.index(columns) == 0);
-  BOOST_TEST(key.name(columns) == scalarColumn.info().name);
-}
-
-BOOST_AUTO_TEST_CASE(from_unresolved_index_test) {
-  ColumnKey key(-1);
-  BOOST_TEST(key.index(columns) == 1);
-  BOOST_TEST(key.name(columns) == vectorColumn.info().name);
-}
-
-BOOST_AUTO_TEST_CASE(from_name_test) {
-  ColumnKey key(scalarColumn.info().name);
-  BOOST_TEST(key.name(columns) == scalarColumn.info().name);
-  BOOST_TEST(key.index(columns) == 0);
-}
-
-void checkIsLast(ColumnKey key, const BintableColumns& columns) {
-  BOOST_TEST(key.index(columns) == 1);
-}
-
-BOOST_AUTO_TEST_CASE(implicit_cast_test) {
-  checkIsLast(1, columns);
-  checkIsLast(-1, columns);
-  checkIsLast(lastColumn.info().name, columns);
-  checkIsLast(lastColumn.info().name.c_str(), columns);
+  BOOST_FAIL("!!!! Please implement your tests !!!!");
 }
 
 //-----------------------------------------------------------------------------

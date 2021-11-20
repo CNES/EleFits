@@ -109,6 +109,10 @@ elements_add_unit_test(ColumnKey tests/src/ColumnKey_test.cpp
                      EXECUTABLE EleFits_ColumnKey_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
+elements_add_unit_test(TestBintable tests/src/TestBintable_test.cpp 
+                     EXECUTABLE EleFits_TestBintable_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:
