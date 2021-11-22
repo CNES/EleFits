@@ -104,9 +104,17 @@ BOOST_AUTO_TEST_SUITE(DataUtils_test)
 
 BOOST_AUTO_TEST_CASE(typed_test) {
   const std::string name = "TOTOTATATITI";
-  const long index = 707074747171;
-  BOOST_TEST(Named<int>(name).name == name);
-  BOOST_TEST(Indexed<int>(index).index == index);
+  const char* cStr = name.c_str();
+  const int integer = 707471;
+  const long index = integer;
+  BOOST_TEST(Named<float>(name).key == name);
+  BOOST_TEST(Named<float>(cStr).key == name);
+  BOOST_TEST(Indexed<float>(integer).key == index);
+  BOOST_TEST(Indexed<float>(index).key == index);
+  BOOST_TEST(as<float>(name).key == name);
+  BOOST_TEST(as<float>(cStr).key == name);
+  BOOST_TEST(as<float>(integer).key == index);
+  BOOST_TEST(as<float>(index).key == index);
 }
 
 BOOST_AUTO_TEST_CASE(tuple_as_test) {

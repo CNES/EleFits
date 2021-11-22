@@ -26,17 +26,17 @@ Two record containers are provided to ease this:
 Records in those containers are convertible thanks to an internal casting system.
 
 
-\section header_data_classes-helpers Named
+\section header_data_classes-helpers TypedKey
 
 
-`Named` is a tool used to robustify the API, for more safety when reading a record (or a column).
-It conveys alone both the name and type of the record (or the column).
+`TypedKey` is a tool used to robustify the API, for more safety when reading a record (or a column).
+It conveys alone both the name and type of the record.
 
 In this context, it is used to write the type close to the name of the record in the function call,
 that is, writing:
 
 \code
-header.parseSeq(Named<int>("A"), Named<float>("B"), Named<std::string>("C"));
+header.parseSeq(as<int>("A"), as<float>("B"), as<std::string>("C"));
 \endcode
 
 instead of:

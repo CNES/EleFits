@@ -251,7 +251,7 @@ public:
    * auto vector = h.parseSeq<int>({"A", "B", "C"});
    * 
    * // Heterogeneous records
-   * auto tuple = h.parseSeq(Named<int>("INT"), Named<float>("FLOAT"));
+   * auto tuple = h.parseSeq(as<int>("INT"), as<float>("FLOAT"));
    * \endcode
    * 
    * Example usages with fallbacks:
@@ -280,7 +280,7 @@ public:
    * @copydetails parseSeq()
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parseSeq(const Named<Ts>&... keywords) const;
+  std::tuple<Record<Ts>...> parseSeq(const TypedKey<Ts, std::string>&... keywords) const;
 
   /**
    * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
@@ -352,17 +352,17 @@ public:
    * // Body body {name, age, height, mass};
    *
    * auto body = hdu.parseStruct<Body>(
-   *     Named<std::string>("NAME"),
-   *     Named<int>("AGE"),
-   *     Named<float>("HEIGHT"),
-   *     Named<float>("MASS"));
+   *     as<std::string>("NAME"),
+   *     as<int>("AGE"),
+   *     as<float>("HEIGHT"),
+   *     as<float>("MASS"));
    *
    * std::cout << "Hello, " << body.name << "!" << std::endl;
    * std::cout << "Your BMI is: " << body.bmi() << std::endl;
    * \endcode
    */
   template <typename TOut, typename... Ts>
-  TOut parseStruct(const Named<Ts>&... keywords) const;
+  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const;
 
   /**
    * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.

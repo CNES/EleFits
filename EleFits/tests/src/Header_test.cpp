@@ -80,9 +80,9 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.parseOr(i);
 
   /* Heterogeneous read */
-  h.parseSeq(Named<int>("I"), Named<float>("F"));
+  h.parseSeq(as<int>("I"), as<float>("F"));
   h.parseSeqOr(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
-  h.parseStruct<S>(Named<int>("I"), Named<float>("F"));
+  h.parseStruct<S>(as<int>("I"), as<float>("F"));
 
   /* Homogeneous read */
   h.parseSeq<VariantValue>({"I", "F"});

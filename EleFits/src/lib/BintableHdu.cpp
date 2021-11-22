@@ -69,7 +69,7 @@ HduCategory BintableHdu::readCategory() const {
 }
 
 #ifndef COMPILE_READ_COLUMN
-#define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
+#define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(ColumnKey) const;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_READ_COLUMN)
 #undef COMPILE_READ_COLUMN
 #endif

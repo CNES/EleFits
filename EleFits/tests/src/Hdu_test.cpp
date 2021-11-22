@@ -237,11 +237,8 @@ BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFil
       Record<int>("INT", input.i),
       Record<float>("FLOAT", input.f),
       Record<std::string>("STRING", input.s));
-  const auto output = header.parseStruct<MyHeader>(
-      Named<bool>("BOOL"),
-      Named<int>("INT"),
-      Named<float>("FLOAT"),
-      Named<std::string>("STRING"));
+  const auto output =
+      header.parseStruct<MyHeader>(as<bool>("BOOL"), as<int>("INT"), as<float>("FLOAT"), as<std::string>("STRING"));
   BOOST_TEST(output.b == input.b);
   BOOST_TEST(output.i == input.i);
   BOOST_TEST(output.f == input.f);

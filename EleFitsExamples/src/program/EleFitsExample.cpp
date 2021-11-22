@@ -132,7 +132,7 @@ public:
       const auto extname = ext2.readName();
       //! [Get HDU name]
       logger.info() << "Name of HDU #3: " << extname;
-      const auto records = ext2.header().parseSeq(Named<std::string>("STRING"), Named<int>("INTEGER"));
+      const auto records = ext2.header().parseSeq(as<std::string>("STRING"), as<int>("INTEGER"));
       logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
       logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
       const auto& imageExt = f.accessFirst<ImageHdu>("SMALLIMG");

@@ -89,7 +89,7 @@ void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, c
   BOOST_TEST(du.readRowCount() == rowCount);
 
   /* Read */
-  const auto res = du.readSeq(Named<T>(last.info().name), Named<T>(first.info().name));
+  const auto res = du.readSeq(as<T>(last.info().name), as<T>(first.info().name));
   const auto& res0 = std::get<0>(res);
   const auto& res1 = std::get<1>(res);
   BOOST_TEST((res0.info() == last.info()));
@@ -102,7 +102,7 @@ void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, c
   BOOST_TEST(du.readRowCount() == rowCount * 2);
 
   /* Read */
-  const auto res2 = du.readSegmentSeq({rowCount, -1}, Named<T>(last.info().name), Named<T>(first.info().name));
+  const auto res2 = du.readSegmentSeq({rowCount, -1}, as<T>(last.info().name), as<T>(first.info().name));
   const auto& res20 = std::get<0>(res2);
   const auto& res21 = std::get<1>(res2);
   BOOST_TEST((res20.info() == last.info()));

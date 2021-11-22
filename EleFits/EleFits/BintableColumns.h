@@ -64,6 +64,7 @@ namespace Fits {
  * - Contain `Segment` for reading or writing segments;
  * - Contain `Seq` for reading or writing several columns;
  * - Contain `To` for filling an existing column.
+ * 
  * For example, `readSegmentSeqTo()` is a method to read a sequence of segments into existing `Column` objects.
  * 
  * For working with segments, two intervals can generally be specified:
@@ -215,7 +216,7 @@ public:
    * @brief Read the column with given name or index into an existing `Column`.
    * @param key The name or 0-based index of the column to be read
    * @param column The `Column` object to which data should be written
-   * (`column.name` is not used by the method and can be different from the `name` parameter)
+   * (`column.info().name` is not used by the method and can be different from the `name` parameter)
    * @copydetails read()
    */
   template <typename T>
@@ -275,32 +276,28 @@ public:
   /// @{
 
   /**
-   * @brief Read a tuple of columns with given names.
+   * @brief Read a tuple of columns with given names or indices.
    * @details
    * Example usages:
    * \code
-   * auto columns = ext.readSeq(Named<int>("A"), Named<float>("B"), Named<std::string>("C"));
-   * auto columns = ext.readSeq(Indexed<int>(0), Indexed<float>(3), Indexed<std::string>(4));
+   * // Heterogeneous sequence (returns a tuple)
+   * auto columns = ext.readSeq(as<int>("A"), as<float>("B"), as<std::string>("C"));
+   * auto columns = ext.readSeq(as<int>(0), as<float>(3), as<std::string>(4));
+   * 
+   * // Homogeneous sequence (returns a vector)
    * auto columns = ext.readSeq<int>({"A", "B", "C"});
    * auto columns = ext.readSeq<int>({0, 3, 4});
    * \endcode
    */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readSeq(const Named<Ts>&... names) const;
-
-  /**
-   * @brief Read a tuple of columns with given indices.
-   * @copydetails readSeq()
-   */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readSeq(const Indexed<Ts>&... indices) const;
+  template <typename TKey, typename... Ts>
+  std::tuple<VecColumn<Ts>...> readSeq(const TypedKey<Ts, TKey>&... keys) const;
 
   /**
    * @brief Read a vector of columns with given names or indices.
    * @copydetails readSeq()
    */
   template <typename T>
-  std::vector<VecColumn<T>> readSeq(std::vector<ColumnKey> keys) const;
+  std::vector<VecColumn<T>> readSeq(std::vector<ColumnKey> keys) const; // FIXME return a RecordVector
   /**
    * @brief Read a sequence of columns into existing `Column`s.
    * @copydetails readSeq()
@@ -336,20 +333,13 @@ public:
   /// @{
 
   /**
-   * @brief Read segments of columns specified by their names.
+   * @brief Read segments of columns specified by their names or indices.
    * @details
    * The rows to be read in the table are specified as a `Segment` object, that is, a lower and upper bounds.
    * The same bounds are used for all columns.
    */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readSegmentSeq(const Segment& rows, const Named<Ts>&... names) const;
-
-  /**
-   * @brief Read segments of columns specified by their indices.
-   * @copydetails readSegmentSeq()
-   */
-  template <typename... Ts>
-  std::tuple<VecColumn<Ts>...> readSegmentSeq(const Segment& rows, const Indexed<Ts>&... indices) const;
+  template <typename TKey, typename... Ts>
+  std::tuple<VecColumn<Ts>...> readSegmentSeq(const Segment& rows, const TypedKey<Ts, TKey>&... keys) const;
 
   /**
    * @brief Read segments of columns into existing `Column`s.

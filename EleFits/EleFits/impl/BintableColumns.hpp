@@ -96,16 +96,11 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, Column<
 
 // readSeq
 
-template <typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Named<Ts>&... names) const {
-  return readSeq(Indexed<Ts>(readIndex(names.name))...);
-}
-
-template <typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const Indexed<Ts>&... indices) const {
+template <typename TKey, typename... Ts>
+std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const TypedKey<Ts, TKey>&... keys) const {
   const auto rowCount = readRowCount();
-  std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(indices.index), rowCount)...};
-  readSeqTo({ColumnKey(indices.index)...}, res);
+  std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(keys.key), rowCount)...};
+  readSeqTo({ColumnKey(keys.key)...}, res);
   return res;
 }
 
@@ -147,19 +142,15 @@ void BintableColumns::readSeqTo(std::vector<ColumnKey> keys, Column<Ts>&... colu
 
 // readSegmentSeq
 
-template <typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Named<Ts>&... names) const {
-  return readSegmentSeq(rows, Indexed<Ts>(readIndex(names))...);
-}
-
-template <typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(const Segment& rows, const Indexed<Ts>&... indices) const {
+template <typename TKey, typename... Ts>
+std::tuple<VecColumn<Ts>...>
+BintableColumns::readSegmentSeq(const Segment& rows, const TypedKey<Ts, TKey>&... keys) const {
   auto resolvedRows = rows;
   if (rows.back == -1) {
     resolvedRows.back = readRowCount() - 1;
   }
-  std::tuple<VecColumn<Ts>...> columns {{readInfo<Ts>(indices.index), resolvedRows.size()}...};
-  readSegmentSeqTo(resolvedRows, {ColumnKey(indices.index)...}, columns);
+  std::tuple<VecColumn<Ts>...> columns {{readInfo<Ts>(keys.key), resolvedRows.size()}...};
+  readSegmentSeqTo(resolvedRows, {ColumnKey(keys.key)...}, columns);
   return columns;
 }
 

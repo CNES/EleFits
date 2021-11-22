@@ -27,13 +27,8 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T>
-VecColumn<T> BintableHdu::readColumn(long index) const {
-  return m_columns.read<T>(index);
-}
-
-template <typename T>
-VecColumn<T> BintableHdu::readColumn(const std::string& name) const {
-  return m_columns.read<T>(name);
+VecColumn<T> BintableHdu::readColumn(ColumnKey key) const {
+  return m_columns.read<T>(std::move(key));
 }
 
 template <typename T>
@@ -42,8 +37,7 @@ void BintableHdu::writeColumn(const Column<T>& column) const {
 }
 
 #ifndef DECLARE_READ_COLUMN
-#define DECLARE_READ_COLUMN(type, unused) \
-  extern template VecColumn<type> BintableHdu::readColumn(const std::string&) const;
+#define DECLARE_READ_COLUMN(type, unused) extern template VecColumn<type> BintableHdu::readColumn(ColumnKey) const;
 ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_READ_COLUMN)
 #undef DECLARE_READ_COLUMN
 #endif

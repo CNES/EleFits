@@ -107,10 +107,10 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto floatColumn = Test::RandomTable::generateColumn<float>("FLOAT");
   const auto& ext = assignBintableExt("", intColumn, floatColumn);
   const auto& du = ext.columns();
-  const auto byName = du.readSeq(Named<int>(intColumn.info().name), Named<float>(floatColumn.info().name));
+  const auto byName = du.readSeq(as<int>(intColumn.info().name), as<float>(floatColumn.info().name));
   BOOST_TEST(std::get<0>(byName).vector() == intColumn.vector());
   BOOST_TEST(std::get<1>(byName).vector() == floatColumn.vector());
-  const auto byIndex = du.readSeq(Indexed<int>(0), Indexed<float>(1));
+  const auto byIndex = du.readSeq(as<int>(0), as<float>(1));
   BOOST_TEST(std::get<0>(byIndex).vector() == intColumn.vector());
   BOOST_TEST(std::get<1>(byIndex).vector() == floatColumn.vector());
 }

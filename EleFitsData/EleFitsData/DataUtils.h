@@ -32,49 +32,62 @@ namespace Fits {
 
 /**
  * @ingroup data_classes
- * @brief A name and type.
+ * @brief A light structure to bind a return type and a key, e.g. for reading records and columns.
+ * @tparam TReturn The desired return type
+ * @tparam TKey The key type, typically `std::string` or `long`
+ * @details
+ * `TypedKeys` should not be instantiated directly.
+ * Instead maker `as()` should be used for clarity, e.g.:
+ * \code
+ * // Ugly
+ * header.parseSeq(TypedKey<float, std::string>("A"), TypedKey<int, std::string>("B"));
+ * 
+ * // Clean
+ * header.parseSeq(as<float>("A"), as<int>("B"));
+ * \endcode
  */
-template <typename T>
-struct Named {
-
-  /**
-   * @brief Constructor.
-   */
-  explicit Named(const std::string& value) : name(value) {};
-
-  /**
-   * @brief Slice as the name.
-   */
-  operator std::string() const {
-    return name;
-  }
-
-  /** @brief The name */
-  std::string name;
+template <typename TReturn, typename TKey>
+struct TypedKey {
+  using Return = TReturn;
+  using Key = TKey;
+  explicit TypedKey(TKey k) : key(k) {}
+  TKey key;
 };
 
 /**
- * @ingroup data_classes
- * @brief An index and type.
+ * @brief Deprecated alias for named keys.
+ * @deprecated Use `as()` instead.
  */
-template <typename T>
-struct Indexed {
+template <typename TReturn>
+using Named = TypedKey<TReturn, std::string>;
 
-  /**
-   * @brief Constructor.
-   */
-  explicit Indexed(long value) : index(value) {};
+/**
+ * @brief Deprecated alias for indexed keys.
+ * @deprecated Use `as()` instead.
+ */
+template <typename TReturn>
+using Indexed = TypedKey<TReturn, long>;
 
-  /**
-   * @brief Slice as the index.
-   */
-  operator long() const {
-    return index;
-  }
-
-  /** @brief The index */
-  long index;
-};
+/**
+ * @brief Create a `TypedKey` where the key type is deduced from the parameter.
+ * @see TypedKey
+ */
+template <typename TReturn>
+TypedKey<TReturn, long> as(long key) {
+  return TypedKey<TReturn, long> {key};
+}
+template <typename TReturn>
+TypedKey<TReturn, long> as(int key) {
+  return TypedKey<TReturn, long> {key};
+}
+template <typename TReturn>
+TypedKey<TReturn, std::string> as(const std::string& key) {
+  return TypedKey<TReturn, std::string> {key};
+}
+template <typename TReturn>
+TypedKey<TReturn, std::string> as(const char* key) {
+  return TypedKey<TReturn, std::string> {key};
+}
 
 /**
  * @ingroup bintable_data_classes

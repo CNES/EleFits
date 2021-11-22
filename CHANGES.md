@@ -5,16 +5,18 @@
 ### Bug fixes
 
 * `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
-* Fix `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
+* Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 
 ### New features
 
 * Empty binary table HDUs can be created
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `vector<VecColumn<T>>`)
+* New "Game of Life" example demonstrates the use of slicing
 
 ### Cleaning
 
-* Review formatting
+* Formatting has been reviewed
+* Several overloads have been merged (e.g. with `ColumnKey` and `TypedKey`)
 
 ## 4.0
 

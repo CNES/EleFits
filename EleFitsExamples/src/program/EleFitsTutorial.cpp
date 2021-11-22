@@ -348,10 +348,10 @@ void readRecords(const Fits::Hdu& hdu) {
   /* Read several records */
 
   const auto someRecords = hdu.header().parseSeq(
-      Fits::Named<std::string>("STRING"),
-      Fits::Named<int>("INT"),
-      Fits::Named<float>("FLOAT"),
-      Fits::Named<std::complex<double>>("COMPLEX"));
+      Fits::as<std::string>("STRING"),
+      Fits::as<int>("INT"),
+      Fits::as<float>("FLOAT"),
+      Fits::as<std::complex<double>>("COMPLEX"));
   const auto& thirdRecord = std::get<2>(someRecords);
 
   /* Read as VariantValue */
@@ -362,10 +362,10 @@ void readRecords(const Fits::Hdu& hdu) {
   /* Read as a user-defined structure */
 
   const auto tutoRecords = hdu.header().parseStruct<TutoRecords>(
-      Fits::Named<std::string>("STRING"),
-      Fits::Named<int>("INT"),
-      Fits::Named<float>("FLOAT"),
-      Fits::Named<std::complex<double>>("COMPLEX"));
+      Fits::as<std::string>("STRING"),
+      Fits::as<int>("INT"),
+      Fits::as<float>("FLOAT"),
+      Fits::as<std::complex<double>>("COMPLEX"));
   const auto& stringRecord = tutoRecords.stringRecord;
 
   //! [Read records]
@@ -408,12 +408,12 @@ void readColumns(const Fits::BintableHdu& hdu) {
 
   /* Read several columns by their name */
 
-  const auto byName = hdu.columns().readSeq(Fits::Named<std::string>("STRING"), Fits::Named<std::int32_t>("INT32"));
+  const auto byName = hdu.columns().readSeq(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
   const auto& stringColumn = std::get<0>(byName);
 
   /* Read several columns by their index */
 
-  const auto byIndex = hdu.columns().readSeq(Fits::Indexed<std::string>(0), Fits::Indexed<std::int32_t>(1));
+  const auto byIndex = hdu.columns().readSeq(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
   const auto& intColumn = std::get<1>(byIndex);
 
   /* Use values */

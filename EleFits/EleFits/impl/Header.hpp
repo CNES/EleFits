@@ -59,7 +59,7 @@ RecordVec<T> Header::parseSeq(const std::vector<std::string>& keywords) const {
 }
 
 template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parseSeq(const Named<Ts>&... keywords) const {
+std::tuple<Record<Ts>...> Header::parseSeq(const TypedKey<Ts, std::string>&... keywords) const {
   return parseStruct<std::tuple<Record<Ts>...>, Ts...>(keywords...);
 }
 
@@ -77,9 +77,9 @@ std::tuple<Record<Ts>...> Header::parseSeqOr(const Record<Ts>&... fallbacks) con
 }
 
 template <typename TReturn, typename... Ts>
-TReturn Header::parseStruct(const Named<Ts>&... keywords) const {
+TReturn Header::parseStruct(const TypedKey<Ts, std::string>&... keywords) const {
   m_touch();
-  return {Cfitsio::HeaderIo::parseRecord<Ts>(m_fptr, keywords.name)...};
+  return {Cfitsio::HeaderIo::parseRecord<Ts>(m_fptr, keywords.key)...};
 }
 
 template <typename TReturn, typename... Ts>

@@ -77,16 +77,10 @@ public:
   HduCategory readCategory() const override;
 
   /**
-   * @brief Read a column with given index.
+   * @brief Read a column with given name or index.
    */
   template <typename T>
-  VecColumn<T> readColumn(long index) const;
-
-  /**
-   * @brief Read a column with given name.
-   */
-  template <typename T>
-  VecColumn<T> readColumn(const std::string& name) const;
+  VecColumn<T> readColumn(ColumnKey key) const;
 
   /**
    * @brief Write a column.

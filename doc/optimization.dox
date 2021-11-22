@@ -133,9 +133,9 @@ to avoid passing through the data unit several times.
 // Good :)
 const auto &ext = f.access<BintableHdu>(index);
 const auto columns = ext.columns().readSeq(
-    Named<std::string>("A"),
-    Named<float>("B"),
-    Named<std::int16_t>("C")); // Reads the whole data unit once
+    as<std::string>("A"),
+    as<float>("B"),
+    as<std::int16_t>("C")); // Reads the whole data unit once
 
 // Bad :(
 const auto &ext = f.access<BintableHdu>(index);
@@ -148,7 +148,7 @@ The strategy holds for record IOs too, yet with smaller improvements to be expec
 
 \code
 // Good :)
-auto records = hdu.header().parse(Named<int>("INT"), Named<float>("FLOAT"));
+auto records = hdu.header().parse(as<int>("INT"), as<float>("FLOAT"));
 
 // Bad :(
 auto record1 = hdu.header().parse<int>("INT");
