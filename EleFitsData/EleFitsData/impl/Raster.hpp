@@ -137,6 +137,16 @@ inline long Raster<T, n>::index(const Position<n>& pos) const {
 }
 
 template <typename T, long n>
+inline const T& Raster<T, n>::operator[](long index) const {
+  return *(data() + index);
+}
+
+template <typename T, long n>
+inline T& Raster<T, n>::operator[](long index) {
+  return const_cast<T&>(const_cast<const Raster*>(this)->operator[](index));
+}
+
+template <typename T, long n>
 inline const T& Raster<T, n>::operator[](const Position<n>& pos) const {
   return *(data() + index(pos));
 }
@@ -248,8 +258,8 @@ PtrRaster<T, n == -1 ? -1 : n - 1> Raster<T, n>::section(long index) {
 template <typename T, long n>
 template <long m>
 bool Raster<T, n>::isContiguous(const Region<n>& region) const {
-  const auto f = region.front;
-  const auto b = region.back;
+  const auto& f = region.front;
+  const auto& b = region.back;
   for (long i = 0; i < m - 1; ++i) {
     if (f[i] != 0 || b[i] != m_shape[i] - 1) { // Doesn't span across the full axis => index jump
       return false;

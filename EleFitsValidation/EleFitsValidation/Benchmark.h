@@ -32,7 +32,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 /**
  * @brief The raster type used for benchmarking.
@@ -232,7 +232,7 @@ private:
   std::unordered_map<std::string, BenchmarkMaker> m_register;
 };
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 

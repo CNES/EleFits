@@ -17,21 +17,21 @@
  *
  */
 
-#include "EleFitsValidation/CfitsioBenchmark.h"
+#include "EleFitsValidation//LoopingBenchmark.h"
 
-#if defined(_ELEFITS_VALIDATION_ELBENCHMARK_IMPL) || defined(CHECK_QUALITY)
+#include <boost/test/unit_test.hpp>
 
-namespace Euclid {
-namespace Fits {
-namespace Test {
+//-----------------------------------------------------------------------------
 
-template <long i>
-Indexed<typename std::tuple_element<i, BColumns>::type::Value> ElColwiseBenchmark::colIndexed() const {
-  return Indexed<typename std::tuple_element<i, BColumns>::type::Value>(i);
+BOOST_AUTO_TEST_SUITE(LoopingBenchmark_test)
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(example_test) {
+
+  BOOST_FAIL("!!!! Please implement your tests !!!!");
 }
 
-} // namespace Test
-} // namespace Fits
-} // namespace Euclid
+//-----------------------------------------------------------------------------
 
-#endif
+BOOST_AUTO_TEST_SUITE_END()

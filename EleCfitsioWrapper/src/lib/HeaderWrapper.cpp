@@ -49,7 +49,7 @@ std::vector<std::string> listKeywords(fitsfile* fptr, Fits::KeywordCategory cate
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
-  std::vector<std::string> keywords;
+  std::vector<std::string> keywords; // TODO Should we reserve(count) while categories can filter a lot?
   char keyword[FLEN_KEYWORD];
   char value[FLEN_KEYWORD];
   for (int i = 0; i < count; ++i) {

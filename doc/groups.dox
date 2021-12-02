@@ -47,6 +47,10 @@
 \defgroup guidelines Development guidelines
 \brief What to do, what not to, and why!
 
+\defgroup api_design On the API design
+\ingroup guidelines
+\brief Understanding why it is designed this way helps using it better
+
 \defgroup types On types
 \ingroup guidelines
 \brief Which types to use?

@@ -73,7 +73,9 @@ public:
    */
   explicit RandomRaster(Position<n> rasterShape, T min = almostMin<T>(), T max = almostMax<T>());
 
-  /** @brief Destructor. */
+  /**
+   * @brief Destructor.
+   */
   virtual ~RandomRaster() = default;
 
   /**

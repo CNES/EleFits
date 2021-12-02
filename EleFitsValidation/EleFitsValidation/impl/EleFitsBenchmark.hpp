@@ -17,20 +17,21 @@
  *
  */
 
-#include "EleFitsValidation/ElBenchmark.h"
+#include "EleFitsValidation/EleFitsBenchmark.h"
 
-#include <boost/test/unit_test.hpp>
+#if defined(_ELEFITS_VALIDATION_ELEFITSBENCHMARK_IMPL) || defined(CHECK_QUALITY)
 
-//-----------------------------------------------------------------------------
+namespace Euclid {
+namespace Fits {
+namespace Validation {
 
-BOOST_AUTO_TEST_SUITE(ElBenchmark_test)
-
-//-----------------------------------------------------------------------------
-
-BOOST_AUTO_TEST_CASE(bypass_test) {
-  // FIXME implement
+template <long i>
+Indexed<typename std::tuple_element<i, BColumns>::type::Value> EleFitsColwiseBenchmark::colIndexed() const {
+  return Indexed<typename std::tuple_element<i, BColumns>::type::Value>(i);
 }
 
-//-----------------------------------------------------------------------------
+} // namespace Validation
+} // namespace Fits
+} // namespace Euclid
 
-BOOST_AUTO_TEST_SUITE_END()
+#endif

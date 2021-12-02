@@ -23,7 +23,7 @@
 #include "EleFitsValidation/Benchmark.h"
 #include "EleFitsValidation/CfitsioBenchmark.h"
 #include "EleFitsValidation/CsvAppender.h"
-#include "EleFitsValidation/ElBenchmark.h"
+#include "EleFitsValidation/EleFitsBenchmark.h"
 #include "ElementsKernel/ProgramHeaders.h"
 
 #include <boost/filesystem.hpp>
@@ -36,13 +36,13 @@ using boost::program_options::value;
 
 using namespace Euclid::Fits;
 
-Test::BenchmarkFactory initFactory() {
-  Test::BenchmarkFactory factory;
-  factory.registerBenchmark<Test::CfitsioBenchmark>("CFITSIO row-wise", 1);
-  factory.registerBenchmark<Test::CfitsioBenchmark>("CFITSIO column-wise", -1);
-  factory.registerBenchmark<Test::CfitsioBenchmark>("CFITSIO optimal", 0);
-  factory.registerBenchmark<Test::ElColwiseBenchmark>("EleFits column-wise");
-  factory.registerBenchmark<Test::ElBenchmark>("EleFits optimal");
+Validation::BenchmarkFactory initFactory() {
+  Validation::BenchmarkFactory factory;
+  factory.registerBenchmark<Validation::CfitsioBenchmark>("CFITSIO row-wise", 1);
+  factory.registerBenchmark<Validation::CfitsioBenchmark>("CFITSIO column-wise", -1);
+  factory.registerBenchmark<Validation::CfitsioBenchmark>("CFITSIO optimal", 0);
+  factory.registerBenchmark<Validation::EleFitsColwiseBenchmark>("EleFits column-wise");
+  factory.registerBenchmark<Validation::EleFitsBenchmark>("EleFits optimal");
   return factory;
 }
 
@@ -56,7 +56,7 @@ std::string join(const std::vector<T>& values, const std::string& sep = ",") {
   });
 }
 
-class EleFitsBenchmark : public Elements::Program {
+class EleFitsRunBenchmark : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
@@ -73,7 +73,7 @@ public:
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsBenchmark");
+    Elements::Logging logger = Elements::Logging::getLogger("EleFitsRunBenchmark");
 
     const auto testSetup = args["setup"].as<std::string>();
     const auto imageCount = args["images"].as<int>();
@@ -91,9 +91,9 @@ public:
     }
     auto benchmark = factory.createBenchmark(testSetup, filename);
     if (not benchmark) {
-      throw Test::TestCaseNotImplemented(std::string("No setup named: ") + testSetup);
+      throw Validation::TestCaseNotImplemented(std::string("No setup named: ") + testSetup);
     }
-    Test::CsvAppender writer(
+    Validation::CsvAppender writer(
         results,
         {"Date",
          "Test setup",
@@ -114,7 +114,7 @@ public:
 
       logger.info("Generating raster...");
 
-      const Test::BRaster raster = Test::RandomRaster<std::int64_t, 1>({pixelCount});
+      const Validation::BRaster raster = Test::RandomRaster<std::int64_t, 1>({pixelCount});
 
       logger.info("Writing image HDUs...");
 
@@ -167,7 +167,7 @@ public:
       logger.info("Generating columns...");
 
       const auto table = Test::RandomTable(1, rowCount);
-      const Test::BColumns columns = std::make_tuple(
+      const Validation::BColumns columns = std::make_tuple(
           std::move(table.getColumn<unsigned char>()),
           std::move(table.getColumn<std::int32_t>()),
           std::move(table.getColumn<std::int64_t>()),
@@ -189,8 +189,8 @@ public:
             "Write",
             "Binary table",
             tableCount,
-            rowCount * Test::columnCount,
-            tableCount * rowCount * Test::columnCount,
+            rowCount * Validation::columnCount,
+            tableCount * rowCount * Validation::columnCount,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),
@@ -212,8 +212,8 @@ public:
             "Read",
             "Binary table",
             tableCount,
-            rowCount * Test::columnCount,
-            tableCount * rowCount * Test::columnCount,
+            rowCount * Validation::columnCount,
+            tableCount * rowCount * Validation::columnCount,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),
@@ -226,7 +226,7 @@ public:
       }
 
     } else {
-      throw Test::TestCaseNotImplemented(
+      throw Validation::TestCaseNotImplemented(
           "There should be either a positive number of image HDUs or a positive number of binary table HDUs");
     }
 
@@ -236,4 +236,4 @@ public:
   }
 };
 
-MAIN_FOR(EleFitsBenchmark)
+MAIN_FOR(EleFitsRunBenchmark)

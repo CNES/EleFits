@@ -27,7 +27,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 template <typename TUnit>
 Chronometer<TUnit>::Chronometer(TUnit offset) : m_tic(), m_toc(), m_running(false), m_incs(), m_elapsed(offset) {
@@ -105,7 +105,7 @@ double Chronometer<TUnit>::max() const {
   return *std::max_element(m_incs.begin(), m_incs.end());
 }
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 

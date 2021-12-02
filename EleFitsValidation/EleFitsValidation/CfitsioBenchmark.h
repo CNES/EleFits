@@ -29,7 +29,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 /**
  * @brief Vanilla CFitsIO.
@@ -138,7 +138,7 @@ private:
   long m_rowChunkSize;
 };
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 

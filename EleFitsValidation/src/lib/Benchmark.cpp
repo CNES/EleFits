@@ -21,7 +21,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 Benchmark::Benchmark(const std::string& filename) :
     m_filename(filename), m_chrono(), m_logger(Elements::Logging::getLogger("Benchmark")) {}
@@ -110,6 +110,6 @@ std::vector<std::string> BenchmarkFactory::keys() const {
   return res;
 }
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid

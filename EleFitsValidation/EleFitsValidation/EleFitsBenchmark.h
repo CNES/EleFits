@@ -17,33 +17,33 @@
  *
  */
 
-#ifndef _ELEFITS_VALIDATION_ELBENCHMARK_H
-#define _ELEFITS_VALIDATION_ELBENCHMARK_H
+#ifndef _ELEFITS_VALIDATION_ELEFITSBENCHMARK_H
+#define _ELEFITS_VALIDATION_ELEFITSBENCHMARK_H
 
 #include "EleFits/MefFile.h"
 #include "EleFitsValidation/Benchmark.h"
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 /**
  * @brief EleFits without column I/O buffering.
  * @details
- * Tests on image HDUs are not supported (use ElBenchmark instead).
+ * Tests on image HDUs are not supported (use `EleFitsBenchmark` instead).
  */
-class ElColwiseBenchmark : public Benchmark {
+class EleFitsColwiseBenchmark : public Benchmark {
 
 public:
   /**
    * @brief Destructor.
    */
-  virtual ~ElColwiseBenchmark() = default;
+  virtual ~EleFitsColwiseBenchmark() = default;
 
   /**
    * @brief Constructor.
    */
-  explicit ElColwiseBenchmark(const std::string& filename);
+  explicit EleFitsColwiseBenchmark(const std::string& filename);
 
   /**
    * @brief Open file.
@@ -86,18 +86,18 @@ protected:
 /**
  * @brief Standard EleFits.
  */
-class ElBenchmark : public ElColwiseBenchmark {
+class EleFitsBenchmark : public EleFitsColwiseBenchmark {
 
 public:
   /**
    * @brief Destructor.
    */
-  virtual ~ElBenchmark() = default;
+  virtual ~EleFitsBenchmark() = default;
 
   /**
    * @brief Constructor.
    */
-  explicit ElBenchmark(const std::string& filename);
+  explicit EleFitsBenchmark(const std::string& filename);
 
   /**
    * @copybrief Benchmark::writeImage
@@ -120,12 +120,12 @@ public:
   virtual BColumns readBintable(long index) override;
 };
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 
-#define _ELEFITS_VALIDATION_ELBENCHMARK_IMPL
-#include "EleFitsValidation/impl/ElBenchmark.hpp"
-#undef _ELEFITS_VALIDATION_ELBENCHMARK_IMPL
+#define _ELEFITS_VALIDATION_ELEFITSBENCHMARK_IMPL
+#include "EleFitsValidation/impl/EleFitsBenchmark.hpp"
+#undef _ELEFITS_VALIDATION_ELEFITSBENCHMARK_IMPL
 
 #endif

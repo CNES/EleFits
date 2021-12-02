@@ -35,7 +35,7 @@ namespace Fits {
  * @brief Column-wise reader-writer for the binary table data unit.
  * @details
  * For flexibility, this handler class provides many methods to read and write data,
- * but they are really different flavors of the following few services:
+ * but they are just different flavors of the following few services:
  * - Read/write a single column completely;
  * - Read/write a segment (i.e. consecutive rows) of a single column;
  * - Read/write a sequence of columns completely;
@@ -67,9 +67,7 @@ namespace Fits {
  * 
  * For example, `readSegmentSeqTo()` is a method to read a sequence of segments into existing `Column` objects.
  * 
- * For working with segments, two intervals can generally be specified:
- * - That in the binary table, which is specified as a `rows` or `firstRow` parameter;
- * - That in the `Column` object, for example using a `PtrColumn` as a view of the data container.
+ * For working with segments, row indices are specified as `Segment`s or `FileMemSegments`.
  * 
  * For example, assume we want to concatenate rows 11 to 50 of a 3-column binary table into some `std::vector`.
  * Here is an option:
@@ -339,7 +337,13 @@ public:
    * The same bounds are used for all columns.
    */
   template <typename TKey, typename... Ts>
-  std::tuple<VecColumn<Ts>...> readSegmentSeq(const Segment& rows, const TypedKey<Ts, TKey>&... keys) const;
+  std::tuple<VecColumn<Ts>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const;
+
+  /**
+   * @copydoc readSegmentSeq
+   */
+  template <typename T>
+  std::vector<VecColumn<T>> readSegmentSeq(Segment rows, std::vector<ColumnKey> keys) const;
 
   /**
    * @brief Read segments of columns into existing `Column`s.
@@ -377,9 +381,6 @@ public:
 
   /**
    * @brief Write a column.
-   * @details
-   * To write a column, use `write()` if the column has been initialized already,
-   * and `insert()` otherwise.
    */
   template <typename T>
   void write(const Column<T>& column) const;

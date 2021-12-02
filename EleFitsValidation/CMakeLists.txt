@@ -43,8 +43,11 @@ elements_add_library(EleFitsValidation src/lib/*.cpp
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
-elements_add_executable(EleFitsBenchmark src/program/EleFitsBenchmark.cpp
+elements_add_executable(EleFitsRunBenchmark src/program/EleFitsRunBenchmark.cpp
                      LINK_LIBRARIES EleFitsValidation)
+elements_add_executable(EleFitsRunLoopingBenchmark src/program/EleFitsRunLoopingBenchmark.cpp
+                     INCLUDE_DIRS ElementsKernel EleFitsValidation
+                     LINK_LIBRARIES ElementsKernel EleFitsValidation)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -70,8 +73,12 @@ elements_add_unit_test(CfitsioBenchmark tests/src/CfitsioBenchmark_test.cpp
                      EXECUTABLE EleFitsValidation_CfitsioBenchmark_test
                      LINK_LIBRARIES EleFitsValidation
                      TYPE Boost)
-elements_add_unit_test(ElBenchmark tests/src/ElBenchmark_test.cpp 
-                     EXECUTABLE EleFitsValidation_ElBenchmark_test
+elements_add_unit_test(ElBenchmark tests/src/EleFitsBenchmark_test.cpp 
+                     EXECUTABLE EleFitsValidation_EleFitsBenchmark_test
+                     LINK_LIBRARIES EleFitsValidation
+                     TYPE Boost)
+elements_add_unit_test(LoopingBenchmark tests/src/LoopingBenchmark_test.cpp 
+                     EXECUTABLE EleFitsValidation_LoopingBenchmark_test
                      LINK_LIBRARIES EleFitsValidation
                      TYPE Boost)
 elements_add_test(CheckPrograms COMMAND EleFitsCheckPrograms)
@@ -90,7 +97,7 @@ elements_install_scripts()
 # elements_add_python_program(PythonProgramExample
 #                             ElementsExamples.PythonProgramExample)
 #===============================================================================
-elements_add_python_program(EleFitsBatchBenchmark EleFitsValidation.EleFitsBatchBenchmark)
+elements_add_python_program(EleFitsRunBatchBenchmark EleFitsValidation.EleFitsRunBatchBenchmark)
 
 #===============================================================================
 # Add the elements_install_conf_files macro

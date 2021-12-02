@@ -36,7 +36,7 @@ def makeCommand(testCase, output, results, log_level):
     """Run a test case specified as a dictionary with following keys:
     "Test setup", "HDU type", "HDU count", "Value count / HDU"
     """
-    cmd = f'EleFitsBenchmark --log-level {log_level} --output {output} --res {results}'
+    cmd = f'EleFitsRunBenchmark --log-level {log_level} --output {output} --res {results}'
     cmd += f' --setup "{testCase["Test setup"]}"'
     if testCase['HDU type'] == 'Image':
         cmd += f' --images {int(float(testCase["HDU count"]))} --pixels {int(float(testCase["Value count / HDU"]))}'
@@ -60,7 +60,7 @@ def defineSpecificProgramOptions():
 
 def mainMethod(args):
 
-    logger = log.getLogger('EleFitsBatchBenchmark')
+    logger = log.getLogger('EleFitsRunBatchBenchmark')
 
     if args.tests is not None:
         with open(args.tests, 'r') as f:

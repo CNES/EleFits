@@ -250,6 +250,16 @@ public:
   long index(const Position<n>& pos) const;
 
   /**
+   * @brief Pixel at given index.
+   */
+  const T& operator[](long index) const;
+
+  /**
+   * @brief Pixel at given index.
+   */
+  T& operator[](long index);
+
+  /**
    * @brief Pixel at given position.
    */
   const T& operator[](const Position<n>& pos) const;

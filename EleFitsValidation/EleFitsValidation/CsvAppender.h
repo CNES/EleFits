@@ -26,7 +26,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 /**
  * @brief A CSV writer which creates a new file or appends rows to an existing file.
@@ -71,7 +71,7 @@ private:
   std::string m_sep;
 };
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 

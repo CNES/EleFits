@@ -23,7 +23,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 template <typename T>
 CsvAppender& CsvAppender::operator<<(const T& value) {
@@ -39,7 +39,7 @@ CsvAppender& CsvAppender::writeRow(const Ts&... values) {
   return operator<<(std::endl);
 }
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 

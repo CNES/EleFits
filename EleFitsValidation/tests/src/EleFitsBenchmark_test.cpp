@@ -17,34 +17,20 @@
  *
  */
 
-#include "EleFitsValidation/CsvAppender.h"
+#include "EleFitsValidation/EleFitsBenchmark.h"
 
-namespace Euclid {
-namespace Fits {
-namespace Validation {
+#include <boost/test/unit_test.hpp>
 
-CsvAppender::CsvAppender(const std::string& filename, const std::vector<std::string>& header, const std::string& sep) :
-    m_file(filename, std::ios::out | std::ios::app), m_sep(sep) {
-  if (header.empty()) {
-    return;
-  }
-  std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
-  const bool append = in.tellg(); // position is 0 if file was just created
-  if (append) {
-    // TODO check header consistency
-  } else {
-    for (const auto h : header) {
-      (*this) << h;
-    }
-    (*this) << std::endl;
-  }
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_SUITE(EleFitsBenchmark_test)
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(bypass_test) {
+  // FIXME implement
 }
 
-CsvAppender& CsvAppender::operator<<(std::ostream& (*pf)(std::ostream&)) {
-  m_file << pf;
-  return *this;
-}
+//-----------------------------------------------------------------------------
 
-} // namespace Validation
-} // namespace Fits
-} // namespace Euclid
+BOOST_AUTO_TEST_SUITE_END()

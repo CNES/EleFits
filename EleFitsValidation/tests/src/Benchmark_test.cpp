@@ -23,8 +23,8 @@
 
 using namespace Euclid::Fits;
 
-struct ParamBenchmark : Test::Benchmark {
-  ParamBenchmark(const std::string& filename, int i, double d) : Test::Benchmark(filename), m_i(i), m_d(d) {}
+struct ParamBenchmark : Validation::Benchmark {
+  ParamBenchmark(const std::string& filename, int i, double d) : Validation::Benchmark(filename), m_i(i), m_d(d) {}
   void open() {};
   void close() {};
   int m_i;
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_SUITE(Benchmark_test)
 
 BOOST_AUTO_TEST_CASE(factory_test) {
 
-  Test::BenchmarkFactory factory;
+  Validation::BenchmarkFactory factory;
   factory.registerBenchmark<ParamBenchmark>("0, 3.14", 0, 3.14);
   factory.registerBenchmark<ParamBenchmark>("-1, 0.", -1, 0.);
 

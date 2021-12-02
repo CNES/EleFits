@@ -23,7 +23,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 template <std::size_t i>
 void CfitsioBenchmark::setupColumnInfo(
@@ -87,7 +87,7 @@ void CfitsioBenchmark::readColumn(BColumns& columns, long firstRow, long rowCoun
   mayThrow("Cannot read column");
 }
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 

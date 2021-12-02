@@ -21,7 +21,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 CfitsioBenchmark::~CfitsioBenchmark() {
   fits_close_file(m_fptr, &m_status);
@@ -196,6 +196,6 @@ void CfitsioBenchmark::mayThrow(const std::string& context) const {
   Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, context);
 }
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid

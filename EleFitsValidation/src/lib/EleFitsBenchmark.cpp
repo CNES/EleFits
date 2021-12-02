@@ -17,26 +17,26 @@
  *
  */
 
-#include "EleFitsValidation/ElBenchmark.h"
+#include "EleFitsValidation/EleFitsBenchmark.h"
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
-ElColwiseBenchmark::ElColwiseBenchmark(const std::string& filename) :
+EleFitsColwiseBenchmark::EleFitsColwiseBenchmark(const std::string& filename) :
     Benchmark(filename), m_f(filename, FileMode::Overwrite) {
   m_logger.info() << "EleFits benchmark (column-wise, filename: " << filename << ")";
 }
 
-void ElColwiseBenchmark::open() {
+void EleFitsColwiseBenchmark::open() {
   m_f.reopen();
 }
 
-void ElColwiseBenchmark::close() {
+void EleFitsColwiseBenchmark::close() {
   m_f.close();
 }
 
-BChronometer::Unit ElColwiseBenchmark::writeBintable(const BColumns& columns) {
+BChronometer::Unit EleFitsColwiseBenchmark::writeBintable(const BColumns& columns) {
   m_chrono.start();
   const auto& ext = m_f.initBintableExt(
       "",
@@ -63,7 +63,7 @@ BChronometer::Unit ElColwiseBenchmark::writeBintable(const BColumns& columns) {
   return m_chrono.stop();
 }
 
-BColumns ElColwiseBenchmark::readBintable(long index) {
+BColumns EleFitsColwiseBenchmark::readBintable(long index) {
   m_chrono.start();
   const auto& ext = m_f.access<BintableHdu>(index);
   const auto columns = std::make_tuple(
@@ -81,30 +81,30 @@ BColumns ElColwiseBenchmark::readBintable(long index) {
   return columns;
 }
 
-ElBenchmark::ElBenchmark(const std::string& filename) : ElColwiseBenchmark(filename) {
+EleFitsBenchmark::EleFitsBenchmark(const std::string& filename) : EleFitsColwiseBenchmark(filename) {
   m_logger.info() << "EleFits benchmark (buffered, filename: " << filename << ")";
 }
 
-BChronometer::Unit ElBenchmark::writeImage(const BRaster& raster) {
+BChronometer::Unit EleFitsBenchmark::writeImage(const BRaster& raster) {
   m_chrono.start();
   m_f.assignImageExt("", raster);
   return m_chrono.stop();
 }
 
-BChronometer::Unit ElBenchmark::writeBintable(const BColumns& columns) {
+BChronometer::Unit EleFitsBenchmark::writeBintable(const BColumns& columns) {
   m_chrono.start();
   m_f.assignBintableExt("", columns);
   return m_chrono.stop();
 }
 
-BRaster ElBenchmark::readImage(long index) {
+BRaster EleFitsBenchmark::readImage(long index) {
   m_chrono.start();
   const auto raster = m_f.access<ImageHdu>(index).readRaster<BRaster::Value, BRaster::Dim>();
   m_chrono.stop();
   return raster;
 }
 
-BColumns ElBenchmark::readBintable(long index) {
+BColumns EleFitsBenchmark::readBintable(long index) {
   m_chrono.start();
   const auto columns = m_f.access<BintableHdu>(index).columns().readSeq(
       colIndexed<0>(),
@@ -121,6 +121,6 @@ BColumns ElBenchmark::readBintable(long index) {
   return columns;
 }
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid

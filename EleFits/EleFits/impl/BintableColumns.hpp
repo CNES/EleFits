@@ -143,14 +143,26 @@ void BintableColumns::readSeqTo(std::vector<ColumnKey> keys, Column<Ts>&... colu
 // readSegmentSeq
 
 template <typename TKey, typename... Ts>
-std::tuple<VecColumn<Ts>...>
-BintableColumns::readSegmentSeq(const Segment& rows, const TypedKey<Ts, TKey>&... keys) const {
-  auto resolvedRows = rows;
+std::tuple<VecColumn<Ts>...> BintableColumns::readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const {
   if (rows.back == -1) {
-    resolvedRows.back = readRowCount() - 1;
+    rows.back = readRowCount() - 1;
   }
-  std::tuple<VecColumn<Ts>...> columns {{readInfo<Ts>(keys.key), resolvedRows.size()}...};
-  readSegmentSeqTo(resolvedRows, {ColumnKey(keys.key)...}, columns);
+  std::tuple<VecColumn<Ts>...> columns {{readInfo<Ts>(keys.key), rows.size()}...};
+  readSegmentSeqTo(rows, {ColumnKey(keys.key)...}, columns);
+  return columns;
+}
+
+template <typename T>
+std::vector<VecColumn<T>> BintableColumns::readSegmentSeq(Segment rows, std::vector<ColumnKey> keys) const {
+  if (rows.back == -1) {
+    rows.back = readRowCount() - 1;
+  }
+  std::vector<VecColumn<T>> columns;
+  columns.reserve(keys.size);
+  for (const auto& k : keys) {
+    columns.emplace_back(readInfo<T>(k), rows.size()); // TODO std::transform?
+  }
+  readSegmentSeqTo(rows, keys, columns);
   return columns;
 }
 

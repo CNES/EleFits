@@ -27,7 +27,7 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Test {
+namespace Validation {
 
 /**
  * @brief A simple chronometer with increment times and elapsed time caching.
@@ -143,7 +143,7 @@ private:
   TUnit m_elapsed;
 };
 
-} // namespace Test
+} // namespace Validation
 } // namespace Fits
 } // namespace Euclid
 
