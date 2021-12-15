@@ -132,6 +132,26 @@ T* Raster<T, n>::data() {
 }
 
 template <typename T, long n>
+const T* Raster<T, n>::begin() const {
+  return data();
+}
+
+template <typename T, long n>
+T* Raster<T, n>::begin() {
+  return const_cast<T*>(const_cast<const Raster<T, n>*>(this)->begin());
+}
+
+template <typename T, long n>
+const T* Raster<T, n>::end() const {
+  return data() + size();
+}
+
+template <typename T, long n>
+T* Raster<T, n>::end() {
+  return const_cast<T*>(const_cast<const Raster<T, n>*>(this)->end());
+}
+
+template <typename T, long n>
 inline long Raster<T, n>::index(const Position<n>& pos) const {
   return Internal::IndexRecursionImpl<n>::index(m_shape, pos);
 }

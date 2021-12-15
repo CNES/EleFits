@@ -245,6 +245,26 @@ public:
   T* data();
 
   /**
+   * @brief Iterator to the first element.
+   */
+  const T* begin() const;
+
+  /**
+   * @copydoc begin()
+   */
+  T* begin();
+
+  /**
+   * @brief Iterator to the past-the-last element.
+   */
+  const T* end() const;
+
+  /**
+   * @copydoc end()
+   */
+  T* end();
+
+  /**
    * @brief Raw index of a position.
    */
   long index(const Position<n>& pos) const;
