@@ -27,7 +27,7 @@ LoopingBenchmark::LoopingBenchmark(long side) :
     m_width(side), m_height(side), m_depth(side), m_a({side, side, side}), m_b({side, side, side}),
     m_c({side, side, side}) {}
 
-BChronometer::Unit LoopingBenchmark::loopOverXyz() {
+LoopingBenchmark::Duration LoopingBenchmark::loopOverXyz() {
   m_chrono.start();
   for (long x = 0; x < m_width; ++x) {
     for (long y = 0; y < m_height; ++y) {
@@ -39,7 +39,7 @@ BChronometer::Unit LoopingBenchmark::loopOverXyz() {
   return m_chrono.stop();
 }
 
-BChronometer::Unit LoopingBenchmark::loopOverZyx() {
+LoopingBenchmark::Duration LoopingBenchmark::loopOverZyx() {
   m_chrono.start();
   for (long z = 0; z < m_depth; ++z) {
     for (long y = 0; y < m_height; ++y) {
@@ -51,7 +51,7 @@ BChronometer::Unit LoopingBenchmark::loopOverZyx() {
   return m_chrono.stop();
 }
 
-BChronometer::Unit LoopingBenchmark::loopOverPositions() {
+LoopingBenchmark::Duration LoopingBenchmark::loopOverPositions() {
   m_chrono.start();
   for (const auto& p : m_c.domain()) {
     m_c[p] = m_a[p] + m_b[p];
@@ -59,7 +59,7 @@ BChronometer::Unit LoopingBenchmark::loopOverPositions() {
   return m_chrono.stop();
 }
 
-BChronometer::Unit LoopingBenchmark::loopOverIndices() {
+LoopingBenchmark::Duration LoopingBenchmark::loopOverIndices() {
   m_chrono.start();
   const auto size = m_c.size();
   for (long i = 0; i < size; ++i) {
@@ -68,7 +68,7 @@ BChronometer::Unit LoopingBenchmark::loopOverIndices() {
   return m_chrono.stop();
 }
 
-BChronometer::Unit LoopingBenchmark::loopOverValues() {
+LoopingBenchmark::Duration LoopingBenchmark::loopOverValues() {
   m_chrono.start();
   auto ait = m_a.data(); // FIXME Raster::begin(), end()
   auto bit = m_b.data();

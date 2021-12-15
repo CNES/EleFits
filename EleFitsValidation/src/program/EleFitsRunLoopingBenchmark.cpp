@@ -28,7 +28,7 @@ using boost::program_options::value;
 
 using namespace Euclid::Fits;
 
-Validation::BChronometer::Unit loop(Validation::LoopingBenchmark& benchmark, char setup) {
+Validation::LoopingBenchmark::Duration loop(Validation::LoopingBenchmark& benchmark, char setup) {
   switch (setup) {
     case 'x':
       return benchmark.loopOverXyz();

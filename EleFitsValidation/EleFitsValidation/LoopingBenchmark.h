@@ -27,19 +27,27 @@ namespace Euclid {
 namespace Fits {
 namespace Validation {
 
-using BChronometer = Chronometer<std::chrono::milliseconds>;
-static constexpr long BDim = 3;
-
 /**
  * @brief Benchmark to measure the impact of pixel looping approach.
- * @details
- * Missing cases:
- * // FIXME Dynamic raster dimension: n=-1 (could have an impact on loopOverPositions)
- * // FIXME Loop over a region (e.g. m_c.domain().erode(margin))
  */
 class LoopingBenchmark {
 
 public:
+  /**
+   * @brief The raster dimension.
+   */
+  static constexpr long Dim = 3;
+
+  /**
+   * @brief The raster value type.
+   */
+  using Value = char;
+
+  /**
+   * @brief The duration unit.
+   */
+  using Duration = std::chrono::milliseconds;
+
   /**
    * @brief Constructor.
    */
@@ -48,36 +56,36 @@ public:
   /**
    * @brief Loop over positions built by looping over x, then y, and then z.
    */
-  BChronometer::Unit loopOverXyz();
+  Duration loopOverXyz();
 
   /**
    * @brief Loop over positions built by looping over z, then y, and then x.
    */
-  BChronometer::Unit loopOverZyx();
+  Duration loopOverZyx();
 
   /**
    * @brief Loop over positions via a position iterator.
    */
-  BChronometer::Unit loopOverPositions();
+  Duration loopOverPositions();
 
   /**
    * @brief Loop over indices.
    */
-  BChronometer::Unit loopOverIndices();
+  Duration loopOverIndices();
 
   /**
    * @brief Loop over values via a pixel iterator.
    */
-  BChronometer::Unit loopOverValues();
+  Duration loopOverValues();
 
 private:
   const long m_width;
   const long m_height;
   const long m_depth;
-  const Test::RandomRaster<char, BDim> m_a;
-  const Test::RandomRaster<char, BDim> m_b;
-  VecRaster<char, BDim> m_c;
-  BChronometer m_chrono;
+  const Test::RandomRaster<Value, Dim> m_a;
+  const Test::RandomRaster<Value, Dim> m_b;
+  VecRaster<Value, Dim> m_c;
+  Chronometer<Duration> m_chrono;
 };
 
 } // namespace Validation
