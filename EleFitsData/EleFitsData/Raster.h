@@ -237,12 +237,12 @@ public:
   /**
    * @brief Const pointer to the first data element.
    */
-  const T* data() const;
+  inline const T* data() const;
 
   /**
    * @brief Pointer to the first data element.
    */
-  T* data();
+  inline T* data();
 
   /**
    * @brief Iterator to the first element.
@@ -443,7 +443,7 @@ private:
   /**
    * @copydoc Raster::dataImpl()
    */
-  const T* dataImpl() const override;
+  inline const T* dataImpl() const final;
 
   /**
    * @brief The data, possibly constant if `T` is `const`-qualified.
@@ -531,7 +531,7 @@ private:
   /**
    * @copydoc Raster::dataImpl()
    */
-  const T* dataImpl() const override;
+  inline const T* dataImpl() const final;
 
   /**
    * @brief The data vector.
