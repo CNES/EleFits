@@ -112,6 +112,10 @@ elements_add_unit_test(PositionIterator tests/src/PositionIterator_test.cpp
                      EXECUTABLE EleFitsData_PositionIterator_test
                      LINK_LIBRARIES EleFitsData
                      TYPE Boost)
+elements_add_unit_test(DataContainer tests/src/DataContainer_test.cpp 
+                     EXECUTABLE EleFitsData_DataContainer_test
+                     LINK_LIBRARIES EleFitsData
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

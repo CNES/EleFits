@@ -20,6 +20,7 @@
 #ifndef _ELEFITSDATA_RASTER_H
 #define _ELEFITSDATA_RASTER_H
 
+#include "EleFitsData/DataContainer.h"
 #include "EleFitsData/Position.h"
 #include "EleFitsData/Region.h"
 
@@ -52,18 +53,18 @@ namespace Fits {
   MACRO(std::uint64_t, uint64)
 
 // Forward declaration for Raster::subraster()
-template <typename T, long n>
+template <typename T, long N>
 class Subraster;
 
 // Forward declaration for Raster::slice()
-template <typename T, long n>
+template <typename T, long N>
 class PtrRaster;
 
 /**
  * @ingroup image_data_classes
  * @brief Raster of a _n_-dimensional image (2D by default).
  * @tparam T The value type, which can be `const`-qualified for read-only rasters
- * @tparam n The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
+ * @tparam N The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
  * @details
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.
@@ -77,7 +78,7 @@ class PtrRaster;
  * - when the dimension is knwon at compile-time,
  *   by giving the dimension parameter a positive or null value;
  * - when the dimension is known at run-time only,
- *   by assigning `n = -1`.
+ *   by assigning `N = -1`.
  * 
  * In the former case, index and size computations are optimized, and the dimension is enforced.
  * For example, it is not possible to read a 3D image HDU as a 2D `Raster`.
@@ -131,8 +132,8 @@ class PtrRaster;
  * @see Position for details on the fixed- and variable-dimension cases.
  * @see makeRaster() for creation shortcuts.
  */
-template <typename T, long n = 2>
-class Raster {
+template <typename T, long N, typename TContainer>
+class Raster : public DataContainerBase<T, TContainer, Raster<T, N, TContainer>> {
   friend class ImageRaster; // FIXME rm when Subraster is removed
 
 public:
@@ -144,46 +145,38 @@ public:
   /**
    * @brief The dimension template parameter.
    * @details
-   * The value of `Raster<T, n>::Dim` is always `n`, irrespective of its sign.
+   * The value of `Raster<T, N>::Dim` is always `N`, irrespective of its sign.
    * In contrast, dimension() provides the actual dimension of the Raster,
    * even in the case of a variable dimension.
    */
-  static constexpr long Dim = n;
+  static constexpr long Dim = N;
 
   /**
    * @name Constructors, destructor.
    */
   /// @{
 
-  /**
-   * @brief Destructor.
-   */
-  virtual ~Raster() = default;
+  ELEFITS_VIRTUAL_DTOR(Raster)
+  ELEFITS_COPYABLE(Raster)
+  ELEFITS_MOVABLE(Raster)
 
   /**
-   * @brief Copy constructor.
+   * @brief Constructor.
+   * @param shape The raster shape
    */
-  Raster(const Raster<T, n>& rhs) = default;
+  Raster(Position<N> shape) :
+      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(shapeSize(shape)),
+      m_shape(std::move(shape)) { // FIXME what if TContainer(size) doesn't exist?
+  }
 
   /**
-   * @brief Move constructor.
+   * @brief Constructor.
+   * @param shape The raster shape
+   * @param values The values
    */
-  Raster(Raster<T, n>&& rhs) = default;
-
-  /**
-   * @brief Copy assignment.
-   */
-  Raster<T, n>& operator=(const Raster<T, n>& rhs) = default;
-
-  /**
-   * @brief Move assignment.
-   */
-  Raster<T, n>& operator=(Raster<T, n>&& rhs) = default;
-
-  /**
-   * @brief Create a raster with given shape.
-   */
-  Raster(Position<n> rasterShape);
+  Raster(Position<N> shape, TContainer&& values) :
+      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(std::forward<TContainer>(values)),
+      m_shape(std::move(shape)) {}
 
   /// \}
   /**
@@ -194,7 +187,7 @@ public:
   /**
    * @brief Get the raster shape.
    */
-  const Position<n>& shape() const;
+  const Position<N>& shape() const;
 
   /**
    * @brief Get raster domain.
@@ -207,12 +200,12 @@ public:
    * }
    * \endcode
    */
-  Region<n> domain() const;
+  Region<N> domain() const;
 
   /**
    * @brief Dimension.
    * @details
-   * This corresponds to the `n` template parameter in general,
+   * This corresponds to the `N` template parameter in general,
    * or to the current dimension if variable.
    */
   long dimension() const;
@@ -225,7 +218,7 @@ public:
   /**
    * @brief Length along given axis.
    */
-  template <long i>
+  template <long I>
   long length() const;
 
   /// @}
@@ -234,40 +227,12 @@ public:
    */
   /// @{
 
-  /**
-   * @brief Const pointer to the first data element.
-   */
-  inline const T* data() const;
-
-  /**
-   * @brief Pointer to the first data element.
-   */
-  inline T* data();
-
-  /**
-   * @brief Iterator to the first element.
-   */
-  const T* begin() const;
-
-  /**
-   * @copydoc begin()
-   */
-  T* begin();
-
-  /**
-   * @brief Iterator to the past-the-last element.
-   */
-  const T* end() const;
-
-  /**
-   * @copydoc end()
-   */
-  T* end();
+  using DataContainerBase<T, TContainer, Raster<T, N, TContainer>>::operator[];
 
   /**
    * @brief Raw index of a position.
    */
-  long index(const Position<n>& pos) const;
+  long index(const Position<N>& pos) const;
 
   /**
    * @brief Pixel at given index.
@@ -282,12 +247,12 @@ public:
   /**
    * @brief Pixel at given position.
    */
-  const T& operator[](const Position<n>& pos) const;
+  const T& operator[](const Position<N>& pos) const;
 
   /**
    * @brief Pixel at given position.
    */
-  T& operator[](const Position<n>& pos);
+  T& operator[](const Position<N>& pos);
 
   /**
    * @brief Access the value at given position.
@@ -296,12 +261,12 @@ public:
    * and bounds are checked.
    * @see operator[]()
    */
-  const T& at(const Position<n>& pos) const;
+  const T& at(const Position<N>& pos) const;
 
   /**
    * @copydoc at()
    */
-  T& at(const Position<n>& pos);
+  T& at(const Position<N>& pos);
 
   /// @}
   /**
@@ -311,18 +276,18 @@ public:
 
   /**
    * @brief Create a slice from a given region.
-   * @tparam m The dimension of the slice (cannot be -1)
+   * @tparam M The dimension of the slice (cannot be -1)
    * @see isContiguous()
    * @see section()
    */
-  template <long m = 2>
-  const PtrRaster<const T, m> slice(const Region<n>& region) const;
+  template <long M = 2>
+  const PtrRaster<const T, M> slice(const Region<N>& region) const;
 
   /**
    * @copydoc slice()
    */
-  template <long m = 2>
-  PtrRaster<T, m> slice(const Region<n>& region);
+  template <long M = 2>
+  PtrRaster<T, M> slice(const Region<N>& region);
 
   /**
    * @brief Create a section at given index.
@@ -330,7 +295,7 @@ public:
    * @param back The section back index along the last axis
    * @param index The section index along the last axis
    * @details
-   * A section is a maximal slice of dimension `n` or `n`-1.
+   * A section is a maximal slice of dimension `N` or `N`-1.
    * For example, a 3D section of a 3D raster of shape (x, y, z)
    * is a 3D raster of shape (x, y, t) where `t` < `z`,
    * while a 2D section of it is a 2D raster of shape (x, y).
@@ -343,42 +308,37 @@ public:
    * 
    * @see slice()
    */
-  const PtrRaster<const T, n> section(long front, long back) const;
+  const PtrRaster<const T, N> section(long front, long back) const;
 
   /**
    * @copydoc section()
    */
-  PtrRaster<T, n> section(long front, long back);
+  PtrRaster<T, N> section(long front, long back);
 
   /**
    * @copydoc section()
    */
-  const PtrRaster<const T, n == -1 ? -1 : n - 1> section(long index) const;
+  const PtrRaster<const T, N == -1 ? -1 : N - 1> section(long index) const;
 
   /**
    * @copydoc section()
    */
-  PtrRaster<T, n == -1 ? -1 : n - 1> section(long index);
+  PtrRaster<T, N == -1 ? -1 : N - 1> section(long index);
 
   /**
    * @brief Check whether a region is made of contiguous values in memory.
-   * @tparam m The actual region dimension
+   * @tparam M The actual region dimension
    * @details
    * A region is contiguous if and only if:
-   * - For `i` < `m-1`, `front[i]` = 0 and `back[i]` = -1;
-   * - For `i` > `m`, `front[i]` = `back[i]`.
+   * - For `i` < `M-1`, `front[i]` = 0 and `back[i]` = -1;
+   * - For `i` > `M`, `front[i]` = `back[i]`.
    */
-  template <long m = 2>
-  bool isContiguous(const Region<n>& region) const;
+  template <long M = 2>
+  bool isContiguous(const Region<N>& region) const;
 
   /// @}
 
 private:
-  /**
-   * @brief Implementation of `data()`.
-   */
-  virtual const T* dataImpl() const = 0;
-
   /**
    * @brief Create a subraster from given region.
    * @details
@@ -388,156 +348,35 @@ private:
    * @see slice()
    * @see section()
    */
-  const Subraster<T, n> subraster(const Region<n>& region) const; // FIXME rm?
+  const Subraster<T, N> subraster(const Region<N>& region) const; // FIXME rm?
 
   /**
    * @copydoc subraster().
    */
-  Subraster<T, n> subraster(const Region<n>& region); // FIXME rm?
+  Subraster<T, N> subraster(const Region<N>& region); // FIXME rm?
 
   /**
    * @brief Raster shape, i.e. length along each axis.
    * @warning Will be made private and accessed through method `shape()` in 4.0
    */
-  Position<n> m_shape;
+  Position<N> m_shape;
 };
 
 /**
  * @ingroup image_data_classes
- * @copydoc Raster
+ * @brief `Raster` which points to some external data.
+ * @copydetails Raster
  */
-template <typename T, long n = 2>
-class PtrRaster : public Raster<T, n> {
-public:
-  /**
-   * @brief Destructor.
-   */
-  ~PtrRaster() = default;
-
-  /**
-   * @brief Copy constructor.
-   */
-  PtrRaster(const PtrRaster&) = default;
-
-  /**
-   * @brief Move constructor.
-   */
-  PtrRaster(PtrRaster&&) = default;
-
-  /**
-   * @brief Copy assignment operator.
-   */
-  PtrRaster& operator=(const PtrRaster&) = default;
-
-  /**
-   * @brief Move assignment operator.
-   */
-  PtrRaster& operator=(PtrRaster&&) = default;
-
-  /**
-   * @brief Constructor.
-   */
-  PtrRaster(Position<n> shape, T* data);
-
-private:
-  /**
-   * @copydoc Raster::dataImpl()
-   */
-  inline const T* dataImpl() const final;
-
-  /**
-   * @brief The data, possibly constant if `T` is `const`-qualified.
-   */
-  T* m_data;
-};
+template <typename T, long N = 2>
+using PtrRaster = Raster<T, N, T*>;
 
 /**
  * @ingroup image_data_classes
- * @copydoc Raster
+ * @brief `Raster` which owns the data as an `std::vector`.
+ * @copydetails Raster
  */
-template <typename T, long n = 2>
-class VecRaster : public Raster<T, n> {
-
-public:
-  /**
-   * @brief Destructor.
-   */
-  virtual ~VecRaster() = default;
-
-  /**
-   * @brief Copy constructor.
-   */
-  VecRaster(const VecRaster&) = default;
-
-  /**
-   * @brief Move constructor.
-   */
-  VecRaster(VecRaster&&) = default;
-
-  /**
-   * @brief Copy assignment.
-   */
-  VecRaster& operator=(const VecRaster&) = default;
-
-  /**
-   * @brief Move assignment.
-   */
-  VecRaster& operator=(VecRaster&&) = default;
-
-  /**
-   * @brief Create a raster with given shape and values.
-   * @details
-   * To transfer ownership of the data instead of copying it, use move semantics:
-   * \code
-   * VecRaster column(shape, std::move(data));
-   * \endcode
-   */
-  VecRaster(Position<n> shape, std::vector<std::decay_t<T>> vec);
-
-  /**
-   * @brief Create a VecRaster with given shape and empty data.
-   */
-  explicit VecRaster(Position<n> shape);
-
-  /**
-   * @brief Create an empty VecRaster.
-   */
-  VecRaster() = default;
-
-  /**
-   * @brief Const reference to the vector.
-   */
-  const std::vector<std::decay_t<T>>& vector() const;
-
-  /**
-   * @brief Move the vector outside the raster.
-   * @details
-   * This method is used to take ownership on the data without copying it.
-   * The raster shape is untouched.
-   * Example usage:
-   * \code
-   * VecRaster<float> raster(...);
-   * std::vector<float> data;
-   * raster.moveTo(data);
-   * // Values have been moved to data without copy.
-   * // raster.vector() is empty now.
-   * \endcode
-   * @warning
-   * The raster data is not usable anymore after this call.
-   */
-  std::vector<std::decay_t<T>>& moveTo(std::vector<std::decay_t<T>>& destination);
-
-private:
-  /**
-   * @copydoc Raster::dataImpl()
-   */
-  inline const T* dataImpl() const final;
-
-  /**
-   * @brief The data vector.
-   */
-  std::vector<std::decay_t<T>> m_vec;
-};
+template <typename T, long N = 2>
+using VecRaster = Raster<T, N, std::vector<T>>;
 
 /**
  * @ingroup image_data_classes

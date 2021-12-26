@@ -33,41 +33,41 @@ namespace Internal {
 
 /**
  * @brief nD-index recursive implementation.
- * @tparam n The raster dimension.
- * @tparam i The dimension of the current recursion step, should be initialized with `n - 1`.
+ * @tparam N The raster dimension.
+ * @tparam i The dimension of the current recursion step, should be initialized with `N - 1`.
  */
-template <long n, long i = n - 1>
+template <long N, long I = N - 1>
 struct IndexRecursionImpl {
 
   /**
    * @brief Index of given position in given shape for Raster::index.
    */
-  static long index(const Position<n>& shape, const Position<n>& pos) {
-    return std::get<n - 1 - i>(pos.indices) +
-        std::get<n - 1 - i>(shape.indices) * IndexRecursionImpl<n, i - 1>::index(shape, pos);
+  static long index(const Position<N>& shape, const Position<N>& pos) {
+    return std::get<N - 1 - I>(pos.indices) +
+        std::get<N - 1 - I>(shape.indices) * IndexRecursionImpl<N, I - 1>::index(shape, pos);
   }
 };
 
 /**
  * @brief Terminal case: dimension 0.
  */
-template <long n>
-struct IndexRecursionImpl<n, 0> {
+template <long N>
+struct IndexRecursionImpl<N, 0> {
 
   /**
-   * @brief pos[n - 1]
+   * @brief pos[N - 1]
    */
-  static long index(const Position<n>& shape, const Position<n>& pos) {
+  static long index(const Position<N>& shape, const Position<N>& pos) {
     (void)(shape);
-    return std::get<n - 1>(pos.indices);
+    return std::get<N - 1>(pos.indices);
   }
 };
 
 /**
  * @brief Variable dimension case.
  */
-template <long i>
-struct IndexRecursionImpl<-1, i> {
+template <long I>
+struct IndexRecursionImpl<-1, I> {
 
   /**
    * @brief pos[0] + shape[1] * (pos[1] + shape[2] * (pos[2] + shape[3] * (...)))
@@ -92,92 +92,49 @@ struct IndexRecursionImpl<-1, i> {
 
 // Raster
 
-template <typename T, long n>
-Raster<T, n>::Raster(Position<n> rasterShape) : m_shape(rasterShape) {}
-
-template <typename T, long n>
-const Position<n>& Raster<T, n>::shape() const {
+template <typename T, long N>
+const Position<N>& Raster<T, N>::shape() const {
   return m_shape;
 }
 
-template <typename T, long n>
-Region<n> Raster<T, n>::domain() const {
-  return Region<n>::fromShape(Position<n>::zero(), m_shape);
+template <typename T, long N>
+Region<N> Raster<T, N>::domain() const {
+  return Region<N>::fromShape(Position<N>::zero(), m_shape);
 }
 
-template <typename T, long n>
-inline long Raster<T, n>::dimension() const {
+template <typename T, long N>
+inline long Raster<T, N>::dimension() const {
   return m_shape.size();
 }
 
-template <typename T, long n>
-inline long Raster<T, n>::size() const {
+template <typename T, long N>
+inline long Raster<T, N>::size() const {
   return shapeSize(m_shape);
 }
 
-template <typename T, long n>
-template <long i>
-inline long Raster<T, n>::length() const {
-  return std::get<i>(m_shape.indices);
+template <typename T, long N>
+template <long I>
+inline long Raster<T, N>::length() const {
+  return std::get<I>(m_shape.indices);
 }
 
-template <typename T, long n>
-const T* Raster<T, n>::data() const {
-  return dataImpl();
+template <typename T, long N>
+inline long Raster<T, N>::index(const Position<N>& pos) const {
+  return Internal::IndexRecursionImpl<N>::index(m_shape, pos);
 }
 
-template <typename T, long n>
-T* Raster<T, n>::data() {
-  return const_cast<T*>(const_cast<const Raster<T, n>*>(this)->data());
-}
-
-template <typename T, long n>
-const T* Raster<T, n>::begin() const {
-  return data();
-}
-
-template <typename T, long n>
-T* Raster<T, n>::begin() {
-  return const_cast<T*>(const_cast<const Raster<T, n>*>(this)->begin());
-}
-
-template <typename T, long n>
-const T* Raster<T, n>::end() const {
-  return data() + size();
-}
-
-template <typename T, long n>
-T* Raster<T, n>::end() {
-  return const_cast<T*>(const_cast<const Raster<T, n>*>(this)->end());
-}
-
-template <typename T, long n>
-inline long Raster<T, n>::index(const Position<n>& pos) const {
-  return Internal::IndexRecursionImpl<n>::index(m_shape, pos);
-}
-
-template <typename T, long n>
-inline const T& Raster<T, n>::operator[](long index) const {
-  return *(data() + index);
-}
-
-template <typename T, long n>
-inline T& Raster<T, n>::operator[](long index) {
-  return const_cast<T&>(const_cast<const Raster*>(this)->operator[](index));
-}
-
-template <typename T, long n>
-inline const T& Raster<T, n>::operator[](const Position<n>& pos) const {
+template <typename T, long N>
+inline const T& Raster<T, N>::operator[](const Position<N>& pos) const {
   return *(data() + index(pos));
 }
 
-template <typename T, long n>
-inline T& Raster<T, n>::operator[](const Position<n>& pos) {
-  return const_cast<T&>(const_cast<const Raster*>(this)->operator[](pos));
+template <typename T, long N>
+inline T& Raster<T, N>::operator[](const Position<N>& pos) {
+  return const_cast<T&>(const_cast<const Raster&>(*this)[pos]);
 }
 
-template <typename T, long n>
-inline const T& Raster<T, n>::at(const Position<n>& pos) const {
+template <typename T, long N>
+inline const T& Raster<T, N>::at(const Position<N>& pos) const {
   auto boundedPos = pos;
   for (long i = 0; i < dimension(); ++i) {
     auto& b = boundedPos[i];
@@ -190,142 +147,107 @@ inline const T& Raster<T, n>::at(const Position<n>& pos) const {
   return operator[](boundedPos);
 }
 
-template <typename T, long n>
-inline T& Raster<T, n>::at(const Position<n>& pos) {
-  return const_cast<T&>(const_cast<const Raster*>(this)->at(pos));
+template <typename T, long N>
+inline T& Raster<T, N>::at(const Position<N>& pos) {
+  return const_cast<T&>(const_cast<const Raster&>(*this).at(pos));
 }
 
-template <typename T, long n>
-Subraster<T, n> Raster<T, n>::subraster(const Region<n>& region) {
-  return Subraster<T, n> {*this, region};
+template <typename T, long N>
+Subraster<T, N> Raster<T, N>::subraster(const Region<N>& region) {
+  return Subraster<T, N> {*this, region};
 }
 
-template <typename T, long n>
-const Subraster<T, n> Raster<T, n>::subraster(const Region<n>& region) const {
-  return Subraster<T, n> {*this, region};
+template <typename T, long N>
+const Subraster<T, N> Raster<T, N>::subraster(const Region<N>& region) const {
+  return Subraster<T, N> {*this, region};
 }
 
-template <typename T, long n>
-template <long m>
-const PtrRaster<const T, m> Raster<T, n>::slice(const Region<n>& region) const {
+template <typename T, long N>
+template <long M>
+const PtrRaster<const T, M> Raster<T, N>::slice(const Region<N>& region) const {
   // FIXME resolve
-  if (not isContiguous<m>(region)) {
+  if (not isContiguous<M>(region)) {
     throw FitsError("Cannot slice: Region is not contiguous."); // FIXME clarify
   }
   const auto& f = region.front;
   const auto& b = region.back;
-  Position<m> reduced(m);
-  for (long i = 0; i < m; ++i) {
+  Position<M> reduced(M);
+  for (long i = 0; i < M; ++i) {
     reduced[i] = b[i] - f[i] + 1;
   }
   return {reduced, &operator[](region.front)};
 }
 
-template <typename T, long n>
-template <long m>
-PtrRaster<T, m> Raster<T, n>::slice(const Region<n>& region) {
-  if (not isContiguous<m>(region)) {
+template <typename T, long N>
+template <long M>
+PtrRaster<T, M> Raster<T, N>::slice(const Region<N>& region) {
+  if (not isContiguous<M>(region)) {
     throw FitsError("Cannot slice: Region is not contiguous."); // FIXME clarify
   }
   const auto& f = region.front;
   const auto& b = region.back;
-  Position<m> reduced(m);
-  for (long i = 0; i < m; ++i) {
+  Position<M> reduced(M);
+  for (long i = 0; i < M; ++i) {
     reduced[i] = b[i] - f[i] + 1;
   }
   // FIXME duplication
   return {reduced, &operator[](region.front)};
 }
 
-template <typename T, long n>
-const PtrRaster<const T, n> Raster<T, n>::section(long front, long back) const {
+template <typename T, long N>
+const PtrRaster<const T, N> Raster<T, N>::section(long front, long back) const {
   auto region = domain();
   const auto last = dimension() - 1;
   region.front[last] = front;
   region.back[last] = back;
-  return slice<n>(region);
+  return slice<N>(region);
 }
 
-template <typename T, long n>
-PtrRaster<T, n> Raster<T, n>::section(long front, long back) {
+template <typename T, long N>
+PtrRaster<T, N> Raster<T, N>::section(long front, long back) {
   auto region = domain();
   const auto last = dimension() - 1;
   region.front[last] = front;
   region.back[last] = back;
-  return slice<n>(region);
+  return slice<N>(region);
 }
 
-template <typename T, long n>
-const PtrRaster<const T, n == -1 ? -1 : n - 1> Raster<T, n>::section(long index) const {
+template <typename T, long N>
+const PtrRaster<const T, N == -1 ? -1 : N - 1> Raster<T, N>::section(long index) const {
   auto region = domain();
   const auto last = dimension() - 1;
   region.front[last] = index;
   region.back[last] = index;
-  return slice < n == -1 ? -1 : n - 1 > (region);
-  // FIXME duplication => return section(index, index).slice<n-1>(Region<n>::whole());
+  return slice < N == -1 ? -1 : N - 1 > (region);
+  // FIXME duplication => return section(index, index).slice<N-1>(Region<N>::whole());
 }
 
-template <typename T, long n>
-PtrRaster<T, n == -1 ? -1 : n - 1> Raster<T, n>::section(long index) {
+template <typename T, long N>
+PtrRaster<T, N == -1 ? -1 : N - 1> Raster<T, N>::section(long index) {
   auto region = domain();
   const auto last = dimension() - 1;
   region.front[last] = index;
   region.back[last] = index;
-  return slice < n == -1 ? -1 : n - 1 > (region);
+  return slice < N == -1 ? -1 : N - 1 > (region);
   // FIXME duplication
 }
 
-template <typename T, long n>
-template <long m>
-bool Raster<T, n>::isContiguous(const Region<n>& region) const {
+template <typename T, long N>
+template <long M>
+bool Raster<T, N>::isContiguous(const Region<N>& region) const {
   const auto& f = region.front;
   const auto& b = region.back;
-  for (long i = 0; i < m - 1; ++i) {
+  for (long i = 0; i < M - 1; ++i) {
     if (f[i] != 0 || b[i] != m_shape[i] - 1) { // Doesn't span across the full axis => index jump
       return false;
     }
   }
-  for (long i = m; i < dimension(); ++i) {
-    if (b[i] != f[i]) { // Not flat along axis i >= m => dimension >= m
+  for (long i = M; i < dimension(); ++i) {
+    if (b[i] != f[i]) { // Not flat along axis i >= M => dimension >= M
       return false;
     }
   }
   return true;
-}
-
-// PtrRaster
-
-template <typename T, long n>
-PtrRaster<T, n>::PtrRaster(Position<n> rasterShape, T* data) : Raster<T, n>(rasterShape), m_data(data) {}
-
-template <typename T, long n>
-const T* PtrRaster<T, n>::dataImpl() const {
-  return m_data;
-}
-
-// VecRaster
-
-template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> rasterShape, std::vector<std::decay_t<T>> vec) :
-    Raster<T, n>(rasterShape), m_vec(vec) {}
-
-template <typename T, long n>
-VecRaster<T, n>::VecRaster(Position<n> rasterShape) : Raster<T, n>(rasterShape), m_vec(shapeSize(rasterShape)) {}
-
-template <typename T, long n>
-const T* VecRaster<T, n>::dataImpl() const {
-  return m_vec.data();
-}
-
-template <typename T, long n>
-const std::vector<std::decay_t<T>>& VecRaster<T, n>::vector() const {
-  return m_vec;
-}
-
-template <typename T, long n>
-std::vector<std::decay_t<T>>& VecRaster<T, n>::moveTo(std::vector<std::decay_t<T>>& destination) {
-  destination = std::move(m_vec);
-  return destination;
 }
 
 #ifndef DECLARE_RASTER_CLASSES
