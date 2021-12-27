@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_SUITE(TestRaster_test)
 
 //-----------------------------------------------------------------------------
 
-template <typename T, long N, typename TContainer> // FIXME simplify
-void checkRasterEqualsItself(const Raster<T, N, TContainer>& raster) {
+template <typename TRaster>
+void checkRasterEqualsItself(const TRaster& raster) {
   BOOST_TEST(Test::rasterApprox(raster, raster));
 }
 
@@ -54,14 +54,12 @@ BOOST_AUTO_TEST_CASE(small_raster_equals_itself_test) {
 
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
 
-template <typename T, long N, typename TContainer> // FIXME simplify
-void checkRastersWithDifferentShapesDiffer(const Raster<T, N, TContainer>& raster) {
+template <typename TRaster>
+void checkRastersWithDifferentShapesDiffer(const TRaster& raster) {
   auto shape = raster.shape();
-  shape[0]++;
-  VecRaster<T, N> other(shape);
-  for (long i = 0; i < raster.size(); ++i) {
-    *(other.data() + i) = *(raster.data() + i);
-  }
+  shape[0] = raster.shape()[1];
+  shape[1] = raster.shape()[0];
+  PtrRaster<const typename TRaster::Value, TRaster::Dim> other(shape, raster.data()); // Same data, different shape
   BOOST_TEST(not Test::rasterApprox(other, raster));
 }
 

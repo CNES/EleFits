@@ -48,8 +48,8 @@ public:
   /**
    * @brief Shortcut for rasterApprox
    */
-  template <typename TContainer> // FIXME simplify
-  bool approx(const Raster<float, 2, TContainer>& other, double tol = 0.01) const;
+  template <typename TRaster>
+  bool approx(const TRaster& other, double tol = 0.01) const;
 
   /**
    * @brief Raster width.
@@ -82,8 +82,8 @@ public:
   /**
    * @brief Shortcut for rasterApprox
    */
-  template <typename TContainer> // FIXME simplify
-  bool approx(const Raster<T, N, TContainer>& other, double tol = 0.01) const;
+  template <typename TRaster>
+  bool approx(const TRaster& other, double tol = 0.01) const;
 };
 
 /**
@@ -91,8 +91,8 @@ public:
  * @details
  * Test each pixel as: |ref - test| / test < tol
  */
-template <typename T, long N, typename TContainer>
-bool rasterApprox(const Raster<T, N, TContainer>& test, const Raster<T, N, TContainer>& ref, double tol = 0.01);
+template <typename TRaster, typename URaster>
+bool rasterApprox(const TRaster& test, const URaster& ref, double tol = 0.01);
 
 } // namespace Test
 } // namespace Fits
