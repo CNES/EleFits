@@ -53,12 +53,8 @@ namespace Fits {
   MACRO(std::uint64_t, uint64)
 
 // Forward declaration for Raster::subraster()
-template <typename T, long N>
+template <typename T, long N, typename TContainer>
 class Subraster;
-
-// Forward declaration for Raster::slice()
-template <typename T, long N>
-class PtrRaster;
 
 /**
  * @ingroup image_data_classes
@@ -133,6 +129,25 @@ class PtrRaster;
  * @see makeRaster() for creation shortcuts.
  */
 template <typename T, long N, typename TContainer>
+class Raster;
+
+/**
+ * @ingroup image_data_classes
+ * @brief `Raster` which points to some external data.
+ * @copydetails Raster
+ */
+template <typename T, long N = 2>
+using PtrRaster = Raster<T, N, T*>;
+
+/**
+ * @ingroup image_data_classes
+ * @brief `Raster` which owns the data as an `std::vector`.
+ * @copydetails Raster
+ */
+template <typename T, long N = 2>
+using VecRaster = Raster<T, N, std::vector<T>>;
+
+template <typename T, long N, typename TContainer>
 class Raster : public DataContainerBase<T, TContainer, Raster<T, N, TContainer>> {
   friend class ImageRaster; // FIXME rm when Subraster is removed
 
@@ -152,7 +167,7 @@ public:
   static constexpr long Dim = N;
 
   /**
-   * @name Constructors, destructor.
+   * @name Constructors
    */
   /// @{
 
@@ -165,24 +180,25 @@ public:
    * @param shape The raster shape
    */
   Raster(Position<N> shape) :
-      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(shapeSize(shape)),
-      m_shape(std::move(shape)) { // FIXME what if TContainer(size) doesn't exist?
-  }
+      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(
+          ContainerAllocator<TContainer>::alloc(shapeSize(shape))),
+      m_shape(std::move(shape)) {}
 
   /**
    * @brief Constructor.
    * @param shape The raster shape
-   * @param values The values
+   * @param args Arguments to be forwarded to the container
    */
-  Raster(Position<N> shape, TContainer&& values) :
-      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(std::forward<TContainer>(values)),
-      m_shape(std::move(shape)) {}
+  template <typename... Ts>
+  Raster(Position<N> shape, Ts&&... args) :
+      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(std::forward<Ts>(args)...), m_shape(std::move(shape)) {
+  }
 
-  /// \}
+  /// @}
   /**
-   * @name Properties.
+   * @name Size
    */
-  /// \{
+  /// @{
 
   /**
    * @brief Get the raster shape.
@@ -223,26 +239,26 @@ public:
 
   /// @}
   /**
-   * @name Element access.
+   * @name Element access
    */
   /// @{
 
   using DataContainerBase<T, TContainer, Raster<T, N, TContainer>>::operator[];
 
   /**
+   * @brief Pixel at given index.
+   */
+  // const T& operator[](long index) const;
+
+  /**
+   * @brief Pixel at given index.
+   */
+  // T& operator[](long index);
+
+  /**
    * @brief Raw index of a position.
    */
   long index(const Position<N>& pos) const;
-
-  /**
-   * @brief Pixel at given index.
-   */
-  const T& operator[](long index) const;
-
-  /**
-   * @brief Pixel at given index.
-   */
-  T& operator[](long index);
 
   /**
    * @brief Pixel at given position.
@@ -270,7 +286,7 @@ public:
 
   /// @}
   /**
-   * @name Views.
+   * @name Views
    */
   /// @{
 
@@ -348,12 +364,12 @@ private:
    * @see slice()
    * @see section()
    */
-  const Subraster<T, N> subraster(const Region<N>& region) const; // FIXME rm?
+  const Subraster<T, N, TContainer> subraster(const Region<N>& region) const; // FIXME rm?
 
   /**
    * @copydoc subraster().
    */
-  Subraster<T, N> subraster(const Region<N>& region); // FIXME rm?
+  Subraster<T, N, TContainer> subraster(const Region<N>& region); // FIXME rm?
 
   /**
    * @brief Raster shape, i.e. length along each axis.
@@ -361,22 +377,6 @@ private:
    */
   Position<N> m_shape;
 };
-
-/**
- * @ingroup image_data_classes
- * @brief `Raster` which points to some external data.
- * @copydetails Raster
- */
-template <typename T, long N = 2>
-using PtrRaster = Raster<T, N, T*>;
-
-/**
- * @ingroup image_data_classes
- * @brief `Raster` which owns the data as an `std::vector`.
- * @copydetails Raster
- */
-template <typename T, long N = 2>
-using VecRaster = Raster<T, N, std::vector<T>>;
 
 /**
  * @ingroup image_data_classes

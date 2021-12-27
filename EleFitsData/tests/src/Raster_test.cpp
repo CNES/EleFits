@@ -117,10 +117,11 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
 
 BOOST_FIXTURE_TEST_CASE(vecraster_move_test, Test::SmallRaster) {
   const auto copied = this->vector();
+  const auto data = this->data();
   std::vector<Value> moved;
   this->moveTo(moved);
   BOOST_TEST(moved == copied);
-  BOOST_TEST(this->vector().size() == 0);
+  BOOST_TEST(moved.data() == data);
 }
 
 BOOST_AUTO_TEST_CASE(make_raster_test) {

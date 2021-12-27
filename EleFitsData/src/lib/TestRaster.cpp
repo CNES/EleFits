@@ -32,10 +32,6 @@ SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
   }
 }
 
-bool SmallRaster::approx(const Raster<float>& other, double tol) const {
-  return rasterApprox(*this, other, tol);
-}
-
 } // namespace Test
 } // namespace Fits
 } // namespace Euclid

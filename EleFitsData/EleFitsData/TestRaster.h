@@ -48,7 +48,8 @@ public:
   /**
    * @brief Shortcut for rasterApprox
    */
-  bool approx(const Raster<float>& other, double tol = 0.01) const;
+  template <typename TContainer> // FIXME simplify
+  bool approx(const Raster<float, 2, TContainer>& other, double tol = 0.01) const;
 
   /**
    * @brief Raster width.
@@ -64,14 +65,14 @@ public:
 /**
  * @brief A random Raster of given type and shape.
  */
-template <typename T, long n = 2>
-class RandomRaster : public VecRaster<T, n> {
+template <typename T, long N = 2>
+class RandomRaster : public VecRaster<T, N> {
 
 public:
   /**
    * @brief Generate a Raster with given shape.
    */
-  explicit RandomRaster(Position<n> rasterShape, T min = almostMin<T>(), T max = almostMax<T>());
+  explicit RandomRaster(Position<N> rasterShape, T min = almostMin<T>(), T max = almostMax<T>());
 
   /**
    * @brief Destructor.
@@ -81,7 +82,8 @@ public:
   /**
    * @brief Shortcut for rasterApprox
    */
-  bool approx(const Raster<T, n>& other, double tol = 0.01) const;
+  template <typename TContainer> // FIXME simplify
+  bool approx(const Raster<T, N, TContainer>& other, double tol = 0.01) const;
 };
 
 /**
@@ -89,8 +91,8 @@ public:
  * @details
  * Test each pixel as: |ref - test| / test < tol
  */
-template <typename T, long n>
-bool rasterApprox(const Raster<T, n>& test, const Raster<T, n>& ref, double tol = 0.01);
+template <typename T, long N, typename TContainer>
+bool rasterApprox(const Raster<T, N, TContainer>& test, const Raster<T, N, TContainer>& ref, double tol = 0.01);
 
 } // namespace Test
 } // namespace Fits

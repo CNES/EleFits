@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_SUITE(TestRaster_test)
 
 //-----------------------------------------------------------------------------
 
-template <typename T, long n>
-void checkRasterEqualsItself(const Raster<T, n>& raster) {
+template <typename T, long N, typename TContainer> // FIXME simplify
+void checkRasterEqualsItself(const Raster<T, N, TContainer>& raster) {
   BOOST_TEST(Test::rasterApprox(raster, raster));
 }
 
@@ -54,11 +54,11 @@ BOOST_AUTO_TEST_CASE(small_raster_equals_itself_test) {
 
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
 
-template <typename T, long n>
-void checkRastersWithDifferentShapesDiffer(const Raster<T, n>& raster) {
+template <typename T, long N, typename TContainer> // FIXME simplify
+void checkRastersWithDifferentShapesDiffer(const Raster<T, N, TContainer>& raster) {
   auto shape = raster.shape();
   shape[0]++;
-  VecRaster<T, n> other(shape);
+  VecRaster<T, N> other(shape);
   for (long i = 0; i < raster.size(); ++i) {
     *(other.data() + i) = *(raster.data() + i);
   }
@@ -84,9 +84,9 @@ BOOST_AUTO_TEST_CASE(small_rasters_with_different_shapes_differ_test) {
 
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 
-template <typename T, long n>
-void checkRastersWithDifferentValuesDiffer(const VecRaster<T, n>& raster) {
-  VecRaster<T, n> other(raster.shape());
+template <typename T, long N>
+void checkRastersWithDifferentValuesDiffer(const VecRaster<T, N>& raster) {
+  VecRaster<T, N> other(raster.shape());
   BOOST_TEST(not Test::rasterApprox(other, raster));
   BOOST_TEST(not Test::rasterApprox(raster, other));
 }

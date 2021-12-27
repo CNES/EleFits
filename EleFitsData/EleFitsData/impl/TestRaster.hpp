@@ -26,17 +26,23 @@ namespace Euclid {
 namespace Fits {
 namespace Test {
 
-template <typename T, long n>
-RandomRaster<T, n>::RandomRaster(Position<n> rasterShape, T min, T max) :
-    VecRaster<T, n>(rasterShape, generateRandomVector<T>(shapeSize(rasterShape), min, max)) {}
-
-template <typename T, long n>
-bool RandomRaster<T, n>::approx(const Raster<T, n>& other, double tol) const {
+template <typename TContainer>
+bool SmallRaster::approx(const Raster<float, 2, TContainer>& other, double tol) const {
   return rasterApprox(*this, other, tol);
 }
 
-template <typename T, long n>
-bool rasterApprox(const Raster<T, n>& test, const Raster<T, n>& ref, double tol) {
+template <typename T, long N>
+RandomRaster<T, N>::RandomRaster(Position<N> rasterShape, T min, T max) :
+    VecRaster<T, N>(rasterShape, generateRandomVector<T>(shapeSize(rasterShape), min, max)) {}
+
+template <typename T, long N>
+template <typename TContainer>
+bool RandomRaster<T, N>::approx(const Raster<T, N, TContainer>& other, double tol) const {
+  return rasterApprox(*this, other, tol);
+}
+
+template <typename T, long N, typename TContainer>
+bool rasterApprox(const Raster<T, N, TContainer>& test, const Raster<T, N, TContainer>& ref, double tol) {
   if (test.shape() != ref.shape()) {
     return false;
   }

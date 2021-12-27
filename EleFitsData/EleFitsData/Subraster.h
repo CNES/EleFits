@@ -54,24 +54,26 @@ namespace Fits {
  * PtrRaster<char, 2> ptrRaster({800, 600}, &raster[{0, 0, 1}]);
  * \endcode
  */
-template <typename T, long n = 2>
+template <typename T, long N, typename TContainer> // FIXME simplify as TParent
 class Subraster {
+
 public:
-  /**
-   * @brief Constructor.
-   */
-  Subraster(const Raster<T, n>& parent, const Region<n>& region) :
-      m_cParent(&parent), m_parent(nullptr), m_region(region) {}
+  using Parent = Raster<T, N, TContainer>;
 
   /**
    * @brief Constructor.
    */
-  Subraster(Raster<T, n>& parent, const Region<n>& region) : m_cParent(&parent), m_parent(&parent), m_region(region) {}
+  Subraster(const Parent& parent, const Region<N>& region) : m_cParent(&parent), m_parent(nullptr), m_region(region) {}
+
+  /**
+   * @brief Constructor.
+   */
+  Subraster(Parent& parent, const Region<N>& region) : m_cParent(&parent), m_parent(&parent), m_region(region) {}
 
   /**
    * @brief The subraster shape.
    */
-  Position<n> shape() const {
+  Position<N> shape() const {
     return m_region.shape();
   }
 
@@ -85,35 +87,35 @@ public:
   /**
    * @brief The parent raster.
    */
-  const Raster<T, n>& parent() const {
+  const Parent& parent() const {
     return *m_cParent;
   }
 
   /**
    * @copydoc parent()
    */
-  Raster<T, n>& parent() {
+  Parent& parent() {
     return *m_parent;
   }
 
   /**
    * @brief The region.
    */
-  const Region<n>& region() const {
+  const Region<N>& region() const {
     return m_region;
   }
 
   /**
    * @brief Pixel at given position.
    */
-  const T& operator[](const Position<n>& pos) const {
+  const T& operator[](const Position<N>& pos) const {
     return (*m_cParent)[pos + m_region.front];
   }
 
   /**
    * @brief Pixel at given position.
    */
-  T& operator[](const Position<n>& pos) {
+  T& operator[](const Position<N>& pos) {
     return (*m_parent)[pos + m_region.front];
   }
 
@@ -121,17 +123,17 @@ private:
   /**
    * @brief Read-only pointer to the raster.
    */
-  const Raster<T, n>* m_cParent;
+  const Parent* m_cParent;
 
   /**
    * @brief Read/write pointer to the raster.
    */
-  Raster<T, n>* m_parent;
+  Parent* m_parent;
 
   /**
    * @brief The region.
    */
-  Region<n> m_region;
+  Region<N> m_region;
 };
 
 /// @endcond
