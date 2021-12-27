@@ -21,6 +21,7 @@
 #define _ELEFITSDATA_DATACONTAINER_H
 
 #include "EleFitsData/DataUtils.h"
+#include "EleFitsData/VectorArithmetic.h"
 
 #include <algorithm>
 #include <array>
@@ -43,12 +44,11 @@ namespace Fits {
  * - Default constructor;
  * - Copy and move constructors;
  * - Copy and move assignment operators;
- * - `const T* data() const`;
- * - `T* data()`;
+ * - `const T* data() const` and `T* data()`;
  * - `std::size_t size() const`.
  */
 template <typename T, typename TDerived>
-struct ContiguousContainerBase {
+struct ContiguousContainerMixin {
 
   /**
    * @name Standard types definitions
@@ -107,7 +107,7 @@ struct ContiguousContainerBase {
    * @copydoc operator[]
    */
   inline T& operator[](size_type index) {
-    return const_cast<T&>(const_cast<const ContiguousContainerBase&>(*this)[index]);
+    return const_cast<T&>(const_cast<const ContiguousContainerMixin&>(*this)[index]);
   }
 
   /// @}
@@ -127,14 +127,14 @@ struct ContiguousContainerBase {
    * @copydoc begin()
    */
   iterator begin() {
-    return const_cast<iterator>(const_cast<const ContiguousContainerBase&>(*this).begin());
+    return const_cast<iterator>(const_cast<const ContiguousContainerMixin&>(*this).begin());
   }
 
   /**
    * @copydoc begin()
    */
   iterator cbegin() {
-    return const_cast<const ContiguousContainerBase&>(*this).begin();
+    return const_cast<const ContiguousContainerMixin&>(*this).begin();
   }
 
   /**
@@ -148,14 +148,14 @@ struct ContiguousContainerBase {
    * @copydoc end()
    */
   iterator end() {
-    return const_cast<iterator>(const_cast<const ContiguousContainerBase&>(*this).end());
+    return const_cast<iterator>(const_cast<const ContiguousContainerMixin&>(*this).end());
   }
 
   /**
    * @copydoc end()
    */
   iterator cend() {
-    return const_cast<const ContiguousContainerBase&>(*this).end();
+    return const_cast<const ContiguousContainerMixin&>(*this).end();
   }
 
   /// @}
@@ -191,11 +191,14 @@ struct ContiguousContainerBase {
 };
 
 /**
- * @brief A `ContiguousContainerBase` which implements `data()`.
- * @tparam TDerived The derived class which should implement `size()`
+ * @brief A `ContiguousContainerMixin` which implements `data()` and arithmetic operators.
+ * @tparam TDerived The derived class
+ * @details
+ * The derived class should implement the missing `ContiguousContainer` methods:
+ * see `ContiguousContainerMixin`.
  */
 template <typename T, typename TContainer, typename TDerived>
-class DataContainerBase : public ContiguousContainerBase<T, TDerived> { // FIXME arithmetic ops
+class DataContainerBase : public ContiguousContainerMixin<T, TDerived>, public VectorArithmeticMixin<T, TDerived> {
 
 public:
   /**
@@ -287,7 +290,9 @@ private:
  * @brief Raw pointer specialization.
  */
 template <typename T, typename TDerived>
-class DataContainerBase<T, T*, TDerived> : public ContiguousContainerBase<T, TDerived> {
+class DataContainerBase<T, T*, TDerived> :
+    public ContiguousContainerMixin<T, TDerived>,
+    public VectorArithmeticMixin<T, TDerived> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(DataContainerBase)

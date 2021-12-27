@@ -79,7 +79,7 @@ struct Position {
   /**
    * @brief Create a position of given dimension.
    */
-  explicit Position(long dim); // FIXME weird!
+  explicit Position(long dim); // FIXME weird! Replace with single CTor Position(Ts... args)?
 
   /**
    * @brief Create a position from a brace-enclosed list of indices.
