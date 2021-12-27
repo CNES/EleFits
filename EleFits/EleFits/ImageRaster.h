@@ -71,20 +71,20 @@ public:
   /**
    * @brief Read the image shape.
    */
-  template <long n = 2>
-  Position<n> readShape() const;
+  template <long N = 2>
+  Position<N> readShape() const;
 
   /**
    * @brief Update the image shape.
    */
-  template <long n = 2>
-  void updateShape(const Position<n>& shape) const;
+  template <long N = 2>
+  void updateShape(const Position<N>& shape) const;
 
   /**
    * @brief Update the image type and shape.
    */
-  template <typename T, long n = 2>
-  void reinit(const Position<n>& shape) const;
+  template <typename T, long N = 2>
+  void reinit(const Position<N>& shape) const;
 
   /// @}
   /**
@@ -105,22 +105,23 @@ public:
    * @warning
    * Filling a `Subraster` is much slower than filling a `Raster`.
    */
-  template <typename T, long n = 2>
-  VecRaster<T, n> read() const;
+  template <typename T, long N = 2>
+  VecRaster<T, N> read() const;
 
   /**
    * @brief Read the whole data unit into an existing `Raster`.
    * @copydetails read()
    */
-  template <typename T, long n = 2>
-  void readTo(Raster<T, n>& raster) const;
+  template <typename TRaster>
+  void readTo(TRaster& raster) const;
 
   /**
    * @brief Read the whole data unit into an existing `Subraster`.
+   * @deprecated
    * @copydetails read()
    */
-  template <typename T, long n = 2>
-  void readTo(Subraster<T, n>& subraster) const;
+  template <typename T, long N = 2, typename TContainer>
+  void readTo(Subraster<T, N, TContainer>& subraster) const; //FIXME rm?
 
   /// @}
   /**
@@ -131,8 +132,8 @@ public:
   /**
    * @brief Read a region as a new `VecRaster`.
    * @tparam T The desired raster type
-   * @tparam m The desired raster dimension, which can be smaller than the data dimension in file
-   * @tparam n The region dimension, which corresponds to the data dimension in file
+   * @tparam M The desired raster dimension, which can be smaller than the data dimension in file
+   * @tparam N The region dimension, which corresponds to the data dimension in file
    * @param region The in-file region
    * @param regions The in-file and in-memory regions
    * @param raster The destination raster
@@ -157,15 +158,15 @@ public:
    * image.readRegionTo<2>({{50, 80}, {100, 120}}, raster);
    * \endcode
    */
-  template <typename T, long m, long n>
-  VecRaster<T, m> readRegion(const Region<n>& region) const;
+  template <typename T, long M, long N>
+  VecRaster<T, M> readRegion(const Region<N>& region) const;
 
   /**
    * @brief Read a region of the data unit into a region of an existing `Raster`.
    * @copydetails readRegion()
    */
-  template <typename T, long m, long n>
-  void readRegionTo(FileMemRegions<n> regions, Raster<T, m>& raster) const;
+  template <typename TRaster>
+  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const;
 
   /// @}
   /**
@@ -176,8 +177,8 @@ public:
   /**
    * @brief Write the whole data unit.
    */
-  template <typename T, long n>
-  void write(const Raster<T, n>& raster) const;
+  template <typename TRaster>
+  void write(const TRaster& raster) const;
 
   /// @}
   /**
@@ -208,8 +209,8 @@ public:
    * du.writeRegion<3>({{0, 0, 4}}, raster.section(2));
    * \endcode
    */
-  template <typename T, long m, long n>
-  void writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const; // TODO return bool = isContiguous()?
+  template <typename TRaster, long N>
+  void writeRegion(FileMemRegions<N> regions, const TRaster& raster) const; // TODO return bool = isContiguous()?
 
   /// @}
 
@@ -218,15 +219,16 @@ private:
    * @brief Read a region of the data unit into an existing `Raster`.
    * @copydetails readRegion()
    */
-  template <typename T, long m, long n>
-  void readRegionToSlice(const Position<n>& frontPosition, Raster<T, m>& raster) const;
+  template <typename TRaster, long N>
+  void readRegionToSlice(const Position<N>& frontPosition, TRaster& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
    * @copydetails readRegion()
    */
-  template <typename T, long m, long n>
-  void readRegionToSubraster(const Position<n>& frontPosition, Subraster<T, m>& subraster) const;
+  template <typename T, long M, long N, typename TContainer>
+  void
+  readRegionToSubraster(const Position<N>& frontPosition, Subraster<T, M, TContainer>& subraster) const; // FIXME rm?
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
@@ -238,27 +240,28 @@ private:
    * \endcode
    * where `region` would be the subraster region, and `raster` the subraster parent.
    */
-  template <typename T, long n>
-  void readRegionTo(Subraster<T, n>& subraster) const;
+  template <typename T, long N, typename TContainer>
+  void readRegionTo(Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.
    */
-  template <typename T, long m, long n>
-  void writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const;
+  template <typename TRaster, long N>
+  void writeSlice(const Position<N>& frontPosition, const TRaster& raster) const;
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
    * @copydetails writeRegion()
    */
-  template <typename T, long n>
-  void writeRegion(const Subraster<T, n>& subraster) const;
+  template <typename T, long N, typename TContainer>
+  void writeRegion(const Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Subraster` at a given position of the data unit.
    */
-  template <typename T, long m, long n>
-  void writeSubraster(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const;
+  template <typename T, long M, long N, typename TContainer>
+  void
+  writeSubraster(const Position<N>& frontPosition, const Subraster<T, M, TContainer>& subraster) const; // FIXME rm?
 
 private:
   /**

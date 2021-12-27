@@ -135,14 +135,14 @@ void createMetadataExtension(fitsfile* fptr, const std::string& name);
 /**
  * @brief Create a new image HDU with given name, pixel type and shape.
  */
-template <typename T, long n = 2>
-void initImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<n>& shape);
+template <typename T, long N = 2>
+void initImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<N>& shape);
 
 /**
  * @brief Write a Raster in a new image HDU.
  */
-template <typename T, long n = 2>
-void assignImageExtension(fitsfile* fptr, const std::string& name, const Fits::Raster<T, n>& raster);
+template <typename TRaster>
+void assignImageExtension(fitsfile* fptr, const std::string& name, const TRaster& raster);
 
 /**
  * @brief Create a new binary table HDU with given name and column infos.

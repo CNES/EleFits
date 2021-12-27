@@ -24,22 +24,22 @@
 namespace Euclid {
 namespace Fits {
 
-template <typename T, long n>
-void SifFile::writeAll(const RecordSeq& records, const Raster<T, n>& raster) {
-  m_raster.reinit<T, n>(raster.shape());
+template <typename TRaster>
+void SifFile::writeAll(const RecordSeq& records, const TRaster& raster) {
+  m_raster.reinit<typename TRaster::Value, TRaster::Dim>(raster.shape());
   m_header.writeSeq(records);
   m_raster.write(raster);
 }
 
-template <typename T, long n>
-VecRaster<T, n> SifFile::readRaster() const {
-  return Cfitsio::ImageIo::readRaster<T, n>(m_fptr);
+template <typename T, long N>
+VecRaster<T, N> SifFile::readRaster() const {
+  return Cfitsio::ImageIo::readRaster<T, N>(m_fptr);
 }
 
-template <typename T, long n>
-void SifFile::writeRaster(const Raster<T, n>& raster) const {
+template <typename TRaster>
+void SifFile::writeRaster(const TRaster& raster) const {
   Cfitsio::HduAccess::gotoPrimary(m_fptr); // FXME needed?
-  Cfitsio::ImageIo::updateTypeShape<T, n>(m_fptr, raster.shape());
+  Cfitsio::ImageIo::updateTypeShape<typename TRaster::Value, TRaster::Dim>(m_fptr, raster.shape());
   Cfitsio::ImageIo::writeRaster(m_fptr, raster);
 }
 

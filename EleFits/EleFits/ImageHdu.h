@@ -34,19 +34,19 @@ namespace Fits {
  * @details
  * The Fits format can accommodate images of any dimension.
  * EleFits stores them in _n_-dimensional containers: Raster objects.
- * This is visible in the ImageHdu services as a template parameter `n`.
+ * This is visible in the ImageHdu services as a template parameter `N`.
  *
  * When the dimension is known at compile time and fixed,
- * it is recommended to specify it (`n > 0`),
+ * it is recommended to specify it (`N > 0`),
  * which allows for a few internal optimizations
  * and brings safety as the code is less error-prone with fewer degrees of freedom.
  *
- * The zero vector space (`n = 0`) is supported;
+ * The zero vector space (`N = 0`) is supported;
  * It is used to represent HDUs with no data, as recommended in the Fits standard.
  *
  * When the dimension is unknown at compile time, or is expected to change
  * (e.g. 2D images to be merged as a 3D image),
- * special value `n = -1` can be specified.
+ * special value `N = -1` can be specified.
  * In this case, the dimension is read in the Fits file,
  * but the user should be careful to handle all possible values.
  * @see
@@ -97,8 +97,8 @@ public:
   /**
    * @brief Read the image shape.
    */
-  template <long n = 2>
-  Position<n> readShape() const;
+  template <long N = 2>
+  Position<N> readShape() const;
 
   /**
    * @copydoc Hdu::readCategory
@@ -108,20 +108,20 @@ public:
   /**
    * @brief Redefine the image shape and type.
    */
-  template <typename T, long n = 2>
-  void updateShape(const Position<n>& shape) const;
+  template <typename T, long N = 2>
+  void updateShape(const Position<N>& shape) const;
 
   /**
    * @brief Read the Raster.
    */
-  template <typename T, long n = 2>
-  VecRaster<T, n> readRaster() const;
+  template <typename T, long N = 2>
+  VecRaster<T, N> readRaster() const;
 
   /**
    * @brief Write the Raster.
    */
-  template <typename T, long n = 2>
-  void writeRaster(const Raster<T, n>& data) const;
+  template <typename TRaster>
+  void writeRaster(const TRaster& data) const;
 
 private:
   /**

@@ -61,20 +61,20 @@ public:
   /**
    * @brief Write both the records and the raster.
    */
-  template <typename T, long n = 2>
-  void writeAll(const RecordSeq& records, const Raster<T, n>& raster);
+  template <typename TRaster>
+  void writeAll(const RecordSeq& records, const TRaster& raster);
 
   /**
    * @brief Read the raster.
    */
-  template <typename T, long n = 2>
-  VecRaster<T, n> readRaster() const;
+  template <typename T, long N = 2>
+  VecRaster<T, N> readRaster() const;
 
   /**
    * @brief Write the raster (initialize primary HDU if not done).
    */
-  template <typename T, long n>
-  void writeRaster(const Raster<T, n>& raster) const;
+  template <typename TRaster>
+  void writeRaster(const TRaster& raster) const;
 
   /**
    * @copydoc Hdu::verifyChecksums()

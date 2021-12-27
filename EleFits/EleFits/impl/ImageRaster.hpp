@@ -25,52 +25,52 @@
 namespace Euclid {
 namespace Fits {
 
-template <long n>
-Position<n> ImageRaster::readShape() const {
+template <long N>
+Position<N> ImageRaster::readShape() const {
   m_edit();
-  return Cfitsio::ImageIo::readShape<n>(m_fptr);
+  return Cfitsio::ImageIo::readShape<N>(m_fptr);
 }
 
-template <long n>
-void ImageRaster::updateShape(const Position<n>& shape) const {
+template <long N>
+void ImageRaster::updateShape(const Position<N>& shape) const {
   m_edit();
-  Cfitsio::ImageIo::updateShape<n>(m_fptr, shape);
+  Cfitsio::ImageIo::updateShape<N>(m_fptr, shape);
 }
 
-template <typename T, long n>
-void ImageRaster::reinit(const Position<n>& shape) const {
+template <typename T, long N>
+void ImageRaster::reinit(const Position<N>& shape) const {
   m_edit();
-  Cfitsio::ImageIo::updateTypeShape<T, n>(m_fptr, shape);
+  Cfitsio::ImageIo::updateTypeShape<T, N>(m_fptr, shape);
 }
 
-template <typename T, long n>
-VecRaster<T, n> ImageRaster::read() const {
-  VecRaster<T, n> raster(readShape<n>());
-  readTo<T, n>(raster);
+template <typename T, long N>
+VecRaster<T, N> ImageRaster::read() const {
+  VecRaster<T, N> raster(readShape<N>());
+  readTo(raster);
   return raster;
 }
 
-template <typename T, long n>
-void ImageRaster::readTo(Raster<T, n>& raster) const {
+template <typename TRaster>
+void ImageRaster::readTo(TRaster& raster) const {
   m_touch();
-  Cfitsio::ImageIo::readRasterTo<T, n>(m_fptr, raster);
+  Cfitsio::ImageIo::readRasterTo(m_fptr, raster);
 }
 
-template <typename T, long n>
-void ImageRaster::readTo(Subraster<T, n>& subraster) const {
+template <typename T, long N, typename TContainer>
+void ImageRaster::readTo(Subraster<T, N, TContainer>& subraster) const {
   m_touch();
-  Cfitsio::ImageIo::readRasterTo<T, n>(m_fptr, subraster);
+  Cfitsio::ImageIo::readRasterTo(m_fptr, subraster);
 }
 
-template <typename T, long m, long n>
-VecRaster<T, m> ImageRaster::readRegion(const Region<n>& region) const {
-  VecRaster<T, m> raster(region.shape().template slice<m>());
+template <typename T, long M, long N>
+VecRaster<T, M> ImageRaster::readRegion(const Region<N>& region) const {
+  VecRaster<T, M> raster(region.shape().template slice<M>());
   readRegionTo(region.front, raster);
   return raster;
 }
 
-template <typename T, long m, long n>
-void ImageRaster::readRegionTo(FileMemRegions<n> regions, Raster<T, m>& raster) const {
+template <typename TRaster>
+void ImageRaster::readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const {
   const auto& memRegion = regions.inMemory();
   if (raster.isContiguous(memRegion)) {
     readRegionToSlice(regions.inFile().front, raster.slice(memRegion));
@@ -79,39 +79,40 @@ void ImageRaster::readRegionTo(FileMemRegions<n> regions, Raster<T, m>& raster) 
   }
 }
 
-template <typename T, long n>
-void ImageRaster::readRegionTo(Subraster<T, n>& subraster) const {
+template <typename T, long N, typename TContainer>
+void ImageRaster::readRegionTo(Subraster<T, N, TContainer>& subraster) const {
   readRegionToSubraster(subraster.region().front, subraster);
 }
 
-template <typename T, long m, long n>
-void ImageRaster::readRegionToSlice(const Position<n>& frontPosition, Raster<T, m>& raster) const {
+template <typename TRaster, long N>
+void ImageRaster::readRegionToSlice(const Position<N>& frontPosition, TRaster& raster) const {
   m_touch();
   Cfitsio::ImageIo::readRegionTo(
       m_fptr,
-      Region<n>::fromShape(frontPosition, raster.shape()), // FIXME use frontPosition in ImageIo
+      Region<N>::fromShape(frontPosition, raster.shape()), // FIXME use frontPosition in ImageIo
       raster);
 }
 
-template <typename T, long m, long n>
-void ImageRaster::readRegionToSubraster(const Position<n>& frontPosition, Subraster<T, m>& subraster) const {
+template <typename T, long M, long N, typename TContainer>
+void ImageRaster::readRegionToSubraster(const Position<N>& frontPosition, Subraster<T, M, TContainer>& subraster)
+    const {
   m_touch();
   Cfitsio::ImageIo::readRegionTo(
       m_fptr,
-      Region<n>::fromShape(frontPosition, subraster.shape()), // FIXME use frontPosition in ImageIo
+      Region<N>::fromShape(frontPosition, subraster.shape()), // FIXME use frontPosition in ImageIo
       subraster);
   // FIXME move algo here, rely solely on readRegionTo(fitsfile, Position, Raster)
 }
 
-template <typename T, long n>
-void ImageRaster::write(const Raster<T, n>& raster) const {
+template <typename TRaster>
+void ImageRaster::write(const TRaster& raster) const {
   m_edit();
-  Cfitsio::ImageIo::writeRaster<T, n>(m_fptr, raster);
+  Cfitsio::ImageIo::writeRaster(m_fptr, raster);
 }
 
-template <typename T, long m, long n>
-void ImageRaster::writeRegion(FileMemRegions<n> regions, const Raster<T, m>& raster) const {
-  regions.resolve(readShape<n>() - 1, raster.shape() - 1);
+template <typename TRaster, long N>
+void ImageRaster::writeRegion(FileMemRegions<N> regions, const TRaster& raster) const {
+  regions.resolve(readShape<N>() - 1, raster.shape() - 1);
   if (raster.isContiguous(regions.memory())) {
     writeSlice(regions.file().front, raster.slice(regions.memory()));
   } else {
@@ -119,25 +120,25 @@ void ImageRaster::writeRegion(FileMemRegions<n> regions, const Raster<T, m>& ras
   }
 }
 
-template <typename T, long n>
-void ImageRaster::writeRegion(const Subraster<T, n>& subraster) const {
+template <typename T, long N, typename TContainer>
+void ImageRaster::writeRegion(const Subraster<T, N, TContainer>& subraster) const {
   writeRegion(subraster.region().front, subraster);
 }
 
-template <typename T, long m, long n>
-void ImageRaster::writeSlice(const Position<n>& frontPosition, const Raster<T, m>& raster) const {
+template <typename TRaster, long N>
+void ImageRaster::writeSlice(const Position<N>& frontPosition, const TRaster& raster) const {
   Cfitsio::ImageIo::writeRegion(m_fptr, raster, frontPosition);
 }
 
-template <typename T, long m, long n>
-void ImageRaster::writeSubraster(const Position<n>& frontPosition, const Subraster<T, m>& subraster) const {
+template <typename T, long M, long N, typename TContainer>
+void ImageRaster::writeSubraster(const Position<N>& frontPosition, const Subraster<T, M, TContainer>& subraster) const {
   m_edit();
   int status = 0;
-  auto locus = Region<m>::fromShape(Position<m>::zero(), subraster.shape());
+  auto locus = Region<M>::fromShape(Position<M>::zero(), subraster.shape());
   locus.back[0] = locus.front[0];
   const auto nelem = subraster.shape()[0];
-  const auto delta = frontPosition.template slice<m>();
-  Position<n> target;
+  const auto delta = frontPosition.template slice<M>();
+  Position<N> target;
   for (const auto& source : locus) {
     target = (source + delta).extend(frontPosition) + 1; // 1-based
     const auto b = &subraster[source];

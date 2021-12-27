@@ -80,16 +80,16 @@ HduSelector<THdu> MefFile::select(const HduFilter& filter) {
   return {*this, filter * HduCategory::forClass<THdu>()};
 }
 
-template <typename T, long n>
-const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<n>& shape) {
-  Cfitsio::HduAccess::initImageExtension<T, n>(m_fptr, name, shape);
+template <typename T, long N>
+const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<N>& shape) {
+  Cfitsio::HduAccess::initImageExtension<T, N>(m_fptr, name, shape);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<ImageHdu>();
 }
 
-template <typename T, long n>
-const ImageHdu& MefFile::assignImageExt(const std::string& name, const Raster<T, n>& raster) {
+template <typename TRaster>
+const ImageHdu& MefFile::assignImageExt(const std::string& name, const TRaster& raster) {
   Cfitsio::HduAccess::assignImageExtension(m_fptr, name, raster);
   const auto size = m_hdus.size();
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
@@ -122,9 +122,12 @@ const BintableHdu& MefFile::assignBintableExt(const std::string& name, const Tup
 
 #ifndef DECLARE_ASSIGN_IMAGE_EXT
 #define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, -1>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 2>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const Raster<type, 3>&);
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, -1>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 2>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 3>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, -1>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 2>&); \
+  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 3>&);
 ELEFITS_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
 #undef DECLARE_ASSIGN_IMAGE_EXT
 #endif

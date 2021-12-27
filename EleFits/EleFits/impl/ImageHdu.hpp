@@ -39,8 +39,8 @@ VecRaster<T, n> ImageHdu::readRaster() const {
   return m_raster.read<T, n>();
 }
 
-template <typename T, long n>
-void ImageHdu::writeRaster(const Raster<T, n>& data) const {
+template <typename TRaster>
+void ImageHdu::writeRaster(const TRaster& data) const {
   m_raster.write(data);
 }
 
@@ -55,9 +55,12 @@ ELEFITS_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
 
 #ifndef DECLARE_WRITE_RASTER
 #define DECLARE_WRITE_RASTER(type, unused) \
-  extern template void ImageHdu::writeRaster(const Raster<type, -1>&) const; \
-  extern template void ImageHdu::writeRaster(const Raster<type, 2>&) const; \
-  extern template void ImageHdu::writeRaster(const Raster<type, 3>&) const;
+  extern template void ImageHdu::writeRaster(const PtrRaster<type, -1>&) const; \
+  extern template void ImageHdu::writeRaster(const PtrRaster<type, 2>&) const; \
+  extern template void ImageHdu::writeRaster(const PtrRaster<type, 3>&) const; \
+  extern template void ImageHdu::writeRaster(const VecRaster<type, -1>&) const; \
+  extern template void ImageHdu::writeRaster(const VecRaster<type, 2>&) const; \
+  extern template void ImageHdu::writeRaster(const VecRaster<type, 3>&) const;
 ELEFITS_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
 #undef DECLARE_WRITE_RASTER
 #endif

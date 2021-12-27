@@ -28,19 +28,19 @@ GameOfLife::GameOfLife(long width, long height, long turns) :
   // The board is filled with zeros
 }
 
-const Raster<GameOfLife::Value, 2>& GameOfLife::generate(long count) {
+const PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(long count) {
   long done = 0;
   while (done <= count) {
     const long i = Test::generateRandomValue<long>(0, m_width * m_height - 1);
-    if (not *(m_previous.data() + i)) {
-      *(m_previous.data() + i) = 1;
+    if (not m_previous[i]) {
+      m_previous[i] = 1;
       ++done;
     }
   }
   return m_previous;
 }
 
-const Raster<GameOfLife::Value, 3>& GameOfLife::run() {
+const VecRaster<GameOfLife::Value, 3>& GameOfLife::run() {
   while (m_t < m_turns) {
     update();
     next();
@@ -55,7 +55,7 @@ long GameOfLife::next() {
   return m_t;
 }
 
-const Raster<GameOfLife::Value, 2>& GameOfLife::update() {
+const PtrRaster<GameOfLife::Value, 2>& GameOfLife::update() {
   for (const auto& p : m_previous.domain()) {
     const auto lifes = countLifes(p);
     if (m_previous[p]) { // Live in previous frame

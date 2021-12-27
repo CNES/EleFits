@@ -45,38 +45,38 @@ const std::type_info& readTypeid(fitsfile* fptr);
 /**
  * @brief Read the shape of the current image HDU.
  */
-template <long n = 2>
-Fits::Position<n> readShape(fitsfile* fptr);
+template <long N = 2>
+Fits::Position<N> readShape(fitsfile* fptr);
 
 /**
  * @brief Reshape the current image HDU.
  */
-template <typename T, long n = 2>
-void updateShape(fitsfile* fptr, const Fits::Position<n>& shape);
+template <typename T, long N = 2>
+void updateShape(fitsfile* fptr, const Fits::Position<N>& shape);
 
 /**
  * @brief Read the whole raster of the current image HDU.
  */
-template <typename T, long n = 2>
-Fits::VecRaster<T, n> readRaster(fitsfile* fptr);
+template <typename T, long N = 2>
+Fits::VecRaster<T, N> readRaster(fitsfile* fptr);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing raster.
  */
-template <typename T, long n = 2>
-void readRasterTo(fitsfile* fptr, Fits::Raster<T, n>& destination);
+template <typename TRaster>
+void readRasterTo(fitsfile* fptr, TRaster& destination);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing subraster.
  */
-template <typename T, long n = 2>
-void readRasterTo(fitsfile* fptr, Fits::Subraster<T, n>& destination);
+template <typename T, long N = 2, typename TContainer>
+void readRasterTo(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination);
 
 /**
  * @brief Read a region of the current image HDU.
  */
-template <typename T, long m, long n>
-Fits::VecRaster<T, m> readRegion(fitsfile* fptr, const Fits::Region<n>& region);
+template <typename T, long M, long N>
+Fits::VecRaster<T, M> readRegion(fitsfile* fptr, const Fits::Region<N>& region);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.
@@ -86,8 +86,8 @@ Fits::VecRaster<T, m> readRegion(fitsfile* fptr, const Fits::Region<n>& region);
  * Similarly to a blit operation, this method reads the data line-by-line
  * directly in a destination raster.
  */
-template <typename T, long m, long n>
-void readRegionTo(fitsfile* fptr, const Fits::Region<n>& region, Fits::Raster<T, m>& destination);
+template <typename TRaster, long N>
+void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& destination);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing subraster.
@@ -97,30 +97,33 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<n>& region, Fits::Raster<T,
  * Similarly to a blit operation, this method reads the data line-by-line
  * directly in a destination subraster.
  */
-template <typename T, long m, long n>
-void readRegionTo(fitsfile* fptr, const Fits::Region<n>& region, Fits::Subraster<T, m>& destination);
+template <typename T, long M, long N, typename TContainer>
+void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination);
 
 /**
  * @brief Write a whole raster in the current image HDU.
  */
-template <typename T, long n = 2>
-void writeRaster(fitsfile* fptr, const Fits::Raster<T, n>& raster);
+template <typename TRaster>
+void writeRaster(fitsfile* fptr, const TRaster& raster);
 
 /**
  * @brief Write a whole raster into a region of the current image HDU.
  * @param raster The raster to be written
  * @param destination The destination position (size is deduced from raster size)
  */
-template <typename T, long m, long n>
-void writeRegion(fitsfile* fptr, const Fits::Raster<T, m>& raster, const Fits::Position<n>& destination);
+template <typename TRaster, long N>
+void writeRegion(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>& destination);
 
 /**
  * @brief Write a subraster into a region of the current image HDU.
  * @param subraster The subraster to be written
  * @param destination The destination position (size is deduced from subraster size)
  */
-template <typename T, long m, long n>
-void writeRegion(fitsfile* fptr, const Fits::Subraster<T, n>& subraster, const Fits::Position<n>& destination);
+template <typename T, long M, long N, typename TContainer> // FIXME where's M?
+void writeRegion(
+    fitsfile* fptr,
+    const Fits::Subraster<T, N, TContainer>& subraster,
+    const Fits::Position<N>& destination);
 
 } // namespace ImageIo
 } // namespace Cfitsio

@@ -27,20 +27,20 @@ namespace Euclid {
 namespace Cfitsio {
 namespace HduAccess {
 
-template <typename T, long n>
-void initImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<n>& shape) {
+template <typename T, long N>
+void initImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<N>& shape) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   auto nonconstShape = shape; // const-correctness issue
-  fits_create_img(fptr, TypeCode<T>::bitpix(), n, &nonconstShape[0], &status);
+  fits_create_img(fptr, TypeCode<T>::bitpix(), shape.size(), &nonconstShape[0], &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create image extension: " + name);
   updateName(fptr, name);
 }
 
-template <typename T, long n>
-void assignImageExtension(fitsfile* fptr, const std::string& name, const Fits::Raster<T, n>& raster) {
-  initImageExtension<T, n>(fptr, name, raster.shape());
-  ImageIo::writeRaster<T, n>(fptr, raster);
+template <typename TRaster>
+void assignImageExtension(fitsfile* fptr, const std::string& name, const TRaster& raster) {
+  initImageExtension<typename TRaster::Value, TRaster::Dim>(fptr, name, raster.shape());
+  ImageIo::writeRaster(fptr, raster);
 }
 
 template <typename... Ts>

@@ -170,15 +170,15 @@ public:
    * @details
    * To not only initialize the HDU but also write data, use assignImageExt instead.
    */
-  template <typename T, long n>
-  const ImageHdu& initImageExt(const std::string& name, const Position<n>& shape);
+  template <typename T, long N>
+  const ImageHdu& initImageExt(const std::string& name, const Position<N>& shape);
 
   /**
    * @brief Append an ImageHdu with given name and data.
    * @return A reference to the new ImageHdu.
    */
-  template <typename T, long n>
-  const ImageHdu& assignImageExt(const std::string& name, const Raster<T, n>& raster);
+  template <typename TRaster>
+  const ImageHdu& assignImageExt(const std::string& name, const TRaster& raster);
 
   /**
    * @brief Append a BintableHdu with given name and columns info.

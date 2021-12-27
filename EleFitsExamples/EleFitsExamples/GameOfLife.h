@@ -46,12 +46,12 @@ public:
    * @brief Generate lifes at random positions.
    * @param count The number of lifes to generate (should be much smaller than the number of cells)
    */
-  const Raster<Value, 2>& generate(long count);
+  const PtrRaster<Value, 2>& generate(long count);
 
   /**
    * @brief Run the game.
    */
-  const Raster<Value, 3>& run();
+  const VecRaster<Value, 3>& run();
 
   /**
    * @brief Move to the next frame.
@@ -61,7 +61,7 @@ public:
   /**
    * @brief Update the current frame.
    */
-  const Raster<Value, 2>& update();
+  const PtrRaster<Value, 2>& update();
 
   /**
    * @brief Count lifes around a given position.
