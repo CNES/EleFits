@@ -2,21 +2,35 @@
 
 ## 4.1
 
+### Known issues
+
+* `Raster::moveTo()` performs a copy instead of a move
+
 ### Bug fixes
 
 * `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
 * Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 
+### Refactoring (backward compatible)
+
+* `Raster` is more generic and can work with any contiguous container
+* Methods which took a `Raster&` as parameter now accept any type which fullfills `Raster` requirements
+* `Raster` fulfills the requirements of the standard `ContiguousContainer` concept
+* `Raster` is additive and multiplicative (e.g. supports +, -, *, /)
+
 ### New features
 
+* Updated to Elements 6.0.1
 * Empty binary table HDUs can be created
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `vector<VecColumn<T>>`)
 * New "Game of Life" example demonstrates the use of slicing
 
-### Cleaning
+### Optimization and cleaning
 
+* Access to `Raster` data is notably faster (using inlining and devirtualization compiler hints)
 * Formatting has been reviewed
 * Several overloads have been merged (e.g. with `ColumnKey` and `TypedKey`)
+* This change log was finally added to Doxygen pages
 
 ## 4.0
 
