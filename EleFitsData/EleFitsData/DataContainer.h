@@ -309,7 +309,7 @@ public:
    */
   /// @{
 
-  const T* data() const {
+  inline const T* data() const {
     return m_data;
   }
 

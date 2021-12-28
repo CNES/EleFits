@@ -248,27 +248,27 @@ public:
   /**
    * @brief Pixel at given index.
    */
-  // const T& operator[](long index) const;
+  // inline const T& operator[](long index) const;
 
   /**
    * @brief Pixel at given index.
    */
-  // T& operator[](long index);
+  // inline T& operator[](long index);
 
   /**
    * @brief Raw index of a position.
    */
-  long index(const Position<N>& pos) const;
+  inline long index(const Position<N>& pos) const;
 
   /**
    * @brief Pixel at given position.
    */
-  const T& operator[](const Position<N>& pos) const;
+  inline const T& operator[](const Position<N>& pos) const;
 
   /**
    * @brief Pixel at given position.
    */
-  T& operator[](const Position<N>& pos);
+  inline T& operator[](const Position<N>& pos);
 
   /**
    * @brief Access the value at given position.
@@ -277,12 +277,12 @@ public:
    * and bounds are checked.
    * @see operator[]()
    */
-  const T& at(const Position<N>& pos) const;
+  inline const T& at(const Position<N>& pos) const;
 
   /**
    * @copydoc at()
    */
-  T& at(const Position<N>& pos);
+  inline T& at(const Position<N>& pos);
 
   /// @}
   /**
