@@ -51,11 +51,6 @@ template <typename T, typename TDerived>
 struct ContiguousContainerMixin {
 
   /**
-   * @name Standard types definitions
-   */
-  /// @{
-
-  /**
    * @brief The value type.
    */
   using value_type = T;
@@ -90,12 +85,6 @@ struct ContiguousContainerMixin {
    */
   using size_type = std::size_t;
 
-  /// @}
-  /**
-   * @name Index-based element access
-   */
-  /// @{
-
   /**
    * @brief Access the element with given index.
    */
@@ -104,17 +93,11 @@ struct ContiguousContainerMixin {
   }
 
   /**
-   * @copydoc operator[]
+   * @copydoc operator[]()
    */
   inline T& operator[](size_type index) {
     return const_cast<T&>(const_cast<const ContiguousContainerMixin&>(*this)[index]);
   }
-
-  /// @}
-  /**
-   * @name Iterators
-   */
-  /// @{
 
   /**
    * @brief Iterator to the first element.
@@ -158,12 +141,6 @@ struct ContiguousContainerMixin {
     return const_cast<const ContiguousContainerMixin&>(*this).end();
   }
 
-  /// @}
-  /**
-   * @name Comparison operators
-   */
-  /// @{
-
   /**
    * @brief Check equality.
    */
@@ -186,8 +163,6 @@ struct ContiguousContainerMixin {
   bool emtpy() const {
     return begin() == end();
   }
-
-  /// @}
 };
 
 /**
@@ -198,29 +173,18 @@ struct ContiguousContainerMixin {
  * see `ContiguousContainerMixin`.
  */
 template <typename T, typename TContainer, typename TDerived>
-class DataContainerBase : public ContiguousContainerMixin<T, TDerived>, public VectorArithmeticMixin<T, TDerived> {
+class DataContainer : public ContiguousContainerMixin<T, TDerived>, public VectorArithmeticMixin<T, TDerived> {
 
 public:
-  /**
-   * @name Constructors
-   */
-  /// @{
-
-  ELEFITS_VIRTUAL_DTOR(DataContainerBase)
-  ELEFITS_COPYABLE(DataContainerBase)
-  ELEFITS_MOVABLE(DataContainerBase)
+  ELEFITS_VIRTUAL_DTOR(DataContainer)
+  ELEFITS_COPYABLE(DataContainer)
+  ELEFITS_MOVABLE(DataContainer)
 
   /**
    * @brief Constructor.
    */
   template <typename... Ts>
-  DataContainerBase(Ts&&... args) : m_container(std::forward<Ts>(args)...) {}
-
-  /// @}
-  /**
-   * @name Raw data access
-   */
-  /// @{
+  DataContainer(Ts&&... args) : m_container(std::forward<Ts>(args)...) {}
 
   /**
    * @brief Access the raw data.
@@ -233,14 +197,8 @@ public:
    * @copydoc data()
    */
   inline T* data() {
-    return const_cast<T*>(const_cast<const DataContainerBase&>(*this).data());
+    return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
   }
-
-  /// @}
-  /**
-   * @name Container access
-   */
-  /// @{
 
   /**
    * @brief Access the container in read-only mode.
@@ -250,11 +208,11 @@ public:
   }
 
   /**
-   * @copydoc container()
-   * @deprecated Use more generic `container()` instead.
+   * @brief Access the container values as an `std::vector`.
+   * @deprecated Use more generic `container()` instead, which performs no copy.
    */
-  const typename std::enable_if<std::is_same<TContainer, std::vector<T>>::value, TContainer>::type& vector() const {
-    return m_container;
+  std::std::vector<T> vector() const {
+    return {this->begin(), this->end()};
   }
 
   /**
@@ -277,8 +235,6 @@ public:
     return destination;
   }
 
-  /// @}
-
 private:
   /**
    * @brief The data container.
@@ -290,25 +246,23 @@ private:
  * @brief Raw pointer specialization.
  */
 template <typename T, typename TDerived>
-class DataContainerBase<T, T*, TDerived> :
+class DataContainer<T, T*, TDerived> :
     public ContiguousContainerMixin<T, TDerived>,
     public VectorArithmeticMixin<T, TDerived> {
 
 public:
-  ELEFITS_VIRTUAL_DTOR(DataContainerBase)
-  ELEFITS_COPYABLE(DataContainerBase)
-  ELEFITS_MOVABLE(DataContainerBase)
+  ELEFITS_VIRTUAL_DTOR(DataContainer)
+  ELEFITS_COPYABLE(DataContainer)
+  ELEFITS_MOVABLE(DataContainer)
 
   /**
    * @brief Constructor.
    */
-  DataContainerBase(T* data = nullptr) : m_data(data) {}
+  DataContainer(T* data = nullptr) : m_data(data) {}
 
   /**
-   * @name Raw data access
+   * @brief Access the raw data.
    */
-  /// @{
-
   inline const T* data() const {
     return m_data;
   }
@@ -317,10 +271,8 @@ public:
    * @copydoc data()
    */
   inline T* data() {
-    return const_cast<T*>(const_cast<const DataContainerBase&>(*this).data());
+    return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
   }
-
-  /// @}
 
 private:
   /**
@@ -329,6 +281,9 @@ private:
   T* m_data;
 };
 
+/**
+ * @brief Uniform container allocator.
+ */
 template <typename TContainer>
 struct ContainerAllocator {
   static TContainer alloc(std::size_t size) {

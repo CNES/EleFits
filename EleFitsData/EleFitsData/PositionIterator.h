@@ -158,11 +158,19 @@ private:
   std::vector<Position<n>> m_followers;
 };
 
+/**
+ * @ingroup image_data_classes
+ * @brief Iterator to the front position of a region.
+ */
 template <long n = 2>
 PositionIterator<n> begin(const Region<n>& region) {
   return PositionIterator<n>(region);
 }
 
+/**
+ * @ingroup image_data_classes
+ * @brief Iterator to one past the back position of a region.
+ */
 template <long n = 2>
 PositionIterator<n> end(const Region<n>& region) {
   Region<n> pastTheLast {region.back, region.back};

@@ -52,84 +52,18 @@ namespace Fits {
   MACRO(std::uint32_t, uint32) \
   MACRO(std::uint64_t, uint64)
 
+/// @cond INTERNAL
+// Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
+
 // Forward declaration for Raster::subraster()
 template <typename T, long N, typename TContainer>
 class Subraster;
 
-/**
- * @ingroup image_data_classes
- * @brief Raster of a _n_-dimensional image (2D by default).
- * @tparam T The value type, which can be `const`-qualified for read-only rasters
- * @tparam N The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
- * @details
- * A raster is a contiguous container for the pixel data of an image.
- * It features access and view services.
- * 
- * This class is abstract, as the actual pixel container is not defined.
- * Two concrete implementations are provided:
- * - `PtrRaster` doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;
- * - `VecRaster` owns an `std::vector` (and is compatible with move semantics, which allows borrowing the `vector`).
- * 
- * There are two ways of defining the dimension of a `Raster`:
- * - when the dimension is knwon at compile-time,
- *   by giving the dimension parameter a positive or null value;
- * - when the dimension is known at run-time only,
- *   by assigning `N = -1`.
- * 
- * In the former case, index and size computations are optimized, and the dimension is enforced.
- * For example, it is not possible to read a 3D image HDU as a 2D `Raster`.
- * Which is nice, because an exception will be raised early!
- * In contrast, it is possible to read a 2D image HDU as a 3D `Raster` of third axis lenght =1.
- * 
- * In the latter case, the dimension may vary or be deduced from the file,
- * which is also nice sometimes but puts more responsibility on the shoulders of the user code,
- * as it should check that the returned dimension is acceptable.
- * 
- * `Raster` ensures constant-time access to elements, whatever the dimension of the data,
- * through subscipt operator `Raster::operator[]()`.
- * Bound checking and backward indexing (index <0) are enabled in `Raster::at()`.
- * 
- * Example usages:
- * \code
- * Position<2> shape {2, 3};
- * 
- * // Read/write Raster
- * float data[] = {1, 2, 3, 4, 5, 6};
- * Raster<float> raster(shape, data);
- * 
- * // Read-only Raster
- * const float cData[] = {1, 2, 3, 4, 5, 6};
- * Raster<const float> cRaster(shape, cData);
- * 
- * // Read/write VecRaster
- * std::vector<float> vec(&data[0], &data[6]);
- * VecRaster<float> vecRaster(shape, std::move(vec));
- * 
- * // Read-only VecRaster
- * std::vector<const float> cVec(&data[0], &data[6]);
- * VecRaster<const float> cVecRaster(shape, std::move(cVec));
- * \endcode
- * 
- * The raster data can be viewed region-wise as a `PtrRaster`,
- * given that the region is contiguous in memory.
- * Reading and writing non contiguous region is possible: see `ImageRaster`.
- * 
- * @note
- * Why "raster" and not simply image or array?
- * Mostly for disambiguation purpose:
- * "image" refers to the extension type, while "array" has already several meanings in C/C++.
- * `NdArray` would have been an option, but every related class should have been prefixed with `Nd` for homogeneity:
- * `NdPosition`, `NdRegion`, `VecNdArray`...
- * From the cathodic television era, raster also historically carries the concept of contiguous pixels,
- * is very common in the field of Earth observation,
- * and also belongs to the Java library.
- * All in all, `Raster` seems to be a fair compromise.
- * 
- * @see Position for details on the fixed- and variable-dimension cases.
- * @see makeRaster() for creation shortcuts.
- */
+// Forward declaration for PtrRaster and VecRaster
 template <typename T, long N, typename TContainer>
 class Raster;
+
+/// @endcond
 
 /**
  * @ingroup image_data_classes
@@ -147,8 +81,86 @@ using PtrRaster = Raster<T, N, T*>;
 template <typename T, long N = 2>
 using VecRaster = Raster<T, N, std::vector<T>>;
 
+/**
+ * @ingroup image_data_classes
+ * @brief Data of a _n_-dimensional image (2D by default).
+ * @tparam T The value type, which can be `const`-qualified for read-only rasters
+ * @tparam N The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
+ * @tparam TContainer The underlying data container type
+ * @details
+ * A raster is a contiguous container for the pixel data of an image.
+ * It features access and view services.
+ * 
+ * Two specializations are provided:
+ * - `PtrRaster` doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;
+ * - `VecRaster` owns an `std::vector` (and is compatible with move semantics, which allows borrowing the `vector`).
+ * 
+ * There are two ways of defining the dimension of a `Raster`:
+ * - When the dimension is knwon at compile-time (safer),
+ *   by giving the dimension parameter a positive or null value;
+ * - When the dimension is known at run-time only (more flexible),
+ *   by assigning `N = -1`.
+ * 
+ * In the former case, index and size computations are optimized, and the dimension is enforced.
+ * For example, it is not possible to read a 3D image HDU as a 2D `Raster` --
+ * which is nice, because an exception will be raised early!
+ * In contrast, it is possible to read a 2D image HDU as a 3D `Raster` of third axis lenght =1.
+ * 
+ * In the latter case, the dimension may vary or be deduced from the file,
+ * which is also nice sometimes but puts more responsibility on the shoulders of the user code,
+ * as it should check that the actual dimension is acceptable.
+ * 
+ * `Raster` fulfills the requirements of the `ContiguousContainer` concept,
+ * by extending `DataContainer` (e.g. is iterable).
+ * `Raster` ensures constant-time access to elements, whatever the dimension of the data,
+ * through subscipt operator `Raster::operator[]()`.
+ * Bound checking and backward indexing (index <0) are enabled in `Raster::at()`.
+ * 
+ * `Raster` also implements some arithmetic operators by extending `VectorArithmeticMixin`.
+ * For example, two rasters can be added, or a raster can be multiplied by a scalar.
+ * 
+ * Example usages:
+ * \code
+ * Position<2> shape {2, 3};
+ * 
+ * // Read/write PtrRaster
+ * float data[] = {1, 2, 3, 4, 5, 6};
+ * PtrRaster<float> ptrRaster(shape, data);
+ * 
+ * // Read-only PtrRaster
+ * const float cData[] = {1, 2, 3, 4, 5, 6};
+ * PtrRaster<const float> cPtrRaster(shape, cData);
+ * 
+ * // Read/write VecRaster
+ * std::vector<float> vec(&data[0], &data[6]);
+ * VecRaster<float> vecRaster(shape, std::move(vec));
+ * 
+ * // Read-only VecRaster
+ * std::vector<const float> cVec(&data[0], &data[6]);
+ * VecRaster<const float> cVecRaster(shape, std::move(cVec));
+ * \endcode
+ * 
+ * The raster data can be viewed region-wise as a `PtrRaster`,
+ * provided that the region is contiguous in memory.
+ * Reading and writing non contiguous region is possible: see `ImageRaster`.
+ * 
+ * @note
+ * Why "raster" and not simply image or array?
+ * Mostly for disambiguation purpose:
+ * "image" refers to the extension type, while "array" has already several meanings in C/C++.
+ * `NdArray` would have been an option, but every related class should have been prefixed with `Nd` for homogeneity:
+ * `NdPosition`, `NdRegion`, `VecNdArray`...
+ * From the cathodic television era, raster also historically carries the concept of contiguous pixels,
+ * is very common in the field of Earth observation,
+ * and also belongs to the Java library.
+ * All in all, `Raster` seems to be a fair compromise.
+ * 
+ * @see
+ * - `Position` for details on the fixed- and variable-dimension cases.
+ * - `makeRaster()` for creation shortcuts.
+ */
 template <typename T, long N, typename TContainer>
-class Raster : public DataContainerBase<T, TContainer, Raster<T, N, TContainer>> {
+class Raster : public DataContainer<T, TContainer, Raster<T, N, TContainer>> {
   friend class ImageRaster; // FIXME rm when Subraster is removed
 
 public:
@@ -180,19 +192,17 @@ public:
    * @param shape The raster shape
    */
   Raster(Position<N> shape) :
-      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(
-          ContainerAllocator<TContainer>::alloc(shapeSize(shape))),
+      DataContainer<T, TContainer, Raster<T, N, TContainer>>(ContainerAllocator<TContainer>::alloc(shapeSize(shape))),
       m_shape(std::move(shape)) {}
 
   /**
    * @brief Constructor.
    * @param shape The raster shape
-   * @param args Arguments to be forwarded to the container
+   * @param args Arguments to be forwarded to the underlying container
    */
   template <typename... Ts>
   Raster(Position<N> shape, Ts&&... args) :
-      DataContainerBase<T, TContainer, Raster<T, N, TContainer>>(std::forward<Ts>(args)...), m_shape(std::move(shape)) {
-  }
+      DataContainer<T, TContainer, Raster<T, N, TContainer>>(std::forward<Ts>(args)...), m_shape(std::move(shape)) {}
 
   /// @}
   /**
@@ -243,17 +253,7 @@ public:
    */
   /// @{
 
-  using DataContainerBase<T, TContainer, Raster<T, N, TContainer>>::operator[];
-
-  /**
-   * @brief Pixel at given index.
-   */
-  // inline const T& operator[](long index) const;
-
-  /**
-   * @brief Pixel at given index.
-   */
-  // inline T& operator[](long index);
+  using DataContainer<T, TContainer, Raster<T, N, TContainer>>::operator[];
 
   /**
    * @brief Raw index of a position.

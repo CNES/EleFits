@@ -62,12 +62,12 @@ namespace Fits {
  * Binary table columns are either scalar (`repeatCount` = 1) or vector (`repeatCount` > 1).
  * In the case of vector columns, each cell of the column contains `repeatCount` values.
  * Here is an example of a 4-row table with a scalar column and a vector column with a repeat count of 3:
- * <table>
+ * <table class="fieldtable">
  * <tr><th>Row<th>repeatCount = 1<th>repeatCount = 3
- * <tr style="text-align:center"><td>0<td>00<td>00, 01, 02
- * <tr style="text-align:center"><td>1<td>10<td>10, 11, 12
- * <tr style="text-align:center"><td>2<td>20<td>20, 21, 22
- * <tr style="text-align:center"><td>3<td>30<td>30, 31, 32
+ * <tr><td>0<td>00<td>00, 01, 02
+ * <tr><td>1<td>10<td>10, 11, 12
+ * <tr><td>2<td>20<td>20, 21, 22
+ * <tr><td>3<td>30<td>30, 31, 32
  * </table>
  * For performance, the values are stored sequentially in a 1D array as follows:
  * \code
@@ -78,7 +78,7 @@ namespace Fits {
  * The only exception to this is string columns, which are vector columns
  * -- they should have a repeat count greater than the maximum number of characters in a cell --
  * but each cell contains only one string:
- * <table>
+ * <table class="fieldtable">
  * <tr><th>Row<th>repeatCount = 6
  * <tr><td>0<td>`"ZERO"`
  * <tr><td>1<td>`"ONE"`
