@@ -28,6 +28,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
+ * @ingroup data_classes
  * @brief Mixin to provide vector and scalar arithmetic operators.
  * @details
  * Implemented arithmetic properties:
@@ -42,38 +43,39 @@ struct VectorArithmeticMixin :
     boost::multiplicative<TDerived, T> {
 
   /**
-   * @brief V += U.
+   * @brief V += U and W = V + U.
    */
   TDerived& operator+=(const TDerived& rhs);
 
   /**
-   * @brief V += a.
+   * @brief V += a and V = U + a.
    */
   TDerived& operator+=(const T& rhs);
 
   /**
-   * @brief V -= U.
+   * @brief V -= U and W = V -U.
    */
   TDerived& operator-=(const TDerived& rhs);
 
   /**
-   * @brief V -= a.
+   * @brief V -= a and V = U - a.
    */
   TDerived& operator-=(const T& rhs);
 
   /**
-   * @brief V *= a.
+   * @brief V *= a and V = U * a.
    */
   TDerived& operator*=(const T& rhs);
 
   /**
-   * @brief V /= a.
+   * @brief V /= a and V = U / a.
    */
   TDerived& operator/=(const T& rhs);
 };
 
 /**
- * @brief Mixin to provide vector and scalar arithmetic operators.
+ * @ingroup data_classes
+ * @brief Extension of `VectorArithmeticMixin` for integer values.
  * @details
  * Implement increment and decrement operators
  * in addition to `VectorArithmeticMixin` operators.
@@ -82,12 +84,12 @@ template <typename T, typename TDerived>
 struct IntVectorArithmeticMixin : VectorArithmeticMixin<T, TDerived>, boost::unit_steppable<TDerived> {
 
   /**
-   * @brief ++V.
+   * @brief ++V and V++.
    */
   TDerived& operator++();
 
   /**
-   * @brief --V.
+   * @brief --V and V--.
    */
   TDerived& operator--();
 };

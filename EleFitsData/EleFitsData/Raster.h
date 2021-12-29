@@ -192,7 +192,8 @@ public:
    * @param shape The raster shape
    */
   Raster(Position<N> shape) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(ContainerAllocator<TContainer>::alloc(shapeSize(shape))),
+      DataContainer<T, TContainer, Raster<T, N, TContainer>>(
+          ContainerAllocator<TContainer>::fromSize(shapeSize(shape))),
       m_shape(std::move(shape)) {}
 
   /**
@@ -216,7 +217,7 @@ public:
   const Position<N>& shape() const;
 
   /**
-   * @brief Get raster domain.
+   * @brief Get the raster domain.
    * @details
    * The domain is the region which spans from the first to the last pixel position.
    * It can be used to loop over all pixels, e.g.:
@@ -229,7 +230,7 @@ public:
   Region<N> domain() const;
 
   /**
-   * @brief Dimension.
+   * @brief Get the actual dimension.
    * @details
    * This corresponds to the `N` template parameter in general,
    * or to the current dimension if variable.
@@ -237,12 +238,12 @@ public:
   long dimension() const;
 
   /**
-   * @brief Number of pixels.
+   * @brief Get the number of pixels.
    */
   long size() const;
 
   /**
-   * @brief Length along given axis.
+   * @brief Get the length along given axis.
    */
   template <long I>
   long length() const;
@@ -256,22 +257,22 @@ public:
   using DataContainer<T, TContainer, Raster<T, N, TContainer>>::operator[];
 
   /**
-   * @brief Raw index of a position.
+   * @brief Compute the raw index of a given position.
    */
   inline long index(const Position<N>& pos) const;
 
   /**
-   * @brief Pixel at given position.
+   * @brief Access the pixel value at given position.
    */
   inline const T& operator[](const Position<N>& pos) const;
 
   /**
-   * @brief Pixel at given position.
+   * @copybrief operator[]()
    */
   inline T& operator[](const Position<N>& pos);
 
   /**
-   * @brief Access the value at given position.
+   * @copybrief operator[]()
    * @details
    * As opposed to `operator[]()`, negative indices are supported for backward indexing,
    * and bounds are checked.
@@ -280,7 +281,7 @@ public:
   inline const T& at(const Position<N>& pos) const;
 
   /**
-   * @copydoc at()
+   * @copybrief at()
    */
   inline T& at(const Position<N>& pos);
 

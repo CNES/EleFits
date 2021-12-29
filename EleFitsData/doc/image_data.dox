@@ -12,10 +12,10 @@ namespace Fits {
 The central class for image data representation is `Raster`.
 It is the in-memory representation of the _n_-D arrays of Fits.
 A raster is defined by:
-- A dimension (number of axes) as template parameter `n`;
+- A dimension (number of axes) as template parameter `N`;
 - A value type as template parameter `T`;
-- A shape, of type `Position<n>`, which is a sequence of indices,
-  and can be viewed as an alias of `std::array<n, long>` or `std::vector<long>`;
+- A shape, of type `Position<N>`, which is a sequence of indices,
+  and can be viewed as an alias of `std::array<N, long>` or `std::vector<long>`;
 - Some data, i.e. the pixel values, stored contiguously, for example in a `std::vector`.
 
 Two specialization are provided for convenience:

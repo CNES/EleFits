@@ -32,6 +32,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
+ * @ingroup data_classes
  * @brief Base class for a Fits data container.
  * @tparam T The value type
  * @tparam TDerived The child class which implements required methods
@@ -107,14 +108,14 @@ struct ContiguousContainerMixin {
   }
 
   /**
-   * @copydoc begin()
+   * @copybrief begin()
    */
   iterator begin() {
     return const_cast<iterator>(const_cast<const ContiguousContainerMixin&>(*this).begin());
   }
 
   /**
-   * @copydoc begin()
+   * @copybrief begin()
    */
   iterator cbegin() {
     return const_cast<const ContiguousContainerMixin&>(*this).begin();
@@ -128,14 +129,14 @@ struct ContiguousContainerMixin {
   }
 
   /**
-   * @copydoc end()
+   * @copybrief end()
    */
   iterator end() {
     return const_cast<iterator>(const_cast<const ContiguousContainerMixin&>(*this).end());
   }
 
   /**
-   * @copydoc end()
+   * @copybrief end()
    */
   iterator cend() {
     return const_cast<const ContiguousContainerMixin&>(*this).end();
@@ -166,6 +167,7 @@ struct ContiguousContainerMixin {
 };
 
 /**
+ * @ingroup data_classes
  * @brief A `ContiguousContainerMixin` which implements `data()` and arithmetic operators.
  * @tparam TDerived The derived class
  * @details
@@ -194,7 +196,7 @@ public:
   }
 
   /**
-   * @copydoc data()
+   * @copybrief data()
    */
   inline T* data() {
     return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
@@ -208,10 +210,10 @@ public:
   }
 
   /**
-   * @brief Access the container values as an `std::vector`.
+   * @brief Copy the container values into an `std::vector`.
    * @deprecated Use more generic `container()` instead, which performs no copy.
    */
-  std::std::vector<T> vector() const {
+  std::vector<T> vector() const {
     return {this->begin(), this->end()};
   }
 
@@ -230,7 +232,7 @@ public:
    * @warning
    * The container is not usable anymore after this call.
    */
-  TContainer& moveTo(TContainer& destination) const {
+  TContainer& moveTo(TContainer& destination) {
     destination = std::move(m_container);
     return destination;
   }
@@ -268,7 +270,7 @@ public:
   }
 
   /**
-   * @copydoc data()
+   * @copybrief data() const
    */
   inline T* data() {
     return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
@@ -286,7 +288,11 @@ private:
  */
 template <typename TContainer>
 struct ContainerAllocator {
-  static TContainer alloc(std::size_t size) {
+
+  /**
+   * @brief Allocate the container for the given number of elements.
+   */
+  static TContainer fromSize(std::size_t size) {
     return TContainer(size);
   }
 };
@@ -296,7 +302,11 @@ struct ContainerAllocator {
  */
 template <typename T>
 struct ContainerAllocator<T*> {
-  static T* alloc(std::size_t) {
+
+  /**
+   * @brief Do nothing (memory is not owned).
+   */
+  static T* fromSize(std::size_t) {
     return nullptr;
   }
 };
