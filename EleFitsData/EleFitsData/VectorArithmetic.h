@@ -23,23 +23,32 @@
 #include <algorithm>
 #include <boost/operators.hpp>
 #include <functional>
+#include <type_traits>
 
 namespace Euclid {
 namespace Fits {
 
 /**
  * @ingroup data_classes
- * @brief Mixin to provide vector and scalar arithmetic operators.
+ * @brief Mixin to provide vector space arithmetics to a container.
  * @details
  * Implemented arithmetic properties:
- * - Vector-additive (V += U, W = V + U, V += U, W = V - U);
- * - Scalar-additive (V += a, V = U + a, V -= a, V = U + a);
- * - Scalar-multiplicative (V *= a, V = U * a, V /= a, V = U / a).
+ * - Vector-additive: V += U, W = V + U, V += U, W = V - U;
+ * - Scalar-additive: V += a, V = U + a, V = a + U, V -= a, V = U + a, V = a - U;
+ * - Scalar-multiplicative: V *= a, V = U * a, V = a * U, V /= a, V = U / a;
+ * - Incrementation if enabled (for integral types by default): V++, ++V, V--, --V.
+ */
+template <typename T, typename TDerived, bool Incrementable = std::is_integral<T>::value>
+struct VectorArithmeticMixin;
+
+/**
+ * @copydoc VectorArithmeticMixin
  */
 template <typename T, typename TDerived>
-struct VectorArithmeticMixin :
+struct VectorArithmeticMixin<T, TDerived, false> :
     boost::additive<TDerived>,
     boost::additive<TDerived, T>,
+    boost::subtractable2_left<TDerived, T>,
     boost::multiplicative<TDerived, T> {
 
   /**
@@ -48,40 +57,38 @@ struct VectorArithmeticMixin :
   TDerived& operator+=(const TDerived& rhs);
 
   /**
-   * @brief V += a and V = U + a.
+   * @brief V += a, V = U + a, V = a + U.
    */
   TDerived& operator+=(const T& rhs);
 
   /**
-   * @brief V -= U and W = V -U.
+   * @brief V -= U and W = V - U.
    */
   TDerived& operator-=(const TDerived& rhs);
 
   /**
-   * @brief V -= a and V = U - a.
+   * @brief V -= a, V = U - a, V = a - U.
    */
   TDerived& operator-=(const T& rhs);
 
   /**
-   * @brief V *= a and V = U * a.
+   * @brief V *= a, V = U * a, V = a * U.
    */
   TDerived& operator*=(const T& rhs);
 
   /**
-   * @brief V /= a and V = U / a.
+   * @brief V /= a, V = U / a.
    */
   TDerived& operator/=(const T& rhs);
 };
 
 /**
- * @ingroup data_classes
- * @brief Extension of `VectorArithmeticMixin` for integer values.
- * @details
- * Implement increment and decrement operators
- * in addition to `VectorArithmeticMixin` operators.
+ * @copydoc VectorArithmeticMixin
  */
 template <typename T, typename TDerived>
-struct IntVectorArithmeticMixin : VectorArithmeticMixin<T, TDerived>, boost::unit_steppable<TDerived> {
+struct VectorArithmeticMixin<T, TDerived, true> :
+    VectorArithmeticMixin<T, TDerived, false>,
+    boost::unit_steppable<TDerived> {
 
   /**
    * @brief ++V and V++.
@@ -95,7 +102,7 @@ struct IntVectorArithmeticMixin : VectorArithmeticMixin<T, TDerived>, boost::uni
 };
 
 template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived>::operator+=(const TDerived& rhs) {
+TDerived& VectorArithmeticMixin<T, TDerived, false>::operator+=(const TDerived& rhs) {
   std::transform(
       static_cast<TDerived*>(this)->begin(),
       static_cast<TDerived*>(this)->end(),
@@ -106,7 +113,7 @@ TDerived& VectorArithmeticMixin<T, TDerived>::operator+=(const TDerived& rhs) {
 }
 
 template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived>::operator+=(const T& rhs) {
+TDerived& VectorArithmeticMixin<T, TDerived, false>::operator+=(const T& rhs) {
   std::transform(
       static_cast<TDerived*>(this)->begin(),
       static_cast<TDerived*>(this)->end(),
@@ -118,7 +125,7 @@ TDerived& VectorArithmeticMixin<T, TDerived>::operator+=(const T& rhs) {
 }
 
 template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived>::operator-=(const TDerived& rhs) {
+TDerived& VectorArithmeticMixin<T, TDerived, false>::operator-=(const TDerived& rhs) {
   std::transform(
       static_cast<TDerived*>(this)->begin(),
       static_cast<TDerived*>(this)->end(),
@@ -129,7 +136,7 @@ TDerived& VectorArithmeticMixin<T, TDerived>::operator-=(const TDerived& rhs) {
 }
 
 template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived>::operator-=(const T& rhs) {
+TDerived& VectorArithmeticMixin<T, TDerived, false>::operator-=(const T& rhs) {
   std::transform(
       static_cast<TDerived*>(this)->begin(),
       static_cast<TDerived*>(this)->end(),
@@ -141,7 +148,7 @@ TDerived& VectorArithmeticMixin<T, TDerived>::operator-=(const T& rhs) {
 }
 
 template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived>::operator*=(const T& rhs) {
+TDerived& VectorArithmeticMixin<T, TDerived, false>::operator*=(const T& rhs) {
   std::transform(
       static_cast<TDerived*>(this)->begin(),
       static_cast<TDerived*>(this)->end(),
@@ -153,7 +160,7 @@ TDerived& VectorArithmeticMixin<T, TDerived>::operator*=(const T& rhs) {
 }
 
 template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived>::operator/=(const T& rhs) {
+TDerived& VectorArithmeticMixin<T, TDerived, false>::operator/=(const T& rhs) {
   std::transform(
       static_cast<TDerived*>(this)->begin(),
       static_cast<TDerived*>(this)->end(),
@@ -165,7 +172,7 @@ TDerived& VectorArithmeticMixin<T, TDerived>::operator/=(const T& rhs) {
 }
 
 template <typename T, typename TDerived>
-TDerived& IntVectorArithmeticMixin<T, TDerived>::operator++() {
+TDerived& VectorArithmeticMixin<T, TDerived, true>::operator++() {
   std::transform(TDerived::begin(), TDerived::end(), TDerived::begin(), [](auto rhs) {
     return ++rhs;
   });
@@ -173,7 +180,7 @@ TDerived& IntVectorArithmeticMixin<T, TDerived>::operator++() {
 }
 
 template <typename T, typename TDerived>
-TDerived& IntVectorArithmeticMixin<T, TDerived>::operator--() {
+TDerived& VectorArithmeticMixin<T, TDerived, true>::operator--() {
   std::transform(TDerived::begin(), TDerived::end(), TDerived::begin(), [](auto rhs) {
     return --rhs;
   });
