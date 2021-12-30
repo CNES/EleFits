@@ -17,9 +17,12 @@
  *
  */
 
+#include "EleFitsData/TestRaster.h"
 #include "EleFitsData/VectorArithmetic.h"
 
 #include <boost/test/unit_test.hpp>
+
+using namespace Euclid::Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -27,9 +30,43 @@ BOOST_AUTO_TEST_SUITE(VectorArithmetic_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(example_test) {
+BOOST_AUTO_TEST_CASE(raster_arithmetic_test) {
+  const Test::SmallRaster lhs;
+  const Test::SmallRaster rhs;
+  int scalar = 2;
+  const auto plusVector = lhs + rhs;
+  const auto plusScalar = lhs + scalar;
+  const auto minusVector = lhs - rhs;
+  const auto minusScalar = lhs - scalar;
+  const auto timesScalar = lhs * scalar;
+  const auto dividedByScalar = lhs / scalar;
+  for (long i = 0; i < lhs.size(); ++i) {
+    BOOST_TEST(plusVector[i] == lhs[i] + rhs[i]);
+    BOOST_TEST(plusScalar[i] == lhs[i] + scalar);
+    BOOST_TEST(minusVector[i] == lhs[i] - rhs[i]);
+    BOOST_TEST(minusScalar[i] == lhs[i] - scalar);
+    BOOST_TEST(timesScalar[i] == lhs[i] * scalar);
+    BOOST_TEST(dividedByScalar[i] == lhs[i] / scalar);
+  }
+}
 
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+BOOST_AUTO_TEST_CASE(raster_generate_test) {
+  Position<3> shape {3, 14, 15};
+  Test::RandomRaster<std::int16_t, 3> a(shape);
+  Test::RandomRaster<std::int32_t, 3> b(shape);
+  VecRaster<std::int64_t, 3> res(shape);
+  res.generate(
+      [](auto v, auto w) {
+        return v * w;
+      },
+      a,
+      b);
+  res.apply([](auto v) {
+    return -v;
+  });
+  for (const auto& p : res.domain()) {
+    BOOST_TEST(res[p] == -a[p] * b[p]);
+  }
 }
 
 //-----------------------------------------------------------------------------

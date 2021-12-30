@@ -124,26 +124,6 @@ BOOST_FIXTURE_TEST_CASE(vecraster_move_test, Test::SmallRaster) {
   BOOST_TEST(moved.data() == data);
 }
 
-BOOST_AUTO_TEST_CASE(arithmetic_test) {
-  const Test::SmallRaster lhs;
-  const Test::SmallRaster rhs;
-  Test::SmallRaster::Value scalar = 2;
-  const auto plusVector = lhs + rhs;
-  const auto plusScalar = lhs + scalar;
-  const auto minusVector = lhs - rhs;
-  const auto minusScalar = lhs - scalar;
-  const auto timesScalar = lhs * scalar;
-  const auto dividedByScalar = lhs / scalar;
-  for (long i = 0; i < lhs.size(); ++i) {
-    BOOST_TEST(plusVector[i] == lhs[i] + rhs[i]);
-    BOOST_TEST(plusScalar[i] == lhs[i] + scalar);
-    BOOST_TEST(minusVector[i] == lhs[i] - rhs[i]);
-    BOOST_TEST(minusScalar[i] == lhs[i] - scalar);
-    BOOST_TEST(timesScalar[i] == lhs[i] * scalar);
-    BOOST_TEST(dividedByScalar[i] == lhs[i] / scalar);
-  }
-}
-
 BOOST_AUTO_TEST_CASE(make_raster_test) {
   constexpr long width = 16;
   constexpr long height = 9;

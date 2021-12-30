@@ -31,6 +31,9 @@ namespace Fits {
 /**
  * @ingroup data_classes
  * @brief Mixin to provide vector space arithmetics to a container.
+ * @tparam T The contained element value type
+ * @tparam TDerived The container which inherits this class
+ * @tparam Incrementable A flag to activate increment and decrement operators
  * @details
  * Implemented arithmetic properties:
  * - Vector-additive: V += U, W = V + U, V += U, W = V - U;
@@ -80,6 +83,41 @@ struct VectorArithmeticMixin<T, TDerived, false> :
    * @brief V /= a, V = U / a.
    */
   TDerived& operator/=(const T& rhs);
+
+  /**
+   * @brief Generate values from a function with optional input containers.
+   * @param func The generator function, which takes as many inputs as there are arguments
+   * @param args The arguments in the form of containers of compatible sizes
+   * @details
+   * For example, here is how to imlement element-wise square root and multiplication:
+   * \code
+   * Container a = ...;
+   * Container b = ...;
+   * Container res(a.size());
+   * res.generate([](auto v) { return std::sqrt(v) }, a); // res = sqrt(a)
+   * res.generate([](auto v, auto w) { return v * w; }, a, b); // res = a * b
+   * \endcode
+   */
+  template <typename TFunc, typename... TContainers>
+  TDerived& generate(TFunc&& func, const TContainers&... args);
+
+  /**
+   * @brief Apply a function with optional input containers.
+   * @param func The function
+   * @param args The arguments in the form of containers of compatible sizes
+   * @details
+   * If there are _n_ arguments, `func` takes _n_+1 parameters,
+   * where the first argument is the element of this container.
+   * For example, here is how to imlement in-place element-wise square root and multiplication:
+   * \code
+   * Container a = ...;
+   * Container res = ...;
+   * res.apply([](auto v) { return std::sqrt(v); }); // res = sqrt(res)
+   * res.apply([](auto v, auto w) { return v * w; }, a); // res *= a
+   * \endcode
+   */
+  template <typename TFunc, typename... TContainers>
+  TDerived& apply(TFunc&& func, const TContainers&... args);
 };
 
 /**
@@ -101,93 +139,13 @@ struct VectorArithmeticMixin<T, TDerived, true> :
   TDerived& operator--();
 };
 
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, false>::operator+=(const TDerived& rhs) {
-  std::transform(
-      static_cast<TDerived*>(this)->begin(),
-      static_cast<TDerived*>(this)->end(),
-      rhs.begin(),
-      static_cast<TDerived*>(this)->begin(),
-      std::plus<>());
-  return static_cast<TDerived&>(*this);
-}
-
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, false>::operator+=(const T& rhs) {
-  std::transform(
-      static_cast<TDerived*>(this)->begin(),
-      static_cast<TDerived*>(this)->end(),
-      static_cast<TDerived*>(this)->begin(),
-      [&](auto lhs) {
-        return lhs + rhs;
-      });
-  return static_cast<TDerived&>(*this);
-}
-
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, false>::operator-=(const TDerived& rhs) {
-  std::transform(
-      static_cast<TDerived*>(this)->begin(),
-      static_cast<TDerived*>(this)->end(),
-      rhs.begin(),
-      static_cast<TDerived*>(this)->begin(),
-      std::minus<>());
-  return static_cast<TDerived&>(*this);
-}
-
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, false>::operator-=(const T& rhs) {
-  std::transform(
-      static_cast<TDerived*>(this)->begin(),
-      static_cast<TDerived*>(this)->end(),
-      static_cast<TDerived*>(this)->begin(),
-      [&](auto lhs) {
-        return lhs - rhs;
-      });
-  return static_cast<TDerived&>(*this);
-}
-
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, false>::operator*=(const T& rhs) {
-  std::transform(
-      static_cast<TDerived*>(this)->begin(),
-      static_cast<TDerived*>(this)->end(),
-      static_cast<TDerived*>(this)->begin(),
-      [&](auto lhs) {
-        return lhs * rhs;
-      });
-  return static_cast<TDerived&>(*this);
-}
-
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, false>::operator/=(const T& rhs) {
-  std::transform(
-      static_cast<TDerived*>(this)->begin(),
-      static_cast<TDerived*>(this)->end(),
-      static_cast<TDerived*>(this)->begin(),
-      [&](auto lhs) {
-        return lhs / rhs;
-      });
-  return static_cast<TDerived&>(*this);
-}
-
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, true>::operator++() {
-  std::transform(TDerived::begin(), TDerived::end(), TDerived::begin(), [](auto rhs) {
-    return ++rhs;
-  });
-  return static_cast<TDerived&>(*this);
-}
-
-template <typename T, typename TDerived>
-TDerived& VectorArithmeticMixin<T, TDerived, true>::operator--() {
-  std::transform(TDerived::begin(), TDerived::end(), TDerived::begin(), [](auto rhs) {
-    return --rhs;
-  });
-  return static_cast<TDerived&>(*this);
-}
-
 } // namespace Fits
 } // namespace Euclid
+
+/// @cond INTERNAL
+#define _ELEFITSDATA_VECTORARITHMETIC_IMPL
+#include "EleFitsData/impl/VectorArithmetic.hpp"
+#undef _ELEFITSDATA_VECTORARITHMETIC_IMPL
+/// @endcond
 
 #endif

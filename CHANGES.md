@@ -21,7 +21,8 @@
 * `Raster` is more generic and can work with any contiguous container
 * Methods which took a `Raster&` as parameter now accept any type which fullfills `Raster` requirements
 * `Raster` fulfills the requirements of the standard `ContiguousContainer` concept
-* `Raster` has vector space arithmetics (e.g. supports +, -, *, /)
+* `Raster` has vector space arithmetic (e.g. supports +, -, *, /)
+* `Raster::apply()` and `Raster::generate()` enable element-wise transforms
 
 ### New features
 
