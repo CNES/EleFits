@@ -18,15 +18,3 @@
  */
 
 #include "EleFitsData/Position.h"
-
-namespace Euclid {
-namespace Fits {
-
-template <>
-Position<-1>::Position(long dim) : indices(dim) {}
-
-template <>
-Position<-1>::Position(std::initializer_list<long> posIndices) : indices(posIndices) {}
-
-} // namespace Fits
-} // namespace Euclid

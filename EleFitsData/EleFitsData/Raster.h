@@ -191,10 +191,17 @@ public:
    * @brief Constructor.
    * @param shape The raster shape
    */
-  Raster(Position<N> shape) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(
-          ContainerAllocator<TContainer>::fromSize(shapeSize(shape))),
-      m_shape(std::move(shape)) {}
+  explicit Raster(Position<N> shape) :
+      DataContainer<T, TContainer, Raster<T, N, TContainer>>(shapeSize(shape)), m_shape(std::move(shape)) {}
+
+  /**
+   * @brief Constructor.
+   * @param shape The raster shape
+   * @param data The raw data
+   */
+  Raster(Position<N> shape, T* data) :
+      DataContainer<T, TContainer, Raster<T, N, TContainer>>(data, data + shapeSize(shape)), m_shape(std::move(shape)) {
+  }
 
   /**
    * @brief Constructor.
@@ -236,11 +243,6 @@ public:
    * or to the current dimension if variable.
    */
   long dimension() const;
-
-  /**
-   * @brief Get the number of pixels.
-   */
-  long size() const;
 
   /**
    * @brief Get the length along given axis.

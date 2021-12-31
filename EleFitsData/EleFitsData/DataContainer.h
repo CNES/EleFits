@@ -21,11 +21,13 @@
 #define _ELEFITSDATA_DATACONTAINER_H
 
 #include "EleFitsData/DataUtils.h"
+#include "EleFitsData/FitsError.h"
 #include "EleFitsData/VectorArithmetic.h"
 
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <initializer_list>
 #include <vector>
 
 namespace Euclid {
@@ -168,11 +170,16 @@ struct ContiguousContainerMixin {
 
 /**
  * @ingroup data_classes
- * @brief A `ContiguousContainerMixin` which implements `data()` and arithmetic operators.
+ * @brief A `ContiguousContainerMixin` which implements `data()`, `size()` and arithmetic operators.
  * @tparam TDerived The derived class
  * @details
- * The derived class should implement the missing `ContiguousContainer` methods:
- * see `ContiguousContainerMixin`.
+ * The class can be specialized for any container, in which case it should provide the following methods:
+ * - Default, copy and move constructors;
+ * - Constructor from a size;
+ * - Constructor from an iterator pair;
+ * - Non-explicit constructor from an initialization list;
+ * - `const T* data() const` and `T* data()`;
+ * - `size_type size() const`.
  */
 template <typename T, typename TContainer, typename TDerived>
 class DataContainer : public ContiguousContainerMixin<T, TDerived>, public VectorArithmeticMixin<T, TDerived> {
@@ -183,7 +190,23 @@ public:
   ELEFITS_MOVABLE(DataContainer)
 
   /**
-   * @brief Constructor.
+   * @brief Default and size-based constructor.
+   */
+  explicit DataContainer(std::size_t size = 0) : m_container(size) {}
+
+  /**
+   * @brief Iterator-based constructor.
+   */
+  template <typename TIterator>
+  DataContainer(TIterator begin, TIterator end) : m_container(begin, end) {}
+
+  /**
+   * @brief Initialization list-based constructor.
+   */
+  DataContainer(std::initializer_list<T> values) : m_container(values) {}
+
+  /**
+   * @brief Forwarding constructor.
    */
   template <typename... Ts>
   DataContainer(Ts&&... args) : m_container(std::forward<Ts>(args)...) {}
@@ -200,6 +223,13 @@ public:
    */
   inline T* data() {
     return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
+  }
+
+  /**
+   * @brief Get the number of elements.
+   */
+  std::size_t size() const {
+    return m_container.size();
   }
 
   /**
@@ -258,9 +288,20 @@ public:
   ELEFITS_MOVABLE(DataContainer)
 
   /**
-   * @brief Constructor.
+   * @brief Default and size-based constructor.
    */
-  DataContainer(T* data = nullptr) : m_data(data) {}
+  explicit DataContainer(std::size_t size = 0, T* data = nullptr) : m_size(size), m_data(data) {}
+
+  /**
+   * @brief Iterator-based constructor.
+   */
+  template <typename TIterator>
+  DataContainer(TIterator begin, TIterator end) : m_size(std::distance(begin, end)), m_data(&(*begin)) {}
+
+  /**
+   * @brief Initialization list-based constructor.
+   */
+  DataContainer(std::initializer_list<T> values) : DataContainer(values.begin(), values.end()) {}
 
   /**
    * @brief Access the raw data.
@@ -276,7 +317,19 @@ public:
     return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
   }
 
+  /**
+   * @brief Get the number of elements.
+   */
+  std::size_t size() const {
+    return m_size;
+  }
+
 private:
+  /**
+   * @brief The number of elements.
+   */
+  std::size_t m_size;
+
   /**
    * @brief The data raw pointer.
    */
@@ -284,32 +337,75 @@ private:
 };
 
 /**
- * @brief Uniform container allocator.
+ * @brief `std::array` specialization.
  */
-template <typename TContainer>
-struct ContainerAllocator {
+template <typename T, typename TDerived, std::size_t N>
+class DataContainer<T, std::array<T, N>, TDerived> :
+    public ContiguousContainerMixin<T, TDerived>,
+    public VectorArithmeticMixin<T, TDerived> {
+
+public:
+  ELEFITS_VIRTUAL_DTOR(DataContainer)
+  ELEFITS_COPYABLE(DataContainer)
+  ELEFITS_MOVABLE(DataContainer)
 
   /**
-   * @brief Allocate the container for the given number of elements.
+   * @brief Default and size-based constructor.
    */
-  static TContainer fromSize(std::size_t size) {
-    return TContainer(size);
+  explicit DataContainer(std::size_t size = N) : m_container {} {
+    // FIXME assert size == N
+    if (size != N) {
+      throw FitsError("Size missmatch in DataContainer<std::array> specialization."); // FIXME clarify
+    }
   }
-};
-
-/**
- * @brief Disable allocation for non-owning `T*` container.
- */
-template <typename T>
-struct ContainerAllocator<T*> {
 
   /**
-   * @brief Do nothing (memory is not owned).
+   * @brief Iterator-based constructor.
    */
-  static T* fromSize(std::size_t) {
-    return nullptr;
+  template <typename TIterator>
+  DataContainer(TIterator begin, TIterator end) : DataContainer(std::distance(begin, end)) {
+    std::copy(begin, end, m_container.begin());
   }
-};
+
+  /**
+   * @brief Initialization list-based constructor.
+   */
+  DataContainer(std::initializer_list<T> values) : DataContainer(values.begin(), values.end()) {}
+
+  /**
+   * @brief Access the raw data.
+   */
+  inline const T* data() const {
+    return m_container.data();
+  }
+
+  /**
+   * @copybrief data() const
+   */
+  inline T* data() {
+    return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
+  }
+
+  /**
+   * @brief Get the number of elements.
+   */
+  std::size_t size() const {
+    return N;
+  }
+
+  /**
+   * @brief Access the container in read-only mode.
+   */
+  const std::array<T, N>& container() const {
+    return m_container;
+  }
+
+private:
+  /**
+   * @brief The data array.
+   */
+  std::array<T, N> m_container;
+}; // FIXME avoid duplication
 
 } // namespace Fits
 } // namespace Euclid

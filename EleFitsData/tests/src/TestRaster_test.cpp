@@ -56,7 +56,7 @@ ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTER_EQUALS_ITSELF_TEST)
 
 template <typename TRaster>
 void checkRastersWithDifferentShapesDiffer(const TRaster& raster) {
-  auto shape = raster.shape();
+  Position<TRaster::Dim> shape = raster.shape();
   shape[0] = raster.shape()[1];
   shape[1] = raster.shape()[0];
   PtrRaster<const typename TRaster::Value, TRaster::Dim> other(shape, raster.data()); // Same data, different shape
@@ -65,7 +65,6 @@ void checkRastersWithDifferentShapesDiffer(const TRaster& raster) {
 
 template <typename T>
 void checkRandomRastersWithDifferentShapesDiffer() {
-  checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 1>({2}));
   checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 2>({2, 3}));
   checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 3>({2, 3, 4}));
   checkRastersWithDifferentShapesDiffer(Test::RandomRaster<T, 4>({2, 3, 4, 5}));

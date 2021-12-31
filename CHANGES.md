@@ -2,32 +2,31 @@
 
 ## 4.1
 
-### Known issues
-
-* `Raster::moveTo()` performs a copy instead of a move
-
 ### Minor breaking changes
 
-* Updated to Elements 6.0.1
-* `Raster` has a third template parameter
+* `Raster` has a third template parameter to select the container
+  (with `PtrRaster<T, N> = Raster<T, N, T*>` and `VecRaster<T, N> = Raster<T, N, vector<T>>`)
 
 ### Bug fixes
 
 * `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
 * Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 
-### Refactoring (backward compatible)
+### Refactoring (mostly backward compatible, see breaking changes above)
 
-* `Raster` is more generic and can work with any contiguous container
+* `Raster` inherits `DataContainer`, which makes it more generic and allows to use any contiguous container
+* `PtrRaster` and `VecRaster` are now mere aliases
 * Methods which took a `Raster&` as parameter now accept any type which fullfills `Raster` requirements
-* `Raster` fulfills the requirements of the standard `ContiguousContainer` concept
-* `Raster` has vector space arithmetic (e.g. supports +, -, *, /)
-* `Raster::apply()` and `Raster::generate()` enable element-wise transforms
+* All `DataContainer`s fulfill the requirements of the standard `ContiguousContainer` concept
+* All `DataContainer`s have vector space arithmetic (e.g. support +, -, *, /)
+* `DataContainer::apply()` and `DataContainer::generate()` enable element-wise transforms
 
 ### New features
 
+* Updated to Elements 6.0.1
 * Empty binary table HDUs can be created
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `vector<VecColumn<T>>`)
+* `DataContainers` provide many mathematical services (see refactoring above)
 * New "Game of Life" example demonstrates the use of slicing
 
 ### Optimization and cleaning
@@ -36,7 +35,7 @@
 * Many similar code blocks have been merged (e.g. through mixins)
 * Several overloads have been merged (e.g. with `ColumnKey` and `TypedKey`)
 * Formatting has been reviewed
-* This change log was finally added to Doxygen pages
+* This change log was added to Doxygen pages
 
 ## 4.0
 
@@ -78,7 +77,7 @@
 
 * `RecordHdu` is renamed as `Hdu`
 * New handlers `Header`, `ImageRaster` and `BintableColumns` are responsible for reading and writing header and data units
-* Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` or `std::variant`
+* Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` variant`
 * `FileMode` replaces `FitsFile::Permission`, `SifFile::Permission` and `MefFile::Permission`
 * Class `HduCategory` replaces enum `HduType`
 * `RecordVector` is renamed as `RecordVec`
@@ -272,11 +271,11 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### API changes
 
-* Indices and lengths as `long`s instead of `std::size_t`s
+* Indices and lengths as `long`s instead size_t`s
 
 ### New features
 
-* Records can be created from `const char*` values in addition to `std::string`
+* Records can be created from `const char*` values in addition string`
 
 ### Safety
 

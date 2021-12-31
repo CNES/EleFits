@@ -26,6 +26,20 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T, typename TDerived>
+TDerived VectorArithmeticMixin<T, TDerived, false>::operator+() const {
+  return *this; // Copies
+}
+
+template <typename T, typename TDerived>
+TDerived VectorArithmeticMixin<T, TDerived, false>::operator-() const {
+  TDerived res = static_cast<const TDerived&>(*this);
+  std::transform(res.begin(), res.end(), res.begin(), [&](auto r) {
+    return -r;
+  });
+  return res;
+}
+
+template <typename T, typename TDerived>
 TDerived& VectorArithmeticMixin<T, TDerived, false>::operator+=(const TDerived& rhs) {
   std::transform(
       static_cast<TDerived*>(this)->begin(),
@@ -113,17 +127,25 @@ TDerived& VectorArithmeticMixin<T, TDerived, false>::apply(TFunc&& func, const T
 
 template <typename T, typename TDerived>
 TDerived& VectorArithmeticMixin<T, TDerived, true>::operator++() {
-  std::transform(TDerived::begin(), TDerived::end(), TDerived::begin(), [](auto rhs) {
-    return ++rhs;
-  });
+  std::transform(
+      static_cast<TDerived*>(this)->begin(),
+      static_cast<TDerived*>(this)->end(),
+      static_cast<TDerived*>(this)->begin(),
+      [](auto rhs) {
+        return ++rhs;
+      });
   return static_cast<TDerived&>(*this);
 }
 
 template <typename T, typename TDerived>
 TDerived& VectorArithmeticMixin<T, TDerived, true>::operator--() {
-  std::transform(TDerived::begin(), TDerived::end(), TDerived::begin(), [](auto rhs) {
-    return --rhs;
-  });
+  std::transform(
+      static_cast<TDerived*>(this)->begin(),
+      static_cast<TDerived*>(this)->end(),
+      static_cast<TDerived*>(this)->begin(),
+      [](auto rhs) {
+        return --rhs;
+      });
   return static_cast<TDerived&>(*this);
 }
 

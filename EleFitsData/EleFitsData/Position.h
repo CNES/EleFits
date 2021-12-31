@@ -20,18 +20,18 @@
 #ifndef _ELEFITSDATA_POSITION_H
 #define _ELEFITSDATA_POSITION_H
 
+#include "EleFitsData/DataContainer.h"
+#include "EleFitsData/DataUtils.h"
 #include "EleFitsData/FitsError.h"
 
-#include <algorithm> // transform
-#include <array>
-#include <functional> // plus, minus, multiplies
-#include <initializer_list>
 #include <numeric> // accumulate
 #include <type_traits> // conditional
-#include <vector>
 
 namespace Euclid {
 namespace Fits {
+
+template <long N = 2>
+using Indices = typename std::conditional<(N == -1), std::vector<long>, std::array<long, (std::size_t)N>>::type;
 
 /**
  * @ingroup image_data_classes
@@ -59,29 +59,16 @@ namespace Fits {
  * @see Region
  */
 template <long N = 2>
-struct Position {
-
+class Position : public DataContainer<long, Indices<N>, Position<N>> {
+public:
+  /**
+   * @brief The dimension template parameter.
+   */
   static constexpr long Dim = N;
 
-  /**
-   * @brief Storage class for the indices.
-   */
-  using Indices = typename std::conditional<(N == -1), std::vector<long>, std::array<long, (std::size_t)N>>::type;
-
-  /**
-   * @brief Standad-like alias to the value type for compatibility, e.g. with Boost.
-   */
-  using value_type = long;
-
-  /**
-   * @brief Standad-like alias to the iterator type for compatibility, e.g. with Boost.
-   */
-  using iterator = typename Indices::iterator;
-
-  /**
-   * @brief Standad-like alias to the const iterator type for compatibility, e.g. with Boost.
-   */
-  using const_iterator = typename Indices::const_iterator;
+  ELEFITS_VIRTUAL_DTOR(Position)
+  ELEFITS_COPYABLE(Position)
+  ELEFITS_MOVABLE(Position)
 
   /**
    * @brief Default constructor.
@@ -94,12 +81,7 @@ struct Position {
   /**
    * @brief Create a position of given dimension.
    */
-  explicit Position(long dim); // FIXME weird! Replace with single CTor Position(Ts... args)?
-
-  /**
-   * @brief Create a position from a brace-enclosed list of indices.
-   */
-  Position(std::initializer_list<long> posIndices);
+  explicit Position(long dim);
 
   /**
    * @brief Create a position by copying data from some container.
@@ -108,13 +90,16 @@ struct Position {
   Position(TIterator begin, TIterator end);
 
   /**
+   * @brief Create a position from a brace-enclosed list of indices.
+   */
+  Position(std::initializer_list<long> indices);
+
+  /**
    * @brief Create position 0.
    */
   static Position<N> zero() {
-    Position<N> res; // FIXME valid for N = -1? Position<N> res(std::abs(N))?
-    for (auto& i : res) {
-      i = 0;
-    }
+    Position<N> res(std::abs(Dim));
+    std::fill(res.begin(), res.end(), 0);
     return res;
   }
 
@@ -122,10 +107,8 @@ struct Position {
    * @brief Create max position (full of -1's).
    */
   static Position<N> max() {
-    Position<N> res; // FIXME valid for N = -1? Position<N> res(std::abs(N))?
-    for (auto& i : res) {
-      i = -1;
-    }
+    Position<N> res(std::abs(N));
+    std::fill(res.begin(), res.end(), -1);
     return res;
   }
 
@@ -133,77 +116,24 @@ struct Position {
    * @brief Check whether the position is zero.
    */
   bool isZero() const {
-    return *this == zero();
+    for (auto i : *this) {
+      if (i != 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
    * @brief Check whether the position is max.
    */
   bool isMax() const {
-    return *this == max();
-  }
-
-  /**
-   * @brief The number of indices.
-   */
-  long size() const {
-    return indices.size();
-  }
-
-  /**
-   * @brief Access the underlying array.
-   */
-  const long* data() const {
-    return indices.data();
-  }
-
-  /**
-   * @copydoc data()
-   */
-  long* data() {
-    return indices.data();
-  }
-
-  /**
-   * @brief Access the `i`-th element.
-   */
-  long& operator[](long i) {
-    return indices[i];
-  }
-
-  /**
-   * @copydoc operator[]()
-   */
-  const long& operator[](long i) const {
-    return indices[i];
-  }
-
-  /**
-   * @brief Iterator to the first element.
-   */
-  iterator begin() {
-    return indices.begin();
-  }
-
-  /**
-   * @copydoc begin()
-   */
-  const_iterator begin() const {
-    return indices.begin();
-  }
-
-  /**
-   * @brief Iterator to the past-the-last element.
-   */
-  iterator end() {
-    return indices.end();
-  }
-
-  /**
-   * @copydoc end()
-   */
-  const_iterator end() const {
-    return indices.end();
+    for (auto i : *this) {
+      if (i != 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -214,11 +144,10 @@ struct Position {
    */
   template <long M>
   Position<M> slice() const {
-    Position<M> res; // TODO one-line with iterator?
-    for (long i = 0; i < M; ++i) {
-      res[i] = indices[i];
-    }
-    return res;
+    const auto b = this->begin();
+    auto e = b;
+    std::advance(e, M);
+    return Position<M>(b, e);
   }
 
   /**
@@ -231,16 +160,11 @@ struct Position {
   template <long M>
   Position<M> extend(const Position<M>& padding) const {
     auto res = padding;
-    for (long i = 0; i < size(); ++i) { // TODO std::transform
-      res[i] = indices[i];
+    for (long i = 0; i < this->size(); ++i) { // TODO std::transform
+      res[i] = (*this)[i];
     }
     return res;
   }
-
-  /**
-   * @brief The indices.
-   */
-  Indices indices;
 };
 
 /**
@@ -251,232 +175,18 @@ long shapeSize(const Position<N>& shape) {
   return std::accumulate(shape.begin(), shape.end(), 1L, std::multiplies<long>());
 }
 
-template <>
-Position<-1>::Position(long dim);
-
-template <>
-Position<-1>::Position(std::initializer_list<long> posIndices);
-
-template <>
-template <typename TIterator>
-Position<-1>::Position(TIterator begin, TIterator end);
+template <long N>
+Position<N>::Position() : DataContainer<long, Indices<N>, Position<N>>() {}
 
 template <long N>
-Position<N>::Position() : indices {} {
-  for (auto& i : indices) {
-    i = 0; // FIXME not needed: indices are unspecified; but should be tested for non-regression
-  }
-}
+Position<N>::Position(long dim) : DataContainer<long, Indices<N>, Position<N>>(dim) {}
 
 template <long N>
-Position<N>::Position(long dim) : indices {} {
-  if (dim != N) {
-    throw FitsError("Dimension mismatch."); // TODO clarify
-  }
-}
-
-template <long N>
-Position<N>::Position(std::initializer_list<long> posIndices) : Position<N> {posIndices.begin(), posIndices.end()} {}
+Position<N>::Position(std::initializer_list<long> indices) : DataContainer<long, Indices<N>, Position<N>>(indices) {}
 
 template <long N>
 template <typename TIterator>
-Position<N>::Position(TIterator begin, TIterator end) : indices {} {
-  std::copy(begin, end, indices.begin());
-}
-
-template <>
-template <typename TIterator>
-Position<-1>::Position(TIterator begin, TIterator end) : indices(begin, end) {}
-
-template <long N = 2>
-bool operator==(const Position<N>& lhs, const Position<N>& rhs) {
-  return lhs.indices == rhs.indices;
-}
-
-template <long N = 2>
-bool operator!=(const Position<N>& lhs, const Position<N>& rhs) {
-  return lhs.indices != rhs.indices;
-}
-
-/**
- * @brief Add a position.
- */
-template <long N = 2>
-Position<N>& operator+=(Position<N>& lhs, const Position<N>& rhs) {
-  std::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), std::plus<long>());
-  return lhs;
-}
-
-/**
- * @brief Subtract a position.
- */
-template <long N = 2>
-Position<N>& operator-=(Position<N>& lhs, const Position<N>& rhs) {
-  std::transform(lhs.begin(), lhs.end(), rhs.begin(), lhs.begin(), std::minus<long>());
-  return lhs;
-}
-
-/**
- * @brief Add a scalar to each coordinate.
- */
-template <long N = 2>
-Position<N>& operator+=(Position<N>& lhs, long rhs) {
-  std::transform(lhs.begin(), lhs.end(), lhs.begin(), [=](long i) {
-    return i + rhs;
-  });
-  return lhs;
-}
-
-/**
- * @brief Subtract a scalar to each coordinate.
- */
-template <long N = 2>
-Position<N>& operator-=(Position<N>& lhs, long rhs) {
-  std::transform(lhs.begin(), lhs.end(), lhs.begin(), [=](long i) {
-    return i - rhs;
-  });
-  return lhs;
-}
-
-/**
- * @brief Multiply each coordinate by a scalar.
- */
-template <long N = 2>
-Position<N>& operator*=(Position<N>& lhs, long rhs) {
-  std::transform(lhs.begin(), lhs.end(), lhs.begin(), [=](long i) {
-    return i * rhs;
-  });
-  return lhs;
-}
-
-/**
- * @brief Divide each coordinate by a scalar.
- */
-template <long N = 2>
-Position<N>& operator/=(Position<N>& lhs, long rhs) {
-  std::transform(lhs.begin(), lhs.end(), lhs.begin(), [=](long i) {
-    return i / rhs;
-  });
-  return lhs;
-}
-
-/**
- * @brief Add 1 to each coordinate.
- */
-template <long N = 2>
-Position<N>& operator++(Position<N>& lhs) {
-  lhs += 1;
-  return lhs;
-}
-
-/**
- * @brief Subtract 1 to each coordinate.
- */
-template <long N = 2>
-Position<N>& operator--(Position<N>& lhs) {
-  lhs -= 1;
-  return lhs;
-}
-
-/**
- * @brief Return the current position and then add 1 to each coordinate.
- */
-template <long N = 2>
-Position<N> operator++(Position<N>& lhs, int) {
-  auto res = lhs;
-  ++lhs;
-  return res;
-}
-
-/**
- * @brief Return the current position and then subtract 1 to each coordinate.
- */
-template <long N = 2>
-Position<N> operator--(Position<N>& lhs, int) {
-  auto res = lhs;
-  --lhs;
-  return res;
-}
-
-/**
- * @brief Identity.
- */
-template <long N = 2>
-Position<N> operator+(const Position<N>& lhs) {
-  return lhs;
-}
-
-/**
- * @brief Change the sign of each coordinate.
- */
-template <long N = 2>
-Position<N> operator-(const Position<N>& lhs) {
-  auto res = lhs;
-  std::transform(res.begin(), res.end(), res.begin(), [=](long i) {
-    return -i;
-  });
-  return res;
-}
-
-/**
- * @brief Add two positions.
- */
-template <long N = 2>
-Position<N> operator+(const Position<N>& lhs, const Position<N>& rhs) {
-  auto res = lhs;
-  res += rhs;
-  return res;
-}
-
-/**
- * @brief Subtract two positions.
- */
-template <long N = 2>
-Position<N> operator-(const Position<N>& lhs, const Position<N>& rhs) {
-  auto res = lhs;
-  res -= rhs;
-  return res;
-}
-
-/**
- * @brief Add a position and a scalar.
- */
-template <long N = 2>
-Position<N> operator+(const Position<N>& lhs, long rhs) {
-  auto res = lhs;
-  res += rhs;
-  return res;
-}
-
-/**
- * @brief Subtract a position and a scalar.
- */
-template <long N = 2>
-Position<N> operator-(const Position<N>& lhs, long rhs) {
-  auto res = lhs;
-  res -= rhs;
-  return res;
-}
-
-/**
- * @brief Multiply a position by a scalar.
- */
-template <long N = 2>
-Position<N> operator*(const Position<N>& lhs, long rhs) {
-  auto res = lhs;
-  res *= rhs;
-  return res;
-}
-
-/**
- * @brief Divide a position by a scalar.
- */
-template <long N = 2>
-Position<N> operator/(const Position<N>& lhs, long rhs) {
-  auto res = lhs;
-  res /= rhs;
-  return res;
-}
+Position<N>::Position(TIterator begin, TIterator end) : DataContainer<long, Indices<N>, Position<N>>(begin, end) {}
 
 } // namespace Fits
 } // namespace Euclid

@@ -93,7 +93,7 @@ public:
         if (shape.size() > 0) {
           std::ostringstream oss;
           std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
-          oss << shape.indices.back();
+          oss << shape.container().back();
           logger.info() << "  Image HDU:";
           logger.info() << "    Type: " << readBitpixName(hdu.as<ImageHdu>());
           logger.info() << "    Shape: " << oss.str() << " px";

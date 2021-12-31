@@ -55,6 +55,16 @@ struct VectorArithmeticMixin<T, TDerived, false> :
     boost::multiplicative<TDerived, T> {
 
   /**
+   * @brief Copy.
+   */
+  TDerived operator+() const;
+
+  /**
+   * @brief Compute the opposite.
+   */
+  TDerived operator-() const;
+
+  /**
    * @brief V += U and W = V + U.
    */
   TDerived& operator+=(const TDerived& rhs);
