@@ -28,6 +28,7 @@
 #include <array>
 #include <cstddef>
 #include <initializer_list>
+#include <ostream>
 #include <vector>
 
 namespace Euclid {
@@ -406,6 +407,28 @@ private:
    */
   std::array<T, N> m_container;
 }; // FIXME avoid duplication
+
+template <typename T, typename TDerived>
+std::ostream& operator<<(std::ostream& os, const ContiguousContainerMixin<T, TDerived>& container) {
+  os << "[";
+  if (not container.emtpy()) {
+    const auto size = static_cast<const TDerived&>(container).size();
+    std::size_t i = 0;
+    os << container[i];
+    if (size > 7) {
+      for (++i; i < 3; ++i) {
+        os << ", " << container[i];
+      }
+      i = size - 3;
+      os << " ... " << container[i];
+    }
+    for (++i; i < size; ++i) {
+      os << ", " << container[i];
+    }
+  }
+  os << "]";
+  return os;
+}
 
 } // namespace Fits
 } // namespace Euclid

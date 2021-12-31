@@ -18,8 +18,11 @@
  */
 
 #include "EleFitsData/DataContainer.h"
+#include "EleFitsData/Position.h"
 
 #include <boost/test/unit_test.hpp>
+
+using namespace Euclid::Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -27,8 +30,19 @@ BOOST_AUTO_TEST_SUITE(DataContainer_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(example_test) {
-
+BOOST_AUTO_TEST_CASE(example_test) { // FIXME test strings instead of printing
+  Position<10> a {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  std::cout << a.slice<0>() << std::endl;
+  std::cout << a.slice<1>() << std::endl;
+  std::cout << a.slice<2>() << std::endl;
+  std::cout << a.slice<3>() << std::endl;
+  std::cout << a.slice<4>() << std::endl;
+  std::cout << a.slice<5>() << std::endl;
+  std::cout << a.slice<6>() << std::endl;
+  std::cout << a.slice<7>() << std::endl;
+  std::cout << a.slice<8>() << std::endl;
+  std::cout << a.slice<9>() << std::endl;
+  std::cout << a << std::endl;
   BOOST_FAIL("!!!! Please implement your tests !!!!");
 }
 

@@ -129,7 +129,7 @@ public:
    */
   bool isMax() const {
     for (auto i : *this) {
-      if (i != 0) {
+      if (i != -1) {
         return false;
       }
     }
