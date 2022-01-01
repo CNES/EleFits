@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(raster_arithmetic_test) {
   const auto minusScalar = lhs - scalar;
   const auto timesScalar = lhs * scalar;
   const auto dividedByScalar = lhs / scalar;
-  for (long i = 0; i < lhs.size(); ++i) {
+  for (std::size_t i = 0; i < lhs.size(); ++i) {
     BOOST_TEST(plusVector[i] == lhs[i] + rhs[i]);
     BOOST_TEST(plusScalar[i] == lhs[i] + scalar);
     BOOST_TEST(minusVector[i] == lhs[i] - rhs[i]);

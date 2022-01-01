@@ -42,7 +42,7 @@ namespace Fits {
  * @details
  * This class provides the necessary types and methods
  * to meet the standard `ContiguousContainer` requirements.
- * This is a CRTP implementation which takes as template parameter
+ * This is a CRTP implementation, which means it takes as template parameter
  * the derived class to be empowered.
  * The functions which should be implemented in the derived class are:
  * - Default constructor;

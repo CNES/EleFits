@@ -62,7 +62,7 @@ LoopingBenchmark::Duration LoopingBenchmark::loopOverPositions() {
 LoopingBenchmark::Duration LoopingBenchmark::loopOverIndices() {
   m_chrono.start();
   const auto size = m_c.size();
-  for (long i = 0; i < size; ++i) {
+  for (std::size_t i = 0; i < size; ++i) {
     m_c[i] = m_a[i] + m_b[i];
   }
   return m_chrono.stop();

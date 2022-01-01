@@ -160,7 +160,7 @@ public:
   template <long M>
   Position<M> extend(const Position<M>& padding) const {
     auto res = padding;
-    for (long i = 0; i < this->size(); ++i) { // TODO std::transform
+    for (std::size_t i = 0; i < this->size(); ++i) { // TODO std::transform
       res[i] = (*this)[i];
     }
     return res;

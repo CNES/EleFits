@@ -46,7 +46,7 @@ bool rasterApprox(const TRaster& test, const URaster& ref, double tol) {
   if (test.shape() != ref.shape()) {
     return false;
   }
-  for (long i = 0; i < test.size(); ++i) {
+  for (std::size_t i = 0; i < test.size(); ++i) {
     if (not approx(test.data()[i], ref.data()[i], tol)) {
       return false;
     }

@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_SUITE(PositionIterator_test)
 BOOST_AUTO_TEST_CASE(shape_is_screened_in_order_test) {
   Position<5> shape {2, 3, 4, 5, 6};
   VecRaster<long, 5> raster(shape);
-  for (long i = 0; i < raster.size(); ++i) {
+  for (std::size_t i = 0; i < raster.size(); ++i) {
     raster[i] = i;
   }
   long i = 0;
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(region_is_screened_in_order_test) {
   Position<4> shape {3, 4, 5, 6};
   VecRaster<long, 4> raster(shape);
   Region<4> region {Position<4>::zero() + 1, shape - 2};
-  for (long i = 0; i < raster.size(); ++i) {
+  for (std::size_t i = 0; i < raster.size(); ++i) {
     raster[i] = i;
   }
   long current = 0;
