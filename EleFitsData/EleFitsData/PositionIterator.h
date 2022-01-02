@@ -33,8 +33,8 @@ namespace Fits {
  * The move is such that the corresponding offset in a `Raster` is always increasing.
  * In particular, when screening a whole `Raster`, the pixels are visited in the storage order.
  */
-template <long n = 2>
-class PositionIterator : public std::iterator<std::input_iterator_tag, Position<n>> {
+template <long N = 2>
+class PositionIterator : public std::iterator<std::input_iterator_tag, Position<N>> {
 
 public:
   /**
@@ -42,27 +42,27 @@ public:
    * @param region The region to be screened
    * @param followers Positions which follow the same moves as the current position
    */
-  explicit PositionIterator(const Region<n>& region, const std::vector<Position<n>>& followers = {}) :
+  explicit PositionIterator(const Region<N>& region, const std::vector<Position<N>>& followers = {}) :
       m_region(region), m_current(region.front), m_fronts(followers), m_followers(followers) {}
 
   /**
    * @brief Dereference operator.
    */
-  const Position<n>& operator*() const {
+  const Position<N>& operator*() const {
     return m_current;
   }
 
   /**
    * @brief Arrow operator.
    */
-  const Position<n>* operator->() const {
+  const Position<N>* operator->() const {
     return &m_current;
   }
 
   /**
    * @brief Increment operator.
    */
-  const Position<n>& operator++() {
+  const Position<N>& operator++() {
     next();
     return m_current;
   }
@@ -70,7 +70,7 @@ public:
   /**
    * @brief Increment operator.
    */
-  const Position<n>* operator++(int) {
+  const Position<N>* operator++(int) {
     next();
     return &m_current;
   }
@@ -92,7 +92,7 @@ public:
   /**
    * @brief Get the followers positions.
    */
-  const std::vector<Position<n>>& followers() const {
+  const std::vector<Position<N>>& followers() const {
     return m_followers;
   }
 
@@ -114,7 +114,7 @@ private:
    * Conventionally, `next(region.back)[i] = region.back[i]` for `i > 0`,
    * and `next(region.back)[0] = region.back[0] + 1`.
    */
-  const Position<n>& next() {
+  const Position<N>& next() {
     if (m_current == m_region.back) {
       m_current[0]++;
       return m_current;
@@ -140,42 +140,42 @@ private:
   /**
    * @brief The screened region.
    */
-  const Region<n>& m_region;
+  const Region<N>& m_region;
 
   /**
    * @brief The current position.
    */
-  Position<n> m_current;
+  Position<N> m_current;
 
   /**
    * @brief The front positions of the followers.
    */
-  std::vector<Position<n>> m_fronts;
+  std::vector<Position<N>> m_fronts;
 
   /**
    * @brief The current position of the followers.
    */
-  std::vector<Position<n>> m_followers;
+  std::vector<Position<N>> m_followers;
 };
 
 /**
  * @ingroup image_data_classes
  * @brief Iterator to the front position of a region.
  */
-template <long n = 2>
-PositionIterator<n> begin(const Region<n>& region) {
-  return PositionIterator<n>(region);
+template <long N = 2>
+PositionIterator<N> begin(const Region<N>& region) {
+  return PositionIterator<N>(region);
 }
 
 /**
  * @ingroup image_data_classes
  * @brief Iterator to one past the back position of a region.
  */
-template <long n = 2>
-PositionIterator<n> end(const Region<n>& region) {
-  Region<n> pastTheLast {region.back, region.back};
+template <long N = 2>
+PositionIterator<N> end(const Region<N>& region) {
+  Region<N> pastTheLast {region.back, region.back};
   pastTheLast.front[0]++;
-  return PositionIterator<n>(pastTheLast);
+  return PositionIterator<N>(pastTheLast);
 }
 
 } // namespace Fits

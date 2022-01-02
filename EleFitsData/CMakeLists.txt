@@ -120,6 +120,10 @@ elements_add_unit_test(VectorArithmetic tests/src/VectorArithmetic_test.cpp
                      EXECUTABLE EleFitsData_VectorArithmetic_test
                      LINK_LIBRARIES EleFitsData
                      TYPE Boost)
+elements_add_unit_test(ContiguousContainer tests/src/ContiguousContainer_test.cpp 
+                     EXECUTABLE EleFitsData_ContiguousContainer_test
+                     LINK_LIBRARIES EleFitsData
+                     TYPE Boost)
 
 #===============================================================================
 # Use the following macro for python modules, scripts and aux files:

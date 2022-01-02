@@ -97,44 +97,22 @@ public:
   /**
    * @brief Create position 0.
    */
-  static Position<N> zero() {
-    Position<N> res(std::abs(Dim));
-    std::fill(res.begin(), res.end(), 0);
-    return res;
-  }
+  static Position<N> zero();
 
   /**
    * @brief Create max position (full of -1's).
    */
-  static Position<N> max() {
-    Position<N> res(std::abs(N));
-    std::fill(res.begin(), res.end(), -1);
-    return res;
-  }
+  static Position<N> max();
 
   /**
    * @brief Check whether the position is zero.
    */
-  bool isZero() const {
-    for (auto i : *this) {
-      if (i != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
+  bool isZero() const;
 
   /**
    * @brief Check whether the position is max.
    */
-  bool isMax() const {
-    for (auto i : *this) {
-      if (i != -1) {
-        return false;
-      }
-    }
-    return true;
-  }
+  bool isMax() const;
 
   /**
    * @brief Create a position of lower dimension.
@@ -143,12 +121,7 @@ public:
    * The indices up to dimension `M` are copied.
    */
   template <long M>
-  Position<M> slice() const {
-    const auto b = this->begin();
-    auto e = b;
-    std::advance(e, M);
-    return Position<M>(b, e);
-  }
+  Position<M> slice() const;
 
   /**
    * @brief Create a position of higher dimension.
@@ -158,13 +131,7 @@ public:
    * Those between dimensions `N` and `M` are taken from the given position.
    */
   template <long M>
-  Position<M> extend(const Position<M>& padding) const {
-    auto res = padding;
-    for (std::size_t i = 0; i < this->size(); ++i) { // TODO std::transform
-      res[i] = (*this)[i];
-    }
-    return res;
-  }
+  Position<M> extend(const Position<M>& padding) const;
 };
 
 /**
@@ -175,20 +142,11 @@ long shapeSize(const Position<N>& shape) {
   return std::accumulate(shape.begin(), shape.end(), 1L, std::multiplies<long>());
 }
 
-template <long N>
-Position<N>::Position() : DataContainer<long, Indices<N>, Position<N>>() {}
-
-template <long N>
-Position<N>::Position(long dim) : DataContainer<long, Indices<N>, Position<N>>(dim) {}
-
-template <long N>
-Position<N>::Position(std::initializer_list<long> indices) : DataContainer<long, Indices<N>, Position<N>>(indices) {}
-
-template <long N>
-template <typename TIterator>
-Position<N>::Position(TIterator begin, TIterator end) : DataContainer<long, Indices<N>, Position<N>>(begin, end) {}
-
 } // namespace Fits
 } // namespace Euclid
+
+#define _ELEFITSDATA_POSITION_IMPL
+#include "EleFitsData/impl/Position.hpp"
+#undef _ELEFITSDATA_POSITION_IMPL
 
 #endif
