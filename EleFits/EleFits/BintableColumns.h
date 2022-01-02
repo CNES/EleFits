@@ -295,7 +295,8 @@ public:
    * @copydetails readSeq()
    */
   template <typename T>
-  std::vector<VecColumn<T>> readSeq(std::vector<ColumnKey> keys) const; // FIXME return a RecordVector
+  std::vector<VecColumn<T>> readSeq(std::vector<ColumnKey> keys) const; // TODO return a ColumnVec?
+
   /**
    * @brief Read a sequence of columns into existing `Column`s.
    * @copydetails readSeq()

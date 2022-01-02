@@ -222,7 +222,7 @@ ELEFITS_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
 #undef DECLARE_WRITE_RECORD
 #endif
 
-// FIXME extern declare more
+// TODO extern declare more?
 
 } // namespace Fits
 } // namespace Euclid

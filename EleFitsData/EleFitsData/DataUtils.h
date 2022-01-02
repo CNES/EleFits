@@ -206,8 +206,8 @@ constexpr decltype(auto) applyImpl(TTuple&& tuple, TFunc&& func, std::index_sequ
  * @brief Apply a variadic function to elements pointed by a tuple of iterators
  * and increment the iterators.
  */
-template <typename TTuple, typename TFunc, std::size_t... Is>
-constexpr decltype(auto) generateImpl(TTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
+template <typename TIteratorTuple, typename TFunc, std::size_t... Is>
+constexpr decltype(auto) iteratorTupleApplyImpl(TIteratorTuple&& tuple, TFunc&& func, std::index_sequence<Is...>) {
   return func(*std::get<Is>(tuple)++...);
 }
 
@@ -287,8 +287,8 @@ constexpr decltype(auto) tupleApply(TTuple&& tuple, TFunc&& func) {
  * and increment the iterators.
  */
 template <typename TIteratorTuple, typename TFunc>
-constexpr decltype(auto) tupleGenerate(TIteratorTuple&& tuple, TFunc&& func) { // FIXME naming
-  return Internal::generateImpl(
+constexpr decltype(auto) iteratorTupleApply(TIteratorTuple&& tuple, TFunc&& func) {
+  return Internal::iteratorTupleApplyImpl(
       std::forward<TIteratorTuple>(tuple),
       std::forward<TFunc>(func),
       Internal::tupleIndexSequence<TIteratorTuple>());

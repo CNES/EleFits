@@ -46,7 +46,7 @@ ColumnInfo<T> BintableColumns::readInfo(ColumnKey key) const {
 
 template <typename T>
 VecColumn<T> BintableColumns::read(ColumnKey key) const {
-  return readSegment<T>({0, -1}, key); // FIXME useless readRowCount()
+  return readSegment<T>({0, -1}, key);
 }
 
 // readTo

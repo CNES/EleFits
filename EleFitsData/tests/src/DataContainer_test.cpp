@@ -21,6 +21,7 @@
 #include "EleFitsData/Position.h"
 
 #include <boost/test/unit_test.hpp>
+#include <sstream>
 
 using namespace Euclid::Fits;
 
@@ -30,20 +31,26 @@ BOOST_AUTO_TEST_SUITE(DataContainer_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(example_test) { // FIXME test strings instead of printing
+template <long M, long N>
+void checkStreamInsertion(const Position<N>& position, const std::string& expected) {
+  const auto slice = position.template slice<M>();
+  std::stringstream os;
+  os << slice;
+  BOOST_TEST(os.str() == expected);
+}
+
+BOOST_AUTO_TEST_CASE(stream_insertion_test) {
   Position<10> a {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-  std::cout << a.slice<0>() << std::endl;
-  std::cout << a.slice<1>() << std::endl;
-  std::cout << a.slice<2>() << std::endl;
-  std::cout << a.slice<3>() << std::endl;
-  std::cout << a.slice<4>() << std::endl;
-  std::cout << a.slice<5>() << std::endl;
-  std::cout << a.slice<6>() << std::endl;
-  std::cout << a.slice<7>() << std::endl;
-  std::cout << a.slice<8>() << std::endl;
-  std::cout << a.slice<9>() << std::endl;
-  std::cout << a << std::endl;
-  BOOST_FAIL("!!!! Please implement your tests !!!!");
+  checkStreamInsertion<0>(a, "[]");
+  checkStreamInsertion<1>(a, "[0]");
+  checkStreamInsertion<2>(a, "[0, 1]");
+  checkStreamInsertion<3>(a, "[0, 1, 2]");
+  checkStreamInsertion<4>(a, "[0, 1, 2, 3]");
+  checkStreamInsertion<5>(a, "[0, 1, 2, 3, 4]");
+  checkStreamInsertion<6>(a, "[0, 1, 2, 3, 4, 5]");
+  checkStreamInsertion<7>(a, "[0, 1, 2, 3, 4, 5, 6]");
+  checkStreamInsertion<8>(a, "[0, 1, 2 ... 5, 6, 7]");
+  checkStreamInsertion<9>(a, "[0, 1, 2 ... 6, 7, 8]");
 }
 
 //-----------------------------------------------------------------------------

@@ -154,7 +154,6 @@ public:
    * @brief Default or size-based constructor.
    */
   explicit DataHolder(std::size_t size = N) : m_container {} {
-    // FIXME assert size == N
     if (size != N) {
       throw FitsError("Size missmatch in DataHolder<std::array> specialization."); // FIXME clarify
     }

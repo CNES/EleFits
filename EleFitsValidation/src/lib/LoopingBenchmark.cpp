@@ -70,10 +70,10 @@ LoopingBenchmark::Duration LoopingBenchmark::loopOverIndices() {
 
 LoopingBenchmark::Duration LoopingBenchmark::loopOverValues() {
   m_chrono.start();
-  auto ait = m_a.data(); // FIXME Raster::begin(), end()
-  auto bit = m_b.data();
-  const auto begin = m_c.data();
-  const auto end = begin + m_c.size();
+  auto ait = m_a.begin();
+  auto bit = m_b.begin();
+  const auto begin = m_c.begin();
+  const auto end = m_c.end();
   for (auto cit = begin; cit != end; ++cit, ++ait, ++bit) {
     *cit = *ait + *bit;
   }
