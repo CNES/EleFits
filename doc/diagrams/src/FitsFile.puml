@@ -4,10 +4,10 @@ package EleFitsData {
 class Record<T> {
 }
 
-abstract class Raster<T> {
+class Raster<T, N, TContainer> {
 }
 
-abstract class Column<T> {
+class Column<T, TContainer> {
 }
 
 }
@@ -15,7 +15,7 @@ abstract class Column<T> {
 package EleFits {
 
 class FitsFile {
-+ open(string)
++ open(filename)
 + close()
 }
 
@@ -28,10 +28,10 @@ class SifFile {
 
 class MefFile {
 + hduCount() : long
-+ access(long) : Hdu&
-+ accessFirst(string) : Hdu&
-+ assignImageExt(string, Raster) : ImageHdu&
-+ assignBintableExt(string, Column...) : BintableHdu&
++ access(index) : Hdu&
++ accessFirst(name) : Hdu&
++ assignImageExt(name, raster) : ImageHdu&
++ assignBintableExt(name, columns...) : BintableHdu&
 }
 
 class Hdu {
@@ -52,24 +52,24 @@ class BintableHdu {
 
 class Header {
 + readAll() : string
-+ parse(string) : Record
-+ write(Record)
-+ parseSeq(string...) : Record...
-+ writeSeq(Record...)
++ parse(keyword) : Record
++ write(record)
++ parseSeq(keywords...) : Record...
++ writeSeq(records...)
 }
 
 class ImageRaster {
 + read() : Raster
-+ write(Raster)
++ write(raster)
 }
 
 class BintableColumns {
-+ read(long) : Column
-+ read(string) : Column
-+ write(Column)
-+ readSeq(long...) : Column...
-+ readSeq(string...) : Column...
-+ writeSeq(Column...)
++ read(index) : Column
++ read(name) : Column
++ write(column)
++ readSeq(indices...) : Column...
++ readSeq(names...) : Column...
++ writeSeq(columns...)
 }
 
 }

@@ -1,67 +1,105 @@
 @startuml
-package EleFitsData {
-
-Column <|-- VecColumn
-Column <|-- PtrColumn
-ColumnInfo -* Column
-
-Raster <|-- VecRaster
-Raster <|-- PtrRaster
-Position -* Raster
-
-class Position<n> {
-+ indices : long[]
+class ContiguousContainerMixin<T, TDerived> {
++ begin()
++ end()
++ operator[](index)
++ operator==(other)
++ operator!=(other)
++ empty()
 }
-
-abstract class Raster<T, n> {
-+ shape() : Position<n>
-+ size() : long
-+ {abstract} data() : T*
-+ operator[](Position) : T&
-+ index(Position) : long
+class DataHolder<T, TContainer> {
++ m_container
++ DataHolder(args...)
++ data()
++ size()
 }
-
-class VecRaster<T, n> {
-- m_vec : vector<T>
-+ data() : T*
-+ vector() : vector<T>&
+class VectorArithmeticMixin<T, TDerived> {
++ operator+=(container)
++ operator+=(scalar)
++ operator++()
++ operator-=(container)
++ operator-=(scalar)
++ operator--()
++ operator*=(scalar)
++ operator/=(scalar)
++ apply(func, args...)
++ generate(func, args...)
 }
-
-class PtrRaster<T, n> {
-- m_data : T*
-+ data() : T*
+class DataContainer<T, TContainer, TDerived> {
++ DataContainer(args...)
++ container()
++ moveTo(destination)
 }
-
-class Record<T> {
-+ keyword : string
-+ value : T
-+ unit : string
-+ comment : string
+class DataContainer<T, TContainer, TDerived> {
 }
-
+class Position<N> {
++ Position(indices)
++ {static} zero()
++ {static} max()
++ dimension()
++ isZero()
++ isMax()
++ slice()
++ extend(padding)
+}
+class Region<N> {
++ front
++ back
++ operator+=(position)
++ operator++()
++ operator-=(position)
++ operator--()
+}
+class Raster<T, N> {
+- m_shape
++ Raster(shape)
++ Raster(shape, data)
++ shape()
++ domain()
++ dimension()
++ length<axis>()
++ index(position)
++ operator[](position)
++ at(position)
++ slice(region)
++ section(front, back)
+}
+class Column<T> {
+- m_info
++ Column(info, rowCount)
++ Column(info, rowCount, data)
++ info()
++ rename(name)
++ reshape(repeatCount)
++ elementCount()
++ rowCount()
++ operator()(rowIndex, repeatIndex)
++ at(row, repeat)
++ slice(front, back)
+}
 class ColumnInfo<T> {
-+ name : string
-+ unit : string
-+ repeatCount : long
++ name
++ unit
++ repeatCount
+}
+class Segment {
++ front
++ back
++ operator+=(index)
++ operator++()
++ operator-=(index)
++ operator--()
 }
 
-abstract class Column<T> {
-+ info : ColumnInfo<T>
-+ {abstract} data() : T*
-+ elementCount() : long
-+ rowCount() : long
-}
-
-class VecColumn<T> {
-- m_vec : vector<T>
-+ data() : T*
-+ vector() : vector<T>&
-}
-
-class PtrColumn<T> {
-- m_data : T*
-+ data() : T*
-}
-
-}
+ContiguousContainerMixin <|-- DataContainer
+DataHolder <|-- DataContainer
+VectorArithmeticMixin <|-- DataContainer
+DataContainer <|-- Position
+DataContainer <|-- Raster
+DataContainer <|-- Column
+Position --* Region
+Position -* Raster
+Raster --> Region
+Column *- ColumnInfo
+Column --> Segment
 @enduml
