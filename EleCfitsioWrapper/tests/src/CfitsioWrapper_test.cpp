@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(smoke_test) {
   fitsfile* fptr;
   (void)fptr;
   using Fits::Column;
-  using Fits::Raster;
+  using Fits::RasterContainer;
   using Fits::Record;
 }
 

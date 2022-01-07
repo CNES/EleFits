@@ -55,13 +55,13 @@ namespace Fits {
 /// @cond INTERNAL
 // Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
 
-// Forward declaration for Raster::subraster()
+// Forward declaration for RasterContainer::subraster()
 template <typename T, long N, typename TContainer>
 class Subraster;
 
 // Forward declaration for PtrRaster and VecRaster
 template <typename T, long N, typename TContainer>
-class Raster;
+class RasterContainer;
 
 /// @endcond
 
@@ -71,7 +71,7 @@ class Raster;
  * @copydetails Raster
  */
 template <typename T, long N = 2>
-using PtrRaster = Raster<T, N, T*>;
+using PtrRaster = RasterContainer<T, N, T*>;
 
 /**
  * @ingroup image_data_classes
@@ -79,7 +79,7 @@ using PtrRaster = Raster<T, N, T*>;
  * @copydetails Raster
  */
 template <typename T, long N = 2>
-using VecRaster = Raster<T, N, std::vector<T>>;
+using VecRaster = RasterContainer<T, N, std::vector<T>>;
 
 /**
  * @ingroup image_data_classes
@@ -160,7 +160,7 @@ using VecRaster = Raster<T, N, std::vector<T>>;
  * - `makeRaster()` for creation shortcuts.
  */
 template <typename T, long N, typename TContainer>
-class Raster : public DataContainer<T, TContainer, Raster<T, N, TContainer>> {
+class RasterContainer : public DataContainer<T, TContainer, RasterContainer<T, N, TContainer>> {
   friend class ImageRaster; // FIXME rm when Subraster is removed
 
 public:
@@ -172,7 +172,7 @@ public:
   /**
    * @brief The dimension template parameter.
    * @details
-   * The value of `Raster<T, N>::Dim` is always `N`, irrespective of its sign.
+   * The value of `RasterContainer<T, N, TContainer>::Dim` is always `N`, irrespective of its sign.
    * In contrast, dimension() provides the actual dimension of the Raster,
    * even in the case of a variable dimension.
    */
@@ -183,25 +183,25 @@ public:
    */
   /// @{
 
-  ELEFITS_VIRTUAL_DTOR(Raster)
-  ELEFITS_COPYABLE(Raster)
-  ELEFITS_MOVABLE(Raster)
+  ELEFITS_VIRTUAL_DTOR(RasterContainer)
+  ELEFITS_COPYABLE(RasterContainer)
+  ELEFITS_MOVABLE(RasterContainer)
 
   /**
    * @brief Constructor.
    * @param shape The raster shape
    */
-  explicit Raster(Position<N> shape) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(shapeSize(shape)), m_shape(std::move(shape)) {}
+  explicit RasterContainer(Position<N> shape) :
+      DataContainer<T, TContainer, RasterContainer<T, N, TContainer>>(shapeSize(shape)), m_shape(std::move(shape)) {}
 
   /**
    * @brief Constructor.
    * @param shape The raster shape
    * @param data The raw data
    */
-  Raster(Position<N> shape, T* data) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(data, data + shapeSize(shape)), m_shape(std::move(shape)) {
-  }
+  RasterContainer(Position<N> shape, T* data) :
+      DataContainer<T, TContainer, RasterContainer<T, N, TContainer>>(data, data + shapeSize(shape)),
+      m_shape(std::move(shape)) {}
 
   /**
    * @brief Constructor.
@@ -209,8 +209,9 @@ public:
    * @param args Arguments to be forwarded to the underlying container
    */
   template <typename... Ts>
-  Raster(Position<N> shape, Ts&&... args) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(std::forward<Ts>(args)...), m_shape(std::move(shape)) {}
+  RasterContainer(Position<N> shape, Ts&&... args) :
+      DataContainer<T, TContainer, RasterContainer<T, N, TContainer>>(std::forward<Ts>(args)...),
+      m_shape(std::move(shape)) {}
 
   /// @}
   /**
@@ -256,7 +257,7 @@ public:
    */
   /// @{
 
-  using DataContainer<T, TContainer, Raster<T, N, TContainer>>::operator[];
+  using DataContainer<T, TContainer, RasterContainer<T, N, TContainer>>::operator[];
 
   /**
    * @brief Compute the raw index of a given position.
@@ -402,18 +403,19 @@ private:
  * auto vecRaster3D = makeRaster(std::move(vec), width, height, depth); // The vector is moved
  * \endcode
  */
-template <typename T, typename... Longs>
-PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) {
-  return {{shape...}, data};
+template <typename TContainer, typename... Longs>
+RasterContainer<typename TContainer::value_type, sizeof...(Longs), TContainer>
+makeRaster(TContainer&& data, Longs... shape) {
+  return {{shape...}, std::forward<TContainer>(data)};
 }
 
 /**
  * @ingroup image_data_classes
- * @copydoc makeRaster
+ * @copydoc makeRaster()
  */
 template <typename T, typename... Longs>
-VecRaster<T, sizeof...(Longs)> makeRaster(std::vector<T> data, Longs... shape) {
-  return {{shape...}, std::move(data)};
+PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) { // FIXME can we merge somehow?
+  return {{shape...}, data};
 }
 
 } // namespace Fits
