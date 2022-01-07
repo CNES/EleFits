@@ -472,6 +472,32 @@ private:
   std::vector<std::decay_t<T>> m_vec;
 };
 
+/**
+ * @ingroup bintable_data_classes
+ * @brief Shortcut to create a column from a column info and data without specifying the template parameters.
+ * @tparam T The value type, should not be specified (automatically deduced)
+ * @param data The column values, which can be either a pointer (or C array) or a vector
+ * @param info The column info
+ * @details
+ * Example usage:
+ * \code
+ * auto column = makeColumn(std::move(vector), std::move(info)); // Copy-less
+ * \endcode
+ */
+template <typename T>
+PtrColumn<T> makeColumn(ColumnInfo<std::decay_t<T>> info, T* data, long elementCount) { // FIXME merge overloads after Column refactoring
+  return {std::move(info), elementCount, data};
+}
+
+/**
+ * @ingroup bintable_data_classes
+ * @copydoc makeColumn
+ */
+template <typename T, typename... Longs>
+VecColumn<T> makeColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> data) {
+  return {std::move(info), std::move(data)};
+}
+
 } // namespace Fits
 } // namespace Euclid
 
