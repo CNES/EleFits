@@ -27,7 +27,7 @@ import ElementsKernel.Logging as log
 
 def scientificNotation(value):
     b, e = f'{float(value):.2e}'.split('e')
-    if float(b)%1 == 0:
+    if float(b) % 1 == 0:
         b = int(float(b))
     return f'{b}e{int(e)}'
 
@@ -49,9 +49,9 @@ def makeCommand(testCase, output, results, log_level):
 def defineSpecificProgramOptions():
     parser = argparse.ArgumentParser()
     parser.add_argument('--tests', default=None,
-            help='The set of test configurations as a TSV file '
-            '(columns are: "Test setup", "HDU type", "HDU count", "Value count / HDU"). '
-            'The result file can be used to rerun the same benchmark.')
+                        help='The set of test configurations as a TSV file '
+                        '(columns are: "Test setup", "HDU type", "HDU count", "Value count / HDU"). '
+                        'The result file can be used to rerun the same benchmark.')
     parser.add_argument('--output', default='/tmp/test.fits', help='The filename of the Fits files to be generated.')
     parser.add_argument('--res', default='/tmp/benchmark.csv', help='The filename of the benchmark results TSV.')
     parser.add_argument('--plot', default='/tmp/plot.eps', help='The filename of the benchmark results plotting file.')
@@ -66,7 +66,7 @@ def mainMethod(args):
         with open(args.tests, 'r') as f:
             for testCase in csv.DictReader(f, delimiter='\t'):
                 logger.debug(testCase)
-                cmd = makeCommand(testCase, args.output, args.res, 'INFO') # TODO get log level from args
+                cmd = makeCommand(testCase, args.output, args.res, 'INFO')  # TODO get log level from args
                 logger.info('')
                 logger.info(cmd)
                 logger.info('')
@@ -85,17 +85,20 @@ def mainMethod(args):
                 testName = f'{testCase["Mode"]} {hduType}\n({testCase["HDU count"]} HDUs x {shape})'
                 testCaseSetup = testCase['Test setup']
                 data = [float(s) for s in testCase["Samples (ms)"].split(',')]
-                logger.debug(testName + ' ' + testCaseSetup + ': ' + str(data))
+                logger.debug(testName.replace('\n', ' ') + ' ' + testCaseSetup + ': ' + str(data))
                 results[testName][testCaseSetup] = data
         cols = 2
-        rows = (len(results) + cols - 1) // cols # Equivalent to ceil(len(results)/2) for ints
-        logger.info(f'Plotting {len(results)} graphs...')
-        _, axes = plt.subplots(ncols=cols, nrows=rows, figsize=(5 * cols, 3 * rows), sharex='col', sharey='row')
-        i = False # left column, since cols = 2
+        rows = (len(results) + cols - 1) // cols  # Equivalent to ceil(len(results)/2) for ints
+        logger.info(f'Plotting {len(results)} graphs ({cols} columns x {rows} rows)...')
+        _, axes = plt.subplots(ncols=cols, nrows=rows, figsize=(5 * cols, 3 * rows))
+        # FIXME Cannot sharex, sharey anymore in EDEN3
+        # plt.subplots(ncols=cols, nrows=rows, figsize=(5 * cols, 3 * rows), sharex='col', sharey='row')
+        # See bug with pandas+matplotlib:
+        # https://github.com/pandas-dev/pandas/issues/36918
+        i = False  # left column, since cols = 2
         j = 0
         for k, v in results.items():
-            logger.info(f'- {k}')
-            logger.debug(v.info())
+            logger.info(f'Ploting ({j}, {int(i)}): ' + k.replace('\n', ' '))
             if cols == 1:
                 ax = axes[j]
             elif rows == 1:
@@ -109,5 +112,6 @@ def mainMethod(args):
                 ax.set_xlabel('Time (ms)')
             j += int(i)
             i = not i
-        plt.tight_layout() # Avoids overlapping texts
-        plt.savefig(args.plot, bbox_inches='tight') # 'tight' avoids having text outside the box
+        plt.tight_layout()  # Avoids overlapping texts
+        plt.savefig(args.plot, bbox_inches='tight')  # 'tight' avoids having text outside the box
+        logger.info(f'Saved plot as: {args.plot}')
