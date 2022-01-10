@@ -42,13 +42,7 @@ namespace Fits {
  * - Incrementation if enabled (for integral types by default): V++, ++V, V--, --V.
  */
 template <typename T, typename TDerived, bool Incrementable = std::is_integral<T>::value>
-struct VectorArithmeticMixin;
-
-/**
- * @copydoc VectorArithmeticMixin
- */
-template <typename T, typename TDerived>
-struct VectorArithmeticMixin<T, TDerived, false> :
+struct VectorArithmeticMixin :
     boost::additive<TDerived>,
     boost::additive<TDerived, T>,
     boost::subtractable2_left<TDerived, T>,
