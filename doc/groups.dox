@@ -7,6 +7,10 @@
 \defgroup data_classes Data classes
 \brief Classes to represent the data stored in a Fits file.
 
+\defgroup data_concepts Data concepts
+\ingroup data_classes
+\brief Concepts satisfied by data classes
+
 \defgroup header_data_classes Header data classes
 \ingroup data_classes
 \brief Classes to manipulate the data stored header units.

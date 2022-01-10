@@ -29,17 +29,28 @@ namespace Euclid {
 namespace Fits {
 
 /**
- * @ingroup data_classes
+ * @ingroup data_concepts
+ * @concept{VectorArithmetic}
+ * @brief Vector-space arithmetic concept.
+ * @details
+ * Implements vector space arithmetic operators
+ * (uppercase letters are for vectors, lowercase letters are for scalars):
+ * - Vector-additive: V += U, W = V + U, V += U, W = V - U;
+ * - Scalar-additive: V += a, V = U + a, V = a + U, V -= a, V = U + a, V = a - U;
+ * - Scalar-multiplicative: V *= a, V = U * a, V = a * U, V /= a, V = U / a;
+ * - Incrementation if enabled (for integral value types by default): V++, ++V, V--, --V.
+ */
+
+/**
+ * @ingroup data_concepts
  * @brief Mixin to provide vector space arithmetics to a container.
  * @tparam T The contained element value type
  * @tparam TDerived The container which inherits this class
  * @tparam Incrementable A flag to activate increment and decrement operators
+ * @satisfies{VectorArithmetic}
  * @details
- * Implemented arithmetic properties:
- * - Vector-additive: V += U, W = V + U, V += U, W = V - U;
- * - Scalar-additive: V += a, V = U + a, V = a + U, V -= a, V = U + a, V = a - U;
- * - Scalar-multiplicative: V *= a, V = U * a, V = a * U, V /= a, V = U / a;
- * - Incrementation if enabled (for integral types by default): V++, ++V, V--, --V.
+ * In addition to vector space arithmetic operators, this mixin provides
+ * `generate()` and `apply()` to apply a function to each element.
  */
 template <typename T, typename TDerived, bool Incrementable = std::is_integral<T>::value>
 struct VectorArithmeticMixin :
@@ -48,15 +59,12 @@ struct VectorArithmeticMixin :
     boost::subtractable2_left<TDerived, T>,
     boost::multiplicative<TDerived, T> {
 
+  /// @{
+
   /**
    * @brief Copy.
    */
   TDerived operator+() const;
-
-  /**
-   * @brief Compute the opposite.
-   */
-  TDerived operator-() const;
 
   /**
    * @brief V += U and W = V + U.
@@ -68,6 +76,15 @@ struct VectorArithmeticMixin :
    */
   TDerived& operator+=(const T& rhs);
 
+  /// @}
+
+  /// @{
+
+  /**
+   * @brief Compute the opposite.
+   */
+  TDerived operator-() const;
+
   /**
    * @brief V -= U and W = V - U.
    */
@@ -78,15 +95,27 @@ struct VectorArithmeticMixin :
    */
   TDerived& operator-=(const T& rhs);
 
+  /// @}
+
+  /// @{
+
   /**
    * @brief V *= a, V = U * a, V = a * U.
    */
   TDerived& operator*=(const T& rhs);
 
+  /// @}
+
+  /// @{
+
   /**
    * @brief V /= a, V = U / a.
    */
   TDerived& operator/=(const T& rhs);
+
+  /// @}
+
+  /// @{
 
   /**
    * @brief Generate values from a function with optional input containers.
@@ -122,6 +151,8 @@ struct VectorArithmeticMixin :
    */
   template <typename TFunc, typename... TContainers>
   TDerived& apply(TFunc&& func, const TContainers&... args);
+
+  /// @}
 };
 
 /**

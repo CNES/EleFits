@@ -27,21 +27,27 @@ namespace Euclid {
 namespace Fits {
 
 /**
- * @ingroup data_classes
+ * @ingroup data_concepts
+ * @concept{ContiguousContainer}
+ * @brief Standard contiguous container concept
+ * @details
+ * A <a href="https://en.cppreference.com/w/cpp/named_req/ContiguousContainer">contiguous container</a>
+ * is a standard container whose elements are stored contiguously in memory.
+ */
+
+/**
+ * @ingroup data_concepts
  * @brief Base class for a Fits data container.
  * @tparam T The value type
  * @tparam TDerived The child class which implements required methods
+ * @satisfies{ContiguousContainer}
  * @details
  * This class provides the necessary types and methods
  * to meet the standard `ContiguousContainer` requirements.
  * This is a CRTP implementation, which means it takes as template parameter
  * the derived class to be empowered.
- * The functions which should be implemented in the derived class are:
- * - Default constructor;
- * - Copy and move constructors;
- * - Copy and move assignment operators;
- * - `const T* data() const` and `T* data()`;
- * - `std::size_t size() const`.
+ * 
+ * The derived class must satisfy the `SizedData` concept.
  */
 template <typename T, typename TDerived>
 struct ContiguousContainerMixin {
@@ -81,65 +87,59 @@ struct ContiguousContainerMixin {
    */
   using size_type = std::size_t;
 
+  /// @{
   /**
    * @brief Access the element with given index.
    */
   inline const T& operator[](size_type index) const {
     return *(static_cast<const TDerived&>(*this).data() + index);
   }
-
-  /**
-   * @copydoc operator[]()
-   */
   inline T& operator[](size_type index) {
     return const_cast<T&>(const_cast<const ContiguousContainerMixin&>(*this)[index]);
   }
+  /// @}
 
+  /// @{
   /**
    * @brief Iterator to the first element.
    */
+
   const_iterator begin() const {
     return static_cast<const TDerived&>(*this).data();
   }
-
-  /**
-   * @copybrief begin()
-   */
   iterator begin() {
     return const_cast<iterator>(const_cast<const ContiguousContainerMixin&>(*this).begin());
   }
-
-  /**
-   * @copybrief begin()
-   */
   iterator cbegin() {
     return const_cast<const ContiguousContainerMixin&>(*this).begin();
   }
 
+  /// @}
+
+  /// @{
   /**
    * @brief Iterator to one past the last element.
    */
+
   const_iterator end() const {
     return begin() + static_cast<const TDerived&>(*this).size();
   }
 
-  /**
-   * @copybrief end()
-   */
   iterator end() {
     return const_cast<iterator>(const_cast<const ContiguousContainerMixin&>(*this).end());
   }
 
-  /**
-   * @copybrief end()
-   */
   iterator cend() {
     return const_cast<const ContiguousContainerMixin&>(*this).end();
   }
 
+  /// @}
+
+  /// @{
   /**
    * @brief Check equality.
    */
+
   virtual bool operator==(const TDerived& rhs) const {
     return (static_cast<const TDerived&>(*this).size() == rhs.size() && std::equal(begin(), end(), rhs.begin()));
   }
@@ -151,18 +151,26 @@ struct ContiguousContainerMixin {
     return not(*this == rhs);
   }
 
+  /// @}
+
+  /// @{
   /**
    * @brief Check whether the container is empty.
    * @details
    * Empty corresponds to `begin() == end()`.
    */
+
   bool emtpy() const {
     return begin() == end();
   }
+
+  /// @}
 };
 
 /**
- * @brief Insert a `ContiguousContainer` into an output stream.
+ * @ingroup data_concepts
+ * @brief Insert a `ContiguousContainerMixin` into an output stream.
+ * @relates ContiguousContainerMixin
  */
 template <typename T, typename TDerived>
 std::ostream& operator<<(std::ostream& os, const ContiguousContainerMixin<T, TDerived>& container) {

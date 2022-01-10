@@ -33,17 +33,27 @@ namespace Euclid {
 namespace Fits {
 
 /**
- * @ingroup data_classes
- * @brief A holder of any contiguous container specified by a size and data pointer.
+ * @ingroup data_concepts
+ * @concept{SizedData}
+ * @brief Concept for contiguous data holders.
  * @details
- * The class can be specialized for any container, in which case it should provide the following:
+ * A contiguous data holder is some class which stores or points to
+ * some data contiguous in memory as a public or protected member `TContainer m_container`,
+ * and implements the following methods:
  * - Default, copy and move constructors;
  * - Constructor from a size;
  * - Constructor from an iterator pair;
  * - Implicit constructor from an initialization list;
  * - `size_type size() const`;
- * - `inline const T* data() const`;
- * - Public or protected member `TContainer m_container`.
+ * - `inline const T* data() const`.
+ */
+
+/**
+ * @ingroup data_concepts
+ * @satisfies{SizedData}
+ * @brief A holder of any contiguous container specified by a size and data pointer.
+ * @details
+ * The class can be specialized for any container, in which case it should satisfy the `SizedData` concept.
  */
 template <typename T, typename TContainer>
 class DataHolder {
@@ -93,7 +103,7 @@ protected:
 };
 
 /**
- * @ingroup data_classes
+ * @ingroup data_concepts
  * @brief Raw pointer specialization.
  */
 template <typename T>
@@ -143,7 +153,7 @@ protected:
 };
 
 /**
- * @ingroup data_classes
+ * @ingroup data_concepts
  * @brief `std::array` specialization.
  */
 template <typename T, std::size_t N>
@@ -195,8 +205,11 @@ protected:
 
 /**
  * @ingroup data_classes
- * @brief Mix `ContiguousContainerMixin` and `VectorArithmeticMixin` into a `DataHolder` as a user-defined derived class.
+ * @brief Mix `ContiguousContainerMixin` and `VectorArithmeticMixin` into a `DataHolder`
+ * as a user-defined derived class.
  * @tparam TDerived The derived class
+ * @satisfies{ContiguousContainer}
+ * @satisfies{VectorArithmetic}
  * @details
  * The class can be specialized for any container which implements the `DataHolder` specification.
  */

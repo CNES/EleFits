@@ -87,6 +87,8 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
  * @tparam T The value type, which can be `const`-qualified for read-only rasters
  * @tparam N The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
  * @tparam TContainer The underlying data container type
+ * @satisfies{ContiguousContainer}
+ * @satisfies{VectorArithmetic}
  * @details
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.
