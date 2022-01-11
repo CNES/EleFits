@@ -30,8 +30,8 @@ namespace Fits {
 
 /**
  * @ingroup data_concepts
- * @concept{VectorArithmetic}
- * @brief Vector-space arithmetic concept.
+ * @requirements{VectorArithmetic}
+ * @brief Vector-space arithmetic requirements.
  * @details
  * Implements vector space arithmetic operators
  * (uppercase letters are for vectors, lowercase letters are for scalars):
@@ -47,10 +47,10 @@ namespace Fits {
  * @tparam T The contained element value type
  * @tparam TDerived The container which inherits this class
  * @tparam Incrementable A flag to activate increment and decrement operators
- * @satisfies{VectorArithmetic}
  * @details
  * In addition to vector space arithmetic operators, this mixin provides
  * `generate()` and `apply()` to apply a function to each element.
+ * @satisfies{VectorArithmetic}
  */
 template <typename T, typename TDerived, bool Incrementable = std::is_integral<T>::value>
 struct VectorArithmeticMixin :

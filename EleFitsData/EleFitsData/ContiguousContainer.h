@@ -28,8 +28,8 @@ namespace Fits {
 
 /**
  * @ingroup data_concepts
- * @concept{ContiguousContainer}
- * @brief Standard contiguous container concept
+ * @requirements{ContiguousContainer}
+ * @brief Standard contiguous container requirements
  * @details
  * A <a href="https://en.cppreference.com/w/cpp/named_req/ContiguousContainer">contiguous container</a>
  * is a standard container whose elements are stored contiguously in memory.
@@ -40,14 +40,14 @@ namespace Fits {
  * @brief Base class for a Fits data container.
  * @tparam T The value type
  * @tparam TDerived The child class which implements required methods
- * @satisfies{ContiguousContainer}
  * @details
  * This class provides the necessary types and methods
  * to meet the standard `ContiguousContainer` requirements.
  * This is a CRTP implementation, which means it takes as template parameter
  * the derived class to be empowered.
  * 
- * The derived class must satisfy the `SizedData` concept.
+ * The derived class must satisfy the `SizedData` requirements.
+ * @satisfies{ContiguousContainer}
  */
 template <typename T, typename TDerived>
 struct ContiguousContainerMixin {

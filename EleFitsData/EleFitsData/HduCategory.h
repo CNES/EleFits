@@ -339,6 +339,7 @@ private:
 };
 
 /**
+ * @relates HduFilter
  * @brief Combine two accepted categories as a filter.
  */
 inline HduFilter operator+(HduCategory lhs, HduCategory rhs) {
@@ -346,6 +347,7 @@ inline HduFilter operator+(HduCategory lhs, HduCategory rhs) {
 }
 
 /**
+ * @relates HduFilter
  * @brief Combine an accepted and rejected categories as a filter.
  */
 inline HduFilter operator-(HduCategory lhs, HduCategory rhs) {
@@ -353,6 +355,7 @@ inline HduFilter operator-(HduCategory lhs, HduCategory rhs) {
 }
 
 /**
+ * @relates HduFilter
  * @brief Consider a category as a filter with only this category as the accepted category.
  */
 inline HduFilter operator+(HduCategory rhs) {
@@ -360,6 +363,7 @@ inline HduFilter operator+(HduCategory rhs) {
 }
 
 /**
+ * @relates HduFilter
  * @brief Consider a category as a filter with only this category as the rejected category.
  */
 inline HduFilter operator-(HduCategory rhs) {

@@ -159,7 +159,7 @@ private:
 };
 
 /**
- * @ingroup image_data_classes
+ * @relates Region
  * @brief Iterator to the front position of a region.
  */
 template <long N = 2>
@@ -168,7 +168,7 @@ PositionIterator<N> begin(const Region<N>& region) {
 }
 
 /**
- * @ingroup image_data_classes
+ * @relates Region
  * @brief Iterator to one past the back position of a region.
  */
 template <long N = 2>

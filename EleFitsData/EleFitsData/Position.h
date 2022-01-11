@@ -30,6 +30,9 @@
 namespace Euclid {
 namespace Fits {
 
+/**
+ * @relates Position
+ */
 template <long N = 2>
 using Indices = typename std::conditional<(N == -1), std::vector<long>, std::array<long, (std::size_t)N>>::type;
 
@@ -135,6 +138,7 @@ public:
 };
 
 /**
+ * @relates Position
  * @brief Compute the number of pixels in a given shape.
  */
 template <long N = 2>

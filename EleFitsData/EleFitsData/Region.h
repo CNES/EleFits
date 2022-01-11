@@ -85,6 +85,7 @@ struct Region {
 };
 
 /**
+ * @relates Region
  * @brief Check whether two regions are equal.
  */
 template <long n = 2>
@@ -93,6 +94,7 @@ bool operator==(const Region<n>& lhs, const Region<n>& rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Check whether two regions are different.
  */
 template <long n = 2>
@@ -101,6 +103,7 @@ bool operator!=(const Region<n>& lhs, const Region<n>& rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Add a position.
  */
 template <long n = 2>
@@ -111,6 +114,7 @@ Region<n>& operator+=(Region<n>& lhs, const Position<n>& rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Subtract a position.
  */
 template <long n = 2>
@@ -121,6 +125,7 @@ Region<n>& operator-=(Region<n>& lhs, const Position<n>& rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Add a scalar to each coordinate.
  */
 template <long n = 2>
@@ -131,6 +136,7 @@ Region<n>& operator+=(Region<n>& lhs, long rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Subtract a scalar to each coordinate.
  */
 template <long n = 2>
@@ -141,6 +147,7 @@ Region<n>& operator-=(Region<n>& lhs, long rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Add 1 to each coordinate.
  */
 template <long n = 2>
@@ -150,6 +157,7 @@ Region<n>& operator++(Region<n>& lhs) {
 }
 
 /**
+ * @relates Region
  * @brief Subtract 1 to each coordinate.
  */
 template <long n = 2>
@@ -159,6 +167,7 @@ Region<n>& operator--(Region<n>& lhs) {
 }
 
 /**
+ * @relates Region
  * @brief Return the current region and then add 1 to each coordinate.
  */
 template <long n = 2>
@@ -169,6 +178,7 @@ Region<n> operator++(Region<n>& lhs, int) {
 }
 
 /**
+ * @relates Region
  * @brief Return the current region and then subtract 1 to each coordinate.
  */
 template <long n = 2>
@@ -179,6 +189,7 @@ Region<n> operator--(Region<n>& lhs, int) {
 }
 
 /**
+ * @relates Region
  * @brief Identity.
  */
 template <long n = 2>
@@ -187,6 +198,7 @@ Region<n> operator+(const Region<n>& rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Change the sign of each coordinate.
  */
 template <long n = 2>
@@ -197,7 +209,8 @@ Region<n> operator-(const Region<n>& rhs) {
 }
 
 /**
- * @brief Add a region and a positino.
+ * @relates Region
+ * @brief Add a region and a position.
  */
 template <long n = 2>
 Region<n> operator+(const Region<n>& lhs, const Position<n>& rhs) {
@@ -207,6 +220,7 @@ Region<n> operator+(const Region<n>& lhs, const Position<n>& rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Subtract a region and a position.
  */
 template <long n = 2>
@@ -217,6 +231,7 @@ Region<n> operator-(const Region<n>& lhs, const Position<n>& rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Add a region and a scalar.
  */
 template <long n = 2>
@@ -227,6 +242,7 @@ Region<n> operator+(const Region<n>& lhs, long rhs) {
 }
 
 /**
+ * @relates Region
  * @brief Subtract a region and a scalar.
  */
 template <long n = 2>

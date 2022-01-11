@@ -34,8 +34,8 @@ namespace Fits {
 
 /**
  * @ingroup data_concepts
- * @concept{SizedData}
- * @brief Concept for contiguous data holders.
+ * @requirements{SizedData}
+ * @brief Requirements for a `DataHolder`.
  * @details
  * A contiguous data holder is some class which stores or points to
  * some data contiguous in memory as a public or protected member `TContainer m_container`,
@@ -50,10 +50,11 @@ namespace Fits {
 
 /**
  * @ingroup data_concepts
- * @satisfies{SizedData}
  * @brief A holder of any contiguous container specified by a size and data pointer.
  * @details
- * The class can be specialized for any container, in which case it should satisfy the `SizedData` concept.
+ * The class can be specialized for any container,
+ * in which case it should satisfy the `SizedData` requirements.
+ * @satisfies{SizedData}
  */
 template <typename T, typename TContainer>
 class DataHolder {
@@ -208,10 +209,10 @@ protected:
  * @brief Mix `ContiguousContainerMixin` and `VectorArithmeticMixin` into a `DataHolder`
  * as a user-defined derived class.
  * @tparam TDerived The derived class
- * @satisfies{ContiguousContainer}
- * @satisfies{VectorArithmetic}
  * @details
  * The class can be specialized for any container which implements the `DataHolder` specification.
+ * @satisfies{ContiguousContainer}
+ * @satisfies{VectorArithmetic}
  */
 template <typename T, typename TContainer, typename TDerived> // TODO allow void
 class DataContainer :

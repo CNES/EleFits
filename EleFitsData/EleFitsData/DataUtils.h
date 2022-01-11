@@ -112,21 +112,41 @@ template <typename TReturn>
 using Indexed = TypedKey<TReturn, long>;
 
 /**
+ * @relates TypedKey
  * @brief Create a `TypedKey` where the key type is deduced from the parameter.
- * @see TypedKey
+ * @details
+ * \par Example
+ * \code
+ * columns.readSeq(as<float>(1), as<std::string>(4));
+ * \endcode
  */
 template <typename TReturn>
 TypedKey<TReturn, long> as(long key) {
   return TypedKey<TReturn, long> {key};
 }
+
+/**
+ * @relates TypedKey
+ * @copydoc as(long)
+ */
 template <typename TReturn>
 TypedKey<TReturn, long> as(int key) {
   return TypedKey<TReturn, long> {key};
 }
+
+/**
+ * @relates TypedKey
+ * @copydoc as(long)
+ */
 template <typename TReturn>
 TypedKey<TReturn, std::string> as(const std::string& key) {
   return TypedKey<TReturn, std::string> {key};
 }
+
+/**
+ * @relates TypedKey
+ * @copydoc as(long)
+ */
 template <typename TReturn>
 TypedKey<TReturn, std::string> as(const char* key) {
   return TypedKey<TReturn, std::string> {key};

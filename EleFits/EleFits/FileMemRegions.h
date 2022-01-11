@@ -128,7 +128,7 @@ private:
 };
 
 /**
- * @ingroup image_handlers
+ * @relates FileMemRegions
  * @brief Create a `FileMemRegions` with in-file position at origin.
  */
 template <long n>
@@ -137,7 +137,7 @@ FileMemRegions<n> makeMemRegion(const Region<n>& memoryRegion) {
 }
 
 /**
- * @ingroup image_handlers
+ * @relates FileMemRegions
  * @brief Create a `FileMemRegions` with whole in-file region.
  */
 template <long n>

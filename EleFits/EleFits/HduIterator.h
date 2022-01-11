@@ -135,19 +135,19 @@ private:
 };
 
 /**
- * @ingroup iterators
+ * @relates HduIterator
  * @brief Beginning of an iterator to loop over all HDUs as `Hdu`s.
  */
 HduIterator<> begin(MefFile& f);
 
 /**
- * @ingroup iterators
+ * @relates HduIterator
  * @brief End of an iterator to loop over all HDUs as `Hdu`s.
  */
 HduIterator<> end(MefFile& f);
 
 /**
- * @ingroup iterators
+ * @relates HduIterator
  * @brief Beginning of an iterator to loop over selected HDUs.
  * @tparam THdu The desired HDU type
  * @param selector The HDU selector
@@ -156,7 +156,7 @@ template <typename THdu = Hdu>
 HduIterator<THdu> begin(HduSelector<THdu>& selector);
 
 /**
- * @ingroup iterators
+ * @relates HduIterator
  * @brief End of an iterator to loop over selected HDUs.
  */
 template <typename THdu = Hdu>

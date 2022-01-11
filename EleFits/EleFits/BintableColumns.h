@@ -496,6 +496,7 @@ private:
 };
 
 /**
+ * @relates Column
  * @brief The common number of rows of a sequence of columns.
  * @details
  * Throw if columns do not have the same size.

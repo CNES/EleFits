@@ -237,6 +237,7 @@ struct Record {
 };
 
 /**
+ * @relates Region
  * @brief Check whether two records are equal.
  * @details
  * Equality of keyword, value, unit and comment is tested.
@@ -259,7 +260,7 @@ bool operator==(const Record<T>& lhs, const Record<T>& rhs) {
 }
 
 /**
- * @ingroup header_data_classes
+ * @relates Region
  * @brief Check whether two records are different.
  */
 template <typename T>

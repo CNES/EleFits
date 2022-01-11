@@ -143,6 +143,7 @@ struct ColumnInfo {
 };
 
 /**
+ * @relates ColumnInfo
  * @brief `ColumnInfo` equality operator.
  */
 template <typename T>
@@ -151,6 +152,7 @@ bool operator==(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
 }
 
 /**
+ * @relates ColumnInfo
  * @brief `ColumnInfo` unequality operator.
  */
 template <typename T>
@@ -473,7 +475,7 @@ private:
 };
 
 /**
- * @ingroup bintable_data_classes
+ * @relates Column
  * @brief Shortcut to create a column from a column info and data without specifying the template parameters.
  * @tparam T The value type, should not be specified (automatically deduced)
  * @param data The column values, which can be either a pointer (or C array) or a vector
@@ -485,12 +487,15 @@ private:
  * \endcode
  */
 template <typename T>
-PtrColumn<T> makeColumn(ColumnInfo<std::decay_t<T>> info, T* data, long elementCount) { // FIXME merge overloads after Column refactoring
+PtrColumn<T> makeColumn(
+    ColumnInfo<std::decay_t<T>> info,
+    T* data,
+    long elementCount) { // FIXME merge overloads after Column refactoring
   return {std::move(info), elementCount, data};
 }
 
 /**
- * @ingroup bintable_data_classes
+ * @relates Column
  * @copydoc makeColumn
  */
 template <typename T, typename... Longs>

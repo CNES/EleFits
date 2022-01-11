@@ -36,7 +36,7 @@ we follow the same convention to provide a fully consistent API.
 This way, the user code only copes with 0-based indices.
 
 In general, sizes are also `long`s, with a notable exception for containers' `size()` method,
-for the sake of compatibility with the standard library, in particular the `ContiguousContainer` concept.
+for the sake of compatibility with the standard library, in particular the `ContiguousContainer` named requirements.
 
 
 \section types-data Data types

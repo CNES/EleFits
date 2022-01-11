@@ -87,8 +87,6 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
  * @tparam T The value type, which can be `const`-qualified for read-only rasters
  * @tparam N The dimension, which can be >= 0 for fixed dimension, or -1 for variable dimension
  * @tparam TContainer The underlying data container type
- * @satisfies{ContiguousContainer}
- * @satisfies{VectorArithmetic}
  * @details
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.
@@ -112,7 +110,7 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
  * which is also nice sometimes but puts more responsibility on the shoulders of the user code,
  * as it should check that the actual dimension is acceptable.
  * 
- * `Raster` fulfills the requirements of the `ContiguousContainer` concept,
+ * `Raster` meets the `ContiguousContainer` requirements,
  * by extending `DataContainer` (e.g. is iterable).
  * `Raster` ensures constant-time access to elements, whatever the dimension of the data,
  * through subscipt operator `Raster::operator[]()`.
@@ -156,6 +154,9 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
  * is very common in the field of Earth observation,
  * and also belongs to the Java library.
  * All in all, `Raster` seems to be a fair compromise.
+ * 
+ * @satisfies{ContiguousContainer}
+ * @satisfies{VectorArithmetic}
  * 
  * @see
  * - `Position` for details on the fixed- and variable-dimension cases.
@@ -385,7 +386,7 @@ private:
 };
 
 /**
- * @ingroup image_data_classes
+ * @relates RasterContainer
  * @brief Shortcut to create a raster from a shape and data without specifying the template parameters.
  * @tparam T The pixel type, should not be specified (automatically deduced)
  * @tparam Longs The axes lengths, should not be specified (automatically deduced)
@@ -412,7 +413,7 @@ makeRaster(TContainer&& data, Longs... shape) {
 }
 
 /**
- * @ingroup image_data_classes
+ * @relates RasterContainer
  * @copydoc makeRaster()
  */
 template <typename T, typename... Longs>
