@@ -35,7 +35,7 @@ namespace Fits {
 /**
  * @ingroup data_concepts
  * @requirements{SizedData}
- * @brief Requirements for a `DataHolder`.
+ * @brief Requirements for a `DataContainerHolder`.
  * @details
  * A contiguous data holder is some class which stores or points to
  * some data contiguous in memory as a public or protected member `TContainer m_container`,
@@ -57,30 +57,30 @@ namespace Fits {
  * @satisfies{SizedData}
  */
 template <typename T, typename TContainer>
-class DataHolder {
+class DataContainerHolder {
 
 public:
   /**
    * @brief Default or size-based constructor.
    */
-  explicit DataHolder(std::size_t size = 0) : m_container(size) {}
+  explicit DataContainerHolder(std::size_t size = 0) : m_container(size) {}
 
   /**
    * @brief Iterator-based constructor.
    */
   template <typename TIterator>
-  DataHolder(TIterator begin, TIterator end) : m_container(begin, end) {}
+  DataContainerHolder(TIterator begin, TIterator end) : m_container(begin, end) {}
 
   /**
    * @brief Initialization list-based constructor.
    */
-  DataHolder(std::initializer_list<T> values) : DataHolder(values.begin(), values.end()) {}
+  DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
 
   /**
    * @brief Forwarding constructor.
    */
   template <typename... Ts>
-  DataHolder(Ts&&... args) : m_container(std::forward<Ts>(args)...) {}
+  DataContainerHolder(Ts&&... args) : m_container(std::forward<Ts>(args)...) {}
 
   /**
    * @brief Get the number of elements.
@@ -108,24 +108,24 @@ protected:
  * @brief Raw pointer specialization.
  */
 template <typename T>
-class DataHolder<T, T*> {
+class DataContainerHolder<T, T*> {
 
 public:
   /**
    * @brief Default or size-based constructor.
    */
-  explicit DataHolder(std::size_t size = 0, T* data = nullptr) : m_size(size), m_container(data) {}
+  explicit DataContainerHolder(std::size_t size = 0, T* data = nullptr) : m_size(size), m_container(data) {}
 
   /**
    * @brief Iterator-based constructor.
    */
   template <typename TIterator>
-  DataHolder(TIterator begin, TIterator end) : DataHolder(std::distance(begin, end), &(*begin)) {}
+  DataContainerHolder(TIterator begin, TIterator end) : DataContainerHolder(std::distance(begin, end), &(*begin)) {}
 
   /**
    * @brief Initialization list-based constructor.
    */
-  DataHolder(std::initializer_list<T> values) : DataHolder(values.begin(), values.end()) {}
+  DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
 
   /**
    * @brief Get the number of elements.
@@ -158,15 +158,15 @@ protected:
  * @brief `std::array` specialization.
  */
 template <typename T, std::size_t N>
-class DataHolder<T, std::array<T, N>> {
+class DataContainerHolder<T, std::array<T, N>> {
 
 public:
   /**
    * @brief Default or size-based constructor.
    */
-  explicit DataHolder(std::size_t size = N) : m_container {} {
+  explicit DataContainerHolder(std::size_t size = N) : m_container {} {
     if (size != N) {
-      throw FitsError("Size missmatch in DataHolder<std::array> specialization."); // FIXME clarify
+      throw FitsError("Size missmatch in DataContainerHolder<std::array> specialization."); // FIXME clarify
     }
   }
 
@@ -174,14 +174,14 @@ public:
    * @brief Iterator-based constructor.
    */
   template <typename TIterator>
-  DataHolder(TIterator begin, TIterator end) : DataHolder(std::distance(begin, end)) {
+  DataContainerHolder(TIterator begin, TIterator end) : DataContainerHolder(std::distance(begin, end)) {
     std::copy(begin, end, m_container.begin());
   }
 
   /**
    * @brief Initialization list-based constructor.
    */
-  DataHolder(std::initializer_list<T> values) : DataHolder(values.begin(), values.end()) {}
+  DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
 
   /**
    * @brief Get the number of elements.
@@ -210,7 +210,7 @@ protected:
  * as a user-defined derived class.
  * @tparam TDerived The derived class
  * @details
- * The class can be specialized for any container which implements the `DataHolder` specification.
+ * The class can be specialized for any container which implements the `SizedData` requirements.
  * @satisfies{ContiguousContainer}
  * @satisfies{VectorArithmetic}
  */
@@ -218,13 +218,13 @@ template <typename T, typename TContainer, typename TDerived> // TODO allow void
 class DataContainer :
     public ContiguousContainerMixin<T, TDerived>, // TODO fallback to DataContainer<T, TContainer, void>
     public VectorArithmeticMixin<T, TDerived>, // TODO fallback to DataContainer<T, TContainer, void>
-    private DataHolder<T, TContainer> {
+    private DataContainerHolder<T, TContainer> {
 
 public:
   /**
    * @brief The concrete data holder type.
    */
-  using Holder = DataHolder<T, TContainer>;
+  using Holder = DataContainerHolder<T, TContainer>;
 
   /**
    * @brief Inherit data holder's constructors.

@@ -7,9 +7,9 @@ class ContiguousContainerMixin<T, TDerived> {
 + operator!=(other)
 + empty()
 }
-class DataHolder<T, TContainer> {
+class DataContainerHolder<T, TContainer> {
 + m_container
-+ DataHolder(args...)
++ DataContainerHolder(args...)
 + data()
 + size()
 }
@@ -29,8 +29,6 @@ class DataContainer<T, TContainer, TDerived> {
 + DataContainer(args...)
 + container()
 + moveTo(destination)
-}
-class DataContainer<T, TContainer, TDerived> {
 }
 class Position<N> {
 + Position(indices)
@@ -92,7 +90,7 @@ class Segment {
 }
 
 ContiguousContainerMixin <|-- DataContainer
-DataHolder <|-- DataContainer
+DataContainerHolder <|-- DataContainer
 VectorArithmeticMixin <|-- DataContainer
 DataContainer <|-- Position
 DataContainer <|-- Raster
