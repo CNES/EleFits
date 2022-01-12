@@ -54,18 +54,18 @@ BOOST_AUTO_TEST_CASE(raster_generate_test) {
   Position<3> shape {3, 14, 15};
   Test::RandomRaster<std::int16_t, 3> a(shape);
   Test::RandomRaster<std::int32_t, 3> b(shape);
-  VecRaster<std::int64_t, 3> res(shape);
-  res.generate(
+  VecRaster<std::int64_t, 3> result(shape);
+  result.generate(
       [](auto v, auto w) {
         return v * w;
       },
       a,
       b);
-  res.apply([](auto v) {
+  result.apply([](auto v) {
     return -v;
   });
-  for (const auto& p : res.domain()) {
-    BOOST_TEST(res[p] == -a[p] * b[p]);
+  for (const auto& p : result.domain()) {
+    BOOST_TEST((result[p] == -a[p] * b[p]));
   }
 }
 
