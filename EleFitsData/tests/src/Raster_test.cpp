@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(const_vecraster_data_test) {
 }
 
 BOOST_FIXTURE_TEST_CASE(small_raster_size_test, Test::SmallRaster) {
-  long size(this->width * this->height);
+  std::size_t size = this->width * this->height;
   BOOST_TEST(this->dimension() == 2);
   BOOST_TEST(this->size() == size);
   BOOST_TEST(this->vector().size() == size);

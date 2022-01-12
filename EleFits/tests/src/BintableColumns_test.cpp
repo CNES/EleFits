@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable) {
 
 BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
   const Test::SmallTable table;
-  const auto initSize = table.names.size();
+  const auto initSize = static_cast<long>(table.names.size());
   const auto& ext = assignBintableExt("TABLE", table.nameCol, table.radecCol);
   const auto& columns = ext.columns();
   BOOST_TEST(columns.readRowCount() == initSize);
