@@ -185,8 +185,8 @@ public:
    * @details
    * To not only initialize the HDU but also write data, use assignBintableExt instead.
    */
-  template <typename... Ts>
-  const BintableHdu& initBintableExt(const std::string& name, const ColumnInfo<Ts>&... header);
+  template <typename... TInfos>
+  const BintableHdu& initBintableExt(const std::string& name, const TInfos&... header);
 
   /**
    * @brief Append a BintableHdu with given name and data.
@@ -194,19 +194,8 @@ public:
    * @warning
    * All columns should have the same number of rows.
    */
-  template <typename... Ts>
-  const BintableHdu& assignBintableExt(const std::string& name, const Column<Ts>&... columns);
-
-  /**
-   * @brief Append a BintableHdu with given name and data.
-   * @return A reference to the new BintableHdu.
-   * @tparam Tuple // TODO
-   * @tparam count // TODO
-   * @warning
-   * All columns should have the same number of rows.
-   */
-  template <typename Tuple, std::size_t count = std::tuple_size<Tuple>::value>
-  const BintableHdu& assignBintableExt(const std::string& name, const Tuple& columns);
+  template <typename... TColumns>
+  const BintableHdu& assignBintableExt(const std::string& name, const TColumns&... columns);
 
   /**
    * @brief The index of the Primary HDU.
@@ -230,6 +219,17 @@ protected:
    */
   template <class T = Hdu>
   const T& appendExt(T extension);
+
+  /**
+   * @brief Append a BintableHdu with given name and data.
+   * @return A reference to the new BintableHdu.
+   * @tparam TTuple A tuple of columns
+   * @tparam Size The number of columns
+   * @warning
+   * All columns should have the same number of rows.
+   */
+  template <typename TTuple, std::size_t Size = std::tuple_size<TTuple>::value>
+  const BintableHdu& assignBintableExt(const std::string& name, const TTuple& columns);
 
   /**
    * @brief Vector of `Hdu`s (castable to `ImageHdu` or `BintableHdu`).

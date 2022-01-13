@@ -91,12 +91,12 @@ long columnIndex(fitsfile* fptr, const std::string& name) {
 namespace Internal {
 
 template <> // TODO clean
-void readColumnInfoImpl<std::string>(fitsfile* fptr, long index, Fits::VecColumn<std::string>& column, long rowCount) {
+void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<std::string>& column, long rowCount) {
   column = Fits::VecColumn<std::string>(readColumnInfo<std::string>(fptr, index), std::vector<std::string>(rowCount));
 }
 
 template <> // TODO clean
-void readColumnChunkImpl<std::string>(
+void readColumnChunkImpl(
     fitsfile* fptr,
     long index,
     Fits::VecColumn<std::string>& column,
@@ -136,10 +136,10 @@ void readColumnChunkImpl<std::string>(
 }
 
 template <>
-void writeColumnChunkImpl<std::string>(
+void writeColumnChunkImpl(
     fitsfile* fptr,
     long index,
-    const Fits::Column<std::string>& column,
+    const Fits::VecColumn<std::string>& column,
     long firstRow,
     long rowCount) {
   int status = 0;
@@ -166,14 +166,10 @@ void writeColumnChunkImpl<std::string>(
 } // namespace Internal
 
 template <>
-void readColumnSegment<std::string>(
-    fitsfile* fptr,
-    const Fits::Segment& rows,
-    long index,
-    Fits::Column<std::string>& column) {
+void readColumnSegment(fitsfile* fptr, const Fits::Segment& rows, long index, Fits::VecColumn<std::string>& column) {
   std::vector<char*> data(rows.size());
   std::generate(data.begin(), data.end(), [&]() {
-    return (char*)malloc(column.info().repeatCount);
+    return (char*)malloc(column.info().repeatCount());
   });
   int status = 0;
   fits_read_col(
@@ -196,7 +192,7 @@ void readColumnSegment<std::string>(
 }
 
 template <>
-void writeColumn<std::string>(fitsfile* fptr, const Fits::Column<std::string>& column) {
+void writeColumn(fitsfile* fptr, const Fits::VecColumn<std::string>& column) {
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
   CStrArray array(begin, end);
@@ -215,7 +211,7 @@ void writeColumn<std::string>(fitsfile* fptr, const Fits::Column<std::string>& c
 }
 
 template <>
-void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::Column<std::string>& column) {
+void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::VecColumn<std::string>& column) {
   long index = columnIndex(fptr, column.info().name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();
@@ -236,10 +232,28 @@ void writeColumnSegment<std::string>(fitsfile* fptr, long firstRow, const Fits::
 }
 
 template <>
-void writeColumnSegment<const std::string>(
-    fitsfile* fptr,
-    long firstRow,
-    const Fits::Column<const std::string>& column) {
+void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::PtrColumn<const std::string>& column) {
+  long index = columnIndex(fptr, column.info().name);
+  const auto begin = column.data();
+  const auto end = begin + column.elementCount();
+  CStrArray array(begin, end);
+  // CStrArray is the only deviation from the generic case;
+  // could we avoid specializing?
+  int status = 0;
+  fits_write_col(
+      fptr,
+      TypeCode<std::string>::forBintable(), // datatype
+      static_cast<int>(index), // colnum // column indices are int
+      firstRow, // firstrow (1-based)
+      1, // firstelem (1-based)
+      column.elementCount(), // nelements
+      array.data(),
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info().name);
+}
+
+template <>
+void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::PtrColumn<std::string>& column) {
   long index = columnIndex(fptr, column.info().name);
   const auto begin = column.data();
   const auto end = begin + column.elementCount();

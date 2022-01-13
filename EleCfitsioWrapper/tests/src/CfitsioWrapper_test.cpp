@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(smoke_test) {
   using namespace Cfitsio;
   fitsfile* fptr;
   (void)fptr;
-  using Fits::Column;
+  using Fits::ColumnContainer;
   using Fits::RasterContainer;
   using Fits::Record;
 }

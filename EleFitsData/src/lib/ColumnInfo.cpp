@@ -17,20 +17,15 @@
  *
  */
 
-#include "EleFitsData/Column.h"
+#include "EleFitsData/ColumnInfo.h"
 
 namespace Euclid {
 namespace Fits {
 
-#ifndef COMPILE_COLUMN_CLASSES
-#define COMPILE_COLUMN_CLASSES(type, unused) \
-  template struct ColumnInfo<type, 1>; \
-  template class ColumnContainer<type, 1, type*>; \
-  template class ColumnContainer<const type, 1, const type*>; \
-  template class ColumnContainer<type, 1, std::vector<type>>;
-ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_COLUMN_CLASSES)
-#undef COMPILE_COLUMN_CLASSES
-#endif
+template <>
+long ColumnInfo<std::string, 1>::elementCountPerEntry() const {
+  return 1;
+}
 
 } // namespace Fits
 } // namespace Euclid

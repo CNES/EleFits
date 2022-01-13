@@ -79,14 +79,14 @@ public:
   /**
    * @brief Read a column with given name or index.
    */
-  template <typename T>
-  VecColumn<T> readColumn(ColumnKey key) const;
+  template <typename T, long N = 1>
+  VecColumn<T, N> readColumn(ColumnKey key) const;
 
   /**
    * @brief Write a column.
    */
-  template <typename T>
-  void writeColumn(const Column<T>& column) const;
+  template <typename TColumn>
+  void writeColumn(const TColumn& column) const;
 
 private:
   /**

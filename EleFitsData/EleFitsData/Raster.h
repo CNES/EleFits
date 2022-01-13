@@ -218,7 +218,7 @@ public:
 
   /// @}
   /**
-   * @name Size
+   * @name Shape
    */
   /// @{
 

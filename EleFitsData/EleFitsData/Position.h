@@ -103,6 +103,11 @@ public:
   static Position<N> zero();
 
   /**
+   * @brief Create a position full of 1's.
+   */
+  static Position<N> one();
+
+  /**
    * @brief Create max position (full of -1's).
    */
   static Position<N> max();

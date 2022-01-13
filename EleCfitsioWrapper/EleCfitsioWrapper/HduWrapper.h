@@ -147,24 +147,24 @@ void assignImageExtension(fitsfile* fptr, const std::string& name, const TRaster
 /**
  * @brief Create a new binary table HDU with given name and column infos.
  */
-template <typename... Ts>
-void initBintableExtension(fitsfile* fptr, const std::string& name, const Fits::ColumnInfo<Ts>&... infos);
+template <typename... TInfos>
+void initBintableExtension(fitsfile* fptr, const std::string& name, const TInfos&... infos);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.
  */
-template <typename... Ts>
-void assignBintableExtension(fitsfile* fptr, const std::string& name, const Fits::Column<Ts>&... columns);
+template <typename... TColumns>
+void assignBintableExtension(fitsfile* fptr, const std::string& name, const TColumns&... columns);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.
- * @tparam Tuple A tuple-like type, which should support `std::get`
+ * @tparam TTuple A tuple-like type, which should support `std::get`
  * @tparam size The number of elements in the tuple
  * @todo
  * Should we provide more DoFs, like an offset or a full list of indices?
  */
-template <typename Tuple, std::size_t size = std::tuple_size<Tuple>::value>
-void assignBintableExtension(fitsfile* fptr, const std::string& name, const Tuple& table);
+template <typename TTuple, std::size_t size = std::tuple_size<TTuple>::value>
+void assignBintableExtension(fitsfile* fptr, const std::string& name, const TTuple& table);
 
 /**
  * @brief Delete the HDU at given index.

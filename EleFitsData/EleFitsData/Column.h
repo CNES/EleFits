@@ -20,6 +20,8 @@
 #ifndef _ELEFITSDATA_COLUMN_H
 #define _ELEFITSDATA_COLUMN_H
 
+#include "EleFitsData/ColumnInfo.h"
+#include "EleFitsData/DataContainer.h"
 #include "EleFitsData/DataUtils.h"
 
 #include <complex>
@@ -30,139 +32,34 @@
 namespace Euclid {
 namespace Fits {
 
-/**
- * @ingroup bintable_data_classes
- * @brief Loop over supported column types.
- * @param MACRO A two-parameter macro: the C++ type and a valid variable name to represent it.
- * @see Program EleFitsPrintSupportedTypes to display all supported types.
- * @see ELEFITS_FOREACH_RECORD_TYPE
- * @see ELEFITS_FOREACH_RASTER_TYPE
- */
-#define ELEFITS_FOREACH_COLUMN_TYPE(MACRO) \
-  /* MACRO(bool, bool) // TODO Could be supported at some point */ \
-  MACRO(char, char) \
-  MACRO(std::int16_t, int16) \
-  MACRO(std::int32_t, int32) \
-  MACRO(std::int64_t, int64) \
-  MACRO(float, float) \
-  MACRO(double, double) \
-  MACRO(std::complex<float>, complex_float) \
-  MACRO(std::complex<double>, complex_double) \
-  MACRO(std::string, string) \
-  MACRO(unsigned char, uchar) \
-  MACRO(std::uint16_t, uint16) \
-  MACRO(std::uint32_t, uint32) \
-  MACRO(std::uint64_t, uint64)
+/// @cond INTERNAL
+// Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
+
+// Forward declaration for PtrColumn and VecColumn
+template <typename T, long N, typename TContainer>
+class ColumnContainer;
+
+/// @endcond
 
 /**
  * @ingroup bintable_data_classes
- * @brief Column metadata, i.e. `{ name, unit, repeatCount }`
- * and the value type as the template parameter.
+ * @brief Column which references some external pointer data.
  * @details
- * Binary table columns are either scalar (`repeatCount` = 1) or vector (`repeatCount` > 1).
- * In the case of vector columns, each cell of the column contains `repeatCount` values.
- * Here is an example of a 4-row table with a scalar column and a vector column with a repeat count of 3:
- * <table class="fieldtable">
- * <tr><th>Row<th>repeatCount = 1<th>repeatCount = 3
- * <tr><td>0<td>00<td>00, 01, 02
- * <tr><td>1<td>10<td>10, 11, 12
- * <tr><td>2<td>20<td>20, 21, 22
- * <tr><td>3<td>30<td>30, 31, 32
- * </table>
- * For performance, the values are stored sequentially in a 1D array as follows:
- * \code
- * int repeat1[] = {00, 10, 20, 30};
- * int repeat3[] = {00, 01, 02, 10, 11, 12, 20, 21, 22, 30, 31, 32};
- * \endcode
- *
- * The only exception to this is string columns, which are vector columns
- * -- they should have a repeat count greater than the maximum number of characters in a cell --
- * but each cell contains only one string:
- * <table class="fieldtable">
- * <tr><th>Row<th>repeatCount = 6
- * <tr><td>0<td>`"ZERO"`
- * <tr><td>1<td>`"ONE"`
- * <tr><td>2<td>`"TWO"`
- * <tr><td>3<td>`"THREE"`
- * </table>
- * The data array is a simple array of `std::string`s:
- * \code
- * std::string data[] = {"ZERO", "ONE", "TWO", "THREE"};
- * \endcode
- * but the repeat count should be at least 6 (beware of the null terminating character).
- *
- * @note
- * Since the values are stored sequentially even for vector columns,
- * a scalar column can be "fold" into a vector column by
- * just setting a repeat count greater than 1, and vice-versa.
- * This trick allows writing scalar columns as vector columns,
- * which is what CFitsIO recommends for performance.
- * Indeed, with CFitsIO, it is much faster to write 1 row with a repeat count of 10.000
- * than 10.000 rows with a repeat count of 1.
- * This is because binary tables are written row-wise in the Fits file.
- * CFitsIO uses an internal buffer, which can be exploited to optimize reading and writing.
- * This is generally handled through the "iterator function" provided by CFitsIO.
- * @note
- * Fortunately, this complexity is already embedded in EleFits internals:
- * the buffer is used optimally when reading and writing several columns.
- * In general, it is nearly as fast to read and write scalar columns as vector columns with EleFits.
- * Therefore, users are encouraged to consider the repeat count as a meaningful value,
- * rather than as an optimization trick.
- *
- * @see \ref optim
+ * Use it for temporary columns.
  * @see \ref data_classes
  */
-template <typename T>
-struct ColumnInfo {
-
-  /**
-   * @brief The value type.
-   */
-  using Value = T;
-
-  /**
-   * @brief Column name.
-   */
-  std::string name;
-
-  /**
-   * @brief Column unit.
-   */
-  std::string unit = "";
-
-  /**
-   * @brief Repeat count of the column, i.e., number of values per cell.
-   * @details
-   * Scalar columns have a repeat count of 1.
-   * @warning
-   * String columns are considered vector columns.
-   * Their repeat count must be greater or equal to the longest string of the column
-   * including the `\0` character.
-   */
-  long repeatCount = 1;
-};
+template <typename T, long N = 1>
+using PtrColumn = ColumnContainer<T, N, T*>;
 
 /**
- * @relates ColumnInfo
- * @brief `ColumnInfo` equality operator.
+ * @ingroup bintable_data_classes
+ * @brief Column which stores internally the data.
+ * @details
+ * Use it (via move semantics) if you don't need your data after the write operation.
+ * @see \ref data_classes
  */
-template <typename T>
-bool operator==(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
-  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount == rhs.repeatCount;
-}
-
-/**
- * @relates ColumnInfo
- * @brief `ColumnInfo` unequality operator.
- */
-template <typename T>
-bool operator!=(const ColumnInfo<T>& lhs, const ColumnInfo<T>& rhs) {
-  return not(lhs == rhs);
-}
-
-// Forward declaration for Column::slice()
-template <typename T>
-class PtrColumn;
+template <typename T, long N = 1>
+using VecColumn = ColumnContainer<T, N, std::vector<T>>;
 
 /**
  * @ingroup bintable_data_classes
@@ -174,34 +71,80 @@ class PtrColumn;
  * (e.g. with other external libraries with custom containers).
  * @see \ref data_classes
  */
-template <typename T>
-class Column {
+template <typename T, long N, typename TContainer>
+class ColumnContainer : public DataContainer<T, TContainer, ColumnContainer<T, N, TContainer>> {
+
+  /**
+   * @brief Shortcut for DataContainer.
+   */
+  using Base = DataContainer<T, TContainer, ColumnContainer<T, N, TContainer>>;
 
 public:
   /**
+   * @brief The info type.
+   */
+  using Info = ColumnInfo<std::decay_t<T>, N>;
+
+  /**
    * @brief The element value type.
    */
-  using Value = T;
+  using Value = T; // FIXME Info::Value, i.e. decay
 
   /**
-   * @brief Create a column with given metadata.
+   * @brief The dimension parameter.
    */
-  explicit Column(ColumnInfo<std::decay_t<T>> info);
+  static constexpr long Dim = Info::Dim;
 
   /**
-   * @brief Destructor.
+   * @name Constructors
    */
-  virtual ~Column() = default;
+  /// @{
+
+  ELEFITS_VIRTUAL_DTOR(ColumnContainer)
+  ELEFITS_COPYABLE(ColumnContainer)
+  ELEFITS_MOVABLE(ColumnContainer)
 
   /**
-   * @name Get/set properties.
+   * @brief Default constructor.
+   */
+  ColumnContainer();
+
+  /**
+   * @brief Create an empty column with given metadata.
+   * @param info The column metadata
+   * @param size The element count
+   * @warning
+   * `VecColumn` constructor used to get the **row** count as input instead of the **element count**,
+   * which makes a difference for vector columns.
+   */
+  explicit ColumnContainer(Info info, long size = 0);
+
+  /**
+   * @brief Create a column with given metadata and data.
+   * @param info The column metadata
+   * @param size The element count
+   * @param data The raw data
+   */
+  ColumnContainer(Info info, long size, T* data);
+
+  /**
+   * @brief Create a column with given metadata and data.
+   * @param info The column metadata
+   * @param args Arguments to be forwarded to the underlying container
+   */
+  template <typename... Ts>
+  ColumnContainer(Info info, Ts&&... args);
+
+  /// @}
+  /**
+   * @name Properties
    */
   /// @{
 
   /**
    * @brief Get the column metadata.
    */
-  const ColumnInfo<std::decay_t<T>>& info() const;
+  const Info& info() const;
 
   /**
    * @brief Change the column name.
@@ -220,6 +163,7 @@ public:
    * @warning
    * For string columns, CFitsIO requires elementCount to be just the number of rows,
    * although they are vector columns.
+   * @deprecated Use standard `size()` instead.
    */
   long elementCount() const;
 
@@ -230,9 +174,11 @@ public:
 
   /// @}
   /**
-   * @name Access elements
+   * @name Element access
    */
   /// @{
+
+  using Base::operator[];
 
   /**
    * @details
@@ -245,16 +191,6 @@ public:
    * @param row The row index
    * @param repeat The repeat index
    */
-
-  /**
-   * @brief Const pointer to the first data element.
-   */
-  const T* data() const;
-
-  /**
-   * @brief Pointer to the first data element.
-   */
-  T* data();
 
   /**
    * @brief Access the value at given row and repeat indices.
@@ -278,7 +214,7 @@ public:
 
   /// @}
   /**
-   * @name Slicing
+   * @name Views
    */
   /// @{
 
@@ -296,182 +232,9 @@ public:
 
 private:
   /**
-   * @brief Implementation of `elementCount()`.
-   */
-  virtual long elementCountImpl() const = 0;
-
-  /**
-   * @brief Implementation of `data()`.
-   */
-  virtual const T* dataImpl() const = 0;
-
-  /**
    * @brief Column metadata.
    */
-  ColumnInfo<std::decay_t<T>> m_info;
-};
-
-/**
- * @ingroup bintable_data_classes
- * @brief Column which references some external pointer data.
- * @details
- * Use it for temporary columns.
- * @see \ref data_classes
- */
-template <typename T>
-class PtrColumn : public Column<T> {
-
-public:
-  /**
-   * @brief Destructor. 
-   */
-  virtual ~PtrColumn() = default;
-
-  /**
-   * @brief Copy constructor.
-   */
-  PtrColumn(const PtrColumn&) = default;
-
-  /**
-   * @brief Move constructor.
-   */
-  PtrColumn(PtrColumn&&) = default;
-
-  /**
-   * @brief Copy assignment.
-   */
-  PtrColumn& operator=(const PtrColumn&) = default;
-
-  /**
-   * @brief Move assignment.
-   */
-  PtrColumn& operator=(PtrColumn&&) = default;
-
-  /**
-   * @brief Create a new column with given metadata and data.
-   * @param info The column metadata.
-   * @param elementCount The number of elements in the column,
-   * which is the number of rows for scalar and string columns.
-   * @param data Pointer to the first element of the data.
-   */
-  PtrColumn(ColumnInfo<std::decay_t<T>> info, long elementCount, T* data);
-
-private:
-  /**
-   * @copydoc Column::elementCountImpl()
-   */
-  long elementCountImpl() const override;
-
-  /**
-   * @copydoc Column::dataImpl()
-   */
-  const T* dataImpl() const override;
-
-  /**
-   * @brief The number of elements.
-   */
-  long m_nelements;
-
-  /**
-   * @brief The data.
-   */
-  T* m_data;
-};
-
-/**
- * @ingroup bintable_data_classes
- * @brief Column which stores internally the data.
- * @details
- * Use it (via move semantics) if you don't need your data after the write operation.
- * @see \ref data_classes
- */
-template <typename T>
-class VecColumn : public Column<T> {
-
-public:
-  /**
-   * @brief Destructor.
-   */
-  virtual ~VecColumn() = default;
-
-  /**
-   * @brief Copy constructor.
-   */
-  VecColumn(const VecColumn&) = default;
-
-  /**
-   * @brief Move constructor.
-   */
-  VecColumn(VecColumn&&) = default;
-
-  /**
-   * @brief Copy assignment.
-   */
-  VecColumn& operator=(const VecColumn&) = default;
-
-  /**
-   * @brief Move assignment.
-   */
-  VecColumn& operator=(VecColumn&&) = default;
-
-  /**
-   * @brief Create an empty VecColumn.
-   */
-  VecColumn();
-
-  /**
-   * @brief Crate a VecColumn with given data and metadata.
-   * @details
-   * To transfer ownership of the data instead of copying it, use move semantics:
-   * \code
-   * VecColumn column(info, std::move(vec));
-   * \endcode
-   */
-  VecColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> vec);
-
-  /**
-   * @brief Create a VecColumn with given metadata.
-   */
-  VecColumn(ColumnInfo<std::decay_t<T>> info, long rowCount);
-
-  /**
-   * @brief Const reference to the vector data.
-   */
-  const std::vector<T>& vector() const;
-
-  /**
-   * @brief Move the vector outside the column.
-   * @details
-   * This method is used to take ownership on the data without copying it.
-   * The column info is untouched.
-   * Example usage:
-   * \code
-   * VecColumn<float> column(...);
-   * std::vector<float> data;
-   * column.moveTo(data);
-   * // Values have been moved to data without copy.
-   * // column.vector() is empty now.
-   * \endcode
-   * @warning
-   * The column data is not usable anymore after this call.
-   */
-  std::vector<std::decay_t<T>>& moveTo(std::vector<std::decay_t<T>>& destination);
-
-private:
-  /**
-   * @copydoc Column::elementCountImpl()
-   */
-  long elementCountImpl() const override;
-
-  /**
-   * @copydoc Column::dataImpl()
-   */
-  const T* dataImpl() const override;
-
-  /**
-   * @brief The data vector.
-   */
-  std::vector<std::decay_t<T>> m_vec;
+  Info m_info;
 };
 
 /**
@@ -486,21 +249,18 @@ private:
  * auto column = makeColumn(std::move(vector), std::move(info)); // Copy-less
  * \endcode
  */
-template <typename T>
-PtrColumn<T> makeColumn(
-    ColumnInfo<std::decay_t<T>> info,
-    T* data,
-    long elementCount) { // FIXME merge overloads after Column refactoring
-  return {std::move(info), elementCount, data};
+template <typename T, typename TInfo>
+PtrColumn<T, TInfo::Dim> makeColumn(TInfo&& info, long rowCount, T* data) {
+  return {std::forward<TInfo>(info), rowCount, data};
 }
 
 /**
  * @relates Column
  * @copydoc makeColumn
  */
-template <typename T, typename... Longs>
-VecColumn<T> makeColumn(ColumnInfo<std::decay_t<T>> info, std::vector<T> data) {
-  return {std::move(info), std::move(data)};
+template <typename T, typename TInfo>
+VecColumn<T, TInfo::Dim> makeColumn(TInfo info, std::vector<T> data) {
+  return {std::forward<TInfo>(info), std::move(data)};
 }
 
 } // namespace Fits

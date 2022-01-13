@@ -47,13 +47,13 @@ using namespace Euclid::Fits;
 // writeSegment(rows, column)
 //   writeSegment(column)
 //
-// writeSegmentSeq (long firstRow, TSeq &&columns) -> loop on writeSegment (row, column)
-//   writeSeq (TSeq &&columns) => SEQ_WRITE_READ_TEST
-//     writeSeq (const Column< Ts > &... columns) => SEQ_WRITE_READ_TEST
-//   writeSegmentSeq (long firstRow, Column< Ts > &... columns) => SEQ_WRITE_READ_TEST
+// writeSegmentSeq (firstRow, columns) -> loop on writeSegment (row, column)
+//   writeSeq (columns) => SEQ_WRITE_READ_TEST
+//     writeSeq (columns...) => SEQ_WRITE_READ_TEST
+//   writeSegmentSeq (firstRow, columns...) => SEQ_WRITE_READ_TEST
 //
-// initSeq (long index, TSeq &&infos) => SEQ_WRITE_READ_TEST
-//   initSeq (long index, const ColumnInfo< Ts > &... infos) => SEQ_WRITE_READ_TEST
+// initSeq (index, infos) => SEQ_WRITE_READ_TEST
+//   initSeq (index, infos...) => SEQ_WRITE_READ_TEST
 //
 // removeSeq (keys) => SEQ_WRITE_READ_TEST
 

@@ -74,25 +74,25 @@ BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
 
   /* VecColumn */
   VecColumn<std::string> vecColumn({"STR", "", repeatCount}, rowCount);
-  BOOST_TEST(vecColumn.info().repeatCount == repeatCount);
+  BOOST_TEST(vecColumn.info().repeatCount() == repeatCount);
   BOOST_TEST(vecColumn.rowCount() == rowCount);
   BOOST_TEST(vecColumn.elementCount() == rowCount);
 
   /* PtrColumn */
   PtrColumn<std::string> ptrColumn({"STR", "", repeatCount}, rowCount, vecColumn.data());
-  BOOST_TEST(ptrColumn.info().repeatCount == repeatCount);
+  BOOST_TEST(ptrColumn.info().repeatCount() == repeatCount);
   BOOST_TEST(ptrColumn.rowCount() == rowCount);
   BOOST_TEST(ptrColumn.elementCount() == rowCount);
 
   /* Constant VecColumn */
   const VecColumn<std::string> cVecColumn({"STR", "", repeatCount}, rowCount);
-  BOOST_TEST(cVecColumn.info().repeatCount == repeatCount);
+  BOOST_TEST(cVecColumn.info().repeatCount() == repeatCount);
   BOOST_TEST(cVecColumn.rowCount() == rowCount);
   BOOST_TEST(cVecColumn.elementCount() == rowCount);
 
   /* Constant PtrColumn */
   const PtrColumn<const std::string> cPtrColumn({"STR", "", repeatCount}, rowCount, cVecColumn.data());
-  BOOST_TEST(cPtrColumn.info().repeatCount == repeatCount);
+  BOOST_TEST(cPtrColumn.info().repeatCount() == repeatCount);
   BOOST_TEST(cPtrColumn.rowCount() == rowCount);
   BOOST_TEST(cPtrColumn.elementCount() == rowCount);
 }

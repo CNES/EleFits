@@ -26,24 +26,27 @@
 namespace Euclid {
 namespace Fits {
 
-template <typename T>
-VecColumn<T> BintableHdu::readColumn(ColumnKey key) const {
-  return m_columns.read<T>(std::move(key));
+template <typename T, long N>
+VecColumn<T, N> BintableHdu::readColumn(ColumnKey key) const {
+  return m_columns.read<T, N>(std::move(key));
 }
 
-template <typename T>
-void BintableHdu::writeColumn(const Column<T>& column) const {
+template <typename TColumn>
+void BintableHdu::writeColumn(const TColumns& column) const {
   m_columns.write(column);
 }
 
 #ifndef DECLARE_READ_COLUMN
-#define DECLARE_READ_COLUMN(type, unused) extern template VecColumn<type> BintableHdu::readColumn(ColumnKey) const;
+#define DECLARE_READ_COLUMN(T, _) extern template VecColumn<T, 1> BintableHdu::readColumn(ColumnKey) const;
 ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_READ_COLUMN)
 #undef DECLARE_READ_COLUMN
 #endif
 
 #ifndef DECLARE_WRITE_COLUMN
-#define DECLARE_WRITE_COLUMN(type, unused) extern template void BintableHdu::writeColumn(const Column<type>&) const;
+#define DECLARE_WRITE_COLUMN(T, _) \
+  extern template void BintableHdu::writeColumn(const PtrColumn<T, 1>&) const; \
+  extern template void BintableHdu::writeColumn(const PtrColumn<const T, 1>&) const; \
+  extern template void BintableHdu::writeColumn(const VecColumn<T, 1>&) const;
 ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_WRITE_COLUMN)
 #undef DECLARE_WRITE_COLUMN
 #endif

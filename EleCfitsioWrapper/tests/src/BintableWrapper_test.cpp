@@ -46,7 +46,7 @@ void checkScalarColumnIsReadBack() {
     const auto info = BintableIo::readColumnInfo<T>(file.fptr, index);
     BOOST_TEST(info.name == input.info().name);
     BOOST_TEST(info.unit == input.info().unit);
-    BOOST_TEST(info.repeatCount == input.info().repeatCount);
+    BOOST_TEST(info.repeatCount() == input.info().repeatCount());
     const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
@@ -80,7 +80,7 @@ void checkVectorColumnIsReadBack() {
   try {
     HduAccess::assignBintableExtension(file.fptr, "BINEXT", input);
     const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
-    BOOST_TEST(output.info().repeatCount == repeatCount);
+    BOOST_TEST(output.info().repeatCount() == repeatCount);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;

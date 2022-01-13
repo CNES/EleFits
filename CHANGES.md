@@ -1,11 +1,16 @@
 # Change log
 
-## 4.1
+## 5.0
 
-### Minor breaking changes
+### Breaking changes
 
-* `Raster` has a third template parameter to select the container
+* Updated to Elements 6.0.1
+* `Raster` has additional parameter `TContainer` to select the container
   (with `PtrRaster<T, N> = Raster<T, N, T*>` and `VecRaster<T, N> = Raster<T, N, vector<T>>`)
+* `Column` has additional template parameters `N` and `TContainer`
+  to support multidimensional entries and select the container
+  (with `PtrColumn<T, N> = Column<T, N, T*>` and `VecColumn<T, N> = Column<T, N, vector<T>>`)
+* `PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)` for compatibility with `VecColumn`
 
 ### Bug fixes
 
@@ -14,24 +19,24 @@
 
 ### Refactoring (mostly backward compatible, see breaking changes above)
 
-* `Raster` inherits `DataContainer`, which makes it more generic and allows to use any contiguous container
-* `PtrRaster` and `VecRaster` are now mere aliases
-* Methods which took a `Raster&` as parameter now accept any type which fullfills `Raster` requirements
-* All `DataContainer`s fulfill the requirements of the standard `ContiguousContainer` concept
+* `Raster`, `Column` and `Position` inherit `DataContainer` (see below)
+* `PtrRaster`, `VecRaster`, `PtrColumn` and `VecColumn` are now mere aliases
+* Methods which took a `Raster&` or `Column&` as parameter now accept any type which fullfills `Raster` or `Column` requirements
+* All `DataContainer`s fulfill the standard `ContiguousContainer` requirements
+  (e.g are iterable)
 * All `DataContainer`s have vector space arithmetic (e.g. support +, -, *, /)
-* `DataContainer::apply()` and `DataContainer::generate()` enable element-wise transforms
+* `DataContainer::apply()` and `DataContainer::generate()` enable arbitrary element-wise transforms,
+  including with other `DataContainer`s as argument
 
-### New features
+### Other new features
 
-* Updated to Elements 6.0.1
 * Empty binary table HDUs can be created
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `vector<VecColumn<T>>`)
-* `DataContainers` provide many mathematical services (see refactoring above)
 * New "Game of Life" example demonstrates the use of slicing
 
 ### Optimization and cleaning
 
-* Access to `Raster` data is notably faster
+* Access to `Raster` and `Column` data is notably faster
 * Many similar code blocks have been merged (e.g. through mixins)
 * Several overloads have been merged (e.g. with `ColumnKey` and `TypedKey`)
 * Formatting has been reviewed

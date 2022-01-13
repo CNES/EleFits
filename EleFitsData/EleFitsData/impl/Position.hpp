@@ -45,6 +45,13 @@ Position<N> Position<N>::zero() {
 }
 
 template <long N>
+Position<N> Position<N>::one() {
+  Position<N> res(std::abs(Dim));
+  std::fill(res.begin(), res.end(), 1);
+  return res;
+}
+
+template <long N>
 Position<N> Position<N>::max() {
   Position<N> res(std::abs(N));
   std::fill(res.begin(), res.end(), -1);

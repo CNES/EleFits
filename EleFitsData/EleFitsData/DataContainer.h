@@ -47,6 +47,7 @@ namespace Fits {
  * - `size_type size() const`;
  * - `inline const T* data() const`.
  */
+// FIXME ctot(size = 0, data = nullptr) should suffice
 
 /**
  * @ingroup data_concepts

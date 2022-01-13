@@ -69,13 +69,16 @@ HduCategory BintableHdu::readCategory() const {
 }
 
 #ifndef COMPILE_READ_COLUMN
-#define COMPILE_READ_COLUMN(type, unused) template VecColumn<type> BintableHdu::readColumn(ColumnKey) const;
+#define COMPILE_READ_COLUMN(T, _) template VecColumn<T, 1> BintableHdu::readColumn(ColumnKey) const;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_READ_COLUMN)
 #undef COMPILE_READ_COLUMN
 #endif
 
 #ifndef COMPILE_WRITE_COLUMN
-#define COMPILE_WRITE_COLUMN(type, unused) template void BintableHdu::writeColumn(const Column<type>&) const;
+#define COMPILE_WRITE_COLUMN(T, _) \
+  template void BintableHdu::writeColumn(const PtrColumn<T, 1>&) const; \
+  template void BintableHdu::writeColumn(const PtrColumn<const T, 1>&) const; \
+  template void BintableHdu::writeColumn(const VecColumn<T, 1>&) const;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_WRITE_COLUMN)
 #undef COMPILE_WRITE_COLUMN
 #endif
