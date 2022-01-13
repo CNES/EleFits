@@ -143,6 +143,30 @@ void appendColumn(fitsfile* fptr, const TColumn& column);
 template <typename... TColumns>
 void appendColumns(fitsfile* fptr, const TColumns&... columns);
 
+/**
+ * @brief Read a segment of a column into some data pointer.
+ */
+template <typename T>
+void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, T* data);
+
+/**
+ * @copydoc readColumnData()
+ */
+template <>
+void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data);
+
+/**
+ * @brief Write a segment of a column given by some data pointer.
+ */
+template <typename T>
+void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const T* data);
+
+/**
+ * @copydoc writeColumnData()
+ */
+template <>
+void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const std::string* data);
+
 } // namespace BintableIo
 } // namespace Cfitsio
 } // namespace Euclid

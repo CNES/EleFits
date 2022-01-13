@@ -95,182 +95,48 @@ void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<std::string>
   column = Fits::VecColumn<std::string>(readColumnInfo<std::string>(fptr, index), std::vector<std::string>(rowCount));
 }
 
-template <> // TODO clean
-void readColumnChunkImpl(
-    fitsfile* fptr,
-    long index,
-    Fits::VecColumn<std::string>& column,
-    long firstRow,
-    long rowCount) {
+} // namespace Internal
+
+template <>
+void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data) {
   int status = 0;
-  long repeatCount = 0;
-  fits_get_coltype(
-      fptr,
-      static_cast<int>(index), // column indices are int
-      nullptr,
-      &repeatCount,
-      nullptr,
-      &status); // TODO wrap?
-  CfitsioError::mayThrow(status, fptr, "Cannot read type of column: #" + std::to_string(index - 1));
-  std::vector<char*> data(rowCount);
-  std::generate(data.begin(), data.end(), [&]() {
+  std::vector<char*> vec(rows.size());
+  std::generate(vec.begin(), vec.end(), [&]() {
     return (char*)malloc(repeatCount);
   });
   fits_read_col(
       fptr,
       TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
-      firstRow,
+      rows.front,
       1,
-      rowCount,
+      rows.size(),
       nullptr,
-      data.data(),
+      vec.data(),
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column chunk: #" + std::to_string(index - 1));
-  auto columnIt = column.data() + firstRow - 1;
-  for (auto dataIt = data.begin(); dataIt != data.end(); ++dataIt, ++columnIt) {
-    *columnIt = std::string(*dataIt);
-    free(*dataIt);
+  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
+  auto columnIt = data;
+  for (auto vecIt = vec.begin(); vecIt != vec.end(); ++vecIt, ++columnIt) {
+    *columnIt = std::string(*vecIt);
+    free(*vecIt);
   }
 }
 
 template <>
-void writeColumnChunkImpl(
-    fitsfile* fptr,
-    long index,
-    const Fits::VecColumn<std::string>& column,
-    long firstRow,
-    long rowCount) {
+void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const std::string* data) {
   int status = 0;
-  auto begin = column.data() + (firstRow - 1);
-  long size = rowCount;
-  auto end = begin + size;
-  CStrArray array(begin, end);
+  CStrArray array(data, data + rows.size());
   fits_write_col(
       fptr,
       TypeCode<std::string>::forBintable(),
       static_cast<int>(index), // column indices are int
-      firstRow,
-      1,
-      size,
-      array.data(),
-      &status);
-  CfitsioError::mayThrow(
-      status,
-      fptr,
-      "Cannot write column chunk: " + column.info().name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
-          std::to_string(firstRow - 1) + "-" + std::to_string(firstRow - 1 + rowCount - 1) + "]");
-}
-
-} // namespace Internal
-
-template <>
-void readColumnSegment(fitsfile* fptr, const Fits::Segment& rows, long index, Fits::VecColumn<std::string>& column) {
-  std::vector<char*> data(rows.size());
-  std::generate(data.begin(), data.end(), [&]() {
-    return (char*)malloc(column.info().repeatCount());
-  });
-  int status = 0;
-  fits_read_col(
-      fptr,
-      TypeCode<std::string>::forBintable(),
-      static_cast<int>(index),
       rows.front,
-      1, // firstelemn (1-based)
-      data.size(), // nelements = number of rows for strings
-      nullptr, // nulval
-      &data[0],
-      nullptr, // anynul
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read string column #" + std::to_string(index));
-  auto columnIt = column.data();
-  for (auto dataIt = data.begin(); dataIt != data.end(); ++dataIt, ++columnIt) {
-    *columnIt = std::string(*dataIt);
-    free(*dataIt);
-  }
-}
-
-template <>
-void writeColumn(fitsfile* fptr, const Fits::VecColumn<std::string>& column) {
-  const auto begin = column.data();
-  const auto end = begin + column.elementCount();
-  CStrArray array(begin, end);
-  long index = columnIndex(fptr, column.info().name);
-  int status = 0;
-  fits_write_col(
-      fptr,
-      TypeCode<std::string>::forBintable(), // datatype
-      static_cast<int>(index), // colnum // column indices are int
-      1, // firstrow (1-based)
-      1, // firstelem (1-based)
-      column.elementCount(), // nelements
+      1,
+      rows.size(),
       array.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column: " + column.info().name);
-}
-
-template <>
-void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::VecColumn<std::string>& column) {
-  long index = columnIndex(fptr, column.info().name);
-  const auto begin = column.data();
-  const auto end = begin + column.elementCount();
-  CStrArray array(begin, end);
-  // CStrArray is the only deviation from the generic case;
-  // could we avoid specializing?
-  int status = 0;
-  fits_write_col(
-      fptr,
-      TypeCode<std::string>::forBintable(), // datatype
-      static_cast<int>(index), // colnum // column indices are int
-      firstRow, // firstrow (1-based)
-      1, // firstelem (1-based)
-      column.elementCount(), // nelements
-      array.data(),
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info().name);
-}
-
-template <>
-void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::PtrColumn<const std::string>& column) {
-  long index = columnIndex(fptr, column.info().name);
-  const auto begin = column.data();
-  const auto end = begin + column.elementCount();
-  CStrArray array(begin, end);
-  // CStrArray is the only deviation from the generic case;
-  // could we avoid specializing?
-  int status = 0;
-  fits_write_col(
-      fptr,
-      TypeCode<std::string>::forBintable(), // datatype
-      static_cast<int>(index), // colnum // column indices are int
-      firstRow, // firstrow (1-based)
-      1, // firstelem (1-based)
-      column.elementCount(), // nelements
-      array.data(),
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info().name);
-}
-
-template <>
-void writeColumnSegment(fitsfile* fptr, long firstRow, const Fits::PtrColumn<std::string>& column) {
-  long index = columnIndex(fptr, column.info().name);
-  const auto begin = column.data();
-  const auto end = begin + column.elementCount();
-  CStrArray array(begin, end);
-  // CStrArray is the only deviation from the generic case;
-  // could we avoid specializing?
-  int status = 0;
-  fits_write_col(
-      fptr,
-      TypeCode<std::string>::forBintable(), // datatype
-      static_cast<int>(index), // colnum // column indices are int
-      firstRow, // firstrow (1-based)
-      1, // firstelem (1-based)
-      column.elementCount(), // nelements
-      array.data(),
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write string column dat: " + column.info().name);
+  CfitsioError::mayThrow(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
 }
 
 } // namespace BintableIo

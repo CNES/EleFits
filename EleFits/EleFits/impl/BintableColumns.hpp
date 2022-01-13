@@ -87,11 +87,11 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, TColumn
   m_touch();
   rows.resolve(readRowCount() - 1, column.rowCount() - 1);
   auto slice = column.slice(rows.memory()); // TODO do we need a temporary variable?
-  Cfitsio::BintableIo::readColumnSegment(
+  Cfitsio::BintableIo::readColumnData(
       m_fptr,
       Segment {rows.file().front + 1, rows.file().back + 1}, // TODO operator+
       key.index(*this) + 1, // 1-based
-      slice);
+      &column(rows.memory().front, 0));
 }
 
 // readSeq
@@ -238,7 +238,12 @@ template <typename TColumn>
 void BintableColumns::writeSegment(FileMemSegments rows, const TColumn& column) const {
   m_edit();
   rows.resolve(readRowCount() - 1, column.rowCount() - 1);
-  Cfitsio::BintableIo::writeColumnSegment(m_fptr, rows.file().front + 1, column.slice(rows.memory()));
+  const auto index = readIndex(column.info().name); // FIXME avoid?
+  Cfitsio::BintableIo::writeColumnData(
+      m_fptr,
+      {rows.file().front + 1, rows.file().back + 1}, // FIXME operator+
+      index + 1,
+      column(rows.memory().front, 0));
 }
 
 // writeSeq

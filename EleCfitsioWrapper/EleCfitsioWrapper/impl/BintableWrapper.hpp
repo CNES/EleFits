@@ -45,109 +45,6 @@ void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, 
 template <>
 void readColumnInfoImpl<std::string>(fitsfile* fptr, long index, Fits::VecColumn<std::string>& column, long rowCount);
 
-template <typename T>
-void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long rowCount) {
-  column = Fits::VecColumn<T>(
-      readColumnInfo<T>(fptr, index),
-      std::vector<std::decay_t<T>>(column.info().repeatCount() * rowCount));
-}
-
-/**
- * @brief Read a column chunk.
- */
-template <typename T>
-void readColumnChunkImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long firstRow, long rowCount);
-
-/**
- * @brief String specialization.
- */
-template <>
-void readColumnChunkImpl<std::string>(
-    fitsfile* fptr,
-    long index,
-    Fits::VecColumn<std::string>& column,
-    long firstRow,
-    long rowCount);
-
-template <typename T>
-void readColumnChunkImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long firstRow, long rowCount) {
-  int status = 0;
-  auto begin = column.data() + (firstRow - 1) * column.info().repeatCount;
-  fits_read_col(
-      fptr,
-      TypeCode<T>::forBintable(),
-      static_cast<int>(index),
-      firstRow,
-      1,
-      rowCount * column.info().repeatCount,
-      nullptr,
-      begin,
-      nullptr,
-      &status);
-  CfitsioError::mayThrow(
-      status,
-      fptr,
-      "Cannot read column chunk: " + column.info().name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
-          std::to_string(firstRow - 1) + "-" + std::to_string(firstRow - 1 + rowCount - 1) + "-");
-}
-
-/**
- * @brief Write a column chunk.
- */
-template <typename TColumn>
-void writeColumnChunkImpl(fitsfile* fptr, long index, const TColumn& column, long firstRow, long rowCount);
-
-/**
- * @brief String specialization.
- */
-template <>
-void writeColumnChunkImpl(
-    fitsfile* fptr,
-    long index,
-    const Fits::VecColumn<std::string, 1>& column, // FIXME ugly
-    long firstRow,
-    long rowCount);
-template <>
-void writeColumnChunkImpl(
-    fitsfile* fptr,
-    long index,
-    const Fits::PtrColumn<const std::string, 1>& column, // FIXME ugly
-    long firstRow,
-    long rowCount);
-template <>
-void writeColumnChunkImpl(
-    fitsfile* fptr,
-    long index,
-    const Fits::PtrColumn<std::string, 1>& column, // FIXME ugly
-    long firstRow,
-    long rowCount);
-
-template <typename TColumn>
-void writeColumnChunkImpl(fitsfile* fptr, long index, const TColumn& column, long firstRow, long rowCount) {
-  /* Allocate vector */
-  const auto clipedRowCount = std::min(rowCount, column.rowCount() - firstRow + 1);
-  const auto begin = column.data() + (firstRow - 1) * column.info().repeatCount;
-  const auto size = clipedRowCount * column.info().repeatCount;
-  const auto end = begin + size;
-  std::vector<typename TColumn::Value> vec(begin, end);
-  /* Write data */
-  int status = 0;
-  fits_write_col(
-      fptr,
-      TypeCode<typename TColumn::Value>::forBintable(),
-      static_cast<int>(index),
-      firstRow,
-      1,
-      size,
-      vec.data(),
-      &status);
-  CfitsioError::mayThrow(
-      status,
-      fptr,
-      "Cannot write column chunk: " + column.info().name + " (" + std::to_string(index - 1) + "); " + "rows: [" +
-          std::to_string(firstRow - 1) + "-" + std::to_string(firstRow - 1 + rowCount - 1) + "-");
-}
-
 /**
  * @brief Helper class to loop on a collection of columns.
  * @tparam i The index of the column the methods should be applied to:
@@ -226,7 +123,7 @@ struct ColumnLooperImpl<std::size_t(-1), TColumns...> {
 } // namespace Internal
 /// @endcond
 
-template <typename T, long N>
+template <typename T, long N> // USED
 Fits::ColumnInfo<T, N> readColumnInfo(fitsfile* fptr, long index) {
   int status = 0;
   char name[FLEN_VALUE];
@@ -252,49 +149,13 @@ template <typename T, long N>
 Fits::VecColumn<T, N> readColumn(fitsfile* fptr, long index) {
   const long rows = rowCount(fptr);
   Fits::VecColumn<T, N> column(readColumnInfo<T>(fptr, index), rows);
-  readColumnSegment<T>(fptr, {1, rows}, index, column);
+  readColumnData(fptr, {1, rows}, index, column.info().repeatCount(), column.data());
   return column;
 }
 
-/// @cond INTERNAL
-/**
- * @brief String specialization.
- */
-template <>
-void readColumnSegment(
-    fitsfile* fptr,
-    const Fits::Segment& rows,
-    long index,
-    Fits::VecColumn<std::string>& column); // FIXME ugly
-template <>
-void readColumnSegment(
-    fitsfile* fptr,
-    const Fits::Segment& rows,
-    long index,
-    Fits::PtrColumn<const std::string>& column); // FIXME ugly
-template <>
-void readColumnSegment(
-    fitsfile* fptr,
-    const Fits::Segment& rows,
-    long index,
-    Fits::PtrColumn<std::string>& column); // FIXME ugly
-/// @endcond
-
 template <typename TColumn>
 void readColumnSegment(fitsfile* fptr, const Fits::Segment& rows, long index, TColumn& column) {
-  int status = 0;
-  fits_read_col(
-      fptr,
-      TypeCode<typename TColumn::Value>::forBintable(), // datatype
-      static_cast<int>(index),
-      rows.front, // 1-based first row index
-      1, // 1-based first element index
-      column.elementCount(), // number of elements
-      nullptr,
-      column.data(),
-      nullptr,
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
+  readColumnData(fptr, rows, index, column.info().repeatCount(), column.data());
 }
 
 template <typename T, long N>
@@ -302,71 +163,20 @@ Fits::VecColumn<T, N> readColumn(fitsfile* fptr, const std::string& name) {
   return readColumn<T, N>(fptr, columnIndex(fptr, name));
 }
 
-/**
- * @brief String specialization.
- */
-template <>
-void writeColumn(fitsfile* fptr, const Fits::VecColumn<std::string>& column); // FIXME
-template <>
-void writeColumn(fitsfile* fptr, const Fits::PtrColumn<const std::string>& column); // FIXME
-template <>
-void writeColumn(fitsfile* fptr, const Fits::PtrColumn<const std::string>& column); // FIXME
-
 template <typename TColumn>
 void writeColumn(fitsfile* fptr, const TColumn& column) {
-  long index = columnIndex(fptr, column.info().name);
-  const auto begin = column.data();
-  const auto end = begin + column.elementCount();
-  std::vector<typename TColumn::Value> nonconstData(begin, end); // We need a non-const data for CFitsIO
-  int status = 0;
-  fits_write_col(
-      fptr,
-      TypeCode<typename TColumn::Value>::forBintable(), // datatype
-      static_cast<int>(index), // colnum
-      1, // firstrow (1-based)
-      1, // firstelem (1-based)
-      column.elementCount(), // nelements
-      nonconstData.data(),
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column data: " + column.info().name);
+  writeColumnSegment(fptr, 1, column);
 }
-
-/**
- * @brief String specialization.
- */
-template <>
-void writeColumnSegment(
-    fitsfile* fptr,
-    long firstRow,
-    const Fits::VecColumn<std::string>& column); // FIXME
-template <>
-void writeColumnSegment(
-    fitsfile* fptr,
-    long firstRow,
-    const Fits::PtrColumn<const std::string>& column); // FIXME
-template <>
-void writeColumnSegment(
-    fitsfile* fptr,
-    long firstRow,
-    const Fits::PtrColumn<std::string>& column); // FIXME
 
 template <typename TColumn>
 void writeColumnSegment(fitsfile* fptr, long firstRow, const TColumn& column) {
-  long index = columnIndex(fptr, column.info().name);
-  const auto begin = column.data();
-  const auto end = begin + column.elementCount();
-  std::vector<typename TColumn::Value> nonconstData(begin, end); // We need a non-const data for CFitsIO
-  int status = 0;
-  fits_write_col(
+  const auto index = columnIndex(fptr, column.info().name);
+  writeColumnData(
       fptr,
-      TypeCode<typename TColumn::Value>::forBintable(), // datatype
-      static_cast<int>(index), // colnum
-      firstRow, // firstrow (1-based)
-      1, // firstelem (1-based)
-      column.elementCount(), // nelements
-      nonconstData.data(),
-      &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column data: " + column.info().name);
+      Fits::Segment::fromSize(firstRow, column.rowCount()),
+      index,
+      column.info().repeatCount(),
+      column.data());
 }
 
 template <typename... Ts> // FIXME Ns
@@ -374,7 +184,7 @@ std::tuple<Fits::VecColumn<Ts, 1>...> readColumns(fitsfile* fptr, const std::vec
   /* Read column metadata */
   const long rows = rowCount(fptr);
   std::tuple<Fits::VecColumn<Ts, 1>...> columns;
-  Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::readInfos(fptr, indices, columns, rows);
+  Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Fits::VecColumn<Ts, 1>...>::readInfos(fptr, indices, columns, rows);
   /* Get the buffer size */
   int status = 0;
   long chunkRows = 0;
@@ -388,7 +198,12 @@ std::tuple<Fits::VecColumn<Ts, 1>...> readColumns(fitsfile* fptr, const std::vec
     if (last > rows) {
       chunkRows = rows - first + 1;
     }
-    Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Ts...>::readChunks(fptr, indices, columns, first, chunkRows);
+    Internal::ColumnLooperImpl<sizeof...(Ts) - 1, Fits::VecColumn<Ts, 1>...>::readChunks(
+        fptr,
+        indices,
+        columns,
+        first,
+        chunkRows);
   }
   return columns;
 }
@@ -465,6 +280,41 @@ void appendColumns(fitsfile* fptr, const TColumns&... columns) {
   int status = 0;
   fits_get_num_cols(fptr, &ncols, &status);
   insertColumns(fptr, ncols + 1, columns...);
+}
+
+template <typename T>
+void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, T* data) {
+  int status = 0;
+  const auto size = rows.size() * repeatCount;
+  fits_read_col(
+      fptr,
+      TypeCode<T>::forBintable(), // datatype
+      static_cast<int>(index),
+      rows.front, // 1-based first row index
+      1, // 1-based first element index
+      size, // number of elements
+      nullptr,
+      data,
+      nullptr,
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
+}
+
+template <typename T>
+void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const T* data) {
+  int status = 0;
+  const auto size = rows.size() * repeatCount;
+  std::vector<T> nonconstData(data, data + size); // We need a non-const data for CFitsIO
+  fits_write_col(
+      fptr,
+      TypeCode<T>::forBintable(), // datatype
+      static_cast<int>(index), // colnum
+      rows.front, // firstrow (1-based)
+      1, // firstelem (1-based)
+      size, // nelements
+      nonconstData.data(),
+      &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
 }
 
 } // namespace BintableIo
