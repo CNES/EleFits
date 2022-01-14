@@ -32,7 +32,7 @@ VecColumn<T, N> BintableHdu::readColumn(ColumnKey key) const {
 }
 
 template <typename TColumn>
-void BintableHdu::writeColumn(const TColumns& column) const {
+void BintableHdu::writeColumn(const TColumn& column) const {
   m_columns.write(column);
 }
 

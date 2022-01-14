@@ -190,8 +190,6 @@ struct ColumnInfo {
    * except for string columns for which it always equals 1.
    */
   long elementCountPerEntry() const;
-
-private:
 };
 
 /**

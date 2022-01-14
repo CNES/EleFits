@@ -64,7 +64,7 @@ void CfitsioBenchmark::initColumn(BColumns& columns, long rowCount) {
   char ttype[FLEN_VALUE];
   char tunit[FLEN_VALUE];
   fits_get_bcolparms(m_fptr, colnum, ttype, tunit, nullptr, &repeat, nullptr, nullptr, nullptr, nullptr, &m_status);
-  col = {{ttype, tunit, repeat}, rowCount};
+  col = std::decay_t<decltype(col)>({ttype, tunit, repeat}, rowCount);
   mayThrow("Cannot initialize column");
 }
 

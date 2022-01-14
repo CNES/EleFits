@@ -5,38 +5,39 @@
 ### Breaking changes
 
 * Updated to Elements 6.0.1
-* `Raster` has additional parameter `TContainer` to select the container
-  (with `PtrRaster<T, N> = Raster<T, N, T*>` and `VecRaster<T, N> = Raster<T, N, vector<T>>`)
-* `Column` has additional template parameters `N` and `TContainer`
+* `Raster<T, N>` becomes `RasterContainer<T, N, TContainer>` to select the container
+  (with `PtrRaster<T, N> = RasterContainer<T, N, T*>` and `VecRaster<T, N> = RasterContainer<T, N, vector<T>>`)
+* `Column<T>` becomes `ColumnContainer<T, N, TContainer>`
   to support multidimensional entries and select the container
-  (with `PtrColumn<T, N> = Column<T, N, T*>` and `VecColumn<T, N> = Column<T, N, vector<T>>`)
+  (with `PtrColumn<T, N> = ColumnContainer<T, N, T*>` and `VecColumn<T, N> = ColumnContainer<T, N, vector<T>>`)
 * `PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)` for compatibility with `VecColumn`
+* Variable `ColumnInfo.repeatCount` becomes function `ColumnInfo.repeatCount()`
 
 ### Bug fixes
 
 * `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
 * Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 
-### Refactoring (mostly backward compatible, see breaking changes above)
+### Refactoring
 
-* `Raster`, `Column` and `Position` inherit `DataContainer` (see below)
+* `RasterContainer`, `ColumnContainer` and `Position` inherit `DataContainer` (see below)
 * `PtrRaster`, `VecRaster`, `PtrColumn` and `VecColumn` are now mere aliases
 * Methods which took a `Raster&` or `Column&` as parameter now accept any type which fullfills `Raster` or `Column` requirements
-* All `DataContainer`s fulfill the standard `ContiguousContainer` requirements
-  (e.g are iterable)
-* All `DataContainer`s have vector space arithmetic (e.g. support +, -, *, /)
+* All `DataContainer`s fulfill the standard `ContiguousContainer` requirements (e.g are iterable)
+* All `DataContainer`s have vector space arithmetic (e.g. support `+`, `-`, `*`, `/`)
 * `DataContainer::apply()` and `DataContainer::generate()` enable arbitrary element-wise transforms,
-  including with other `DataContainer`s as argument
+  including with other `DataContainer`s as arguments
 
 ### Other new features
 
+* Multi-dimensional columns are supported
 * Empty binary table HDUs can be created
-* Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `vector<VecColumn<T>>`)
+* Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `std::vector<VecColumn<T>>`)
 * New "Game of Life" example demonstrates the use of slicing
 
 ### Optimization and cleaning
 
-* Access to `Raster` and `Column` data is notably faster
+* Access to raster and column elements is notably faster
 * Many similar code blocks have been merged (e.g. through mixins)
 * Several overloads have been merged (e.g. with `ColumnKey` and `TypedKey`)
 * Formatting has been reviewed

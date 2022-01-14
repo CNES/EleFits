@@ -23,6 +23,7 @@
 #include "EleFitsData/ColumnInfo.h"
 #include "EleFitsData/DataContainer.h"
 #include "EleFitsData/DataUtils.h"
+#include "EleFitsData/Raster.h" // PtrRaster for Entry
 
 #include <complex>
 #include <cstdint>
@@ -89,6 +90,11 @@ public:
    * @brief The element value type.
    */
   using Value = T; // FIXME Info::Value, i.e. decay
+
+  /**
+   * @brief The entry value type.
+   */
+  using Entry = PtrRaster<T, N>;
 
   /**
    * @brief The dimension parameter.

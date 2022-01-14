@@ -45,6 +45,13 @@ void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, 
 template <>
 void readColumnInfoImpl<std::string>(fitsfile* fptr, long index, Fits::VecColumn<std::string>& column, long rowCount);
 
+template <typename T>
+void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long rowCount) {
+  column = Fits::VecColumn<T>(
+      readColumnInfo<T>(fptr, index),
+      std::vector<std::decay_t<T>>(column.info().repeatCount() * rowCount));
+}
+
 /**
  * @brief Helper class to loop on a collection of columns.
  * @tparam i The index of the column the methods should be applied to:
@@ -75,7 +82,9 @@ struct ColumnLooperImpl {
       std::tuple<TColumns...>& columns,
       long firstRow,
       long rowCount) {
-    readColumnChunkImpl(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
+    auto data = &std::get<i>(columns)(firstRow - 1);
+    const auto repeatCount = std::get<i>(columns).info().repeatCount();
+    readColumnData(fptr, Fits::Segment::fromSize(firstRow, rowCount), indices[i], repeatCount, data);
     ColumnLooperImpl<i - 1, TColumns...>::readChunks(fptr, indices, columns, firstRow, rowCount);
   }
 
@@ -96,7 +105,9 @@ struct ColumnLooperImpl {
       std::tuple<const TColumns&...> columns,
       long firstRow,
       long rowCount) {
-    writeColumnChunkImpl(fptr, indices[i], std::get<i>(columns), firstRow, rowCount);
+    const auto data = &std::get<i>(columns)(firstRow - 1);
+    const auto repeatCount = std::get<i>(columns).info().repeatCount();
+    writeColumnData(fptr, Fits::Segment::fromSize(firstRow, rowCount), indices[i], repeatCount, data);
     ColumnLooperImpl<i - 1, TColumns...>::writeChunks(fptr, indices, columns, firstRow, rowCount);
   }
 };

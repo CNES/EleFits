@@ -198,6 +198,17 @@ public:
   const BintableHdu& assignBintableExt(const std::string& name, const TColumns&... columns);
 
   /**
+   * @brief Append a BintableHdu with given name and data.
+   * @return A reference to the new BintableHdu.
+   * @tparam TTuple A tuple of columns
+   * @tparam Size The number of columns
+   * @warning
+   * All columns should have the same number of rows.
+   */
+  template <typename TTuple, std::size_t Size = std::tuple_size<TTuple>::value>
+  const BintableHdu& assignBintableExt(const std::string& name, const TTuple& columns);
+
+  /**
    * @brief The index of the Primary HDU.
    * @details
    * The HDU indices are now 0-based while they used to be 1-based.
@@ -219,17 +230,6 @@ protected:
    */
   template <class T = Hdu>
   const T& appendExt(T extension);
-
-  /**
-   * @brief Append a BintableHdu with given name and data.
-   * @return A reference to the new BintableHdu.
-   * @tparam TTuple A tuple of columns
-   * @tparam Size The number of columns
-   * @warning
-   * All columns should have the same number of rows.
-   */
-  template <typename TTuple, std::size_t Size = std::tuple_size<TTuple>::value>
-  const BintableHdu& assignBintableExt(const std::string& name, const TTuple& columns);
 
   /**
    * @brief Vector of `Hdu`s (castable to `ImageHdu` or `BintableHdu`).

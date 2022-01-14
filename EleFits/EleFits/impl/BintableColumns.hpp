@@ -53,25 +53,25 @@ VecColumn<T, N> BintableColumns::read(ColumnKey key) const {
 
 template <typename TColumn>
 void BintableColumns::readTo(TColumn& column) const {
-  readTo<T>(column.info().name, column);
+  readTo(column.info().name, column);
 }
 
 template <typename TColumn>
 void BintableColumns::readTo(ColumnKey key, TColumn& column) const {
-  readSegmentTo<T>({0, -1}, key, column);
+  readSegmentTo({0, -1}, key, column);
 }
 
 // readSegment
 
-template <typename T>
-VecColumn<T> BintableColumns::readSegment(const Segment& rows, ColumnKey key) const {
+template <typename T, long N>
+VecColumn<T, N> BintableColumns::readSegment(const Segment& rows, ColumnKey key) const {
   const auto index = key.index(*this);
   auto resolvedRows = rows;
   if (rows.back == -1) {
     resolvedRows.back = readRowCount() - 1;
   }
-  VecColumn<T> column(readInfo<T>(std::move(key)), resolvedRows.size());
-  readSegmentTo<T>(resolvedRows, index, column);
+  VecColumn<T, N> column(readInfo<T>(std::move(key)), resolvedRows.size());
+  readSegmentTo(resolvedRows, index, column);
   return column;
 }
 
@@ -91,6 +91,7 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, TColumn
       m_fptr,
       Segment {rows.file().front + 1, rows.file().back + 1}, // TODO operator+
       key.index(*this) + 1, // 1-based
+      column.info().repeatCount(),
       &column(rows.memory().front, 0));
 }
 
@@ -147,7 +148,7 @@ std::tuple<VecColumn<Ts, 1>...> BintableColumns::readSegmentSeq(Segment rows, co
   if (rows.back == -1) {
     rows.back = readRowCount() - 1;
   }
-  std::tuple<VecColumn<Ts, 1>...> columns {{readInfo<Ts, 1>(keys.key), rows.size()}...};
+  auto columns = std::make_tuple(VecColumn<Ts, 1>(readInfo<Ts, 1>(keys.key), rows.size())...);
   readSegmentSeqTo(rows, {ColumnKey(keys.key)...}, columns);
   return columns;
 }
@@ -220,7 +221,7 @@ void BintableColumns::write(const TColumn& column) const {
 template <typename TInfo>
 void BintableColumns::init(const TInfo& info, long index) const {
   auto name = Cfitsio::toCharPtr(info.name);
-  auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<TInfo::Value>::tform(info.repeatCount()));
+  auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount()));
   int status = 0;
   int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_col(m_fptr, cfitsioIndex, name.get(), tform.get(), &status);
@@ -243,7 +244,8 @@ void BintableColumns::writeSegment(FileMemSegments rows, const TColumn& column) 
       m_fptr,
       {rows.file().front + 1, rows.file().back + 1}, // FIXME operator+
       index + 1,
-      column(rows.memory().front, 0));
+      column.info().repeatCount(),
+      &column(rows.memory().front, 0));
 }
 
 // writeSeq

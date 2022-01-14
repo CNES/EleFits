@@ -309,7 +309,7 @@ public:
    * @copydetails readSeq()
    */
   template <typename... TColumns>
-  void readSeqTo(TColumn&... columns) const;
+  void readSeqTo(TColumns&... columns) const;
 
   /**
    * @brief Read a sequence of columns with given names or indices into existing `Column`s.

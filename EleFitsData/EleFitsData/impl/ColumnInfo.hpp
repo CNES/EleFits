@@ -26,7 +26,7 @@ namespace Fits {
 
 template <typename T, long N>
 bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
-  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount() == rhs.repeatCount;
+  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount() == rhs.repeatCount();
 }
 
 template <typename T, long N>
