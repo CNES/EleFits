@@ -80,12 +80,12 @@ html {
     --warning-color: #fca49b;
     --warning-color-dark: #b61825;
     --warning-color-darker: #75070f;
-    --note-color: rgba(255,229,100,.3);
-    --note-color-dark: #c39900;
-    --note-color-darker: #8d7400;
-    --deprecated-color: rgb(214, 216, 224);
-    --deprecated-color-dark: #5b6269;
-    --deprecated-color-darker: #43454a;
+    --note-color: rgb(214, 216, 224);
+    --note-color-dark: #5b6269;
+    --note-color-darker: #43454a;
+    --deprecated-color: rgba(255,229,100,.3);
+    --deprecated-color-dark: #c39900;
+    --deprecated-color-darker: #8d7400;
     --bug-color: rgb(246, 208, 178);
     --bug-color-dark: #a53a00;
     --bug-color-darker: #5b1d00;
@@ -153,7 +153,9 @@ html {
     /* height of an item in any tree / collapsable table */
     --tree-item-height: 30px;
 
-    --darkmode-toggle-button-icon: '☀️'
+    --darkmode-toggle-button-icon: '☀️';
+
+    --github-corner-size: 80px;
 }
 
 @media screen and (max-width: 767px) {
@@ -302,6 +304,7 @@ a:link, a:visited, a:hover, a:focus, a:active {
 #main-nav {
     flex-grow: 5;
     padding: var(--spacing-small) var(--spacing-medium);
+    margin-right: var(--github-corner-size);
 }
 
 #titlearea {
@@ -496,7 +499,7 @@ a:link, a:visited, a:hover, a:focus, a:active {
 @media screen and (max-width: 767px) {
     .tabs #MSearchBox {
         position: relative;
-        right: 0;
+        right: 80;
         margin-left: var(--spacing-medium);
         margin-top: 0;
     }
@@ -1478,4 +1481,51 @@ doxygen-awesome-dark-mode-toggle:hover {
 
 doxygen-awesome-dark-mode-toggle:after {
     content: var(--darkmode-toggle-button-icon)
+}
+
+/* GitHub corner */
+
+.github-corner svg {
+    fill: var(--primary-light-color);
+    color: var(--page-background-color);
+    position: fixed;
+    width: var(--github-corner-size);
+    height: var(--github-corner-size);
+    top: 0;
+    right: 0;
+    border: 0;
+}
+
+.github-corner:hover .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+}
+
+@keyframes octocat-wave {
+    0% {
+        transform: rotate(0deg);
+    }
+    20% {
+        transform: rotate(-25deg);
+    }
+    40% {
+        transform: rotate(10deg);
+    }
+    60% {
+        transform: rotate(-25deg);
+    }
+    80% {
+        transform: rotate(10deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+@media (max-width: 500px) {
+    .github-corner:hover .octo-arm {
+        animation: none;
+    }
+    .github-corner .octo-arm {
+        animation: octocat-wave 560ms ease-in-out;
+    }
 }
