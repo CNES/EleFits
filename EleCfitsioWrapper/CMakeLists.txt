@@ -53,6 +53,26 @@ elements_add_library(EleCfitsioWrapper src/lib/*.cpp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
+elements_add_unit_test(BintableWrapper tests/src/BintableWrapper_test.cpp 
+                     EXECUTABLE EleCfitsioWrapper_BintableWrapper_test
+                     LINK_LIBRARIES EleCfitsioWrapper
+                     TYPE Boost)
+elements_add_unit_test(CfitsioFixture tests/src/CfitsioFixture_test.cpp 
+                     EXECUTABLE EleCfitsioWrapper_CfitsioFixture_test
+                     LINK_LIBRARIES EleCfitsioWrapper
+                     TYPE Boost)
+elements_add_unit_test(CfitsioUtils tests/src/CfitsioUtils_test.cpp 
+                     EXECUTABLE EleCfitsioWrapper_CfitsioUtils_test
+                     LINK_LIBRARIES EleCfitsioWrapper
+                     TYPE Boost)
+elements_add_unit_test(CfitsioWrapper tests/src/CfitsioWrapper_test.cpp 
+                     EXECUTABLE EleCfitsioWrapper_CfitsioWrapper_test
+                     LINK_LIBRARIES EleCfitsioWrapper
+                     TYPE Boost)
+elements_add_unit_test(ErrorWrapper tests/src/ErrorWrapper_test.cpp 
+                     EXECUTABLE EleCfitsioWrapper_ErrorWrapper_test
+                     LINK_LIBRARIES EleCfitsioWrapper
+                     TYPE Boost)
 elements_add_unit_test(FileWrapper tests/src/FileWrapper_test.cpp 
                      EXECUTABLE EleCfitsioWrapper_FileWrapper_test
                      LINK_LIBRARIES EleCfitsioWrapper
@@ -65,32 +85,12 @@ elements_add_unit_test(HeaderWrapper tests/src/HeaderWrapper_test.cpp
                      EXECUTABLE EleCfitsioWrapper_HeaderWrapper_test
                      LINK_LIBRARIES EleCfitsioWrapper
                      TYPE Boost)
-elements_add_unit_test(TypeWrapper tests/src/TypeWrapper_test.cpp 
-                     EXECUTABLE EleCfitsioWrapper_TypeWrapper_test
-                     LINK_LIBRARIES EleCfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(ErrorWrapper tests/src/ErrorWrapper_test.cpp 
-                     EXECUTABLE EleCfitsioWrapper_ErrorWrapper_test
-                     LINK_LIBRARIES EleCfitsioWrapper
-                     TYPE Boost)
 elements_add_unit_test(ImageWrapper tests/src/ImageWrapper_test.cpp 
                      EXECUTABLE EleCfitsioWrapper_ImageWrapper_test
                      LINK_LIBRARIES EleCfitsioWrapper
                      TYPE Boost)
-elements_add_unit_test(CfitsioUtils tests/src/CfitsioUtils_test.cpp 
-                     EXECUTABLE EleCfitsioWrapper_CfitsioUtils_test
-                     LINK_LIBRARIES EleCfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(BintableWrapper tests/src/BintableWrapper_test.cpp 
-                     EXECUTABLE EleCfitsioWrapper_BintableWrapper_test
-                     LINK_LIBRARIES EleCfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(CfitsioFixture tests/src/CfitsioFixture_test.cpp 
-                     EXECUTABLE EleCfitsioWrapper_CfitsioFixture_test
-                     LINK_LIBRARIES EleCfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(CfitsioWrapper tests/src/CfitsioWrapper_test.cpp 
-                     EXECUTABLE EleCfitsioWrapper_CfitsioWrapper_test
+elements_add_unit_test(TypeWrapper tests/src/TypeWrapper_test.cpp 
+                     EXECUTABLE EleCfitsioWrapper_TypeWrapper_test
                      LINK_LIBRARIES EleCfitsioWrapper
                      TYPE Boost)
 

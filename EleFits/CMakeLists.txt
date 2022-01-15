@@ -57,44 +57,16 @@ elements_add_executable(EleFitsReadStructure src/program/EleFitsReadStructure.cp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
-elements_add_unit_test(FitsFile tests/src/FitsFile_test.cpp 
-                     EXECUTABLE EleFits_FitsFile_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
-elements_add_unit_test(MefFile tests/src/MefFile_test.cpp 
-                     EXECUTABLE EleFits_MefFile_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
-elements_add_unit_test(SifFile tests/src/SifFile_test.cpp 
-                     EXECUTABLE EleFits_SifFile_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
-elements_add_unit_test(Hdu tests/src/Hdu_test.cpp 
-                     EXECUTABLE EleFits_Hdu_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
-elements_add_unit_test(ImageHdu tests/src/ImageHdu_test.cpp 
-                     EXECUTABLE EleFits_ImageHdu_test
+elements_add_unit_test(BintableColumns tests/src/BintableColumns_test.cpp 
+                     EXECUTABLE EleFits_BintableColumns_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
 elements_add_unit_test(BintableHdu tests/src/BintableHdu_test.cpp 
                      EXECUTABLE EleFits_BintableHdu_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
-elements_add_unit_test(HduIterator tests/src/HduIterator_test.cpp 
-                     EXECUTABLE EleFits_HduIterator_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
-elements_add_unit_test(Header tests/src/Header_test.cpp 
-                     EXECUTABLE EleFits_Header_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
-elements_add_unit_test(BintableColumns tests/src/BintableColumns_test.cpp 
-                     EXECUTABLE EleFits_BintableColumns_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
-elements_add_unit_test(ImageRaster tests/src/ImageRaster_test.cpp 
-                     EXECUTABLE EleFits_ImageRaster_test
+elements_add_unit_test(ColumnKey tests/src/ColumnKey_test.cpp 
+                     EXECUTABLE EleFits_ColumnKey_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
 elements_add_unit_test(FileMemRegions tests/src/FileMemRegions_test.cpp 
@@ -105,8 +77,36 @@ elements_add_unit_test(FileMemSegments tests/src/FileMemSegments_test.cpp
                      EXECUTABLE EleFits_FileMemSegments_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
-elements_add_unit_test(ColumnKey tests/src/ColumnKey_test.cpp 
-                     EXECUTABLE EleFits_ColumnKey_test
+elements_add_unit_test(FitsFile tests/src/FitsFile_test.cpp 
+                     EXECUTABLE EleFits_FitsFile_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
+elements_add_unit_test(Hdu tests/src/Hdu_test.cpp 
+                     EXECUTABLE EleFits_Hdu_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
+elements_add_unit_test(HduIterator tests/src/HduIterator_test.cpp 
+                     EXECUTABLE EleFits_HduIterator_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
+elements_add_unit_test(Header tests/src/Header_test.cpp 
+                     EXECUTABLE EleFits_Header_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
+elements_add_unit_test(ImageHdu tests/src/ImageHdu_test.cpp 
+                     EXECUTABLE EleFits_ImageHdu_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
+elements_add_unit_test(ImageRaster tests/src/ImageRaster_test.cpp 
+                     EXECUTABLE EleFits_ImageRaster_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
+elements_add_unit_test(MefFile tests/src/MefFile_test.cpp 
+                     EXECUTABLE EleFits_MefFile_test
+                     LINK_LIBRARIES EleFits
+                     TYPE Boost)
+elements_add_unit_test(SifFile tests/src/SifFile_test.cpp 
+                     EXECUTABLE EleFits_SifFile_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
 elements_add_unit_test(TestBintable tests/src/TestBintable_test.cpp 

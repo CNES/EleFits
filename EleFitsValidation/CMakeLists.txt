@@ -57,20 +57,20 @@ elements_add_executable(EleFitsRunLoopingBenchmark src/program/EleFitsRunLooping
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
-elements_add_unit_test(Chronometer tests/src/Chronometer_test.cpp 
-                     EXECUTABLE EleFitsValidation_Chronometer_test
-                     LINK_LIBRARIES EleFitsValidation
-                     TYPE Boost)
-elements_add_unit_test(CsvAppender tests/src/CsvAppender_test.cpp 
-                     EXECUTABLE EleFitsValidation_CsvAppender_test
-                     LINK_LIBRARIES EleFitsValidation
-                     TYPE Boost)
 elements_add_unit_test(Benchmark tests/src/Benchmark_test.cpp 
                      EXECUTABLE EleFitsValidation_Benchmark_test
                      LINK_LIBRARIES EleFitsValidation
                      TYPE Boost)
 elements_add_unit_test(CfitsioBenchmark tests/src/CfitsioBenchmark_test.cpp 
                      EXECUTABLE EleFitsValidation_CfitsioBenchmark_test
+                     LINK_LIBRARIES EleFitsValidation
+                     TYPE Boost)
+elements_add_unit_test(Chronometer tests/src/Chronometer_test.cpp 
+                     EXECUTABLE EleFitsValidation_Chronometer_test
+                     LINK_LIBRARIES EleFitsValidation
+                     TYPE Boost)
+elements_add_unit_test(CsvAppender tests/src/CsvAppender_test.cpp 
+                     EXECUTABLE EleFitsValidation_CsvAppender_test
                      LINK_LIBRARIES EleFitsValidation
                      TYPE Boost)
 elements_add_unit_test(ElBenchmark tests/src/EleFitsBenchmark_test.cpp 

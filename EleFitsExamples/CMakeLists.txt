@@ -43,19 +43,19 @@ elements_add_library(EleFitsExamples src/lib/*.cpp
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
+elements_add_executable(EleCfitsioExample src/program/EleCfitsioExample.cpp
+                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleCfitsioWrapperExample src/program/EleCfitsioWrapperExample.cpp
                      LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsExample src/program/EleFitsExample.cpp
                      LINK_LIBRARIES EleFitsExamples)
-elements_add_executable(EleCfitsioExample src/program/EleCfitsioExample.cpp
+elements_add_executable(EleFitsGenerate2DMassFiles src/program/EleFitsGenerate2DMassFiles.cpp
                      LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsGenerateAstroObj src/program/EleFitsGenerateAstroObj.cpp
                      LINK_LIBRARIES EleFitsExamples)
-elements_add_executable(EleFitsTutorial src/program/EleFitsTutorial.cpp
-                     LINK_LIBRARIES EleFitsExamples)
-elements_add_executable(EleFitsGenerate2DMassFiles src/program/EleFitsGenerate2DMassFiles.cpp
-                     LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsGenerateLife src/program/EleFitsGenerateLife.cpp
+                     LINK_LIBRARIES EleFitsExamples)
+elements_add_executable(EleFitsTutorial src/program/EleFitsTutorial.cpp
                      LINK_LIBRARIES EleFitsExamples)
 
 #===============================================================================
@@ -89,5 +89,5 @@ elements_add_unit_test(GameOfLife tests/src/GameOfLife_test.cpp
 # Examples:
 #          elements_install_conf_files()
 #===============================================================================
-elements_install_aux_files()
 elements_install_conf_files()
+elements_install_aux_files()
