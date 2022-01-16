@@ -26,7 +26,7 @@ namespace Fits {
 
 template <typename T, long N>
 bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
-  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount() == rhs.repeatCount();
+  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount == rhs.repeatCount;
 }
 
 template <typename T, long N>
@@ -38,26 +38,11 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
  * @brief String specialization.
  */
 template <>
-long ColumnInfo<std::string, 1>::elementCountPerEntry() const;
+long FieldInfo<std::string>::elementCount() const;
 
-// Generic
-
-template <typename T, long N>
-ColumnInfo<T, N>::ColumnInfo(std::string n, std::string u, long r) : ColumnInfo(n, u, Position<N>::one()) {
-  shape[0] = r;
-}
-
-template <typename T, long N>
-ColumnInfo<T, N>::ColumnInfo(std::string n, std::string u, Position<N> s) : name(n), unit(u), shape(s) {}
-
-template <typename T, long N>
-long ColumnInfo<T, N>::repeatCount() const {
-  return shapeSize(shape);
-}
-
-template <typename T, long N>
-long ColumnInfo<T, N>::elementCountPerEntry() const {
-  return repeatCount();
+template <typename T>
+long FieldInfo<T>::elementCount() const {
+  return repeatCount;
 }
 
 } // namespace Fits

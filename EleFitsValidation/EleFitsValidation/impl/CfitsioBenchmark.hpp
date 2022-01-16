@@ -33,7 +33,7 @@ void CfitsioBenchmark::setupColumnInfo(
     std::vector<std::string>& units) {
   const auto& col = std::get<i>(columns);
   names[i] = col.info().name;
-  formats[i] = Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::tform(col.info().repeatCount());
+  formats[i] = Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::tform(col.info().repeatCount);
   units[i] = col.info().unit;
 }
 

@@ -106,10 +106,9 @@ const BintableHdu& MefFile::initBintableExt(const std::string& name, const TInfo
 
 template <typename... TColumns>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns&... columns) {
-  Cfitsio::HduAccess::assignBintableExtension(m_fptr, name, columns...);
-  const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
-  return m_hdus[size]->as<BintableHdu>();
+  const auto& ext = initBintableExt(name, columns.info()...);
+  ext.columns().writeSeq(std::forward_as_tuple(columns...)); // FIXME rm forwarding => should accept single column
+  return ext;
 }
 
 template <typename TColumns, std::size_t count>
@@ -118,6 +117,7 @@ const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TCo
   const auto size = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
   return m_hdus[size]->as<BintableHdu>();
+  // FIXME call assignBE(name, columns...)
 }
 
 #ifndef DECLARE_ASSIGN_IMAGE_EXT

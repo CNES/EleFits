@@ -49,7 +49,7 @@ template <typename T>
 void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long rowCount) {
   column = Fits::VecColumn<T>(
       readColumnInfo<T>(fptr, index),
-      std::vector<std::decay_t<T>>(column.info().repeatCount() * rowCount));
+      std::vector<std::decay_t<T>>(column.info().repeatCount * rowCount));
 }
 
 /**
@@ -83,7 +83,7 @@ struct ColumnLooperImpl {
       long firstRow,
       long rowCount) {
     auto data = &std::get<i>(columns)(firstRow - 1);
-    const auto repeatCount = std::get<i>(columns).info().repeatCount();
+    const auto repeatCount = std::get<i>(columns).info().repeatCount;
     readColumnData(fptr, Fits::Segment::fromSize(firstRow, rowCount), indices[i], repeatCount, data);
     ColumnLooperImpl<i - 1, TColumns...>::readChunks(fptr, indices, columns, firstRow, rowCount);
   }
@@ -106,7 +106,7 @@ struct ColumnLooperImpl {
       long firstRow,
       long rowCount) {
     const auto data = &std::get<i>(columns)(firstRow - 1);
-    const auto repeatCount = std::get<i>(columns).info().repeatCount();
+    const auto repeatCount = std::get<i>(columns).info().repeatCount;
     writeColumnData(fptr, Fits::Segment::fromSize(firstRow, rowCount), indices[i], repeatCount, data);
     ColumnLooperImpl<i - 1, TColumns...>::writeChunks(fptr, indices, columns, firstRow, rowCount);
   }
@@ -160,13 +160,13 @@ template <typename T, long N>
 Fits::VecColumn<T, N> readColumn(fitsfile* fptr, long index) {
   const long rows = rowCount(fptr);
   Fits::VecColumn<T, N> column(readColumnInfo<T>(fptr, index), rows);
-  readColumnData(fptr, {1, rows}, index, column.info().repeatCount(), column.data());
+  readColumnData(fptr, {1, rows}, index, column.info().repeatCount, column.data());
   return column;
 }
 
 template <typename TColumn>
 void readColumnSegment(fitsfile* fptr, const Fits::Segment& rows, long index, TColumn& column) {
-  readColumnData(fptr, rows, index, column.info().repeatCount(), column.data());
+  readColumnData(fptr, rows, index, column.info().repeatCount, column.data());
 }
 
 template <typename T, long N>
@@ -186,7 +186,7 @@ void writeColumnSegment(fitsfile* fptr, long firstRow, const TColumn& column) {
       fptr,
       Fits::Segment::fromSize(firstRow, column.rowCount()),
       index,
-      column.info().repeatCount(),
+      column.info().repeatCount,
       column.data());
 }
 
@@ -260,7 +260,7 @@ void writeColumns(fitsfile* fptr, const TColumns&... columns) {
 template <typename TColumn>
 void insertColumn(fitsfile* fptr, long index, const TColumn& column) {
   auto name = toCharPtr(column.info().name);
-  auto tform = toCharPtr(TypeCode<typename TColumn::Value>::tform(column.info().repeatCount()));
+  auto tform = toCharPtr(TypeCode<typename TColumn::Value>::tform(column.info().repeatCount));
   // FIXME write unit
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
@@ -270,7 +270,7 @@ void insertColumn(fitsfile* fptr, long index, const TColumn& column) {
 template <typename... TColumns>
 void insertColumns(fitsfile* fptr, long index, const TColumns&... columns) {
   auto names = CStrArray({columns.info().name...});
-  auto tforms = CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeatCount())...});
+  auto tforms = CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeatCount)...});
   // FIXME write unit
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(TColumns), names.data(), tforms.data(), &status);

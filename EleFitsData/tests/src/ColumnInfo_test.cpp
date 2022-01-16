@@ -30,21 +30,35 @@ BOOST_AUTO_TEST_SUITE(ColumnInfo_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkElementCountPerRow() {
+void checkElementCount() {
   constexpr long repeat = 17; // Not 1 ;)
   ColumnInfo<T> info {"COL", "unit", repeat};
-  BOOST_TEST(info.repeatCount() == repeat);
+  BOOST_TEST(info.repeatCount == repeat);
   if (std::is_same<T, std::string>::value) {
-    BOOST_TEST(info.elementCountPerEntry() == 1);
+    BOOST_TEST(info.elementCount() == 1);
   } else {
-    BOOST_TEST(info.elementCountPerEntry() == repeat);
+    BOOST_TEST(info.elementCount() == repeat);
   }
 }
 
-#define ELEMENT_COUNT_PER_ROW_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_element_count_per_row) { \
-    checkElementCountPerRow<type>(#name); \
+#define ELEMENT_COUNT_TEST(T, name) \
+  BOOST_AUTO_TEST_CASE(name##_element_count) { \
+    checkElementCount<T>(); \
   }
+
+template <long N>
+void checkRepeatCountFromShape(const Position<N>& shape) {
+  ColumnInfo<float, N> info("NAME", "unit", shape);
+  BOOST_TEST(info.repeatCount == shapeSize(shape));
+}
+
+BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test) {
+  checkRepeatCountFromShape<-1>({1, 2, 3});
+  checkRepeatCountFromShape<2>({3, 14});
+  checkRepeatCountFromShape<3>({28, 6, 1989});
+}
+
+ELEFITS_FOREACH_COLUMN_TYPE(ELEMENT_COUNT_TEST)
 
 //-----------------------------------------------------------------------------
 

@@ -23,7 +23,7 @@ namespace Euclid {
 namespace Fits {
 
 template <>
-long ColumnInfo<std::string, 1>::elementCountPerEntry() const {
+long FieldInfo<std::string>::elementCount() const {
   return 1;
 }
 

@@ -47,7 +47,7 @@ template <typename... TInfos>
 void initBintableExtension(fitsfile* fptr, const std::string& name, const TInfos&... infos) {
   constexpr long ncols = sizeof...(TInfos);
   CStrArray colName {infos.name...};
-  CStrArray colFormat {TypeCode<typename TInfos::Value>::tform(infos.repeatCount())...};
+  CStrArray colFormat {TypeCode<typename TInfos::Value>::tform(infos.repeatCount)...};
   CStrArray colUnit {infos.unit...};
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
@@ -83,7 +83,7 @@ void assignBintableExtension(fitsfile* fptr, const std::string& name, const TCol
   constexpr long columnCount = 1;
   std::string colName = column.info().name;
   char* cName = &colName[0];
-  std::string colFormat = TypeCode<typename TColumn::Value>::tform(column.info().repeatCount());
+  std::string colFormat = TypeCode<typename TColumn::Value>::tform(column.info().repeatCount);
   char* cFormat = &colFormat[0];
   std::string colUnit = column.info().unit;
   char* cUnit = &colUnit[0];

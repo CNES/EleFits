@@ -389,7 +389,7 @@ public:
   /**
    * @brief Append or insert a column, which was not previously initialized.
    * @param info The column info
-   * @param index The 0-based column index, which may be >= 0 or -1 to append the column at the end
+   * @param index The 0-based column index, which may be &ge; 0 or -1 to append the column at the end
    */
   template <typename TInfo>
   void init(const TInfo& info, long index = -1) const;
@@ -437,7 +437,7 @@ public:
 
   /**
    * @brief Append or insert a sequence of columns, which were not previously initialized.
-   * @param index The 0-based index of the first column to be added, which may be >= 0 or -1 to append the columns at the end
+   * @param index The 0-based index of the first column to be added, which may be &ge; 0 or -1 to append the columns at the end
    * @param info The column infos
    */
   template <typename TSeq>

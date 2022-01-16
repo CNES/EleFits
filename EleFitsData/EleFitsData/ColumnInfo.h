@@ -22,6 +22,7 @@
 
 #include "EleFitsData/Position.h"
 
+#include <complex>
 #include <string>
 
 namespace Euclid {
@@ -53,7 +54,50 @@ namespace Fits {
 
 /**
  * @ingroup bintable_data_classes
- * @brief Column metadata, i.e. name, unit, entry shape and value type.
+ * @brief Basic column informations: name, unit and repeat count.
+ * @see ColumnInfo
+ */
+template <typename T>
+struct FieldInfo {
+
+  ELEFITS_VIRTUAL_DTOR(FieldInfo)
+  ELEFITS_COPYABLE(FieldInfo)
+  ELEFITS_MOVABLE(FieldInfo)
+
+  FieldInfo(const std::string& n, const std::string& u, long r) : name(n), unit(u), repeatCount(r) {}
+
+  /**
+   * @brief The value type.
+   */
+  using Value = T;
+
+  /**
+   * @brief The column name.
+   */
+  std::string name = "";
+
+  /**
+   * @brief The column unit.
+   */
+  std::string unit = "";
+
+  /**
+   * @brief Get the repeat count.
+   */
+  long repeatCount = 1;
+
+  /**
+   * @brief Get the number of elements per entry.
+   * @details
+   * This is generally the repeat count,
+   * except for string columns for which it always equals 1.
+   */
+  long elementCount() const;
+};
+
+/**
+ * @ingroup bintable_data_classes
+ * @brief Column informations, i.e. name, unit, entry shape and value type.
  * @details
  * Binary tables can be seen as a sequence of columns or rows, made of consecutive entries.
  * Entry values are not necessarily simple types:
@@ -64,21 +108,21 @@ namespace Fits {
  * -- and more details follow.
  * 
  * <table class="fieldtable">
- * <tr><th>Type<th>`T`<th>`N`<th>`repeatCount`<th>`elementCountPerEntry`
- * <tr><td>String<td>`std::string`<td>1<td>> max number of characters<td>1
- * <tr><td>Scalar<td>Not `std::string`<td>1<td>1<td>1
- * <tr><td>Vector<td>Not `std::string`<td>1<td>> 1<td>= `repeatCount`
- * <tr><td>Multidimensional<td>Not `std::string`<td>-1 or > 1<td>Unconstrained<td>= `repeatCount`
+ * <tr><th>Type<th>`T`<th>`N`<th>`repeatCount`<th>`elementCount`<th>`shape`
+ * <tr><td>String<td>`std::string`<td>1<td>> max number of characters<td>1<td>Undefined
+ * <tr><td>Scalar<td>Not `std::string`<td>1<td>1<td>1<td>Undefined
+ * <tr><td>Vector<td>Not `std::string`<td>1<td>> 1<td> = `repeatCount`<td>Undefinerd
+ * <tr><td>Multidimensional<td>Not `std::string`<td>-1 or > 1<td>&ge; shape size<td>= `repeatCount`<td>Unconstrained
  * </table>
  * 
  * In the case of vector and multidimensional columns, each entry contains `repeatCount` values.
- * Here is an example of a 4-row table with a scalar column and a vector column with a repeat count of 3:
+ * Here is an example of a 4-row table with a scalar column, a vector column and a string column:
  * <table class="fieldtable">
- * <tr><th>Row<th>`repeatCount` = 1<th>`repeatCount` = 3
- * <tr><td>0<td>00<td>00, 01, 02
- * <tr><td>1<td>10<td>10, 11, 12
- * <tr><td>2<td>20<td>20, 21, 22
- * <tr><td>3<td>30<td>30, 31, 32
+ * <tr><th>Row<th>`repeatCount` = 1<th>`repeatCount` = 3<th>`repeatCount` = 6
+ * <tr><td>0<td>00<td>00, 01, 02<td>`"ZERO"`
+ * <tr><td>1<td>10<td>10, 11, 12<td>`"ONE"`
+ * <tr><td>2<td>20<td>20, 21, 22<td>`"TWO"`
+ * <tr><td>3<td>30<td>30, 31, 32<td>`"THREE"`
  * </table>
  * For performance, the values are stored sequentially in a 1D array as follows:
  * \code
@@ -86,18 +130,8 @@ namespace Fits {
  * int repeat3[] = {00, 01, 02, 10, 11, 12, 20, 21, 22, 30, 31, 32};
  * \endcode
  *
- * The only exception to this is string columns, which are like vector columns
- * -- they should have a repeat count greater than the maximum number of characters in a cell --
- * but each cell contains only one string:
- * <table class="fieldtable">
- * <tr><th>Row<th>`repeatCount` = 6
- * <tr><td>0<td>`"ZERO"`
- * <tr><td>1<td>`"ONE"`
- * <tr><td>2<td>`"TWO"`
- * <tr><td>3<td>`"THREE"`
- * </table>
- * 
- * The data array is a simple array of `std::string`s:
+ * The only exception to this is string columns,
+ * for which the data array is a simple array of `std::string`s:
  * \code
  * std::string data[] = {"ZERO", "ONE", "TWO", "THREE"};
  * \endcode
@@ -131,65 +165,76 @@ namespace Fits {
  * Therefore, users are encouraged to consider the repeat count as a meaningful value,
  * rather than as an optimization trick.
  * 
+ * @see ColumnInfo< T, 1 > for unidimensional cases.
  * @see \ref optim
  * @see \ref data_classes
  */
 template <typename T, long N = 1>
-struct ColumnInfo {
-
-  /**
-   * @brief The value type.
-   */
-  using Value = T;
+struct ColumnInfo : public FieldInfo<T> {
 
   /**
    * @brief The dimension parameter.
    */
   static constexpr long Dim = N;
 
-  /**
-   * @brief Create a column info in which only the first component of the shape is different from 1.
-   * @param n The column name
-   * @param u The column unit
-   * @param r The repeat count
-   */
-  ColumnInfo(std::string n = "", std::string u = "", long r = 1);
+  ELEFITS_VIRTUAL_DTOR(ColumnInfo)
+  ELEFITS_COPYABLE(ColumnInfo)
+  ELEFITS_MOVABLE(ColumnInfo)
 
   /**
    * @brief Create a column info with given entry shape.
    * @param n The column name
    * @param u The column unit
    * @param s The entry shape
+   * @details
+   * The repeat count is deduced from the shape.
    */
-  ColumnInfo(std::string n, std::string u, Position<N> s = Position<N>::one());
+  ColumnInfo(std::string n = "", std::string u = "", Position<N> s = Position<N>::one()) :
+      FieldInfo<T>(n, u, shapeSize(s)), shape(std::move(s)) {}
 
   /**
-   * @brief The column name.
+   * @brief Create a column info with given entry shape and explicit repeat count.
+   * @param n The column name
+   * @param u The column unit
+   * @param s The shape
+   * @param r The repeat count
+   * @details
+   * The repeat count must be greater than or equal to the shape size.
    */
-  std::string name;
-
-  /**
-   * @brief The column unit.
-   */
-  std::string unit = "";
+  ColumnInfo(std::string n, std::string u, Position<N> s, long r) : FieldInfo<T>(n, u, r), shape(std::move(s)) {}
 
   /**
    * @brief The shape of one entry.
    */
   Position<N> shape;
+};
+
+/**
+ * @brief Unidimensional column informations.
+ * @details
+ * This simplified version for unidimensional columns is adequate for:
+ * - Scalar columns;
+ * - String columns;
+ * - Vector columns.
+ * 
+ * @see `ColumnInfo`
+ */
+template <typename T>
+struct ColumnInfo<T, 1> : public FieldInfo<T> {
 
   /**
-   * @brief Get the repeat count of the column, i.e., number of values per entry.
+   * @brief The dimension parameter.
    */
-  long repeatCount() const;
+  static constexpr long Dim = 1;
+
+  ELEFITS_VIRTUAL_DTOR(ColumnInfo)
+  ELEFITS_COPYABLE(ColumnInfo)
+  ELEFITS_MOVABLE(ColumnInfo)
 
   /**
-   * @brief Get the number of elements per entry.
-   * @details
-   * This is generally the repeat count,
-   * except for string columns for which it always equals 1.
+   * @brief Create a column info.
    */
-  long elementCountPerEntry() const;
+  ColumnInfo(std::string n = "", std::string u = "", long r = 1) : FieldInfo<T>(n, u, r) {}
 };
 
 /**

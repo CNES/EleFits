@@ -41,10 +41,10 @@ using Indices = typename std::conditional<(N == -1), std::vector<long>, std::arr
  * @brief _n_-dimensional pixel position or image shape, i.e. set of integer coordinates.
  * @tparam N A non-negative dimension (0 is allowed), or -1 for variable dimension.
  * @details
- * The values are stored in a `std::array<long, N>` in general (`N >= 0`),
+ * The values are stored in a `std::array<long, N>` in general (`N &ge; 0`),
  * or `std::vector<long>` for variable dimension (`N = -1`).
  *
- * Memory and services are optimized when dimension is fixed at compile-time (`N >= 0`).
+ * Memory and services are optimized when dimension is fixed at compile-time (`N &ge; 0`).
  * 
  * Anonymous brace-initialization is permitted, e.g.:
  * \code

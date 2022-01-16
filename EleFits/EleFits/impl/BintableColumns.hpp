@@ -91,7 +91,7 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, TColumn
       m_fptr,
       Segment {rows.file().front + 1, rows.file().back + 1}, // TODO operator+
       key.index(*this) + 1, // 1-based
-      column.info().repeatCount(),
+      column.info().repeatCount,
       &column(rows.memory().front, 0));
 }
 
@@ -221,7 +221,7 @@ void BintableColumns::write(const TColumn& column) const {
 template <typename TInfo>
 void BintableColumns::init(const TInfo& info, long index) const {
   auto name = Cfitsio::toCharPtr(info.name);
-  auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount()));
+  auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount));
   int status = 0;
   int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_col(m_fptr, cfitsioIndex, name.get(), tform.get(), &status);
@@ -244,7 +244,7 @@ void BintableColumns::writeSegment(FileMemSegments rows, const TColumn& column) 
       m_fptr,
       {rows.file().front + 1, rows.file().back + 1}, // FIXME operator+
       index + 1,
-      column.info().repeatCount(),
+      column.info().repeatCount,
       &column(rows.memory().front, 0));
 }
 
@@ -269,7 +269,7 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
   Cfitsio::CStrArray names(nameVec);
   const auto tformVec = seqTransform<std::vector<std::string>>(infos, [&](const auto& info) {
     using Value = typename std::decay_t<decltype(info)>::Value;
-    return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeatCount());
+    return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeatCount);
   });
   Cfitsio::CStrArray tforms(tformVec);
   int status = 0;

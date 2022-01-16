@@ -10,8 +10,7 @@
 * `Column<T>` becomes `ColumnContainer<T, N, TContainer>`
   to support multidimensional entries and select the container
   (with `PtrColumn<T, N> = ColumnContainer<T, N, T*>` and `VecColumn<T, N> = ColumnContainer<T, N, vector<T>>`)
-* `PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)` for compatibility with `VecColumn`
-* Variable `ColumnInfo.repeatCount` becomes function `ColumnInfo.repeatCount()`
+* `PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)` for homogeneity with `VecColumn`
 
 ### Bug fixes
 

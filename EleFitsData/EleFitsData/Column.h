@@ -118,20 +118,20 @@ public:
   /**
    * @brief Create an empty column with given metadata.
    * @param info The column metadata
-   * @param size The element count
-   * @warning
-   * `VecColumn` constructor used to get the **row** count as input instead of the **element count**,
-   * which makes a difference for vector columns.
+   * @param rowCount The row count
    */
-  explicit ColumnContainer(Info info, long size = 0);
+  explicit ColumnContainer(Info info, long rowCount = 0);
 
   /**
    * @brief Create a column with given metadata and data.
    * @param info The column metadata
-   * @param size The element count
+   * @param rowCount The row count
    * @param data The raw data
+   * @warning
+   * `PtrColumn` constructor used to get the **element** count as input instead of the **row count**,
+   * which makes a difference for vector columns.
    */
-  ColumnContainer(Info info, long size, T* data);
+  ColumnContainer(Info info, long rowCount, T* data);
 
   /**
    * @brief Create a column with given metadata and data.
