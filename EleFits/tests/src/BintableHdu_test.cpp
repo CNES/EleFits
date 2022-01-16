@@ -72,18 +72,14 @@ BOOST_AUTO_TEST_CASE(empty_column_test) {
   file.assignBintableExt("BINEXT", input);
 }
 
-BOOST_AUTO_TEST_CASE(colsize_mismatch_test) {
+BOOST_FIXTURE_TEST_CASE(colsize_mismatch_test, Test::TemporaryMefFile) {
   VecColumn<float> input0({"COL0", "", 1}, std::vector<float>());
-  Test::RandomScalarColumn<float> input1(1);
-  Test::RandomScalarColumn<float> input2(2);
-  input1.rename("COL1");
-  input2.rename("COL2");
-  const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, FileMode::Temporary);
-  BOOST_CHECK_NO_THROW(file.assignBintableExt("0AND1", input0, input1));
-  BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND0", input1, input0));
-  BOOST_CHECK_NO_THROW(file.assignBintableExt("1AND2", input1, input2));
-  BOOST_CHECK_NO_THROW(file.assignBintableExt("2AND1", input2, input1));
+  VecColumn<float> input1({"COL1", "", 1}, std::vector<float> {0});
+  VecColumn<float> input2({"COL1", "", 1}, std::vector<float> {0, 1});
+  BOOST_CHECK_THROW(this->assignBintableExt("0AND1", input0, input1), FitsError);
+  BOOST_CHECK_THROW(this->assignBintableExt("1AND0", input1, input0), FitsError);
+  BOOST_CHECK_THROW(this->assignBintableExt("1AND2", input1, input2), FitsError);
+  BOOST_CHECK_THROW(this->assignBintableExt("2AND1", input2, input1), FitsError);
 }
 
 BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
