@@ -1,6 +1,71 @@
-# Breaking changes
+# Breaking changes and migration guide
 
 [TOC]
+
+## Purpose
+
+For each major version, this page lists the breaking changes,
+details the underlying rationale,
+the status in the previous version (e.g. what's there already and what's deprecated),
+and how to adapt the client code.
+
+## Breaking changes in 5.0
+
+### Introduction
+
+Version 5.0 brings a lot of improvements related to performance and flexibility.
+Most changes have only limited impact on the interface,
+but there are enough "minor changes" to justify bumping the major version digit.
+Many changes in the API (including the additional template parameters, see below)
+won't even impact user codes.
+
+### PtrRaster constructor change
+
+`PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)`.
+
+**Rationale**
+
+Implementation of the data classes was completely refactored for improved performance,
+more flexibility and easier maintenance (see below).
+This came with the mergin of `PtrRaster` and `VecRaster` (which are now mere aliases)
+and therefore of their constructors.
+
+**Impact on client code**
+
+Calls to the constructor should be updated.
+
+### Raster and Column refactoring
+
+`Raster<T, N>` has become `RasterContainer<T, N, TContainer>`, where the added template parameter
+allows working with any contiguous container.
+`PtrRaster` and `VecRaster` are no more classes which inherit `Raster` but typedefs insead:
+`PtrRaster<T, N> = RasterContainer<T, N, T*>` and `VecRaster<T, N> = RasterContainer<T, N, vector<T>>`.
+
+`PtrRaster` and `VecRaster` are backward compatible.
+
+`Column<T>` has become `ColumnContainer<T, N, TContainer>`, where the added template parameters
+allow supporting multidimensional entries and working with any contiguous container.
+`PtrColumn` and `VecColumn` are no more classes which inherit `Column` but typedefs insead:
+`PtrColumn<T, N> = ColumnContainer<T, N, T*>` and `VecColumn<T, N> = ColumnContainer<T, N, vector<T>>`.
+
+The default value of `N` is 1 to limit impact on client code.
+
+Let alone the change in `PtrColumn`'s constructor described above,
+`PtrColumn` and `VecColumn` are backward compatible.
+
+**Impact on client code**
+
+None for basic usage.
+
+For user-defined functions which used to return or take a `Raster` or a `Column` or a `ColumnInfo` as parameter,
+e.g. `void f(Column<T>& column)`, there are several options:
+* add the new template parameters,
+  e.g. `void f(Column<T, N, TContainer>& column)`;
+* fix the new template parameters,
+  e.g. `void f(VecColumn<T>& column)`;
+* use a template for the parameter itself,
+  e.g. `void f(TColumn& column)`
+  (which is the path taken by EleFits).
 
 ## Breaking changes in 4.0
 
@@ -11,10 +76,6 @@ Most of them are already in place in version 3.2, but with backward compatibilit
 This is done to make transition smoother on client code side.
 Therefore, in 3.2, the user can use both 3.x and 4.x versions of the API.
 Items removed from the API in 4.0 are marked deprecated in 3.2.
-
-For each breaking change, this page details the underlying reasons,
-the status in version 3.2,
-and how to adapt the client code.
 
 ### EL_FitsIO becomes EleFits and associated changes
 

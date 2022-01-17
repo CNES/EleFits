@@ -41,7 +41,7 @@ Legend:
   - **Write CONTINUE'd string record**
   - **Write COMMENT/HISTORY record**
   - Write/update DATE record
-  - Update comment (useful?)
+  - **Update comment** (done by reading, modifying and writing back)
   - **Write unit**
   - Rename record (useful?)
   - **Delete record**
@@ -49,12 +49,12 @@ Legend:
   - **Read image type**
   - **Read image size**
   - **Create image extension**
-  - Copy image data to image or binary table extension
+  - **Copy image data to image or binary table extension**
   - **Write image region**
   - **Write image**
   - **Read image region**
   - **Read image**
-  - Copy image region
+  - **Copy image region**
 - Image Compression
   - Compress image
   - **Decompress image**
@@ -67,7 +67,7 @@ Legend:
   - **Insert rows**
   - Delete rows
   - **Insert columns**
-  - Delete columns
+  - **Delete columns**
   - Copy rows
   - Copy columns
   - **Write scalar column elements**

@@ -84,16 +84,14 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
 /**
  * @ingroup image_data_classes
  * @brief Data of a _n_-dimensional image (2D by default).
+ * 
  * @tparam T The value type, which can be `const`-qualified for read-only rasters
  * @tparam N The dimension, which can be &ge; 0 for fixed dimension, or -1 for variable dimension
  * @tparam TContainer The underlying data container type
+ * 
  * @details
  * A raster is a contiguous container for the pixel data of an image.
  * It features access and view services.
- * 
- * Two specializations are provided:
- * - `PtrRaster` doesn's itself own data: it is just a shell which stores a shape, and a pointer to some actual data;
- * - `VecRaster` owns an `std::vector` (and is compatible with move semantics, which allows borrowing the `vector`).
  * 
  * There are two ways of defining the dimension of a `Raster`:
  * - When the dimension is knwon at compile-time (safer),
@@ -119,7 +117,22 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
  * `Raster` also implements some arithmetic operators by extending `VectorArithmeticMixin`.
  * For example, two rasters can be added, or a raster can be multiplied by a scalar.
  * 
- * Example usages:
+ * The raster data can be viewed region-wise as a `PtrRaster`,
+ * provided that the region is contiguous in memory.
+ * Reading and writing non contiguous region is possible: see `ImageRaster`.
+ * 
+ * @par_specialization
+ * \li_specialization{PtrRaster}
+ * \li_specialization{VecRaster}
+ * 
+ * @satisfies{ContiguousContainer}
+ * @satisfies{VectorArithmetic}
+ * 
+ * @see
+ * - `Position` for details on the fixed- and variable-dimension cases.
+ * - `makeRaster()` for creation shortcuts.
+ * 
+ * @par_example
  * \code
  * Position<2> shape {2, 3};
  * 
@@ -140,10 +153,6 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
  * VecRaster<const float> cVecRaster(shape, std::move(cVec));
  * \endcode
  * 
- * The raster data can be viewed region-wise as a `PtrRaster`,
- * provided that the region is contiguous in memory.
- * Reading and writing non contiguous region is possible: see `ImageRaster`.
- * 
  * @note
  * Why "raster" and not simply image or array?
  * Mostly for disambiguation purpose:
@@ -154,13 +163,6 @@ using VecRaster = RasterContainer<T, N, std::vector<T>>;
  * is very common in the field of Earth observation,
  * and also belongs to the Java library.
  * All in all, `Raster` seems to be a fair compromise.
- * 
- * @satisfies{ContiguousContainer}
- * @satisfies{VectorArithmetic}
- * 
- * @see
- * - `Position` for details on the fixed- and variable-dimension cases.
- * - `makeRaster()` for creation shortcuts.
  */
 template <typename T, long N, typename TContainer>
 class RasterContainer : public DataContainer<T, TContainer, RasterContainer<T, N, TContainer>> {
@@ -181,10 +183,7 @@ public:
    */
   static constexpr long Dim = N;
 
-  /**
-   * @name Constructors
-   */
-  /// @{
+  /// @group_construction
 
   ELEFITS_VIRTUAL_DTOR(RasterContainer)
   ELEFITS_COPYABLE(RasterContainer)
@@ -216,11 +215,7 @@ public:
       DataContainer<T, TContainer, RasterContainer<T, N, TContainer>>(std::forward<Ts>(args)...),
       m_shape(std::move(shape)) {}
 
-  /// @}
-  /**
-   * @name Shape
-   */
-  /// @{
+  /// @group_properties
 
   /**
    * @brief Get the raster shape.
@@ -231,6 +226,8 @@ public:
    * @brief Get the raster domain.
    * @details
    * The domain is the region which spans from the first to the last pixel position.
+   * 
+   * \par_example
    * It can be used to loop over all pixels, e.g.:
    * \code
    * for (auto pos : raster.domain()) {
@@ -254,11 +251,7 @@ public:
   template <long I>
   long length() const;
 
-  /// @}
-  /**
-   * @name Element access
-   */
-  /// @{
+  /// @group_elements
 
   using DataContainer<T, TContainer, RasterContainer<T, N, TContainer>>::operator[];
 
@@ -291,11 +284,18 @@ public:
    */
   inline T& at(const Position<N>& pos);
 
-  /// @}
+  /// @group_views
+
   /**
-   * @name Views
+   * @brief Check whether a region is made of contiguous values in memory.
+   * @tparam M The actual region dimension
+   * @details
+   * A region is contiguous if and only if:
+   * - For `i` < `M-1`, `front[i]` = 0 and `back[i]` = -1;
+   * - For `i` > `M`, `front[i]` = `back[i]`.
    */
-  /// @{
+  template <long M = 2>
+  bool isContiguous(const Region<N>& region) const;
 
   /**
    * @brief Create a slice from a given region.
@@ -307,7 +307,7 @@ public:
   const PtrRaster<const T, M> slice(const Region<N>& region) const;
 
   /**
-   * @copydoc slice()
+   * @copybrief slice()
    */
   template <long M = 2>
   PtrRaster<T, M> slice(const Region<N>& region);
@@ -334,30 +334,19 @@ public:
   const PtrRaster<const T, N> section(long front, long back) const;
 
   /**
-   * @copydoc section()
+   * @copybrief section()
    */
   PtrRaster<T, N> section(long front, long back);
 
   /**
-   * @copydoc section()
+   * @copybrief section()
    */
   const PtrRaster<const T, N == -1 ? -1 : N - 1> section(long index) const;
 
   /**
-   * @copydoc section()
+   * @copybrief section()
    */
   PtrRaster<T, N == -1 ? -1 : N - 1> section(long index);
-
-  /**
-   * @brief Check whether a region is made of contiguous values in memory.
-   * @tparam M The actual region dimension
-   * @details
-   * A region is contiguous if and only if:
-   * - For `i` < `M-1`, `front[i]` = 0 and `back[i]` = -1;
-   * - For `i` > `M`, `front[i]` = `back[i]`.
-   */
-  template <long M = 2>
-  bool isContiguous(const Region<N>& region) const;
 
   /// @}
 
@@ -367,6 +356,7 @@ private:
    * @details
    * A subraster is a view of the raster data contained in a region.
    * As opposed to a slice or a section, a subraster is not necessarily contiguous in memory.
+   * @warning Should be removed.
    * @see isContiguous()
    * @see slice()
    * @see section()
@@ -380,7 +370,6 @@ private:
 
   /**
    * @brief Raster shape, i.e. length along each axis.
-   * @warning Will be made private and accessed through method `shape()` in 4.0
    */
   Position<N> m_shape;
 };
@@ -393,7 +382,7 @@ private:
  * @param data The raster values, which can be either a pointer (or C array) or a vector
  * @param shape The shape as a comma-separated list of `long`s
  * @details
- * Example usages:
+ * \par_example
  * \code
  * Given:
  * - long width, height, depth: The axes lengths;
@@ -414,7 +403,7 @@ makeRaster(TContainer&& data, Longs... shape) {
 
 /**
  * @relates RasterContainer
- * @copydoc makeRaster()
+ * @copybrief makeRaster()
  */
 template <typename T, typename... Longs>
 PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) { // FIXME can we merge somehow?

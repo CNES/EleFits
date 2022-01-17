@@ -5,10 +5,10 @@
 ### Breaking changes
 
 * Updated to Elements 6.0.1
-* `Raster<T, N>` becomes `RasterContainer<T, N, TContainer>` to select the container
+* `Raster<T, N>` becomes `RasterContainer<T, N, TContainer>` to work with any contiguous container
   (with `PtrRaster<T, N> = RasterContainer<T, N, T*>` and `VecRaster<T, N> = RasterContainer<T, N, vector<T>>`)
 * `Column<T>` becomes `ColumnContainer<T, N, TContainer>`
-  to support multidimensional entries and select the container
+  to support multidimensional entries and to work with any contiguous container
   (with `PtrColumn<T, N> = ColumnContainer<T, N, T*>` and `VecColumn<T, N> = ColumnContainer<T, N, vector<T>>`)
 * `PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)` for homogeneity with `VecColumn`
 

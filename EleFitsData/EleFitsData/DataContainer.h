@@ -61,6 +61,8 @@ template <typename T, typename TContainer>
 class DataContainerHolder {
 
 public:
+  /// @group_construction
+
   /**
    * @brief Default or size-based constructor.
    */
@@ -83,6 +85,8 @@ public:
   template <typename... Ts>
   DataContainerHolder(Ts&&... args) : m_container(std::forward<Ts>(args)...) {}
 
+  /// @group_properties
+
   /**
    * @brief Get the number of elements.
    */
@@ -90,12 +94,16 @@ public:
     return m_container.size();
   }
 
+  /// @group_elements
+
   /**
    * @brief Access the raw data.
    */
   inline const T* data() const {
     return m_container.data();
   }
+
+  /// @}
 
 protected:
   /**
@@ -112,6 +120,8 @@ template <typename T>
 class DataContainerHolder<T, T*> {
 
 public:
+  /// @group_construction
+
   /**
    * @brief Default or size-based constructor.
    */
@@ -128,6 +138,8 @@ public:
    */
   DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
 
+  /// @group_properties
+
   /**
    * @brief Get the number of elements.
    */
@@ -135,12 +147,16 @@ public:
     return m_size;
   }
 
+  /// @group_elements
+
   /**
    * @brief Access the raw data.
    */
   inline const T* data() const {
     return m_container;
   }
+
+  /// @}
 
 protected:
   /**
@@ -162,6 +178,8 @@ template <typename T, std::size_t N>
 class DataContainerHolder<T, std::array<T, N>> {
 
 public:
+  /// @group_construction
+
   /**
    * @brief Default or size-based constructor.
    */
@@ -184,6 +202,8 @@ public:
    */
   DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
 
+  /// @group_properties
+
   /**
    * @brief Get the number of elements.
    */
@@ -191,12 +211,16 @@ public:
     return N;
   }
 
+  /// @group_elements
+
   /**
    * @brief Access the raw data.
    */
   inline const T* data() const {
     return m_container.data();
   }
+
+  /// @}
 
 protected:
   /**
@@ -227,6 +251,8 @@ public:
    */
   using Holder = DataContainerHolder<T, TContainer>;
 
+  /// @group_construction
+
   /**
    * @brief Inherit data holder's constructors.
    */
@@ -236,10 +262,14 @@ public:
   ELEFITS_COPYABLE(DataContainer)
   ELEFITS_MOVABLE(DataContainer)
 
+  /// @group_properties
+
   /**
    * @brief Inherit data holder's `size()`.
    */
   using Holder::size;
+
+  /// @group_elements
 
   /**
    * @brief Inherit data holder's `data()`.
@@ -247,7 +277,7 @@ public:
   using Holder::data;
 
   /**
-   * @copydoc data()
+   * @copybrief data()
    */
   inline T* data() {
     return const_cast<T*>(const_cast<const DataContainer&>(*this).data());
@@ -260,6 +290,8 @@ public:
     return this->m_container;
   }
 
+  /// @group_operations
+
   /**
    * @brief Copy the container values into an `std::vector`.
    * @deprecated Use more generic `container()` instead, which performs no copy.
@@ -267,6 +299,8 @@ public:
   std::vector<T> vector() const {
     return {this->begin(), this->end()};
   }
+
+  /// @group_modifiers
 
   /**
    * @brief Move the container.
@@ -287,6 +321,8 @@ public:
     destination = std::move(this->m_container);
     return destination;
   }
+
+  /// @}
 };
 
 } // namespace Fits

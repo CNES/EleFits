@@ -59,12 +59,7 @@ struct VectorArithmeticMixin :
     boost::subtractable2_left<TDerived, T>,
     boost::multiplicative<TDerived, T> {
 
-  /// @{
-
-  /**
-   * @brief Copy.
-   */
-  TDerived operator+() const;
+  /// @group_modifiers
 
   /**
    * @brief V += U and W = V + U.
@@ -76,15 +71,6 @@ struct VectorArithmeticMixin :
    */
   TDerived& operator+=(const T& rhs);
 
-  /// @}
-
-  /// @{
-
-  /**
-   * @brief Compute the opposite.
-   */
-  TDerived operator-() const;
-
   /**
    * @brief V -= U and W = V - U.
    */
@@ -95,27 +81,15 @@ struct VectorArithmeticMixin :
    */
   TDerived& operator-=(const T& rhs);
 
-  /// @}
-
-  /// @{
-
   /**
    * @brief V *= a, V = U * a, V = a * U.
    */
   TDerived& operator*=(const T& rhs);
 
-  /// @}
-
-  /// @{
-
   /**
    * @brief V /= a, V = U / a.
    */
   TDerived& operator/=(const T& rhs);
-
-  /// @}
-
-  /// @{
 
   /**
    * @brief Generate values from a function with optional input containers.
@@ -151,6 +125,18 @@ struct VectorArithmeticMixin :
    */
   template <typename TFunc, typename... TContainers>
   TDerived& apply(TFunc&& func, const TContainers&... args);
+
+  /// @group_operations
+
+  /**
+   * @brief Copy.
+   */
+  TDerived operator+() const;
+
+  /**
+   * @brief Compute the opposite.
+   */
+  TDerived operator-() const;
 
   /// @}
 };
