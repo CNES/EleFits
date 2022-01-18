@@ -256,8 +256,7 @@ ALIASES                = FIXME=\todo \
                          PROJECT_VERSION=@CMAKE_PROJECT_VERSION@ \
                          "requirements{1}=^^\interface \1^^" \
                          "satisfies{1}=\implements \1^^\par Satisfies `\1` requirements^^\copydetails \1^^" \
-                         "par_specialization=\par Template specializations^^" \
-                         "li_specialization{1}=\ref \1 <br> \copybrief \1 <br>" \
+                         "tspecialization{1}=\par Template specialization \1^^\copybrief \1 \ref \1 \"More...\"" \
                          "par_example=\par Example^^" \
                          "group_construction=^^\}^^\name Construction^^\{" \
                          "group_properties=^^\}^^\name Properties^^\{^^" \
@@ -2210,14 +2209,14 @@ EXPAND_ONLY_PREDEF     = NO
 # The default value is: YES.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-SEARCH_INCLUDES        = YES
+SEARCH_INCLUDES        = NO
 
 # The INCLUDE_PATH tag can be used to specify one or more directories that
 # contain include files that are not input files but should be processed by the
 # preprocessor.
 # This tag requires that the tag SEARCH_INCLUDES is set to YES.
 
-INCLUDE_PATH           = /usr/include
+INCLUDE_PATH           =
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the

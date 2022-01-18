@@ -52,7 +52,7 @@ namespace Fits {
   MACRO(std::uint32_t, uint32) \
   MACRO(std::uint64_t, uint64)
 
-/// @cond INTERNAL
+/// @cond
 // Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
 
 // Forward declaration for Raster::subraster()
@@ -67,16 +67,14 @@ class Raster;
 
 /**
  * @ingroup image_data_classes
- * @brief `Raster` which points to some external data.
- * @copydetails Raster
+ * @brief `Raster` which points to some external data (`TContainer` = `T*`).
  */
 template <typename T, long N = 2>
 using PtrRaster = Raster<T, N, T*>;
 
 /**
  * @ingroup image_data_classes
- * @brief `Raster` which owns the data as an `std::vector`.
- * @copydetails Raster
+ * @brief `Raster` which owns a data vector (`TContainer` = `std::vector`).
  */
 template <typename T, long N = 2>
 using VecRaster = Raster<T, N, std::vector<T>>;
@@ -121,9 +119,8 @@ using VecRaster = Raster<T, N, std::vector<T>>;
  * provided that the region is contiguous in memory.
  * Reading and writing non contiguous region is possible: see `ImageRaster`.
  * 
- * @par_specialization
- * \li_specialization{PtrRaster}
- * \li_specialization{VecRaster}
+ * @tspecialization{PtrRaster}
+ * @tspecialization{VecRaster}
  * 
  * @satisfies{ContiguousContainer}
  * @satisfies{VectorArithmetic}
