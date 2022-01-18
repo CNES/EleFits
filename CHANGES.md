@@ -5,11 +5,11 @@
 ### Breaking changes
 
 * Updated to Elements 6.0.1
-* `Raster<T, N>` becomes `RasterContainer<T, N, TContainer>` to work with any contiguous container
-  (with `PtrRaster<T, N> = RasterContainer<T, N, T*>` and `VecRaster<T, N> = RasterContainer<T, N, vector<T>>`)
-* `Column<T>` becomes `ColumnContainer<T, N, TContainer>`
+* `Raster<T, N>` becomes `Raster<T, N, TContainer>` to work with any contiguous container
+  (with `PtrRaster<T, N> = Raster<T, N, T*>` and `VecRaster<T, N> = Raster<T, N, vector<T>>`)
+* `Column<T>` becomes `Column<T, N, TContainer>`
   to support multidimensional entries and to work with any contiguous container
-  (with `PtrColumn<T, N> = ColumnContainer<T, N, T*>` and `VecColumn<T, N> = ColumnContainer<T, N, vector<T>>`)
+  (with `PtrColumn<T, N> = Column<T, N, T*>` and `VecColumn<T, N> = Column<T, N, vector<T>>`)
 * `PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)` for homogeneity with `VecColumn`
 
 ### Bug fixes
@@ -19,7 +19,7 @@
 
 ### Refactoring
 
-* `RasterContainer`, `ColumnContainer` and `Position` inherit `DataContainer` (see below)
+* `Raster`, `Column` and `Position` inherit `DataContainer` (see below)
 * `PtrRaster`, `VecRaster`, `PtrColumn` and `VecColumn` are now mere aliases
 * Methods which took a `Raster&` or `Column&` as parameter now accept any type which fullfills `Raster` or `Column` requirements
 * All `DataContainer`s fulfill the standard `ContiguousContainer` requirements (e.g are iterable)

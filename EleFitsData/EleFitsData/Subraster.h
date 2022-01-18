@@ -58,7 +58,7 @@ template <typename T, long N, typename TContainer> // FIXME simplify as TParent
 class Subraster {
 
 public:
-  using Parent = RasterContainer<T, N, TContainer>;
+  using Parent = Raster<T, N, TContainer>;
 
   /**
    * @brief Constructor.

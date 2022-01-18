@@ -36,17 +36,17 @@ Calls to the constructor should be updated.
 
 ### Raster and Column refactoring
 
-`Raster<T, N>` has become `RasterContainer<T, N, TContainer>`, where the added template parameter
+`Raster<T, N>` has become `Raster<T, N, TContainer>`, where the added template parameter
 allows working with any contiguous container.
 `PtrRaster` and `VecRaster` are no more classes which inherit `Raster` but typedefs insead:
-`PtrRaster<T, N> = RasterContainer<T, N, T*>` and `VecRaster<T, N> = RasterContainer<T, N, vector<T>>`.
+`PtrRaster<T, N> = Raster<T, N, T*>` and `VecRaster<T, N> = Raster<T, N, vector<T>>`.
 
 `PtrRaster` and `VecRaster` are backward compatible.
 
-`Column<T>` has become `ColumnContainer<T, N, TContainer>`, where the added template parameters
+`Column<T>` has become `Column<T, N, TContainer>`, where the added template parameters
 allow supporting multidimensional entries and working with any contiguous container.
 `PtrColumn` and `VecColumn` are no more classes which inherit `Column` but typedefs insead:
-`PtrColumn<T, N> = ColumnContainer<T, N, T*>` and `VecColumn<T, N> = ColumnContainer<T, N, vector<T>>`.
+`PtrColumn<T, N> = Column<T, N, T*>` and `VecColumn<T, N> = Column<T, N, vector<T>>`.
 
 The default value of `N` is 1 to limit impact on client code.
 

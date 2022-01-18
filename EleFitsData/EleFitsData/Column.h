@@ -38,7 +38,7 @@ namespace Fits {
 
 // Forward declaration for PtrColumn and VecColumn
 template <typename T, long N, typename TContainer>
-class ColumnContainer;
+class Column;
 
 /// @endcond
 
@@ -50,7 +50,7 @@ class ColumnContainer;
  * @see \ref data_classes
  */
 template <typename T, long N = 1>
-using PtrColumn = ColumnContainer<T, N, T*>;
+using PtrColumn = Column<T, N, T*>;
 
 /**
  * @ingroup bintable_data_classes
@@ -60,7 +60,7 @@ using PtrColumn = ColumnContainer<T, N, T*>;
  * @see \ref data_classes
  */
 template <typename T, long N = 1>
-using VecColumn = ColumnContainer<T, N, std::vector<T>>;
+using VecColumn = Column<T, N, std::vector<T>>;
 
 /**
  * @ingroup bintable_data_classes
@@ -73,12 +73,12 @@ using VecColumn = ColumnContainer<T, N, std::vector<T>>;
  * @see \ref data_classes
  */
 template <typename T, long N, typename TContainer>
-class ColumnContainer : public DataContainer<T, TContainer, ColumnContainer<T, N, TContainer>> {
+class Column : public DataContainer<T, TContainer, Column<T, N, TContainer>> {
 
   /**
    * @brief Shortcut for DataContainer.
    */
-  using Base = DataContainer<T, TContainer, ColumnContainer<T, N, TContainer>>;
+  using Base = DataContainer<T, TContainer, Column<T, N, TContainer>>;
 
 public:
   /**
@@ -106,21 +106,21 @@ public:
    */
   /// @{
 
-  ELEFITS_VIRTUAL_DTOR(ColumnContainer)
-  ELEFITS_COPYABLE(ColumnContainer)
-  ELEFITS_MOVABLE(ColumnContainer)
+  ELEFITS_VIRTUAL_DTOR(Column)
+  ELEFITS_COPYABLE(Column)
+  ELEFITS_MOVABLE(Column)
 
   /**
    * @brief Default constructor.
    */
-  ColumnContainer();
+  Column();
 
   /**
    * @brief Create an empty column with given metadata.
    * @param info The column metadata
    * @param rowCount The row count
    */
-  explicit ColumnContainer(Info info, long rowCount = 0);
+  explicit Column(Info info, long rowCount = 0);
 
   /**
    * @brief Create a column with given metadata and data.
@@ -131,7 +131,7 @@ public:
    * `PtrColumn` constructor used to get the **element** count as input instead of the **row count**,
    * which makes a difference for vector columns.
    */
-  ColumnContainer(Info info, long rowCount, T* data);
+  Column(Info info, long rowCount, T* data);
 
   /**
    * @brief Create a column with given metadata and data.
@@ -139,7 +139,7 @@ public:
    * @param args Arguments to be forwarded to the underlying container
    */
   template <typename... Ts>
-  ColumnContainer(Info info, Ts&&... args);
+  Column(Info info, Ts&&... args);
 
   /// @}
   /**
