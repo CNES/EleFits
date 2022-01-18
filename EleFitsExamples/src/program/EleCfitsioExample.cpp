@@ -17,9 +17,9 @@
  *
  */
 
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleFitsUtils/ProgramOptions.h"
+#include "EleFitsUtils/StringUtils.h"
 #include "ElementsKernel/ProgramHeaders.h"
 
 #include <boost/program_options.hpp>
@@ -29,17 +29,17 @@
 #include <string>
 
 using boost::program_options::value;
-using Euclid::Cfitsio::CStrArray;
+using namespace Euclid;
 
 struct SmallTable {
   static constexpr long cols = 4;
   static constexpr long rows = 3;
-  CStrArray colName {"ID", "RADEC", "NAME", "DIST_MAG"};
-  CStrArray colFormat {"1J", "1C", "68A", "2D"};
-  CStrArray colUnit {"", "deg", "", "kal"};
+  Fits::String::CStrArray colName {"ID", "RADEC", "NAME", "DIST_MAG"};
+  Fits::String::CStrArray colFormat {"1J", "1C", "68A", "2D"};
+  Fits::String::CStrArray colUnit {"", "deg", "", "kal"};
   int ids[rows] = {45, 7, 31};
   std::complex<float> radecs[rows] = {{56.8500F, 24.1167F}, {268.4667F, -34.7928F}, {10.6833F, 41.2692F}};
-  CStrArray names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
+  Fits::String::CStrArray names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
   std::vector<double> dist_mags[rows] = {{0.44, 1.6}, {0.8, 3.3}, {2900., 3.4}};
 };
 

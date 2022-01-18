@@ -41,6 +41,16 @@ BOOST_AUTO_TEST_CASE(trim_test) {
   BOOST_TEST(String::trim(input) == expected);
 }
 
+BOOST_AUTO_TEST_CASE(c_str_array_test) {
+  std::vector<std::string> vec {"Fievre", "Chat", "Bebe", "Passe-miroir"};
+  String::CStrArray arr(vec);
+  for (std::size_t row = 0; row < vec.size(); ++row) {
+    for (std::size_t letter = 0; letter < vec[row].length(); ++letter) {
+      BOOST_TEST(vec[row].c_str()[letter] == arr.data()[row][letter]);
+    }
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -19,9 +19,9 @@
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleCfitsioWrapper/CfitsioFixture.h"
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleFitsData/TestColumn.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <boost/test/unit_test.hpp>
 

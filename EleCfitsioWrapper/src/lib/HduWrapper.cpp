@@ -98,7 +98,7 @@ bool gotoName(fitsfile* fptr, const std::string& name, long version, Fits::HduCa
   } else if (category != Fits::HduCategory::Any) {
     throw Fits::FitsError("Invalid HduCategory; Only Any, Image and Bintable are supported.");
   }
-  fits_movnam_hdu(fptr, hdutype, toCharPtr(name).get(), version, &status);
+  fits_movnam_hdu(fptr, hdutype, Fits::String::toCharPtr(name).get(), version, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot move to HDU: " + name);
   return true;
 }

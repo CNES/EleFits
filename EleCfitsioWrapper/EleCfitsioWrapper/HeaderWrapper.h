@@ -20,13 +20,13 @@
 #ifndef _ELECFITSIOWRAPPER_HEADERWRAPPER_H
 #define _ELECFITSIOWRAPPER_HEADERWRAPPER_H
 
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/KeywordCategory.h"
 #include "EleFitsData/Record.h"
 #include "EleFitsData/RecordVec.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <fitsio.h>
 #include <string>

@@ -18,9 +18,9 @@
  */
 
 #include "EleCfitsioWrapper/CfitsioFixture.h"
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleFitsData/TestRecord.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <boost/test/unit_test.hpp>
 

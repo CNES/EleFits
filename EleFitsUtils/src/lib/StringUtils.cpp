@@ -43,12 +43,27 @@ std::string readFile(const std::string& filename) {
   return {std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>()};
 }
 
-/**
- * @brief Read a text file from the auxiliary directory.
- * @param filename The path to the file, relative to the auxiliary directory
- */
 std::string readAuxFile(const std::string& filename) {
   return readFile(Elements::getAuxiliaryPath(filename).string());
+}
+
+std::unique_ptr<char[]> toCharPtr(const std::string& str) {
+  const long size = str.length();
+  auto c_str = std::make_unique<char[]>(size + 1);
+  strcpy(c_str.get(), str.c_str());
+  return c_str;
+}
+
+CStrArray::CStrArray(const std::vector<std::string>& data) : CStrArray(data.begin(), data.end()) {}
+
+CStrArray::CStrArray(const std::initializer_list<std::string>& data) : CStrArray(data.begin(), data.end()) {}
+
+std::size_t CStrArray::size() const {
+  return cStrVector.size();
+}
+
+char** CStrArray::data() {
+  return cStrVector.data();
 }
 
 } // namespace String

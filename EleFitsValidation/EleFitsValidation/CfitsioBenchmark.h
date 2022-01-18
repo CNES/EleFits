@@ -20,9 +20,9 @@
 #ifndef _ELEFITS_VALIDATION_CFITSIOBENCHMARK_H
 #define _ELEFITS_VALIDATION_CFITSIOBENCHMARK_H
 
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
+#include "EleFitsUtils/StringUtils.h"
 #include "EleFitsValidation/Benchmark.h"
 
 #include <fitsio.h>

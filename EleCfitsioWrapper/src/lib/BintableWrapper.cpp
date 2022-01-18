@@ -19,8 +19,8 @@
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
 
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <algorithm>
 
@@ -47,7 +47,7 @@ long rowCount(fitsfile* fptr) {
 bool hasColumn(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
-  fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
+  fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
   return (status == 0) || (status == COL_NOT_UNIQUE);
 }
 
@@ -83,7 +83,7 @@ void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
 long columnIndex(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
-  fits_get_colnum(fptr, CASESEN, toCharPtr(name).get(), &index, &status);
+  fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot find index of column: " + name);
   return index;
 }
@@ -126,7 +126,7 @@ void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long 
 template <>
 void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const std::string* data) {
   int status = 0;
-  CStrArray array(data, data + rows.size());
+  Fits::String::CStrArray array(data, data + rows.size());
   fits_write_col(
       fptr,
       TypeCode<std::string>::forBintable(),

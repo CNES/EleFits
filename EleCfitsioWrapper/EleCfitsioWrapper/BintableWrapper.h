@@ -20,9 +20,9 @@
 #ifndef _ELECFITSIOWRAPPER_BINTABLEWRAPPER_H
 #define _ELECFITSIOWRAPPER_BINTABLEWRAPPER_H
 
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/Column.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <tuple>
 #include <vector>

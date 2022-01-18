@@ -14,7 +14,7 @@ elements_subdir(EleCfitsioWrapper)
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
 elements_depends_on_subdirs(ElementsKernel)
-elements_depends_on_subdirs(EleFitsData)
+elements_depends_on_subdirs(EleFitsData EleFitsUtils)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -33,8 +33,8 @@ find_package(Cfitsio REQUIRED)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EleCfitsioWrapper src/lib/*.cpp
-                     INCLUDE_DIRS ElementsKernel EleFitsData Cfitsio
-                     LINK_LIBRARIES ElementsKernel EleFitsData Cfitsio
+                     INCLUDE_DIRS ElementsKernel EleFitsData EleFitsUtils Cfitsio
+                     LINK_LIBRARIES ElementsKernel EleFitsData EleFitsUtils Cfitsio
                      PUBLIC_HEADERS EleCfitsioWrapper)
 
 #===============================================================================
@@ -59,10 +59,6 @@ elements_add_unit_test(BintableWrapper tests/src/BintableWrapper_test.cpp
                      TYPE Boost)
 elements_add_unit_test(CfitsioFixture tests/src/CfitsioFixture_test.cpp 
                      EXECUTABLE EleCfitsioWrapper_CfitsioFixture_test
-                     LINK_LIBRARIES EleCfitsioWrapper
-                     TYPE Boost)
-elements_add_unit_test(CfitsioUtils tests/src/CfitsioUtils_test.cpp 
-                     EXECUTABLE EleCfitsioWrapper_CfitsioUtils_test
                      LINK_LIBRARIES EleCfitsioWrapper
                      TYPE Boost)
 elements_add_unit_test(CfitsioWrapper tests/src/CfitsioWrapper_test.cpp 

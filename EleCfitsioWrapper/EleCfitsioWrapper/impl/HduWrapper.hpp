@@ -46,9 +46,9 @@ void assignImageExtension(fitsfile* fptr, const std::string& name, const TRaster
 template <typename... TInfos>
 void initBintableExtension(fitsfile* fptr, const std::string& name, const TInfos&... infos) {
   constexpr long ncols = sizeof...(TInfos);
-  CStrArray colName {infos.name...};
-  CStrArray colFormat {TypeCode<typename TInfos::Value>::tform(infos.repeatCount)...};
-  CStrArray colUnit {infos.unit...};
+  Fits::String::CStrArray colName {infos.name...};
+  Fits::String::CStrArray colFormat {TypeCode<typename TInfos::Value>::tform(infos.repeatCount)...};
+  Fits::String::CStrArray colUnit {infos.unit...};
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);

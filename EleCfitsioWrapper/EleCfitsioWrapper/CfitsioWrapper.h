@@ -21,13 +21,13 @@
 #define _ELECFITSIOWRAPPER_CFITSIOWRAPPER_H
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/FileWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
+#include "EleFitsUtils/StringUtils.h"
 
 /**
  * @brief Euclid SGS namespace.

@@ -17,14 +17,15 @@
  *
  */
 
-#if defined(_ELECFITSIOWRAPPER_CFITSIOUTILS_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELEFITSUTILS_STRINGUTILS_IMPL) || defined(CHECK_QUALITY)
 
-#include "EleCfitsioWrapper/CfitsioUtils.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <algorithm>
 
 namespace Euclid {
-namespace Cfitsio {
+namespace Fits {
+namespace String {
 
 template <typename T>
 CStrArray::CStrArray(const T begin, const T end) : smartPtrVector(end - begin), cStrVector(end - begin) {
@@ -42,7 +43,8 @@ CStrArray::CStrArray(const T begin, const T end) : smartPtrVector(end - begin), 
   });
 }
 
-} // namespace Cfitsio
+} // namespace String
+} // namespace Fits
 } // namespace Euclid
 
 #endif

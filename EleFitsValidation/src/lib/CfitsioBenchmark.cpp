@@ -105,9 +105,9 @@ BChronometer::Unit CfitsioBenchmark::writeBintable(const BColumns& columns) {
   setupColumnInfo<7>(columns, names, formats, units);
   setupColumnInfo<8>(columns, names, formats, units);
   setupColumnInfo<9>(columns, names, formats, units); // TODO index_sequence
-  Cfitsio::CStrArray nameArray(names);
-  Cfitsio::CStrArray formatArray(formats);
-  Cfitsio::CStrArray unitArray(units);
+  String::CStrArray nameArray(names);
+  String::CStrArray formatArray(formats);
+  String::CStrArray unitArray(units);
   m_chrono.start();
   fits_create_tbl(
       m_fptr,

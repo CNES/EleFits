@@ -21,10 +21,10 @@
 #define _ELECFITSIOWRAPPER_HDUWRAPPER_H
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
-#include "EleCfitsioWrapper/CfitsioUtils.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/HduCategory.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <array>
 #include <fitsio.h>

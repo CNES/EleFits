@@ -259,8 +259,8 @@ void writeColumns(fitsfile* fptr, const TColumns&... columns) {
 
 template <typename TColumn>
 void insertColumn(fitsfile* fptr, long index, const TColumn& column) {
-  auto name = toCharPtr(column.info().name);
-  auto tform = toCharPtr(TypeCode<typename TColumn::Value>::tform(column.info().repeatCount));
+  auto name = Fits::String::toCharPtr(column.info().name);
+  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(column.info().repeatCount));
   // FIXME write unit
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
@@ -269,8 +269,8 @@ void insertColumn(fitsfile* fptr, long index, const TColumn& column) {
 
 template <typename... TColumns>
 void insertColumns(fitsfile* fptr, long index, const TColumns&... columns) {
-  auto names = CStrArray({columns.info().name...});
-  auto tforms = CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeatCount)...});
+  auto names = Fits::String::CStrArray({columns.info().name...});
+  auto tforms = Fits::String::CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeatCount)...});
   // FIXME write unit
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(TColumns), names.data(), tforms.data(), &status);

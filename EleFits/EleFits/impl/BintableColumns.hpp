@@ -220,8 +220,8 @@ void BintableColumns::write(const TColumn& column) const {
 
 template <typename TInfo>
 void BintableColumns::init(const TInfo& info, long index) const {
-  auto name = Cfitsio::toCharPtr(info.name);
-  auto tform = Cfitsio::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount));
+  auto name = Fits::String::toCharPtr(info.name);
+  auto tform = Fits::String::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount));
   int status = 0;
   int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_col(m_fptr, cfitsioIndex, name.get(), tform.get(), &status);
@@ -266,12 +266,12 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
   const auto nameVec = seqTransform<std::vector<std::string>>(infos, [&](const auto& info) {
     return info.name;
   });
-  Cfitsio::CStrArray names(nameVec);
+  String::CStrArray names(nameVec);
   const auto tformVec = seqTransform<std::vector<std::string>>(infos, [&](const auto& info) {
     using Value = typename std::decay_t<decltype(info)>::Value;
     return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeatCount);
   });
-  Cfitsio::CStrArray tforms(tformVec);
+  String::CStrArray tforms(tformVec);
   int status = 0;
   int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
   fits_insert_cols(m_fptr, cfitsioIndex, names.size(), names.data(), tforms.data(), &status);
