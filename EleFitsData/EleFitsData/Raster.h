@@ -74,7 +74,7 @@ using PtrRaster = Raster<T, N, T*>;
 
 /**
  * @ingroup image_data_classes
- * @brief `Raster` which owns a data vector (`TContainer` = `std::vector`).
+ * @brief `Raster` which owns a data vector (`TContainer` = `std::vector<T>`).
  */
 template <typename T, long N = 2>
 using VecRaster = Raster<T, N, std::vector<T>>;
@@ -125,9 +125,8 @@ using VecRaster = Raster<T, N, std::vector<T>>;
  * @satisfies{ContiguousContainer}
  * @satisfies{VectorArithmetic}
  * 
- * @see
- * - `Position` for details on the fixed- and variable-dimension cases.
- * - `makeRaster()` for creation shortcuts.
+ * @see `Position` for details on the fixed- and variable-dimension cases.
+ * @see `makeRaster()` for creation shortcuts.
  * 
  * @par_example
  * \code

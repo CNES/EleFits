@@ -33,7 +33,7 @@
 namespace Euclid {
 namespace Fits {
 
-/// @cond INTERNAL
+/// @cond
 // Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
 
 // Forward declaration for PtrColumn and VecColumn
@@ -44,20 +44,14 @@ class Column;
 
 /**
  * @ingroup bintable_data_classes
- * @brief Column which references some external pointer data.
- * @details
- * Use it for temporary columns.
- * @see \ref data_classes
+ * @brief `Column` which points to some external data (`TContainer` = `T*`).
  */
 template <typename T, long N = 1>
 using PtrColumn = Column<T, N, T*>;
 
 /**
  * @ingroup bintable_data_classes
- * @brief Column which stores internally the data.
- * @details
- * Use it (via move semantics) if you don't need your data after the write operation.
- * @see \ref data_classes
+ * @brief `Column` which owns a data vector (`TContainer` = `std::vector<T>`).
  */
 template <typename T, long N = 1>
 using VecColumn = Column<T, N, std::vector<T>>;
@@ -66,11 +60,22 @@ using VecColumn = Column<T, N, std::vector<T>>;
  * @ingroup bintable_data_classes
  * @brief Binary table column data and metadata.
  * @details
- * This is an interface to be implemented with a concrete data container (e.g. `std::vector`).
- * Some implementations are provided with the library,
- * but others could be useful to interface with client code
- * (e.g. with other external libraries with custom containers).
- * @see \ref data_classes
+ * A column is a contiguous container for the entry data of a binary table column.
+ * As explained in the ColumnInfo documentation (make sure to have read it before going further),
+ * entries can be made of several values.
+ * Template parameter `N` is bound to the entry category:
+ * - `N` = 1 for scalar, string and vector columns;
+ * - `N` > 1 for multidimensional columns with fixed dimension;
+ * - `N` = -1 for multidimensional columns with runtime dimension.
+ * 
+ * @tspecialization{PtrColumn}
+ * @tspecialization{VecColumn}
+ * 
+ * @satisfies{ContiguousContainer}
+ * @satisfies{VectorArithmetic}
+ * 
+ * @see `ColumnInfo` for details on the entry properties.
+ * @see `makeColumn()` for creation shortcuts.
  */
 template <typename T, long N, typename TContainer>
 class Column : public DataContainer<T, TContainer, Column<T, N, TContainer>> {
@@ -101,10 +106,7 @@ public:
    */
   static constexpr long Dim = Info::Dim;
 
-  /**
-   * @name Constructors
-   */
-  /// @{
+  /// @group_construction
 
   ELEFITS_VIRTUAL_DTOR(Column)
   ELEFITS_COPYABLE(Column)
@@ -141,11 +143,7 @@ public:
   template <typename... Ts>
   Column(Info info, Ts&&... args);
 
-  /// @}
-  /**
-   * @name Properties
-   */
-  /// @{
+  /// @group_properties
 
   /**
    * @brief Get the column metadata.
@@ -178,51 +176,39 @@ public:
    */
   long rowCount() const;
 
-  /// @}
-  /**
-   * @name Element access
-   */
-  /// @{
+  /// @group_elements
 
   using Base::operator[];
 
   /**
-   * @details
-   * Three methods are available to access elements:
-   * 
-   * - Method data() returns a pointer to the first element.
-   * - Methods operator()() provide access to the value at given row and repeat indices;
-   * - Methods at() additionally perform bound checking and allows for backward (negative) indexing;
-   * 
+   * @brief Access the value at given row and repeat indices.
    * @param row The row index
    * @param repeat The repeat index
-   */
-
-  /**
-   * @brief Access the value at given row and repeat indices.
+   * @details
+   * Several methods are available to access elements:
+   * 
+   * - `data()` returns a pointer to the first element;
+   * - `operator()()` gives access to the element at given row and repeat indices;
+   * - `at()` additionally perform bound checking and allows for backward (negative) indexing.
    */
   const T& operator()(long row, long repeat = 0) const;
 
   /**
-   * @copydoc operator()()
+   * @copybrief operator()(long,long)const
    */
   T& operator()(long row, long repeat = 0);
 
   /**
-   * @copydoc operator()()
+   * @copybrief operator()(long,long)const
    */
   const T& at(long row, long repeat = 0) const;
 
   /**
-   * @copydoc at()
+   * @copybrief at()
    */
   T& at(long row, long repeat = 0);
 
-  /// @}
-  /**
-   * @name Views
-   */
-  /// @{
+  /// @group_views
 
   /**
    * @brief Get a view on contiguous rows.
@@ -230,9 +216,19 @@ public:
   const PtrColumn<const T> slice(const Segment& rows) const;
 
   /**
-   * @copydoc slice()
+   * @copybrief slice()
    */
   PtrColumn<T> slice(const Segment& rows);
+
+  /**
+   * @brief Access the entry at given row as a raster.
+   */
+  const PtrRaster<const T> entry(long row) const;
+
+  /**
+   * @copybrief entry(long)const
+   */
+  PtrRaster<T> entry(long row) const;
 
   /// @}
 
@@ -262,7 +258,7 @@ PtrColumn<T, TInfo::Dim> makeColumn(TInfo&& info, long rowCount, T* data) {
 
 /**
  * @relates Column
- * @copydoc makeColumn
+ * @copybrief makeColumn
  */
 template <typename T, typename TInfo>
 VecColumn<T, TInfo::Dim> makeColumn(TInfo info, std::vector<T> data) {
