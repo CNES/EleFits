@@ -33,7 +33,7 @@ CsvAppender::CsvAppender(const std::string& filename, const std::vector<std::str
   if (append) {
     // TODO check header consistency
   } else {
-    for (const auto h : header) {
+    for (const auto& h : header) {
       (*this) << h;
     }
     (*this) << std::endl;
