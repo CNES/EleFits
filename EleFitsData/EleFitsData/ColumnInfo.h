@@ -165,18 +165,6 @@ struct ColumnInfo {
       name(n), unit(u), repeatCount(shapeSize(s)), shape(std::move(s)) {}
 
   /**
-   * @brief Create a column info with given entry shape and repeat count.
-   * @param n The column name
-   * @param u The column unit
-   * @param s The entry shape
-   * @param r The repeat count
-   * @details
-   * The repeat count must be greater than or equal to the shape size.
-   */
-  ColumnInfo(std::string n, std::string u, Position<N> s, long r) :
-      name(n), unit(u), repeatCount(r), shape(std::move(s)) {}
-
-  /**
    * @brief The column name.
    */
   std::string name;

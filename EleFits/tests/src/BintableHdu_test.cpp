@@ -36,8 +36,7 @@ BOOST_AUTO_TEST_SUITE(BintableHdu_test)
 template <typename T>
 void checkScalar() {
   Test::RandomScalarColumn<T> input;
-  const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, FileMode::Temporary);
+  Test::TemporaryMefFile file;
   file.assignBintableExt("BINEXT", input);
   const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
   BOOST_TEST(output.vector() == input.vector());
@@ -49,8 +48,7 @@ void checkVector() {
   constexpr long repeatCount = 2;
   Test::RandomScalarColumn<T> input(rowCount * repeatCount);
   input.reshape(repeatCount);
-  const std::string filename = Elements::TempFile().path().string();
-  MefFile file(filename, FileMode::Temporary);
+  Test::TemporaryMefFile file;
   file.initBintableExt("BINEXT", input.info());
   file.accessFirst<BintableHdu>("BINEXT").writeColumn(input);
   const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info().name);

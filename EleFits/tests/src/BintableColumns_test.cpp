@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable) {
   const auto rowCount = nums.size();
   BOOST_TEST(names.size() == rowCount);
   const auto columns = std::make_tuple(numCol, radecCol, nameCol, distMagCol);
-  BOOST_TEST(columnsRowCount(columns) == rowCount);
+  BOOST_TEST(columnsRowCount(columns) == static_cast<long>(rowCount));
 }
 
 BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {

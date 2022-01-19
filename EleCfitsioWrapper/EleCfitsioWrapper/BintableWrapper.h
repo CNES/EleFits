@@ -72,6 +72,12 @@ template <typename T, long N = 1>
 Fits::ColumnInfo<T, N> readColumnInfo(fitsfile* fptr, long index);
 
 /**
+ * @brief Read the TDIM keyword (if any).
+ */
+template <long N>
+void readColumnDim(fitsfile* fptr, long index, Fits::Position<N>& info);
+
+/**
  * @brief Read the binary table column with given index.
  */
 template <typename T, long N = 1>
@@ -106,6 +112,21 @@ std::tuple<Fits::VecColumn<Ts, 1>...> readColumns(fitsfile* fptr, const std::vec
  */
 template <typename TColumn>
 void writeColumn(fitsfile* fptr, const TColumn& column);
+
+/**
+ * @brief Write the TDIM keyword if needed.
+ * @details
+ * The keyword will be written only if the dimension is > 1
+ * or if the shape does not correspond to the repeat count.
+ */
+template <long N>
+void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape, long repeatCount);
+
+/**
+ * @brief Write several TDIM keywords if needed.
+ */
+template <typename... TInfos>
+void writeColumnDims(fitsfile* fptr, long index, const TInfos&... infos);
 
 /**
  * @brief Write a segment of a binary table column.

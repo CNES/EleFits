@@ -98,6 +98,17 @@ void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<std::string>
 } // namespace Internal
 
 template <>
+void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
+  int status = 0;
+  Fits::Indices<-1> naxes(999); // Max allowed number of axes
+  int naxis = 0;
+  fits_read_tdim(fptr, static_cast<int>(index), 999, &naxis, shape.data(), &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
+  naxes.resize(naxis);
+  shape = Fits::Position<-1>(naxes.begin(), naxes.end()); // FIXME assign
+}
+
+template <>
 void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data) {
   int status = 0;
   std::vector<char*> vec(rows.size());
@@ -124,7 +135,7 @@ void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long 
 }
 
 template <>
-void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const std::string* data) {
+void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long, const std::string* data) {
   int status = 0;
   Fits::String::CStrArray array(data, data + rows.size());
   fits_write_col(

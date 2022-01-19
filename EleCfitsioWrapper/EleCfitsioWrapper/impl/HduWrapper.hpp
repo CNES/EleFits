@@ -52,6 +52,7 @@ void initBintableExtension(fitsfile* fptr, const std::string& name, const TInfos
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
+  BintableIo::writeColumnDims(fptr, 1, infos...);
 }
 
 template <typename... TColumns>

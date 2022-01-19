@@ -20,6 +20,7 @@
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleCfitsioWrapper/CfitsioFixture.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
+#include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleFitsData/TestColumn.h"
 #include "EleFitsUtils/StringUtils.h"
 
@@ -164,6 +165,27 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
   BOOST_TEST(distsMags.vector() == table.distsMags);
   const auto radecs = BintableIo::readColumn<SmallTable::Radec>(fptr, table.radecCol.info().name);
   BOOST_TEST(radecs.vector() == table.radecs);
+}
+
+template <long N>
+void checkTdimIsReadBack(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info) {
+  HduAccess::initBintableExtension(fptr, "TABLE", info);
+  const bool shouldHaveTdim = (info.shape.size() > 1) || (info.shape[0] != info.repeatCount);
+  BOOST_TEST(HeaderIo::hasKeyword(fptr, "TDIM1") == shouldHaveTdim);
+  const auto result = BintableIo::readColumnInfo<char, N>(fptr, 1);
+  BOOST_TEST(result == info);
+}
+
+BOOST_FIXTURE_TEST_CASE(tdim_is_read_back_test, Fits::Test::MinimalFile) {
+  static constexpr long width = 10;
+  static constexpr long height = 6;
+  checkTdimIsReadBack(this->fptr, Fits::ColumnInfo<char, 1>("SCALAR"));
+  checkTdimIsReadBack(this->fptr, Fits::ColumnInfo<char, 1>("VECTOR", "", width));
+  checkTdimIsReadBack(this->fptr, Fits::ColumnInfo<char, 2>("MULTI", "", {width, height}));
+}
+
+BOOST_FIXTURE_TEST_CASE(tdim_for_string_learning_test, Fits::Test::MinimalFile) {
+  // FIXME check what CFitsIO is doing with TDIM for string columns
 }
 
 //-----------------------------------------------------------------------------

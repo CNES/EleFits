@@ -153,7 +153,20 @@ Fits::ColumnInfo<T, N> readColumnInfo(fitsfile* fptr, long index) {
       nullptr, // tdisp
       &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read column info: #" + std::to_string(index - 1));
-  return {name, unit, repeatCount};
+  Fits::ColumnInfo<T, N> info(name, unit, repeatCount);
+  readColumnDim(fptr, index, info.shape);
+  return info;
+}
+
+template <>
+void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape);
+
+template <long N>
+void readColumnDim(fitsfile* fptr, long index, Fits::Position<N>& shape) {
+  int status = 0;
+  int naxis = 0;
+  fits_read_tdim(fptr, static_cast<int>(index), N, &naxis, shape.data(), &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
 }
 
 template <typename T, long N>
@@ -177,6 +190,26 @@ Fits::VecColumn<T, N> readColumn(fitsfile* fptr, const std::string& name) {
 template <typename TColumn>
 void writeColumn(fitsfile* fptr, const TColumn& column) {
   writeColumnSegment(fptr, 1, column);
+}
+
+template <long N>
+void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape, long repeatCount) {
+  printf("N = %li - r = %li - s[0] = %li\n", N, repeatCount, shape[0]); // FIXME rm
+  if ((shape.size() == 1) && (shape[0] == repeatCount)) {
+    return;
+  }
+  int status = 0;
+  auto nonconstShape = shape.container();
+  fits_write_tdim(fptr, static_cast<int>(index), shape.size(), nonconstShape.data(), &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot write column dimension: #" + std::to_string(index - 1));
+}
+
+template <typename... TInfos>
+void writeColumnDims(fitsfile* fptr, long index, const TInfos&... infos) {
+  auto i = index;
+  (void)fptr;
+  using mockUnpack = long[];
+  (void)mockUnpack {0L, (writeColumnDim(fptr, i, infos.shape, infos.repeatCount), ++i)...}; // FIXME check ordering
 }
 
 template <typename TColumn>
@@ -259,11 +292,13 @@ void writeColumns(fitsfile* fptr, const TColumns&... columns) {
 
 template <typename TColumn>
 void insertColumn(fitsfile* fptr, long index, const TColumn& column) {
-  auto name = Fits::String::toCharPtr(column.info().name);
-  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(column.info().repeatCount));
+  const auto& info = column.info();
+  auto name = Fits::String::toCharPtr(info.name);
+  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(info.repeatCount));
   // FIXME write unit
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
+  writeColumnDim(fptr, index, info.shape);
   writeColumn(fptr, column);
 }
 
@@ -274,6 +309,7 @@ void insertColumns(fitsfile* fptr, long index, const TColumns&... columns) {
   // FIXME write unit
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(TColumns), names.data(), tforms.data(), &status);
+  writeColumnDims(fptr, index, columns.info()...);
   writeColumns(fptr, columns...);
 }
 
