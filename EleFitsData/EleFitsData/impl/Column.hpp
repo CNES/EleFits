@@ -101,12 +101,22 @@ T& Column<T, N, TContainer>::at(long row, long repeat) {
 }
 
 template <typename T, long N, typename TContainer>
-const PtrColumn<const T> Column<T, N, TContainer>::slice(const Segment& rows) const {
+const PtrRaster<const T, N> Column<T, N, TContainer>::entry(long row) const {
+  return PtrRaster<const T, N>({m_info.shape}, &at(row));
+}
+
+template <typename T, long N, typename TContainer>
+PtrRaster<T, N> Column<T, N, TContainer>::entry(long row) {
+  return PtrRaster<T, N>({m_info.shape}, &at(row));
+}
+
+template <typename T, long N, typename TContainer>
+const PtrColumn<const T, N> Column<T, N, TContainer>::slice(const Segment& rows) const {
   return {info(), rows.size(), &operator()(rows.front)};
 }
 
 template <typename T, long N, typename TContainer>
-PtrColumn<T> Column<T, N, TContainer>::slice(const Segment& rows) {
+PtrColumn<T, N> Column<T, N, TContainer>::slice(const Segment& rows) {
   return {info(), rows.size(), &operator()(rows.front)};
 }
 

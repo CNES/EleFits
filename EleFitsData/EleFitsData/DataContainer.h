@@ -277,7 +277,7 @@ public:
   using Holder::data;
 
   /**
-   * @copybrief data()
+   * @copybrief data()const
    */
   inline T* data() {
     return const_cast<T*>(const_cast<const DataContainer&>(*this).data());

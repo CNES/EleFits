@@ -21,11 +21,13 @@
 
 namespace Euclid {
 namespace Fits {
+namespace Internal {
 
 template <>
-long FieldInfo<std::string>::elementCount() const {
+long entryElementCountImpl<std::string>(long) {
   return 1;
 }
 
+} // namespace Internal
 } // namespace Fits
 } // namespace Euclid

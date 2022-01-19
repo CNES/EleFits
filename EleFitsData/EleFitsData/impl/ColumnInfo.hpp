@@ -24,25 +24,42 @@
 namespace Euclid {
 namespace Fits {
 
-template <typename T, long N>
-bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
-  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount == rhs.repeatCount;
-}
+/// @cond
+namespace Internal {
 
-template <typename T, long N>
-bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
-  return not(lhs == rhs);
-}
+/**
+ * @brief Compute the element count from the repeat count and value type.
+ */
+template <typename T>
+long entryElementCountImpl(long repeatCount);
 
 /**
  * @brief String specialization.
  */
 template <>
-long FieldInfo<std::string>::elementCount() const;
+long entryElementCountImpl<std::string>(long repeatCount);
 
 template <typename T>
-long FieldInfo<T>::elementCount() const {
+long entryElementCountImpl(long repeatCount) {
   return repeatCount;
+}
+
+} // namespace Internal
+/// @endcond
+
+template <typename T, long N>
+long ColumnInfo<T, N>::elementCount() const {
+  return Internal::entryElementCountImpl<T>(repeatCount);
+}
+
+template <typename T, long N>
+bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
+  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount == rhs.repeatCount && lhs.shape == rhs.shape;
+}
+
+template <typename T, long N>
+bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
+  return not(lhs == rhs);
 }
 
 } // namespace Fits

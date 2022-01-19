@@ -78,6 +78,13 @@ public:
   }
 
   /**
+   * @copydoc begin()const
+   */
+  typename std::vector<Record<T>>::iterator begin() {
+    return vector.begin();
+  }
+
+  /**
    * @brief Get an iterator to the end.
    */
   typename std::vector<Record<T>>::const_iterator end() const {
@@ -85,14 +92,7 @@ public:
   }
 
   /**
-   * @copydoc begin()
-   */
-  typename std::vector<Record<T>>::iterator begin() {
-    return vector.begin();
-  }
-
-  /**
-   * @copydoc end()
+   * @copydoc end()const
    */
   typename std::vector<Record<T>>::iterator end() {
     return vector.end();

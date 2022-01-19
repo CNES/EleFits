@@ -54,49 +54,6 @@ namespace Fits {
 
 /**
  * @ingroup bintable_data_classes
- * @brief Basic column informations: name, unit and repeat count.
- * @see ColumnInfo
- */
-template <typename T>
-struct FieldInfo {
-
-  ELEFITS_VIRTUAL_DTOR(FieldInfo)
-  ELEFITS_COPYABLE(FieldInfo)
-  ELEFITS_MOVABLE(FieldInfo)
-
-  FieldInfo(const std::string& n, const std::string& u, long r) : name(n), unit(u), repeatCount(r) {}
-
-  /**
-   * @brief The value type.
-   */
-  using Value = T;
-
-  /**
-   * @brief The column name.
-   */
-  std::string name = "";
-
-  /**
-   * @brief The column unit.
-   */
-  std::string unit = "";
-
-  /**
-   * @brief Get the repeat count.
-   */
-  long repeatCount = 1;
-
-  /**
-   * @brief Get the number of elements per entry.
-   * @details
-   * This is generally the repeat count,
-   * except for string columns for which it always equals 1.
-   */
-  long elementCount() const;
-};
-
-/**
- * @ingroup bintable_data_classes
  * @brief Column informations, i.e. name, unit, entry shape and value type.
  * @details
  * Binary tables can be seen as a sequence of columns or rows, made of consecutive entries.
@@ -170,16 +127,31 @@ struct FieldInfo {
  * @see \ref data_classes
  */
 template <typename T, long N = 1>
-struct ColumnInfo : public FieldInfo<T> {
+struct ColumnInfo {
+
+  /**
+   * @brief The value decay type.
+   */
+  using Value = std::decay_t<T>;
 
   /**
    * @brief The dimension parameter.
    */
   static constexpr long Dim = N;
 
-  ELEFITS_VIRTUAL_DTOR(ColumnInfo)
-  ELEFITS_COPYABLE(ColumnInfo)
-  ELEFITS_MOVABLE(ColumnInfo)
+  /**
+   * @brief Create a column info with given entry repeat count.
+   * @param n The column name
+   * @param u The column unit
+   * @param r The repeat count
+   * @details
+   * The entry shape is deduced from the repeat count
+   * (first axis' lenght is the repeat count, others are set to 1).
+   */
+  ColumnInfo(std::string n = "", std::string u = "", long r = 1) :
+      name(n), unit(u), repeatCount(r), shape(Position<N>::one()) {
+    shape[0] = r;
+  }
 
   /**
    * @brief Create a column info with given entry shape.
@@ -189,52 +161,48 @@ struct ColumnInfo : public FieldInfo<T> {
    * @details
    * The repeat count is deduced from the shape.
    */
-  ColumnInfo(std::string n = "", std::string u = "", Position<N> s = Position<N>::one()) :
-      FieldInfo<T>(n, u, shapeSize(s)), shape(std::move(s)) {}
+  ColumnInfo(std::string n, std::string u, Position<N> s) :
+      name(n), unit(u), repeatCount(shapeSize(s)), shape(std::move(s)) {}
 
   /**
-   * @brief Create a column info with given entry shape and explicit repeat count.
+   * @brief Create a column info with given entry shape and repeat count.
    * @param n The column name
    * @param u The column unit
-   * @param s The shape
+   * @param s The entry shape
    * @param r The repeat count
    * @details
    * The repeat count must be greater than or equal to the shape size.
    */
-  ColumnInfo(std::string n, std::string u, Position<N> s, long r) : FieldInfo<T>(n, u, r), shape(std::move(s)) {}
+  ColumnInfo(std::string n, std::string u, Position<N> s, long r) :
+      name(n), unit(u), repeatCount(r), shape(std::move(s)) {}
+
+  /**
+   * @brief The column name.
+   */
+  std::string name;
+
+  /**
+   * @brief The column unit.
+   */
+  std::string unit;
+
+  /**
+   * @brief Get the repeat count.
+   */
+  long repeatCount;
 
   /**
    * @brief The shape of one entry.
    */
   Position<N> shape;
-};
-
-/**
- * @brief Unidimensional column informations.
- * @details
- * This simplified version for unidimensional columns is adequate for:
- * - Scalar columns;
- * - String columns;
- * - Vector columns.
- * 
- * @see `ColumnInfo`
- */
-template <typename T>
-struct ColumnInfo<T, 1> : public FieldInfo<T> {
 
   /**
-   * @brief The dimension parameter.
+   * @brief Get the number of elements per entry.
+   * @details
+   * This is generally the repeat count,
+   * except for string columns for which it always equals 1.
    */
-  static constexpr long Dim = 1;
-
-  ELEFITS_VIRTUAL_DTOR(ColumnInfo)
-  ELEFITS_COPYABLE(ColumnInfo)
-  ELEFITS_MOVABLE(ColumnInfo)
-
-  /**
-   * @brief Create a column info.
-   */
-  ColumnInfo(std::string n = "", std::string u = "", long r = 1) : FieldInfo<T>(n, u, r) {}
+  long elementCount() const;
 };
 
 /**

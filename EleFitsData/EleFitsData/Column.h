@@ -87,24 +87,19 @@ class Column : public DataContainer<T, TContainer, Column<T, N, TContainer>> {
 
 public:
   /**
-   * @brief The info type.
-   */
-  using Info = ColumnInfo<std::decay_t<T>, N>;
-
-  /**
    * @brief The element value type.
    */
-  using Value = T; // FIXME Info::Value, i.e. decay
-
-  /**
-   * @brief The entry value type.
-   */
-  using Entry = PtrRaster<T, N>;
+  using Value = std::decay_t<T>;
 
   /**
    * @brief The dimension parameter.
    */
-  static constexpr long Dim = Info::Dim;
+  static constexpr long Dim = N;
+
+  /**
+   * @brief The info type.
+   */
+  using Info = ColumnInfo<Value, N>;
 
   /// @group_construction
 
@@ -163,9 +158,9 @@ public:
   void reshape(long repeatCount = 1);
 
   /**
-   * @brief Number of elements in the column, i.e. repeat count * number of rows.
+   * @brief Number of elements in the column, i.e. repeat count times number of rows.
    * @warning
-   * For string columns, CFitsIO requires elementCount to be just the number of rows,
+   * For string columns, the element count is just the number of rows,
    * although they are vector columns.
    * @deprecated Use standard `size()` instead.
    */
@@ -211,24 +206,24 @@ public:
   /// @group_views
 
   /**
-   * @brief Get a view on contiguous rows.
-   */
-  const PtrColumn<const T> slice(const Segment& rows) const;
-
-  /**
-   * @copybrief slice()
-   */
-  PtrColumn<T> slice(const Segment& rows);
-
-  /**
    * @brief Access the entry at given row as a raster.
    */
-  const PtrRaster<const T> entry(long row) const;
+  const PtrRaster<const T, N> entry(long row) const;
 
   /**
    * @copybrief entry(long)const
    */
-  PtrRaster<T> entry(long row) const;
+  PtrRaster<T, N> entry(long row);
+
+  /**
+   * @brief Get a view on contiguous rows.
+   */
+  const PtrColumn<const T, N> slice(const Segment& rows) const;
+
+  /**
+   * @copybrief slice()
+   */
+  PtrColumn<T, N> slice(const Segment& rows);
 
   /// @}
 
@@ -244,6 +239,7 @@ private:
  * @brief Shortcut to create a column from a column info and data without specifying the template parameters.
  * @tparam T The value type, should not be specified (automatically deduced)
  * @param data The column values, which can be either a pointer (or C array) or a vector
+ * @param rowCount The number of rows
  * @param info The column info
  * @details
  * Example usage:
