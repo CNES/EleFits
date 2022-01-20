@@ -27,7 +27,6 @@
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
-#include "EleFitsUtils/StringUtils.h"
 
 /**
  * @brief Euclid SGS namespace.

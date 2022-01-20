@@ -7,6 +7,8 @@
 * Updated to Elements 6.0.1
 * `Raster<T, N>` becomes `Raster<T, N, TContainer>` to work with any contiguous container
   (with `PtrRaster<T, N> = Raster<T, N, T*>` and `VecRaster<T, N> = Raster<T, N, vector<T>>`)
+* `ColumnInfo<T>` becomes `ColumnInfo<T, N>` and variable `repeatCount` becomes method `repeatCount()`
+  to support multidimensional entries
 * `Column<T>` becomes `Column<T, N, TContainer>`
   to support multidimensional entries and to work with any contiguous container
   (with `PtrColumn<T, N> = Column<T, N, T*>` and `VecColumn<T, N> = Column<T, N, vector<T>>`)
@@ -26,6 +28,8 @@
 * All `DataContainer`s have vector space arithmetic (e.g. support `+`, `-`, `*`, `/`)
 * `DataContainer::apply()` and `DataContainer::generate()` enable arbitrary element-wise transforms,
   including with other `DataContainer`s as arguments
+* `ColumnInfo` has a member `shape` in lieu of `repeatCount` to support multidimensional entries
+* `Column::entry()` returns a view as a `PtrRaster` for multidimensional columns
 
 ### Other new features
 

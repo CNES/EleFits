@@ -20,10 +20,10 @@
 #ifndef _ELECFITSIOWRAPPER_BINTABLEWRAPPER_H
 #define _ELECFITSIOWRAPPER_BINTABLEWRAPPER_H
 
-#include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/Column.h"
-#include "EleFitsUtils/StringUtils.h"
 
+#include <fitsio.h>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -120,7 +120,7 @@ void writeColumn(fitsfile* fptr, const TColumn& column);
  * or if the shape does not correspond to the repeat count.
  */
 template <long N>
-void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape, long repeatCount);
+void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape);
 
 /**
  * @brief Write several TDIM keywords if needed.

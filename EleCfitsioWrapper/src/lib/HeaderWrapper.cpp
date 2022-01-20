@@ -19,6 +19,7 @@
 
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 
+#include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleFitsData/FitsError.h"
 
 #include <limits>

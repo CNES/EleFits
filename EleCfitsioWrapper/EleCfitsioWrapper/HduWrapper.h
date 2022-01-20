@@ -20,16 +20,13 @@
 #ifndef _ELECFITSIOWRAPPER_HDUWRAPPER_H
 #define _ELECFITSIOWRAPPER_HDUWRAPPER_H
 
-#include "EleCfitsioWrapper/BintableWrapper.h"
-#include "EleCfitsioWrapper/ImageWrapper.h"
-#include "EleCfitsioWrapper/TypeWrapper.h"
+#include "EleFitsData/Column.h"
 #include "EleFitsData/HduCategory.h"
-#include "EleFitsUtils/StringUtils.h"
+#include "EleFitsData/Raster.h"
 
-#include <array>
 #include <fitsio.h>
 #include <string>
-#include <utility> // index_sequence
+#include <tuple>
 
 namespace Euclid {
 namespace Cfitsio {

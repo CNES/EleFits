@@ -20,6 +20,7 @@
 #include "EleCfitsioWrapper/BintableWrapper.h"
 
 #include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsUtils/StringUtils.h"
 
 #include <algorithm>
@@ -88,17 +89,11 @@ long columnIndex(fitsfile* fptr, const std::string& name) {
   return index;
 }
 
-namespace Internal {
-
-template <> // TODO clean
-void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<std::string>& column, long rowCount) {
-  column = Fits::VecColumn<std::string>(readColumnInfo<std::string>(fptr, index), std::vector<std::string>(rowCount));
-}
-
-} // namespace Internal
-
 template <>
 void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
+  if (not HeaderIo::hasKeyword(fptr, std::string("TDIM") + std::to_string(index))) {
+    return;
+  }
   int status = 0;
   Fits::Indices<-1> naxes(999); // Max allowed number of axes
   int naxis = 0;

@@ -21,8 +21,10 @@
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
+#include "EleCfitsioWrapper/HeaderWrapper.h" // hasKeyword
+#include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/FitsError.h"
-#include "ElementsKernel/Unused.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <algorithm> // transform
 
@@ -30,26 +32,18 @@ namespace Euclid {
 namespace Cfitsio {
 namespace BintableIo {
 
-/// @cond INTERNAL
+/// @cond
 namespace Internal {
 
-/**
- * @brief Read metadata and allocate data.
- */
 template <typename T>
-void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long rowCount);
-
-/**
- * @brief String specialization.
- */
-template <>
-void readColumnInfoImpl<std::string>(fitsfile* fptr, long index, Fits::VecColumn<std::string>& column, long rowCount);
-
-template <typename T>
-void readColumnInfoImpl(fitsfile* fptr, long index, Fits::VecColumn<T>& column, long rowCount) {
+void readColumnInfoImpl(
+    fitsfile* fptr,
+    long index,
+    Fits::VecColumn<T>& column,
+    long rowCount) { // FIXME move outside of Internal
   column = Fits::VecColumn<T>(
       readColumnInfo<T>(fptr, index),
-      std::vector<std::decay_t<T>>(column.info().repeatCount * rowCount));
+      std::vector<std::decay_t<T>>(column.info().elementCount() * rowCount));
 }
 
 /**
@@ -83,7 +77,7 @@ struct ColumnLooperImpl {
       long firstRow,
       long rowCount) {
     auto data = &std::get<i>(columns)(firstRow - 1);
-    const auto repeatCount = std::get<i>(columns).info().repeatCount;
+    const auto repeatCount = std::get<i>(columns).info().repeatCount();
     readColumnData(fptr, Fits::Segment::fromSize(firstRow, rowCount), indices[i], repeatCount, data);
     ColumnLooperImpl<i - 1, TColumns...>::readChunks(fptr, indices, columns, firstRow, rowCount);
   }
@@ -106,7 +100,7 @@ struct ColumnLooperImpl {
       long firstRow,
       long rowCount) {
     const auto data = &std::get<i>(columns)(firstRow - 1);
-    const auto repeatCount = std::get<i>(columns).info().repeatCount;
+    const auto repeatCount = std::get<i>(columns).info().repeatCount();
     writeColumnData(fptr, Fits::Segment::fromSize(firstRow, rowCount), indices[i], repeatCount, data);
     ColumnLooperImpl<i - 1, TColumns...>::writeChunks(fptr, indices, columns, firstRow, rowCount);
   }
@@ -163,6 +157,9 @@ void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape);
 
 template <long N>
 void readColumnDim(fitsfile* fptr, long index, Fits::Position<N>& shape) {
+  if (not HeaderIo::hasKeyword(fptr, std::string("TDIM") + std::to_string(index))) {
+    return;
+  }
   int status = 0;
   int naxis = 0;
   fits_read_tdim(fptr, static_cast<int>(index), N, &naxis, shape.data(), &status);
@@ -173,13 +170,13 @@ template <typename T, long N>
 Fits::VecColumn<T, N> readColumn(fitsfile* fptr, long index) {
   const long rows = rowCount(fptr);
   Fits::VecColumn<T, N> column(readColumnInfo<T>(fptr, index), rows);
-  readColumnData(fptr, {1, rows}, index, column.info().repeatCount, column.data());
+  readColumnData(fptr, {1, rows}, index, column.info().repeatCount(), column.data());
   return column;
 }
 
 template <typename TColumn>
 void readColumnSegment(fitsfile* fptr, const Fits::Segment& rows, long index, TColumn& column) {
-  readColumnData(fptr, rows, index, column.info().repeatCount, column.data());
+  readColumnData(fptr, rows, index, column.info().repeatCount(), column.data());
 }
 
 template <typename T, long N>
@@ -193,9 +190,8 @@ void writeColumn(fitsfile* fptr, const TColumn& column) {
 }
 
 template <long N>
-void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape, long repeatCount) {
-  printf("N = %li - r = %li - s[0] = %li\n", N, repeatCount, shape[0]); // FIXME rm
-  if ((shape.size() == 1) && (shape[0] == repeatCount)) {
+void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape) {
+  if (shape.size() == 1) {
     return;
   }
   int status = 0;
@@ -205,11 +201,11 @@ void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape, 
 }
 
 template <typename... TInfos>
-void writeColumnDims(fitsfile* fptr, long index, const TInfos&... infos) {
+void writeColumnDims(fitsfile* fptr, long index, const TInfos&... infos) { // FIXME pass shape
   auto i = index;
   (void)fptr;
   using mockUnpack = long[];
-  (void)mockUnpack {0L, (writeColumnDim(fptr, i, infos.shape, infos.repeatCount), ++i)...}; // FIXME check ordering
+  (void)mockUnpack {0L, (writeColumnDim(fptr, i, infos.shape), ++i)...}; // FIXME check ordering
 }
 
 template <typename TColumn>
@@ -219,7 +215,7 @@ void writeColumnSegment(fitsfile* fptr, long firstRow, const TColumn& column) {
       fptr,
       Fits::Segment::fromSize(firstRow, column.rowCount()),
       index,
-      column.info().repeatCount,
+      column.info().repeatCount(),
       column.data());
 }
 
@@ -294,7 +290,7 @@ template <typename TColumn>
 void insertColumn(fitsfile* fptr, long index, const TColumn& column) {
   const auto& info = column.info();
   auto name = Fits::String::toCharPtr(info.name);
-  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(info.repeatCount));
+  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(info.repeatCount()));
   // FIXME write unit
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
@@ -305,7 +301,7 @@ void insertColumn(fitsfile* fptr, long index, const TColumn& column) {
 template <typename... TColumns>
 void insertColumns(fitsfile* fptr, long index, const TColumns&... columns) {
   auto names = Fits::String::CStrArray({columns.info().name...});
-  auto tforms = Fits::String::CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeatCount)...});
+  auto tforms = Fits::String::CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeatCount())...});
   // FIXME write unit
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(TColumns), names.data(), tforms.data(), &status);

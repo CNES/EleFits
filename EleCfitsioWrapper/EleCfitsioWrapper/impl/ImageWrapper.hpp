@@ -19,7 +19,9 @@
 
 #if defined(_ELECFITSIOWRAPPER_IMAGEWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
+#include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
+#include "EleCfitsioWrapper/TypeWrapper.h"
 
 namespace Euclid {
 namespace Cfitsio {

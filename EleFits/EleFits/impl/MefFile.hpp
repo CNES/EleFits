@@ -19,6 +19,7 @@
 
 #if defined(_ELEFITS_MEFFILE_IMPL) || defined(CHECK_QUALITY)
 
+#include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleFits/MefFile.h"
 
 namespace Euclid {

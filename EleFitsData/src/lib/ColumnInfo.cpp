@@ -21,13 +21,6 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Internal {
-
-template <>
-long entryElementCountImpl<std::string>(long) {
-  return 1;
-}
-
-} // namespace Internal
+namespace Internal {} // namespace Internal
 } // namespace Fits
 } // namespace Euclid

@@ -238,9 +238,9 @@ private:
  * @relates Column
  * @brief Shortcut to create a column from a column info and data without specifying the template parameters.
  * @tparam T The value type, should not be specified (automatically deduced)
- * @param data The column values, which can be either a pointer (or C array) or a vector
- * @param rowCount The number of rows
  * @param info The column info
+ * @param rowCount The number of rows
+ * @param data The column values, which can be either a pointer (or C array) or a vector
  * @details
  * Example usage:
  * \code

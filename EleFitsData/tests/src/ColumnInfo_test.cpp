@@ -33,7 +33,7 @@ template <typename T>
 void checkElementCount() {
   constexpr long repeat = 17; // Not 1 ;)
   ColumnInfo<T> info {"COL", "unit", repeat};
-  BOOST_TEST(info.repeatCount == repeat);
+  BOOST_TEST(info.repeatCount() == repeat);
   if (std::is_same<T, std::string>::value) {
     BOOST_TEST(info.elementCount() == 1);
   } else {
@@ -49,7 +49,7 @@ void checkElementCount() {
 template <long N>
 void checkRepeatCountFromShape(const Position<N>& shape) {
   ColumnInfo<float, N> info("NAME", "unit", shape);
-  BOOST_TEST(info.repeatCount == shapeSize(shape));
+  BOOST_TEST(info.repeatCount() == shapeSize(shape));
 }
 
 BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test) {

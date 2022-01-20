@@ -24,37 +24,22 @@
 namespace Euclid {
 namespace Fits {
 
-/// @cond
-namespace Internal {
-
-/**
- * @brief Compute the element count from the repeat count and value type.
- */
-template <typename T>
-long entryElementCountImpl(long repeatCount);
-
-/**
- * @brief String specialization.
- */
-template <>
-long entryElementCountImpl<std::string>(long repeatCount);
-
-template <typename T>
-long entryElementCountImpl(long repeatCount) {
-  return repeatCount;
+template <typename T, long N>
+long ColumnInfo<T, N>::repeatCount() const {
+  return shapeSize(shape);
 }
-
-} // namespace Internal
-/// @endcond
 
 template <typename T, long N>
 long ColumnInfo<T, N>::elementCount() const {
-  return Internal::entryElementCountImpl<T>(repeatCount);
+  if (std::is_same<T, std::string>::value) {
+    return 1;
+  }
+  return repeatCount();
 }
 
 template <typename T, long N>
 bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs) {
-  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.repeatCount == rhs.repeatCount && lhs.shape == rhs.shape;
+  return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.shape == rhs.shape;
 }
 
 template <typename T, long N>

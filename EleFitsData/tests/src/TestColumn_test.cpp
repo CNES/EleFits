@@ -32,7 +32,7 @@ BOOST_FIXTURE_TEST_SUITE(TestColumn_test, Test::RandomTable)
 template <typename T>
 void checkRandomVectorColumnSize(long repeatCount, long rowCount) {
   Test::RandomVectorColumn<T> column(repeatCount, rowCount);
-  BOOST_TEST(column.info().repeatCount == repeatCount);
+  BOOST_TEST(column.info().repeatCount() == repeatCount);
   BOOST_TEST(column.rowCount() == rowCount);
   if (std::is_same<T, std::string>::value) {
     BOOST_TEST(column.size() == rowCount);

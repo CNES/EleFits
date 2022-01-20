@@ -19,7 +19,9 @@
 
 #if defined(_ELECFITSIOWRAPPER_HEADERWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
+#include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleCfitsioWrapper/TypeWrapper.h"
 
 #include <utility> // index_sequence, make_index_sequence
 

@@ -45,9 +45,7 @@ void checkScalarColumnIsReadBack() {
     const auto index = BintableIo::columnIndex(file.fptr, input.info().name);
     BOOST_TEST(index == 1);
     const auto info = BintableIo::readColumnInfo<T>(file.fptr, index);
-    BOOST_TEST(info.name == input.info().name);
-    BOOST_TEST(info.unit == input.info().unit);
-    BOOST_TEST(info.repeatCount == input.info().repeatCount);
+    BOOST_TEST(info == input.info());
     const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
@@ -82,7 +80,7 @@ void checkVectorColumnIsReadBack() {
     HduAccess::assignBintableExtension(file.fptr, "BINEXT", input);
     BOOST_TEST(BintableIo::rowCount(file.fptr) == rowCount);
     const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
-    BOOST_TEST(output.info().repeatCount == repeatCount);
+    BOOST_TEST(output.info().repeatCount() == repeatCount);
     BOOST_TEST(output.rowCount() == rowCount);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
@@ -170,7 +168,7 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
 template <long N>
 void checkTdimIsReadBack(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info) {
   HduAccess::initBintableExtension(fptr, "TABLE", info);
-  const bool shouldHaveTdim = (info.shape.size() > 1) || (info.shape[0] != info.repeatCount);
+  const bool shouldHaveTdim = (info.shape.size() > 1) || (info.shape[0] != info.repeatCount());
   BOOST_TEST(HeaderIo::hasKeyword(fptr, "TDIM1") == shouldHaveTdim);
   const auto result = BintableIo::readColumnInfo<char, N>(fptr, 1);
   BOOST_TEST(result == info);
@@ -185,7 +183,25 @@ BOOST_FIXTURE_TEST_CASE(tdim_is_read_back_test, Fits::Test::MinimalFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(tdim_for_string_learning_test, Fits::Test::MinimalFile) {
-  // FIXME check what CFitsIO is doing with TDIM for string columns
+  int status = 0;
+  Fits::String::CStrArray ttype({std::string("TEST")});
+  Fits::String::CStrArray tform({std::string("10A")});
+  int naxis = 0;
+  long naxes[] = {0, 0, 0};
+  fits_create_tbl(this->fptr, BINARY_TBL, 0, 1, ttype.data(), tform.data(), nullptr, "EXTNAME", &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  int dummy = 0;
+  fits_get_key_strlen(fptr, "TDIM1", &dummy, &status);
+  BOOST_CHECK_EQUAL(status, KEY_NO_EXIST);
+  status = 0;
+  int ncols = 0;
+  fits_get_num_cols(this->fptr, &ncols, &status); // Note: if this is not called, fits_read_tdim throws
+  BOOST_CHECK_EQUAL(status, 0);
+  BOOST_CHECK_EQUAL(ncols, 1);
+  fits_read_tdim(this->fptr, 1, 3, &naxis, naxes, &status);
+  BOOST_CHECK_EQUAL(status, 0);
+  BOOST_CHECK_EQUAL(naxis, 1);
+  BOOST_CHECK_NE(naxes[1], 10);
 }
 
 //-----------------------------------------------------------------------------

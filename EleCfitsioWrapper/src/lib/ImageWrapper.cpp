@@ -19,6 +19,8 @@
 
 #include "EleCfitsioWrapper/ImageWrapper.h"
 
+#include "EleCfitsioWrapper/ErrorWrapper.h"
+#include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/Raster.h" // ELEFITS_FOREACH_RASTER_TYPE
 
 namespace Euclid {

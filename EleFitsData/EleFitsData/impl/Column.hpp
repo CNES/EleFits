@@ -61,7 +61,8 @@ template <typename T, long N, typename TContainer>
 void Column<T, N, TContainer>::reshape(long repeatCount) {
   // FIXME check that elementCount() % repeatCount = 0, but for strings!
   // FIXME check that shape is valid
-  m_info.repeatCount = repeatCount;
+  m_info.shape = Position<N>::one();
+  m_info.shape[0] = repeatCount;
 }
 
 template <typename T, long N, typename TContainer>

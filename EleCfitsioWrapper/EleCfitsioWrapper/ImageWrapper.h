@@ -20,16 +20,13 @@
 #ifndef _ELECFITSIOWRAPPER_IMAGEWRAPPER_H
 #define _ELECFITSIOWRAPPER_IMAGEWRAPPER_H
 
-#include "EleCfitsioWrapper/ErrorWrapper.h"
-#include "EleCfitsioWrapper/FileWrapper.h"
-#include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/Raster.h"
 
 #include <fitsio.h>
 #include <string>
+#include <typeinfo>
 
 namespace Euclid {
-
 namespace Cfitsio {
 
 /**
