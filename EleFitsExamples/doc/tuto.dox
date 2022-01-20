@@ -328,9 +328,12 @@ which provides ready-to-use functions and classes, such as the random records, r
 
 \image html doc/diagrams/out/FitsFile.png
 
-\example EleFitsTutorial.cpp
-
 */
 
 }
 }
+
+/**
+ * \example EleFitsTutorial.cpp
+ * \example EleFitsBintableExample.cpp
+ */

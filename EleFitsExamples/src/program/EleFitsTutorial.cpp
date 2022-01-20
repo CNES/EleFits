@@ -17,6 +17,11 @@
  *
  */
 
+/**
+ * @example EleFitsTutorial.cpp
+ * @brief Basic usage of the main services of EleFits.
+ */
+
 #include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
 

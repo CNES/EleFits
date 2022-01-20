@@ -70,7 +70,7 @@ VecColumn<T, N> BintableColumns::readSegment(const Segment& rows, ColumnKey key)
   if (rows.back == -1) {
     resolvedRows.back = readRowCount() - 1;
   }
-  VecColumn<T, N> column(readInfo<T>(std::move(key)), resolvedRows.size());
+  VecColumn<T, N> column(readInfo<T, N>(std::move(key)), resolvedRows.size());
   readSegmentTo(resolvedRows, index, column);
   return column;
 }
