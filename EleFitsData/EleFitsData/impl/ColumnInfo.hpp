@@ -25,6 +25,9 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T, long N>
+constexpr long ColumnInfo<T, N>::Dim;
+
+template <typename T, long N>
 long ColumnInfo<T, N>::repeatCount() const {
   return shapeSize(shape);
 }

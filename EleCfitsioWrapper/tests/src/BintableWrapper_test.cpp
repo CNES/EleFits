@@ -45,7 +45,7 @@ void checkScalarColumnIsReadBack() {
     const auto index = BintableIo::columnIndex(file.fptr, input.info().name);
     BOOST_TEST(index == 1);
     const auto info = BintableIo::readColumnInfo<T>(file.fptr, index);
-    BOOST_TEST(info == input.info());
+    BOOST_TEST((info == input.info()));
     const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
@@ -171,7 +171,7 @@ void checkTdimIsReadBack(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info) 
   const bool shouldHaveTdim = (info.shape.size() > 1) || (info.shape[0] != info.repeatCount());
   BOOST_TEST(HeaderIo::hasKeyword(fptr, "TDIM1") == shouldHaveTdim);
   const auto result = BintableIo::readColumnInfo<char, N>(fptr, 1);
-  BOOST_TEST(result == info);
+  BOOST_TEST((result == info));
 }
 
 BOOST_FIXTURE_TEST_CASE(tdim_is_read_back_test, Fits::Test::MinimalFile) {

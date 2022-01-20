@@ -28,6 +28,9 @@
 namespace Euclid {
 namespace Fits {
 
+template <typename T, long N, typename TContainer>
+constexpr long Raster<T, N, TContainer>::Dim;
+
 /// @cond INTERNAL
 namespace Internal {
 

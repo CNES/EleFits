@@ -58,6 +58,17 @@ BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test) {
   checkRepeatCountFromShape<3>({28, 6, 1989});
 }
 
+BOOST_AUTO_TEST_CASE(make_column_info_test) {
+  auto stringInfo = makeColumnInfo<std::string>("String", "", 6);
+  BOOST_TEST((stringInfo.shape == Position<1> {6}));
+  auto scalarInfo = makeColumnInfo<int>("Scalar");
+  BOOST_TEST((scalarInfo.shape == Position<1> {1}));
+  auto vectorInfo = makeColumnInfo<int>("Vector", "", 3);
+  BOOST_TEST((vectorInfo.shape == Position<1> {3}));
+  auto multidimInfo = makeColumnInfo<int>("Multidim", "", 3, 2);
+  BOOST_TEST((multidimInfo.shape == Position<2> {3, 2}));
+}
+
 ELEFITS_FOREACH_COLUMN_TYPE(ELEMENT_COUNT_TEST)
 
 //-----------------------------------------------------------------------------

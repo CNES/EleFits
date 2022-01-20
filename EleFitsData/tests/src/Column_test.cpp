@@ -97,6 +97,39 @@ BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
   BOOST_TEST(cPtrColumn.elementCount() == rowCount);
 }
 
+BOOST_AUTO_TEST_CASE(make_veccolumn_test) {
+  constexpr long repeat = 3;
+  constexpr long rows = 9;
+  constexpr long size = repeat * rows;
+  auto info = makeColumnInfo<char>("NAME", "unit", repeat);
+  auto vector = Test::generateRandomVector<char>(size);
+  const auto* data = vector.data();
+  auto column = makeColumn(std::move(info), std::move(vector));
+  using Value = decltype(column)::Value;
+  BOOST_TEST((std::is_same<Value, char>::value));
+  BOOST_TEST(column.info().name == "NAME");
+  BOOST_TEST(column.info().unit == "unit");
+  BOOST_TEST(column.info().shape == Position<1> {repeat});
+  BOOST_TEST(column.rowCount() == rows);
+  BOOST_TEST(column.data() == data);
+}
+
+BOOST_AUTO_TEST_CASE(make_ptrcolumn_test) {
+  constexpr long repeat = 3;
+  constexpr long rows = 9;
+  constexpr long size = repeat * rows;
+  auto info = makeColumnInfo<char>("NAME", "unit", repeat);
+  auto vector = Test::generateRandomVector<char>(size);
+  auto column = makeColumn(std::move(info), rows, vector.data());
+  using Value = decltype(column)::Value;
+  BOOST_TEST((std::is_same<Value, char>::value));
+  BOOST_TEST(column.info().name == "NAME");
+  BOOST_TEST(column.info().unit == "unit");
+  BOOST_TEST(column.info().shape == Position<1> {repeat});
+  BOOST_TEST(column.rowCount() == rows);
+  BOOST_TEST(column.data() == vector.data());
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

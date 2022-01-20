@@ -244,21 +244,22 @@ private:
  * @details
  * Example usage:
  * \code
- * auto column = makeColumn(std::move(vector), std::move(info)); // Copy-less
+ * auto column = makeColumn(std::move(info), std::move(vector)); // Copy-less
  * \endcode
  */
-template <typename T, typename TInfo>
-PtrColumn<T, TInfo::Dim> makeColumn(TInfo&& info, long rowCount, T* data) {
-  return {std::forward<TInfo>(info), rowCount, data};
+template <typename TInfo, typename TContainer>
+Column<typename TContainer::value_type, std::decay_t<TInfo>::Dim, TContainer>
+makeColumn(TInfo info, TContainer&& data) {
+  return {std::forward<TInfo>(info), std::forward<TContainer>(data)};
 }
 
 /**
  * @relates Column
- * @copybrief makeColumn
+ * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-VecColumn<T, TInfo::Dim> makeColumn(TInfo info, std::vector<T> data) {
-  return {std::forward<TInfo>(info), std::move(data)};
+PtrColumn<T, std::decay_t<TInfo>::Dim> makeColumn(TInfo&& info, long rowCount, T* data) {
+  return {std::forward<TInfo>(info), rowCount, data};
 }
 
 } // namespace Fits

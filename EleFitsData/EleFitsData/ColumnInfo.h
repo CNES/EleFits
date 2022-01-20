@@ -219,6 +219,41 @@ bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
 template <typename T, long N>
 bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
 
+/**
+ * @relates ColumnInfo
+ * @brief Shortcut to create column informations without specifying the dimension template parameters.
+ * @tparam T The value type, must be specified
+ * @tparam Longs The axes lengths, should not be specified (automatically deduced)
+ * @param name The column name
+ * @param unit The column unit, or `""` to omit it
+ * @param shape The shape as a comma-separated list of `long`s
+ * can be left empty for scalar columns
+ * 
+ * @par_example
+ * \code
+ * Given:
+ * - long width, height, depth: The axes lengths;
+ * 
+ * auto stringInfo = makeColumnInfo<std::string>("String", "", 6);
+ * auto scalarInfo = makeColumnInfo<int>("Scalar");
+ * auto vectorInfo = makeColumnInfo<int>("Vector", "", 3);
+ * auto multidimInfo = makeColumnInfo<int>("Multidim", "", 3, 2);
+ * \endcode
+ */
+template <typename T, typename... Longs>
+ColumnInfo<T, sizeof...(Longs)> makeColumnInfo(const std::string& name, const std::string& unit, Longs... shape) {
+  return {name, unit, Position<sizeof...(Longs)> {shape...}};
+}
+
+/**
+ * @relates ColumnInfo
+ * @brief Scalar column specialization.
+ */
+template <typename T>
+ColumnInfo<T> makeColumnInfo(const std::string& name, const std::string& unit = "") {
+  return {name, unit};
+}
+
 } // namespace Fits
 } // namespace Euclid
 
