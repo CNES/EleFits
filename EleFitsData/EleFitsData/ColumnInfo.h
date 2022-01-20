@@ -92,10 +92,10 @@ namespace Fits {
  * 
  * <table class="fieldtable">
  * <tr><th>Row<th>%String<th>Scalar<th>Vector<th>Multidim
- * <tr><td>0<td>`"ZERO"`<td>0<td>00, 01, 02<td>000, 001, 002<br>010, 011, 012
- * <tr><td>1<td>`"ONE"`<td>1<td>10, 11, 12<td>100, 101, 102<br>110, 111, 112
- * <tr><td>2<td>`"TWO"`<td>2<td>20, 21, 22<td>200, 201, 202<br>210, 211, 212
- * <tr><td>3<td>`"THREE"`<td>3<td>30, 31, 32<td>300, 301, 302<br>310, 311, 312
+ * <tr><td>0<td>`"ZERO"`<td>0<td>00 01 02<td>000 001 002<br>010 011 012
+ * <tr><td>1<td>`"ONE"`<td>1<td>10 11 12<td>100 101 102<br>110 111 112
+ * <tr><td>2<td>`"TWO"`<td>2<td>20 21 22<td>200 201 202<br>210 211 212
+ * <tr><td>3<td>`"THREE"`<td>3<td>30 31 32<td>300 301 302<br>310 311 312
  * </table>
  * 
  * For performance, the values are stored sequentially in a 1D array as follows:
@@ -231,9 +231,6 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
  * 
  * @par_example
  * \code
- * Given:
- * - long width, height, depth: The axes lengths;
- * 
  * auto stringInfo = makeColumnInfo<std::string>("String", "", 6);
  * auto scalarInfo = makeColumnInfo<int>("Scalar");
  * auto vectorInfo = makeColumnInfo<int>("Vector", "", 3);

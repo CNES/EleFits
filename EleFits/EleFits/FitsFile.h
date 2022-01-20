@@ -65,6 +65,7 @@ enum class FileMode
   Read, ///< Open an existing file with read-only permission
   Edit, ///< Open an existing file with write permission
   Create, ///< Create a new file (overwrite forbidden)
+  Write, ///< Open a file if it exists, create a new one otherwise
   Overwrite, ///< Create a new file or overwrite existing file
   Temporary ///< Create a temporary file (removed by destructor, overwrite forbidden)
 };
@@ -183,6 +184,12 @@ protected:
    */
   bool m_open;
 };
+
+/**
+ * @relates FitsFile
+ * @brief Check whether a file exists.
+ */
+bool fileExists(const std::string& filename);
 
 } // namespace Fits
 } // namespace Euclid

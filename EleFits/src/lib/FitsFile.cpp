@@ -23,6 +23,8 @@
 #include "EleFitsData/FitsError.h"
 #include "ElementsKernel/Project.h"
 
+#include <fstream>
+
 namespace Euclid {
 namespace Fits {
 
@@ -80,6 +82,13 @@ void FitsFile::open(const std::string& filename, FileMode permission) {
     case FileMode::Read:
       m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadOnly);
       break;
+    case FileMode::Write:
+      if (fileExists(filename)) {
+        m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadWrite);
+      } else {
+        m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
+      }
+      break;
     case FileMode::Edit:
       m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadWrite);
       break;
@@ -117,6 +126,11 @@ void FitsFile::closeAndDelete() {
   }
   Cfitsio::FileAccess::closeAndDelete(m_fptr);
   m_open = false;
+}
+
+bool fileExists(const std::string& filename) {
+  std::ifstream f(filename);
+  return f.is_open();
 }
 
 } // namespace Fits
