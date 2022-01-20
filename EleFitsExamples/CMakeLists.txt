@@ -57,6 +57,9 @@ elements_add_executable(EleFitsGenerateLife src/program/EleFitsGenerateLife.cpp
                      LINK_LIBRARIES EleFitsExamples)
 elements_add_executable(EleFitsTutorial src/program/EleFitsTutorial.cpp
                      LINK_LIBRARIES EleFitsExamples)
+elements_add_executable(EleFitsBintableExample src/program/EleFitsBintableExample.cpp
+                     INCLUDE_DIRS ElementsKernel EleFitsExamples
+                     LINK_LIBRARIES ElementsKernel EleFitsExamples)
 
 #===============================================================================
 # Declare the Boost tests here
