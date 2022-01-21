@@ -189,10 +189,10 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, std::vector<ColumnK
   const long rowCount = columnsRowCount(std::forward<TSeq>(columns));
   rows.resolve(readRowCount() - 1, rowCount - 1);
   const long lastMemRow = rows.memory().back;
-  for (Segment file = Segment::fromSize(rows.file().front, bufferSize), // TODO use a FileMemSegments
+  for (Segment file = Segment::fromSize(rows.file().front, bufferSize), // FIXME use a FileMemSegments
        mem = Segment::fromSize(rows.memory().front, bufferSize);
-       mem.front <= lastMemRow; // FIXME file += bufferSize, mem += bufferSize) {
-       file.front += bufferSize, file.back += bufferSize, mem.front += bufferSize, mem.back += bufferSize) {
+       mem.front <= lastMemRow;
+       file += bufferSize, mem += bufferSize) {
     if (mem.back > lastMemRow) {
       mem.back = lastMemRow;
     }
@@ -242,7 +242,7 @@ void BintableColumns::writeSegment(FileMemSegments rows, const TColumn& column) 
   const auto index = readIndex(column.info().name); // FIXME avoid?
   Cfitsio::BintableIo::writeColumnData(
       m_fptr,
-      {rows.file().front + 1, rows.file().back + 1}, // FIXME operator+
+      rows.file() + 1,
       index + 1,
       column.info().repeatCount(),
       &column(rows.memory().front, 0));
@@ -300,10 +300,10 @@ void BintableColumns::writeSegmentSeq(FileMemSegments rows, TSeq&& columns) cons
   rows.resolve(readRowCount() - 1, rowCount - 1);
   const long lastMemRow = rows.memory().back;
   const auto bufferSize = readBufferRowCount();
-  for (auto mem = Segment::fromSize(rows.memory().front, bufferSize), // TODO use a FileMemSegments
+  for (auto mem = Segment::fromSize(rows.memory().front, bufferSize), // FIXME use a FileMemSegments
        file = Segment::fromSize(rows.file().front, bufferSize);
-       mem.front <= lastMemRow; // TODO mem += bufferSize, file += bufferSize) {
-       mem.front += bufferSize, mem.back += bufferSize, file.front += bufferSize, file.back += bufferSize) {
+       mem.front <= lastMemRow;
+       mem += bufferSize, file += bufferSize) {
     if (mem.back > lastMemRow) {
       mem.back = lastMemRow;
     }

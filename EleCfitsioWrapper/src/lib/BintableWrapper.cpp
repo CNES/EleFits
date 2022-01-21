@@ -100,7 +100,7 @@ void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
   fits_read_tdim(fptr, static_cast<int>(index), 999, &naxis, shape.data(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
   naxes.resize(naxis);
-  shape = Fits::Position<-1>(naxes.begin(), naxes.end()); // FIXME assign
+  shape = Fits::Position<-1>(naxes.begin(), naxes.end()); // TODO assign
 }
 
 template <>
