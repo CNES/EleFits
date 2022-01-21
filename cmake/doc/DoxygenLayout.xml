@@ -26,7 +26,7 @@
   <class>
     <briefdescription visible="no"/>
     <includes visible="$SHOW_INCLUDE_FILES"/>
-    <detaileddescription title="Class Description"/>
+    <detaileddescription title=""/>
     <inheritancegraph visible="$CLASS_GRAPH"/>
     <collaborationgraph visible="$COLLABORATION_GRAPH"/>
     <memberdecl>

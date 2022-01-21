@@ -15,17 +15,17 @@ A raster is defined by:
 - A dimension (number of axes) as template parameter `N`;
 - A value type as template parameter `T`;
 - A shape, of type `Position<N>`, which is a sequence of indices,
-  and can be viewed as an alias of `std::array<N, long>` or `std::vector<long>`;
+  and can be viewed as an alias of `std::array<long, N>` or `std::vector<long>`;
 - Some data, i.e. the pixel values, stored contiguously, for example in a `std::vector`.
 
 Two specialization are provided for convenience:
-- `PtrRaster` merely stores a pointer to the data array;
-- `VecRaster` owns itself the data as an `std::vector`.
+- \ref `PtrRaster` merely stores a pointer to the data array;
+- \ref `VecRaster` owns itself the data as an `std::vector`.
 
 Functions which return a `Raster` generally return a `VecRaster` (e.g. `ImageRaster::read()`).
 All methods which take a `Raster` as input accept whatever flavor of it.
 
-For convenience, `makeRaster` functions enable raster creation
+For convenience, `makeRaster()` functions enable raster creation
 without template parameters.
 
 

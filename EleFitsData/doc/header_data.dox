@@ -9,7 +9,9 @@ namespace Fits {
 \section header_data_classes-record Record
 
 
-\copydetails Record
+A header is made of records, represented in memory by objects of type... `Record`!
+A `Record` is a simple structure which stores the keyword, value, unit and comment,
+and is templated by the value type.
 
 
 \section header_data_classes-recordvec RecordVec, RecordSeq
@@ -17,7 +19,7 @@ namespace Fits {
 
 Passing a large number of records around can be complex,
 all the more if the value types are different
-given how cumbersome it would be to use `std::tuple` of various `Record`s.
+given how cumbersome it would be to use a `std::tuple` of various `Record`s.
 
 Two record containers are provided to ease this:
 - `RecordVec` is a homogeneous container, i.e. the value type is the same for each contained record;
@@ -31,8 +33,9 @@ Records in those containers are convertible thanks to an internal casting system
 
 `TypedKey` is a tool used to robustify the API, for more safety when reading a record (or a column).
 It conveys alone both the name and type of the record.
+`TypedKey`s are preferrably created with function `as()`.
 
-In this context, it is used to write the type close to the name of the record in the function call,
+`TypedKey`s are used to write the type close to the name of the records in function calls,
 that is, writing:
 
 \code

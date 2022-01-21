@@ -12,13 +12,10 @@ namespace Fits {
 Data classes represent the data which can be read or written in a Fits file.
 They are split into header, image, and binary table data classes.
 
-As a spoiler, here is a simplified class diagram:
-
-\image html doc/diagrams/out/FitsData.png
-
 
 \section data-record Header data classes
 
+Headers are made of consecutive `Record`s.
 
 `Record` is a very basic template structure which holds the following four fields:
 - `keyword`,
@@ -27,6 +24,8 @@ As a spoiler, here is a simplified class diagram:
 - `comment`.
 
 Its template parameter is the type of the value.
+
+Some convenience classes like `RecordSeq` are also implemented.
 
 \see header_data_classes
 
@@ -47,15 +46,12 @@ A raster has:
 \section data-column Binary table data classes
 
 
-`Column`s represent the contents of the data unit of binary table HDUs.
+`Column`s represent the contents of the data unit of binary table HDUs seen column-wise.
 They are made of two components:
-
 - metadata as a `ColumnInfo` instance,
 - data as a whatever-you-want!
 
-In order to accommodate whatever-you-want kind of data container,
-`Column` is an abstract class whose only assumption is that elements are contiguous in memory,
-so that you just need to provide a raw pointer to the first element of the column.
+Entries of a column (the table cells) can be scalar, vector or even multidimensional.
 
 \see bintable_data_classes
 

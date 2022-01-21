@@ -13,23 +13,19 @@ namespace Fits {
 - The value type as a template parameter;
 - The name;
 - The unit;
-- The "repeat count".
-
-The repeat count represents the width of the column:
-- If =1, the column contains scalars;
-- If >1, the column contains vectors.
+- The entry shape (column entries can be multidimensional).
 
 
 \section bintable_data_classes-columns Column, PtrColumn, VecColumn
 
 
 A `Column` is an abstract class composed of a `ColumnInfo` and some contiguous data.
-Analogously to `Raster`, two concrete classes are implemented, and others can be user-defined:
-- `PtrColumn` is the lightest structure: it just knows a pointer to the first element of the column;
-- `VecColumn` owns the data as an `std::vector` and is compatible with the move semantics.
+Analogously to `Raster`, two specializations are provided, and others can be user-defined:
+- \ref `PtrColumn` is the lightest structure: it just knows a pointer to the first element of the column;
+- \ref `VecColumn` owns the data as a `std::vector` and is compatible with the move semantics.
 
 To write a column, any `Column` implementation works: you can even provide your own, e.g. some `EigenColumn`.
-`Column`s are always read as `VecColumn` instances.
+`Column`s are generally read as `VecColumn` instances.
 If you want to give or steal the data to or from a `VecColumn`, you can exploit move semantics, as shown in the \ref tuto "":
 
 \snippet EleFitsTutorial.cpp Create columns
