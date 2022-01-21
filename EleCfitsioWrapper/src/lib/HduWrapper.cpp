@@ -54,6 +54,9 @@ long currentVersion(fitsfile* fptr) {
   if (HeaderIo::hasKeyword(fptr, "EXTVER")) {
     return HeaderIo::parseRecord<long>(fptr, "EXTVER");
   }
+  if (HeaderIo::hasKeyword(fptr, "HDUVER")) {
+    return HeaderIo::parseRecord<long>(fptr, "HDUVER");
+  }
   return 1;
 }
 

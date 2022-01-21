@@ -58,11 +58,15 @@ long currentIndex(fitsfile* fptr);
 
 /**
  * @brief Get the name of the current HDU.
+ * @details
+ * Look for `EXTNAME` and then `HDUNAME`; return `""` if not found.
  */
 std::string currentName(fitsfile* fptr);
 
 /**
  * @brief Get the version of the current HDU.
+ * @details
+ * Look for `EXTVER` and then `HDUVER`; return 1 if not found.
  */
 long currentVersion(fitsfile* fptr);
 
