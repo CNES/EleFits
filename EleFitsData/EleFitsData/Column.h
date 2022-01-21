@@ -156,9 +156,20 @@ public:
   /**
    * @brief Change the column repeat count (fold/unfold).
    * @details
-   * The repeat count must be a divisor of the columns size, except for string columns.
+   * The repeat count must be a divisor of the column size, except for string columns.
+   * The resulting entry shape will be flat, with the first component = `repeatCount`
+   * and the other components = 1.
+   * @see reshape(Position<N>)
    */
   void reshape(long repeatCount = 1);
+
+  /**
+   * @brief Change the entry shape.
+   * @details
+   * The shape size must be a divisor of the column size.
+   * @see reshape(long)
+   */
+  void reshape(Position<N> shape);
 
   /**
    * @brief Number of elements in the column, i.e. repeat count times number of rows.

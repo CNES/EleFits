@@ -63,9 +63,15 @@ void Column<T, N, TContainer>::rename(const std::string& name) {
 template <typename T, long N, typename TContainer>
 void Column<T, N, TContainer>::reshape(long repeatCount) {
   // FIXME check that elementCount() % repeatCount = 0, but for strings!
+  auto shape = Position<N>::one();
+  shape[0] = repeatCount;
+  reshape(std::move(shape));
+}
+
+template <typename T, long N, typename TContainer>
+void Column<T, N, TContainer>::reshape(Position<N> shape) {
   // FIXME check that shape is valid
-  m_info.shape = Position<N>::one();
-  m_info.shape[0] = repeatCount;
+  m_info.shape = std::move(shape);
 }
 
 template <typename T, long N, typename TContainer>
