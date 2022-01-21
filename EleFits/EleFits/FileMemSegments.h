@@ -20,7 +20,7 @@
 #ifndef _ELEFITS_FILEMEMSEGMENTS_H
 #define _ELEFITS_FILEMEMSEGMENTS_H
 
-#include "EleFitsData/DataUtils.h" // Segment
+#include "EleFitsData/Segment.h"
 
 namespace Euclid {
 namespace Fits {

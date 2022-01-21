@@ -152,50 +152,7 @@ TypedKey<TReturn, std::string> as(const char* key) {
   return TypedKey<TReturn, std::string> {key};
 }
 
-/**
- * @ingroup bintable_data_classes
- * @brief Bounds of a closed index interval.
- * @details
- * The lower and upper bounds are named `front` and `back`
- * to match `Region` wording.
- * This also avoids confusion when working with table segments,
- * where the lower bound is upward the upper bound.
- */
-struct Segment {
-
-  /**
-   * @brief Create a segment specified by a lower bound and size.
-   */
-  static Segment fromSize(long front, long size) {
-    return {front, front + size - 1};
-  }
-
-  /**
-   * @brief Create a maximal segment (from index 0 to max).
-   */
-  static Segment whole() {
-    return {0, -1};
-  }
-
-  /**
-   * @brief The lower bound.
-   */
-  long front;
-
-  /**
-   * @brief The upper bound.
-   */
-  long back;
-
-  /**
-   * @brief Get the number of elements.
-   */
-  long size() const {
-    return back - front + 1;
-  }
-};
-
-/// @cond INTERNAL
+/// @cond
 namespace Internal {
 
 /**

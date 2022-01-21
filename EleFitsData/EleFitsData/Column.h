@@ -22,8 +22,8 @@
 
 #include "EleFitsData/ColumnInfo.h"
 #include "EleFitsData/DataContainer.h"
-#include "EleFitsData/DataUtils.h"
 #include "EleFitsData/Raster.h" // PtrRaster for Entry
+#include "EleFitsData/Segment.h"
 
 #include <complex>
 #include <cstdint>

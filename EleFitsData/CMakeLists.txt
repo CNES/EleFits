@@ -108,6 +108,10 @@ elements_add_unit_test(Region tests/src/Region_test.cpp
                      EXECUTABLE EleFitsData_Region_test
                      LINK_LIBRARIES EleFitsData
                      TYPE Boost)
+elements_add_unit_test(Segment tests/src/Segment_test.cpp 
+                     EXECUTABLE EleFitsData_Segment_test
+                     LINK_LIBRARIES EleFitsData
+                     TYPE Boost)
 elements_add_unit_test(Subraster tests/src/Subraster_test.cpp 
                      EXECUTABLE EleFitsData_Subraster_test
                      LINK_LIBRARIES EleFitsData
