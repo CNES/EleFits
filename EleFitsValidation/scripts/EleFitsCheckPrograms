@@ -86,6 +86,9 @@ test_program \
   EleFitsTutorial "tutorial.fits"
 
 test_program \
+  EleFitsBintableExample "bintable.fits"
+
+test_program \
   EleFitsGenerateLife "life.fits"
 
 test_program \

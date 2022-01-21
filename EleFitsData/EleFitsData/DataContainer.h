@@ -34,23 +34,6 @@ namespace Fits {
 
 /**
  * @ingroup data_concepts
- * @requirements{SizedData}
- * @brief Requirements for a `DataContainerHolder`.
- * @details
- * A contiguous data holder is some class which stores or points to
- * some data contiguous in memory as a public or protected member `TContainer m_container`,
- * and implements the following methods:
- * - Default, copy and move constructors;
- * - Constructor from a size;
- * - Constructor from an iterator pair;
- * - Implicit constructor from an initialization list;
- * - `size_type size() const`;
- * - `inline const T* data() const`.
- */
-// FIXME ctot(size = 0, data = nullptr) should suffice
-
-/**
- * @ingroup data_concepts
  * @brief A holder of any contiguous container specified by a size and data pointer.
  * @details
  * The class can be specialized for any container,

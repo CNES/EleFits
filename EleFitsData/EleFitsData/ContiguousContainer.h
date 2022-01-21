@@ -37,6 +37,23 @@ namespace Fits {
 
 /**
  * @ingroup data_concepts
+ * @requirements{SizedData}
+ * @brief Requirements for a `DataContainerHolder`.
+ * @details
+ * A contiguous data holder is some class which stores or points to
+ * some data contiguous in memory as a public or protected member `TContainer m_container`,
+ * and implements the following methods:
+ * - Default, copy and move constructors;
+ * - Constructor from a size;
+ * - Constructor from an iterator pair;
+ * - Implicit constructor from an initialization list;
+ * - `size_type size() const`;
+ * - `inline const T* data() const`.
+ */
+// FIXME ctot(size = 0, data = nullptr) should suffice
+
+/**
+ * @ingroup data_concepts
  * @brief Base class for a Fits data container.
  * 
  * @tparam T The value type
@@ -136,7 +153,7 @@ struct ContiguousContainerMixin {
   /**
    * @copybrief begin()const
    */
-  iterator cbegin() {
+  const_iterator cbegin() {
     return const_cast<const ContiguousContainerMixin&>(*this).begin();
   }
 
@@ -157,7 +174,7 @@ struct ContiguousContainerMixin {
   /**
    * @copybrief end()const
    */
-  iterator cend() {
+  const_iterator cend() {
     return const_cast<const ContiguousContainerMixin&>(*this).end();
   }
 
