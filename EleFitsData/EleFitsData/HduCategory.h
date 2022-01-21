@@ -147,9 +147,12 @@ public:
   /**
    * @brief The HDU filter which corresponds to a given HDU handler.
    * @return
-   * - HduCategory::forClass<Hdu>() = HduCategory::Any,
-   * - HduCategory::forClass<ImageHdu>() = HduCategory::Image,
-   * - HduCategory::forClass<BintableHdu>() = HduCategory::Bintable.
+   * - `HduCategory::forClass<Hdu>() -> HduCategory::Any`,
+   * - `HduCategory::forClass<Header>() -> HduCategory::Any`,
+   * - `HduCategory::forClass<ImageHdu>() -> HduCategory::Image`,
+   * - `HduCategory::forClass<ImageRaster>() -> HduCategory::Image`,
+   * - `HduCategory::forClass<BintableHdu>() -> HduCategory::Bintable`,
+   * - `HduCategory::forClass<BintableColumn>() -> HduCategory::Bintable`.
    */
   template <typename T>
   static HduCategory forClass();

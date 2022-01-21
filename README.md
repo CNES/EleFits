@@ -32,7 +32,7 @@ to read a column named "RA" in the 4th extension of a Multi-Extension Fits (MEF)
 // - string filename: The file name
 
 MefFile f(filename, FileMode::READ);
-auto ra = f.access<BintableHdu>(4).columns().read<double>("RA");
+auto ra = f.access<BintableColumns>(4).read<double>("RA");
 ```
 
 A more realistic example is creating a Single Image Fits (SIF) file with a keyword record and an array:

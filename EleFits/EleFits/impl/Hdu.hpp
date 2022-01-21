@@ -26,6 +26,12 @@
 namespace Euclid {
 namespace Fits {
 
+/**
+ * @brief Specialization of `Hdu::as()` for the header unit.
+ */
+template <>
+const Header& Hdu::as() const;
+
 template <typename T>
 const T& Hdu::as() const {
   return dynamic_cast<const T&>(*this);

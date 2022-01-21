@@ -9,7 +9,7 @@
 
 \defgroup data_concepts Data concepts
 \ingroup data_classes
-\brief Concepts satisfied by data classes
+\brief Concepts satisfied by data classes and associated helper classes
 
 \defgroup header_data_classes Header data classes
 \ingroup data_classes

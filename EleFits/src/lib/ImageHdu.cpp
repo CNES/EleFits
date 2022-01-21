@@ -76,6 +76,11 @@ HduCategory ImageHdu::readCategory() const {
   return cat;
 }
 
+template <>
+const ImageRaster& Hdu::as() const {
+  return as<ImageHdu>().raster();
+}
+
 #ifndef COMPILE_READ_RASTER
 #define COMPILE_READ_RASTER(type, unused) \
   template VecRaster<type, -1> ImageHdu::readRaster() const; \

@@ -106,7 +106,7 @@ BRaster EleFitsBenchmark::readImage(long index) {
 
 BColumns EleFitsBenchmark::readBintable(long index) {
   m_chrono.start();
-  const auto columns = m_f.access<BintableHdu>(index).columns().readSeq(
+  const auto columns = m_f.access<BintableColumns>(index).readSeq(
       colIndexed<0>(),
       colIndexed<1>(),
       colIndexed<2>(),

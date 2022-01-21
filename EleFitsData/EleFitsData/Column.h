@@ -58,10 +58,13 @@ using VecColumn = Column<T, N, std::vector<T>>;
 
 /**
  * @ingroup bintable_data_classes
+ * @tparam T The value type, possibly const-qualified for read-only columns
+ * @tparam N The entry dimension (number of axes) or -1 for runtime dimension
+ * @tparam TContainer The data container, which must meet `SizedData` requirements
  * @brief Binary table column data and metadata.
  * @details
  * A column is a contiguous container for the entry data of a binary table column.
- * As explained in the ColumnInfo documentation (make sure to have read it before going further),
+ * As explained in the `ColumnInfo` documentation (make sure to have read it before going further),
  * entries can be made of several values.
  * Template parameter `N` is bound to the entry category:
  * - `N` = 1 for scalar, string and vector columns;

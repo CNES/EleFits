@@ -25,17 +25,29 @@ namespace Euclid {
 namespace Fits {
 
 class Hdu;
+class Header;
 class ImageHdu;
+class ImageRaster;
 class BintableHdu;
+class BintableColumns;
 
 template <>
 HduCategory HduCategory::forClass<Hdu>();
 
 template <>
+HduCategory HduCategory::forClass<Header>();
+
+template <>
 HduCategory HduCategory::forClass<ImageHdu>();
 
 template <>
+HduCategory HduCategory::forClass<ImageRaster>();
+
+template <>
 HduCategory HduCategory::forClass<BintableHdu>();
+
+template <>
+HduCategory HduCategory::forClass<BintableColumns>();
 
 } // namespace Fits
 } // namespace Euclid

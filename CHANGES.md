@@ -33,6 +33,8 @@
 
 ### Other new features
 
+* Header units and data units can be accessed directly from a `MefFile`
+  (e.g. `access<ImageRaster>(1)` is a shortcut for `access<ImageHdu>(1).raster()`)
 * Multi-dimensional columns are supported
 * Empty binary table HDUs can be created
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `std::vector<VecColumn<T>>`)

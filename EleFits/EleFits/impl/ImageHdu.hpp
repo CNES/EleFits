@@ -44,6 +44,12 @@ void ImageHdu::writeRaster(const TRaster& data) const {
   m_raster.write(data);
 }
 
+/**
+ * @brief Specialization of `Hdu::as()` for the data unit.
+ */
+template <>
+const ImageRaster& Hdu::as() const;
+
 #ifndef DECLARE_READ_RASTER
 #define DECLARE_READ_RASTER(type, unused) \
   extern template VecRaster<type, -1> ImageHdu::readRaster() const; \

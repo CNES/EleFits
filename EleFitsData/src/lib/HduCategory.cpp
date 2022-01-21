@@ -152,12 +152,27 @@ HduCategory HduCategory::forClass<Hdu>() {
 }
 
 template <>
+HduCategory HduCategory::forClass<Header>() {
+  return HduCategory::Any;
+}
+
+template <>
 HduCategory HduCategory::forClass<ImageHdu>() {
   return HduCategory::Image;
 }
 
 template <>
+HduCategory HduCategory::forClass<ImageRaster>() {
+  return HduCategory::Image;
+}
+
+template <>
 HduCategory HduCategory::forClass<BintableHdu>() {
+  return HduCategory::Bintable;
+}
+
+template <>
+HduCategory HduCategory::forClass<BintableColumns>() {
   return HduCategory::Bintable;
 }
 

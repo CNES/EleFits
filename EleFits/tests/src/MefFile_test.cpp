@@ -88,13 +88,26 @@ BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::Temp
   BOOST_TEST(firstlyAccessedPrimary.readName() == secondlyAccessedPrimary.readName());
 }
 
-BOOST_FIXTURE_TEST_CASE(access_single_named_hdu, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(access_single_named_hdu_test, Test::TemporaryMefFile) {
   const std::string extname = "EXT";
   BOOST_CHECK_THROW(this->access<>(extname), FitsError);
   this->initRecordExt(extname);
   BOOST_CHECK_NO_THROW(this->access<>(extname));
   this->initRecordExt(extname);
   BOOST_CHECK_THROW(this->access<>(extname), FitsError);
+}
+
+BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile) {
+  const Position<2> shape {2, 56};
+  const ColumnInfo<char, 2> info {"COL", "unit", shape};
+  this->initImageExt<char>("IMAGE", shape);
+  this->initBintableExt("TABLE", info);
+  BOOST_TEST(this->access<Header>(1).has("NAXIS"));
+  BOOST_TEST(this->access<Header>("IMAGE").has("NAXIS"));
+  BOOST_TEST(this->access<ImageRaster>(1).readShape() == shape);
+  BOOST_TEST(this->access<ImageRaster>("IMAGE").readShape() == shape);
+  BOOST_TEST(this->access<BintableColumns>(2).readName(0) == info.name);
+  BOOST_TEST(this->access<BintableColumns>("TABLE").readName(0) == info.name);
 }
 
 //-----------------------------------------------------------------------------

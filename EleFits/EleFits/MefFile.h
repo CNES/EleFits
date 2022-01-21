@@ -84,11 +84,11 @@ public:
 
   /**
    * @brief Access the HDU at given 0-based index.
-   * @tparam T The type of HDU: ImageHdu, BintableHdu, or Hdu to just handle metadata.
+   * @tparam T The type of HDU or header or data unit handler, i.e.
+   * `ImageHdu`, `ImageRaster`, `BintableHdu`, `BintableColumns`, `Hdu` or `Header` to just handle metadata.
    * @return A reference to the HDU reader-writer.
    * @details
-   * The type can be ImageHdu, BintableHdu or unspecified (i.e. base class Hdu, the metadata reader-writer.).
-   * In the latter case, if needs be, the returned HDU can still be cast to an ImageHdu or BintableHdu:
+   * The default handler is `Hdu`, in which case the returned HDU can still be cast to another handler, e.g.:
    * \code
    * const auto &ext = f.access<>(1);
    * ext.as<ImageHdu>().readRaster<float>();
@@ -105,12 +105,11 @@ public:
 
   /**
    * @brief Access the first HDU with given name, type and version.
-   * @tparam T The type of HDU, or Hdu to not check the type
+   * @tparam T The type of HDU or data unit
    * @param name The HDU name
    * @param version The HDU version, or 0 to not check the version
    * @details
-   * The template parameter is used to disambiguate when two extensions of different types have the same name,
-   * if set to ImageHdu or BintableHdu.
+   * The template parameter is used to disambiguate when two extensions of different types have the same name.
    * For example, in a file with an image extension and a binary table extension both named "EXT",
    * `accessFirst<ImageHdu>("EXT")` returns the image extension,
    * while `accessFirst<BintableHdu>("EXT")` returns the binary table extension,

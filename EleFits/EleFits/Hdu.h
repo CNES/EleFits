@@ -140,7 +140,7 @@ public:
   bool matches(HduFilter filter) const;
 
   /**
-   * @brief Cast to an ImageHdu or BintableHdu (if possible).
+   * @brief View as an `ImageHdu`, `ImageRaster`, `BintableHdu` or `BintableColumns` (if possible).
    */
   template <typename T>
   const T& as() const;

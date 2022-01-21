@@ -115,5 +115,10 @@ void Hdu::editThisHdu() const {
   m_status &= HduCategory::Edited;
 }
 
+template <>
+const Header& Hdu::as() const {
+  return as<Hdu>().header();
+}
+
 } // namespace Fits
 } // namespace Euclid

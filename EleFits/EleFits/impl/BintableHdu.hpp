@@ -36,6 +36,12 @@ void BintableHdu::writeColumn(const TColumn& column) const {
   m_columns.write(column);
 }
 
+/**
+ * @brief Specialization of `Hdu::as()` for the data unit.
+ */
+template <>
+const BintableColumns& Hdu::as() const;
+
 #ifndef DECLARE_READ_COLUMN
 #define DECLARE_READ_COLUMN(T, _) extern template VecColumn<T, 1> BintableHdu::readColumn(ColumnKey) const;
 ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_READ_COLUMN)
