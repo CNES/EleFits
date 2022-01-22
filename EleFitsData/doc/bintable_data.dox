@@ -21,8 +21,8 @@ namespace Fits {
 
 A `Column` is an abstract class composed of a `ColumnInfo` and some contiguous data.
 Analogously to `Raster`, two specializations are provided, and others can be user-defined:
-- \ref `PtrColumn` is the lightest structure: it just knows a pointer to the first element of the column;
-- \ref `VecColumn` owns the data as a `std::vector` and is compatible with the move semantics.
+- `PtrColumn` is the lightest structure: it just knows a pointer to the first element of the column;
+- `VecColumn` owns the data as a `std::vector` and is compatible with the move semantics.
 
 To write a column, any `Column` implementation works: you can even provide your own, e.g. some `EigenColumn`.
 `Column`s are generally read as `VecColumn` instances.

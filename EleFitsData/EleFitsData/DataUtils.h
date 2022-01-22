@@ -91,9 +91,26 @@ namespace Fits {
  */
 template <typename TReturn, typename TKey>
 struct TypedKey {
+
+  /**
+   * @brief The return type.
+   */
   using Return = TReturn;
+
+  /**
+   * @brief The key type.
+   */
   using Key = TKey;
+
+  /**
+   * @brief Constructor.
+   * @see as()
+   */
   explicit TypedKey(TKey k) : key(k) {}
+
+  /**
+   * @brief The key.
+   */
   TKey key;
 };
 

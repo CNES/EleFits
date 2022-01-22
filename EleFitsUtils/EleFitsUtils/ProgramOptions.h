@@ -115,7 +115,7 @@ public:
 
 private:
   /**
-   * @build the options description from a possibly empty help message.
+   * @brief Build the options description from a possibly empty help message.
    */
   static std::string makeDesc(const std::string& helpMessage);
 

@@ -88,7 +88,7 @@
 
 * `RecordHdu` is renamed as `Hdu`
 * New handlers `Header`, `ImageRaster` and `BintableColumns` are responsible for reading and writing header and data units
-* Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` variant`
+* Introduction of classes `VariantValue` to prepare migration from `boost::any` to `boost::variant` variant
 * `FileMode` replaces `FitsFile::Permission`, `SifFile::Permission` and `MefFile::Permission`
 * Class `HduCategory` replaces enum `HduType`
 * `RecordVector` is renamed as `RecordVec`
@@ -260,7 +260,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 * Records can be written as tuples in addition to parameter packs
 * Records of `any` can be read and written
-* New helper method `Record<T>::cast<U>` where `T` and `U` can be `any`
+* New helper method `Record<T>::cast<U>()` where `T` and `U` can be `any`
 * Vectors of homogeneous records can be read and written
 * New helper class `RecordVector` to find homogeneous records by keyword
 * Method `RecordHdu::parseAllRecords` parses a whole header unit

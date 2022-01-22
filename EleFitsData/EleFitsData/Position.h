@@ -32,6 +32,7 @@ namespace Fits {
 
 /**
  * @relates Position
+ * @brief The index container type.
  */
 template <long N = 2>
 using Indices = typename std::conditional<(N == -1), std::vector<long>, std::array<long, (std::size_t)N>>::type;

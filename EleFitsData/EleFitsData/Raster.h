@@ -174,7 +174,7 @@ public:
    * @brief The dimension template parameter.
    * @details
    * The value of `Raster<T, N, TContainer>::Dim` is always `N`, irrespective of its sign.
-   * In contrast, dimension() provides the actual dimension of the Raster,
+   * In contrast, `dimension()` provides the actual dimension of the Raster,
    * even in the case of a variable dimension.
    */
   static constexpr long Dim = N;
@@ -308,10 +308,9 @@ public:
   PtrRaster<T, M> slice(const Region<N>& region);
 
   /**
-   * @brief Create a section at given index.
+   * @brief Create a section between given indices.
    * @param front The section front index along the last axis
    * @param back The section back index along the last axis
-   * @param index The section index along the last axis
    * @details
    * A section is a maximal slice of dimension `N` or `N`-1.
    * For example, a 3D section of a 3D raster of shape (x, y, z)
@@ -329,17 +328,17 @@ public:
   const PtrRaster<const T, N> section(long front, long back) const;
 
   /**
-   * @copybrief section()
+   * @copybrief section(long,long)const
    */
   PtrRaster<T, N> section(long front, long back);
 
   /**
-   * @copybrief section()
+   * @brief Create a section at given.
    */
   const PtrRaster<const T, N == -1 ? -1 : N - 1> section(long index) const;
 
   /**
-   * @copybrief section()
+   * @copybrief section(long)const
    */
   PtrRaster<T, N == -1 ? -1 : N - 1> section(long index);
 
@@ -359,7 +358,7 @@ private:
   const Subraster<T, N, TContainer> subraster(const Region<N>& region) const; // FIXME rm?
 
   /**
-   * @copydoc subraster().
+   * @copydetails subraster().
    */
   Subraster<T, N, TContainer> subraster(const Region<N>& region); // FIXME rm?
 

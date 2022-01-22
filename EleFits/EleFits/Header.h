@@ -146,7 +146,7 @@ public:
 
   /**
    * @brief Read the whole header as a single string.
-   * @param categories Either `KeywordCategory::All`, or `~KeywordCategory::Comment` to skip COMMENT and HISTORY records
+   * @param categories Either `KeywordCategory::All` (default), or `~KeywordCategory::Comment` to skip COMMENT and HISTORY records
    */
   std::string readAll(KeywordCategory categories = KeywordCategory::All) const;
 
