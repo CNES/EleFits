@@ -234,7 +234,7 @@ SEPARATE_MEMBER_PAGES  = YES
 # uses this value to replace tabs by spaces in code fragments.
 # Minimum value: 1, maximum value: 16, default value: 4.
 
-TAB_SIZE               = 8
+TAB_SIZE               = 2
 
 # This tag can be used to specify a number of aliases that act as commands in
 # the documentation. An alias has the form:
@@ -877,7 +877,6 @@ WARN_LOGFILE           =
 INPUT                  = @PROJECT_SOURCE_DIR@/README.md \
                          @PROJECT_SOURCE_DIR@/CHANGES.md \
                          @PROJECT_SOURCE_DIR@/doc \
-                         @PROJECT_SOURCE_DIR@/EleCfitsioWrapper \
                          @PROJECT_SOURCE_DIR@/EleFitsUtils \
                          @PROJECT_SOURCE_DIR@/EleFitsData \
                          @PROJECT_SOURCE_DIR@/EleFits \
