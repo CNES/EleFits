@@ -1,0 +1,196 @@
+#!/bin/python3
+#
+# Copyright (C) 2012-2020 Euclid Science Ground Segment
+#
+# This library is free software; you can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation; either version 3.0 of the License, or (at your option)
+# any later version.
+#
+# This library is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+#
+
+from pathlib import Path
+import re
+import shutil
+import os
+import subprocess
+import sys
+
+desc = "Publish EleFits' documentation"
+usage = """
+    The script must be run from the EleFits project directory,
+    and Doxygen's HTML documentation must have been generated.
+    The script takes as input the target documentation directory,
+    which must contain the index and previous versions documentation.
+    In general, the target directory is the EleFits  Git repository
+    where the branch doc has been checked out.
+
+    The script copies the documentation to the target directory
+    and updates index accordingly.
+
+Usage:
+    EleFitsPulishDoc <target_dir>
+    """
+
+
+class DocPublisher:
+    """Doc publisher.
+    """
+
+    # Current version list in index.html
+    version_list_regex = r'<ul[^>]*id="version_list"[^>]*>\s*(.*)\s*<\/ul>'
+    version_list_pattern = re.compile(version_list_regex, flags=re.M | re.S)
+
+    # Tagged version pattern (X.Y.Z)
+    tag_regex = r'\d+\.\d+\.\d+'
+    tag_pattern = re.compile(tag_regex)
+
+    def __init__(self, version, build, target):
+        """Parameters:
+        * `version`: The version to be documented
+        * `build`: The build directory
+        * `target`: The target directory, typically the EleFits repository
+          with `doc` branch checked out
+        """
+
+        # Preconditions
+        if not self.is_tag(version):
+            print(f'{version} is not a valid tag; trying to append ".0"')
+            version += '.0'
+        assert self.is_tag(version), f'{version} is still a valid tag.'
+        assert build.exists(), f'Build directory does not exist: {build}'
+        assert target.exists(), f'Target directory does not exist: {target}'
+
+        # Setup
+        self.version = version
+        self.target_dir = Path(target)
+        self.index_file = self.target_dir / 'index.html'
+        self.source_doc_dir = Path(build) / 'doc/doxygen/html'
+        self.target_doc_dir = self.target_dir / self.version
+        print(f'Source directory: {self.source_doc_dir}')
+        print(f'Target directory: {self.target_doc_dir}')
+        print(f'Index file: {self.index_file}')
+
+    def publish_locally(self):
+        """Update the local documentation:
+        * Remove the old version documentation directory if it exists;
+        * Update the index;
+        * Copy the version documentation directory.
+        """
+        self.remove_version_doc()
+        self.update_index()
+        self.copy_version_doc()
+        print(f'\nCheck the results here: file://{self.index_file}\n')
+
+    def remove_version_doc(self):
+        """Remove the target version doc directory if it exists.
+        """
+        if self.target_doc_dir.exists():
+            print(f'A previous documentation of this version of was found; it will be replaced.')
+            shutil.rmtree(self.target_doc_dir)
+
+    def update_index(self):
+        """Update the index file with new list of versions.
+        """
+        with open(self.index_file) as f:
+            contents = f.read()
+        matches = self.version_list_pattern.search(contents)
+        target = matches.group(1).strip()
+        remplacement = self.dump_versions(self.list_versions())
+        with open(self.index_file, 'w') as f:
+            f.write(contents.replace(target, remplacement))
+        print(f'Index updated: {self.index_file}')
+
+    def list_versions(self):
+        """List the version dirs in the target repository, including the version to be published.
+        Versions are sorted in descending order.
+        """
+        dirs = set(d.name for d in self.target_dir.iterdir() if d.is_dir())
+        dirs.add(self.version)
+        versions = [d for d in dirs if self.is_tag(d)]
+        versions.sort(reverse=True)
+        print('Versions list: ' + ', '.join(versions))
+        return versions
+
+    def dump_versions(self, versions):
+        """Serialize the list of versions as an HTML list of hyperlinks.
+        """
+        return '\n'.join(f'<li><a href="{v}/index.html">{v}</a></li>' for v in versions)
+
+    def is_tag(self, text):
+        """Check whether a given string matches the tag pattern.
+        """
+        return self.tag_pattern.search(text) is not None
+
+    def copy_version_doc(self):
+        """Copy the source doc directory into the target repository, named after the version.
+        """
+        shutil.copytree(self.source_doc_dir, self.target_doc_dir)
+        print(f'Doc copied to: {self.target_doc_dir}')
+
+
+class ProjectInfo:
+    """Project metadata, e.g. name and version.
+    """
+
+    version_regex = r'Version:\s*(\S+)\s*$'
+    version_pattern = re.compile(version_regex, flags=re.M)
+    project_name_regex = r'Name:\s*(\S+)\s*$'
+    project_name_pattern = re.compile(project_name_regex, flags=re.M)
+    project_dir_regex = r'Source Directory:\s*(\S+)\s*$'
+    project_dir_pattern = re.compile(project_dir_regex, flags=re.M)
+
+    def __init__(self):
+        """Init from `make info`.
+        """
+
+        info = self._read_info()
+
+        # Project name
+        name = self.project_name_pattern.search(info).group(1)
+        assert name == 'EleFits', 'Do not run this script on anything else than EleFits!'
+
+        # Project version
+        version = self.version_pattern.search(info).group(1)
+        assert version is not None, 'Cannot find version number'
+        self.version = version
+
+        # Project directories
+        project_dir = self.project_dir_pattern.search(info).group(1)
+        self.project_dir = Path(project_dir)
+        assert self.project_dir is not None, 'Cannot find project directory'
+        self.build_dir = self.project_dir / ('build.' + os.environ['BINARY_TAG'])
+        self.doc_dir = self.build_dir / 'doc/doxygen/html'
+        assert self.doc_dir.exists(), f'Documentation directory not found: {self.doc_dir}'
+
+    def _read_info(self):
+        """Read the output of `make info`.
+        """
+        return subprocess.check_output(['make', 'info']).decode()
+        # FIXME set values here?
+
+
+if __name__ == '__main__':
+
+    # Parse arguments
+    args = sys.argv
+    if len(args) != 2 or args[1] == '-h':
+        print('\n')
+        print(desc)
+        print(usage)
+        exit(1)
+    doc_dir = Path(args[1]).expanduser().resolve()
+
+    # Run
+    info = ProjectInfo()
+    publisher = DocPublisher(info.version, info.build_dir, doc_dir)
+    publisher.publish_locally()
+    exit(0)

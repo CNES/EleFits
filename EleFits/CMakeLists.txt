@@ -119,6 +119,7 @@ elements_add_unit_test(TestBintable tests/src/TestBintable_test.cpp
 #  elements_install_python_modules()
 #  elements_install_scripts()
 #===============================================================================
+elements_install_scripts()
 
 #===============================================================================
 # Declare the Python programs here
