@@ -72,41 +72,41 @@ void writeExt(MefFile& f, const std::string& name, const AstroObjInfo& info, lon
 
   /* Random data */
 
-  const auto objIdData = Test::generateRandomVector<std::int64_t>(rowCount);
-  const auto objRadecData = Test::generateRandomVector<std::complex<float>>(rowCount);
-  const auto expTimeData = Test::generateRandomVector<float>(rowCount);
+  auto objIdData = Test::generateRandomVector<std::int64_t>(rowCount);
+  auto objRadecData = Test::generateRandomVector<std::complex<float>>(rowCount);
+  auto expTimeData = Test::generateRandomVector<float>(rowCount);
 
-  const auto combSigData = Test::generateRandomVector<float>(combSize * rowCount);
-  const auto combQualData = Test::generateRandomVector<std::int32_t>(combSize * rowCount);
-  const auto combVarData = Test::generateRandomVector<float>(combSize * rowCount);
+  auto combSigData = Test::generateRandomVector<float>(combSize * rowCount);
+  auto combQualData = Test::generateRandomVector<std::int32_t>(combSize * rowCount);
+  auto combVarData = Test::generateRandomVector<float>(combSize * rowCount);
 
-  const auto ptgIdData = Test::generateRandomVector<std::int64_t>(dithCount * rowCount);
+  auto ptgIdData = Test::generateRandomVector<std::int64_t>(dithCount * rowCount);
 
-  const auto dith1SigData = Test::generateRandomVector<float>(dith1Size * dithCount * rowCount);
-  const auto dith1QualData = Test::generateRandomVector<std::int32_t>(dith1Size * dithCount * rowCount);
-  const auto dith1VarData = Test::generateRandomVector<float>(dith1Size * dithCount * rowCount);
+  auto dith1SigData = Test::generateRandomVector<float>(dith1Size * dithCount * rowCount);
+  auto dith1QualData = Test::generateRandomVector<std::int32_t>(dith1Size * dithCount * rowCount);
+  auto dith1VarData = Test::generateRandomVector<float>(dith1Size * dithCount * rowCount);
 
-  const auto dith2SigData = Test::generateRandomVector<float>(dith2Width * dith2Height * dithCount * rowCount);
-  const auto dith2QualData = Test::generateRandomVector<std::int32_t>(dith2Width * dith2Height * dithCount * rowCount);
-  const auto dith2VarData = Test::generateRandomVector<float>(dith2Width * dith2Height * dithCount * rowCount);
+  auto dith2SigData = Test::generateRandomVector<float>(dith2Width * dith2Height * dithCount * rowCount);
+  auto dith2QualData = Test::generateRandomVector<std::int32_t>(dith2Width * dith2Height * dithCount * rowCount);
+  auto dith2VarData = Test::generateRandomVector<float>(dith2Width * dith2Height * dithCount * rowCount);
 
   /* Write! */
 
   f.assignBintableExt(
       name,
-      makeColumn(objIdInfo, std::move(objIdData)),
-      makeColumn(objRadecInfo, std::move(objRadecData)),
-      makeColumn(expTimeInfo, std::move(expTimeData)),
-      makeColumn(combSigInfo, std::move(combSigData)),
-      makeColumn(combQualInfo, std::move(combQualData)),
-      makeColumn(combVarInfo, std::move(combVarData)),
-      makeColumn(ptgIdInfo, std::move(ptgIdData)),
-      makeColumn(dith1SigInfo, std::move(dith1SigData)),
-      makeColumn(dith1QualInfo, std::move(dith1QualData)),
-      makeColumn(dith1VarInfo, std::move(dith1VarData)),
-      makeColumn(dith2SigInfo, std::move(dith2SigData)),
-      makeColumn(dith2QualInfo, std::move(dith2QualData)),
-      makeColumn(dith2VarInfo, std::move(dith2VarData)));
+      makeColumn(std::move(objIdInfo), std::move(objIdData)),
+      makeColumn(std::move(objRadecInfo), std::move(objRadecData)),
+      makeColumn(std::move(expTimeInfo), std::move(expTimeData)),
+      makeColumn(std::move(combSigInfo), std::move(combSigData)),
+      makeColumn(std::move(combQualInfo), std::move(combQualData)),
+      makeColumn(std::move(combVarInfo), std::move(combVarData)),
+      makeColumn(std::move(ptgIdInfo), std::move(ptgIdData)),
+      makeColumn(std::move(dith1SigInfo), std::move(dith1SigData)),
+      makeColumn(std::move(dith1QualInfo), std::move(dith1QualData)),
+      makeColumn(std::move(dith1VarInfo), std::move(dith1VarData)),
+      makeColumn(std::move(dith2SigInfo), std::move(dith2SigData)),
+      makeColumn(std::move(dith2QualInfo), std::move(dith2QualData)),
+      makeColumn(std::move(dith2VarInfo), std::move(dith2VarData)));
 }
 
 class EleFitsGenerateAstroObj : public Elements::Program {
@@ -138,9 +138,10 @@ public:
 
     logger.info() << "Creating Fits file: " << filename;
     MefFile f(filename, FileMode::Overwrite);
+
     logger.info() << "Writing metadata";
     const auto& primary = f.primary();
-    primary.header().write("N_OBJ", nobj);
+    primary.header().write("N_OBJ", nobj * nhdu);
 
     for (long i = 0; i < nhdu; ++i) {
       logger.info() << "Writing HDU " << i + 1;
