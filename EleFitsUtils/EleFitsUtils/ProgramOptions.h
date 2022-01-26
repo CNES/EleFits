@@ -106,6 +106,18 @@ public:
   void positional(const char* name, const ValueSemantics* value, const char* description);
 
   /**
+   * @brief Add a flag.
+   * @param name The flag name
+   * @param description The flag description
+   * @details
+   * A flag is a named option which is either set (implicitely to `true`)
+   * or omitted, in which case the value is `false`.
+   * A flag is simply set as:
+   * \verbatim Program --flag \endverbatim
+   */
+  void flag(const char* name, const char* description);
+
+  /**
    * @brief Get the named and positional option descriptions.
    * @details
    * This methods is primarily intended as the return of the override

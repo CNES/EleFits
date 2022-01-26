@@ -44,6 +44,10 @@ void ProgramOptions::positional(
   m_positional.add(name, maxArgs);
 }
 
+void ProgramOptions::flag(const char* name, const char* description) {
+  named(name, boost::program_options::value<bool>()->default_value(false)->implicit_value(true), description);
+}
+
 std::pair<ProgramOptions::OptionsDescription, ProgramOptions::PositionalOptionsDescription>
 ProgramOptions::asPair() const {
   return std::make_pair(m_named, m_positional);
