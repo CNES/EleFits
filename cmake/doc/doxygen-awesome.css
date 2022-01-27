@@ -1411,6 +1411,10 @@ img.footer {
 
 address.footer {
     margin-bottom: var(--spacing-large);
+    text-align: justify;
+    max-width: var(--content-maxwidth);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #nav-path li.navelem {

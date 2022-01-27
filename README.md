@@ -121,9 +121,9 @@ to take advantage of an internal buffer:
 columns.writeSeq(columnA, columnB, columnC);
 ```
 
-## Licence
+## License
 
-LGPL v3
+[LGPL v3](LICENSE.md)
 
 ## Tutorial
 
