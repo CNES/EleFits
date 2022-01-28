@@ -17,6 +17,8 @@
 
 #include "EleFits/BintableColumns.h"
 
+#include <algorithm> // sort
+
 namespace Euclid {
 namespace Fits {
 
@@ -92,9 +94,11 @@ void BintableColumns::remove(ColumnKey key) const {
 }
 
 void BintableColumns::removeSeq(std::vector<ColumnKey> keys) const {
-  // FIXME Order indices in descending order
+  std::sort(keys.begin(), keys.end(), [&](auto& lhs, auto& rhs) {
+    return lhs.index(*this) > rhs.index(*this); // descending order to avoid shifting
+  });
   for (auto& k : keys) {
-    remove(std::move(k)); // TODO Scans the whole HDU at every loop
+    remove(std::move(k)); // WARN Scans the whole HDU at every loop
   }
 }
 

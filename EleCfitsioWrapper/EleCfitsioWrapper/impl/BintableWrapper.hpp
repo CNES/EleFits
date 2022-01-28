@@ -203,7 +203,7 @@ void writeColumnDims(fitsfile* fptr, long index, const TInfos&... infos) { // FI
   auto i = index;
   (void)fptr;
   using mockUnpack = long[];
-  (void)mockUnpack {0L, (writeColumnDim(fptr, i, infos.shape), ++i)...}; // FIXME check ordering
+  (void)mockUnpack {0L, (writeColumnDim(fptr, i, infos.shape), ++i)...};
 }
 
 template <typename TColumn>

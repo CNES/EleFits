@@ -284,6 +284,8 @@ public:
    * auto columns = ext.readSeq<int, 2>({"A", "B", "C"});
    * auto columns = ext.readSeq<int, 2>({0, 3, 4});
    * \endcode
+   * @warning
+   * Multidimensional columns are read as vector columns as of today.
    */
   template <typename TKey, typename... Ts> // FIXME add long... Ns
   std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const; // FIXME Ns in TypedKey and as()
@@ -334,6 +336,8 @@ public:
    * @details
    * The rows to be read in the table are specified as a `Segment` object, that is, a lower and upper bounds.
    * The same bounds are used for all columns.
+   * @warning
+   * Multidimensional columns are read as vector columns as of today.
    */
   template <typename TKey, typename... Ts> // FIXME Ns
   std::tuple<VecColumn<Ts, 1>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const;
