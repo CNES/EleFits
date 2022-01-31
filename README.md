@@ -123,7 +123,7 @@ columns.writeSeq(columnA, columnB, columnC);
 
 ## License
 
-[LGPL v3](LICENSE.md)
+[LGPL-3.0-or-later](LICENSE.md)
 
 ## Tutorial
 
