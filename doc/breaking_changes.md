@@ -13,11 +13,31 @@ and how to adapt the client code.
 
 ### Introduction
 
-Version 5.0 brings a lot of improvements related to performance and flexibility.
-Most changes have only limited impact on the interface,
-but there are enough "minor changes" to justify bumping the major version digit.
-Many changes in the API (including the additional template parameters, see below)
+The brand new feature brought by version 5.0 is the support for multidimensional columns.
+This has a few impacts on the public API (e.g. the columns now have a dimension and shape),
+most of which are backward compatible (but not all of them).
+
+In order to accomodate multidimensional columns, data classes (including `Raster`) were refactored.
+The refactoring brings a lot of improvements related to performance and flexibility.
+Yet, most changes in the API (including the additional template parameters, see below)
 won't even impact user codes.
+
+### Column entries have a shape instead of repeat count
+
+Variable `ColumnInfo::repeatCount` becomes method `ColumnInfo::repeatCount()`.
+
+**Rationale**
+
+The repeat count is not sufficient to describe multidimensional entries,
+while having both a repeat count and shape would be unsafe.
+
+**Impact on client code**
+
+No impact at construction.
+
+To read the repeat count value, use `ColumnInfo::repeatCount()` instead of `ColumnInfo::repeatCount`.
+
+To update the repeat count, use `Column::reshape()`.
 
 ### PtrRaster constructor change
 
@@ -27,7 +47,7 @@ won't even impact user codes.
 
 Implementation of the data classes was completely refactored for improved performance,
 more flexibility and easier maintenance (see below).
-This came with the mergin of `PtrRaster` and `VecRaster` (which are now mere aliases)
+This came with the merging of `PtrRaster` and `VecRaster` (which are now mere aliases)
 and therefore of their constructors.
 
 **Impact on client code**
