@@ -17,7 +17,7 @@ namespace Fits {
  * @ingroup image_handlers
  * @brief Image HDU reader-writer.
  * @details
- * The Fits format can accommodate images of any dimension.
+ * The FITS format can accommodate images of any dimension.
  * EleFits stores them in _n_-dimensional containers: Raster objects.
  * This is visible in the ImageHdu services as a template parameter `N`.
  *
@@ -27,12 +27,12 @@ namespace Fits {
  * and brings safety as the code is less error-prone with fewer degrees of freedom.
  *
  * The zero vector space (`N = 0`) is supported;
- * It is used to represent HDUs with no data, as recommended in the Fits standard.
+ * It is used to represent HDUs with no data, as recommended in the FITS standard.
  *
  * When the dimension is unknown at compile time, or is expected to change
  * (e.g. 2D images to be merged as a 3D image),
  * special value `N = -1` can be specified.
- * In this case, the dimension is read in the Fits file,
+ * In this case, the dimension is read in the FITS file,
  * but the user should be careful to handle all possible values.
  * @see
  * Hdu for services to read and write records.

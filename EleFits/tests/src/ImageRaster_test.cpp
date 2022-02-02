@@ -41,10 +41,10 @@ void checkRasterIsReadBack() {
 }
 
 template <>
-void checkRasterIsReadBack<char>() {} // CFitsIO bug
+void checkRasterIsReadBack<char>() {} // CFITSIO bug
 
 template <>
-void checkRasterIsReadBack<std::uint64_t>() {} // CFitsIO bug
+void checkRasterIsReadBack<std::uint64_t>() {} // CFITSIO bug
 
 #define RASTER_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_raster_is_read_back_test) { \
@@ -75,10 +75,10 @@ void checkSlice3DIsReadBack() {
 }
 
 template <>
-void checkSlice3DIsReadBack<char>() {} // CFitsIO bug
+void checkSlice3DIsReadBack<char>() {} // CFITSIO bug
 
 template <>
-void checkSlice3DIsReadBack<std::uint64_t>() {} // CFitsIO bug
+void checkSlice3DIsReadBack<std::uint64_t>() {} // CFITSIO bug
 
 #define SLICE_3D_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_slice_3d_is_read_back_test) { \
@@ -110,10 +110,10 @@ void checkSlice2DIsReadBack() {
 }
 
 template <>
-void checkSlice2DIsReadBack<char>() {} // CFitsIO bug
+void checkSlice2DIsReadBack<char>() {} // CFITSIO bug
 
 template <>
-void checkSlice2DIsReadBack<std::uint64_t>() {} // CFitsIO bug
+void checkSlice2DIsReadBack<std::uint64_t>() {} // CFITSIO bug
 
 #define SLICE_2D_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_slice_2d_is_read_back_test) { \
@@ -145,10 +145,10 @@ void checkSubraster2DIsReadBack() {
 }
 
 template <>
-void checkSubraster2DIsReadBack<char>() {} // CFitsIO bug
+void checkSubraster2DIsReadBack<char>() {} // CFITSIO bug
 
 template <>
-void checkSubraster2DIsReadBack<std::uint64_t>() {} // CFitsIO bug
+void checkSubraster2DIsReadBack<std::uint64_t>() {} // CFITSIO bug
 
 #define SUBRASTER_2D_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_subraster_2d_is_read_back_test) { \

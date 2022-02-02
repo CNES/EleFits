@@ -12,7 +12,7 @@ namespace Fits {
 
 /**
  * @ingroup image_handlers
- * @brief Mapping between an in-file (Fits image data unit) region and an in-memory (raster) region
+ * @brief Mapping between an in-file (FITS image data unit) region and an in-memory (raster) region
  * for reading and writing image regions.
  * @details
  * In-file and in-memory regions have the same shape.

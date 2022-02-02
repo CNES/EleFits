@@ -40,7 +40,7 @@ void checkVector() {
 }
 
 /**
- * We test only one type here to check the flow from the top-level API to CFitsIO.
+ * We test only one type here to check the flow from the top-level API to CFITSIO.
  * Support for other types is tested in EleCfitsioWrapper.
  */
 BOOST_AUTO_TEST_CASE(float_test) {

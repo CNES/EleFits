@@ -139,7 +139,7 @@ f.access<>(3).header().write("KEY", 1);
 
 **Rationale**
 
-* Better mapping to Fits structure (separate header unit and data unit);
+* Better mapping to FITS structure (separate header unit and data unit);
 * Cleaner `SifFile` (e.g. no more useless `index()` method);
 * Better application of the Single Responsibility Principle
 (e.g. `BintableHdu` goes from 57 methods to 15 in `BintableColumns`);
@@ -247,8 +247,8 @@ Not implemented.
 ### All indices are 0-based
 
 Most indices in 2.0 were 0-based (e.g. in `Raster` and `Column`).
-A notable exception was the HDU index, which used to follow the CFitsIO convention.
-Yet, the Fits standard doesn't set any convention for HDU indices
+A notable exception was the HDU index, which used to follow the CFITSIO convention.
+Yet, the FITS standard doesn't set any convention for HDU indices
 (well, HDU indices are not even mentioned in the standard).
 Therefore, it was decided to homogeneize indexing, and follow the C++ convention instead.
 

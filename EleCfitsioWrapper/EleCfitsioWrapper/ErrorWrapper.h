@@ -14,7 +14,7 @@ namespace Euclid {
 namespace Cfitsio {
 
 /**
- * @brief The error class which is thrown when an error occurs in a CFitsIO routine.
+ * @brief The error class which is thrown when an error occurs in a CFITSIO routine.
  */
 class CfitsioError : public Fits::FitsError {
 
@@ -25,18 +25,18 @@ public:
   virtual ~CfitsioError() = default;
 
   /**
-   * @brief Create from CFitsIO error code.
-   * @details This generate the associated CFitsIO message with no context.
+   * @brief Create from CFITSIO error code.
+   * @details This generate the associated CFITSIO message with no context.
    */
   explicit CfitsioError(int cfitsioStatus);
 
   /**
    * @brief Create a CfitsioError.
-   * @param cfitsioStatus The CFitsIO error status
+   * @param cfitsioStatus The CFITSIO error status
    * @param fptr The fitsfile pointer to provide informations on the file
    * @param context A more human-friendly message to explain the error context
    * @details
-   * Prints the context, then some file metadata, and then the CFitsIO error stack.
+   * Prints the context, then some file metadata, and then the CFITSIO error stack.
    */
   CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string& context);
 
@@ -57,7 +57,7 @@ public:
 
 public:
   /**
-   * @brief The CFitsIO error code.
+   * @brief The CFITSIO error code.
    */
   int status;
 };

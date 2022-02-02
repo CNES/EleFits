@@ -31,7 +31,7 @@ namespace Cfitsio {
 namespace HduAccess {
 
 /**
- * @brief Read the number of HDUs in a Fits file.
+ * @brief Read the number of HDUs in a FITS file.
  * @warning Empty or incomplete HDUs are not counted.
  */
 long count(fitsfile* fptr);

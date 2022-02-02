@@ -35,10 +35,10 @@ public:
 
     logger.info();
     {
-      logger.info() << "Creating Fits file: " << filename;
-      //! [Create Fits]
+      logger.info() << "Creating FITS file: " << filename;
+      //! [Create FITS]
       MefFile f(filename, FileMode::Overwrite);
-      //! [Create Fits]
+      //! [Create FITS]
       const auto& primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
       logger.info() << "Writing new record: VALUE = 1";
       //! [Write record]
@@ -73,17 +73,17 @@ public:
       logger.info();
 
       logger.info() << "Closing file.";
-      //! [Close Fits]
+      //! [Close FITS]
       f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
-      //! [Close Fits]
+      //! [Close FITS]
     }
     logger.info();
     {
 
       logger.info() << "Reopening file.";
-      //! [Open Fits]
+      //! [Open FITS]
       MefFile f(filename, FileMode::Read);
-      //! [Open Fits]
+      //! [Open FITS]
       //! [Read record]
       const auto recordValue = f.primary().header().parse<int>("VALUE");
       //! [Read record]

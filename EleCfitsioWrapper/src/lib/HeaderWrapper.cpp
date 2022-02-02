@@ -78,7 +78,7 @@ template <>
 Fits::Record<bool> parseRecord<bool>(fitsfile* fptr, const std::string& keyword) { // TODO rm duplication
   int status = 0;
   /* Read value and comment */
-  int nonconstIntValue; // TLOGICAL is for int in CFitsIO
+  int nonconstIntValue; // TLOGICAL is for int in CFITSIO
   char comment[FLEN_COMMENT];
   fits_read_key(fptr, TypeCode<bool>::forRecord(), keyword.c_str(), &nonconstIntValue, comment, &status);
   /* Read unit */
@@ -110,7 +110,7 @@ Fits::Record<std::string> parseRecord<std::string>(fitsfile* fptr, const std::st
   if (length == 0) {
     return {keyword, ""};
   }
-  char* value = nullptr; // That's almost the only function in which CFitsIO allocates itself!
+  char* value = nullptr; // That's almost the only function in which CFITSIO allocates itself!
   char unit[FLEN_COMMENT];
   unit[0] = '\0';
   char comment[FLEN_COMMENT];
@@ -154,7 +154,7 @@ Fits::Record<Fits::VariantValue> parseRecord<Fits::VariantValue>(fitsfile* fptr,
 template <>
 void writeRecord<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int status = 0;
-  int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
+  int nonconstIntValue = record.value; // TLOGICAL is for int in CFITSIO
   fits_write_key(
       fptr,
       TypeCode<bool>::forRecord(),
@@ -202,7 +202,7 @@ template <>
 void updateRecord<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int status = 0;
   std::string comment = record.rawComment();
-  int nonconstIntValue = record.value; // TLOGICAL is for int in CFitsIO
+  int nonconstIntValue = record.value; // TLOGICAL is for int in CFITSIO
   fits_update_key(fptr, TypeCode<bool>::forRecord(), record.keyword.c_str(), &nonconstIntValue, &comment[0], &status);
   CfitsioError::mayThrow(status, fptr, "Cannot update Boolean record: " + record.keyword);
 }

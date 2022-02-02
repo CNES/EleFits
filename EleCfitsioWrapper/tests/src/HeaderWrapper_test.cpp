@@ -63,7 +63,7 @@ void checkRecordIsReadBack(const std::string& label) {
 
 template <>
 void checkRecordIsReadBack<unsigned long>(const std::string& label) {
-  // Known CFitsIO bug: error if value is > max(long)
+  // Known CFITSIO bug: error if value is > max(long)
   (void)(label); // Silent "unused parameter" warning
 }
 

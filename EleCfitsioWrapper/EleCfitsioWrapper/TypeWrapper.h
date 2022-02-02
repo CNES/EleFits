@@ -14,7 +14,7 @@ namespace Euclid {
 namespace Cfitsio {
 
 /**
- * @brief Type traits to convert C++ types to CFitsIO type codes.
+ * @brief Type traits to convert C++ types to CFITSIO type codes.
  * @details
  * Used to read and write:
  * * Records,

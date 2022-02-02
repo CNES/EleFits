@@ -174,7 +174,7 @@ public:
 
     AstroObjInfo info {nbin, ndith, nbin, {nbin, height}};
 
-    logger.info() << "Creating Fits file: " << filename;
+    logger.info() << "Creating FITS file: " << filename;
     MefFile f(filename, FileMode::Overwrite);
 
     logger.info() << "Writing metadata";

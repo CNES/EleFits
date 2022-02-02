@@ -12,7 +12,7 @@ namespace Fits {
 
 template <class T>
 const T& MefFile::access(long index) {
-  Cfitsio::HduAccess::gotoIndex(m_fptr, index + 1); // CFitsIO index is 1-based
+  Cfitsio::HduAccess::gotoIndex(m_fptr, index + 1); // CFITSIO index is 1-based
   const auto hduType = Cfitsio::HduAccess::currentType(m_fptr);
   auto& ptr = m_hdus[index];
   if (ptr == nullptr) {
@@ -30,7 +30,7 @@ const T& MefFile::access(long index) {
 template <class T>
 const T& MefFile::accessFirst(const std::string& name, long version) {
   Cfitsio::HduAccess::gotoName(m_fptr, name, version, HduCategory::forClass<T>());
-  return access<T>(Cfitsio::HduAccess::currentIndex(m_fptr) - 1); // -1 because CFitsIO index is 1-based
+  return access<T>(Cfitsio::HduAccess::currentIndex(m_fptr) - 1); // -1 because CFITSIO index is 1-based
 }
 
 template <class T>

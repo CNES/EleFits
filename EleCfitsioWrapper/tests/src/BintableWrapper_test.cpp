@@ -119,7 +119,7 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
-  constexpr long rowCount(10000); // Large enough to ensure CFitsIO buffer is full
+  constexpr long rowCount(10000); // Large enough to ensure CFITSIO buffer is full
   RandomScalarColumn<int> i(rowCount);
   i.rename("I");
   RandomScalarColumn<float> f(rowCount);

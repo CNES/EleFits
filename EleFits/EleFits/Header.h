@@ -74,7 +74,7 @@ enum class RecordMode
  * The impact on runtime is negligible.
  * 
  * @note
- * As specified in the Fits definition, duplicated keywords lead to an undefined behavior.
+ * As specified in the FITS definition, duplicated keywords lead to an undefined behavior.
  */
 class Header {
 

@@ -60,12 +60,12 @@ using VariantValue = boost::any;
  * Record<double> lightSpeed {"LIGHT", 3.0e8, "m/s", "speed of light"};
  * \endcode
  *
- * In the Fits file, this record will appear in the header of an HDU as (padding blank spaces removed):
+ * In the FITS file, this record will appear in the header of an HDU as (padding blank spaces removed):
  * \code
  * LIGHT = 3.0E8 / [m/s] speed of light
  * \endcode
  *
- * In the Fits definition, it is unclear if the "comment" encompasses only: `speed of light`, or also the unit, as: `[m/s] speed of light`.
+ * In the FITS definition, it is unclear if the "comment" encompasses only: `speed of light`, or also the unit, as: `[m/s] speed of light`.
  * In EleFits, the former is named comment, while the latter is the raw comment.
  * The raw comment can be get as `Record::rawComment()`.
  * 
@@ -91,11 +91,11 @@ using VariantValue = boost::any;
  * \endcode
  * The maximum length of such a keyword is 67 characters, which gives room for a 1-byte long value.
  *
- * CFitsIO convention on long string values (more than 68 characters) is supported.
+ * CFITSIO convention on long string values (more than 68 characters) is supported.
  * When writing a long string record, the value is wrapped automatically,
  * and each new line starts with the CONTINUE keyword.
  * An additional "LONGSTRN" record is written to the file,
- * to warn the file user about the CFitsIO convention.
+ * to warn the file user about the CFITSIO convention.
  */
 template <typename T>
 struct Record {

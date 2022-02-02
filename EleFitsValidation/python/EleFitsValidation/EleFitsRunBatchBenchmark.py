@@ -38,7 +38,7 @@ def defineSpecificProgramOptions():
                         help='The set of test configurations as a TSV file '
                         '(columns are: "Test setup", "HDU type", "HDU count", "Value count / HDU"). '
                         'The result file can be used to rerun the same benchmark.')
-    parser.add_argument('--output', default='/tmp/test.fits', help='The filename of the Fits files to be generated.')
+    parser.add_argument('--output', default='/tmp/test.fits', help='The filename of the FITS files to be generated.')
     parser.add_argument('--res', default='/tmp/benchmark.csv', help='The filename of the benchmark results TSV.')
     parser.add_argument('--plot', default='/tmp/plot.eps', help='The filename of the benchmark results plotting file.')
     return parser

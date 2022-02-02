@@ -32,14 +32,14 @@ This means:
 - That you don't create the Primary HDU yourself, and the header is immediately accessible;
 - That you have to reshape the Primary array in order to write data to it.
 
-The rationale is that a `FitsFile` should always represent a valid Fits file,
+The rationale is that a `FitsFile` should always represent a valid FITS file,
 and therefore have at the minimum one image HDU with all the mandatory keyword records.
 
 
 \section handlers-mef Multi-extension Fits
 
 
-Multi-extension Fits (MEF) files are manipulated through the `MefFile` class.
+Multi-extension FITS (MEF) files are manipulated through the `MefFile` class.
 
 All in all, `MefFile` is a mere container of HDUs, each of which is either of type `ImageHdu` or `BintableHdu`.
 There are methods to access the HDUs by index or by name, to select and iterate over HDUs, and to create new HDUs.
@@ -101,7 +101,7 @@ Again, many services are hidden for the sake of synthesis.
 
 
 Although they can be seen as simplistic instances of a MEF file,
-single image Fits (SIF) files have specificities which deserve a dedicated class: `SifFile`.
+single image FITS (SIF) files have specificities which deserve a dedicated class: `SifFile`.
 Shortcuts are provided to read and write the image data, and to access directly the header unit.
 Of course, it is possible to effectively handle a SIF file with a `MefFile` object,
 but this is more verbose, and does not enforce or guarantee that the file is and remains a SIF.
@@ -122,9 +122,9 @@ For comparison with `MefFile`, here is are much simplified tree view and class d
 \section handlers-wrapup Wrap-up
 
 
-The organization of the service classes matches that of a Fits file:
+The organization of the service classes matches that of a FITS file:
 
-- A Fits file can be either of type SIF or MEF;
+- A FITS file can be either of type SIF or MEF;
 - A MEF file contains HDUs, which themeselves contain records in a header and data in the form of an image or binary table;
 - As a specific case, a SIF file is made of a header and image.
 

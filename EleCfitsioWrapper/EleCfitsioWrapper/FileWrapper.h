@@ -35,22 +35,22 @@ enum class OpenPolicy
 };
 
 /**
- * @brief Create or overwrite a Fits file and open it.
+ * @brief Create or overwrite a FITS file and open it.
  */
 fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy);
 
 /**
- * @brief Open an existing Fits file with optional write permission.
+ * @brief Open an existing FITS file with optional write permission.
  */
 fitsfile* open(const std::string& filename, OpenPolicy policy);
 
 /**
- * @brief Close a Fits file.
+ * @brief Close a FITS file.
  */
 void close(fitsfile*& fptr);
 
 /**
- * @brief Close and delete a Fits file.
+ * @brief Close and delete a FITS file.
  * @warning Throw an exception if writing is not permitted.
  */
 void closeAndDelete(fitsfile*& fptr);
@@ -61,7 +61,7 @@ void closeAndDelete(fitsfile*& fptr);
 std::string name(fitsfile* fptr);
 
 /**
- * @brief Check whether a Fits file is open with write permission.
+ * @brief Check whether a FITS file is open with write permission.
  */
 bool isWritable(fitsfile* fptr);
 

@@ -1,8 +1,8 @@
 @startuml
-class CFitsIO {
+class CFITSIO {
 + functions()
 }
-hide CFitsIO circle
+hide CFITSIO circle
 package EleCfitsioWrapper {
 class SomeNamespace {
 + functions()
@@ -22,5 +22,5 @@ class SomeServiceClass {
 SomeDataClass <- SomeServiceClass : create and use
 SomeDataClass <-- SomeNamespace : create and use
 SomeServiceClass --> SomeNamespace : call
-SomeNamespace --> CFitsIO : call
+SomeNamespace --> CFITSIO : call
 @enduml

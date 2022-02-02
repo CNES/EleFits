@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(smoke_test) {
 }
 
 /**
- * Check that CFitsIO is not able to read unsigned long records if greater than max(long).
+ * Check that CFITSIO is not able to read unsigned long records if greater than max(long).
  */
 BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::Fits::Test::MinimalFile) {
   /* Write */
@@ -46,8 +46,8 @@ BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::Fits::Test::Min
   BOOST_TEST(status == 0);
   BOOST_TEST(output == signed_max);
   fits_read_key(fptr, TULONG, "UNSIGNED", &output, nullptr, &status);
-  BOOST_TEST(status == NUM_OVERFLOW); // CFitsIO bug
-  BOOST_TEST(output != unsigned_max); // CFitsIO bug
+  BOOST_TEST(status == NUM_OVERFLOW); // CFITSIO bug
+  BOOST_TEST(output != unsigned_max); // CFITSIO bug
 }
 
 BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::Fits::Test::MinimalFile) {
@@ -57,7 +57,7 @@ BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::Fits::Test::Min
   fits_resize_img(fptr, BYTE_IMG, 1, &naxes, &status);
   BOOST_TEST(status == 0);
   fits_resize_img(fptr, SBYTE_IMG, 1, &naxes, &status);
-  BOOST_TEST(status == BAD_BITPIX); // CFitsIO bug
+  BOOST_TEST(status == BAD_BITPIX); // CFITSIO bug
 }
 
 BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::Fits::Test::MinimalFile) {
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::Fits::Test
   fits_resize_img(fptr, LONGLONG_IMG, 1, &naxes, &status);
   BOOST_TEST(status == 0);
   fits_resize_img(fptr, ULONGLONG_IMG, 1, &naxes, &status);
-  BOOST_TEST(status == BAD_BITPIX); // CFitsIO bug
+  BOOST_TEST(status == BAD_BITPIX); // CFITSIO bug
 }
 
 //-----------------------------------------------------------------------------

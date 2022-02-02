@@ -4,34 +4,34 @@
 
 ## Purpose and scope
 
-EleFits (Euclid libraries and executables for Fits) is a modern C++ package to read and write Fits files which focuses on safety, user-friendliness, and performance.
-EleFits provides the only C++ Fits library which features a fully consistent and optimal internal type management system.
+EleFits (Euclid libraries and executables for FITS) is a modern C++ package to read and write FITS files which focuses on safety, user-friendliness, and performance.
+EleFits provides the only C++ FITS library which features a fully consistent and optimal internal type management system.
 Nevertheless, the API is templated and agnostic of the underlying architecture, which makes usage straightforward.
 EleFits is compact and involves as few parameters as possible, which makes it both simple and robust.
-As compared to CFitsIO, the benefits are mainly those of C++ over C:
+As compared to CFITSIO, the benefits are mainly those of C++ over C:
 
 * No raw pointers for a safe memory management;
 * No type codes but template traits classes which handle architecture specifics;
 * No error codes but a proper exception handling;
 * Structures dedicated to data storage;
-* A lightweight class hierarchy to represent the actual Fits organization (e.g. HDUs, records, columns).
+* A lightweight class hierarchy to represent the actual FITS organization (e.g. HDUs, records, columns).
 
 Furthermore, exclusive features are provided, like HDU selectors and automatic buffering of binary tables.
 
-To maximize performance, EleFits is built as a CFitsIO wrapper as thin as possible.
-While the two libraries are generally equivalent, optimizations implemented internally make EleFits even faster in some classical cases, unless the CFitsIO user spends considerable development efforts.
+To maximize performance, EleFits is built as a CFITSIO wrapper as thin as possible.
+While the two libraries are generally equivalent, optimizations implemented internally make EleFits even faster in some classical cases, unless the CFITSIO user spends considerable development efforts.
 
 ## Example usages
 
 The EleFits API was specifically designed to be very fluent and compact.
 The following (a bit extreme) example shows how natural it is
-to read a column named "RA" in the 4th extension of a Multi-Extension Fits (MEF) file:
+to read a column named "RA" in the 4th extension of a Multi-Extension FITS (MEF) file:
 
 ```cpp
 auto ra = MefFile("file.fits", FileMode::READ).access<BintableColumns>(4).read<double>("RA");
 ```
 
-A more realistic example is creating a Single Image Fits (SIF) file with a keyword record and an array:
+A more realistic example is creating a Single Image FITS (SIF) file with a keyword record and an array:
 
 ```cpp
 // Given:
@@ -54,7 +54,7 @@ auto& primary = fits->pHDU();
 primary.addKey(name, value, comment);
 primary.write(1, width * height, data);
 
-// And with CFitsIO:
+// And with CFITSIO:
 
 long shape[] = { width, height };
 int status = 0;
@@ -136,7 +136,7 @@ Each so-called documentation module addresses a specific topic to learn how to u
 The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.
 
 To go further, many other topics are discussed in the [Related pages](https://cnes.github.io/EleFits/4.0.1/pages.html), as unordered documents.
-Among others, you'll find there thoughts on CFitsIO, the tutorial, and some design documentation. 
+Among others, you'll find there thoughts on CFITSIO, the tutorial, and some design documentation. 
 
 ## Feedbacks
 

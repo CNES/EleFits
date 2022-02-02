@@ -33,12 +33,12 @@ namespace Fits {
  * 
  * When writing, if more rows are needed, they are automatically filled with zeros.
  * 
- * In the Fits file, binary tables are written row-wise, i.e. values of a row are contiguous in the file.
+ * In the FITS file, binary tables are written row-wise, i.e. values of a row are contiguous in the file.
  * As of today, in memory, values are stored column-wise (in `Column`) for convenience,
  * to avoid heterogeneous containers as much as possible.
  * This implies that read and write functions jump from one disk or memory adress to another all the time,
  * which costs a lot of resources.
- * To save on I/Os, an internal buffer is instantiated by CFitsIO.
+ * To save on I/Os, an internal buffer is instantiated by CFITSIO.
  * As opposed to methods to read and write a single column,
  * methods to read and write several columns take advantage of the internal buffer.
  * It is therefore much more efficient to use those than to chain several calls to methods for single columns.
@@ -103,7 +103,7 @@ public:
   /**
    * @brief Get the number of rows in the internal buffer.
    * @details
-   * CFitsIO internally implements a buffer to read and write data units efficiently.
+   * CFITSIO internally implements a buffer to read and write data units efficiently.
    * To optimize its usage, columns should be read and written by chunks of the buffer size at most.
    */
   long readBufferRowCount() const;

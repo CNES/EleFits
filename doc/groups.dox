@@ -1,12 +1,12 @@
 /**
 
 
-\defgroup primer  What's a Fits file?
-\brief The structure and contents of a Fits file, and how they relate to EleFits.
+\defgroup primer  What's a FITS file?
+\brief The structure and contents of a FITS file, and how they relate to EleFits.
 
 
 \defgroup data_classes Data classes
-\brief Classes to represent the data stored in a Fits file.
+\brief Classes to represent the data stored in a FITS file.
 
 \defgroup header_data_classes Header data classes
 \ingroup data_classes
@@ -26,7 +26,7 @@
 
 
 \defgroup handlers File and HDU handlers
-\brief Service classes to read and write Fits files.
+\brief Service classes to read and write FITS files.
 
 \defgroup file_handlers File handlers
 \ingroup handlers

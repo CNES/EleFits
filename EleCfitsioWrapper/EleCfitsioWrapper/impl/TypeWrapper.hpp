@@ -10,7 +10,7 @@ namespace Euclid {
 namespace Cfitsio {
 
 /*
- * From CFitsIO documentation "Keyword Reading Routines"
+ * From CFITSIO documentation "Keyword Reading Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node38.html
  *
  * Allowed types for records:
@@ -47,7 +47,7 @@ DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
 #endif
 
 /*
- * From CFitsIO documentation "Read and Write Column Data Routines"
+ * From CFITSIO documentation "Read and Write Column Data Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node46.html
  *
  * Allowed types for ASCII tables:
@@ -84,12 +84,12 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
 #endif
 
 /*
- * From Fits standard and CFitsIO documentation "Read and Write Column Data
+ * From FITS standard and CFITSIO documentation "Read and Write Column Data
  * Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node23.html
  *
- * CFitsIO recognizes 4 additional data type codes besides those already defined
- * in the Fits standard:
+ * CFITSIO recognizes 4 additional data type codes besides those already defined
+ * in the FITS standard:
  * - `U' meaning a 16-bit unsigned integer column,
  * - `V' for a 32-bit unsigned integer column,
  * - `W' for a 64-bit unsigned integer column, and
@@ -123,7 +123,7 @@ DEF_TABLE_TFORM(std::uint64_t, 'W')
 #endif
 
 /*
- * From CFitsIO documentation "Primary Array or Image Extension I/O Routines"
+ * From CFITSIO documentation "Primary Array or Image Extension I/O Routines"
  * https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node40.html
  *
  * Allowed types:
@@ -156,7 +156,7 @@ DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
 #endif
 
 /*
- * From CFitsIO documentation? //TODO link
+ * From CFITSIO documentation? //TODO link
  *
  * Allowed types:
  * BYTE_IMG, SHORT_IMG, LONG_IMG, LONGLONG_IMG, FLOAT_IMG, DOUBLE_IMG

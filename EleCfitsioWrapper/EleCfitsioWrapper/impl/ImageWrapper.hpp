@@ -89,7 +89,7 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster
   Fits::Position<N> back = region.back; // idem
   std::vector<long> step(dim, 1);
   for (std::size_t i = 0; i < dim; ++i) {
-    front[i]++; // CFitsIO is 1-based
+    front[i]++; // CFITSIO is 1-based
     back[i]++; // idem
   }
   fits_read_subset(

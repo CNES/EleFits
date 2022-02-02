@@ -36,13 +36,13 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
-  BOOST_TEST(this->hduCount() == 1); // 0 with CFitsIO
+  BOOST_TEST(this->hduCount() == 1); // 0 with CFITSIO
   Test::SmallRaster raster;
   const auto& primary = this->primary();
   primary.updateShape<float, 2>(raster.shape());
   BOOST_TEST(this->hduCount() == 1);
   const auto& ext = this->initImageExt<float, 2>("IMG", raster.shape());
-  BOOST_TEST(this->hduCount() == 2); // 1 with CFitsIO
+  BOOST_TEST(this->hduCount() == 2); // 1 with CFITSIO
   ext.writeRaster(raster);
   BOOST_TEST(this->hduCount() == 2);
 }

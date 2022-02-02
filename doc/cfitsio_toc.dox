@@ -3,11 +3,11 @@ namespace Fits {
 
 /**
 
-\page cfitsio_toc CFitsIO-like table of contents
+\page cfitsio_toc CFITSIO-like table of contents
 
 - Introduction: \ref index
 - Creating the EleFits package: \ref md_doc_INSTALL
-- A Fits primer: \ref primer
+- A FITS primer: \ref primer
 - Programming guidelines
   - Definitions: *not relevant*
   - Current Header Data Unit (CHDU): *not relevant*
@@ -16,15 +16,15 @@ namespace Fits {
   - Dealing with character strings: *not relevant*
   - Implicit data type conversion: \ref types
   - Data scaling: \ref types
-  - Support for IEEE special values: same as CFitsIO
+  - Support for IEEE special values: same as CFITSIO
   - Error status values and the error message stack: \ref exceptions
   - Variable-length arrays in binary tables: *not supported*
-  - Multiple access to the same Fits file: same as CFitsIO
-  - When the final size of the Fits HDU is unknown: *not relevant*
-  - Size limitations: same as CFitsIO 
+  - Multiple access to the same FITS file: same as CFITSIO
+  - When the final size of the FITS HDU is unknown: *not relevant*
+  - Size limitations: same as CFITSIO 
 - Basic and specialized services
   - Exceptions: \ref exceptions
-  - Fits file access: \ref file_handlers
+  - FITS file access: \ref file_handlers
   - HDU access and creation: \ref file_handlers
   - Header keyword records read/write: \ref header_handlers
   - Primary array or image extension: \ref image_handlers

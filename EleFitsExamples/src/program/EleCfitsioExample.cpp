@@ -53,15 +53,15 @@ public:
 
     logger.info();
 
-    logger.info() << "Creating Fits file: " << filename;
+    logger.info() << "Creating FITS file: " << filename;
     int status = 0;
-    //! [Create Fits]
+    //! [Create FITS]
     fitsfile* fptr;
     fits_create_file(&fptr, (std::string("!") + filename).c_str(), &status);
     long naxis0 = 0;
     fits_create_img(fptr, BYTE_IMG, 1, &naxis0, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create file");
-    //! [Create Fits]
+    //! [Create FITS]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
     int recordValue = 1;
@@ -122,17 +122,17 @@ public:
     logger.info();
 
     logger.info() << "Closing file.";
-    //! [Close Fits]
+    //! [Close FITS]
     fits_close_file(fptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot close file");
-    //! [Close Fits]
+    //! [Close FITS]
 
     logger.info();
 
     logger.info() << "Reopening file.";
-    //! [Open Fits]
+    //! [Open FITS]
     fits_open_file(&fptr, filename.c_str(), READONLY, &status);
-    //! [Open Fits]
+    //! [Open FITS]
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot reopen file");
     //! [Read record]
     fits_read_key(fptr, TINT, "VALUE", &recordValue, nullptr, &status);

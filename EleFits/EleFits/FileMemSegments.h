@@ -12,7 +12,7 @@ namespace Fits {
 
 /**
  * @ingroup bintable_handlers
- * @brief Mapping between an in-file (Fits binary table data unit) segment and an in-memory (column) segment
+ * @brief Mapping between an in-file (FITS binary table data unit) segment and an in-memory (column) segment
  * for reading and writing bintable segments.
  */
 class FileMemSegments {

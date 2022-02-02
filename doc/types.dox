@@ -11,21 +11,21 @@ namespace Fits {
 
 \section types-indices Indices
 
-Indices in the Fits namespace are 0-based `long`s.
+Indices in the `Fits` namespace are 0-based `long`s.
 Here is why.
 
 There is no way to make everybody happy:
 
-- Fits generally relies on 1-based integers, sign-ness of which is undefined;
-- HDUs have no index in the Fits definition: they are just contiguous in the file;
+- FITS generally relies on 1-based integers, sign-ness of which is undefined;
+- HDUs have no index in the FITS definition: they are just contiguous in the file;
 - C uses 0-based signed integers;
 - The C++ standard library uses 0-based unsigned integers;
-- CFitsIO uses 1-based signed integers with varying type (e.g. `int` for column count and `long` or `LONGLONG` for row count).
+- CFITSIO uses 1-based signed integers with varying type (e.g. `int` for column count and `long` or `LONGLONG` for row count).
 
 Following the <a href="https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Res-subscripts">C++ Core Guidelines</a>,
 we've opted for signed integers, and precisely for `long`'s.
 To reduce the noise, we did not create a custom type like "index", "length" or "size".
-We do not rely on `ptrdiff_t` as suggested in the Guidelines, because it would create issues when interfacing internally with CFitsIO.
+We do not rely on `ptrdiff_t` as suggested in the Guidelines, because it would create issues when interfacing internally with CFITSIO.
 Using `long`s conveys the following message: trying to use something larger than the max of `long` won't work.
 
 Having signed indices also enables backard indexing, where -1 means the last index.
@@ -42,8 +42,8 @@ for the sake of compatibility with the standard library, in particular the `Cont
 \section types-data Data types
 
 
-As shown in the \ref type_map, handling data types right with CFitsIO can be very cumbersome.
-EleFits aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFitsIO implementation.
+As shown in the \ref type_map, handling data types right with CFITSIO can be very cumbersome.
+EleFits aims at carrying the boilerplate internally, so that the user doesn't need to know the underlying architecture or CFITSIO implementation.
 Template functions and methods are provided to simply let the user set the desired type, e.g.:
 
 \code
@@ -61,8 +61,8 @@ Indeed, if an image of pixel type `int` is written on a system where it is encod
 and read on a system where it is encoded as a 32-bit integer, values will be corrupted.
 This is avoided by using `std::int32_t` instead.
 
-The Fits format doesn't natively support unsigned integers or signed bytes.
-Yet, CFitsIO and EleFits rely on the scaling mechanism to support them:
+The FITS format doesn't natively support unsigned integers or signed bytes.
+Yet, CFITSIO and EleFits rely on the scaling mechanism to support them:
 an unsigned integer value will be internally offset to get a signed integer in the file.
 The offset is written in the file as a `BZERO` (image HDU) or `TZERO` (binary table HDU) keyword record,
 used to correctly recover the value at reading.
@@ -74,7 +74,7 @@ Yet, a few sevices are overloaded with `const char*` for convenience.
 
 \subsection types-data-variant VariantValue
 
-In addition to CFitsIO data types, EleFits provides some of the services for `VariantValue` (e.g., to read records).
+In addition to CFITSIO data types, EleFits provides some of the services for `VariantValue` (e.g., to read records).
 In this case, the underlying type is wrapped in a `VariantValue` object, which can be cast later.
 
 Development efforts have been put to allow the user to get whatever compatible type from the `VariantValue` object.

@@ -195,10 +195,10 @@ protected:
   fitsfile*& m_fptr;
 
   /**
-   * @brief The 1-based CFitsIO HDU index.
+   * @brief The 1-based CFITSIO HDU index.
    * @warning
    * EleFits HDUs are 0-based in the public API and 1-based in the CfitsioWrapper namespace
-   * because CFitsIO indices are 1-based.
+   * because CFITSIO indices are 1-based.
    */
   long m_cfitsioIndex;
 

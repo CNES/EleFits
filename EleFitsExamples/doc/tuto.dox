@@ -9,7 +9,7 @@ namespace Fits {
 \section tuto-intro Introduction
 
 
-In this tutorial, we will show how to read and write multi-extension Fits (MEF) files.
+In this tutorial, we will show how to read and write multi-extension FITS (MEF) files.
 This means understanding the usage of the following service classes:
 
 - `MefFile` at file level,
@@ -18,7 +18,7 @@ This means understanding the usage of the following service classes:
 
 as well as `Record`, `Raster` and `Column` data classes.
 
-We strongly recommend reading first \ref primer, even if you're familiar with the Fits format,
+We strongly recommend reading first \ref primer, even if you're familiar with the FITS format,
 because it introduces `EleFits`-specific wording.
 
 At the end of the tutorial, you will be able to create a MEF file from scratch
@@ -56,7 +56,7 @@ For the headers and namespace, here's the only thing you'll have to do:
 \section tuto-data-classes Data classes
 
 
-Data classes are the classes which hold the pieces of data read from and written to a Fits file.
+Data classes are the classes which hold the pieces of data read from and written to a FITS file.
 There are three main classes:
 
 - `Record` for header units,
@@ -67,7 +67,7 @@ There are three main classes:
 \subsection tuto-record Record
 
 
-A keyword record as defined in the Fits standard is a triplet of keyword, value and optional comment rendered in the file as:
+A keyword record as defined in the FITS standard is a triplet of keyword, value and optional comment rendered in the file as:
 \code
 KEYWORD = VALUE / comment
 \endcode
@@ -94,7 +94,7 @@ Here's a how they can be built:
 \subsection tuto-raster Raster
 
 
-Images in Fits are _n_-dimensional arrays.
+Images in FITS are _n_-dimensional arrays.
 `Raster` is a class which represents this kind of data and provides constant time pixel accessors.
 Template arguments are the pixel type and number of axes.
 There are two kinds of rasters:
@@ -144,14 +144,14 @@ Here's a set of examples on how create them:
 Now that we have learned about the data classes, we can move to the service classes, or handlers.
 The first thing we can do is to create a new file.
 
-The `MefFile` class represents multi-extension Fits (MEF) files.
-It extends the `FitsFile` class, which is also the base class of `SifFile` for single-image Fits (SIF) files.
+The `MefFile` class represents multi-extension FITS (MEF) files.
+It extends the `FitsFile` class, which is also the base class of `SifFile` for single-image FITS (SIF) files.
 
 Creating (or opening) a file is simply done with the constructor of `MefFile` (or `SifFile` for SIF files!):
 
 \snippet EleFitsTutorial.cpp Create a MEF file
 
-A newly created Fits file consists in an empty Primary,
+A newly created FITS file consists in an empty Primary,
 which can then be accessed and modified, but is never created by hand.
 
 The mode parameter controls the access rights on the file.
@@ -239,7 +239,7 @@ They are described in details in \ref image_handlers.
 Analogously to `ImageRaster` for image HDUs,
 `BintableColumns` provides read/write services for the data unit of the binary table extension.
 
-As the name implies, data is stored, read and written column-wise, as opposed to the row-major ordering of the Fits file.
+As the name implies, data is stored, read and written column-wise, as opposed to the row-major ordering of the FITS file.
 This is to avoid working with very complex structures like tuples with holes, and rather rely on `Column`, `std::vector`, arrays...
 Yet, this also means that I/Os *could* be very inefficient!
 To workaround this, several columns can be written (and read) at a time.

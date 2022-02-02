@@ -22,10 +22,10 @@ class HduSelector;
 
 /**
  * @ingroup file_handlers
- * @brief Multi-Extension Fits file reader-writer.
+ * @brief Multi-Extension FITS file reader-writer.
  * @details
  * Provide HDU access/create services.
- * Single Image Fits files can be handled by this class, but SifFile is better suited:
+ * Single Image FITS files can be handled by this class, but SifFile is better suited:
  * it is safer and provides shortcuts.
  * @see \ref handlers
  */
@@ -45,9 +45,9 @@ public:
   /**
    * @brief Get the number of HDUs.
    * @details
-   * As opposed to CFitsIO HDU counting, the number is not read by this function:
+   * As opposed to CFITSIO HDU counting, the number is not read by this function:
    * it is initialized by the constructor and then updated at each modification through MefFile methods.
-   * This way, incomplete HDUs are also taken into account where CFitsIO would exclude them.
+   * This way, incomplete HDUs are also taken into account where CFITSIO would exclude them.
    * This means, for example, that the initial number of HDUs in a new file is 1 instead of 0.
    */
   long hduCount() const;

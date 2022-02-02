@@ -16,7 +16,7 @@ CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string&
     FitsError(context), status(cfitsioStatus) {
   append("");
   if (not fptr) {
-    append("CFitsIO fitsfile pointer is null.");
+    append("CFITSIO fitsfile pointer is null.");
   } else {
     try {
       append("File name: " + FileAccess::name(fptr));
@@ -49,7 +49,7 @@ std::string CfitsioError::message(int cfitsioStatus) {
   cfitsioMessage[0] = '\0';
   fits_get_errstatus(cfitsioStatus, cfitsioMessage);
   std::string message =
-      "CFitsIO v" + std::to_string(cfitsioVersion) + " error " + std::to_string(cfitsioStatus) + ": " + cfitsioMessage;
+      "CFITSIO v" + std::to_string(cfitsioVersion) + " error " + std::to_string(cfitsioStatus) + ": " + cfitsioMessage;
   return message;
 }
 

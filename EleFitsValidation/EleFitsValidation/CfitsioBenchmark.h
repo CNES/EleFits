@@ -17,7 +17,7 @@ namespace Fits {
 namespace Validation {
 
 /**
- * @brief Vanilla CFitsIO.
+ * @brief Vanilla CFITSIO.
  */
 class CfitsioBenchmark : public Benchmark {
 public:
@@ -115,9 +115,9 @@ private:
   void readColumn(BColumns& columns, long firstRow, long rowCount);
 
 private:
-  /** @brief The Fits file. */
+  /** @brief The FITS file. */
   fitsfile* m_fptr;
-  /** @brief The CFitsIO status code. */
+  /** @brief The CFITSIO status code. */
   int m_status;
   /** @brief The number of rows to write at once. */
   long m_rowChunkSize;

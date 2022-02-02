@@ -47,7 +47,7 @@ std::string readAuxFile(const std::string& filename);
 /**
  * @brief Copy a `std::string` into a `std::unique_ptr<char[]>`.
  * @details
- * Internally used to work around non-const correctness of CFitsIO:
+ * Internally used to work around non-const correctness of CFITSIO:
  * when a function expects a `char`* instead of a `const char*`,
  * `string::c_str()` cannot be used.
  * @see `CStrArray` for multiple strings

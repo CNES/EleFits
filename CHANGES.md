@@ -45,6 +45,7 @@
 * Access to raster and column elements is notably faster
 * Many similar code blocks have been merged (e.g. through mixins)
 * Several overloads have been merged (e.g. with `ColumnKey` and `TypedKey`)
+* Legal notices have been reviewed
 * Formatting has been reviewed
 * This change log was added to Doxygen pages
 
@@ -234,7 +235,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### Known bugs/issues
 
-* `unsigned long` records larger than the greatest `long` cannot be read (CFitsIO bug), although they can be written
+* `unsigned long` records larger than the greatest `long` cannot be read (CFITSIO bug), although they can be written
 * Boolean columns are not supported
 
 ## 2.0 (breaking)
@@ -274,7 +275,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### Known bugs/issues
 
-* `unsigned long` records larger than the greatest `long` cannot be read (CFitsIO bug), although they can be written
+* `unsigned long` records larger than the greatest `long` cannot be read (CFITSIO bug), although they can be written
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
 
@@ -290,7 +291,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### Safety
 
-* Test CFitsIO bug in reading `unsigned long` records (see known bugs)
+* Test CFITSIO bug in reading `unsigned long` records (see known bugs)
 * Explicitly cast every conversion
 
 ### Cleaning
@@ -299,7 +300,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### Known bugs/issues
 
-* `unsigned long` records larger than the greatest `long` cannot be read (CFitsIO bug), although they can be written
+* `unsigned long` records larger than the greatest `long` cannot be read (CFITSIO bug), although they can be written
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
 
@@ -329,7 +330,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### Cleaning
 
-* Fix CFitsIO include
+* Fix CFITSIO include
 * Overall code quality review
 
 ### Known bugs/issues
@@ -351,7 +352,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 File handlers:
 
-* Get the number of HDUs in a MEF file (fixes flawed behavior of CFitsIO)
+* Get the number of HDUs in a MEF file (fixes flawed behavior of CFITSIO)
 * List HDU names
 * Get the file name
 
@@ -363,7 +364,7 @@ Records:
 
 Binary tables:
 
-* Row-wise binary table reading and writing (huge performance improvement, not available in CFitsIO)
+* Row-wise binary table reading and writing (huge performance improvement, not available in CFITSIO)
 * Append new columns in a binary table
 
 ### Considered features for 1.4
@@ -402,5 +403,5 @@ Binary tables:
 
 ### Known bugs
 
-* Boolean columns are not working (requires discussions with CFitsIO devs)
+* Boolean columns are not working (requires discussions with CFITSIO devs)
 * Units are not consistently handled in records

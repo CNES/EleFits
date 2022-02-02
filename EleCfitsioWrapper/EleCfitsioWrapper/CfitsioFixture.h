@@ -19,7 +19,7 @@ namespace Fits {
 namespace Test {
 
 /**
- * @brief A minimal and temporary Fits file removed by destructor.
+ * @brief A minimal and temporary FITS file removed by destructor.
  */
 class MinimalFile {
 
@@ -46,7 +46,7 @@ public:
   std::string filename;
 
   /**
-   * @brief Pointer to the fitsfile for use with CFitsIO routines.
+   * @brief Pointer to the fitsfile for use with CFITSIO routines.
    */
   fitsfile* fptr;
 };

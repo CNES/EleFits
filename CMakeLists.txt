@@ -17,4 +17,4 @@ set(USE_SPHINX OFF
 #===============================================================================
 
 elements_project(EleFits 5.0 USE Elements 6.0.1
-        DESCRIPTION "A modern C++ API on top of CFitsIO")
+        DESCRIPTION "A modern C++ API on top of CFITSIO")

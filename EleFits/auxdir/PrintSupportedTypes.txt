@@ -1,7 +1,7 @@
 For each data structure (Record, Raster, Column), this program
 prints the list of types supported by EleFits.
 
-Record values are stored as ASCII strings in the Fits file.
+Record values are stored as ASCII strings in the FITS file.
 Machine types (short, int, long...) are therefore adequate.
 
 In contrast, Raster and Column data are stored in binary format.

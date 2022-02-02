@@ -68,7 +68,7 @@ namespace Fits {
  * 
  * For string columns, the element count differs from the repeat count,
  * in that the element count is the number of `std::string` objects stored in the column data container,
- * while the repeat count is the number of characters allocated to each string in the Fits file.
+ * while the repeat count is the number of characters allocated to each string in the FITS file.
  * This results in `elementCount()` = 1 and `repeatCount()` > 1
  * (multidimensional string columns are not supported).
  * 
@@ -111,13 +111,13 @@ namespace Fits {
  * a scalar column can be "fold" into a vector column by
  * just setting a repeat count greater than 1, and vice-versa.
  * This trick allows writing scalar columns as vector columns,
- * which is what CFitsIO recommends for performance.
- * Indeed, with CFitsIO, it is much faster to write 1 row with a repeat count of 10,000
+ * which is what CFITSIO recommends for performance.
+ * Indeed, with CFITSIO, it is much faster to write 1 row with a repeat count of 10,000
  * than 10,000 rows with a repeat count of 1.
- * This is because binary tables are written row-wise in the Fits file.
+ * This is because binary tables are written row-wise in the FITS file.
  * @note
- * CFitsIO uses an internal buffer, which can be exploited to optimize reading and writing.
- * This is generally handled through the "iterator function" provided by CFitsIO.
+ * CFITSIO uses an internal buffer, which can be exploited to optimize reading and writing.
+ * This is generally handled through the "iterator function" provided by CFITSIO.
  * @note
  * Fortunately, this complexity is already embedded in EleFits internals:
  * the buffer is used optimally when reading and writing several columns.

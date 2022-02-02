@@ -14,7 +14,7 @@ CfitsioBenchmark::~CfitsioBenchmark() {
 
 CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long rowChunkSize) :
     Benchmark(filename), m_fptr(nullptr), m_status(0), m_rowChunkSize(rowChunkSize) {
-  m_logger.info() << "CFitsIO benchmark (rowChunkSize: " << rowChunkSize << ", filename: " << filename << ")";
+  m_logger.info() << "CFITSIO benchmark (rowChunkSize: " << rowChunkSize << ", filename: " << filename << ")";
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
   fits_create_img(m_fptr, BYTE_IMG, 0, nullptr, &m_status); // Create empty Primary
   mayThrow("Cannot create file");

@@ -1,7 +1,7 @@
 This tutorial program demonstrates the usage
 of some basic functionalities of EleFits.
 
-It contists in creating a Fits file made of:
+It contists in creating a FITS file made of:
 - A Primary HDU with some custom records,
 - An image Extenion with random values,
 - A binary table Extension with random values.

@@ -20,7 +20,7 @@ we've tried to sort by orders of magnitude for classical use cases.
 \section optim-data-copy Avoid copies and implicit transforms
 
 
-This one is not specific to the Fits format or EleFits at all,
+This one is not specific to the FITS format or EleFits at all,
 but is probably worth remembering when using a code devoted to dataset manipulation.
 
 In the frame of the library usage, avoiding such operations boils down to:
@@ -33,10 +33,10 @@ Move semantics is a C++ feature you can look for on the Internet;
 Let us focus on the two other items.
 
 When casting is explicit, let's assume that you know what to do.
-The case we'll describe in more details is implicit casting made internally by CFitsIO.
+The case we'll describe in more details is implicit casting made internally by CFITSIO.
 
-The Fits format is obviously specified in terms of actual bytes, and therefore fixed-size types (e.g. 16- or 32-bit integers).
-CFitsIO mixes such fixed-size types with C types (e.g. `TLONG` maps to `long` while `LONG_IMG` maps to 32-bit integer),
+The FITS format is obviously specified in terms of actual bytes, and therefore fixed-size types (e.g. 16- or 32-bit integers).
+CFITSIO mixes such fixed-size types with C types (e.g. `TLONG` maps to `long` while `LONG_IMG` maps to 32-bit integer),
 without providing to the user any straightforwad way of avoiding casting.
 
 EleFits abstracts from this and provides a templated API, which internally handles fixed-size types and C types transparently
@@ -44,13 +44,13 @@ to enforce consistency and limit the number of casts.
 Yet, only fixed-size types guarantee that there is no time spent in casting operation.
 It is therefore recommended to use fixed-size integers as the template parameters (e.g. `std::int16_t`).
 
-Scaling is an affine transform specified in the Fits files as a pair of offset and scale parameters.
-The transform is applied at read-time by CFitsIO (and therefore EleFits),
-and at write-time when the type is not natively supported by Fits.
-For example, Fits does not support unsigned 16-bit integer values, but CFitsIO (and EleFits) does.
+Scaling is an affine transform specified in the FITS files as a pair of offset and scale parameters.
+The transform is applied at read-time by CFITSIO (and therefore EleFits),
+and at write-time when the type is not natively supported by FITS.
+For example, FITS does not support unsigned 16-bit integer values, but CFITSIO (and EleFits) does.
 To this end, it offsets the value to be written, writes it, and writes the offset parameter.
 This obviously has a non-negligible cost when applied to many values, like for table columns.
-In order to avoid scaling, users should stick to native Fits types (e.g. `std::int16_t` but not `std::uint16_t`).
+In order to avoid scaling, users should stick to native FITS types (e.g. `std::int16_t` but not `std::uint16_t`).
 
 \see types
 
@@ -58,7 +58,7 @@ In order to avoid scaling, users should stick to native Fits types (e.g. `std::i
 \section optim-hdu-jumping Avoid jumping from one HDU to another
 
 
-Fits files are made of consecutive HDUs, themeselves made of an ASCII header unit followed by a binary data unit.
+FITS files are made of consecutive HDUs, themeselves made of an ASCII header unit followed by a binary data unit.
 Reading or writing data to or from an HDU consists in:
 
 - Finding the HDU (more on that later) and accessing it;
@@ -121,12 +121,12 @@ EleFits provides services to read and write bunches of data through one single c
 The reason is to skip steps (like bunny hopping in the file) and lower runtime and memory footprint.
 
 This is especially true for binary table writing.
-Without diving into the implementation details, let's give a brief overview of what's happening in CFitsIO.
-Fits tables are stored row-wise.
-When reading a single column, CFitsIO has to load each of the rows.
-When reaching the last value of the target column, CFitsIO has finally loaded the whole set of columns!
+Without diving into the implementation details, let's give a brief overview of what's happening in CFITSIO.
+FITS tables are stored row-wise.
+When reading a single column, CFITSIO has to load each of the rows.
+When reaching the last value of the target column, CFITSIO has finally loaded the whole set of columns!
 
-EleFits's multi-column reading and writing functions internally take advantage of a CFitsIO buffer
+EleFits's multi-column reading and writing functions internally take advantage of a CFITSIO buffer
 to avoid passing through the data unit several times.
 
 \code
@@ -156,19 +156,19 @@ auto record2 = hdu.header().parse<float>("FLOAT");
 \endcode
 
 
-\section optim-vector-column-trick Don't use the CFitsIO vector column trick
+\section optim-vector-column-trick Don't use the CFITSIO vector column trick
 
 
 In order to lower the impact of reading table data colomn-wise,
-CFitsIO documentation recommends writing vector columns even for scalar concepts.
+CFITSIO documentation recommends writing vector columns even for scalar concepts.
 That is, if scalar columns of 10,000 rows should be written, rather write 10,000 value-wide vector columns over one row.
 This indeed allows storing the column values contiguously, and therefore speeds up the accesses.
 
 We think software optimization should not obfuscate the data, and the trick should be avoided as much as possible.
-Aforementioned multi-column reading and writing services of EleFits have no counterpart in CFitsIO,
-which makes the trick more relevant to CFitsIO users than to EleFits users.
+Aforementioned multi-column reading and writing services of EleFits have no counterpart in CFITSIO,
+which makes the trick more relevant to CFITSIO users than to EleFits users.
 
-To go further, CFitsIO "iterator" mechanism is the way to go for performance;
+To go further, CFITSIO "iterator" mechanism is the way to go for performance;
 it is a clean solution which keeps the data in the logical format.
 It has no counterpart in EleFits. For now...
 

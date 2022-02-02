@@ -13,7 +13,7 @@
 namespace Euclid {
 
 /**
- * @brief Wrapper classes to read and write Fits file contents.
+ * @brief Wrapper classes to read and write FITS file contents.
  * @details
  * There are two types of classes:
  * -# Service classes offer read/write services:
@@ -24,13 +24,13 @@ namespace Euclid {
  *
  * The following naming conventions are adopted:
  * * `Hdu` refers to both the Primary HDU and the extensions, while `Ext` refers only to the extensions;
- * * `read` and `parse` means that some data are read from the Fits file;
- * * `parse` differs from `read` in that the raw contents of the Fits file are interpreted
+ * * `read` and `parse` means that some data are read from the FITS file;
+ * * `parse` differs from `read` in that the raw contents of the FITS file are interpreted
  * instead of being simply forwarded:
  * for example, `Header::parse()` returns a `Record` with user-defined type
- * by parsing the characters in the Fits file,
+ * by parsing the characters in the FITS file,
  * while `Hdu::readName()` returns the raw value of the `EXTNAME` keyword.
- * * `write`, `init` and `assign` means that some data are written to the Fits file;
+ * * `write`, `init` and `assign` means that some data are written to the FITS file;
  * * `init` methods write metadata (e.g. image size) while `assign` methods also write data (e.g. image pixels);
  * * Getters -- which do not imply reading from the Files but only working with class members -- are nouns:
  * for example, `Hdu::readName()` is a reading operation, while `Hdu::index()` is a simple getter.
@@ -43,7 +43,7 @@ namespace Fits {
 std::string version();
 
 /**
- * @brief Fits file read/write permissions.
+ * @brief FITS file read/write permissions.
  */
 enum class FileMode
 {
@@ -76,7 +76,7 @@ public:
 
 /**
  * @ingroup file_handlers
- * @brief Fits file reader-writer.
+ * @brief FITS file reader-writer.
  * @details
  * Mostly en empty shell for file opening and closing operations;
  * Useful services are in the SifFile and MefFile classes.
@@ -86,7 +86,7 @@ class FitsFile {
 
 public:
   /**
-   * @brief Create a new Fits file handler with given filename and permission.
+   * @brief Create a new FITS file handler with given filename and permission.
    */
   FitsFile(const std::string& filename, FileMode permission);
 
@@ -130,7 +130,7 @@ public:
 
 protected:
   /**
-   * @brief Open a Fits file with given filename and permission.
+   * @brief Open a FITS file with given filename and permission.
    * @details
    * This method can only be used after having closed the file;
    * It throws an exception otherwise.
@@ -143,14 +143,14 @@ protected:
    * ... // Read things
    * \endcode
    * ... but not to change the filename:
-   * If called with another filename, another Fits file will be opened.
+   * If called with another filename, another FITS file will be opened.
    * @warning
    * In any case, relying on the constructors and destructors by managing the object lifetime is preferable.
    */
   void open(const std::string& filename, FileMode permission);
 
   /**
-   * @brief The CFitsIO file handler.
+   * @brief The CFITSIO file handler.
    */
   fitsfile* m_fptr;
 

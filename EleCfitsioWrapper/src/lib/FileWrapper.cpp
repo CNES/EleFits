@@ -14,7 +14,7 @@ namespace FileAccess {
 fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
   std::string cfitsioName = filename;
   if (policy == CreatePolicy::OverWrite) {
-    cfitsioName.insert(0, 1, '!'); // CFitsIO convention
+    cfitsioName.insert(0, 1, '!'); // CFITSIO convention
   }
   fitsfile* fptr;
   int status = 0;

@@ -51,7 +51,7 @@ public:
     options.named("pixels", value<int>()->default_value(1), "Number of pixels");
     options.named("tables", value<int>()->default_value(0), "Number of binary table extensions");
     options.named("rows", value<int>()->default_value(1), "Number of rows");
-    options.named("output", value<std::string>()->default_value("/tmp/test.fits"), "Output Fits file");
+    options.named("output", value<std::string>()->default_value("/tmp/test.fits"), "Output FITS file");
     options.named("res", value<std::string>()->default_value("/tmp/benchmark.csv"), "Output result file");
     return options.asPair();
   }

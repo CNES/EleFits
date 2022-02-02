@@ -35,10 +35,10 @@ public:
 
     logger.info();
 
-    logger.info() << "Creating Fits file: " << filename;
-    //! [Create Fits]
+    logger.info() << "Creating FITS file: " << filename;
+    //! [Create FITS]
     auto fptr = FileAccess::createAndOpen(filename, FileAccess::CreatePolicy::OverWrite);
-    //! [Create Fits]
+    //! [Create FITS]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
     HeaderIo::writeRecord<int>(fptr, {"VALUE", 1});
@@ -72,16 +72,16 @@ public:
     logger.info();
 
     logger.info() << "Closing file.";
-    //! [Close Fits]
+    //! [Close FITS]
     FileAccess::close(fptr);
-    //! [Close Fits]
+    //! [Close FITS]
 
     logger.info();
 
     logger.info() << "Reopening file.";
-    //! [Open Fits]
+    //! [Open FITS]
     fptr = FileAccess::open(filename, FileAccess::OpenPolicy::ReadOnly);
-    //! [Open Fits]
+    //! [Open FITS]
     //! [Read record]
     const auto recordValue = HeaderIo::parseRecord<int>(fptr, "VALUE");
     //! [Read record]

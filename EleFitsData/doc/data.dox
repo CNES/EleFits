@@ -9,7 +9,7 @@ namespace Fits {
 \section data-intro Introduction
 
 
-Data classes represent the data which can be read or written in a Fits file.
+Data classes represent the data which can be read or written in a FITS file.
 They are split into header, image, and binary table data classes.
 
 
@@ -33,7 +33,7 @@ Some convenience classes like `RecordSeq` are also implemented.
 \section data-raster Image data classes
 
 
-`Raster`s are the in-memory representation of the _n_-D arrays of Fits.
+`Raster`s are the in-memory representation of the _n_-D arrays of FITS.
 A raster has:
 - a dimension (number of axes) as a template parameter,
 - a value type as a template parameter,

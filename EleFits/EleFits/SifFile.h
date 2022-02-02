@@ -13,7 +13,7 @@ namespace Fits {
 
 /**
  * @ingroup file_handlers
- * @brief Single image Fits file handler.
+ * @brief Single image FITS file handler.
  * @details
  * Provide read/write access to the header and image raster.
  * @see \ref handlers

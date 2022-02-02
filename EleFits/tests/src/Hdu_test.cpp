@@ -38,14 +38,14 @@ void checkRecordWithFallbackIsReadBack(const Header& h, const std::string& keywo
 
 template <>
 void checkRecordWithFallbackIsReadBack<unsigned long>(const Header& h, const std::string& keyword) {
-  // Wait for CFitsIO bug to be fixed
+  // Wait for CFITSIO bug to be fixed
   (void)h;
   (void)keyword;
 }
 
 template <>
 void checkRecordWithFallbackIsReadBack<unsigned long long>(const Header& h, const std::string& keyword) {
-  // Wait for CFitsIO bug to be fixed
+  // Wait for CFITSIO bug to be fixed
   (void)h;
   (void)keyword;
 }

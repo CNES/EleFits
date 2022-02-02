@@ -9,7 +9,7 @@ namespace Fits {
 \section api_design-history A journey to the API design
 
 
-The main reason why we have started implementing EleFits is to make usage safer wrt. CFitsIO and CCfits.
+The main reason why we have started implementing EleFits is to make usage safer wrt. CFITSIO and CCfits.
 This means improving type safety, memory management,
 and also safety of use in the sense of preventing API usage mistakes.
 This comes with the simplification of the parameters (no pointers, structured groups of parameters...)
@@ -20,7 +20,7 @@ In the fourth extension of some file "catalog.fits",
 read columns "ID" and "RADEC" as vectors of `string` and `std::complex<double>`, respectively.
 By the way, get the name of the extension.
 
-An object-based API following the CFitsIO approach (one single class does everything) could be something like this:
+An object-based API following the CFITSIO approach (one single class does everything) could be something like this:
 
 \code
 FitsFile f("catalog.fits", FileMode::READ);

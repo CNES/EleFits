@@ -39,7 +39,7 @@ namespace Fits {
 
 /**
  * @ingroup data_concepts
- * @brief Base class for a Fits data container.
+ * @brief Base class for a FITS data container.
  * 
  * @tparam T The value type
  * @tparam TDerived The child class which implements required methods

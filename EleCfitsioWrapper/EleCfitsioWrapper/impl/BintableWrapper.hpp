@@ -332,7 +332,7 @@ template <typename T>
 void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const T* data) {
   int status = 0;
   const auto size = rows.size() * repeatCount;
-  std::vector<T> nonconstData(data, data + size); // We need a non-const data for CFitsIO
+  std::vector<T> nonconstData(data, data + size); // We need a non-const data for CFITSIO
   fits_write_col(
       fptr,
       TypeCode<T>::forBintable(), // datatype

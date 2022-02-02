@@ -4,7 +4,7 @@
 
 [TOC]
 
-## Known CFitsIO bugs
+## Known CFITSIO bugs
 
 TODO
 
@@ -12,7 +12,7 @@ TODO
 
 TODO
 
-## Unsupported CFitsIO features
+## Unsupported CFITSIO features
 
 HDUs:
 * HDU copy
@@ -36,7 +36,7 @@ Table HDUs:
 * Row searching and selection
 * Binary table histograms
 
-## Unsupported Fits features
+## Unsupported FITS features
 
 * Compressed binary table HDUs
 * Random groups

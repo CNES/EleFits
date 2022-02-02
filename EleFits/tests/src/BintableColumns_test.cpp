@@ -112,7 +112,7 @@ void checkTupleWriteRead<std::uint64_t>(
     const BintableColumns& du,
     const VecColumn<std::uint64_t>& first,
     const VecColumn<std::uint64_t>& last) {
-  // FIXME CFitsIO bug?
+  // FIXME CFITSIO bug?
   (void)du;
   (void)first;
   (void)last;
@@ -158,7 +158,7 @@ void checkArrayWriteRead<std::string>(const BintableColumns& du) {
 
 template <>
 void checkArrayWriteRead<std::uint64_t>(const BintableColumns& du) {
-  // FIXME CFitsIO bug?
+  // FIXME CFITSIO bug?
   (void)du;
 }
 
@@ -200,7 +200,7 @@ void checkVectorWriteRead<std::string>(const BintableColumns& du) {
 
 template <>
 void checkVectorWriteRead<std::uint64_t>(const BintableColumns& du) {
-  // FIXME CFitsIO bug?
+  // FIXME CFITSIO bug?
   (void)du;
 }
 

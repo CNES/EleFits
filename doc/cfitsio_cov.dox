@@ -1,6 +1,6 @@
 /**
 
-\page cfitsio_cov CFitsIO routines covered by EleFits
+\page cfitsio_cov CFITSIO routines covered by EleFits
 
 Legend:
 
@@ -8,10 +8,10 @@ Legend:
 - Items in *italic* are being implemented;
 - Other items are not available, they might be implemented on user requests.
 
-\section cfitsio-basic Basic CFitsIO Interface Routines 
+\section cfitsio-basic Basic CFITSIO Interface Routines 
 
-- **CFitsIO Error Status Routines**
-- Fits File Access Routines
+- **CFITSIO Error Status Routines**
+- FITS File Access Routines
   - **Open file** (and with more modes, e.g. temporary)
   - Open table/image (useful?)
   - **Create file**
@@ -24,7 +24,7 @@ Legend:
   - **Move to the HDU with given index**
   - **Move to the next HDU**
   - **Move to the first HDU with given name**
-  - **HDU count** (flawed in CFitsIO, fixed in EleFits)
+  - **HDU count** (flawed in CFITSIO, fixed in EleFits)
   - **HDU index**
   - **HDU type**
   - Copy HDUs
@@ -79,29 +79,29 @@ Legend:
   - Calculate histogram parameters
   - Bin table values and write histogram
 
-\section cfitsio-iterator The CFitsIO Iterator Function
+\section cfitsio-iterator The CFITSIO Iterator Function
 
 Not supported.
 
 \section cfitsio-wcs World Coordinate System Routines
 
-Not supported, but deprecated in CFitsIO.
+Not supported, but deprecated in CFITSIO.
 
 \section cfitsio-grouping Hierarchical Grouping Routines
 
 Not supported.
 
-\section cfitsio-special Specialized CFitsIO Interface Routines
+\section cfitsio-special Specialized CFITSIO Interface Routines
 
 Partly supported: to be documented.
 
-\section cfitsio-missing EleFits features not implemented in CFitsIO
+\section cfitsio-missing EleFits features not implemented in CFITSIO
 
 - Const-correctness
-- Consistent type management (not mixing C types and Fits types)
+- Consistent type management (not mixing C types and FITS types)
 - Read/write non-contiguous in-memory image regions
-- Read/write several columns at once (with optimal usage of CFitsIO buffer: boosts I/Os)
-- Count the total number of HDUs (CFitsIO counting excludes empty or incomplete HDUs)
+- Read/write several columns at once (with optimal usage of CFITSIO buffer: boosts I/Os)
+- Count the total number of HDUs (CFITSIO counting excludes empty or incomplete HDUs)
 - Filter and iterate over selected HDUs
 
 */

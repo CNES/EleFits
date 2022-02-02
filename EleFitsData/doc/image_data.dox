@@ -10,7 +10,7 @@ namespace Fits {
 
 
 The central class for image data representation is `Raster`.
-It is the in-memory representation of the _n_-D arrays of Fits.
+It is the in-memory representation of the _n_-D arrays of FITS.
 A raster is defined by:
 - A dimension (number of axes) as template parameter `N`;
 - A value type as template parameter `T`;

@@ -13,7 +13,7 @@ There are two main classes to perform image HDU I/Os:
 - `ImageRaster` focuses on services to read and write the data unit.
 
 In addition, `FileMemRegions` is a helper class to specify which regions to consider,
-both in the Fits file and in the `Raster` object,
+both in the FITS file and in the `Raster` object,
 when reading or writing the data unit region-wise.
 
 For example, here is how to write the 2D region of a raster spanning from (8, 16) to (32, 48)
