@@ -175,13 +175,13 @@ that is, an image HDU with empty array.
 
 There are two types of table HDUs: ASCII tables and binary tables.
 ASCII tables are hardly used anymore, and are not supported at all by EleFits.
-Binary tables are sequences of rows, themselves made of *fields*.
-Obviously, they can be seen as columns made of fields, but the FITS file is written row-wise.
-Binary table fields can be *scalar* (one element per field) or *vector* (several elements per field).
-In the latter case, fields can even be *multidimensional*, and seen as rasters like in image data units.
+Binary tables are sequences of rows, themselves made of *entries*.
+Obviously, they can be seen as columns made of entries, but the FITS file is written row-wise.
+Binary table entries can be *scalar* (one element per entry) or *vector* (several elements per entry).
+In the latter case, entries can even be *multidimensional*, and seen as rasters like in image data units.
 
 A more recent addition to the standard is binary tables with vector columns of varying size,
-i.e. the cells of a single column have different value counts.
+i.e. the entries of a single column have different value counts.
 This is not supported by EleFits.
 
 \see
@@ -198,7 +198,7 @@ The following HDUs are named extensions, and they may be images or binary tables
 
 %Header units are a sequence of records,
 image data units are _n_-D arrays,
-and binary table data units are a sequence of rows which represent scalar or vector fields.
+and binary table data units are a sequence of rows which represent scalar or vector entries.
 
 There is almost a 1-to-1 mapping of the FITS and EleFits structures:
 
@@ -279,11 +279,11 @@ In an image data unit:
 - *%Raster:* An _n_-D array or values stored contiguously, in row-major order.
 
 In a binary table data unit:
-- *Field:* A cell of a table HDU, i.e. the intersection of a row and column; It may contain several elements!
-- *Element:* A single value of a field, with simple type (e.g. one character of a string field).
-- *Scalar field:* A field which contains one element.
-- *Vector field:* A field which contains several elements.
-- *Multidimensional field:* A vector field which can be viewed as a raster.
+- *Entry:* A cell of a table HDU, i.e. the intersection of a row and column; It may contain several elements!
+- *Element:* A single value of an entry, of simple type (e.g. one character of a string entry).
+- *Scalar entry:* An entry which contains one element.
+- *Vector entry:* An entry which contains several elements.
+- *Multidimensional entry:* A vector entry which can be viewed as a raster.
 
 */
 
