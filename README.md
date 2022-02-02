@@ -28,11 +28,7 @@ The following (a bit extreme) example shows how natural it is
 to read a column named "RA" in the 4th extension of a Multi-Extension Fits (MEF) file:
 
 ```cpp
-// Given:
-// - string filename: The file name
-
-MefFile f(filename, FileMode::READ);
-auto ra = f.access<BintableColumns>(4).read<double>("RA");
+auto ra = MefFile("file.fits", FileMode::READ).access<BintableColumns>(4).read<double>("RA");
 ```
 
 A more realistic example is creating a Single Image Fits (SIF) file with a keyword record and an array:
@@ -78,7 +74,7 @@ Files are iterable, and selectors enable looping over filtered HDUs
 ```cpp
 // Given:
 // - MefFile f: The MEF file handler
-// - processNewImage: The user-defined function
+// - processNewImage: A user-defined function
 
 for (const auto& hdu : f.select<ImageHdu>(HduCategory::Created)) {
   processNewImage(hdu);
@@ -105,9 +101,9 @@ by mapping -- possibly non-contiguous -- in-file and in-memory regions, e.g.:
 // - ImageRaster raster: The image data unit handler
 // - Raster data: The image container
 
-Region<2> inFile { { 32, 16 }, { 64, 32 } };
-Position<2> inMemory { 8, 8 };
-raster.readRegionTo({ inFile, inMemory }, data);
+Region<2> inFile {{32, 16}, {64, 32}};
+Position<2> inMemory {8, 8};
+raster.readRegionTo({inFile, inMemory}, data);
 ```
 
 For binary tables, multiple columns can be read or written at once

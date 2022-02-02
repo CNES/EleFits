@@ -9,71 +9,115 @@ namespace Fits {
 \tableofcontents
 
 
-\section primer-intro Yet another Fits primer!
+\section primer-intro Yet another FITS primer!
 
 
 Why so, when there are many nice examples already available?
-Because this one shows the mapping between the components of a Fits file, and the classes we implemented.
-Of course, feel free to have a look to the others, like that of the <a href="https://fits.gsfc.nasa.gov/fits_primer.html">Fits support office</a>.
+Because this one shows the mapping between the components of a FITS file, and the classes we implemented.
+Of course, feel free to have a look at the others, like that of the
+<a href="https://fits.gsfc.nasa.gov/fits_primer.html">FITS support office</a>
+or even
+<a href="https://fits.gsfc.nasa.gov/fits_standard.html">the FITS standard</a>.
+
+\note
+Deviations from the standard or CFITSIO wording are outlined in such note blocks.
+
+At the end of some sections, a "see also" paragraph points to other documentation pages,
+or to more advanced topics out of the scope of this introductory page but which are good to know.
+
+Definitions of the introduced terms are recalled in a glossary at the bottom of the page.
 
 
 \section primer-sif A bit of history: Header unit and data unit
 
 
-The Fits format appeared in 1981, as a single-image file format.
-At that time, a Fits file only consisted of a *header unit*, full of metadata,
-and a *data unit*, full of... data.
-
-The format definition has drammatically evolved, but with backward compatibility in mind.
-Therefore, the concepts of header and data units are still valid.
-A Fits file made of a single image is named *Single Image Fits* file, or SIF file in short.
+The simplest form of FITS file is as *Single Image FITS* (SIF) file,
+which is the initial FITS format, as described in 1981.
+A SIF file only consists of a *header unit*, full of metadata,
+followed by a *data unit*, full of... data.
 
 
 \subsection primer-sif-header Header unit
 
 
-The header unit is a block of ASCII characters, which you can display in a 80-character wide terminal.
-Each chunk of 80 characters is named a *record*.
-Most records are *keyword records*, which store a keyword-value pair as follows:
+The header unit is a block of ASCII characters,
+organized in chunks of 80 characters named records.
+Most records are *keyword records*, which store a key-value pair as follows:
 
 \verbatim
-KEYWORD = VALUE
+KEY     = VALUE
 \endverbatim
 
-A comment can be appended, separated with a slash (`/`):
+The key is at most 8-character long.
+
+The value can be:
+- a Boolean value (`T` or `F`);
+- an integer;
+- a floating-point number, possibly in exponential notation;
+- a complex number (a pair of floating-point numbers);
+- a string.
+
+\verbatim
+BOOL    =                    T
+INT     =                    3
+FLOAT   =               3.00e8
+COMPLEX =       (28.06, 19.89)
+STRING  = 'HEY'
+\endverbatim
+
+A comment can be appended, separated from the value by a slash (`/`):
 
 \verbatim
 KEYWORD = VALUE / comment
 \endverbatim
 
-A unit can be inserted inside the comment, enclosed in square brackets:
+And a unit can be inserted between the slash and the comment, enclosed in square brackets:
 
 \verbatim
 KEYWORD = VALUE / [unit] comment
 \endverbatim
 
-The value can be:
-- an integer,
-- a floating-point number, possibly in exponential notation,
-- a complex number (a pair of floating-point numbers),
-- a string.
+\note
+In the FITS standard and in CFITSIO, the key of a keyword record is not named "keyword", but "name".
+In CFITSIO, "keyword" denotes the full keyword record instead.
+In EleFits, it seemed to us more natural to name "record" the keyword record and "keyword" its key.
 
-In EleFits, keyword records are instantiated as `Record` objects, templated with the value type.
+\note
+What the FITS standard calls "comment" includes the unit.
+In EleFits, the unit is excluded.
+CFITSIO uses both options.
+EleFits refers to the comment with unit as the "raw comment".
+
+\note
+The naming conventions of the FITS standard, CFITSIO and EleFits for the keyword records are compared below:
+<table class="fieldtable">
+<tr><th>EleFits<th>Standard<th>CFITSIO<th>Example
+<tr><td>%Record<td>Keyword record<td>Keyword or Keyword record<td>`EXPTIME = 1500.0 / [s] exposure time`
+<tr><td>Keyword<td>Name<td>Name or Keyword<td>`EXPTIME`
+<tr><td>Value<td>Value<td>Value<td>`1500.0`
+<tr><td>Raw comment<td>Comment<td>Comment<td>`[s] exposure time`
+<tr><td>Unit<td>Unit<td>Unit<td>`s`
+<tr><td>Comment<td>Unnamed<td>Comment or Unnamed<td>`exposure time`
+</table>
+
+\see
+- header_data_classes
+- Keyword records with long string values
+- Non-valued keywords records (e.g. `COMMENT`)
 
 
-\subsection primer-sif-data Primary data unit
+\subsection primer-sif-data Image data unit
 
 
 The data unit of a SIF file is an _n_-dimensional array,
 like a 0D nothing, a 1D vector, a 2D image, a 3D data cube, a 4D color video,
-or whatever fancier array you wish (with _n_<1000, but this should not be a show-stopper in general).
+or whatever fancier array you wish (with _n_ < 1000, but this should not be a show-stopper in general).
 
-(Be patient, we'll explain the *Primary* word in the next section.)
-
-Pixels are stored contiguously, and the properties of the image are stored in the header unit as special records.
+Pixels are stored contiguously (in row-major order) in binary format,
+and the properties of the image are stored in the header unit as special records.
 For example, the size of the image is given by the values associated with keys `NAXIS1`, `NAXIS2`, `NAXIS3`...
 The pixel value type can be an 8- to 64-bit integer, or a 32- or 64-bit floating-point.
-The value type is again encoded in the header unit with keyword `BITPIX`.
+The value type is also encoded in the header unit with keyword `BITPIX`.
 Here is a typical Primary header unit:
 
 \code
@@ -87,21 +131,42 @@ EXPTIME =               1500.0 / [s] exposure time
 END
 \endcode
 
-The class which represents a SIF file is `SifFile`.
-That which represents the header is `Header`, and that which represent the array is `ImageRaster`.
-In EleFits, a `SifFile` can therefore simply be seen like a structure made of a `Header` and an `ImageRaster`,
-accessed by getters `SifFile::header()` and `SifFile::raster()`, respectively.
+\note
+FITS' arrays are EleFits' *rasters*.
+"Array" is already ambiguous in C++, and we didn't want to introduce more confusion.
+"Raster" is more precise.
+More details on the name are given in `Raster`'s documentation.
+
+\see
+- file_handlers
+- image_data_classes
+- \ref types
+- Signed byte and unsigned integer pixel %types (reserved use of keyword `BZERO`)
 
 
-\section primer-mef Newer Fits: Extensions
+\section primer-mef Newer FITS: Extensions
 
 
-During several decades, the definition of the Fits format has evolved quite a lot.
-First, Fits has become a multi-image format, where header and data units (HDUs) are written in sequence.
-The first HDU is referred to as Primary array, Primary HDU, or simply *Primary*.
+\subsection primer-mef-hdus Header and Data Unit
+
+
+During several decades, the format definition has drammatically evolved, but with backward compatibility in mind.
+The header unit and data unit are still the building blocks of a FITS file.
+In 1994, FITS has become a multi-image format, where *%Header and Data Units* (HDUs),
+made of one header unit and one data unit, are written in sequence.
+The first HDU is referred to as Primary array, Primary HDU, or simply *Primary*,
+and is made exactly like a SIF file (in other words, a SIF file is a FITS file with one HDU).
 The subsequent HDUs, if any, are named *extensions*.
+FITS files with extensions are known as *Multi-Extension FITS* (MEF) files.
 
-Another vast improvement of the standard is the support for tabular data.
+\see
+- file_handlers
+
+
+\subsection primer-mef-bintable-data Binary table data unit
+
+
+Another major improvement of the standard is the support for tabular data in 1995.
 As opposed to values in arrays, the values in tables can have different types
 (although the values of a same column share the same type).
 Table HDUs are necessarily extensions: the Primary is always an image HDU.
@@ -109,35 +174,35 @@ This means that files which store only tabular data start with a header-only Pri
 that is, an image HDU with empty array.
 
 There are two types of table HDUs: ASCII tables and binary tables.
-Binary table columns can be scalar (one value per cell) or vector (several values per cell).
+ASCII tables are hardly used anymore, and are not supported at all by EleFits.
+Binary tables are sequences of rows, themselves made of *fields*.
+Obviously, they can be seen as columns made of fields, but the FITS file is written row-wise.
+Binary table fields can be *scalar* (one element per field) or *vector* (several elements per field).
+In the latter case, fields can even be *multidimensional*, and seen as rasters like in image data units.
+
 A more recent addition to the standard is binary tables with vector columns of varying size,
 i.e. the cells of a single column have different value counts.
-ASCII tables are generally no more used, and are not supported at all by EleFits.
-Only binary tables with columns of fixed width are available.
+This is not supported by EleFits.
 
-Fits files with extensions are known as *Multi-Extension Fits* (MEF) files.
-
-Image and binary table HDUs are respectively handled with `ImageHdu` and `BintableHdu`.
-Like for the Primary, the handler class for the header units of the extensions is `Header`,
-and for the image data units (the arrays), it is `ImageRaster`.
-Binary table data units can be read and written column-wise with `BintableColumns`,
-or row-wise with `BintableRows`.
+\see
+- bintable_data_classes
 
 
 \section primer-wrapup Wrap-up
 
 
-A Fits file is composed of contiguous HDUs, themselves made of an ASCII header unit,
+A FITS file is composed of contiguous HDUs, themselves made of an ASCII header unit,
 and a binary data unit.
 The first HDU is named Primary, and is necessarily an image, which may be empty.
 The following HDUs are named extensions, and they may be images or binary tables.
 
-Header units are a sequence of records, image data units are _n_-D arrays,
-and binary table data units are a sequence of rows which represent scalar or vector columns.
+%Header units are a sequence of records,
+image data units are _n_-D arrays,
+and binary table data units are a sequence of rows which represent scalar or vector fields.
 
-There is almost a 1-to-1 mapping of the Fits and EleFits structures:
+There is almost a 1-to-1 mapping of the FITS and EleFits structures:
 
-<table class="markdownTable">
+<table class="fieldtable">
 <tr>
 <th>File structure<th>Class structure
 <tr>
@@ -181,16 +246,44 @@ MEF file
     - `Record`s
   - `BintableColumns`
     - `Column`s
-  - `BintableRows`
-    - User-defined objects
 </table>
 
-For more details, head to the following pages:
-- <a href="https://fits.gsfc.nasa.gov/fits_primer.html">The primer of the Fits support office</a>
-- <a href="https://fits.gsfc.nasa.gov/fits_standard.html">The Fits standard</a>
-- \ref handlers
+\see
+- <a href="https://fits.gsfc.nasa.gov/fits_primer.html">The primer of the FITS support office</a>
+- <a href="https://fits.gsfc.nasa.gov/fits_standard.html">The FITS standard</a>
 - \ref data_classes
+- \ref handlers
 - \ref tuto
+
+
+\section primer-glossary Glossary
+
+
+At file level:
+- *HDU (%Header and Data Units):* A header unit and optional data unit.
+- *Primary:* The first HDU.
+- *Extension:* An HDU which is not the Primary.
+- *SIF (Single Image FITS) file:* A FITS file made of a single HDU.
+- *MEF (Multi-Extension FITS) file:* A FITS file made of several HDUs.
+
+In an HDU:
+- *%Header unit:* A sequence of records.
+- *Data unit:* The binary part of an HDU,
+  which is a sequence of pixel values for image HDUs or a sequence of rows for binary table HDUs.
+
+In a header:
+- *Keyword record:* An 80-ASCII character string which represents some metadata made of a keyword, value, unit and comment.
+* *Keyword:* The key of a keyword record.
+
+In an image data unit:
+- *%Raster:* An _n_-D array or values stored contiguously, in row-major order.
+
+In a binary table data unit:
+- *Field:* A cell of a table HDU, i.e. the intersection of a row and column; It may contain several elements!
+- *Element:* A single value of a field, with simple type (e.g. one character of a string field).
+- *Scalar field:* A field which contains one element.
+- *Vector field:* A field which contains several elements.
+- *Multidimensional field:* A vector field which can be viewed as a raster.
 
 */
 
