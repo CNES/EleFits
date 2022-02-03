@@ -18,7 +18,7 @@ namespace Test {
  * The table is made of a scalar and a vector column of same value type.
  */
 template <typename T>
-struct TestBintable {
+struct TestBintable { // FIXME add multidimensional column
 
   /**
    * @brief Constructor.

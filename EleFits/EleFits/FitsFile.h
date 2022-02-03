@@ -128,6 +128,19 @@ public:
    */
   void closeAndDelete();
 
+  /**
+   * @brief Get CFITSIO's `fitsfile*`.
+   * @warning
+   * There is no way back!
+   * @warning
+   * The only methods which can safely be called after this one are:
+   * - The destructor;
+   * - `filename()`.
+   * @warning
+   * The behaviour of all other `MefFile` methods after calling this function is undefined.
+   */
+  fitsfile* handoverToCfitsio();
+
 protected:
   /**
    * @brief Open a FITS file with given filename and permission.

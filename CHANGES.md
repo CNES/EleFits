@@ -39,6 +39,7 @@
 * Empty binary table HDUs can be created
 * `FileMode::Write` added to edit an existing file or create a new one
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `std::vector<VecColumn<T>>`)
+* `Record` and `DataContainer`s support `operator<<()`
 * New "Game of Life" example demonstrates the use of slicing
 
 ### Optimization and cleaning

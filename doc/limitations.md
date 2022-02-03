@@ -4,9 +4,16 @@
 
 [TOC]
 
+## Disclaimer
+
+The following refers to the Euclid version of CFITSIO: 3.470.
+Issues may have been solved in more recent versions.
+
 ## Known CFITSIO bugs
 
-TODO
+* Cannot read `unsigned long` records if greater than `max(long)`
+* Image HDU type cannot be updated to `signed char` or `unsigned long long`
+* Binary table columns of type `uint64_t` cannot be inserted
 
 ## Other known bugs
 

@@ -4,6 +4,7 @@
 
 #include "EleFits/BintableColumns.h"
 #include "EleFits/TestBintable.h"
+#include "EleFitsUtils/StringUtils.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -112,7 +113,7 @@ void checkTupleWriteRead<std::uint64_t>(
     const BintableColumns& du,
     const VecColumn<std::uint64_t>& first,
     const VecColumn<std::uint64_t>& last) {
-  // FIXME CFITSIO bug?
+  // FIXME CFITSIO bug, see below
   (void)du;
   (void)first;
   (void)last;
@@ -146,8 +147,8 @@ void checkArrayWriteRead(const BintableColumns& du) {
 
   /* Remove */
   du.removeSeq({1, 0}); // Inverted for robustness test
-  BOOST_TEST(not du.has("VECTOR"));
-  BOOST_TEST(not du.has("SCALAR"));
+  BOOST_TEST(not du.has(infos[0].name)); // FIXME accept ColumnInfo as key
+  BOOST_TEST(not du.has(infos[1].name)); // FIXME idem
 }
 
 template <>
@@ -156,10 +157,38 @@ void checkArrayWriteRead<std::string>(const BintableColumns& du) {
   (void)du;
 }
 
+/**
+ * @brief Show CFITSIO bug when inserting a uint64 column.
+ */
 template <>
 void checkArrayWriteRead<std::uint64_t>(const BintableColumns& du) {
-  // FIXME CFITSIO bug?
-  (void)du;
+
+  /* Setup */
+  using T = std::uint64_t;
+  Test::TemporaryMefFile f;
+  fitsfile* fptr = f.handoverToCfitsio(); // FIXME in FitsFile, explicitely keep filename() available
+  int status = 0;
+
+  /* Create ext */
+  std::string ttypeStr = "SCALAR";
+  auto ttypePtr = String::toCharPtr(ttypeStr);
+  auto* ttype = ttypePtr.get();
+  std::string tformStr = Euclid::Cfitsio::TypeCode<T>::tform(1); // 1W
+  auto tformPtr = String::toCharPtr(tformStr);
+  auto* tform = tformPtr.get();
+  // fits_create_tbl(fptr, BINARY_TBL, 0, 1, &ttype, &tform, nullptr, "CFITSIO", &status); // Works this way...
+  fits_create_tbl(fptr, BINARY_TBL, 0, 0, nullptr, nullptr, nullptr, "CFITSIO", &status); // But not this way!
+  fits_insert_col(fptr, 1, ttype, tform, &status);
+  BOOST_TEST(status == 0);
+
+  /* Write data */
+  constexpr long rowCount = 10000;
+  auto data = Test::generateRandomVector<T>(rowCount);
+  fits_write_col(fptr, Euclid::Cfitsio::TypeCode<T>::forBintable(), 1, 1, 1, rowCount, data.data(), &status);
+  BOOST_TEST(status == BAD_BTABLE_FORMAT); // FIXME CFITSIO bug (works with all other types)
+
+  /* Tear down */
+  remove(f.filename().c_str());
 }
 
 template <typename T>
@@ -176,7 +205,7 @@ void checkVectorWriteRead(const BintableColumns& du) {
   /* Write */
   du.initSeq(0, infos);
   du.writeSeq(seq);
-  const auto res = du.readSeq<T>({std::string("VECTOR"), std::string("SCALAR")});
+  const auto res = du.readSeq<T>({infos[0].name, infos[1].name}); // FIXME accept ColumnInfo as key
 
   /* Read */
   const auto& res0 = res[0];
@@ -187,9 +216,9 @@ void checkVectorWriteRead(const BintableColumns& du) {
   BOOST_TEST(res1.vector() == seq[0].vector());
 
   /* Remove */
-  du.removeSeq({std::string("SCALAR"), std::string("VECTOR")}); // Inverted for robustness test
-  BOOST_TEST(not du.has("VECTOR"));
-  BOOST_TEST(not du.has("SCALAR"));
+  du.removeSeq({infos[0].name, infos[1].name}); // Inverted for robustness test
+  BOOST_TEST(not du.has(infos[0].name));
+  BOOST_TEST(not du.has(infos[1].name));
 }
 
 template <>
@@ -200,7 +229,7 @@ void checkVectorWriteRead<std::string>(const BintableColumns& du) {
 
 template <>
 void checkVectorWriteRead<std::uint64_t>(const BintableColumns& du) {
-  // FIXME CFITSIO bug?
+  // FIXME CFITSIO bug, see above
   (void)du;
 }
 

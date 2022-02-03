@@ -113,6 +113,13 @@ void FitsFile::closeAndDelete() {
   m_open = false;
 }
 
+fitsfile* FitsFile::handoverToCfitsio() {
+  auto fptr = m_fptr;
+  m_fptr = nullptr;
+  m_open = false;
+  return fptr;
+}
+
 bool fileExists(const std::string& filename) {
   std::ifstream f(filename);
   return f.is_open();
