@@ -11,7 +11,8 @@ Issues may have been solved in more recent versions.
 
 ## Known CFITSIO bugs
 
-* Cannot read `unsigned long` records if greater than `max(long)`
+* Cannot read `unsigned long` records if greater than `max(long)` (throws an error)
+* Parsing records as `unsigned long` or `unsigned long long` values silently returns wrong values (`status == 0`)
 * Image HDU type cannot be updated to `signed char` or `unsigned long long`
 * Binary table columns of type `uint64_t` cannot be inserted
 
