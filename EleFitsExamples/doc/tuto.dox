@@ -47,7 +47,7 @@ We'll first discover the data classes, then use them to create a MEF file, and f
 
 
 First things first, we have to declare the dependency to EleFits and to use the right headers and namespaces.
-For the first part, head to the \ref md_doc_INSTALL.
+For the first part, head to the \ref md_INSTALL.
 For the headers and namespace, here's the only thing you'll have to do:
 
 \snippet EleFitsTutorial.cpp Include

@@ -6,7 +6,7 @@ namespace Fits {
 \page cfitsio_toc CFITSIO-like table of contents
 
 - Introduction: \ref index
-- Creating the EleFits package: \ref md_doc_INSTALL
+- Creating the EleFits package: \ref md_INSTALL
 - A FITS primer: \ref primer
 - Programming guidelines
   - Definitions: *not relevant*

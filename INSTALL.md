@@ -34,7 +34,7 @@ You'll first need to get Elements:
 
 ```xml
 cd <root>
-git clone -b 6.0.1 https://github.com/astrorama/Elements.git
+git clone -b 5.14.0 https://github.com/astrorama/Elements.git
 cd Elements
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
@@ -98,20 +98,22 @@ Here's a minimal `CMakeLists.txt` file to use the EleFits library (end-user API)
 ```xml
 CMAKE_MINIMUM_REQUIRED(VERSION <cmake_version>)
 project(<project_name>)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 find_package(EleFits REQUIRED)
 add_executable(<exe_name> <exe_source>)
 target_link_libraries(<exe_name> EleFits)
 ```
 
 The `find_package` command expects parent folder of the file `FindEleFits.cmake` to be in the `CMAKE_MODULE_PATH`.
-For now, it is located in the sources of EleFits, in `cmake/modules`
+For now, this file is located in the sources of EleFits, in `cmake/modules`
 (we'd like it to be installed in a more standard location in some future version).
-Here's an example to build the project:
+To work with the proposed `CMakeLists.txt`, it should be copied inside your project:
 
-```xml
+```sh
 cd <root>/<project_name>
+wget https://raw.githubusercontent.com/CNES/EleFits/4.0.1/cmake/modules/FindEleFits.cmake -P cmake/modules
 mkdir build ; cd build
-cmake -DCMAKE_MODULE_PATH=<root>/EleFits/cmake/modules ..
+cmake ..
 make
 ```
 

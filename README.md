@@ -127,7 +127,7 @@ The tutorial composed of an example program and [associated documentation](https
 
 ## Installation instructions
 
-See [the dedicated page](doc/INSTALL.md).
+See [the dedicated page](INSTALL.md).
 
 ## User documentation
 
