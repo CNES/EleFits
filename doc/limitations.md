@@ -1,7 +1,5 @@
 # Known bugs and limitations
 
-**! Work in progress !**
-
 [TOC]
 
 ## Disclaimer
@@ -18,7 +16,7 @@ Issues may have been solved in more recent versions.
 
 ## Other known bugs
 
-TODO
+-
 
 ## Known CFITSIO limitations
 

@@ -34,9 +34,8 @@ You'll first need to get Elements:
 
 ```xml
 cd <root>
-git clone https://github.com/astrorama/Elements.git
+git clone -b 6.0.1 https://github.com/astrorama/Elements.git
 cd Elements
-git checkout 5.14.0
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 sudo make install
@@ -46,11 +45,10 @@ Finally, install EleFits the same way:
 
 ```xml
 cd <root>
-git clone https://github.com/cnes/EleFits.git
+git clone -b 4.0.1 https://github.com/cnes/EleFits.git
 cd EleFits
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local ..
-make tests
 sudo make install
 ```
 
