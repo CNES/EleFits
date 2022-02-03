@@ -15,6 +15,30 @@ BOOST_FIXTURE_TEST_SUITE(Header_test, Test::TemporarySifFile)
 
 //-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE(long_string_record_is_read_back_test) {
+
+  /* From the FITS standard */
+  const std::string keyword = "STRKEY";
+  const std::string longValue = "This keyword value is continued over multiple keyword records.";
+  const std::string longComment = "The comment field for this keyword is also continued over multiple records";
+  const auto& h = header();
+
+  /* Long value, no comment */
+  const Record<std::string> longValueRecord(keyword, longValue);
+  h.write(longValueRecord);
+  BOOST_TEST(h.parse<std::string>(keyword) == longValueRecord);
+
+  /* Long comment, no value */
+  const Record<std::string> longCommentRecord(keyword, "", "", longComment);
+  h.write<RecordMode::UpdateExisting>(longCommentRecord);
+  BOOST_TEST(h.parse<std::string>(keyword) == longCommentRecord);
+
+  /* Long value and comment */
+  const Record<std::string> longValueAndCommentRecord(keyword, longValue, "", longComment);
+  h.write<RecordMode::UpdateExisting>(longValueAndCommentRecord);
+  BOOST_TEST(h.parse<std::string>(keyword) == longValueAndCommentRecord);
+}
+
 BOOST_AUTO_TEST_CASE(keyword_error_test) {
   const std::string keyword = "TEST";
   KeywordExistsError kee(keyword);

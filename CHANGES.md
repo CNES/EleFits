@@ -37,6 +37,7 @@
   (e.g. `access<ImageRaster>(1)` is a shortcut for `access<ImageHdu>(1).raster()`)
 * Multi-dimensional columns are supported
 * Empty binary table HDUs can be created
+* `FileMode::Write` added to edit an existing file or create a new one
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `std::vector<VecColumn<T>>`)
 * New "Game of Life" example demonstrates the use of slicing
 

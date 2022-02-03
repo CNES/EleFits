@@ -222,7 +222,7 @@ struct Record {
 };
 
 /**
- * @relates Region
+ * @relates Record
  * @brief Check whether two records are equal.
  * @details
  * Equality of keyword, value, unit and comment is tested.
@@ -245,12 +245,26 @@ bool operator==(const Record<T>& lhs, const Record<T>& rhs) {
 }
 
 /**
- * @relates Region
+ * @relates Record
  * @brief Check whether two records are different.
  */
 template <typename T>
 bool operator!=(const Record<T>& lhs, const Record<T>& rhs) {
   return not(lhs == rhs);
+}
+
+/**
+ * @relates Record
+ * @brief Serialize a record.
+ */
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Record<T>& r) {
+  os << r.keyword << " = " << r.value;
+  const auto rc = r.rawComment();
+  if (not rc.empty()) {
+    os << " / " << rc;
+  }
+  return os;
 }
 
 } // namespace Fits

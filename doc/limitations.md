@@ -12,6 +12,11 @@ TODO
 
 TODO
 
+## Known CFITSIO limitations
+
+Keyword records:
+* Long comments of string records are truncated
+
 ## Unsupported CFITSIO features
 
 HDUs:

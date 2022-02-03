@@ -273,7 +273,7 @@ In an HDU:
 
 In a header:
 - *Keyword record:* An 80-ASCII character string which represents some metadata made of a keyword, value, unit and comment.
-* *Keyword:* The key of a keyword record.
+- *Keyword:* The key of a keyword record.
 
 In an image data unit:
 - *%Raster:* An _n_-D array or values stored contiguously, in row-major order.
