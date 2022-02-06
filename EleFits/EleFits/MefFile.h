@@ -16,7 +16,7 @@
 namespace Euclid {
 namespace Fits {
 
-// Forward declaration for MefFile::select()
+// Forward declaration for MefFile::filter()
 template <typename THdu>
 class HduSelector;
 
@@ -117,6 +117,15 @@ public:
   const T& find(const std::string& name, long version = 0);
 
   /**
+   * @brief Deprecated alias for backward compatibility.
+   * @deprecated see find()
+   */
+  template <class T = Hdu>
+  const T& accessFirst(const std::string& name, long version = 0) {
+    return find<T>(name, version);
+  }
+
+  /**
    * @brief Access the only HDU with given name, type and version.
    * @details
    * Throws an exception if several HDUs with given name exists.
@@ -136,11 +145,29 @@ public:
 
   /**
    * @ingroup iterators
-   * @brief Select a filtered set of HDUs.
-   * @return An iterable object, i.e. one for which begin and end functions are provided.
+   * @brief Get an iterable object which represents a filtered set of HDUs.
+   * @return An iterable object, i.e. one for which `begin()` and `end()` functions are provided.
+   * @par_example
+   * \code
+   * for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) {
+   *   processNewImage(hdu);
+   * }
+   * \endcode
+   * @see `iterators`
    */
   template <typename THdu = Hdu>
-  HduSelector<THdu> select(const HduFilter& filter = HduCategory::Any);
+  HduSelector<THdu> filter(const HduFilter& categories = HduCategory::Any);
+
+  /**
+   * @brief Deprecated alias for backward compatibility.
+   * @deprecated see filter()
+   */
+  template <typename THdu = Hdu>
+  HduSelector<THdu> select(const HduFilter& categories = HduCategory::Any) {
+    return filter(categories);
+  }
+
+  /// @group_modifiers
 
   /**
    * @brief Append a new Hdu (as an empty ImageHdu) with given name.
@@ -191,6 +218,8 @@ public:
   template <typename TTuple, std::size_t Size = std::tuple_size<TTuple>::value>
   const BintableHdu& assignBintableExt(const std::string& name, const TTuple& columns);
 
+  /// @}
+
   /**
    * @brief The index of the Primary HDU.
    * @details
@@ -203,6 +232,7 @@ public:
    *   // do something with ext
    * }
    * \endcode
+   * @deprecated No more useful now that the indexing change is old.
    */
   static constexpr long primaryIndex = 0;
 

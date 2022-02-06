@@ -76,7 +76,7 @@ Files are iterable, and selectors enable looping over filtered HDUs
 // - MefFile f: The MEF file handler
 // - processNewImage: A user-defined function
 
-for (const auto& hdu : f.select<ImageHdu>(HduCategory::Created)) {
+for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) {
   processNewImage(hdu);
 }
 ```

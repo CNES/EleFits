@@ -22,6 +22,23 @@ The refactoring brings a lot of improvements related to performance and flexibil
 Yet, most changes in the API (including the additional template parameters, see below)
 won't even impact user codes.
 
+### Many names are standardized
+
+In `MefFile` (breaking):
+* `accessFirst()` -> `find()`
+* `select()` -> `filter()`
+
+In containers, type aliases are introduced generally without breaking the API,
+e.g. `value_type` is added, but `Value` is kept (though as `std::decay_type(value_type)` instead of `value_type`).
+
+**Rationale**
+
+Standard names are already understood by some users.
+
+**Impact on client code**
+
+Update names (previous names are kept for backward compatibility in this version).
+
 ### Column entries have a shape instead of repeat count
 
 Variable `ColumnInfo::repeatCount` becomes method `ColumnInfo::repeatCount()`.

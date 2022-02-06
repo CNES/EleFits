@@ -30,6 +30,10 @@
   including with other `DataContainer`s as arguments
 * `ColumnInfo` has a member `shape` in lieu of `repeatCount` to support multidimensional entries
 * `Column::entry()` returns a view as a `PtrRaster` for multidimensional columns
+* `Column::elementCount()` is deprecated and replaced with standard `size()`
+* `MefFile` method names have been standardized (old names are kept for backward compatibility but deprecated)
+* `VecRaster::vector()` and `VecColumn::vector()` are deprecated (use `container()` instead, which performs no copy)
+* `Named` and `Indexed` are deprecated (use maker function `as()`)
 
 ### Other new features
 
@@ -40,6 +44,7 @@
 * `FileMode::Write` added to edit an existing file or create a new one
 * Added `BintableColumns::readSeq()` overloads for homogeneous sequences (returns `std::vector<VecColumn<T>>`)
 * `Record` and `DataContainer`s support `operator<<()`
+* New method `FitsFile::handoverToCfitsio()` returns the CFITSIO's `fitsfile*`
 * New "Game of Life" example demonstrates the use of slicing
 
 ### Optimization and cleaning

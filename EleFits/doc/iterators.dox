@@ -61,10 +61,10 @@ for (const auto& hdu : f) {
 
 
 Similarly to the range loop presented at the beginning of this page, it is possible to loop over a subset of HDUs.
-This is done by creating the adequate iterator using method `MefFile::select()`:
+This is done by creating the adequate iterator using method `MefFile::filter()`:
 
 \code
-for (const auto& hdu : f.select<ImageHdu>(HduCategory::Image & HduCategory::Created)) {
+for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Image & HduCategory::Created)) {
   processNewImage(hdu);
 }
 \endcode
@@ -72,11 +72,11 @@ for (const auto& hdu : f.select<ImageHdu>(HduCategory::Image & HduCategory::Crea
 The template parameter specifies the class to be returned: Hdu, ImageHdu, or BintableHdu.
 It is used to constrain the given filter:
 for ImageHdu (resp. BintableHdu), HduCategory::Image (resp. HduCategory::Bintable) is added to the filter.
-Therefore, `f.select<ImageHdu>()` is strictly equivalent to `f.select<ImageHdu>(HduCategory::Image)`,
+Therefore, `f.filter<ImageHdu>()` is strictly equivalent to `f.filter<ImageHdu>(HduCategory::Image)`,
 and the above example can be rewritten more straightforwardly:
 
 \code
-for (const auto& hdu : f.select<ImageHdu>(HduCategory::Created)) { // Don't repeat Image
+for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) { // Don't repeat Image
   processNewImage(hdu);
 }
 \endcode
@@ -86,10 +86,10 @@ Even when using filters, the whole file is scanned.
 It is therefore very inefficient to write several loops when one would be enough.
 For example, instead of:
 \code
-for (const auto& hdu : f.select<ImageHdu>()) { // Scans all HDUs
+for (const auto& hdu : f.filter<ImageHdu>()) { // Scans all HDUs
   processImage(hdu);
 }
-for (const auto& hdu : f.select<BintableHdu>()) { // Scans all HDUs again
+for (const auto& hdu : f.filter<BintableHdu>()) { // Scans all HDUs again
   processBintable(hdu);
 }
 \endcode

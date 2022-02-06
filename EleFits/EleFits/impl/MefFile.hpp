@@ -57,7 +57,7 @@ const T& MefFile::access(const std::string& name, long version) {
 }
 
 template <typename THdu>
-HduSelector<THdu> MefFile::select(const HduFilter& filter) {
+HduSelector<THdu> MefFile::filter(const HduFilter& filter) {
   return {*this, filter * HduCategory::forClass<THdu>()};
 }
 

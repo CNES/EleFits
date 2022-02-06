@@ -161,7 +161,7 @@ void checkArrayWriteRead<std::string>(const BintableColumns& du) {
  * @brief Show CFITSIO bug when inserting a uint64 column.
  */
 template <>
-void checkArrayWriteRead<std::uint64_t>(const BintableColumns& du) {
+void checkArrayWriteRead<std::uint64_t>(const BintableColumns& /* du */) {
 
   /* Setup */
   using T = std::uint64_t;
