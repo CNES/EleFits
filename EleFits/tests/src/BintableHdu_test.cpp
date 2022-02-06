@@ -23,7 +23,7 @@ void checkScalar() {
   Test::RandomScalarColumn<T> input;
   Test::TemporaryMefFile file;
   file.assignBintableExt("BINEXT", input);
-  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
+  const auto output = file.find<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
   BOOST_TEST(output.vector() == input.vector());
 }
 
@@ -35,8 +35,8 @@ void checkVector() {
   input.reshape(repeatCount);
   Test::TemporaryMefFile file;
   file.initBintableExt("BINEXT", input.info());
-  file.accessFirst<BintableHdu>("BINEXT").writeColumn(input);
-  const auto output = file.accessFirst<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
+  file.find<BintableHdu>("BINEXT").writeColumn(input);
+  const auto output = file.find<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
 }
 
 /**

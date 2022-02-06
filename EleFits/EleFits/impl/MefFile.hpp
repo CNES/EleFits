@@ -28,7 +28,7 @@ const T& MefFile::access(long index) {
 }
 
 template <class T>
-const T& MefFile::accessFirst(const std::string& name, long version) {
+const T& MefFile::find(const std::string& name, long version) {
   Cfitsio::HduAccess::gotoName(m_fptr, name, version, HduCategory::forClass<T>());
   return access<T>(Cfitsio::HduAccess::currentIndex(m_fptr) - 1); // -1 because CFITSIO index is 1-based
 }
@@ -54,11 +54,6 @@ const T& MefFile::access(const std::string& name, long version) {
     throw FitsError("No HDU match."); // TODO specific exception?
   }
   return hduPtr->as<T>();
-}
-
-template <class T>
-const T& MefFile::accessPrimary() {
-  return access<T>(MefFile::primaryIndex);
 }
 
 template <typename THdu>

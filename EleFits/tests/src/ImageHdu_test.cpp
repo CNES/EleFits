@@ -23,7 +23,7 @@ void check_2d() {
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, FileMode::Temporary);
   file.assignImageExt("IMGEXT", input);
-  const auto output = file.accessFirst<ImageHdu>("IMGEXT").readRaster<T, 2>();
+  const auto output = file.find<ImageHdu>("IMGEXT").readRaster<T, 2>();
   BOOST_TEST(output.vector() == input.vector());
 }
 

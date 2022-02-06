@@ -121,7 +121,7 @@ public:
 
     logger.info("Reading image...");
     MefFile i(image, FileMode::Read);
-    const auto& ext = i.accessFirst<ImageHdu>("KAPPA_PATCH");
+    const auto& ext = i.find<ImageHdu>("KAPPA_PATCH");
     const auto raster = ext.readRaster<float, 3>();
     const Position<3> center {raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2};
     logger.info() << "Central pixel = " << raster[center];

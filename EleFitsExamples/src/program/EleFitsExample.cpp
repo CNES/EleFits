@@ -39,7 +39,7 @@ public:
       //! [Create FITS]
       MefFile f(filename, FileMode::Overwrite);
       //! [Create FITS]
-      const auto& primary = f.accessPrimary<>(); // We don't need to specify the HDU type for metadata work
+      const auto& primary = f.primary();
       logger.info() << "Writing new record: VALUE = 1";
       //! [Write record]
       primary.header().write("VALUE", 1);
@@ -93,7 +93,7 @@ public:
 
       logger.info() << "Reading binary table.";
       //! [Find HDU by name]
-      const auto& bintableExt = f.accessFirst<BintableHdu>("SMALLTBL");
+      const auto& bintableExt = f.find<BintableHdu>("SMALLTBL");
       //! [Find HDU by name]
       //! [Get HDU index]
       const auto index = bintableExt.index();
@@ -120,7 +120,7 @@ public:
       const auto records = ext2.header().parseSeq(as<std::string>("STRING"), as<int>("INTEGER"));
       logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
       logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-      const auto& imageExt = f.accessFirst<ImageHdu>("SMALLIMG");
+      const auto& imageExt = f.find<ImageHdu>("SMALLIMG");
       //! [Read raster]
       const auto image = imageExt.readRaster<float>();
       const auto firstPixel = image[{0, 0}];

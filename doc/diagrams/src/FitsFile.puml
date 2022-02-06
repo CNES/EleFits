@@ -29,7 +29,7 @@ class SifFile {
 class MefFile {
 + hduCount() : long
 + access(index) : Hdu&
-+ accessFirst(name) : Hdu&
++ find(name, version) : Hdu&
 + assignImageExt(name, raster) : ImageHdu&
 + assignBintableExt(name, columns...) : BintableHdu&
 }

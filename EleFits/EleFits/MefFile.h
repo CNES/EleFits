@@ -32,6 +32,8 @@ class HduSelector;
 class MefFile : public FitsFile {
 
 public:
+  /// @group_construction
+
   /**
    * @copydoc FitsFile::~FitsFile
    */
@@ -41,6 +43,8 @@ public:
    * @copydoc FitsFile::FitsFile
    */
   MefFile(const std::string& filename, FileMode permission);
+
+  /// @group_properties
 
   /**
    * @brief Get the number of HDUs.
@@ -66,6 +70,8 @@ public:
    * When there is no version specified, 1 is returned.
    */
   std::vector<std::pair<std::string, long>> readHduNamesVersions();
+
+  /// @group_elements
 
   /**
    * @brief Access the HDU at given 0-based index.
@@ -96,11 +102,11 @@ public:
    * @details
    * The template parameter is used to disambiguate when two extensions of different types have the same name.
    * For example, in a file with an image extension and a binary table extension both named "EXT",
-   * `accessFirst<ImageHdu>("EXT")` returns the image extension,
-   * while `accessFirst<BintableHdu>("EXT")` returns the binary table extension,
-   * and `accessFirst<Hdu>("EXT")` returns whichever of the two has the smallest index.
+   * `find<ImageHdu>("EXT")` returns the image extension,
+   * while `find<BintableHdu>("EXT")` returns the binary table extension,
+   * and `find<Hdu>("EXT")` returns whichever of the two has the smallest index.
    * 
-   * In the case where several HDUs of same type have the same name
+   * In the case where several HDUs of same type have the same type, name and version
    * (which is discouraged by the standard, but not forbidden),
    * method `readHduNames()` should be used to get the indices
    * and then `access(long)` should be called.
@@ -108,7 +114,7 @@ public:
    * @see access(const std::string&)
    */
   template <class T = Hdu>
-  const T& accessFirst(const std::string& name, long version = 0);
+  const T& find(const std::string& name, long version = 0);
 
   /**
    * @brief Access the only HDU with given name, type and version.
@@ -117,17 +123,10 @@ public:
    * @warning
    * In order to ensure uniqueness of the name, all HDUs are visited,
    * which may have a non-negligible I/O cost.
-   * @see accessFirst
+   * @see find()
    */
   template <class T = Hdu>
   const T& access(const std::string& name, long version = 0);
-
-  /**
-   * @brief Access the Primary HDU.
-   * @see deprecated, to be replaced with primary()
-   */
-  template <class T = Hdu>
-  const T& accessPrimary();
 
   /**
    * @brief Access the Primary HDU.
