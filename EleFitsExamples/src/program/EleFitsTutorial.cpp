@@ -70,10 +70,10 @@ TutoColumns createColumns();
 
 void writeMefFile(const std::string& filename);
 void readMefFile(const std::string& filename);
-void writeRecords(const Fits::Hdu& hdu);
-void readRecords(const Fits::Hdu& hdu);
-void readRaster(const Fits::ImageHdu& hdu);
-void readColumns(const Fits::BintableHdu& hdu);
+void writeRecords(const Fits::Header& h);
+void readRecords(const Fits::Header& h);
+void readRaster(const Fits::ImageRaster& du);
+void readColumns(const Fits::BintableColumns& du);
 
 ///////////////////
 // DATA CLASSES //
@@ -240,7 +240,7 @@ void writeMefFile(const std::string& filename) {
 
   /* Write records */
 
-  writeRecords(f.accessPrimary<>());
+  writeRecords(f.primary().header());
 
   /* Mute "unused variable" warnings */
 
@@ -250,7 +250,7 @@ void writeMefFile(const std::string& filename) {
   // File is closed at destruction of f.
 }
 
-void writeRecords(const Fits::Hdu& hdu) {
+void writeRecords(const Fits::Header& h) {
 
   const auto records = createRecords();
 
@@ -260,15 +260,15 @@ void writeRecords(const Fits::Hdu& hdu) {
 
   /* Write a single record */
 
-  hdu.header().write(records.stringRecord);
+  h.write(records.stringRecord);
 
   /* Write several records */
 
-  hdu.header().writeSeq(records.intRecord, records.floatRecord, records.complexRecord);
+  h.writeSeq(records.intRecord, records.floatRecord, records.complexRecord);
 
   /* Update using initialization lists */
 
-  hdu.header().writeSeq<Fits::RecordMode::UpdateExisting>(
+  h.writeSeq<Fits::RecordMode::UpdateExisting>(
       Fits::Record<int>("INT", 1),
       Fits::Record<float>("FLOAT", 3.14159F, "", "A larger piece of Pi"),
       Fits::Record<std::complex<double>>("COMPLEX", {180., 90.}));
@@ -307,7 +307,7 @@ void readMefFile(const std::string& filename) {
 
   /* Access an HDU by its name */
 
-  const auto& table1 = f.accessFirst<Fits::BintableHdu>("TABLE1");
+  const auto& table1 = f.find<Fits::BintableHdu>("TABLE1");
   const auto tableIndex = table1.index();
   // If several HDUs have the same name, the first one is returned.
 
@@ -317,12 +317,12 @@ void readMefFile(const std::string& filename) {
   logger.info() << "    Name of the second extension: " << imageName;
   logger.info() << "    Index of the 'TABLE1' extension: " << tableIndex;
 
-  readRecords(primary);
-  readRaster(image2);
-  readColumns(table1);
+  readRecords(primary.header());
+  readRaster(image2.raster());
+  readColumns(table1.columns());
 }
 
-void readRecords(const Fits::Hdu& hdu) {
+void readRecords(const Fits::Header& h) {
 
   logger.info("  Reading records...");
 
@@ -330,14 +330,14 @@ void readRecords(const Fits::Hdu& hdu) {
 
   /* Read a single record */
 
-  const auto intRecord = hdu.header().parse<int>("INT");
+  const auto intRecord = h.parse<int>("INT");
 
   // Records can be sliced as their value for immediate use:
-  const int intValue = hdu.header().parse<int>("INT");
+  const int intValue = h.parse<int>("INT");
 
   /* Read several records */
 
-  const auto someRecords = hdu.header().parseSeq(
+  const auto someRecords = h.parseSeq(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
@@ -346,12 +346,12 @@ void readRecords(const Fits::Hdu& hdu) {
 
   /* Read as VariantValue */
 
-  const auto variantRecords = hdu.header().parseSeq<>({"INT", "COMPLEX"});
+  const auto variantRecords = h.parseSeq<>({"INT", "COMPLEX"});
   const auto complexRecord = variantRecords.as<std::complex<double>>("COMPLEX");
 
   /* Read as a user-defined structure */
 
-  const auto tutoRecords = hdu.header().parseStruct<TutoRecords>(
+  const auto tutoRecords = h.parseStruct<TutoRecords>(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
@@ -368,13 +368,13 @@ void readRecords(const Fits::Hdu& hdu) {
   logger.info() << "    " << stringRecord.keyword << " = " << stringRecord.value << " " << stringRecord.unit;
 }
 
-void readRaster(const Fits::ImageHdu& hdu) {
+void readRaster(const Fits::ImageRaster& du) {
 
   logger.info("  Reading a raster...");
 
   //! [Read a raster]
 
-  const auto image = hdu.raster().read<std::int16_t, 2>();
+  const auto image = du.read<std::int16_t, 2>();
 
   const auto& firstPixel = image[{0, 0}];
   const auto& lastPixel = image.at({-1, -1});
@@ -386,7 +386,7 @@ void readRaster(const Fits::ImageHdu& hdu) {
   logger.info() << "    Last pixel: " << lastPixel;
 }
 
-void readColumns(const Fits::BintableHdu& hdu) {
+void readColumns(const Fits::BintableColumns& du) {
 
   logger.info("  Reading columns...");
 
@@ -394,16 +394,16 @@ void readColumns(const Fits::BintableHdu& hdu) {
 
   /* Read a single column */
 
-  const auto vectorColumn = hdu.readColumn<double>("VECTOR");
+  const auto vectorColumn = du.read<double>("VECTOR");
 
   /* Read several columns by their name */
 
-  const auto byName = hdu.columns().readSeq(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
+  const auto byName = du.readSeq(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
   const auto& stringColumn = std::get<0>(byName);
 
   /* Read several columns by their index */
 
-  const auto byIndex = hdu.columns().readSeq(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
+  const auto byIndex = du.readSeq(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
   const auto& intColumn = std::get<1>(byIndex);
 
   /* Use values */
