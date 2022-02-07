@@ -24,10 +24,49 @@ class HduSelector;
  * @ingroup file_handlers
  * @brief Multi-Extension FITS file reader-writer.
  * @details
- * Provide HDU access/create services.
- * Single Image FITS files can be handled by this class, but SifFile is better suited:
+ * Provide HDU access and creation services.
+ * A `MefFile` can roughly be seen as a sequence of
+ * image HDUs and binary table HDUs (see \ref primer).
+ * Methods to access HDUs, header units or data units all return constant references,
+ * because they are stateless views on the `MefFile` object,
+ * which is the only handler modified by write operation.
+ * 
+ * At creation, a `MefFile` already contains a Primary,
+ * which is empty but can be resized and filled.
+ * HDUs are accessed either directly by their index (which is fast),
+ * or by finding a {type, name, version} triplet.
+ * Although it should not be an issue for most files (even with hundreds of HDUs),
+ * the second option is much slower because it consists in reading each header unit until a match is found.
+ * Once a HDU has been accessed, the reference can be safely reused
+ * (please don't re-find an already accessed HDU).
+ * It is possible to specify the return type of accessors to best fit target usage, e.g.:
+ * 
+ * \code
+ * const auto& p = f.primary(); // ImageHdu
+ * const auto& hdu = f[1]; // Hdu
+ * const auto& hdu = f.access<Hdu>(1);
+ * const auto& hdu = f.access<ImageHdu>(1);
+ * const auto& hdu = f.access<BintableHdu>(1);
+ * const auto& h = f.access<Header>(1);
+ * const auto& du = f.access<ImageRaster>(1);
+ * const auto& du = f.access<BintableColumns>(1);
+ * \endcode
+ * 
+ * Creating extensions can be done in three ways:
+ * - Header only: A header unit is created, the data unit is empty;
+ * - Null data: A header unit is created,
+ *   as well as a data unit which is filled with null values
+ *   (as defined by the header contents, e.g. with record `BLANK`);
+ * - Complete: A header unit is created,
+ *   as well as a data unit which is filled with provided values.
+ * 
+ * @note
+ * Single Image FITS files can be handled by this class, but `SifFile` is better suited:
  * it is safer and provides shortcuts.
+ * 
  * @see \ref handlers
+ * @see \ref iterators
+ * @see \ref optim
  */
 class MefFile : public FitsFile {
 
@@ -49,10 +88,10 @@ public:
   /**
    * @brief Get the number of HDUs.
    * @details
-   * As opposed to CFITSIO HDU counting, the number is not read by this function:
-   * it is initialized by the constructor and then updated at each modification through MefFile methods.
+   * As opposed to CFITSIO's HDU counting, the number is not read by this function:
+   * it is initialized by the constructor and then updated at each modification through `MefFile` methods.
    * This way, incomplete HDUs are also taken into account where CFITSIO would exclude them.
-   * This means, for example, that the initial number of HDUs in a new file is 1 instead of 0.
+   * This means, for example, that the initial number of HDUs in a new file is 1 instead of 0 with CFITSIO.
    */
   long hduCount() const;
 
@@ -187,6 +226,9 @@ public:
 
   /**
    * @brief Append and write a new image extension.
+   * @param name The extension name (or an empty string to not write any)
+   * @param records The sequence of records to be written in addition to structural records
+   * @param raster The data
    */
   template <typename TRaster>
   const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster);
@@ -221,6 +263,8 @@ public:
    */
   template <typename TColumns, std::size_t Size = std::tuple_size<TColumns>::value> // FIXME rm Size => enable_if
   const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns);
+
+  // DEPRECATED COUNTERPARTS
 
   /**
    * @brief Append a new Hdu (as an empty ImageHdu) with given name.
