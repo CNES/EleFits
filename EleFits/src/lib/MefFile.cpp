@@ -47,10 +47,7 @@ const ImageHdu& MefFile::primary() {
 }
 
 const Hdu& MefFile::initRecordExt(const std::string& name) {
-  Cfitsio::HduAccess::createMetadataExtension(m_fptr, name);
-  const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<Hdu>(Hdu::Token {}, m_fptr, size, HduCategory::Image, HduCategory::Created));
-  return *m_hdus[size].get();
+  return appendImageHeader<>(name);
 }
 
 const long MefFile::primaryIndex;

@@ -61,44 +61,115 @@ HduSelector<THdu> MefFile::filter(const HduFilter& filter) {
   return {*this, filter * HduCategory::forClass<THdu>()};
 }
 
+template <typename T>
+const ImageHdu& MefFile::appendImageHeader(const std::string& name, const RecordSeq& records) {
+  Cfitsio::HduAccess::initImageExtension<T, 0>(m_fptr, name, {});
+  const auto index = m_hdus.size();
+  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  const auto& hdu = m_hdus[index]->as<ImageHdu>();
+  hdu.header().writeSeq(records);
+  return hdu;
+
+  // FIXME inverse dependency (see appendImageExt's FIXME)
+}
+
+template <typename T, long N>
+const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
+  Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
+  const auto index = m_hdus.size();
+  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  const auto& hdu = m_hdus[index]->as<ImageHdu>();
+  hdu.header().writeSeq(records);
+
+  int status = 0;
+  fits_write_img_null(m_fptr, 0, 1, shapeSize(shape), &status);
+  // FIXME To CfitsioWrapper and as `bool ImageRaster::fillNull() const`
+  // Check status is acceptable (e.g. != 0 if no BLANK keyword or real values)
+
+  // FIXME Fill Raster and pass to appendImage()?
+
+  return hdu;
+}
+
+template <typename TRaster>
+const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster) {
+  Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
+  const auto index = m_hdus.size();
+  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  const auto& hdu = m_hdus[index]->as<ImageHdu>();
+  hdu.header().writeSeq(records);
+  hdu.raster().write(raster);
+  return hdu;
+  // FIXME Is it more efficient to (1) create dataless HDU and then resize and fill data,
+  // or (2) first write data and then shift it to accommodate records?
+  // For now, we cannot resize uint64 images (CFITSIO bug), so option (1) cannot be tested.
+}
+
+template <typename... TInfos>
+const BintableHdu&
+MefFile::appendBintableHeader(const std::string& name, const RecordSeq& records, const TInfos&... infos) {
+  Cfitsio::HduAccess::initBintableExtension(m_fptr, name, infos...);
+  const auto index = m_hdus.size();
+  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  const auto& hdu = m_hdus[index]->as<BintableHdu>();
+  hdu.header().writeSeq(records);
+  return hdu;
+}
+
+template <typename... TInfos>
+const BintableHdu&
+MefFile::appendNullBintable(const std::string& name, const RecordSeq& records, long rowCount, const TInfos&... infos) {
+  const auto& hdu = appendBintableHeader(name, records, infos...);
+
+  int status = 0;
+  fits_write_nullrows(m_fptr, 1, rowCount, &status);
+  // FIXME To CfitsioWrapper and as `BintableRows::fillNull(Segment) const;`
+
+  return hdu;
+}
+
+template <typename... TColumns>
+const BintableHdu&
+MefFile::appendBintable(const std::string& name, const RecordSeq& records, const TColumns&... columns) {
+  const auto& hdu = appendBintableHeader(name, records, columns.info()...);
+  hdu.columns().writeSeq(std::forward_as_tuple(columns...)); // FIXME rm forwarding => should accept single column
+  return hdu;
+}
+
+template <typename TColumns, std::size_t Size>
+const BintableHdu& MefFile::appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns) {
+  Cfitsio::HduAccess::assignBintableExtension<TColumns, Size>(m_fptr, name, columns);
+  const auto index = m_hdus.size();
+  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  const auto& hdu = m_hdus[index]->as<BintableHdu>();
+  hdu.header().writeSeq(records);
+  return hdu;
+  // FIXME use appendBintableExt(name, records, columns...) or inverse dependency
+}
+
 template <typename T, long N>
 const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<N>& shape) {
-  Cfitsio::HduAccess::initImageExtension<T, N>(m_fptr, name, shape);
-  const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
-  return m_hdus[size]->as<ImageHdu>();
+  return appendNullImage<T>(name, {}, shape);
 }
 
 template <typename TRaster>
 const ImageHdu& MefFile::assignImageExt(const std::string& name, const TRaster& raster) {
-  Cfitsio::HduAccess::assignImageExtension(m_fptr, name, raster);
-  const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
-  return m_hdus[size]->as<ImageHdu>();
+  return appendImage(name, {}, raster);
 }
 
 template <typename... TInfos>
 const BintableHdu& MefFile::initBintableExt(const std::string& name, const TInfos&... infos) {
-  Cfitsio::HduAccess::initBintableExtension(m_fptr, name, infos...);
-  const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
-  return m_hdus[size]->as<BintableHdu>();
+  return appendBintableHeader(name, {}, infos...);
 }
 
 template <typename... TColumns>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns&... columns) {
-  const auto& ext = initBintableExt(name, columns.info()...);
-  ext.columns().writeSeq(std::forward_as_tuple(columns...)); // FIXME rm forwarding => should accept single column
-  return ext;
+  return appendBintable(name, {}, std::forward_as_tuple(columns...));
 }
 
 template <typename TColumns, std::size_t count>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns& columns) {
-  Cfitsio::HduAccess::assignBintableExtension<TColumns, count>(m_fptr, name, columns);
-  const auto size = m_hdus.size();
-  m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, size, HduCategory::Created));
-  return m_hdus[size]->as<BintableHdu>();
-  // FIXME call assignBE(name, columns...)
+  return appendBintable(name, {}, columns);
 }
 
 #ifndef DECLARE_ASSIGN_IMAGE_EXT

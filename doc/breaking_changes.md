@@ -29,7 +29,7 @@ In `MefFile` (breaking):
 * `select()` -> `filter()`
 
 In containers, type aliases are introduced generally without breaking the API,
-e.g. `value_type` is added, but `Value` is kept (though as `std::decay_type(value_type)` instead of `value_type`).
+e.g. `value_type` is added, but `Value` is kept (though as `std::decay_t<value_type>` instead of `value_type`).
 
 **Rationale**
 

@@ -170,8 +170,62 @@ public:
   /// @group_modifiers
 
   /**
+   * @brief Append a new image extension with empty data unit (`NAXIS = 0`).
+   */
+  template <typename T = unsigned char>
+  const ImageHdu& appendImageHeader(const std::string& name = "", const RecordSeq& records = {});
+
+  /**
+   * @brief Append and new image extension and fill the data unit with null values.
+   * @details
+   * For integer images, if the `BLANK` record is among the provided ones, then its value is used;
+   * Otherwise, the data unit is filled with zeros.
+   * For real images, the data unit is filled with NaNs.
+   */
+  template <typename T, long N = 2>
+  const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape);
+
+  /**
+   * @brief Append and write a new image extension.
+   */
+  template <typename TRaster>
+  const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster);
+
+  /**
+   * @brief Append a binary table extension with empty data unit (0 rows and possibly 0 columns).
+   */
+  template <typename... TInfos>
+  const BintableHdu&
+  appendBintableHeader(const std::string& name = "", const RecordSeq& records = {}, const TInfos&... infos);
+
+  /**
+   * @brief Append a binary table extension and fill it with null values.
+   * @details
+   * For integer columns, if the `TNULL` record is among the provided ones, then its value is used;
+   * Otherwise, the column is filled with zeros.
+   * Real columns are filled with NaNs.
+   */
+  template <typename... TInfos>
+  const BintableHdu&
+  appendNullBintable(const std::string& name, const RecordSeq& records, long rowCount, const TInfos&... infos);
+
+  /**
+   * @brief Append and write a new binary table extension.
+   */
+  template <typename... TColumns>
+  const BintableHdu&
+  appendBintable(const std::string& name = "", const RecordSeq& records = {}, const TColumns&... columns);
+
+  /**
+   * @brief Append and write a new binary table extension.
+   */
+  template <typename TColumns, std::size_t Size = std::tuple_size<TColumns>::value> // FIXME rm Size => enable_if
+  const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns);
+
+  /**
    * @brief Append a new Hdu (as an empty ImageHdu) with given name.
    * @return A reference to the new Hdu.
+   * @deprecated See appendImageHeader
    */
   const Hdu& initRecordExt(const std::string& name);
 
@@ -179,6 +233,7 @@ public:
    * @brief Append a new ImageHdu with given name and shape.
    * @details
    * To not only initialize the HDU but also write data, use assignImageExt instead.
+   * @deprecated See appendImageExt
    */
   template <typename T, long N>
   const ImageHdu& initImageExt(const std::string& name, const Position<N>& shape);
@@ -186,6 +241,7 @@ public:
   /**
    * @brief Append an ImageHdu with given name and data.
    * @return A reference to the new ImageHdu.
+   * @deprecated See appendImageExt
    */
   template <typename TRaster>
   const ImageHdu& assignImageExt(const std::string& name, const TRaster& raster);
@@ -194,6 +250,7 @@ public:
    * @brief Append a BintableHdu with given name and columns info.
    * @details
    * To not only initialize the HDU but also write data, use assignBintableExt instead.
+   * @deprecated See appendBintableHeader
    */
   template <typename... TInfos>
   const BintableHdu& initBintableExt(const std::string& name, const TInfos&... header);
@@ -203,6 +260,7 @@ public:
    * @return A reference to the new BintableHdu.
    * @warning
    * All columns should have the same number of rows.
+   * @deprecated See appendBintableExt
    */
   template <typename... TColumns>
   const BintableHdu& assignBintableExt(const std::string& name, const TColumns&... columns);
@@ -214,6 +272,7 @@ public:
    * @tparam Size The number of columns
    * @warning
    * All columns should have the same number of rows.
+   * @deprecated See appendBintableExt
    */
   template <typename TTuple, std::size_t Size = std::tuple_size<TTuple>::value>
   const BintableHdu& assignBintableExt(const std::string& name, const TTuple& columns);
