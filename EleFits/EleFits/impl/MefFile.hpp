@@ -138,7 +138,10 @@ MefFile::appendBintable(const std::string& name, const RecordSeq& records, const
 
 template <typename TColumns, std::size_t Size>
 const BintableHdu& MefFile::appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns) {
-  Cfitsio::HduAccess::assignBintableExtension<TColumns, Size>(m_fptr, name, columns);
+  Cfitsio::HduAccess::assignBintableExtension<TColumns, Size>(
+      m_fptr,
+      name,
+      columns); // FIXME doesn't check for column size
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
@@ -164,7 +167,7 @@ const BintableHdu& MefFile::initBintableExt(const std::string& name, const TInfo
 
 template <typename... TColumns>
 const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns&... columns) {
-  return appendBintable(name, {}, std::forward_as_tuple(columns...));
+  return appendBintable(name, {}, columns...);
 }
 
 template <typename TColumns, std::size_t count>
