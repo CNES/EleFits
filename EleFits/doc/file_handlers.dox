@@ -1,0 +1,19 @@
+namespace Euclid {
+namespace Fits {
+
+/**
+
+\addtogroup file_handlers
+
+
+FITS files are manipulated either by:
+- `SifFile` for Single Image FITS (SIF) files;
+- `MefFile` for Multi-Extension FITS (MEF) files.
+
+Common services are in base class `FitsFile`,
+which also gives access to the CFITSIO's handler: `fitsfile*`.
+
+*/
+
+}
+}

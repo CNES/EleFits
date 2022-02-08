@@ -24,7 +24,8 @@ class HduSelector;
  * @ingroup file_handlers
  * @brief Multi-Extension FITS file reader-writer.
  * @details
- * Provide HDU access and creation services.
+ * In addition to `FitsFile`'s methods, this class provides HDU access and creation services.
+ * 
  * A `MefFile` can roughly be seen as a sequence of
  * image HDUs and binary table HDUs (see \ref primer).
  * Methods to access HDUs, header units or data units all return constant references,
@@ -33,13 +34,13 @@ class HduSelector;
  * 
  * At creation, a `MefFile` already contains a Primary,
  * which is empty but can be resized and filled.
- * HDUs are accessed either directly by their index (which is fast),
- * or by finding a {type, name, version} triplet.
+ * HDUs are accessed either directly by their index, e.g. with `access()`,
+ * or by finding a {type, name, version} triplet with `find()`.
  * Although it should not be an issue for most files (even with hundreds of HDUs),
  * the second option is much slower because it consists in reading each header unit until a match is found.
  * Once a HDU has been accessed, the reference can be safely reused
  * (please don't re-find an already accessed HDU).
- * It is possible to specify the return type of accessors to best fit target usage, e.g.:
+ * It is possible to specify the return type of `access()` and `find()` to best fit target usage, e.g.:
  * 
  * \code
  * const auto& p = f.primary(); // ImageHdu
@@ -156,15 +157,6 @@ public:
   const T& find(const std::string& name, long version = 0);
 
   /**
-   * @brief Deprecated alias for backward compatibility.
-   * @deprecated see find()
-   */
-  template <class T = Hdu>
-  const T& accessFirst(const std::string& name, long version = 0) {
-    return find<T>(name, version);
-  }
-
-  /**
    * @brief Access the only HDU with given name, type and version.
    * @details
    * Throws an exception if several HDUs with given name exists.
@@ -196,15 +188,6 @@ public:
    */
   template <typename THdu = Hdu>
   HduSelector<THdu> filter(const HduFilter& categories = HduCategory::Any);
-
-  /**
-   * @brief Deprecated alias for backward compatibility.
-   * @deprecated see filter()
-   */
-  template <typename THdu = Hdu>
-  HduSelector<THdu> select(const HduFilter& categories = HduCategory::Any) {
-    return filter(categories);
-  }
 
   /// @group_modifiers
 
@@ -264,7 +247,27 @@ public:
   template <typename TColumns, std::size_t Size = std::tuple_size<TColumns>::value> // FIXME rm Size => enable_if
   const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns);
 
-  // DEPRECATED COUNTERPARTS
+  /// @}
+  /// @name Deprecated
+  /// @{
+
+  /**
+   * @brief Deprecated alias for backward compatibility.
+   * @deprecated see find()
+   */
+  template <class T = Hdu>
+  const T& accessFirst(const std::string& name, long version = 0) {
+    return find<T>(name, version);
+  }
+
+  /**
+   * @brief Deprecated alias for backward compatibility.
+   * @deprecated see filter()
+   */
+  template <typename THdu = Hdu>
+  HduSelector<THdu> select(const HduFilter& categories = HduCategory::Any) {
+    return filter(categories);
+  }
 
   /**
    * @brief Append a new Hdu (as an empty ImageHdu) with given name.

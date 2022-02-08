@@ -137,7 +137,8 @@ public:
    * - The destructor;
    * - `filename()`.
    * @warning
-   * The behaviour of all other `MefFile` methods after calling this function is undefined.
+   * The behaviour of all other handler methods (not only `MefFile`'s ones)
+   * after calling this function is undefined.
    */
   fitsfile* handoverToCfitsio();
 
