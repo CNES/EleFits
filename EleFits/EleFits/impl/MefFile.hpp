@@ -81,8 +81,16 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   hdu.header().writeSeq(records);
 
-  int status = 0;
-  fits_write_img_null(m_fptr, 0, 1, shapeSize(shape), &status);
+  if (std::is_floating_point<T>::value != records.has("BLANK")) { // != is XOR
+    int status = 0;
+    fits_write_img_null(m_fptr, 0, 1, shapeSize(shape), &status);
+    if (status != 0) {
+      throw FitsError("Cannot write nulls."); // FIXME
+    }
+  } else if (shapeSize(shape) != 0) {
+    VecRaster<T, N> raster(shape);
+    hdu.raster().write(raster);
+  }
   // FIXME To CfitsioWrapper and as `bool ImageRaster::fillNull() const`
   // Check status is acceptable (e.g. != 0 if no BLANK keyword or real values)
 

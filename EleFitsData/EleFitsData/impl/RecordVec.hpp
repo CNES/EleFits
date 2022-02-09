@@ -29,6 +29,14 @@ template <typename... Ts>
 RecordVec<T>::RecordVec(const Record<Ts>&... records) : vector {Record<T>(records)...} {}
 
 template <typename T>
+bool RecordVec<T>::has(const std::string& keyword) const {
+  const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T>& r) {
+    return r.keyword == keyword;
+  });
+  return it != vector.end();
+}
+
+template <typename T>
 const Record<T>& RecordVec<T>::operator[](const std::string& keyword) const {
   const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T>& r) {
     return r.keyword == keyword;

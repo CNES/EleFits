@@ -89,6 +89,11 @@ public:
   }
 
   /**
+   * @brief Check whether a given keyword is present.
+   */
+  bool has(const std::string& keyword) const;
+
+  /**
    * @brief Find the first record with given keyword.
    */
   const Record<T>& operator[](const std::string& keyword) const;

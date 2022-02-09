@@ -157,27 +157,29 @@ bool isNull(T value) {
 }
 
 template <typename T>
-void checkAppendNullImage(MefFile& f) {
-
-  /* Without BLANK keyword */
+void checkAppendZeroImage(MefFile& f) {
   Position<1> shape {10};
   RecordSeq withoutBlank {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
-  const auto& image0 = f.appendNullImage<T>("ZERO", withoutBlank, shape);
-  BOOST_TEST(image0.readName() == "ZERO");
-  BOOST_TEST(image0.readSize() == shapeSize(shape));
-  BOOST_TEST(image0.template readShape<1>() == shape);
-  BOOST_TEST(image0.header().template parse<int>("FOO").value == 3);
-  BOOST_TEST(image0.header().template parse<int>("BAR").value == 41);
-  const auto zero = image0.raster().template read<T, 1>();
+  const auto& image = f.appendNullImage<T>("ZERO", withoutBlank, shape);
+  BOOST_TEST(image.readName() == "ZERO");
+  BOOST_TEST(image.readSize() == shapeSize(shape));
+  BOOST_TEST(image.template readShape<1>() == shape);
+  BOOST_TEST(not image.header().has("BLANK"));
+  BOOST_TEST(image.header().template parse<int>("FOO").value == 3);
+  BOOST_TEST(image.header().template parse<int>("BAR").value == 41);
+  const auto zero = image.raster().template read<T, 1>();
   BOOST_TEST(zero.shape() == shape);
   for (auto v : zero) {
     BOOST_TEST(isNull(v));
   }
+}
 
-  /* With BLANK keyword */
+template <typename T>
+void checkAppendNullImage(MefFile& f) {
+  Position<1> shape {10};
   RecordSeq withBlank {{"BLANK", T(1)}, {"BAR", 41, "s", "useless"}};
-  const auto& image1 = f.appendNullImage<T>("ZERO", withBlank, shape);
-  BOOST_TEST(image1.readName() == "ZERO");
+  const auto& image1 = f.appendNullImage<T>("NULL", withBlank, shape);
+  BOOST_TEST(image1.readName() == "NULL");
   BOOST_TEST(image1.readSize() == shapeSize(shape));
   BOOST_TEST(image1.template readShape<1>() == shape);
   BOOST_TEST(image1.header().template parse<int>("NAXIS").value == 1);
@@ -210,14 +212,16 @@ void checkAppendImage(MefFile& f) {
 }
 
 #define APPEND_IMAGE_TEST(T, name) \
+  BOOST_FIXTURE_TEST_CASE(append_zero_##name##_image_test, Test::TemporaryMefFile) { \
+    checkAppendZeroImage<T>(*this); \
+  } \
   BOOST_FIXTURE_TEST_CASE(append_null_##name##_image_test, Test::TemporaryMefFile) { \
     checkAppendNullImage<T>(*this); \
   } \
   BOOST_FIXTURE_TEST_CASE(append_##name##_image_test, Test::TemporaryMefFile) { \
     checkAppendImage<T>(*this); \
   }
-// ELEFITS_FOREACH_RASTER_TYPE(APPEND_NULL_IMAGE_TEST)
-APPEND_IMAGE_TEST(float, float)
+ELEFITS_FOREACH_RASTER_TYPE(APPEND_IMAGE_TEST)
 
 //-----------------------------------------------------------------------------
 
