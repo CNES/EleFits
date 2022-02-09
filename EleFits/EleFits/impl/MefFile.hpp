@@ -130,7 +130,11 @@ MefFile::appendNullBintable(const std::string& name, const RecordSeq& records, l
   const auto& hdu = appendBintableHeader(name, records, infos...);
 
   int status = 0;
+  fits_insert_rows(m_fptr, 0, rowCount, &status);
   fits_write_nullrows(m_fptr, 1, rowCount, &status);
+  if (status != 0) {
+    throw FitsError("Cannot write null rows. Error: " + std::to_string(status));
+  }
   // FIXME To CfitsioWrapper and as `BintableRows::fillNull(Segment) const;`
 
   return hdu;

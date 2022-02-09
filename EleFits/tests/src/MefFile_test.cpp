@@ -209,8 +209,6 @@ void checkAppendNullImage<double>(MefFile&) {
 
 template <typename T>
 void checkAppendImage(MefFile& f) {
-
-  /* Without BLANK keyword */
   Position<1> shape {10};
   Test::RandomRaster<T, 1> raster(shape);
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
@@ -236,6 +234,38 @@ void checkAppendImage(MefFile& f) {
     checkAppendImage<T>(*this); \
   }
 ELEFITS_FOREACH_RASTER_TYPE(APPEND_IMAGE_TEST)
+
+template <typename T>
+void checkAppendNullBintable(MefFile& f) {
+
+  if (std::is_same<T, char>::value || std::is_same<T, std::uint16_t>::value || std::is_same<T, std::uint32_t>::value ||
+      std::is_same<T, std::uint64_t>::value) {
+    return; // FIXME CFITSIO bug?
+  }
+
+  ColumnInfo<T> zero("ZERO");
+  ColumnInfo<T> blank("BLANK");
+  RecordSeq records {{"TNULL2", T(1)}, {"FOO", "BAR"}};
+  const auto& ext = f.appendNullBintable("BINTABLE", records, 10, zero, blank);
+  const auto rowCount = ext.readRowCount();
+  BOOST_TEST(rowCount == 10);
+  const auto output = ext.columns().readSeq(as<T>("ZERO"), as<T>("BLANK"));
+  for (std::size_t i = 0; i < rowCount; ++i) {
+    BOOST_TEST(isNull(std::get<0>(output)[i]));
+    const auto value1 = std::get<1>(output)[1];
+    if (std::is_floating_point<T>::value) {
+      BOOST_TEST(value1 != value1);
+    } else {
+      BOOST_TEST(value1 == T(1));
+    }
+  }
+}
+
+#define APPEND_BINTABLE_TEST(T, name) \
+  BOOST_FIXTURE_TEST_CASE(append_null_##name##_bintable_test, Test::TemporaryMefFile) { \
+    checkAppendNullBintable<T>(*this); \
+  }
+ELEFITS_FOREACH_RASTER_TYPE(APPEND_BINTABLE_TEST)
 
 //-----------------------------------------------------------------------------
 

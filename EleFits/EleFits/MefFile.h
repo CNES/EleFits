@@ -203,6 +203,8 @@ public:
    * For integer images, if the `BLANK` record is among the provided ones, then its value is used;
    * Otherwise, the data unit is filled with zeros.
    * For real images, the data unit is filled with NaNs.
+   * @warning
+   * Only native FITS types are supported; there is a known bug for types which rely on `BZERO`.
    */
   template <typename T, long N = 2>
   const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape);
@@ -226,9 +228,11 @@ public:
   /**
    * @brief Append a binary table extension and fill it with null values.
    * @details
-   * For integer columns, if the `TNULL` record is among the provided ones, then its value is used;
+   * For integer columns, if the `TNULLn` record is among the provided ones, then its value is used;
    * Otherwise, the column is filled with zeros.
    * Real columns are filled with NaNs.
+   * @warning
+   * Only native FITS types are supported; there is a known bug for types which rely on `TZEROn`.
    */
   template <typename... TInfos>
   const BintableHdu&
