@@ -2,6 +2,11 @@
 
 ## 5.0
 
+### Bug fixes
+
+* Function `shapeSize()` was wrong for `N = 0`
+* Method `readSize()` of `ImageHdu` and `ImageRaster` was wrong for `N != 2`
+
 ### Breaking changes
 
 * Updated to Elements 6.0.1

@@ -134,6 +134,9 @@ public:
  */
 template <long N = 2>
 long shapeSize(const Position<N>& shape) {
+  if (shape.size() == 0) {
+    return 0;
+  }
   return std::accumulate(shape.begin(), shape.end(), 1L, std::multiplies<long>());
 }
 

@@ -136,6 +136,89 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   // FIXME check with tuple
 }
 
+template <typename T>
+bool isNull(T value, T blank) {
+  return value == blank;
+}
+
+template <>
+bool isNull(float value, float) {
+  return value != value;
+}
+
+template <>
+bool isNull(double value, double) {
+  return value != value;
+}
+
+template <typename T>
+bool isNull(T value) {
+  return isNull(value, T());
+}
+
+template <typename T>
+void checkAppendNullImage(MefFile& f) {
+
+  /* Without BLANK keyword */
+  Position<1> shape {10};
+  RecordSeq withoutBlank {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
+  const auto& image0 = f.appendNullImage<T>("ZERO", withoutBlank, shape);
+  BOOST_TEST(image0.readName() == "ZERO");
+  BOOST_TEST(image0.readSize() == shapeSize(shape));
+  BOOST_TEST(image0.template readShape<1>() == shape);
+  BOOST_TEST(image0.header().template parse<int>("FOO").value == 3);
+  BOOST_TEST(image0.header().template parse<int>("BAR").value == 41);
+  const auto zero = image0.raster().template read<T, 1>();
+  BOOST_TEST(zero.shape() == shape);
+  for (auto v : zero) {
+    BOOST_TEST(isNull(v));
+  }
+
+  /* With BLANK keyword */
+  RecordSeq withBlank {{"BLANK", T(1)}, {"BAR", 41, "s", "useless"}};
+  const auto& image1 = f.appendNullImage<T>("ZERO", withBlank, shape);
+  BOOST_TEST(image1.readName() == "ZERO");
+  BOOST_TEST(image1.readSize() == shapeSize(shape));
+  BOOST_TEST(image1.template readShape<1>() == shape);
+  BOOST_TEST(image1.header().template parse<int>("NAXIS").value == 1);
+  BOOST_TEST(image1.header().template parse<int>("NAXIS1").value == 10);
+  BOOST_TEST(image1.header().template parse<int>("BLANK").value == 1);
+  BOOST_TEST(image1.header().template parse<int>("BAR").value == 41);
+  const auto blank = image1.raster().template read<T, 1>();
+  BOOST_TEST(blank.shape() == shape);
+  for (auto v : blank) {
+    BOOST_TEST(isNull(v, T(1)));
+  }
+}
+
+template <typename T>
+void checkAppendImage(MefFile& f) {
+
+  /* Without BLANK keyword */
+  Position<1> shape {10};
+  Test::RandomRaster<T, 1> raster(shape);
+  RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
+  const auto& image = f.appendImage("ZERO", records, raster);
+  BOOST_TEST(image.readName() == "ZERO");
+  BOOST_TEST(image.readSize() == shapeSize(shape));
+  BOOST_TEST(image.readSize() == shapeSize(shape));
+  BOOST_TEST(image.header().template parse<int>("FOO").value == 3);
+  BOOST_TEST(image.header().template parse<int>("BAR").value == 41);
+  const auto output = image.raster().template read<T, 1>();
+  BOOST_TEST(output.shape() == shape);
+  BOOST_TEST(output.container() == raster.container());
+}
+
+#define APPEND_IMAGE_TEST(T, name) \
+  BOOST_FIXTURE_TEST_CASE(append_null_##name##_image_test, Test::TemporaryMefFile) { \
+    checkAppendNullImage<T>(*this); \
+  } \
+  BOOST_FIXTURE_TEST_CASE(append_##name##_image_test, Test::TemporaryMefFile) { \
+    checkAppendImage<T>(*this); \
+  }
+// ELEFITS_FOREACH_RASTER_TYPE(APPEND_NULL_IMAGE_TEST)
+APPEND_IMAGE_TEST(float, float)
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

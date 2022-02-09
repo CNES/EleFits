@@ -62,7 +62,7 @@ void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
   Cfitsio::HeaderIo::updateRecord<std::string>(fptr, {keyword, newName});
   int status = 0;
   fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
-  // TODO fits_set_hdustruc is DEPRECATED => ask CFITSIO support
+  // FIXME fits_set_hdustruc is deprecated => ask CFITSIO support
   CfitsioError::mayThrow(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
 }
 

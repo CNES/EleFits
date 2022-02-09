@@ -16,7 +16,7 @@ const std::type_info& ImageRaster::readTypeid() const {
 }
 
 long ImageRaster::readSize() const {
-  return shapeSize(readShape());
+  return shapeSize(readShape<-1>());
 }
 
 } // namespace Fits
