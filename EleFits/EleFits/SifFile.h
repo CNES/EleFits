@@ -15,7 +15,9 @@ namespace Fits {
  * @ingroup file_handlers
  * @brief Single image FITS file handler.
  * @details
- * Provide read/write access to the header and image raster.
+ * Through constructor and destructor, `SifFile` handles creation, opening, closing and removing of the SIF-file.
+ * Other methods give access to the header unit and image data unit.
+ * Note that the data unit is empty at creation, and must be resized to write data.
  * @see \ref handlers
  */
 class SifFile : public FitsFile {
@@ -33,8 +35,6 @@ public:
 
   /**
    * @brief Access the header unit.
-   * @warning
-   * Return will be of type Header from version 4.0 on.
    */
   const Header& header() const;
 
@@ -44,19 +44,32 @@ public:
   const ImageRaster& raster() const;
 
   /**
-   * @brief Write both the records and the raster.
+   * @brief Write both the records and the raster (resize the data unit if empty).
    */
   template <typename TRaster>
   void writeAll(const RecordSeq& records, const TRaster& raster);
 
   /**
    * @brief Read the raster.
+   * @details
+   * This is a shortcut for:
+   * - Accessing the data unit;
+   * - Reading the raster.
+   * 
+   * Anything more complex (e.g. region-wise reading) can be done via `raster()`.
    */
   template <typename T, long N = 2>
   VecRaster<T, N> readRaster() const;
 
   /**
-   * @brief Write the raster (initialize primary HDU if not done).
+   * @brief Write the raster (resize the data unit if empty).
+   * @details
+   * This is a shortcut for:
+   * - Accessing the data unit;
+   * - Resizing it;
+   * - Writing the raster.
+   * 
+   * Anything more complex (e.g. region-wise writing) can be done via `raster()`.
    */
   template <typename TRaster>
   void writeRaster(const TRaster& raster) const;

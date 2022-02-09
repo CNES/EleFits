@@ -24,15 +24,13 @@ namespace Fits {
  * @details
  * This class provides services common to all HDUs for reading and writing records.
  * Services exclusively applicable to MEF files (e.g. HDU name or type) are directly provided as methods,
- * while generic services are accessed through the `header()` method (refer to the documentation of the `Header` class).
- *
- * @note
- * `Hdu`s are written as Image HDUs with `NAXIS` = 0.
+ * while generic services are accessed through the `header()` method
+ * (refer to the documentation of the `Header` class).
  */
 class Hdu {
 
 public:
-  /// @cond INTERNAL
+  /// @cond
 
   /**
    * @brief A token for the passkey idiom.
@@ -159,6 +157,19 @@ public:
   /**
    * @brief Compute the HDU and data checksums and compare them to the values in the header.
    * @throw ChecksumError if checksums values in header are missing or incorrect
+   * @details
+   * In case of error, a `ChecksumError` is thrown.
+   * The checksum records `CHECKSUM` and `DATASUM` can be missing or invalid.
+   * To get details on the error, ask the `ChecksumError` object itself:
+   * \code
+   * try {
+   *   hdu.verifyChecksums();
+   * } catch (ChecksumError& e) {
+   *   if (e.data == ChecksumError::Status::Missing) {
+   *     // ...
+   *   }
+   * }
+   * \endcode
    * @see updateChecksums()
    */
   void verifyChecksums() const;

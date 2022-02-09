@@ -56,7 +56,7 @@ This can be easily mitigated by creating classes `ImageHdu` and `BintableHdu`.
 To further reduce the coupling between header units and data units,
 classes have been introduced as follows:
 - `ImageHdu`s are made of a `Header` and `ImageRaster`;
-- `BintableHdu`s are made of a `Header` and `BintableColumns` or `BintableRows`;
+- `BintableHdu`s are made of a `Header` and `BintableColumns`;
 - `Hdu` is the parent class of `ImageHdu` and `BintableHdu`, which can store the name and index of the HDU.
 
 \code
