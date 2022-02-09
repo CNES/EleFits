@@ -45,7 +45,12 @@ public:
   RecordVec(std::vector<Record<T>>&& records);
 
   /**
-   * @brief Create a RecordVec from a list of records.
+   * @brief Create a `RecordVec` from a list of homogeneous records.
+   */
+  RecordVec(std::initializer_list<Record<T>> records);
+
+  /**
+   * @brief Create a RecordVec from a list of heterogeneous records.
    */
   template <typename... Ts>
   RecordVec(const Record<Ts>&... records);

@@ -95,6 +95,47 @@ BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile) {
   BOOST_TEST(this->access<BintableColumns>("TABLE").readName(0) == info.name);
 }
 
+BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
+  /* Image */
+  RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
+  const auto& image = this->appendImageHeader("IMAGE", records);
+  BOOST_TEST(image.readName() == "IMAGE");
+  BOOST_TEST(image.readSize() == 0);
+  BOOST_TEST(image.header().parse<int>("FOO").value == 3);
+  BOOST_TEST(image.header().parse<int>("BAR").value == 41);
+
+  /* No-column bintable */
+  const auto& bintable0 = this->appendBintableHeader("BINTABLE0", records);
+  BOOST_TEST(bintable0.readName() == "BINTABLE0");
+  BOOST_TEST(bintable0.readRowCount() == 0);
+  BOOST_TEST(bintable0.readColumnCount() == 0);
+  BOOST_TEST(bintable0.header().parse<int>("FOO").value == 3);
+  BOOST_TEST(bintable0.header().parse<int>("BAR").value == 41);
+
+  /* Single-column bintable */
+  const ColumnInfo<char> charInfo("CHAR");
+  const auto& bintable1 = this->appendBintableHeader("BINTABLE1", records, charInfo);
+  BOOST_TEST(bintable1.readName() == "BINTABLE1");
+  BOOST_TEST(bintable1.readRowCount() == 0);
+  BOOST_TEST(bintable1.readColumnCount() == 1);
+  BOOST_TEST(bintable1.columns().readName(0) == "CHAR");
+  BOOST_TEST(bintable1.header().parse<int>("FOO").value == 3);
+  BOOST_TEST(bintable1.header().parse<int>("BAR").value == 41);
+  // FIXME check with tuple
+
+  /* Multi-column bintable */
+  const ColumnInfo<float> floatInfo("FLOAT");
+  const auto& bintable2 = this->appendBintableHeader("BINTABLE2", records, charInfo, floatInfo);
+  BOOST_TEST(bintable2.readName() == "BINTABLE2");
+  BOOST_TEST(bintable2.readRowCount() == 0);
+  BOOST_TEST(bintable2.readColumnCount() == 2);
+  BOOST_TEST(bintable2.columns().readName(0) == "CHAR");
+  BOOST_TEST(bintable2.columns().readName(1) == "FLOAT");
+  BOOST_TEST(bintable2.header().parse<int>("FOO").value == 3);
+  BOOST_TEST(bintable2.header().parse<int>("BAR").value == 41);
+  // FIXME check with tuple
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

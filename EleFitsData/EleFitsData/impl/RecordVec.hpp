@@ -22,6 +22,9 @@ template <typename T>
 RecordVec<T>::RecordVec(std::vector<Record<T>>&& records) : vector(std::move(records)) {}
 
 template <typename T>
+RecordVec<T>::RecordVec(std::initializer_list<Record<T>> records) : vector(std::move(records)) {}
+
+template <typename T>
 template <typename... Ts>
 RecordVec<T>::RecordVec(const Record<Ts>&... records) : vector {Record<T>(records)...} {}
 
