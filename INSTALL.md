@@ -18,10 +18,10 @@ Jump to the configuration section.
 
 #### TL;DR
 
-Download and run [the installation script](https://raw.githubusercontent.com/CNES/EleFits/4.0.1/install.sh):
+Download and run [the installation script](https://raw.githubusercontent.com/CNES/EleFits/5.0.0/install.sh):
 
 ```sh
-wget https://raw.githubusercontent.com/CNES/EleFits/4.0.1/install.sh
+wget https://raw.githubusercontent.com/CNES/EleFits/5.0.0/install.sh
 chmod +x install.sh
 sudo ./install.sh
 ```
@@ -45,7 +45,7 @@ Finally, install EleFits the same way:
 
 ```xml
 cd <root>
-git clone -b 4.0.1 https://github.com/cnes/EleFits.git
+git clone -b 5.0.0 https://github.com/cnes/EleFits.git
 cd EleFits
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local ..
@@ -111,7 +111,7 @@ To work with the proposed `CMakeLists.txt`, it should be copied inside your proj
 
 ```sh
 cd <root>/<project_name>
-wget https://raw.githubusercontent.com/CNES/EleFits/4.0.1/cmake/modules/FindEleFits.cmake -P cmake/modules
+wget https://raw.githubusercontent.com/CNES/EleFits/5.0.0/cmake/modules/FindEleFits.cmake -P cmake/modules
 mkdir build ; cd build
 cmake ..
 make
