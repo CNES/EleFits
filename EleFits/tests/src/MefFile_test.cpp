@@ -155,14 +155,14 @@ template <typename T>
 void checkAppendZeroImage(MefFile& f) {
   Position<1> shape {10};
   RecordSeq withoutBlank {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
-  const auto& image = f.appendNullImage<T>("ZERO", withoutBlank, shape);
-  BOOST_TEST(image.readName() == "ZERO");
-  BOOST_TEST(image.readSize() == shapeSize(shape));
-  BOOST_TEST(image.template readShape<1>() == shape);
-  BOOST_TEST(not image.header().has("BLANK"));
-  BOOST_TEST(image.header().template parse<int>("FOO").value == 3);
-  BOOST_TEST(image.header().template parse<int>("BAR").value == 41);
-  const auto zero = image.raster().template read<T, 1>();
+  const auto& ext = f.appendNullImage<T>("ZERO", withoutBlank, shape);
+  BOOST_TEST(ext.readName() == "ZERO");
+  BOOST_TEST(ext.readSize() == shapeSize(shape));
+  BOOST_TEST(ext.template readShape<1>() == shape);
+  BOOST_TEST(not ext.header().has("BLANK"));
+  BOOST_TEST(ext.header().template parse<int>("FOO").value == 3);
+  BOOST_TEST(ext.header().template parse<int>("BAR").value == 41);
+  const auto zero = ext.raster().template read<T, 1>();
   BOOST_TEST(zero.shape() == shape);
   for (auto v : zero) {
     BOOST_TEST(isNull(v));
@@ -172,28 +172,25 @@ void checkAppendZeroImage(MefFile& f) {
 template <typename T>
 void checkAppendNullImage(MefFile& f) {
 
-  if (std::is_same<T, char>::value || std::is_same<T, std::uint16_t>::value || std::is_same<T, std::uint32_t>::value ||
-      std::is_same<T, std::uint64_t>::value) {
+  if (std::is_same<T, std::uint64_t>::value) {
     return; // FIXME CFITSIO bug?
   }
 
   Position<1> shape {10};
   RecordSeq withBlank {{"BLANK", T(1)}, {"BAR", 41, "s", "useless"}};
-  const auto& image1 = f.appendNullImage<T>("NULL", withBlank, shape);
-  BOOST_TEST(image1.readName() == "NULL");
-  BOOST_TEST(image1.readSize() == shapeSize(shape));
-  BOOST_TEST(image1.template readShape<1>() == shape);
-  BOOST_TEST(image1.header().template parse<int>("NAXIS").value == 1);
-  BOOST_TEST(image1.header().template parse<int>("NAXIS1").value == 10);
-  BOOST_TEST(image1.header().template parse<int>("BLANK").value == 1);
-  BOOST_TEST(image1.header().template parse<int>("BAR").value == 41);
-  const auto blank = image1.raster().template read<T, 1>();
+  const auto& ext = f.appendNullImage<T>("NULL", withBlank, shape);
+  BOOST_TEST(ext.readName() == "NULL");
+  BOOST_TEST(ext.readSize() == shapeSize(shape));
+  BOOST_TEST(ext.template readShape<1>() == shape);
+  BOOST_TEST(ext.header().template parse<int>("NAXIS").value == 1);
+  BOOST_TEST(ext.header().template parse<int>("NAXIS1").value == 10);
+  BOOST_TEST(ext.header().template parse<int>("BLANK").value == 1);
+  BOOST_TEST(ext.header().template parse<int>("BAR").value == 41);
+  const auto offset = ext.header().template parseOr<T>("BZERO", T());
+  const auto blank = ext.raster().template read<T, 1>();
   BOOST_TEST(blank.shape() == shape);
   for (auto v : blank) {
-    BOOST_TEST(v == T(1));
-    if (v != T(1)) {
-      std::cout << v << std::endl;
-    }
+    BOOST_TEST(v == T(1) + offset);
   }
 }
 
@@ -212,13 +209,13 @@ void checkAppendImage(MefFile& f) {
   Position<1> shape {10};
   Test::RandomRaster<T, 1> raster(shape);
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
-  const auto& image = f.appendImage("ZERO", records, raster);
-  BOOST_TEST(image.readName() == "ZERO");
-  BOOST_TEST(image.readSize() == shapeSize(shape));
-  BOOST_TEST(image.readSize() == shapeSize(shape));
-  BOOST_TEST(image.header().template parse<int>("FOO").value == 3);
-  BOOST_TEST(image.header().template parse<int>("BAR").value == 41);
-  const auto output = image.raster().template read<T, 1>();
+  const auto& ext = f.appendImage("ZERO", records, raster);
+  BOOST_TEST(ext.readName() == "ZERO");
+  BOOST_TEST(ext.readSize() == shapeSize(shape));
+  BOOST_TEST(ext.readSize() == shapeSize(shape));
+  BOOST_TEST(ext.header().template parse<int>("FOO").value == 3);
+  BOOST_TEST(ext.header().template parse<int>("BAR").value == 41);
+  const auto output = ext.raster().template read<T, 1>();
   BOOST_TEST(output.shape() == shape);
   BOOST_TEST(output.container() == raster.container());
 }
@@ -238,8 +235,7 @@ ELEFITS_FOREACH_RASTER_TYPE(APPEND_IMAGE_TEST)
 template <typename T>
 void checkAppendNullBintable(MefFile& f) {
 
-  if (std::is_same<T, char>::value || std::is_same<T, std::uint16_t>::value || std::is_same<T, std::uint32_t>::value ||
-      std::is_same<T, std::uint64_t>::value) {
+  if (std::is_same<T, std::uint64_t>::value) {
     return; // FIXME CFITSIO bug?
   }
 
@@ -247,16 +243,17 @@ void checkAppendNullBintable(MefFile& f) {
   ColumnInfo<T> blank("BLANK");
   RecordSeq records {{"TNULL2", T(1)}, {"FOO", "BAR"}};
   const auto& ext = f.appendNullBintable("BINTABLE", records, 10, zero, blank);
+  const auto offset = ext.header().template parseOr<T>("TZERO2", T());
   const auto rowCount = ext.readRowCount();
   BOOST_TEST(rowCount == 10);
   const auto output = ext.columns().readSeq(as<T>("ZERO"), as<T>("BLANK"));
-  for (std::size_t i = 0; i < rowCount; ++i) {
-    BOOST_TEST(isNull(std::get<0>(output)[i]));
+  for (long i = 0; i < rowCount; ++i) {
+    BOOST_TEST(isNull(std::get<0>(output)[i] - offset));
     const auto value1 = std::get<1>(output)[1];
     if (std::is_floating_point<T>::value) {
       BOOST_TEST(value1 != value1);
     } else {
-      BOOST_TEST(value1 == T(1));
+      BOOST_TEST(value1 == T(1) + offset);
     }
   }
 }
