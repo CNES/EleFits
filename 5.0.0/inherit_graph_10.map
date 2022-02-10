@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classEuclid_1_1Fits_1_1FitsFile.html" title="FITS file reader&#45;writer." alt="" coords="5,81,72,108"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1MefFile.html" title="Multi&#45;Extension FITS file reader&#45;writer." alt="" coords="121,56,189,83"/>
+<area shape="rect" id="node5" href="$classEuclid_1_1Fits_1_1SifFile.html" title="Single image FITS file handler." alt="" coords="124,107,185,133"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1Test_1_1NewMefFile.html" title="MefFile with random name and create&#45;only policy." alt="" coords="258,5,355,32"/>
+<area shape="rect" id="node4" href="$classEuclid_1_1Fits_1_1Test_1_1TemporaryMefFile.html" title="Temporary MefFile with random name." alt="" coords="238,56,375,83"/>
+<area shape="rect" id="node6" href="$classEuclid_1_1Fits_1_1Test_1_1NewSifFile.html" title="SifFile with random name and create&#45;only policy." alt="" coords="261,107,352,133"/>
+<area shape="rect" id="node7" href="$classEuclid_1_1Fits_1_1Test_1_1TemporarySifFile.html" title="Temporary SifFile with random name." alt="" coords="241,157,372,184"/>
+</map>

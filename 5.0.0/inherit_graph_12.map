@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classEuclid_1_1Fits_1_1Hdu.html" title="Base class for ImageHdu and BintableHdu." alt="" coords="5,31,53,57"/>
+<area shape="rect" id="node2" href="$classEuclid_1_1Fits_1_1BintableHdu.html" title="Binary table HDU reader&#45;writer." alt="" coords="102,5,205,32"/>
+<area shape="rect" id="node3" href="$classEuclid_1_1Fits_1_1ImageHdu.html" title="Image HDU reader&#45;writer." alt="" coords="109,56,198,83"/>
+</map>
