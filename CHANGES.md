@@ -6,6 +6,8 @@
 
 * Function `shapeSize()` was wrong for `N = 0`
 * Method `readSize()` of `ImageHdu` and `ImageRaster` was wrong for `N != 2`
+* `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
+* Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 
 ### Breaking changes
 
@@ -18,11 +20,6 @@
   to support multidimensional entries and to work with any contiguous container
   (with `PtrColumn<T, N> = Column<T, N, T*>` and `VecColumn<T, N> = Column<T, N, vector<T>>`)
 * `PtrColumn(info, elementCount, data)` becomes `PtrColumn(info, rowCount, data)` for homogeneity with `VecColumn`
-
-### Bug fixes
-
-* `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
-* Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 
 ### Refactoring
 
