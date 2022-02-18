@@ -10,6 +10,7 @@
 #include "EleFitsData/FitsError.h"
 #include "EleFitsData/VectorArithmetic.h"
 
+#include <algorithm> // copy_n
 #include <array>
 #include <cstddef> // size_t
 #include <initializer_list>
@@ -34,24 +35,18 @@ public:
   /**
    * @brief Default or size-based constructor.
    */
-  explicit DataContainerHolder(std::size_t size = 0) : m_container(size) {}
-
-  /**
-   * @brief Iterator-based constructor.
-   */
-  template <typename TIterator>
-  DataContainerHolder(TIterator begin, TIterator end) : m_container(begin, end) {}
-
-  /**
-   * @brief Initialization list-based constructor.
-   */
-  DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
+  template <typename U>
+  explicit DataContainerHolder(std::size_t size, U* data) : m_container(size) {
+    if (data) {
+      std::copy_n(data, size, m_container.begin());
+    }
+  }
 
   /**
    * @brief Forwarding constructor.
    */
-  template <typename... Ts>
-  DataContainerHolder(Ts&&... args) : m_container(std::forward<Ts>(args)...) {}
+  template <typename... TArgs>
+  explicit DataContainerHolder(TArgs&&... args) : m_container(std::forward<TArgs>(args)...) {}
 
   /// @group_properties
 
@@ -93,18 +88,7 @@ public:
   /**
    * @brief Default or size-based constructor.
    */
-  explicit DataContainerHolder(std::size_t size = 0, T* data = nullptr) : m_size(size), m_container(data) {}
-
-  /**
-   * @brief Iterator-based constructor.
-   */
-  template <typename TIterator>
-  DataContainerHolder(TIterator begin, TIterator end) : DataContainerHolder(std::distance(begin, end), &(*begin)) {}
-
-  /**
-   * @brief Initialization list-based constructor.
-   */
-  DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
+  explicit DataContainerHolder(std::size_t size, T* data) : m_size(size), m_container(data) {}
 
   /// @group_properties
 
@@ -151,24 +135,16 @@ public:
   /**
    * @brief Default or size-based constructor.
    */
-  explicit DataContainerHolder(std::size_t size = N) : m_container {} {
-    if (size != N) {
-      throw FitsError("Size missmatch in DataContainerHolder<std::array> specialization."); // FIXME clarify
+  explicit DataContainerHolder(std::size_t size, const T* data) : m_container {} {
+    if (size != N && size != 0) {
+      std::string msg = "Size mismatch in DataContainerHolder<std::array> specialization. ";
+      msg += "Got " + std::to_string(size) + ", should be 0 or " + std::to_string(N) + ".";
+      throw FitsError(msg);
+    }
+    if (data) {
+      std::copy_n(data, size, m_container.begin());
     }
   }
-
-  /**
-   * @brief Iterator-based constructor.
-   */
-  template <typename TIterator>
-  DataContainerHolder(TIterator begin, TIterator end) : DataContainerHolder(std::distance(begin, end)) {
-    std::copy(begin, end, m_container.begin());
-  }
-
-  /**
-   * @brief Initialization list-based constructor.
-   */
-  DataContainerHolder(std::initializer_list<T> values) : DataContainerHolder(values.begin(), values.end()) {}
 
   /// @group_properties
 
@@ -222,9 +198,35 @@ public:
   /// @group_construction
 
   /**
-   * @brief Inherit data holder's constructors.
+   * @brief Default or size-based constructor.
    */
-  using Holder::Holder;
+  template <
+      typename TSize = std::size_t,
+      typename U = T,
+      typename std::enable_if_t<std::is_integral<TSize>::value, TSize>* = nullptr>
+  DataContainer(TSize s = 0, U* d = nullptr) : Holder(std::size_t(s), d) {}
+
+  /**
+   * @brief Iterator-based constructor.
+   */
+  template <typename TIterator>
+  DataContainer(TIterator begin, TIterator end) : DataContainer(std::distance(begin, end), &(*begin)) {}
+
+  /**
+   * @brief Value list constructor.
+   */
+  DataContainer(std::initializer_list<T> values) : DataContainer(values.begin(), values.end()) {}
+
+  /**
+   * @brief Forwarding constructor.
+   */
+  // template <typename... TArgs>
+  // DataContainer(TArgs&&... args) : Holder(std::forward<TArgs>(args)...) {}
+  template <
+      typename TArg0,
+      typename... TArgs,
+      typename std::enable_if_t<not std::is_integral<TArg0>::value, TArg0>* = nullptr>
+  DataContainer(TArg0 arg0, TArgs&&... args) : Holder(std::forward<TArg0>(arg0), std::forward<TArgs>(args)...) {}
 
   ELEFITS_VIRTUAL_DTOR(DataContainer)
   ELEFITS_COPYABLE(DataContainer)

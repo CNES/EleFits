@@ -28,14 +28,33 @@ namespace Fits {
  * A contiguous data holder is some class which stores or points to
  * some data contiguous in memory as a public or protected member `TContainer m_container`,
  * and implements the following methods:
- * - Default, copy and move constructors;
- * - Constructor from a size;
- * - Constructor from an iterator pair;
- * - Implicit constructor from an initialization list;
- * - `size_type size() const`;
+ * - Constructor from a size and pointer;
+ * - `std::size_t size() const`;
  * - `inline const T* data() const`.
+ * @par_example
+ * Here is a minimal `SizedData`-compliant class which wraps a `std::vector`:
+ * \code
+ * template<typename T>
+ * struct MyData {
+ * 
+ *   MyData(std::size_t s, T* d) : m_container(s) {
+ *     if (d) {
+ *       std::copy_n(d, s, m_container.begin());
+ *     }
+ *   }
+ * 
+ *   std::size_t size() const {
+ *     return m_container.size();
+ *   }
+ * 
+ *   inline const T* data() {
+ *     return m_container.data();
+ *   }
+ * 
+ *   std::vector<T> m_container;
+ * };
+ * \endcode
  */
-// FIXME ctot(size = 0, data = nullptr) should suffice
 
 /**
  * @ingroup data_concepts
