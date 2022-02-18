@@ -8,11 +8,11 @@ namespace Euclid {
 namespace Fits {
 
 #ifndef COMPILE_COLUMN_CLASSES
-#define COMPILE_COLUMN_CLASSES(type, unused) \
-  template struct ColumnInfo<type, 1>; \
-  template class Column<type, 1, type*>; \
-  template class Column<const type, 1, const type*>; \
-  template class Column<type, 1, std::vector<type>>;
+#define COMPILE_COLUMN_CLASSES(T, unused) \
+  template struct ColumnInfo<T, 1>; \
+  template class Column<T, 1, DataContainerHolder<T, T*>>; \
+  template class Column<const T, 1, DataContainerHolder<const T, const T*>>; \
+  template class Column<T, 1, DataContainerHolder<T, std::vector<T>>>;
 ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_COLUMN_CLASSES)
 #undef COMPILE_COLUMN_CLASSES
 #endif

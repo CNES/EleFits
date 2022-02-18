@@ -22,30 +22,30 @@ namespace Fits {
 // Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
 
 // Forward declaration for PtrColumn and VecColumn
-template <typename T, long N, typename TContainer>
+template <typename T, long N, typename THolder>
 class Column;
 
 /// @endcond
 
 /**
  * @ingroup bintable_data_classes
- * @brief `Column` which points to some external data (`TContainer` = `T*`).
+ * @brief `Column` which points to some external data (`THolder` = `T*`).
  */
 template <typename T, long N = 1>
-using PtrColumn = Column<T, N, T*>;
+using PtrColumn = Column<T, N, DataContainerHolder<T, T*>>;
 
 /**
  * @ingroup bintable_data_classes
- * @brief `Column` which owns a data vector (`TContainer` = `std::vector<T>`).
+ * @brief `Column` which owns a data vector (`THolder` = `std::vector<T>`).
  */
 template <typename T, long N = 1>
-using VecColumn = Column<T, N, std::vector<T>>;
+using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
 
 /**
  * @ingroup bintable_data_classes
  * @tparam T The value type, possibly const-qualified for read-only columns
  * @tparam N The entry dimension (number of axes) or -1 for runtime dimension
- * @tparam TContainer The data container, which must meet `SizedData` requirements
+ * @tparam THolder The data container, which must meet `SizedData` requirements
  * @brief Binary table column data and metadata.
  * @details
  * A column is a contiguous container for the entry data of a binary table column.
@@ -65,13 +65,13 @@ using VecColumn = Column<T, N, std::vector<T>>;
  * @see `ColumnInfo` for details on the entry properties.
  * @see `makeColumn()` for creation shortcuts.
  */
-template <typename T, long N, typename TContainer>
-class Column : public DataContainer<T, TContainer, Column<T, N, TContainer>> {
+template <typename T, long N, typename THolder>
+class Column : public DataContainer<T, THolder, Column<T, N, THolder>> {
 
   /**
    * @brief Shortcut for DataContainer.
    */
-  using Base = DataContainer<T, TContainer, Column<T, N, TContainer>>;
+  using Base = DataContainer<T, THolder, Column<T, N, THolder>>;
 
 public:
   /**
@@ -246,7 +246,10 @@ private:
  * \endcode
  */
 template <typename TInfo, typename TContainer>
-Column<typename TContainer::value_type, std::decay_t<TInfo>::Dim, TContainer>
+Column<
+    typename TContainer::value_type,
+    std::decay_t<TInfo>::Dim,
+    DataContainerHolder<typename TContainer::value_type, TContainer>>
 makeColumn(TInfo info, TContainer&& data) {
   return {std::forward<TInfo>(info), std::forward<TContainer>(data)};
 }

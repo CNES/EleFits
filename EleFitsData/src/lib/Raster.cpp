@@ -8,16 +8,16 @@ namespace Euclid {
 namespace Fits {
 
 #ifndef COMPILE_RASTER_CLASSES
-#define COMPILE_RASTER_CLASSES(type, unused) \
-  template class Raster<type, -1, type*>; \
-  template class Raster<type, 2, type*>; \
-  template class Raster<type, 3, type*>; \
-  template class Raster<const type, -1, const type*>; \
-  template class Raster<const type, 2, const type*>; \
-  template class Raster<const type, 3, const type*>; \
-  template class Raster<type, -1, std::vector<type>>; \
-  template class Raster<type, 2, std::vector<type>>; \
-  template class Raster<type, 3, std::vector<type>>;
+#define COMPILE_RASTER_CLASSES(T, unused) \
+  template class Raster<T, -1, DataContainerHolder<T, T*>>; \
+  template class Raster<T, 2, DataContainerHolder<T, T*>>; \
+  template class Raster<T, 3, DataContainerHolder<T, T*>>; \
+  template class Raster<const T, -1, DataContainerHolder<const T, const T*>>; \
+  template class Raster<const T, 2, DataContainerHolder<const T, const T*>>; \
+  template class Raster<const T, 3, DataContainerHolder<const T, const T*>>; \
+  template class Raster<T, -1, DataContainerHolder<T, std::vector<T>>>; \
+  template class Raster<T, 2, DataContainerHolder<T, std::vector<T>>>; \
+  template class Raster<T, 3, DataContainerHolder<T, std::vector<T>>>;
 ELEFITS_FOREACH_RASTER_TYPE(COMPILE_RASTER_CLASSES)
 #undef COMPILE_COLUMN_CLASSES
 #endif

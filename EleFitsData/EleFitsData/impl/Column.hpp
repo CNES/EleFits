@@ -116,11 +116,11 @@ PtrColumn<T, N> Column<T, N, TContainer>::slice(const Segment& rows) {
 }
 
 #ifndef DECLARE_COLUMN_CLASSES
-#define DECLARE_COLUMN_CLASSES(type, unused) \
-  extern template struct ColumnInfo<type, 1>; \
-  extern template class Column<type, 1, type*>; \
-  extern template class Column<const type, 1, const type*>; \
-  extern template class Column<type, 1, std::vector<type>>;
+#define DECLARE_COLUMN_CLASSES(T, unused) \
+  extern template struct ColumnInfo<T, 1>; \
+  extern template class Column<T, 1, DataContainerHolder<T, T*>>; \
+  extern template class Column<const T, 1, DataContainerHolder<const T, const T*>>; \
+  extern template class Column<T, 1, DataContainerHolder<T, std::vector<T>>>;
 ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
 #undef DECLARE_COLUMN_CLASSES
 #endif

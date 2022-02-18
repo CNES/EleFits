@@ -39,11 +39,11 @@ namespace Fits {
  * PtrRaster<char, 2> ptrRaster({800, 600}, &raster[{0, 0, 1}]);
  * \endcode
  */
-template <typename T, long N, typename TContainer> // FIXME simplify as TParent
+template <typename T, long N, typename THolder> // FIXME simplify as TParent
 class Subraster {
 
 public:
-  using Parent = Raster<T, N, TContainer>;
+  using Parent = Raster<T, N, THolder>;
 
   /**
    * @brief Constructor.

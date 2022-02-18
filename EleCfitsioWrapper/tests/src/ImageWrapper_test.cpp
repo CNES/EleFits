@@ -61,7 +61,9 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile) {
     }
   }
   Fits::VecRaster<long, 3> output({3, 4, 5});
-  Fits::Subraster<long, 3, std::vector<long>> dst {output, region}; // TODO don't use the same region
+  Fits::Subraster<long, 3, Fits::DataContainerHolder<long, std::vector<long>>> dst {
+      output,
+      region}; // TODO don't use the same region
   ImageIo::readRegionTo<long, 3>(fptr, region, dst);
   for (long z = region.front[2]; z <= region.back[2]; ++z) {
     for (long y = region.front[1]; y <= region.back[1]; ++y) {

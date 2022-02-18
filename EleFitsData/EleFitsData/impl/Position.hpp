@@ -10,17 +10,19 @@ namespace Euclid {
 namespace Fits {
 
 template <long N>
-Position<N>::Position() : DataContainer<long, Indices<N>, Position<N>>() {}
+Position<N>::Position() : DataContainer<long, DataContainerHolder<long, Indices<N>>, Position<N>>() {}
 
 template <long N>
-Position<N>::Position(long dim) : DataContainer<long, Indices<N>, Position<N>>(dim) {}
+Position<N>::Position(long dim) : DataContainer<long, DataContainerHolder<long, Indices<N>>, Position<N>>(dim) {}
 
 template <long N>
-Position<N>::Position(std::initializer_list<long> indices) : DataContainer<long, Indices<N>, Position<N>>(indices) {}
+Position<N>::Position(std::initializer_list<long> indices) :
+    DataContainer<long, DataContainerHolder<long, Indices<N>>, Position<N>>(indices) {}
 
 template <long N>
 template <typename TIterator>
-Position<N>::Position(TIterator begin, TIterator end) : DataContainer<long, Indices<N>, Position<N>>(begin, end) {}
+Position<N>::Position(TIterator begin, TIterator end) :
+    DataContainer<long, DataContainerHolder<long, Indices<N>>, Position<N>>(begin, end) {}
 
 template <long N>
 Position<N> Position<N>::zero() {

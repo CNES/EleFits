@@ -48,7 +48,7 @@ using Indices = typename std::conditional<(N == -1), std::vector<long>, std::arr
  * @see Region
  */
 template <long N = 2>
-class Position : public DataContainer<long, Indices<N>, Position<N>> {
+class Position : public DataContainer<long, DataContainerHolder<long, Indices<N>>, Position<N>> {
 public:
   /**
    * @brief The dimension template parameter.

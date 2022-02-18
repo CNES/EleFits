@@ -41,28 +41,28 @@ namespace Fits {
 // Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
 
 // Forward declaration for Raster::subraster()
-template <typename T, long N, typename TContainer>
+template <typename T, long N, typename THolder>
 class Subraster;
 
 // Forward declaration for PtrRaster and VecRaster
-template <typename T, long N, typename TContainer>
+template <typename T, long N, typename THolder>
 class Raster;
 
 /// @endcond
 
 /**
  * @ingroup image_data_classes
- * @brief `Raster` which points to some external data (`TContainer` = `T*`).
+ * @brief `Raster` which points to some external data (`THolder` = `T*`).
  */
 template <typename T, long N = 2>
-using PtrRaster = Raster<T, N, T*>;
+using PtrRaster = Raster<T, N, DataContainerHolder<T, T*>>;
 
 /**
  * @ingroup image_data_classes
- * @brief `Raster` which owns a data vector (`TContainer` = `std::vector<T>`).
+ * @brief `Raster` which owns a data vector (`THolder` = `std::vector<T>`).
  */
 template <typename T, long N = 2>
-using VecRaster = Raster<T, N, std::vector<T>>;
+using VecRaster = Raster<T, N, DataContainerHolder<T, std::vector<T>>>;
 
 /**
  * @ingroup image_data_classes
@@ -70,7 +70,7 @@ using VecRaster = Raster<T, N, std::vector<T>>;
  * 
  * @tparam T The value type, which can be `const`-qualified for read-only rasters
  * @tparam N The dimension, which can be &ge; 0 for fixed dimension, or -1 for variable dimension
- * @tparam TContainer The underlying data container type
+ * @tparam THolder The underlying data container type
  * 
  * @details
  * A raster is a contiguous container for the pixel data of an image.
@@ -145,8 +145,8 @@ using VecRaster = Raster<T, N, std::vector<T>>;
  * and also belongs to the Java library.
  * All in all, `Raster` seems to be a fair compromise.
  */
-template <typename T, long N, typename TContainer>
-class Raster : public DataContainer<T, TContainer, Raster<T, N, TContainer>> {
+template <typename T, long N, typename THolder>
+class Raster : public DataContainer<T, THolder, Raster<T, N, THolder>> {
   friend class ImageRaster; // FIXME rm when Subraster is removed
 
 public:
@@ -158,7 +158,7 @@ public:
   /**
    * @brief The dimension template parameter.
    * @details
-   * The value of `Raster<T, N, TContainer>::Dim` is always `N`, irrespective of its sign.
+   * The value of `Raster<T, N, THolder>::Dim` is always `N`, irrespective of its sign.
    * In contrast, `dimension()` provides the actual dimension of the Raster,
    * even in the case of a variable dimension.
    */
@@ -175,7 +175,7 @@ public:
    * @param shape The raster shape
    */
   explicit Raster(Position<N> shape) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(shapeSize(shape)), m_shape(std::move(shape)) {}
+      DataContainer<T, THolder, Raster<T, N, THolder>>(shapeSize(shape)), m_shape(std::move(shape)) {}
 
   /**
    * @brief Constructor.
@@ -183,8 +183,7 @@ public:
    * @param data The raw data
    */
   Raster(Position<N> shape, T* data) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(data, data + shapeSize(shape)), m_shape(std::move(shape)) {
-  }
+      DataContainer<T, THolder, Raster<T, N, THolder>>(data, data + shapeSize(shape)), m_shape(std::move(shape)) {}
 
   /**
    * @brief Constructor.
@@ -193,7 +192,7 @@ public:
    */
   template <typename... Ts>
   Raster(Position<N> shape, Ts&&... args) :
-      DataContainer<T, TContainer, Raster<T, N, TContainer>>(std::forward<Ts>(args)...), m_shape(std::move(shape)) {}
+      DataContainer<T, THolder, Raster<T, N, THolder>>(std::forward<Ts>(args)...), m_shape(std::move(shape)) {}
 
   /// @group_properties
 
@@ -233,7 +232,7 @@ public:
 
   /// @group_elements
 
-  using DataContainer<T, TContainer, Raster<T, N, TContainer>>::operator[];
+  using DataContainer<T, THolder, Raster<T, N, THolder>>::operator[];
 
   /**
    * @brief Compute the raw index of a given position.
@@ -340,12 +339,12 @@ private:
    * @see slice()
    * @see section()
    */
-  const Subraster<T, N, TContainer> subraster(const Region<N>& region) const; // FIXME rm?
+  const Subraster<T, N, THolder> subraster(const Region<N>& region) const; // FIXME rm?
 
   /**
    * @copydetails subraster().
    */
-  Subraster<T, N, TContainer> subraster(const Region<N>& region); // FIXME rm?
+  Subraster<T, N, THolder> subraster(const Region<N>& region); // FIXME rm?
 
   /**
    * @brief Raster shape, i.e. length along each axis.
@@ -375,7 +374,11 @@ private:
  * \endcode
  */
 template <typename TContainer, typename... Longs>
-Raster<typename TContainer::value_type, sizeof...(Longs), TContainer> makeRaster(TContainer&& data, Longs... shape) {
+Raster<
+    typename TContainer::value_type,
+    sizeof...(Longs),
+    DataContainerHolder<typename TContainer::value_type, TContainer>>
+makeRaster(TContainer&& data, Longs... shape) {
   return {{shape...}, std::forward<TContainer>(data)};
 }
 

@@ -234,16 +234,16 @@ bool Raster<T, N, TContainer>::isContiguous(const Region<N>& region) const {
 }
 
 #ifndef DECLARE_RASTER_CLASSES
-#define DECLARE_RASTER_CLASSES(type, unused) \
-  extern template class Raster<type, -1, type*>; \
-  extern template class Raster<type, 2, type*>; \
-  extern template class Raster<type, 3, type*>; \
-  extern template class Raster<const type, -1, const type*>; \
-  extern template class Raster<const type, 2, const type*>; \
-  extern template class Raster<const type, 3, const type*>; \
-  extern template class Raster<type, -1, std::vector<type>>; \
-  extern template class Raster<type, 2, std::vector<type>>; \
-  extern template class Raster<type, 3, std::vector<type>>;
+#define DECLARE_RASTER_CLASSES(T, unused) \
+  extern template class Raster<T, -1, DataContainerHolder<T, T*>>; \
+  extern template class Raster<T, 2, DataContainerHolder<T, T*>>; \
+  extern template class Raster<T, 3, DataContainerHolder<T, T*>>; \
+  extern template class Raster<const T, -1, DataContainerHolder<const T, const T*>>; \
+  extern template class Raster<const T, 2, DataContainerHolder<const T, const T*>>; \
+  extern template class Raster<const T, 3, DataContainerHolder<const T, const T*>>; \
+  extern template class Raster<T, -1, DataContainerHolder<T, std::vector<T>>>; \
+  extern template class Raster<T, 2, DataContainerHolder<T, std::vector<T>>>; \
+  extern template class Raster<T, 3, DataContainerHolder<T, std::vector<T>>>;
 ELEFITS_FOREACH_RASTER_TYPE(DECLARE_RASTER_CLASSES)
 #undef DECLARE_COLUMN_CLASSES
 #endif

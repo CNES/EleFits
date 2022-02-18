@@ -30,6 +30,11 @@ template <typename T, typename TContainer>
 class DataContainerHolder {
 
 public:
+  /**
+   * @brief The concrete container type.
+   */
+  using Container = TContainer;
+
   /// @group_construction
 
   /**
@@ -38,7 +43,7 @@ public:
   template <typename U>
   explicit DataContainerHolder(std::size_t size, U* data) : m_container(size) {
     if (data) {
-      std::copy_n(data, size, m_container.begin());
+      std::copy_n(data, size, const_cast<T*>(this->data()));
     }
   }
 
@@ -72,7 +77,7 @@ protected:
   /**
    * @brief The underlying container.
    */
-  TContainer m_container;
+  Container m_container;
 };
 
 /**
@@ -83,32 +88,17 @@ template <typename T>
 class DataContainerHolder<T, T*> {
 
 public:
-  /// @group_construction
+  using Container = T*;
 
-  /**
-   * @brief Default or size-based constructor.
-   */
   explicit DataContainerHolder(std::size_t size, T* data) : m_size(size), m_container(data) {}
 
-  /// @group_properties
-
-  /**
-   * @brief Get the number of elements.
-   */
   std::size_t size() const {
     return m_size;
   }
 
-  /// @group_elements
-
-  /**
-   * @brief Access the raw data.
-   */
   inline const T* data() const {
     return m_container;
   }
-
-  /// @}
 
 protected:
   /**
@@ -130,11 +120,8 @@ template <typename T, std::size_t N>
 class DataContainerHolder<T, std::array<T, N>> {
 
 public:
-  /// @group_construction
+  using Container = std::array<T, N>;
 
-  /**
-   * @brief Default or size-based constructor.
-   */
   explicit DataContainerHolder(std::size_t size, const T* data) : m_container {} {
     if (size != N && size != 0) {
       std::string msg = "Size mismatch in DataContainerHolder<std::array> specialization. ";
@@ -146,25 +133,13 @@ public:
     }
   }
 
-  /// @group_properties
-
-  /**
-   * @brief Get the number of elements.
-   */
   std::size_t size() const {
     return N;
   }
 
-  /// @group_elements
-
-  /**
-   * @brief Access the raw data.
-   */
   inline const T* data() const {
     return m_container.data();
   }
-
-  /// @}
 
 protected:
   /**
@@ -183,17 +158,22 @@ protected:
  * @satisfies{ContiguousContainer}
  * @satisfies{VectorArithmetic}
  */
-template <typename T, typename TContainer, typename TDerived> // TODO allow void
+template <typename T, typename THolder, typename TDerived> // TODO allow void
 class DataContainer :
-    public ContiguousContainerMixin<T, TDerived>, // TODO fallback to DataContainer<T, TContainer, void>
-    public VectorArithmeticMixin<T, TDerived>, // TODO fallback to DataContainer<T, TContainer, void>
-    private DataContainerHolder<T, TContainer> {
+    public ContiguousContainerMixin<T, TDerived>, // TODO fallback to DataContainer<T, THolder, void>
+    public VectorArithmeticMixin<T, TDerived>, // TODO fallback to DataContainer<T, THolder, void>
+    public THolder {
 
 public:
   /**
    * @brief The concrete data holder type.
    */
-  using Holder = DataContainerHolder<T, TContainer>;
+  using Holder = THolder;
+
+  /**
+   * @brief The concrete container type.
+   */
+  using Container = typename Holder::Container;
 
   /// @group_construction
 
@@ -256,7 +236,7 @@ public:
   /**
    * @brief Access the container in read-only mode.
    */
-  const std::decay_t<TContainer>& container() const {
+  const std::decay_t<Container>& container() const {
     return this->m_container;
   }
 
@@ -287,7 +267,7 @@ public:
    * @warning
    * The container is not usable anymore after this call.
    */
-  TContainer& moveTo(TContainer& destination) {
+  Container& moveTo(Container& destination) {
     destination = std::move(this->m_container);
     return destination;
   }
