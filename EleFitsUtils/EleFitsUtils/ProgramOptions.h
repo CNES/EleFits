@@ -75,6 +75,22 @@ public:
   void named(const char* name, const ValueSemantics* value, const char* description);
 
   /**
+   * @brief Add a named option.
+   */
+  template <typename T>
+  void named(const char* name, const char* description) {
+    named(name, boost::program_options::value<T>(), description);
+  }
+
+  /**
+   * @brief Add a named option with default value.
+   */
+  template <typename T>
+  void named(const char* name, const char* description, T defaultValue) {
+    named(name, boost::program_options::value<T>()->default_value(defaultValue), description);
+  }
+
+  /**
    * @brief Add a positional option.
    * @param name The option name
    * @param value The option value semantics
@@ -89,6 +105,22 @@ public:
    * Positional options should be added in the expected order of the command line.
    */
   void positional(const char* name, const ValueSemantics* value, const char* description);
+
+  /**
+   * @brief Add a positional option.
+   */
+  template <typename T>
+  void positional(const char* name, const char* description) {
+    positional(name, boost::program_options::value<T>(), description);
+  }
+
+  /**
+   * @brief Add a positional option with default value.
+   */
+  template <typename T>
+  void positional(const char* name, const char* description, T defaultValue) {
+    positional(name, boost::program_options::value<T>()->default_value(defaultValue), description);
+  }
 
   /**
    * @brief Add a flag.
