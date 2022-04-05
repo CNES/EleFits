@@ -178,13 +178,16 @@ public:
   /// @group_construction
 
   /**
-   * @brief Default or size-based constructor.
+   * @brief Construct from a size and non-constant data.
    */
-  template <
-      typename TSize = std::size_t,
-      typename U = T,
-      typename std::enable_if_t<std::is_integral<TSize>::value, TSize>* = nullptr>
-  DataContainer(TSize s = 0, U* d = nullptr) : Holder(std::size_t(s), d) {}
+  template <typename TSize = std::size_t, typename std::enable_if_t<std::is_integral<TSize>::value, TSize>* = nullptr>
+  DataContainer(TSize s = 0, std::remove_const_t<T>* d = nullptr) : Holder(std::size_t(s), d) {}
+
+  /**
+   * @brief Construct from a size and constant data.
+   */
+  template <typename TSize = std::size_t, typename std::enable_if_t<std::is_integral<TSize>::value, TSize>* = nullptr>
+  DataContainer(TSize s, const T* d) : Holder(std::size_t(s), d) {}
 
   /**
    * @brief Iterator-based constructor.

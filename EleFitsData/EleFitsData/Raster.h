@@ -182,7 +182,8 @@ public:
    * @param shape The raster shape
    * @param data The raw data
    */
-  Raster(Position<N> shape, T* data) :
+  template <typename U>
+  Raster(Position<N> shape, U* data) :
       DataContainer<T, THolder, Raster<T, N, THolder>>(data, data + shapeSize(shape)), m_shape(std::move(shape)) {}
 
   /**
