@@ -172,21 +172,21 @@ BOOST_AUTO_TEST_CASE(sectionning_test) {
   // 3D
   const auto section3D = raster3D.section(3, 5);
   BOOST_TEST((section3D.shape() == Position<3> {8, 9, 3}));
-  for (const auto p : section3D.domain()) {
+  for (const auto& p : section3D.domain()) {
     BOOST_TEST((section3D[p] == raster3D[p + Position<3> {0, 0, 3}]));
   }
 
   // 2D
   const auto section2D = raster3D.section(3);
   BOOST_TEST(section2D.shape() == Position<2>({8, 9}));
-  for (const auto p : section2D.domain()) {
+  for (const auto& p : section2D.domain()) {
     BOOST_TEST((section2D[p] == raster3D[p.extend<3>({0, 0, 3})]));
   }
 
   // 1D
   const auto section1D = section2D.section(6);
   BOOST_TEST(section1D.shape() == Position<1> {8});
-  for (const auto p : section1D.domain()) {
+  for (const auto& p : section1D.domain()) {
     BOOST_TEST((section1D[p] == raster3D[p.extend<3>({0, 6, 3})]));
   }
 
