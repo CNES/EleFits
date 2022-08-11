@@ -6,6 +6,7 @@
 
 * Function `shapeSize()` was wrong for `N = 0`
 * Method `readSize()` of `ImageHdu` and `ImageRaster` was wrong for `N != 2`
+* Call m_edit() to update current HDU index in BintableColumns::init()
 
 ### Breaking changes
 
