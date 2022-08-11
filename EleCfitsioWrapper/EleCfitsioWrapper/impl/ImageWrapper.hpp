@@ -18,7 +18,7 @@ namespace ImageIo {
 template <>
 Fits::Position<-1> readShape<-1>(fitsfile* fptr);
 
-template <long N = 2>
+template <long N>
 Fits::Position<N> readShape(fitsfile* fptr) {
   Fits::Position<N> shape;
   int status = 0;
