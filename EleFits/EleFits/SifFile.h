@@ -31,7 +31,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  SifFile(const std::string& filename, FileMode permission);
+  SifFile(const std::string& filename, FileMode permission = FileMode::Read);
 
   /**
    * @brief Access the header unit.

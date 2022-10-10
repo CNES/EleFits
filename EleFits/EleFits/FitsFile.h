@@ -88,7 +88,7 @@ public:
   /**
    * @brief Create a new FITS file handler with given filename and permission.
    */
-  FitsFile(const std::string& filename, FileMode permission);
+  FitsFile(const std::string& filename, FileMode permission = FileMode::Read);
 
   /**
    * @brief Destroy the object and close the file.

@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(empty_file_test) {
   FitsFile overwrittenFile(filename, FileMode::Overwrite);
   overwrittenFile.close();
 
-  FitsFile readonlyFile(filename, FileMode::Read);
+  FitsFile readonlyFile(filename);
   BOOST_CHECK_THROW(readonlyFile.closeAndDelete(), std::exception);
   readonlyFile.close();
 

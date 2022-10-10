@@ -82,7 +82,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  MefFile(const std::string& filename, FileMode permission);
+  MefFile(const std::string& filename, FileMode permission = FileMode::Read);
 
   /// @group_properties
 
