@@ -205,6 +205,7 @@ void BintableColumns::write(const TColumn& column) const {
 
 template <typename TInfo>
 void BintableColumns::init(const TInfo& info, long index) const {
+  m_edit();
   auto name = Fits::String::toCharPtr(info.name);
   auto tform = Fits::String::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount()));
   int status = 0;
