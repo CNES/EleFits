@@ -42,9 +42,9 @@ A more realistic example is creating a Single Image FITS (SIF) file with a keywo
 // - long width, height: The image size
 // - float[width * height] data: The image values
 
-SifFile f(filename, FileMode::CREATE);
-f.header().write(keyword, value, "", comment);
-f.raster().write(makeRaster(data, width, height));
+SifFile fits(filename, FileMode::CREATE);
+fits.header().write(keyword, value, "", comment);
+fits.raster().write(makeRaster(data, width, height));
 
 // For comparison, here is the same use case implemented with CCfits:
 
@@ -58,11 +58,11 @@ primary.write(1, width * height, data);
 
 long shape[] = { width, height };
 int status = 0;
-fitsfile* fptr = nullptr;
-fits_create_file(&fptr, filename.c_str(), &status);
-fits_create_img(fptr, SHORT_IMG, 2, shape, &status);
-fits_write_key(fptr, TDOUBLE, name.c_str(), &value, comment.c_str(), &status);
-fits_write_img(fptr, TSHORT, 1, width * height, data, &status);
+fitsfile* fits = nullptr;
+fits_create_file(&fits, filename.c_str(), &status);
+fits_create_img(fits, SHORT_IMG, 2, shape, &status);
+fits_write_key(fits, TDOUBLE, name.c_str(), &value, comment.c_str(), &status);
+fits_write_img(fits, TSHORT, 1, width * height, data, &status);
 ```
 
 To go further, here are Python options compared:
@@ -70,15 +70,15 @@ To go further, here are Python options compared:
 ```py
 # With Astropy
 
-h = fits.Header()
-h.append((keyword, value, comment))
-fits.writeto(filename, data, h)
+header = fits.Header()
+header.append((keyword, value, comment))
+fits.writeto(filename, data, header)
 
 # With FITSIO
 
-h = [{'keyword' : keyword, 'value' : value, 'comment' : comment}]
-with FITS(filename,'rw') as f:
-    f.write(data, h)
+header = [{'keyword' : keyword, 'value' : value, 'comment' : comment}]
+with fitsio.FITS(filename,'rw') as fits:
+    fits.write(data, header)
 ```
 
 In addition, exclusive features are provided to simplify the implementation of classical use cases.
