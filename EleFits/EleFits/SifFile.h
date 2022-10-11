@@ -57,6 +57,8 @@ public:
    * - Reading the raster.
    * 
    * Anything more complex (e.g. region-wise reading) can be done via `raster()`.
+   * 
+   * @deprecated Use `raster().read()` instead.
    */
   template <typename T, long N = 2>
   VecRaster<T, N> readRaster() const;
@@ -70,6 +72,8 @@ public:
    * - Writing the raster.
    * 
    * Anything more complex (e.g. region-wise writing) can be done via `raster()`.
+   * 
+   * @deprecated Use `raster().write()` instead.
    */
   template <typename TRaster>
   void writeRaster(const TRaster& raster) const;

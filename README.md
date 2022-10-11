@@ -77,7 +77,7 @@ fits.writeto(filename, data, header)
 # With FITSIO
 
 header = [{'keyword' : keyword, 'value' : value, 'comment' : comment}]
-with fitsio.FITS(filename,'rw') as fits:
+with fitsio.FITS(filename, 'rw') as fits:
     fits.write(data, header)
 ```
 
