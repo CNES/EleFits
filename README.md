@@ -21,8 +21,6 @@ Furthermore, exclusive features are provided, like HDU selectors and automatic b
 To maximize performance, EleFits is built as a CFITSIO wrapper as thin as possible.
 While the two libraries are generally equivalent, optimizations implemented internally make EleFits even faster in some classical cases, unless the CFITSIO user spends considerable development efforts.
 
-## Example usages
-
 The EleFits API was specifically designed to be very fluent and compact.
 The following (a bit extreme) example shows how natural it is
 to read a column named "RA" in the 4th extension of a Multi-Extension FITS (MEF) file:
@@ -31,7 +29,10 @@ to read a column named "RA" in the 4th extension of a Multi-Extension FITS (MEF)
 auto ra = MefFile("file.fits").access<BintableColumns>(4).read<double>("RA");
 ```
 
-A more realistic example is creating a Single Image FITS (SIF) file with a keyword record and an array:
+## Comparison to alternatives
+
+A more realistic use case than the toy example above is creating a Single Image FITS (SIF) file with a keyword record and an array.
+Here is a comparison of EleFits with the main alternatives:
 
 ```cpp
 // Given:
@@ -39,14 +40,16 @@ A more realistic example is creating a Single Image FITS (SIF) file with a keywo
 // - string keyword: The keyword record name
 // - int value: The keyword record value
 // - string comment: The keyword record comment
-// - long width, height: The image size
-// - float[width * height] data: The image values
+// - long width, height: The array size
+// - float[width * height] data: The array values
+
+// EleFits
 
 SifFile fits(filename, FileMode::CREATE);
 fits.header().write(keyword, value, "", comment);
 fits.raster().write(makeRaster(data, width, height));
 
-// For comparison, here is the same use case implemented with CCfits:
+// CCfits
 
 long shape[] = { width, height };
 auto fits = std::make_unique<FITS>(filename, SHORT_IMG, 2, shape);
@@ -54,7 +57,7 @@ auto& primary = fits->pHDU();
 primary.addKey(name, value, comment);
 primary.write(1, width * height, data);
 
-// And with CFITSIO:
+// CFITSIO
 
 long shape[] = { width, height };
 int status = 0;
@@ -65,21 +68,23 @@ fits_write_key(fits, TDOUBLE, name.c_str(), &value, comment.c_str(), &status);
 fits_write_img(fits, TSHORT, 1, width * height, data, &status);
 ```
 
-To go further, here are Python options compared:
+To go further, here are Python options:
 
 ```py
-# With Astropy
+# Astropy
 
 header = fits.Header()
 header.append((keyword, value, comment))
 fits.writeto(filename, data, header)
 
-# With FITSIO
+# FITSIO
 
 header = [{'keyword' : keyword, 'value' : value, 'comment' : comment}]
 with fitsio.FITS(filename, 'rw') as fits:
     fits.write(data, header)
 ```
+
+## Exclusive features
 
 In addition, exclusive features are provided to simplify the implementation of classical use cases.
 A few examples are given below.
