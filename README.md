@@ -28,7 +28,7 @@ The following (a bit extreme) example shows how natural it is
 to read a column named "RA" in the 4th extension of a Multi-Extension FITS (MEF) file:
 
 ```cpp
-auto ra = MefFile("file.fits", FileMode::READ).access<BintableColumns>(4).read<double>("RA");
+auto ra = MefFile("file.fits").access<BintableColumns>(4).read<double>("RA");
 ```
 
 A more realistic example is creating a Single Image FITS (SIF) file with a keyword record and an array:
