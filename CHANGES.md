@@ -1,14 +1,19 @@
 # Change log
 
+## 5.1
+
+### Bug fixes
+
+* `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
+* Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
+* Calling `BintableColumns::init()` while having accessed another HDU edited the wrong HDU
+
 ## 5.0
 
 ### Bug fixes
 
 * Function `shapeSize()` was wrong for `N = 0`
 * Method `readSize()` of `ImageHdu` and `ImageRaster` was wrong for `N != 2`
-* `BintableColumns::initSeq()` was ill-formed for non-tuple sequences
-* Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
-* Calling `BintableColumns::init()` while having accessed another HDU edited the wrong HDU
 
 ### Breaking changes
 
