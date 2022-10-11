@@ -65,6 +65,22 @@ fits_write_key(fptr, TDOUBLE, name.c_str(), &value, comment.c_str(), &status);
 fits_write_img(fptr, TSHORT, 1, width * height, data, &status);
 ```
 
+To go further, here are Python options compared:
+
+```py
+# With Astropy
+
+h = fits.Header()
+h.append((keyword, value, comment))
+fits.writeto(filename, data, h)
+
+# With FITSIO
+
+h = [{'keyword' : keyword, 'value' : value, 'comment' : comment}]
+with FITS(filename,'rw') as f:
+    f.write(data, h)
+```
+
 In addition, exclusive features are provided to simplify the implementation of classical use cases.
 A few examples are given below.
 
