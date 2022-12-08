@@ -8,6 +8,10 @@
 * Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 * Calling `BintableColumns::init()` while having accessed another HDU edited the wrong HDU
 
+### Breaking changes
+
+* Updated to Elements 6.1.1
+
 ## 5.0
 
 ### Bug fixes
