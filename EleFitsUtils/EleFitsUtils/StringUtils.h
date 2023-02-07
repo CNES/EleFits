@@ -7,6 +7,7 @@
 
 #include "ElementsKernel/Auxiliary.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 

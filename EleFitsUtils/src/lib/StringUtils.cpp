@@ -5,6 +5,7 @@
 #include "EleFitsUtils/StringUtils.h"
 
 #include <boost/algorithm/string.hpp>
+#include <fstream>
 
 namespace Euclid {
 namespace Fits {
