@@ -52,6 +52,38 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   BOOST_CHECK_THROW(column.at(0, -1 - repeatCount), FitsError);
 }
 
+BOOST_AUTO_TEST_CASE(numeric_column_elementcount_is_rowcount_times_repeatcount_test) {
+
+  constexpr long rowCount = 17;
+  constexpr long repeatCount = 7;
+  // FIXME Breaks with int instead of long:
+  // CTor overload forwards to vector and creates 17 values instead of 17 * 7
+
+  /* VecColumn */
+  VecColumn<float> vecColumn({"STR", "", repeatCount}, rowCount);
+  BOOST_TEST(vecColumn.info().repeatCount() == repeatCount);
+  BOOST_TEST(vecColumn.rowCount() == rowCount);
+  BOOST_TEST(vecColumn.elementCount() == rowCount * repeatCount);
+
+  /* PtrColumn */
+  PtrColumn<float> ptrColumn({"STR", "", repeatCount}, rowCount, vecColumn.data());
+  BOOST_TEST(ptrColumn.info().repeatCount() == repeatCount);
+  BOOST_TEST(ptrColumn.rowCount() == rowCount);
+  BOOST_TEST(ptrColumn.elementCount() == rowCount * repeatCount);
+
+  /* Constant VecColumn */
+  const VecColumn<float> cVecColumn({"STR", "", repeatCount}, rowCount);
+  BOOST_TEST(cVecColumn.info().repeatCount() == repeatCount);
+  BOOST_TEST(cVecColumn.rowCount() == rowCount);
+  BOOST_TEST(cVecColumn.elementCount() == rowCount * repeatCount);
+
+  /* Constant PtrColumn */
+  const PtrColumn<const float> cPtrColumn({"STR", "", repeatCount}, rowCount, cVecColumn.data());
+  BOOST_TEST(cPtrColumn.info().repeatCount() == repeatCount);
+  BOOST_TEST(cPtrColumn.rowCount() == rowCount);
+  BOOST_TEST(cPtrColumn.elementCount() == rowCount * repeatCount);
+}
+
 BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
 
   constexpr long rowCount = 17;
