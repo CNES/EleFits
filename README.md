@@ -1,6 +1,6 @@
 # Project overview
 
-![EleFits logo](doc/diagrams/out/elefits_square.svg)
+<br/>![EleFits logo](doc/diagrams/out/elefits_square.svg)
 
 ## Purpose and scope
 
