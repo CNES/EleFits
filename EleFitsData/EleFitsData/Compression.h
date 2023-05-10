@@ -60,15 +60,16 @@ public:
   float level() const;
 
   /**
-   * @brief Get the of level (Absolute, Relative)
+   * @brief Get if quantization is absolute or relative to noise
+   * @details
+   * Always considered relative for qlevel of 0.
    */
-  FactorType type() const;
+  bool isAbsolute() const;
 
 private:
-  Quantification(float qlevel, FactorType qType);
+  Quantification(float qlevel);
 
   float m_level;
-  FactorType m_type;
 };
 
 /**
@@ -98,15 +99,16 @@ public:
   float factor() const;
 
   /**
-   * @brief Get the type of scaling (Absolute, Relative)
+   * @brief Get if the scaling is absolute or relative to noise
+   * @details
+   * Always considered relative for scale of 0.
    */
-  FactorType type() const;
+  bool isAbsolute() const;
 
 private:
-  Scale(float factor, FactorType sType);
+  Scale(float factor);
 
   float m_factor;
-  FactorType m_type;
 };
 
 /**

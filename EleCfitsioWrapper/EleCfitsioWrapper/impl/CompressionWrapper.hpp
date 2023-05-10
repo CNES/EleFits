@@ -35,7 +35,7 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> algo) {
 
   int status = 0;
 
-  if (algo.scale().type() == Euclid::Fits::Compression::FactorType::Relative) {
+  if (!algo.scale().isAbsolute()) {
     fits_set_hcomp_scale(fptr, algo.scale().factor(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
   } else { // absolute scaling applied in this case
