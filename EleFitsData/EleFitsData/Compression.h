@@ -5,6 +5,8 @@
 #ifndef COMPRESSION_H
 #define COMPRESSION_H
 
+#include "EleFitsData/DataUtils.h"
+
 #include <fitsio.h>
 #include <string>
 
@@ -115,10 +117,7 @@ class Algo {
   friend class ImageHdu;
 
 public:
-  /**
-   * @brief Destructor.
-   */
-  virtual ~Algo() = default;
+  ELEFITS_VIRTUAL_DTOR(Algo)
 
 protected:
   virtual void compress(fitsfile* fptr) const = 0;
@@ -126,6 +125,9 @@ protected:
 
 template <typename TDerived, long N>
 class AlgoMixin : Algo {
+
+public:
+  ELEFITS_VIRTUAL_DTOR(AlgoMixin)
 
 protected:
   void compress(fitsfile* fptr) const override;
@@ -151,6 +153,8 @@ template <typename TDerived, long N>
 class FloatAlgo : public AlgoMixin<TDerived, N> {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(FloatAlgo)
+
   void set(Dithering dither);
   void set(Quantification quantize);
   void enableLossyInt();
@@ -176,8 +180,11 @@ protected:
 class None : public AlgoMixin<None, 0> {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(None)
+  ELEFITS_COPYABLE(None)
+  ELEFITS_MOVABLE(None)
+
   None();
-  ~None();
 
 private:
   const Euclid::Fits::Position<0> none_shape;
@@ -190,8 +197,11 @@ template <long N>
 class Rice : public FloatAlgo<Rice<N>, N> {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(Rice)
+  ELEFITS_COPYABLE(Rice)
+  ELEFITS_MOVABLE(Rice)
+
   Rice(const Euclid::Fits::Position<N> shape);
-  ~Rice();
 };
 
 /**
@@ -201,8 +211,11 @@ template <long N>
 class HCompress : public FloatAlgo<HCompress<N>, N> {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(HCompress)
+  ELEFITS_COPYABLE(HCompress)
+  ELEFITS_MOVABLE(HCompress)
+
   HCompress(const Euclid::Fits::Position<N> shape);
-  ~HCompress();
 
   void set(Scale scale);
   void enableSmoothing();
@@ -223,8 +236,11 @@ template <long N>
 class Plio : public AlgoMixin<Plio<N>, N> {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(Plio)
+  ELEFITS_COPYABLE(Plio)
+  ELEFITS_MOVABLE(Plio)
+
   Plio(const Euclid::Fits::Position<N> shape);
-  ~Plio();
 };
 
 /**
@@ -234,8 +250,11 @@ template <long N>
 class Gzip : public FloatAlgo<Gzip<N>, N> {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(Gzip)
+  ELEFITS_COPYABLE(Gzip)
+  ELEFITS_MOVABLE(Gzip)
+
   Gzip(const Euclid::Fits::Position<N> shape);
-  ~Gzip();
 };
 
 /**
@@ -246,8 +265,11 @@ template <long N>
 class ShuffledGzip : public FloatAlgo<ShuffledGzip<N>, N> {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(ShuffledGzip)
+  ELEFITS_COPYABLE(ShuffledGzip)
+  ELEFITS_MOVABLE(ShuffledGzip)
+
   ShuffledGzip(const Euclid::Fits::Position<N> shape);
-  ~ShuffledGzip();
 };
 
 } // namespace Compression

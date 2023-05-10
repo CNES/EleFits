@@ -11,17 +11,17 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
-void compress(fitsfile* fptr, Euclid::Fits::Compression::None noneAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::None algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> riceAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> hcompressAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> plioAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> gzipAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> shuffledGzipAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> algo);
 
 } // namespace Compression
 } // namespace Cfitsio
@@ -178,12 +178,9 @@ void FloatAlgo<TDerived, N>::compress(fitsfile* fptr) const {
 }
 
 None::None() : AlgoMixin<None, 0>(this->none_shape) {}
-None::~None() {}
 
 template <long N>
 Rice<N>::Rice(const Euclid::Fits::Position<N> shape) : FloatAlgo<Rice<N>, N>(shape) {}
-template <long N>
-Rice<N>::~Rice() {}
 
 template <long N>
 HCompress<N>::HCompress(const Euclid::Fits::Position<N> shape) :
@@ -220,22 +217,13 @@ bool HCompress<N>::smooth() const {
 }
 
 template <long N>
-HCompress<N>::~HCompress() {}
-
-template <long N>
 Plio<N>::Plio(const Euclid::Fits::Position<N> shape) : AlgoMixin<Plio<N>, N>(shape) {}
-template <long N>
-Plio<N>::~Plio() {}
 
 template <long N>
 Gzip<N>::Gzip(const Euclid::Fits::Position<N> shape) : FloatAlgo<Gzip<N>, N>(shape) {}
-template <long N>
-Gzip<N>::~Gzip() {}
 
 template <long N>
 ShuffledGzip<N>::ShuffledGzip(const Euclid::Fits::Position<N> shape) : FloatAlgo<ShuffledGzip<N>, N>(shape) {}
-template <long N>
-ShuffledGzip<N>::~ShuffledGzip() {}
 
 } // namespace Compression
 } // namespace Fits

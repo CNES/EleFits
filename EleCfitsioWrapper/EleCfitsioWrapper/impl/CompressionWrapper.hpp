@@ -11,9 +11,9 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
-void compress(fitsfile* fptr, Euclid::Fits::Compression::None noneAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::None algo) {
 
-  (void)noneAlgo; // no params for None
+  (void)algo; // no params for None
 
   int status = 0;
   fits_set_compression_type(fptr, NULL, &status);
@@ -21,9 +21,9 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::None noneAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> riceAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> algo) {
 
-  (void)riceAlgo; // can be used later for algo params specific to Rice
+  (void)algo; // can be used later for algo params specific to Rice
 
   int status = 0;
   fits_set_compression_type(fptr, RICE_1, &status);
@@ -31,19 +31,19 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> riceAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> hcompressAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> algo) {
 
   int status = 0;
 
-  if (hcompressAlgo.scaleType() == Euclid::Fits::Compression::FactorType::Relative) {
-    fits_set_hcomp_scale(fptr, hcompressAlgo.scale(), &status);
+  if (algo.scaleType() == Euclid::Fits::Compression::FactorType::Relative) {
+    fits_set_hcomp_scale(fptr, algo.scale(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
   } else { // absolute scaling applied in this case
-    fits_set_hcomp_scale(fptr, -hcompressAlgo.scale(), &status);
+    fits_set_hcomp_scale(fptr, -algo.scale(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
   }
 
-  fits_set_hcomp_smooth(fptr, hcompressAlgo.smooth(), &status);
+  fits_set_hcomp_smooth(fptr, algo.smooth(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set smoothing for HCompress");
 
   fits_set_compression_type(fptr, HCOMPRESS_1, &status);
@@ -51,9 +51,9 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> hcompressA
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> plioAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> algo) {
 
-  (void)plioAlgo; // can be used later for algo params specific to Plio
+  (void)algo; // can be used later for algo params specific to Plio
 
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
@@ -61,9 +61,9 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> plioAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> gzipAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> algo) {
 
-  (void)gzipAlgo; // can be used later for algo params specific to Gzip
+  (void)algo; // can be used later for algo params specific to Gzip
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_1, &status);
@@ -71,9 +71,9 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> gzipAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> shuffledGzipAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> algo) {
 
-  (void)shuffledGzipAlgo; // can be used later for algo params specific to Gzip2
+  (void)algo; // can be used later for algo params specific to Gzip2
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_2, &status);

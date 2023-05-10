@@ -17,37 +17,37 @@ namespace Compression {
 /**
  * @brief Set the compression algorithm to None.
  */
-void compress(fitsfile* fptr, Euclid::Fits::Compression::None noneAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::None algo);
 
 /**
  * @brief Set the compression algorithm to Rice.
  */
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> riceAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> algo);
 
 /**
  * @brief Set the compression algorithm to HCompress.
  */
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> hcompressAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> algo);
 
 /**
  * @brief Set the compression algorithm to Plio.
  */
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> plioAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> algo);
 
 /**
  * @brief Set the compression algorithm to Gzip.
  */
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> gzipAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> algo);
 
 /**
  * @brief Set the compression algorithm to ShuffledGzip.
  */
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> shuffledGzipAlgo);
+void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> algo);
 
 /**
  * @brief Compression traits to know which C++ type supports which algorithm.
