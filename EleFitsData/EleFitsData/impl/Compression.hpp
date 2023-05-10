@@ -2,12 +2,10 @@
 // This file is part of EleFits <github.com/CNES/EleFits>
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#if defined(COMPRESSIONDATA_IMPL) || defined(CHECK_QUALITY)
-
-#include "EleFitsData/CompressionData.h"
+#if defined(COMPRESSION_IMPL) || defined(CHECK_QUALITY)
 
 #include "EleCfitsioWrapper/ErrorWrapper.h"
-
+#include "EleFitsData/Compression.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -24,10 +22,10 @@ template <long N>
 void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> gzipAlgo);
 template <long N>
 void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> shuffledGzipAlgo);
-  
-}  // namespace Compression
-}  // namespace Cfitsio
-}  // namespace Euclid
+
+} // namespace Compression
+} // namespace Cfitsio
+} // namespace Euclid
 
 namespace Euclid {
 namespace Fits {
@@ -37,7 +35,7 @@ Quantification::Quantification(float qlevel, FactorType qType) : m_level(qlevel)
 
 Quantification Quantification::absolute(float qlevel) {
 
-  if (qlevel < 0.f) 
+  if (qlevel < 0.f)
     Euclid::Fits::FitsError("Absolute quantize level out of supported bounds");
 
   return Quantification(std::abs(qlevel), FactorType::Absolute);
@@ -51,15 +49,19 @@ Quantification Quantification::relativeToNoise(float qlevel) {
   return Quantification(std::abs(qlevel), FactorType::Relative);
 }
 
-float Quantification::level() const { return this->m_level; }
+float Quantification::level() const {
+  return this->m_level;
+}
 
-FactorType Quantification::type() const { return this->m_type; }
+FactorType Quantification::type() const {
+  return this->m_type;
+}
 
 Scale::Scale(float factor, FactorType sType) : m_factor(factor), m_type(sType) {}
 
 Scale Scale::absolute(float factor) {
 
-  if (factor < 0.f) 
+  if (factor < 0.f)
     Euclid::Fits::FitsError("Absolute scale factor out of supported bounds");
 
   return Scale(std::abs(factor), FactorType::Absolute);
@@ -73,9 +75,13 @@ Scale Scale::relativeToNoise(float factor) {
   return Scale(std::abs(factor), FactorType::Relative);
 }
 
-float Scale::factor() const { return this->m_factor; }
+float Scale::factor() const {
+  return this->m_factor;
+}
 
-FactorType Scale::type() const { return this->m_type; }
+FactorType Scale::type() const {
+  return this->m_type;
+}
 
 template <typename TDerived, long N>
 AlgoMixin<TDerived, N>::AlgoMixin(const Euclid::Fits::Position<N> shape) : m_shape(std::move(shape)) {}
@@ -93,7 +99,9 @@ void AlgoMixin<TDerived, N>::compress(fitsfile* fptr) const {
 }
 
 template <typename TDerived, long N>
-FloatAlgo<TDerived, N>::FloatAlgo(const Euclid::Fits::Position<N> shape) : AlgoMixin<TDerived, N>(shape), m_quantize(Quantification::relativeToNoise(4.f)), m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
+FloatAlgo<TDerived, N>::FloatAlgo(const Euclid::Fits::Position<N> shape) :
+    AlgoMixin<TDerived, N>(shape), m_quantize(Quantification::relativeToNoise(4.f)),
+    m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
 
 template <typename TDerived, long N>
 void FloatAlgo<TDerived, N>::set(Dithering dither) {
@@ -140,7 +148,7 @@ void FloatAlgo<TDerived, N>::compress(fitsfile* fptr) const {
     fits_set_quantize_level(fptr, this->quantize().level(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
   } else { // absolute quantize level applied in this case
-    fits_set_quantize_level(fptr, - this->quantize().level(), &status);
+    fits_set_quantize_level(fptr, -this->quantize().level(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantize level");
   }
 
@@ -178,7 +186,8 @@ template <long N>
 Rice<N>::~Rice() {}
 
 template <long N>
-HCompress<N>::HCompress(const Euclid::Fits::Position<N> shape) : FloatAlgo<HCompress<N>, N>(shape), m_scale(Scale::relativeToNoise(0.f)), m_smooth(false) {}
+HCompress<N>::HCompress(const Euclid::Fits::Position<N> shape) :
+    FloatAlgo<HCompress<N>, N>(shape), m_scale(Scale::relativeToNoise(0.f)), m_smooth(false) {}
 
 template <long N>
 void HCompress<N>::set(Scale scale) {
@@ -228,8 +237,8 @@ ShuffledGzip<N>::ShuffledGzip(const Euclid::Fits::Position<N> shape) : FloatAlgo
 template <long N>
 ShuffledGzip<N>::~ShuffledGzip() {}
 
-}  // namespace Compression
-}  // namespace Fits
-}  // namespace Euclid
+} // namespace Compression
+} // namespace Fits
+} // namespace Euclid
 
 #endif

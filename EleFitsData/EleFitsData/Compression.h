@@ -2,12 +2,11 @@
 // This file is part of EleFits <github.com/CNES/EleFits>
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef COMPRESSIONDATA_H
-#define COMPRESSIONDATA_H
-
-#include <string>
+#ifndef COMPRESSION_H
+#define COMPRESSION_H
 
 #include <fitsio.h>
+#include <string>
 
 namespace Euclid {
 namespace Fits {
@@ -20,9 +19,9 @@ namespace Compression {
  * TOFIX: add dither_offset
  */
 enum class Dithering {
-  NoDithering,            ///< Do not dither any pixel
-  NonZeroPixelDithering,  ///< Dither only non-zero pixels
-  EveryPixelDithering     ///< Dither all pixels
+  NoDithering, ///< Do not dither any pixel
+  NonZeroPixelDithering, ///< Dither only non-zero pixels
+  EveryPixelDithering ///< Dither all pixels
 };
 
 /**
@@ -152,13 +151,13 @@ template <typename TDerived, long N>
 class FloatAlgo : public AlgoMixin<TDerived, N> {
 
 public:
-void set(Dithering dither);
-void set(Quantification quantize);
-void enableLossyInt();
-void disableLossyInt();
-Dithering dither() const;
-Quantification quantize() const;
-bool lossyInt() const;
+  void set(Dithering dither);
+  void set(Quantification quantize);
+  void enableLossyInt();
+  void disableLossyInt();
+  Dithering dither() const;
+  Quantification quantize() const;
+  bool lossyInt() const;
 
 protected:
   FloatAlgo<TDerived, N>(const Euclid::Fits::Position<N> shape);
@@ -251,14 +250,14 @@ public:
   ~ShuffledGzip();
 };
 
-}  // namespace Compression
-}  // namespace Fits
-}  // namespace Euclid
+} // namespace Compression
+} // namespace Fits
+} // namespace Euclid
 
 /// @cond INTERNAL
-#define COMPRESSIONDATA_IMPL
-#include "EleFitsData/impl/CompressionData.hpp"
-#undef COMPRESSIONDATA_IMPL
+#define COMPRESSION_IMPL
+#include "EleFitsData/impl/Compression.hpp"
+#undef COMPRESSION_IMPL
 /// @endcond
 
 #endif

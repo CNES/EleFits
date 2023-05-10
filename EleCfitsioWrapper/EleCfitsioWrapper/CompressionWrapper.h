@@ -5,10 +5,10 @@
 #ifndef COMPRESSIONWRAPPER_H
 #define COMPRESSIONWRAPPER_H
 
-#include <string>
+#include "EleFitsData/Compression.h"
 
 #include <fitsio.h>
-#include "EleFitsData/CompressionData.h"
+#include <string>
 
 namespace Euclid {
 namespace Cfitsio {
@@ -61,9 +61,9 @@ struct CompressionTraits {
   inline static bool has();
 };
 
-}  // namespace Compression
-}  // namespace Cfitsio
-}  // namespace Euclid
+} // namespace Compression
+} // namespace Cfitsio
+} // namespace Euclid
 
 /// @cond INTERNAL
 #define COMPRESSIONWRAPPER_IMPL
