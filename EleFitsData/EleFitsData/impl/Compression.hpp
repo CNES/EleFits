@@ -104,12 +104,12 @@ FloatAlgo<TDerived, N>::FloatAlgo(const Euclid::Fits::Position<N> shape) :
     m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
 
 template <typename TDerived, long N>
-void FloatAlgo<TDerived, N>::set(Dithering dither) {
+void FloatAlgo<TDerived, N>::dither(Dithering dither) {
   this->m_dither = dither;
 }
 
 template <typename TDerived, long N>
-void FloatAlgo<TDerived, N>::set(Quantification quantize) {
+void FloatAlgo<TDerived, N>::quantize(Quantification quantize) {
   this->m_quantize = quantize;
 }
 
@@ -187,7 +187,7 @@ HCompress<N>::HCompress(const Euclid::Fits::Position<N> shape) :
     FloatAlgo<HCompress<N>, N>(shape), m_scale(Scale::relativeToNoise(0.f)), m_smooth(false) {}
 
 template <long N>
-void HCompress<N>::set(Scale scale) {
+void HCompress<N>::scale(Scale scale) {
   this->m_scale = scale; // TOFIX: make a copy ?
 }
 

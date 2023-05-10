@@ -155,8 +155,8 @@ class FloatAlgo : public AlgoMixin<TDerived, N> {
 public:
   ELEFITS_VIRTUAL_DTOR(FloatAlgo)
 
-  void set(Dithering dither);
-  void set(Quantification quantize);
+  void dither(Dithering dither);
+  void quantize(Quantification quantize);
   void enableLossyInt();
   void disableLossyInt();
   Dithering dither() const;
@@ -217,7 +217,7 @@ public:
 
   HCompress(const Euclid::Fits::Position<N> shape);
 
-  void set(Scale scale);
+  void scale(Scale scale);
   void enableSmoothing();
   void disableSmoothing();
   float scale() const;
