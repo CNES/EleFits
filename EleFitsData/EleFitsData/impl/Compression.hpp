@@ -105,12 +105,12 @@ FloatAlgo<TDerived, N>::FloatAlgo(const Euclid::Fits::Position<N> shape) :
 
 template <typename TDerived, long N>
 void FloatAlgo<TDerived, N>::dither(Dithering dither) {
-  this->m_dither = dither;
+  this->m_dither = std::move(dither);
 }
 
 template <typename TDerived, long N>
 void FloatAlgo<TDerived, N>::quantize(Quantification quantize) {
-  this->m_quantize = quantize;
+  this->m_quantize = std::move(quantize);
 }
 
 template <typename TDerived, long N>
@@ -129,7 +129,7 @@ Dithering FloatAlgo<TDerived, N>::dither() const {
 }
 
 template <typename TDerived, long N>
-Quantification FloatAlgo<TDerived, N>::quantize() const {
+const Quantification& FloatAlgo<TDerived, N>::quantize() const {
   return this->m_quantize;
 }
 
@@ -188,7 +188,7 @@ HCompress<N>::HCompress(const Euclid::Fits::Position<N> shape) :
 
 template <long N>
 void HCompress<N>::scale(Scale scale) {
-  this->m_scale = scale; // TOFIX: make a copy ?
+  this->m_scale = std::move(scale);
 }
 
 template <long N>
@@ -202,13 +202,8 @@ void HCompress<N>::disableSmoothing() {
 }
 
 template <long N>
-float HCompress<N>::scale() const {
-  return this->m_scale.factor();
-}
-
-template <long N>
-FactorType HCompress<N>::scaleType() const {
-  return this->m_scale.type();
+const Scale& HCompress<N>::scale() const {
+  return this->m_scale;
 }
 
 template <long N>

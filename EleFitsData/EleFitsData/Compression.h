@@ -160,7 +160,7 @@ public:
   void enableLossyInt();
   void disableLossyInt();
   Dithering dither() const;
-  Quantification quantize() const;
+  const Quantification& quantize() const;
   bool lossyInt() const;
 
 protected:
@@ -220,8 +220,7 @@ public:
   void scale(Scale scale);
   void enableSmoothing();
   void disableSmoothing();
-  float scale() const;
-  FactorType scaleType() const;
+  const Scale& scale() const;
   bool smooth() const;
 
 private:
