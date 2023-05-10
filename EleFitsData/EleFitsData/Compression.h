@@ -27,14 +27,6 @@ enum class Dithering {
 };
 
 /**
- * @brief Types for quantize level (for floating point algos) & scaling factor (for HCompress).
- */
-enum class FactorType {
-  Absolute,
-  Relative
-};
-
-/**
  * @brief Quantification of floating-types for FloatAlgo
 */
 class Quantification {
