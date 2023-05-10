@@ -6,10 +6,29 @@
 
 #include "EleFitsData/CompressionData.h"
 
-#include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 
-using namespace Euclid;
+
+namespace Euclid {
+namespace Cfitsio {
+namespace Compression {
+
+void compress(fitsfile* fptr, Euclid::Fits::Compression::None noneAlgo);
+template <long N>
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> riceAlgo);
+template <long N>
+void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> hcompressAlgo);
+template <long N>
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> plioAlgo);
+template <long N>
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> gzipAlgo);
+template <long N>
+void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> shuffledGzipAlgo);
+  
+}  // namespace Compression
+}  // namespace Cfitsio
+}  // namespace Euclid
+
 namespace Euclid {
 namespace Fits {
 namespace Compression {

@@ -12,7 +12,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
-void compress(fitsfile* fptr, None noneAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::None noneAlgo) {
 
   (void)noneAlgo;  // no params for None
 
@@ -22,7 +22,7 @@ void compress(fitsfile* fptr, None noneAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Rice<N> riceAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> riceAlgo) {
 
   (void)riceAlgo;  // can be used later for algo params specific to Rice
 
@@ -32,11 +32,11 @@ void compress(fitsfile* fptr, Rice<N> riceAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, HCompress<N> hcompressAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> hcompressAlgo) {
 
   int status = 0;
   
-  if (hcompressAlgo.scaleType() == FactorType::Relative) {
+  if (hcompressAlgo.scaleType() == Euclid::Fits::Compression::FactorType::Relative) {
     fits_set_hcomp_scale(fptr, hcompressAlgo.scale(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
   } else { // absolute scaling applied in this case
@@ -52,7 +52,7 @@ void compress(fitsfile* fptr, HCompress<N> hcompressAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Plio<N> plioAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> plioAlgo) {
 
   (void)plioAlgo;  // can be used later for algo params specific to Plio
 
@@ -62,7 +62,7 @@ void compress(fitsfile* fptr, Plio<N> plioAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Gzip<N> gzipAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> gzipAlgo) {
 
   (void)gzipAlgo;  // can be used later for algo params specific to Gzip
 
@@ -72,7 +72,7 @@ void compress(fitsfile* fptr, Gzip<N> gzipAlgo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, ShuffledGzip<N> shuffledGzipAlgo) {
+void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> shuffledGzipAlgo) {
 
   (void)shuffledGzipAlgo;  // can be used later for algo params specific to Gzip2
 
