@@ -11,17 +11,17 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
-void compress(fitsfile* fptr, Euclid::Fits::Compression::None algo);
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> algo);
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> algo);
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> algo);
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>& algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> algo);
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo);
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> algo);
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>& algo);
 
 } // namespace Compression
 } // namespace Cfitsio

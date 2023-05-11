@@ -11,7 +11,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
-void compress(fitsfile* fptr, Euclid::Fits::Compression::None algo) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo) {
 
   (void)algo; // no params for None
 
@@ -21,7 +21,7 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::None algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> algo) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo) {
 
   (void)algo; // can be used later for algo params specific to Rice
 
@@ -31,7 +31,7 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::Rice<N> algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> algo) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& algo) {
 
   int status = 0;
 
@@ -51,7 +51,7 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::HCompress<N> algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> algo) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>& algo) {
 
   (void)algo; // can be used later for algo params specific to Plio
 
@@ -61,7 +61,7 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::Plio<N> algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> algo) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo) {
 
   (void)algo; // can be used later for algo params specific to Gzip
 
@@ -71,7 +71,7 @@ void compress(fitsfile* fptr, Euclid::Fits::Compression::Gzip<N> algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, Euclid::Fits::Compression::ShuffledGzip<N> algo) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>& algo) {
 
   (void)algo; // can be used later for algo params specific to Gzip2
 
