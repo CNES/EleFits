@@ -60,6 +60,10 @@ elements_add_unit_test(ColumnInfo tests/src/ColumnInfo_test.cpp
                      EXECUTABLE EleFitsData_ColumnInfo_test
                      LINK_LIBRARIES EleFitsData
                      TYPE Boost)
+elements_add_unit_test(Compression tests/src/Compression_test.cpp 
+                     EXECUTABLE EleFitsData_Compression_test
+                     LINK_LIBRARIES EleFitsData EleCfitsioWrapper
+                     TYPE Boost)
 elements_add_unit_test(ContiguousContainer tests/src/ContiguousContainer_test.cpp 
                      EXECUTABLE EleFitsData_ContiguousContainer_test
                      LINK_LIBRARIES EleFitsData

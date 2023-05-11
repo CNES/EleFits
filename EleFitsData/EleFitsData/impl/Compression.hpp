@@ -6,6 +6,7 @@
 
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleFitsData/Compression.h"
+#include "EleFitsData/FitsError.h"
 
 namespace Euclid {
 namespace Cfitsio {

@@ -6,6 +6,7 @@
 #define COMPRESSION_H
 
 #include "EleFitsData/DataUtils.h"
+#include "EleFitsData/Position.h"
 
 #include <fitsio.h>
 #include <string>
