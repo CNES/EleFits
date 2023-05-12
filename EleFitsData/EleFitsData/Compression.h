@@ -120,7 +120,7 @@ protected:
   virtual void compress(fitsfile* fptr) const = 0;
 };
 
-template <typename TDerived, long N>
+template <long N, typename TDerived>
 class AlgoMixin : Algo {
 
 public:
@@ -128,13 +128,15 @@ public:
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
+  const Position<N>& shape() const;
+
 protected:
   void compress(fitsfile* fptr) const override;
 
   /**
    * @brief Constructor.
    */
-  AlgoMixin<TDerived, N>(Position<N> shape);
+  AlgoMixin<N, TDerived>(Position<N> shape);
 
 private:
   /**
@@ -148,8 +150,8 @@ private:
 /**
  * @brief Compression algorithms for floating-point data.
  */
-template <typename TDerived, long N>
-class FloatAlgo : public AlgoMixin<TDerived, N> {
+template <long N, typename TDerived>
+class FloatAlgo : public AlgoMixin<N, TDerived> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(FloatAlgo)
@@ -163,7 +165,7 @@ public:
   bool lossyInt() const;
 
 protected:
-  FloatAlgo<TDerived, N>(const Position<N> shape);
+  FloatAlgo<N, TDerived>(const Position<N> shape);
 
   void compress(fitsfile* fptr) const override;
 
@@ -176,7 +178,7 @@ protected:
 /**
  * @brief No compression
  */
-class None : public AlgoMixin<None, 0> {
+class None : public AlgoMixin<0, None> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(None)
@@ -190,7 +192,7 @@ public:
  * @brief The Rice algorithm.
  */
 template <long N>
-class Rice : public FloatAlgo<Rice<N>, N> {
+class Rice : public FloatAlgo<N, Rice<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(Rice)
@@ -204,7 +206,7 @@ public:
  * @brief The HCompress algorithm.
  */
 template <long N>
-class HCompress : public FloatAlgo<HCompress<N>, N> {
+class HCompress : public FloatAlgo<N, HCompress<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(HCompress)
@@ -228,7 +230,7 @@ private:
  * @brief The Plio algorithm.
  */
 template <long N>
-class Plio : public AlgoMixin<Plio<N>, N> {
+class Plio : public AlgoMixin<N, Plio<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(Plio)
@@ -242,7 +244,7 @@ public:
  * @brief The Gzip algorithm.
  */
 template <long N>
-class Gzip : public FloatAlgo<Gzip<N>, N> {
+class Gzip : public FloatAlgo<N, Gzip<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(Gzip)
@@ -257,7 +259,7 @@ public:
  * where most significant bytes of each value appear first.
  */
 template <long N>
-class ShuffledGzip : public FloatAlgo<ShuffledGzip<N>, N> {
+class ShuffledGzip : public FloatAlgo<N, ShuffledGzip<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(ShuffledGzip)

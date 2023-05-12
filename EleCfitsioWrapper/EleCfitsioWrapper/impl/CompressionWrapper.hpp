@@ -11,8 +11,8 @@ namespace Euclid {
 namespace Fits {
 namespace Compression {
 
-template <typename TDerived, long N>
-void AlgoMixin<TDerived, N>::compress(fitsfile* fptr) const {
+template <long N, typename TDerived>
+void AlgoMixin<N, TDerived>::compress(fitsfile* fptr) const {
 
   int status = 0;
 
@@ -23,8 +23,8 @@ void AlgoMixin<TDerived, N>::compress(fitsfile* fptr) const {
   Euclid::Cfitsio::Compression::compress(fptr, static_cast<const TDerived&>(*this));
 }
 
-template <typename TDerived, long N>
-void FloatAlgo<TDerived, N>::compress(fitsfile* fptr) const {
+template <long N, typename TDerived>
+void FloatAlgo<N, TDerived>::compress(fitsfile* fptr) const {
 
   int status = 0;
 
