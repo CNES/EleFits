@@ -49,18 +49,6 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo);
 template <long N>
 void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>& algo);
 
-/**
- * @brief Compression traits to know which C++ type supports which algorithm.
- */
-template <typename T>
-struct CompressionTraits {
-
-  /**
-   * @brief Get if type has support for compression.
-   */
-  inline static bool has();
-};
-
 } // namespace Compression
 } // namespace Cfitsio
 } // namespace Euclid

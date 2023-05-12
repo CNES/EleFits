@@ -70,9 +70,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo) {
-
-  (void)algo; // no params for None
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::None&) {
 
   int status = 0;
   fits_set_compression_type(fptr, NULL, &status);
@@ -80,9 +78,7 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo) {
-
-  (void)algo; // can be used later for algo params specific to Rice
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>&) {
 
   int status = 0;
   fits_set_compression_type(fptr, RICE_1, &status);
@@ -110,9 +106,7 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& alg
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>& algo) {
-
-  (void)algo; // can be used later for algo params specific to Plio
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>&) {
 
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
@@ -120,9 +114,7 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>& algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo) {
-
-  (void)algo; // can be used later for algo params specific to Gzip
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>&) {
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_1, &status);
@@ -130,37 +122,12 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>& algo) {
-
-  (void)algo; // can be used later for algo params specific to Gzip2
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>&) {
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_2, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
 }
-
-#ifndef DEF_HAS_COMPRESSION
-#define DEF_HAS_COMPRESSION(type, compressionSupported) \
-  template <> \
-  inline bool CompressionTraits<type>::has() { \
-    return compressionSupported; \
-  } \
-  template <> \
-  inline bool CompressionTraits<const type>::has() { \
-    return compressionSupported; \
-  }
-DEF_HAS_COMPRESSION(char, true)
-DEF_HAS_COMPRESSION(std::int16_t, true)
-DEF_HAS_COMPRESSION(std::int32_t, true)
-DEF_HAS_COMPRESSION(std::int64_t, false)
-DEF_HAS_COMPRESSION(float, true)
-DEF_HAS_COMPRESSION(double, true)
-DEF_HAS_COMPRESSION(unsigned char, true)
-DEF_HAS_COMPRESSION(std::uint16_t, true)
-DEF_HAS_COMPRESSION(std::uint32_t, true)
-DEF_HAS_COMPRESSION(std::uint64_t, false)
-#undef DEF_IMAGE_BITPIX
-#endif
 
 } // namespace Compression
 } // namespace Cfitsio
