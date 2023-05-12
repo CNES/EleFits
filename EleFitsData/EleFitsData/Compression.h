@@ -8,7 +8,6 @@
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/Position.h"
 
-// #include <fitsio.h>
 #include <string>
 
 namespace Euclid {
@@ -185,9 +184,6 @@ public:
   ELEFITS_MOVABLE(None)
 
   None();
-
-private:
-  const Position<0> none_shape;
 };
 
 /**

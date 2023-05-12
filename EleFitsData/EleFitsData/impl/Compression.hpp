@@ -107,7 +107,7 @@ bool FloatAlgo<TDerived, N>::lossyInt() const {
   return m_lossyInt;
 }
 
-None::None() : AlgoMixin<None, 0>(this->none_shape) {}
+None::None() : AlgoMixin<None, 0>(Position<0>()) {}
 
 template <long N>
 Rice<N>::Rice(const Position<N> shape) : FloatAlgo<Rice<N>, N>(shape) {}

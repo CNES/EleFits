@@ -29,12 +29,12 @@ void FloatAlgo<TDerived, N>::compress(fitsfile* fptr) const {
   int status = 0;
 
   // setting quantize level:
-  if (!quantize().isAbsolute()) {
-    fits_set_quantize_level(fptr, quantize().level(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
-  } else { // absolute quantize level applied in this case
+  if (quantize().isAbsolute()) {
     fits_set_quantize_level(fptr, -quantize().level(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantize level");
+  } else { // relative quantize level applied in this case
+    fits_set_quantize_level(fptr, quantize().level(), &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
   }
 
   // setting dither method:
@@ -94,12 +94,12 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& alg
 
   int status = 0;
 
-  if (!algo.scale().isAbsolute()) {
-    fits_set_hcomp_scale(fptr, algo.scale().factor(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
-  } else { // absolute scaling applied in this case
+  if (algo.scale().isAbsolute()) {
     fits_set_hcomp_scale(fptr, -algo.scale().factor(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
+  } else { // relative scaling applied in this case
+    fits_set_hcomp_scale(fptr, algo.scale().factor(), &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
   }
 
   fits_set_hcomp_smooth(fptr, algo.isSmooth(), &status);
