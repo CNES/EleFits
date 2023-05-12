@@ -135,14 +135,14 @@ protected:
   /**
    * @brief Constructor.
    */
-  AlgoMixin<TDerived, N>(Euclid::Fits::Position<N> shape);
+  AlgoMixin<TDerived, N>(Position<N> shape);
 
 private:
   /**
    * @brief The shape of the tiles.
    * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM)
    */
-  Euclid::Fits::Position<N> m_shape;
+  Position<N> m_shape;
   // FIXME: add huge for fits_set_huge_hdu
 };
 
@@ -164,7 +164,7 @@ public:
   bool lossyInt() const;
 
 protected:
-  FloatAlgo<TDerived, N>(const Euclid::Fits::Position<N> shape);
+  FloatAlgo<TDerived, N>(const Position<N> shape);
 
   void compress(fitsfile* fptr) const override;
 
@@ -187,7 +187,7 @@ public:
   None();
 
 private:
-  const Euclid::Fits::Position<0> none_shape;
+  const Position<0> none_shape;
 };
 
 /**
@@ -201,7 +201,7 @@ public:
   ELEFITS_COPYABLE(Rice)
   ELEFITS_MOVABLE(Rice)
 
-  Rice(const Euclid::Fits::Position<N> shape);
+  Rice(const Position<N> shape);
 };
 
 /**
@@ -215,7 +215,7 @@ public:
   ELEFITS_COPYABLE(HCompress)
   ELEFITS_MOVABLE(HCompress)
 
-  HCompress(const Euclid::Fits::Position<N> shape);
+  HCompress(const Position<N> shape);
 
   void scale(Scale scale);
   void enableSmoothing();
@@ -239,7 +239,7 @@ public:
   ELEFITS_COPYABLE(Plio)
   ELEFITS_MOVABLE(Plio)
 
-  Plio(const Euclid::Fits::Position<N> shape);
+  Plio(const Position<N> shape);
 };
 
 /**
@@ -253,7 +253,7 @@ public:
   ELEFITS_COPYABLE(Gzip)
   ELEFITS_MOVABLE(Gzip)
 
-  Gzip(const Euclid::Fits::Position<N> shape);
+  Gzip(const Position<N> shape);
 };
 
 /**
@@ -268,7 +268,7 @@ public:
   ELEFITS_COPYABLE(ShuffledGzip)
   ELEFITS_MOVABLE(ShuffledGzip)
 
-  ShuffledGzip(const Euclid::Fits::Position<N> shape);
+  ShuffledGzip(const Position<N> shape);
 };
 
 } // namespace Compression
