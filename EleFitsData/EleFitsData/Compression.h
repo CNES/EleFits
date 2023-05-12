@@ -17,9 +17,9 @@ namespace Compression {
 
 /**
  * @brief Dithering methods.
- * TOFIX: what about function fits_set_quantize_method() -> seems exact same as set_quantize_dither()
- * TOFIX: include Dithering in Quantification ?
- * TOFIX: add dither_offset
+ * FIXME: what about function fits_set_quantize_method() -> seems exact same as set_quantize_dither()
+ * FIXME: include Dithering in Quantification ?
+ * FIXME: add dither_offset
  */
 enum class Dithering {
   NoDithering, ///< Do not dither any pixel
@@ -67,7 +67,7 @@ private:
 
 /**
  * @brief Scale factor associated to the HCompress algorithm
- * TOFIX: factorize Scale and Quantification into FactorParameter ?
+ * FIXME: factorize Scale and Quantification into FactorParameter ?
 */
 class Scale {
 
@@ -112,7 +112,10 @@ class Algo {
   friend class ImageHdu;
 
 public:
+  Algo() = default;
   ELEFITS_VIRTUAL_DTOR(Algo)
+  ELEFITS_COPYABLE(Algo)
+  ELEFITS_MOVABLE(Algo)
 
 protected:
   virtual void compress(fitsfile* fptr) const = 0;
@@ -123,6 +126,8 @@ class AlgoMixin : Algo {
 
 public:
   ELEFITS_VIRTUAL_DTOR(AlgoMixin)
+  ELEFITS_COPYABLE(AlgoMixin)
+  ELEFITS_MOVABLE(AlgoMixin)
 
 protected:
   void compress(fitsfile* fptr) const override;
@@ -130,7 +135,7 @@ protected:
   /**
    * @brief Constructor.
    */
-  AlgoMixin<TDerived, N>(const Euclid::Fits::Position<N> shape);
+  AlgoMixin<TDerived, N>(Euclid::Fits::Position<N> shape);
 
 private:
   /**
@@ -138,7 +143,7 @@ private:
    * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM)
    */
   Euclid::Fits::Position<N> m_shape;
-  // TOFIX: add huge for fits_set_huge_hdu
+  // FIXME: add huge for fits_set_huge_hdu
 };
 
 /**
@@ -216,7 +221,7 @@ public:
   void enableSmoothing();
   void disableSmoothing();
   const Scale& scale() const;
-  bool smooth() const;
+  bool isSmooth() const;
 
 private:
   Scale m_scale;

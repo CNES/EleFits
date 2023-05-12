@@ -85,7 +85,7 @@ bool Scale::isAbsolute() const {
 }
 
 template <typename TDerived, long N>
-AlgoMixin<TDerived, N>::AlgoMixin(const Euclid::Fits::Position<N> shape) : m_shape(std::move(shape)) {}
+AlgoMixin<TDerived, N>::AlgoMixin(Euclid::Fits::Position<N> shape) : m_shape(std::move(shape)) {}
 
 template <typename TDerived, long N>
 void AlgoMixin<TDerived, N>::compress(fitsfile* fptr) const {
@@ -171,7 +171,7 @@ void FloatAlgo<TDerived, N>::compress(fitsfile* fptr) const {
   }
 
   // setting lossy int compression:
-  // TOFIX: how to verify that it is applied correctly to img?
+  // FIXME: how to verify that it is applied correctly to img?
   fits_set_lossy_int(fptr, this->lossyInt(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set lossy int compression");
 
@@ -208,7 +208,7 @@ const Scale& HCompress<N>::scale() const {
 }
 
 template <long N>
-bool HCompress<N>::smooth() const {
+bool HCompress<N>::isSmooth() const {
   return this->m_smooth;
 }
 

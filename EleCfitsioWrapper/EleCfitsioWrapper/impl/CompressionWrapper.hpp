@@ -43,7 +43,7 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& alg
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
   }
 
-  fits_set_hcomp_smooth(fptr, algo.smooth(), &status);
+  fits_set_hcomp_smooth(fptr, algo.isSmooth(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set smoothing for HCompress");
 
   fits_set_compression_type(fptr, HCOMPRESS_1, &status);
