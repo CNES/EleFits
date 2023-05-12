@@ -8,6 +8,65 @@
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 
 namespace Euclid {
+namespace Fits {
+namespace Compression {
+
+template <typename TDerived, long N>
+void AlgoMixin<TDerived, N>::compress(fitsfile* fptr) const {
+
+  int status = 0;
+
+  Position<N> ndims = m_shape;
+  fits_set_tile_dim(fptr, N, ndims.data(), &status); // setting compression tile size
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+
+  Euclid::Cfitsio::Compression::compress(fptr, static_cast<const TDerived&>(*this));
+}
+
+template <typename TDerived, long N>
+void FloatAlgo<TDerived, N>::compress(fitsfile* fptr) const {
+
+  int status = 0;
+
+  // setting quantize level:
+  if (!quantize().isAbsolute()) {
+    fits_set_quantize_level(fptr, quantize().level(), &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
+  } else { // absolute quantize level applied in this case
+    fits_set_quantize_level(fptr, -quantize().level(), &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantize level");
+  }
+
+  // setting dither method:
+  if (dither() == Dithering::NoDithering) {
+
+    fits_set_quantize_dither(fptr, NO_DITHER, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to NoDithering");
+
+  } else if (dither() == Dithering::NonZeroPixelDithering) {
+
+    fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_2, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to NonZeroPixelDithering");
+
+  } else { // Dithering::EveryPixelDithering in this case
+
+    fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_1, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to EveryPixelDithering");
+  }
+
+  // setting lossy int compression:
+  // FIXME: how to verify that it is applied correctly to img?
+  fits_set_lossy_int(fptr, lossyInt(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set lossy int compression");
+
+  Euclid::Cfitsio::Compression::compress(fptr, static_cast<const TDerived&>(*this));
+}
+
+} // namespace Compression
+} // namespace Fits
+} // namespace Euclid
+
+namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
