@@ -17,7 +17,7 @@ namespace Compression {
 /**
  * @brief Dithering methods.
  * FIXME: what about function fits_set_quantize_method() -> seems exact same as set_quantize_dither()
- * FIXME: include Dithering in Quantification ?
+ * FIXME: include Dithering in Quantification ? TODO: YES  
  * FIXME: add dither_offset
  */
 enum class Dithering {
@@ -66,7 +66,6 @@ private:
 
 /**
  * @brief Scale factor associated to the HCompress algorithm
- * FIXME: factorize Scale and Quantification into FactorParameter ?
 */
 class Scale {
 

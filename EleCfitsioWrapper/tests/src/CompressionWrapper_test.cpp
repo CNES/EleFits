@@ -5,6 +5,7 @@
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 
 #include <boost/test/unit_test.hpp>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -76,16 +77,40 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(quantification2_test) {
+BOOST_AUTO_TEST_CASE(wrapper_test) {
 
-  // const float zeroLevel = 0.f;
-  // const float positiveLevel = 5.f;
-  // const float negativeLevel = -5.f;
+  // TODO
+}
 
-  // const Quantification absPositive_q = Quantification::absolute(positiveLevel);
+//-----------------------------------------------------------------------------
 
-  // BOOST_TEST(absPositive_q.level() == positiveLevel);
-  // BOOST_TEST(absPositive_q.isAbsolute() == true);
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(Compression_learning_test)
+
+//-----------------------------------------------------------------------------
+
+BOOST_AUTO_TEST_CASE(default_values_learning_test) {
+
+  int status = 0;
+  fitsfile* fptr;
+  fits_create_file(&fptr, (std::string("!learning_test.fits")).c_str(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create file");
+
+  int defaultAlgo;
+  fits_get_compression_type(fptr, &defaultAlgo, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
+  BOOST_TEST(defaultAlgo == NULL);
+
+  float defaultLevel;
+  fits_get_quantize_level(fptr, &defaultLevel, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get quantize level");
+  BOOST_TEST(defaultLevel == 0.0); // default should be 4.0 according to doc
+
+  float defaultScale;
+  fits_get_hcomp_scale(fptr, &defaultScale, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get hcompress scale");
+  BOOST_TEST(defaultScale == 0.0);
 }
 
 //-----------------------------------------------------------------------------
