@@ -120,6 +120,14 @@ protected:
   virtual void compress(void* fptr) const = 0;
 };
 
+/**
+ * @brief Generic Algo class holding the tiling shape.
+ * @details
+ * Tiling shape is represented as a Position<N>.
+ * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM).
+ * The value of N must therefore not exceed 6.
+ * TODO: verify MAX_COMPRESS_DIM value in test
+ */
 template <long N, typename TDerived>
 class AlgoMixin : Algo {
 
@@ -141,7 +149,6 @@ protected:
 private:
   /**
    * @brief The shape of the tiles.
-   * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM)
    */
   Position<N> m_shape;
   // FIXME: add huge for fits_set_huge_hdu

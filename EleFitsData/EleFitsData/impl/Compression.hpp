@@ -64,7 +64,9 @@ bool Scale::isAbsolute() const {
 }
 
 template <long N, typename TDerived>
-AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)) {}
+AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)) {
+  static_assert(N >= 0 and N <= 6, "N must be positive and less or equal to 6");
+}
 
 template <long N, typename TDerived>
 const Position<N>& AlgoMixin<N, TDerived>::shape() const {
