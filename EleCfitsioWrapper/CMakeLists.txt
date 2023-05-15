@@ -65,6 +65,10 @@ elements_add_unit_test(CfitsioWrapper tests/src/CfitsioWrapper_test.cpp
                      EXECUTABLE EleCfitsioWrapper_CfitsioWrapper_test
                      LINK_LIBRARIES EleCfitsioWrapper
                      TYPE Boost)
+elements_add_unit_test(CompressionWrapper tests/src/CompressionWrapper_test.cpp 
+                     EXECUTABLE EleCfitsioWrapper_CompressionWrapper_test
+                     LINK_LIBRARIES EleCfitsioWrapper
+                     TYPE Boost)
 elements_add_unit_test(ErrorWrapper tests/src/ErrorWrapper_test.cpp 
                      EXECUTABLE EleCfitsioWrapper_ErrorWrapper_test
                      LINK_LIBRARIES EleCfitsioWrapper

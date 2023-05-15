@@ -4,7 +4,6 @@
 
 #if defined(COMPRESSION_IMPL) || defined(CHECK_QUALITY)
 
-#include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleFitsData/Compression.h"
 #include "EleFitsData/FitsError.h"
 
@@ -17,7 +16,7 @@ Quantification::Quantification(float qlevel) : m_level(qlevel) {}
 Quantification Quantification::absolute(float qlevel) {
 
   if (qlevel < 0.f)
-    FitsError("Absolute quantize level out of supported bounds");
+    throw FitsError("Absolute quantize level out of supported bounds");
 
   return Quantification(-qlevel); // absoluteness stored internally as negative value like in cfitsio
 }
@@ -25,7 +24,7 @@ Quantification Quantification::absolute(float qlevel) {
 Quantification Quantification::relativeToNoise(float qlevel) {
 
   if (qlevel < 0.f)
-    FitsError("Relative quantize level out of supported bounds");
+    throw FitsError("Relative quantize level out of supported bounds");
 
   return Quantification(qlevel);
 }
@@ -43,7 +42,7 @@ Scale::Scale(float factor) : m_factor(factor) {}
 Scale Scale::absolute(float factor) {
 
   if (factor < 0.f)
-    FitsError("Absolute scale factor out of supported bounds");
+    throw FitsError("Absolute scale factor out of supported bounds");
 
   return Scale(-factor); // absoluteness stored internally as negative value like in cfitsio
 }
@@ -51,7 +50,7 @@ Scale Scale::absolute(float factor) {
 Scale Scale::relativeToNoise(float factor) {
 
   if (factor < 0.f)
-    FitsError("Relative scale factor out of supported bounds");
+    throw FitsError("Relative scale factor out of supported bounds");
 
   return Scale(factor);
 }

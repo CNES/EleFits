@@ -117,7 +117,7 @@ public:
   ELEFITS_MOVABLE(Algo)
 
 protected:
-  virtual void compress(fitsfile* fptr) const = 0;
+  virtual void compress(void* fptr) const = 0;
 };
 
 template <long N, typename TDerived>
@@ -131,7 +131,7 @@ public:
   const Position<N>& shape() const;
 
 protected:
-  void compress(fitsfile* fptr) const override;
+  void compress(void* fptr) const override;
 
   /**
    * @brief Constructor.
@@ -167,7 +167,7 @@ public:
 protected:
   FloatAlgo<N, TDerived>(const Position<N> shape);
 
-  void compress(fitsfile* fptr) const override;
+  void compress(void* fptr) const override;
 
 protected:
   Quantification m_quantize;
