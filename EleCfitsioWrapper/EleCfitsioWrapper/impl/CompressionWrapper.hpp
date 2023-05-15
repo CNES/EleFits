@@ -23,44 +23,44 @@ void AlgoMixin<N, TDerived>::compress(void* fptr) const {
   Euclid::Cfitsio::Compression::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
 }
 
-template <long N, typename TDerived>
-void FloatAlgo<N, TDerived>::compress(void* fptr) const {
+// template <long N, typename TDerived>
+// void FloatAlgo<N, TDerived>::compress(void* fptr) const {
 
-  int status = 0;
+//   int status = 0;
 
-  // setting quantize level:
-  if (quantize().isAbsolute()) {
-    fits_set_quantize_level((fitsfile*)fptr, -quantize().level(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set absolute quantize level");
-  } else { // relative quantize level applied in this case
-    fits_set_quantize_level((fitsfile*)fptr, quantize().level(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set relative quantize level");
-  }
+//   // setting quantize level:
+//   if (quantize().isAbsolute()) {
+//     fits_set_quantize_level((fitsfile*)fptr, -quantize().level(), &status);
+//     Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set absolute quantize level");
+//   } else { // relative quantize level applied in this case
+//     fits_set_quantize_level((fitsfile*)fptr, quantize().level(), &status);
+//     Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set relative quantize level");
+//   }
 
-  // setting dither method:
-  if (dither() == Dithering::NoDithering) {
+//   // setting dither method:
+//   if (dither() == Dithering::NoDithering) {
 
-    fits_set_quantize_dither((fitsfile*)fptr, NO_DITHER, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NoDithering");
+//     fits_set_quantize_dither((fitsfile*)fptr, NO_DITHER, &status);
+//     Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NoDithering");
 
-  } else if (dither() == Dithering::NonZeroPixelDithering) {
+//   } else if (dither() == Dithering::NonZeroPixelDithering) {
 
-    fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_2, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NonZeroPixelDithering");
+//     fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_2, &status);
+//     Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NonZeroPixelDithering");
 
-  } else { // Dithering::EveryPixelDithering in this case
+//   } else { // Dithering::EveryPixelDithering in this case
 
-    fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_1, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to EveryPixelDithering");
-  }
+//     fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_1, &status);
+//     Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to EveryPixelDithering");
+//   }
 
-  // setting lossy int compression:
-  // FIXME: how to verify that it is applied correctly to img?
-  fits_set_lossy_int((fitsfile*)fptr, lossyInt(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set lossy int compression");
+//   // setting lossy int compression:
+//   // FIXME: how to verify that it is applied correctly to img?
+//   fits_set_lossy_int((fitsfile*)fptr, lossyInt(), &status);
+//   Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set lossy int compression");
 
-  Euclid::Cfitsio::Compression::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
-}
+//   Euclid::Cfitsio::Compression::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
+// }
 
 } // namespace Compression
 } // namespace Fits

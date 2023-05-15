@@ -11,23 +11,25 @@ namespace Euclid {
 namespace Fits {
 namespace Compression {
 
-Quantification::Quantification(float qlevel) : m_level(qlevel) {}
+Quantification::Quantification() : m_level(0.f) {}
 
-Quantification Quantification::absolute(float qlevel) {
+// Quantification::Quantification(float qlevel) : m_level(qlevel) {}
 
-  if (qlevel < 0.f)
-    throw FitsError("Absolute quantize level out of supported bounds");
+// Quantification Quantification::absolute(float qlevel) {
 
-  return Quantification(-qlevel); // absoluteness stored internally as negative value like in cfitsio
-}
+//   if (qlevel < 0.f)
+//     throw FitsError("Absolute quantize level out of supported bounds");
 
-Quantification Quantification::relativeToNoise(float qlevel) {
+//   return Quantification(-qlevel); // absoluteness stored internally as negative value like in cfitsio
+// }
 
-  if (qlevel < 0.f)
-    throw FitsError("Relative quantize level out of supported bounds");
+// Quantification Quantification::relativeToNoise(float qlevel) {
 
-  return Quantification(qlevel);
-}
+//   if (qlevel < 0.f)
+//     throw FitsError("Relative quantize level out of supported bounds");
+
+//   return Quantification(qlevel);
+// }
 
 float Quantification::level() const {
   return std::abs(m_level);
@@ -74,53 +76,58 @@ const Position<N>& AlgoMixin<N, TDerived>::shape() const {
 }
 
 template <long N, typename TDerived>
-FloatAlgo<N, TDerived>::FloatAlgo(const Position<N> shape) :
-    AlgoMixin<N, TDerived>(shape), m_quantize(Quantification::relativeToNoise(4.f)),
-    m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
-
-template <long N, typename TDerived>
-void FloatAlgo<N, TDerived>::dither(Dithering dither) {
-  m_dither = std::move(dither);
-}
-
-template <long N, typename TDerived>
-void FloatAlgo<N, TDerived>::quantize(Quantification quantize) {
-  m_quantize = std::move(quantize);
-}
-
-template <long N, typename TDerived>
-void FloatAlgo<N, TDerived>::enableLossyInt() {
-  m_lossyInt = true;
-}
-
-template <long N, typename TDerived>
-void FloatAlgo<N, TDerived>::disableLossyInt() {
-  m_lossyInt = false;
-}
-
-template <long N, typename TDerived>
-Dithering FloatAlgo<N, TDerived>::dither() const {
-  return m_dither;
-}
-
-template <long N, typename TDerived>
-const Quantification& FloatAlgo<N, TDerived>::quantize() const {
+const Quantification& AlgoMixin<N, TDerived>::quantize() const {
   return m_quantize;
 }
 
-template <long N, typename TDerived>
-bool FloatAlgo<N, TDerived>::lossyInt() const {
-  return m_lossyInt;
-}
+// template <long N, typename TDerived>
+// FloatAlgo<N, TDerived>::FloatAlgo(const Position<N> shape) :
+//     AlgoMixin<N, TDerived>(shape), m_quantize(Quantification::relativeToNoise(4.f)),
+//     m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
+
+// template <long N, typename TDerived>
+// void FloatAlgo<N, TDerived>::dither(Dithering dither) {
+//   m_dither = std::move(dither);
+// }
+
+// template <long N, typename TDerived>
+// void FloatAlgo<N, TDerived>::quantize(Quantification quantize) {
+//   m_quantize = std::move(quantize);
+// }
+
+// template <long N, typename TDerived>
+// void FloatAlgo<N, TDerived>::enableLossyInt() {
+//   m_lossyInt = true;
+// }
+
+// template <long N, typename TDerived>
+// void FloatAlgo<N, TDerived>::disableLossyInt() {
+//   m_lossyInt = false;
+// }
+
+// template <long N, typename TDerived>
+// Dithering FloatAlgo<N, TDerived>::dither() const {
+//   return m_dither;
+// }
+
+// template <long N, typename TDerived>
+// const Quantification& FloatAlgo<N, TDerived>::quantize() const {
+//   return m_quantize;
+// }
+
+// template <long N, typename TDerived>
+// bool FloatAlgo<N, TDerived>::lossyInt() const {
+//   return m_lossyInt;
+// }
 
 None::None() : AlgoMixin<0, None>(Position<0>()) {}
 
 template <long N>
-Rice<N>::Rice(const Position<N> shape) : FloatAlgo<N, Rice<N>>(shape) {}
+Rice<N>::Rice(const Position<N> shape) : AlgoMixin<N, Rice<N>>(shape) {}
 
 template <long N>
 HCompress<N>::HCompress(const Position<N> shape) :
-    FloatAlgo<N, HCompress<N>>(shape), m_scale(Scale::relativeToNoise(0.f)), m_smooth(false) {}
+    AlgoMixin<N, HCompress<N>>(shape), m_scale(Scale::relativeToNoise(0.f)), m_smooth(false) {}
 
 template <long N>
 void HCompress<N>::scale(Scale scale) {
@@ -151,10 +158,10 @@ template <long N>
 Plio<N>::Plio(const Position<N> shape) : AlgoMixin<N, Plio<N>>(shape) {}
 
 template <long N>
-Gzip<N>::Gzip(const Position<N> shape) : FloatAlgo<N, Gzip<N>>(shape) {}
+Gzip<N>::Gzip(const Position<N> shape) : AlgoMixin<N, Gzip<N>>(shape) {}
 
 template <long N>
-ShuffledGzip<N>::ShuffledGzip(const Position<N> shape) : FloatAlgo<N, ShuffledGzip<N>>(shape) {}
+ShuffledGzip<N>::ShuffledGzip(const Position<N> shape) : AlgoMixin<N, ShuffledGzip<N>>(shape) {}
 
 } // namespace Compression
 } // namespace Fits

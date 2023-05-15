@@ -28,23 +28,28 @@ enum class Dithering {
 
 /**
  * @brief Quantification of floating-types for FloatAlgo
+ * TODO: includ dithering & lossInt in Quantification
 */
 class Quantification {
 
 public:
   /**
-   * @brief Set globally the quantize level to the given value.
-   * @details
-   * A non-zero scale enables lossy compression of integer data.
+   * @brief Create quantification with default parameters
    */
-  static Quantification absolute(float qlevel);
+  Quantification();
+  // /**
+  //  * @brief Set globally the quantize level to the given value.
+  //  * @details
+  //  * A non-zero scale enables lossy compression of integer data.
+  //  */
+  // static Quantification absolute(float qlevel);
 
-  /**
-   * @brief Set tile-wise the quantize level to: tile RMS_noise * 1/value.
-   * @details
-   * A non-zero scale enables lossy compression of integer data.
-   */
-  static Quantification relativeToNoise(float qlevel);
+  // /**
+  //  * @brief Set tile-wise the quantize level to: tile RMS_noise * 1/value.
+  //  * @details
+  //  * A non-zero scale enables lossy compression of integer data.
+  //  */
+  // static Quantification relativeToNoise(float qlevel);
 
   /**
    * @brief Get the quantize level
@@ -59,7 +64,7 @@ public:
   bool isAbsolute() const;
 
 private:
-  Quantification(float qlevel);
+  // Quantification(float qlevel);
 
   float m_level;
 };
@@ -136,9 +141,10 @@ public:
   ELEFITS_MOVABLE(AlgoMixin)
 
   const Position<N>& shape() const;
+  const Quantification& quantize() const;
 
 protected:
-  void compress(void* fptr) const override;
+  void compress(void* fptr) const final;
 
   /**
    * @brief Constructor.
@@ -150,36 +156,41 @@ private:
    * @brief The shape of the tiles.
    */
   Position<N> m_shape;
+
+  /**
+   * @brief Stores all parameters concerning quantification for floating-point algorithms
+   */
+  Quantification m_quantize;
   // FIXME: add huge for fits_set_huge_hdu
 };
 
-/**
- * @brief Compression algorithms for floating-point data.
- */
-template <long N, typename TDerived>
-class FloatAlgo : public AlgoMixin<N, TDerived> {
+// /**
+//  * @brief Compression algorithms for floating-point data.
+//  */
+// template <long N, typename TDerived>
+// class FloatAlgo : public AlgoMixin<N, TDerived> {
 
-public:
-  ELEFITS_VIRTUAL_DTOR(FloatAlgo)
+// public:
+//   ELEFITS_VIRTUAL_DTOR(FloatAlgo)
 
-  void dither(Dithering dither);
-  void quantize(Quantification quantize);
-  void enableLossyInt();
-  void disableLossyInt();
-  Dithering dither() const;
-  const Quantification& quantize() const;
-  bool lossyInt() const;
+//   void dither(Dithering dither);
+//   void quantize(Quantification quantize);
+//   void enableLossyInt();
+//   void disableLossyInt();
+//   Dithering dither() const;
+//   const Quantification& quantize() const;
+//   bool lossyInt() const;
 
-protected:
-  FloatAlgo<N, TDerived>(const Position<N> shape);
+// protected:
+//   FloatAlgo<N, TDerived>(const Position<N> shape);
 
-  void compress(void* fptr) const override;
+//   void compress(void* fptr) const override;
 
-protected:
-  Quantification m_quantize;
-  Dithering m_dither;
-  bool m_lossyInt;
-};
+// protected:
+//   Quantification m_quantize;
+//   Dithering m_dither;
+//   bool m_lossyInt;
+// };
 
 /**
  * @brief No compression
@@ -198,7 +209,7 @@ public:
  * @brief The Rice algorithm.
  */
 template <long N>
-class Rice : public FloatAlgo<N, Rice<N>> {
+class Rice : public AlgoMixin<N, Rice<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(Rice)
@@ -212,7 +223,7 @@ public:
  * @brief The HCompress algorithm.
  */
 template <long N>
-class HCompress : public FloatAlgo<N, HCompress<N>> {
+class HCompress : public AlgoMixin<N, HCompress<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(HCompress)
@@ -250,7 +261,7 @@ public:
  * @brief The Gzip algorithm.
  */
 template <long N>
-class Gzip : public FloatAlgo<N, Gzip<N>> {
+class Gzip : public AlgoMixin<N, Gzip<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(Gzip)
@@ -265,7 +276,7 @@ public:
  * where most significant bytes of each value appear first.
  */
 template <long N>
-class ShuffledGzip : public FloatAlgo<N, ShuffledGzip<N>> {
+class ShuffledGzip : public AlgoMixin<N, ShuffledGzip<N>> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(ShuffledGzip)
