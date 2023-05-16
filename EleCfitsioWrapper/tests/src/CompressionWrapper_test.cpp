@@ -17,7 +17,7 @@ using namespace Euclid::Fits::Compression;
 
 BOOST_AUTO_TEST_CASE(quantification_test) {
 
-  // TODO adapt to new Qunatification class
+  // TODO adapt to new Quantification class
   // const float positiveLevel = 5.f;
   // const float zeroLevel = 0.f;
   // const float negativeLevel = -5.f;
