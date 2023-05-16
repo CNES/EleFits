@@ -11,25 +11,36 @@ namespace Euclid {
 namespace Fits {
 namespace Compression {
 
-Quantification::Quantification() : m_level(0.f) {}
+// TODO verify default values
+Quantification::Quantification() : m_level(0.f), m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
 
-// Quantification::Quantification(float qlevel) : m_level(qlevel) {}
+void Quantification::absoluteLevel(float qlevel) {
 
-// Quantification Quantification::absolute(float qlevel) {
+  if (qlevel < 0.f)
+    throw FitsError("Absolute quantize level out of supported bounds");
 
-//   if (qlevel < 0.f)
-//     throw FitsError("Absolute quantize level out of supported bounds");
+  m_level = -qlevel; // absoluteness stored internally as negative value like in cfitsio
+}
 
-//   return Quantification(-qlevel); // absoluteness stored internally as negative value like in cfitsio
-// }
+void Quantification::relativeLevel(float qlevel) {
 
-// Quantification Quantification::relativeToNoise(float qlevel) {
+  if (qlevel < 0.f)
+    throw FitsError("Relative quantize level out of supported bounds");
 
-//   if (qlevel < 0.f)
-//     throw FitsError("Relative quantize level out of supported bounds");
+  m_level = qlevel;
+}
 
-//   return Quantification(qlevel);
-// }
+void Quantification::dither(Dithering dither) {
+  m_dither = std::move(dither);
+}
+
+void Quantification::enableLossyInt() {
+  m_lossyInt = true;
+}
+
+void Quantification::disableLossyInt() {
+  m_lossyInt = false;
+}
 
 float Quantification::level() const {
   return std::abs(m_level);
@@ -37,6 +48,14 @@ float Quantification::level() const {
 
 bool Quantification::isAbsolute() const {
   return m_level < 0.f;
+}
+
+Dithering Quantification::dither() const {
+  return m_dither;
+}
+
+bool Quantification::hasLossyInt() const {
+  return m_lossyInt;
 }
 
 Scale::Scale(float factor) : m_factor(factor) {}
@@ -66,8 +85,13 @@ bool Scale::isAbsolute() const {
 }
 
 template <long N, typename TDerived>
-AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)) {
+AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantize(Quantification()) {
   static_assert(N >= 0 and N <= 6, "N must be positive and less or equal to 6");
+}
+
+template <long N, typename TDerived>
+void AlgoMixin<N, TDerived>::quantize(Quantification quantize) {
+  m_quantize = std::move(quantize);
 }
 
 template <long N, typename TDerived>
@@ -79,46 +103,6 @@ template <long N, typename TDerived>
 const Quantification& AlgoMixin<N, TDerived>::quantize() const {
   return m_quantize;
 }
-
-// template <long N, typename TDerived>
-// FloatAlgo<N, TDerived>::FloatAlgo(const Position<N> shape) :
-//     AlgoMixin<N, TDerived>(shape), m_quantize(Quantification::relativeToNoise(4.f)),
-//     m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
-
-// template <long N, typename TDerived>
-// void FloatAlgo<N, TDerived>::dither(Dithering dither) {
-//   m_dither = std::move(dither);
-// }
-
-// template <long N, typename TDerived>
-// void FloatAlgo<N, TDerived>::quantize(Quantification quantize) {
-//   m_quantize = std::move(quantize);
-// }
-
-// template <long N, typename TDerived>
-// void FloatAlgo<N, TDerived>::enableLossyInt() {
-//   m_lossyInt = true;
-// }
-
-// template <long N, typename TDerived>
-// void FloatAlgo<N, TDerived>::disableLossyInt() {
-//   m_lossyInt = false;
-// }
-
-// template <long N, typename TDerived>
-// Dithering FloatAlgo<N, TDerived>::dither() const {
-//   return m_dither;
-// }
-
-// template <long N, typename TDerived>
-// const Quantification& FloatAlgo<N, TDerived>::quantize() const {
-//   return m_quantize;
-// }
-
-// template <long N, typename TDerived>
-// bool FloatAlgo<N, TDerived>::lossyInt() const {
-//   return m_lossyInt;
-// }
 
 None::None() : AlgoMixin<0, None>(Position<0>()) {}
 

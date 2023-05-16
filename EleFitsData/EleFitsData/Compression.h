@@ -15,10 +15,7 @@ namespace Fits {
 namespace Compression {
 
 /**
- * @brief Dithering methods.
- * FIXME: what about function fits_set_quantize_method() -> seems exact same as set_quantize_dither()
- * FIXME: include Dithering in Quantification ? TODO: YES  
- * FIXME: add dither_offset
+ * @brief Dithering methods for quantification.
  */
 enum class Dithering {
   NoDithering, ///< Do not dither any pixel
@@ -28,7 +25,8 @@ enum class Dithering {
 
 /**
  * @brief Quantification of floating-types for FloatAlgo
- * TODO: includ dithering & lossInt in Quantification
+ * FIXME: what about function fits_set_quantize_method() -> seems exact same as set_quantize_dither()
+ * FIXME: add dither_offset
 */
 class Quantification {
 
@@ -37,19 +35,28 @@ public:
    * @brief Create quantification with default parameters
    */
   Quantification();
-  // /**
-  //  * @brief Set globally the quantize level to the given value.
-  //  * @details
-  //  * A non-zero scale enables lossy compression of integer data.
-  //  */
-  // static Quantification absolute(float qlevel);
 
-  // /**
-  //  * @brief Set tile-wise the quantize level to: tile RMS_noise * 1/value.
-  //  * @details
-  //  * A non-zero scale enables lossy compression of integer data.
-  //  */
-  // static Quantification relativeToNoise(float qlevel);
+  /**
+   * @brief Set globally the quantize level to the given value.
+   * @details
+   * A non-zero scale enables lossy compression of integer data.
+   */
+  void absoluteLevel(float qlevel);
+
+  /**
+   * @brief Set tile-wise the quantize level to: tile RMS_noise * 1/value.
+   * @details
+   * A non-zero scale enables lossy compression of integer data.
+   */
+  void relativeLevel(float qlevel);
+
+  /**
+   * @brief Set the dithering method for the quantification.
+   */
+  void dither(Dithering);
+
+  void enableLossyInt();
+  void disableLossyInt();
 
   /**
    * @brief Get the quantize level
@@ -57,16 +64,25 @@ public:
   float level() const;
 
   /**
-   * @brief Get if quantization is absolute or relative to noise
+   * @brief Get if quantization is absolute or relative to noise.
    * @details
    * Always considered relative for qlevel of 0.
    */
   bool isAbsolute() const;
 
+  /**
+   * @brief Get the dithering method for the quantification.
+   */
+  Dithering dither() const;
+
+  bool hasLossyInt() const;
+
 private:
   // Quantification(float qlevel);
 
   float m_level;
+  Dithering m_dither;
+  bool m_lossyInt;
 };
 
 /**
@@ -140,6 +156,7 @@ public:
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
+  void quantize(Quantification quantize);
   const Position<N>& shape() const;
   const Quantification& quantize() const;
 
@@ -163,34 +180,6 @@ private:
   Quantification m_quantize;
   // FIXME: add huge for fits_set_huge_hdu
 };
-
-// /**
-//  * @brief Compression algorithms for floating-point data.
-//  */
-// template <long N, typename TDerived>
-// class FloatAlgo : public AlgoMixin<N, TDerived> {
-
-// public:
-//   ELEFITS_VIRTUAL_DTOR(FloatAlgo)
-
-//   void dither(Dithering dither);
-//   void quantize(Quantification quantize);
-//   void enableLossyInt();
-//   void disableLossyInt();
-//   Dithering dither() const;
-//   const Quantification& quantize() const;
-//   bool lossyInt() const;
-
-// protected:
-//   FloatAlgo<N, TDerived>(const Position<N> shape);
-
-//   void compress(void* fptr) const override;
-
-// protected:
-//   Quantification m_quantize;
-//   Dithering m_dither;
-//   bool m_lossyInt;
-// };
 
 /**
  * @brief No compression
