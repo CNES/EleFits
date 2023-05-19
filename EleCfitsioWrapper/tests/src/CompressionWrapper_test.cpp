@@ -17,30 +17,54 @@ using namespace Euclid::Fits::Compression;
 
 BOOST_AUTO_TEST_CASE(quantification_test) {
 
-  // TODO adapt to new Quantification class
-  // const float positiveLevel = 5.f;
-  // const float zeroLevel = 0.f;
-  // const float negativeLevel = -5.f;
+  Quantification quant;
 
-  // const Quantification absPositive_q = Quantification::absolute(positiveLevel);
-  // const Quantification absZero_q = Quantification::absolute(zeroLevel);
-  // BOOST_CHECK_THROW(Quantification::absolute(negativeLevel), Euclid::Fits::FitsError);
+  // default values:
+  BOOST_TEST(quant.level() == 0.f);
+  BOOST_TEST(quant.isAbsolute() == false);
+  BOOST_TEST(quant.hasLossyInt() == false);
+  BOOST_CHECK(quant.dither() == Dithering::EveryPixelDithering);
 
-  // BOOST_TEST(absPositive_q.level() == positiveLevel);
-  // BOOST_TEST(absPositive_q.isAbsolute() == true);
+  // setting quantification level:
+  const float positiveLevel = 5.f;
+  const float zeroLevel = 0.f;
+  const float negativeLevel = -5.f;
 
-  // BOOST_TEST(absZero_q.level() == zeroLevel);
-  // BOOST_TEST(absZero_q.isAbsolute() == false); // zero always considered relative
+  quant.absoluteLevel(positiveLevel);
+  BOOST_TEST(quant.level() == positiveLevel);
+  BOOST_TEST(quant.isAbsolute() == true);
 
-  // const Quantification relPositive_q = Quantification::relativeToNoise(positiveLevel);
-  // const Quantification relZero_q = Quantification::relativeToNoise(zeroLevel);
-  // BOOST_CHECK_THROW(Quantification::relativeToNoise(negativeLevel), Euclid::Fits::FitsError);
+  quant.absoluteLevel(zeroLevel);
+  BOOST_TEST(quant.level() == zeroLevel);
+  BOOST_TEST(quant.isAbsolute() == false); // zero is always considered relative
 
-  // BOOST_TEST(relPositive_q.level() == positiveLevel);
-  // BOOST_TEST(relPositive_q.isAbsolute() == false);
+  BOOST_CHECK_THROW(quant.absoluteLevel(negativeLevel), Euclid::Fits::FitsError);
 
-  // BOOST_TEST(relZero_q.level() == zeroLevel);
-  // BOOST_TEST(relZero_q.isAbsolute() == false);
+  quant.relativeLevel(positiveLevel);
+  BOOST_TEST(quant.level() == positiveLevel);
+  BOOST_TEST(quant.isAbsolute() == false);
+
+  quant.relativeLevel(zeroLevel);
+  BOOST_TEST(quant.level() == zeroLevel);
+  BOOST_TEST(quant.isAbsolute() == false); // zero is always considered relative
+
+  BOOST_CHECK_THROW(quant.relativeLevel(negativeLevel), Euclid::Fits::FitsError);
+
+  // turning on/off lossyInt:
+  quant.enableLossyInt();
+  BOOST_TEST(quant.hasLossyInt() == true);
+  quant.disableLossyInt();
+  BOOST_TEST(quant.hasLossyInt() == false);
+
+  // setting dithering:
+  quant.dither(Dithering::NoDithering);
+  BOOST_CHECK(quant.dither() == Dithering::NoDithering);
+
+  quant.dither(Dithering::NonZeroPixelDithering);
+  BOOST_CHECK(quant.dither() == Dithering::NonZeroPixelDithering);
+
+  quant.dither(Dithering::EveryPixelDithering);
+  BOOST_CHECK(quant.dither() == Dithering::EveryPixelDithering);
 }
 
 BOOST_AUTO_TEST_CASE(scale_test) {
