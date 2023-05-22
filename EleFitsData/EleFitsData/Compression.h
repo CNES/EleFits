@@ -128,7 +128,7 @@ private:
  */
 class Algo {
 
-  friend class ImageHdu;
+  friend class ImageHdu; // FIXME: to remove or change depending on who will handle compress()
 
 public:
   Algo() = default;

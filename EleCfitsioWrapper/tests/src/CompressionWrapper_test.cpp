@@ -14,6 +14,7 @@ BOOST_AUTO_TEST_SUITE(Compression_test)
 //-----------------------------------------------------------------------------
 
 using namespace Euclid::Fits::Compression;
+using namespace Euclid::Fits;
 
 BOOST_AUTO_TEST_CASE(quantification_test) {
 
@@ -94,6 +95,83 @@ BOOST_AUTO_TEST_CASE(scale_test) {
   BOOST_TEST(relZero_s.isAbsolute() == false);
 }
 
+// TODO
+template <typename TAlgo>
+void testAlgoMixinParameters(const Position<2>& shape) {
+
+  TAlgo algo(shape);
+
+  // verify shape of algo is correctly stored at construction
+  BOOST_CHECK(algo.shape() == shape);
+
+  // check default quantification values:
+  BOOST_TEST(algo.quantize().level() == 0.f); // FIXME: may be changed depending on algorithm (float algos)
+  BOOST_TEST(algo.quantize().isAbsolute() == false);
+  BOOST_TEST(algo.quantize().hasLossyInt() == false);
+  BOOST_CHECK(algo.quantize().dither() == Dithering::EveryPixelDithering);
+
+  // set/get quantification:
+  Quantification quant;
+  quant.absoluteLevel(5.f);
+  quant.enableLossyInt();
+  quant.dither(Dithering::NoDithering);
+  algo.quantize(quant);
+  BOOST_TEST(algo.quantize().level() == quant.level());
+  BOOST_TEST(algo.quantize().isAbsolute() == quant.isAbsolute());
+  BOOST_TEST(algo.quantize().hasLossyInt() == quant.hasLossyInt());
+  BOOST_CHECK(algo.quantize().dither() == quant.dither());
+}
+
+// specific to the None algo
+template <typename TAlgo>
+void testAlgoMixinParameters() {
+
+  TAlgo algo();
+
+  // FIXME: non-class type None error ??
+  // verify shape of algo is correctly stored at construction
+  // BOOST_CHECK(algo.shape() == Position<0>());
+}
+
+#define FOREACH_COMPRESSION_ALGO(MACRO, SHAPE) \
+  MACRO<None>(); \
+  MACRO<Rice<2>>(SHAPE); \
+  MACRO<HCompress<2>>(SHAPE); \
+  MACRO<Plio<2>>(SHAPE); \
+  MACRO<Gzip<2>>(SHAPE); \
+  MACRO<ShuffledGzip<2>>(SHAPE);
+
+#define FOREACH_FLOAT_COMPRESSION_ALGO(MACRO) \
+  MACRO<Rice<2>>(SHAPE); \
+  MACRO<HCompress<2>>(SHAPE); \
+  MACRO<Gzip<2>>(SHAPE); \
+  MACRO<ShuffledGzip<2>>(SHAPE);
+
+BOOST_AUTO_TEST_CASE(algo_mixin_test) {
+
+  const Position<2>& shape {300, 200};
+  FOREACH_COMPRESSION_ALGO(testAlgoMixinParameters, shape);
+}
+
+BOOST_AUTO_TEST_CASE(hcompress_test) {
+
+  const Position<2>& shape {300, 200};
+  HCompress<2> algo(shape);
+
+  // check default hcompress params values:
+  BOOST_TEST(algo.scale().factor() == 0.f);
+  BOOST_TEST(algo.scale().isAbsolute() == false);
+  BOOST_TEST(algo.isSmooth() == false);
+
+  // setters & getters
+  Scale scale = Scale::absolute(5.f);
+  algo.scale(scale);
+  algo.enableSmoothing();
+  BOOST_TEST(algo.scale().factor() == 5.f);
+  BOOST_TEST(algo.scale().isAbsolute() == true);
+  BOOST_TEST(algo.isSmooth() == true);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -136,6 +214,8 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) {
   fits_get_hcomp_scale(fptr, &defaultScale, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get hcompress scale");
   BOOST_TEST(defaultScale == 0.0);
+
+  // No fitsfile closing because with crash the test ?
 }
 
 //-----------------------------------------------------------------------------
