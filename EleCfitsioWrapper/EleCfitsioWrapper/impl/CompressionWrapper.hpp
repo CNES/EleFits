@@ -30,20 +30,20 @@ void AlgoMixin<N, TDerived>::compress(void* fptr) const {
   }
 
   // setting dither method:
-  if (quantize().dither() == Dithering::NoDithering) {
+  if (quantize().dither() == Dithering::EveryPixelDithering) {
 
-    fits_set_quantize_dither((fitsfile*)fptr, NO_DITHER, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NoDithering");
+    fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_1, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to EveryPixelDithering");
 
   } else if (quantize().dither() == Dithering::NonZeroPixelDithering) {
 
     fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_2, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NonZeroPixelDithering");
 
-  } else { // Dithering::EveryPixelDithering in this case
+  } else { // Dithering::NoDithering in this case
 
-    fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_1, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to EveryPixelDithering");
+    fits_set_quantize_dither((fitsfile*)fptr, NO_DITHER, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NoDithering");
   }
 
   // setting lossy int compression:

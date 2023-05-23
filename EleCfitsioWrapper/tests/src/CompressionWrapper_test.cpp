@@ -95,7 +95,6 @@ BOOST_AUTO_TEST_CASE(scale_test) {
   BOOST_TEST(relZero_s.isAbsolute() == false);
 }
 
-// TODO
 template <typename TAlgo>
 void testAlgoMixinParameters(const Position<2>& shape) {
 
@@ -126,31 +125,25 @@ void testAlgoMixinParameters(const Position<2>& shape) {
 template <typename TAlgo>
 void testAlgoMixinParameters() {
 
-  TAlgo algo();
+  TAlgo algo;
 
-  // FIXME: non-class type None error ??
   // verify shape of algo is correctly stored at construction
-  // BOOST_CHECK(algo.shape() == Position<0>());
+  BOOST_CHECK(algo.shape() == Position<0>());
 }
 
-#define FOREACH_COMPRESSION_ALGO(MACRO, SHAPE) \
+#define FOREACH_ALGO_2DIMS(MACRO, SHAPE, NDIM) \
   MACRO<None>(); \
-  MACRO<Rice<2>>(SHAPE); \
-  MACRO<HCompress<2>>(SHAPE); \
-  MACRO<Plio<2>>(SHAPE); \
-  MACRO<Gzip<2>>(SHAPE); \
-  MACRO<ShuffledGzip<2>>(SHAPE);
-
-#define FOREACH_FLOAT_COMPRESSION_ALGO(MACRO) \
-  MACRO<Rice<2>>(SHAPE); \
-  MACRO<HCompress<2>>(SHAPE); \
-  MACRO<Gzip<2>>(SHAPE); \
-  MACRO<ShuffledGzip<2>>(SHAPE);
+  MACRO<Rice<NDIM>>(SHAPE); \
+  MACRO<HCompress<NDIM>>(SHAPE); \
+  MACRO<Plio<NDIM>>(SHAPE); \
+  MACRO<Gzip<NDIM>>(SHAPE); \
+  MACRO<ShuffledGzip<NDIM>>(SHAPE);
 
 BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
-  const Position<2>& shape {300, 200};
-  FOREACH_COMPRESSION_ALGO(testAlgoMixinParameters, shape);
+  const int ndim = 2;
+  const Position<ndim>& shape {300, 200};
+  FOREACH_ALGO_2DIMS(testAlgoMixinParameters, shape, ndim);
 }
 
 BOOST_AUTO_TEST_CASE(hcompress_test) {
@@ -163,7 +156,7 @@ BOOST_AUTO_TEST_CASE(hcompress_test) {
   BOOST_TEST(algo.scale().isAbsolute() == false);
   BOOST_TEST(algo.isSmooth() == false);
 
-  // setters & getters
+  // setters & getters:
   Scale scale = Scale::absolute(5.f);
   algo.scale(scale);
   algo.enableSmoothing();
@@ -180,9 +173,75 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(wrapper_test) {
+using namespace Euclid::Fits::Compression;
+using namespace Euclid::Cfitsio::Compression;
+
+template <typename TAlgo>
+void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Position<2>& shape) {
+
+  int status = 0;
+
+  TAlgo algo(shape);
+  compress(fptr, algo);
 
   // TODO
+  // verify tile size:
+  // long tilesize;
+  // fits_get_tile_dim(fptr, 2, &tilesize, &status);
+  // Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get tile dim");
+  // BOOST_TEST(tilesize == 200);
+
+  // verify the correct compression algo is set:
+  int actualComptype;
+  fits_get_compression_type(fptr, &actualComptype, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
+  BOOST_TEST(actualComptype == comptype);
+
+  // verify default quantification level:
+  float qlevel;
+  fits_get_quantize_level(fptr, &qlevel, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get quantize level");
+  BOOST_TEST(qlevel == algo.quantize().level());
+}
+
+// specific to the None algo
+template <typename TAlgo>
+void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
+
+  int status = 0;
+
+  TAlgo algo;
+  compress(fptr, algo);
+
+  // verify the correct compression algo is set:
+  int actualComptype;
+  fits_get_compression_type(fptr, &actualComptype, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
+  BOOST_TEST(actualComptype == comptype);
+}
+
+#define FOREACH_ALGO_2DIMS_COMPRESS(MACRO, FPTR, SHAPE, NDIM) \
+  MACRO<None>(FPTR, NULL); \
+  MACRO<Rice<NDIM>>(FPTR, RICE_1, SHAPE); \
+  MACRO<HCompress<NDIM>>(FPTR, HCOMPRESS_1, SHAPE); \
+  MACRO<Plio<NDIM>>(FPTR, PLIO_1, SHAPE); \
+  MACRO<Gzip<NDIM>>(FPTR, GZIP_1, SHAPE); \
+  MACRO<ShuffledGzip<NDIM>>(FPTR, GZIP_2, SHAPE);
+
+BOOST_AUTO_TEST_CASE(wrapper_test) {
+
+  int status = 0;
+  fitsfile* fptr;
+  fits_create_file(&fptr, (std::string("!wrapper_test.fits")).c_str(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create file");
+
+  const int ndim = 2;
+  const Euclid::Fits::Position<ndim>& shape {300, 200};
+  FOREACH_ALGO_2DIMS_COMPRESS(testAlgoMixinCompress, fptr, shape, ndim);
+
+  // FIXME: No fitsfile close() because with it the test crashes ?
+  // fits_close_file(fptr, &status);
+  // Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot close file");
 }
 
 //-----------------------------------------------------------------------------
@@ -194,6 +253,9 @@ BOOST_AUTO_TEST_SUITE(Compression_learning_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(default_values_learning_test) {
+
+  // verify max image dimension supported for compression
+  BOOST_TEST(MAX_COMPRESS_DIM == 6);
 
   int status = 0;
   fitsfile* fptr;
@@ -215,7 +277,9 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) {
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get hcompress scale");
   BOOST_TEST(defaultScale == 0.0);
 
-  // No fitsfile closing because with crash the test ?
+  // FIXME: No fitsfile close() because with it the test crashes ?
+  // fits_close_file(fptr, &status);
+  // Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot close file");
 }
 
 //-----------------------------------------------------------------------------
