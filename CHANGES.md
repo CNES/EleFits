@@ -1,5 +1,11 @@
 # Change log
 
+## 5.2
+
+### Breaking changes
+
+* Updated to Elements 6.2.1
+
 ## 5.1
 
 ### Bug fixes
