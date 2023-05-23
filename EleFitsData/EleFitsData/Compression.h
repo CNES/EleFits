@@ -124,10 +124,11 @@ private:
 
 /**
  * @brief Base class for compression algorithms.
+ * FIXME: friend class to remove or change depending on who will handle compress()
  */
 class Algo {
 
-  friend class ImageHdu; // FIXME: to remove or change depending on who will handle compress()
+  friend class ImageHdu;
 
 public:
   Algo() = default;
@@ -145,7 +146,8 @@ protected:
  * Tiling shape is represented as a Position<N>.
  * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM).
  * The value of N must therefore not exceed 6.
- * TODO: verify MAX_COMPRESS_DIM value in test
+ * TODO: investigate how different tiling behaviours can be set at construction
+ * FIXME: add boolean attribute huge for fits_set_huge_hdu
  */
 template <long N, typename TDerived>
 class AlgoMixin : Algo {
@@ -177,7 +179,6 @@ private:
    * @brief Stores all parameters concerning quantification for floating-point algorithms
    */
   Quantification m_quantize;
-  // FIXME: add huge for fits_set_huge_hdu
 };
 
 /**

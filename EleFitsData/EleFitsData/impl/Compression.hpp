@@ -11,7 +11,7 @@ namespace Euclid {
 namespace Fits {
 namespace Compression {
 
-// TODO verify default values
+// TODO still have to verify default values for dithering and lossyInt
 Quantification::Quantification() : m_level(0.f), m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
 
 void Quantification::absoluteLevel(float qlevel) {
