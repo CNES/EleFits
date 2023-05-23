@@ -25,7 +25,6 @@ enum class Dithering {
 
 /**
  * @brief Quantification of floating-types for FloatAlgo
- * FIXME: what about function fits_set_quantize_method() -> seems exact same as set_quantize_dither()
  * FIXME: add dither_offset
 */
 class Quantification {
@@ -99,7 +98,7 @@ public:
   static Scale absolute(float factor);
 
   /**
-   * @brief Set tile-wise the scaling factor to: tile RMS_noise * value.
+   * @brief Set tile-wise the scaling factor to: tile RMS_noise * 1/value.
    * @details
    * A non-zero scale enables lossy compression of integer data.
    */

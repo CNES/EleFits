@@ -14,43 +14,6 @@ namespace Compression {
 template <long N, typename TDerived>
 void AlgoMixin<N, TDerived>::compress(void* fptr) const {
 
-  int status = 0;
-
-  Position<N> ndims = m_shape;
-  fits_set_tile_dim((fitsfile*)fptr, N, ndims.data(), &status); // setting compression tile size
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set compression tile dimensions");
-
-  // setting quantize level:
-  if (quantize().isAbsolute()) {
-    fits_set_quantize_level((fitsfile*)fptr, -quantize().level(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set absolute quantize level");
-  } else { // relative quantize level applied in this case
-    fits_set_quantize_level((fitsfile*)fptr, quantize().level(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set relative quantize level");
-  }
-
-  // setting dither method:
-  if (quantize().dither() == Dithering::EveryPixelDithering) {
-
-    fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_1, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to EveryPixelDithering");
-
-  } else if (quantize().dither() == Dithering::NonZeroPixelDithering) {
-
-    fits_set_quantize_dither((fitsfile*)fptr, SUBTRACTIVE_DITHER_2, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NonZeroPixelDithering");
-
-  } else { // Dithering::NoDithering in this case
-
-    fits_set_quantize_dither((fitsfile*)fptr, NO_DITHER, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set dithering to NoDithering");
-  }
-
-  // setting lossy int compression:
-  // FIXME: how to verify that it is applied correctly to img?
-  fits_set_lossy_int((fitsfile*)fptr, quantize().hasLossyInt(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, (fitsfile*)fptr, "Cannot set lossy int compression");
-
   Euclid::Cfitsio::Compression::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
 }
 
@@ -62,7 +25,48 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
+// function to factorize quantification for all floating-point algorithms
+template <long N, typename TDerived>
+void setQuantizeParams(fitsfile* fptr, const Euclid::Fits::Compression::AlgoMixin<N, TDerived>& algo) {
+
+  int status = 0;
+
+  // setting quantize level:
+  if (algo.quantize().isAbsolute()) {
+    fits_set_quantize_level(fptr, -algo.quantize().level(), &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantize level");
+  } else { // relative quantize level applied in this case
+    fits_set_quantize_level(fptr, algo.quantize().level(), &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
+  }
+
+  // setting dither method:
+  // fits_set_quantize_method() is exact same as set_quantize_dither() (old name)
+  if (algo.quantize().dither() == Euclid::Fits::Compression::Dithering::EveryPixelDithering) {
+
+    fits_set_quantize_method(fptr, SUBTRACTIVE_DITHER_1, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to EveryPixelDithering");
+
+  } else if (algo.quantize().dither() == Euclid::Fits::Compression::Dithering::NonZeroPixelDithering) {
+
+    fits_set_quantize_method(fptr, SUBTRACTIVE_DITHER_2, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to NonZeroPixelDithering");
+
+  } else { // Euclid::Fits::Compression::Dithering::NoDithering in this case
+
+    fits_set_quantize_method(fptr, NO_DITHER, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to NoDithering");
+  }
+
+  // setting lossy int compression:
+  // FIXME: how to verify that it is applied correctly to img?
+  fits_set_lossy_int(fptr, algo.quantize().hasLossyInt(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set lossy int compression");
+}
+
 void compress(fitsfile* fptr, const Euclid::Fits::Compression::None&) {
+
+  // FIXME: just call fits_unset_compression_request() which resets everything instead ?
 
   int status = 0;
   fits_set_compression_type(fptr, NULL, &status);
@@ -70,17 +74,30 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::None&) {
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>&) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, RICE_1, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Rice");
+
+  Euclid::Fits::Position<N> ndims = algo.shape();
+  fits_set_tile_dim(fptr, N, ndims.data(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+
+  setQuantizeParams(fptr, (Euclid::Fits::Compression::AlgoMixin<N, Euclid::Fits::Compression::Rice<N>>)algo);
 }
 
 template <long N>
 void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& algo) {
 
   int status = 0;
+
+  fits_set_compression_type(fptr, HCOMPRESS_1, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
+
+  Euclid::Fits::Position<N> ndims = algo.shape();
+  fits_set_tile_dim(fptr, N, ndims.data(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 
   if (algo.scale().isAbsolute()) {
     fits_set_hcomp_scale(fptr, -algo.scale().factor(), &status);
@@ -93,32 +110,47 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& alg
   fits_set_hcomp_smooth(fptr, algo.isSmooth(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set smoothing for HCompress");
 
-  fits_set_compression_type(fptr, HCOMPRESS_1, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
+  setQuantizeParams(fptr, (Euclid::Fits::Compression::AlgoMixin<N, Euclid::Fits::Compression::HCompress<N>>)algo);
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>&) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
+
+  Euclid::Fits::Position<N> ndims = algo.shape();
+  fits_set_tile_dim(fptr, N, ndims.data(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>&) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_1, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
+
+  Euclid::Fits::Position<N> ndims = algo.shape();
+  fits_set_tile_dim(fptr, N, ndims.data(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+
+  setQuantizeParams(fptr, (Euclid::Fits::Compression::AlgoMixin<N, Euclid::Fits::Compression::Gzip<N>>)algo);
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>&) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_2, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
+
+  Euclid::Fits::Position<N> ndims = algo.shape();
+  fits_set_tile_dim(fptr, N, ndims.data(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+
+  setQuantizeParams(fptr, (Euclid::Fits::Compression::AlgoMixin<N, Euclid::Fits::Compression::ShuffledGzip<N>>)algo);
 }
 
 } // namespace Compression

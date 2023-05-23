@@ -184,18 +184,18 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Pos
   TAlgo algo(shape);
   compress(fptr, algo);
 
-  // TODO
-  // verify tile size:
-  // long tilesize;
-  // fits_get_tile_dim(fptr, 2, &tilesize, &status);
-  // Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get tile dim");
-  // BOOST_TEST(tilesize == 200);
-
   // verify the correct compression algo is set:
   int actualComptype;
   fits_get_compression_type(fptr, &actualComptype, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
   BOOST_TEST(actualComptype == comptype);
+
+  // verify tile size:
+  long actualShape[2];
+  fits_get_tile_dim(fptr, 2, actualShape, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get tile dim");
+  BOOST_TEST(actualShape[0] = shape.data()[0]);
+  BOOST_TEST(actualShape[1] = shape.data()[1]);
 
   // verify default quantification level:
   float qlevel;
@@ -267,10 +267,17 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) {
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
   BOOST_TEST(defaultAlgo == NULL);
 
+  long defaultTileDim[MAX_COMPRESS_DIM];
+  fits_get_tile_dim(fptr, MAX_COMPRESS_DIM, defaultTileDim, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get tile dim");
+  for (int i = 0; i < MAX_COMPRESS_DIM; i++) {
+    BOOST_TEST(defaultTileDim[i] == 0); // ie. defaultTileDim = {0,0,0,0,0,0}
+  }
+
   float defaultLevel;
   fits_get_quantize_level(fptr, &defaultLevel, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get quantize level");
-  BOOST_TEST(defaultLevel == 0.0); // default should be 4.0 according to doc
+  BOOST_TEST(defaultLevel == 0.0);
 
   float defaultScale;
   fits_get_hcomp_scale(fptr, &defaultScale, &status);
