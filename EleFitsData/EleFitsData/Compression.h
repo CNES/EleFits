@@ -18,9 +18,9 @@ namespace Compression {
  * @brief Dithering methods for quantification.
  */
 enum class Dithering {
-  NoDithering, ///< Do not dither any pixel
-  NonZeroPixelDithering, ///< Dither only non-zero pixels
-  EveryPixelDithering ///< Dither all pixels
+  None, ///< Do not dither any pixel
+  NonZeroPixel, ///< Dither only non-zero pixels
+  EveryPixel ///< Dither all pixels
 };
 
 /**
@@ -52,7 +52,7 @@ public:
   /**
    * @brief Set the dithering method for the quantification.
    */
-  void dither(Dithering);
+  void dithering(Dithering);
 
   void enableLossyInt();
   void disableLossyInt();
@@ -72,7 +72,7 @@ public:
   /**
    * @brief Get the dithering method for the quantification.
    */
-  Dithering dither() const;
+  Dithering dithering() const;
 
   bool hasLossyInt() const;
 
@@ -80,7 +80,7 @@ private:
   // Quantification(float qlevel);
 
   float m_level;
-  Dithering m_dither;
+  Dithering m_dithering;
   bool m_lossyInt;
 };
 

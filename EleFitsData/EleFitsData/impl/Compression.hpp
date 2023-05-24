@@ -12,7 +12,7 @@ namespace Fits {
 namespace Compression {
 
 // TODO still have to verify default values for dithering and lossyInt
-Quantification::Quantification() : m_level(0.f), m_dither(Dithering::EveryPixelDithering), m_lossyInt(false) {}
+Quantification::Quantification() : m_level(0.f), m_dithering(Dithering::EveryPixel), m_lossyInt(false) {}
 
 void Quantification::absoluteLevel(float qlevel) {
 
@@ -30,8 +30,8 @@ void Quantification::relativeLevel(float qlevel) {
   m_level = qlevel;
 }
 
-void Quantification::dither(Dithering dither) {
-  m_dither = std::move(dither);
+void Quantification::dithering(Dithering dither) {
+  m_dithering = std::move(dither);
 }
 
 void Quantification::enableLossyInt() {
@@ -50,8 +50,8 @@ bool Quantification::isAbsolute() const {
   return m_level < 0.f;
 }
 
-Dithering Quantification::dither() const {
-  return m_dither;
+Dithering Quantification::dithering() const {
+  return m_dithering;
 }
 
 bool Quantification::hasLossyInt() const {

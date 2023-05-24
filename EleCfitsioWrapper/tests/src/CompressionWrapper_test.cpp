@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(quantification_test) {
   BOOST_TEST(quant.level() == 0.f);
   BOOST_TEST(quant.isAbsolute() == false);
   BOOST_TEST(quant.hasLossyInt() == false);
-  BOOST_CHECK(quant.dither() == Dithering::EveryPixelDithering);
+  BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
 
   // setting quantification level:
   const float positiveLevel = 5.f;
@@ -58,14 +58,14 @@ BOOST_AUTO_TEST_CASE(quantification_test) {
   BOOST_TEST(quant.hasLossyInt() == false);
 
   // setting dithering:
-  quant.dither(Dithering::NoDithering);
-  BOOST_CHECK(quant.dither() == Dithering::NoDithering);
+  quant.dithering(Dithering::None);
+  BOOST_TEST((quant.dithering() == Dithering::None));
 
-  quant.dither(Dithering::NonZeroPixelDithering);
-  BOOST_CHECK(quant.dither() == Dithering::NonZeroPixelDithering);
+  quant.dithering(Dithering::NonZeroPixel);
+  BOOST_TEST((quant.dithering() == Dithering::NonZeroPixel));
 
-  quant.dither(Dithering::EveryPixelDithering);
-  BOOST_CHECK(quant.dither() == Dithering::EveryPixelDithering);
+  quant.dithering(Dithering::EveryPixel);
+  BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
 }
 
 BOOST_AUTO_TEST_CASE(scale_test) {
@@ -101,24 +101,24 @@ void testAlgoMixinParameters(const Position<2>& shape) {
   TAlgo algo(shape);
 
   // verify shape of algo is correctly stored at construction
-  BOOST_CHECK(algo.shape() == shape);
+  BOOST_TEST((algo.shape() == shape));
 
   // check default quantification values:
   BOOST_TEST(algo.quantize().level() == 0.f); // FIXME: may be changed depending on algorithm (float algos)
   BOOST_TEST(algo.quantize().isAbsolute() == false);
   BOOST_TEST(algo.quantize().hasLossyInt() == false);
-  BOOST_CHECK(algo.quantize().dither() == Dithering::EveryPixelDithering);
+  BOOST_TEST((algo.quantize().dithering() == Dithering::EveryPixel));
 
   // set/get quantification:
   Quantification quant;
   quant.absoluteLevel(5.f);
   quant.enableLossyInt();
-  quant.dither(Dithering::NoDithering);
+  quant.dithering(Dithering::None);
   algo.quantize(quant);
   BOOST_TEST(algo.quantize().level() == quant.level());
   BOOST_TEST(algo.quantize().isAbsolute() == quant.isAbsolute());
   BOOST_TEST(algo.quantize().hasLossyInt() == quant.hasLossyInt());
-  BOOST_CHECK(algo.quantize().dither() == quant.dither());
+  BOOST_TEST((algo.quantize().dithering() == quant.dithering()));
 }
 
 // specific to the None algo
@@ -128,7 +128,7 @@ void testAlgoMixinParameters() {
   TAlgo algo;
 
   // verify shape of algo is correctly stored at construction
-  BOOST_CHECK(algo.shape() == Position<0>());
+  BOOST_TEST((algo.shape() == Position<0>()));
 }
 
 #define FOREACH_ALGO_2DIMS(MACRO, SHAPE, NDIM) \
@@ -197,11 +197,11 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Pos
   BOOST_TEST(actualShape[0] = shape.data()[0]);
   BOOST_TEST(actualShape[1] = shape.data()[1]);
 
-  // verify default quantification level:
-  float qlevel;
-  fits_get_quantize_level(fptr, &qlevel, &status);
+  // verify quantification level:
+  float actualQlevel;
+  fits_get_quantize_level(fptr, &actualQlevel, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get quantize level");
-  BOOST_TEST(qlevel == algo.quantize().level());
+  BOOST_TEST(actualQlevel == algo.quantize().level());
 }
 
 // specific to the None algo
@@ -228,16 +228,46 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
   MACRO<Gzip<NDIM>>(FPTR, GZIP_1, SHAPE); \
   MACRO<ShuffledGzip<NDIM>>(FPTR, GZIP_2, SHAPE);
 
-BOOST_AUTO_TEST_CASE(wrapper_test) {
+BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 
   int status = 0;
   fitsfile* fptr;
-  fits_create_file(&fptr, (std::string("!wrapper_test.fits")).c_str(), &status);
+  fits_create_file(&fptr, (std::string("!algomixin_compress_test.fits")).c_str(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create file");
 
   const int ndim = 2;
   const Euclid::Fits::Position<ndim>& shape {300, 200};
   FOREACH_ALGO_2DIMS_COMPRESS(testAlgoMixinCompress, fptr, shape, ndim);
+
+  // FIXME: No fitsfile close() because with it the test crashes ?
+  // fits_close_file(fptr, &status);
+  // Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot close file");
+}
+
+BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
+
+  int status = 0;
+  fitsfile* fptr;
+  fits_create_file(&fptr, (std::string("!hcompress_compress_test.fits")).c_str(), &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create file");
+
+  const int ndim = 2;
+  const Euclid::Fits::Position<ndim>& shape {300, 200};
+
+  HCompress algo(shape);
+  compress(fptr, algo);
+
+  // verify scale factor:
+  float actualScale;
+  fits_get_hcomp_scale(fptr, &actualScale, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get hcompress scale");
+  BOOST_TEST(actualScale == (algo.scale().isAbsolute() ? -algo.scale().factor() : algo.scale().factor()));
+
+  // verify smoothing:
+  int actualSmooth;
+  fits_get_hcomp_smooth(fptr, &actualSmooth, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get hcompress smooth");
+  BOOST_TEST(actualSmooth == algo.isSmooth());
 
   // FIXME: No fitsfile close() because with it the test crashes ?
   // fits_close_file(fptr, &status);
