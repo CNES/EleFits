@@ -109,32 +109,26 @@ None::None() : AlgoMixin<0, None>(Position<0>()) {}
 template <long N>
 Rice<N>::Rice(const Position<N> shape) : AlgoMixin<N, Rice<N>>(shape) {}
 
-template <long N>
-HCompress<N>::HCompress(const Position<N> shape) :
-    AlgoMixin<N, HCompress<N>>(shape), m_scale(Scale::relativeToNoise(0.f)), m_smooth(false) {}
+HCompress::HCompress(const Position<2> shape) :
+    AlgoMixin<2, HCompress>(shape), m_scale(Scale::relativeToNoise(0.f)), m_smooth(false) {}
 
-template <long N>
-void HCompress<N>::scale(Scale scale) {
+void HCompress::scale(Scale scale) {
   m_scale = std::move(scale);
 }
 
-template <long N>
-void HCompress<N>::enableSmoothing() {
+void HCompress::enableSmoothing() {
   m_smooth = true;
 }
 
-template <long N>
-void HCompress<N>::disableSmoothing() {
+void HCompress::disableSmoothing() {
   m_smooth = false;
 }
 
-template <long N>
-const Scale& HCompress<N>::scale() const {
+const Scale& HCompress::scale() const {
   return m_scale;
 }
 
-template <long N>
-bool HCompress<N>::isSmooth() const {
+bool HCompress::isSmooth() const {
   return m_smooth;
 }
 

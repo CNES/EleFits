@@ -28,8 +28,7 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo);
 /**
  * @brief Set the compression algorithm to HCompress.
  */
-template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& algo);
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress& algo);
 
 /**
  * @brief Set the compression algorithm to Plio.

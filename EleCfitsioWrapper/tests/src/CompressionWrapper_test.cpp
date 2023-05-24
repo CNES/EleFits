@@ -134,7 +134,7 @@ void testAlgoMixinParameters() {
 #define FOREACH_ALGO_2DIMS(MACRO, SHAPE, NDIM) \
   MACRO<None>(); \
   MACRO<Rice<NDIM>>(SHAPE); \
-  MACRO<HCompress<NDIM>>(SHAPE); \
+  MACRO<HCompress>(SHAPE); \
   MACRO<Plio<NDIM>>(SHAPE); \
   MACRO<Gzip<NDIM>>(SHAPE); \
   MACRO<ShuffledGzip<NDIM>>(SHAPE);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 BOOST_AUTO_TEST_CASE(hcompress_test) {
 
   const Position<2>& shape {300, 200};
-  HCompress<2> algo(shape);
+  HCompress algo(shape);
 
   // check default hcompress params values:
   BOOST_TEST(algo.scale().factor() == 0.f);
@@ -223,7 +223,7 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
 #define FOREACH_ALGO_2DIMS_COMPRESS(MACRO, FPTR, SHAPE, NDIM) \
   MACRO<None>(FPTR, NULL); \
   MACRO<Rice<NDIM>>(FPTR, RICE_1, SHAPE); \
-  MACRO<HCompress<NDIM>>(FPTR, HCOMPRESS_1, SHAPE); \
+  MACRO<HCompress>(FPTR, HCOMPRESS_1, SHAPE); \
   MACRO<Plio<NDIM>>(FPTR, PLIO_1, SHAPE); \
   MACRO<Gzip<NDIM>>(FPTR, GZIP_1, SHAPE); \
   MACRO<ShuffledGzip<NDIM>>(FPTR, GZIP_2, SHAPE);
@@ -251,8 +251,7 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   fits_create_file(&fptr, (std::string("!hcompress_compress_test.fits")).c_str(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create file");
 
-  const int ndim = 2;
-  const Euclid::Fits::Position<ndim>& shape {300, 200};
+  const Euclid::Fits::Position<2>& shape {300, 200};
 
   HCompress algo(shape);
   compress(fptr, algo);

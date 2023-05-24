@@ -90,16 +90,15 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo) {
   setQuantize(fptr, algo.quantize());
 }
 
-template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress<N>& algo) {
+void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress& algo) {
 
   int status = 0;
 
   fits_set_compression_type(fptr, HCOMPRESS_1, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
 
-  Euclid::Fits::Position<N> ndims = algo.shape();
-  fits_set_tile_dim(fptr, N, ndims.data(), &status);
+  Euclid::Fits::Position<2> ndims = algo.shape();
+  fits_set_tile_dim(fptr, 2, ndims.data(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 
   if (algo.scale().isAbsolute()) {

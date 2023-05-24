@@ -211,15 +211,14 @@ public:
 /**
  * @brief The HCompress algorithm.
  */
-template <long N>
-class HCompress : public AlgoMixin<N, HCompress<N>> {
+class HCompress : public AlgoMixin<2, HCompress> {
 
 public:
   ELEFITS_VIRTUAL_DTOR(HCompress)
   ELEFITS_COPYABLE(HCompress)
   ELEFITS_MOVABLE(HCompress)
 
-  HCompress(const Position<N> shape);
+  HCompress(const Position<2> shape);
 
   void scale(Scale scale);
   void enableSmoothing();
