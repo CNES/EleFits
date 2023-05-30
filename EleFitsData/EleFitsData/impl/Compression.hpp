@@ -47,24 +47,12 @@ float Factor::value() const {
   return std::abs(m_value);
 }
 
+inline bool Factor::operator==(const Factor& f2) const {
+  return (m_value == f2.value()) and (this->type() == f2.type());
+}
+
 // TODO still have to verify default values for dithering and lossyInt
 Quantization::Quantization() : m_level(Factor::none()), m_dithering(Dithering::EveryPixel), m_lossyInt(false) {}
-
-// void Quantization::absoluteLevel(float qlevel) {
-
-//   if (qlevel < 0.f)
-//     throw FitsError("Absolute quantize level out of supported bounds");
-
-//   m_level = -qlevel; // absoluteness stored internally as negative value like in cfitsio
-// }
-
-// void Quantization::relativeLevel(float qlevel) {
-
-//   if (qlevel < 0.f)
-//     throw FitsError("Relative quantize level out of supported bounds");
-
-//   m_level = qlevel;
-// }
 
 Quantization& Quantization::level(Factor level) {
   m_level = std::move(level);
@@ -90,10 +78,6 @@ const Factor& Quantization::level() const {
   return m_level;
 }
 
-// bool Quantization::isAbsolute() const {
-//   return m_level < 0.f;
-// }
-
 Dithering Quantization::dithering() const {
   return m_dithering;
 }
@@ -102,31 +86,9 @@ bool Quantization::hasLossyInt() const {
   return m_lossyInt;
 }
 
-// Scale::Scale(float factor) : m_factor(factor) {}
-
-// Scale Scale::absolute(float factor) {
-
-//   if (factor < 0.f)
-//     throw FitsError("Absolute scale factor out of supported bounds");
-
-//   return Scale(-factor); // absoluteness stored internally as negative value like in cfitsio
-// }
-
-// Scale Scale::relativeToNoise(float factor) {
-
-//   if (factor < 0.f)
-//     throw FitsError("Relative scale factor out of supported bounds");
-
-//   return Scale(factor);
-// }
-
-// float Scale::factor() const {
-//   return std::abs(m_factor);
-// }
-
-// bool Scale::isAbsolute() const {
-//   return m_factor < 0.f;
-// }
+inline bool Quantization::operator==(const Quantization& q2) const {
+  return (m_level == q2.level()) and (m_dithering == q2.dithering()) and (m_lossyInt == q2.hasLossyInt());
+}
 
 template <long N, typename TDerived>
 AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantize(Quantization()) {

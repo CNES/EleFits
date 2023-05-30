@@ -30,6 +30,9 @@ public:
   Factor::Type type() const;
   float value() const;
 
+  // FIXME: properly compare floats here
+  inline bool operator==(const Factor& f2) const;
+
 private:
   Factor(float value);
 
@@ -85,6 +88,8 @@ public:
   Dithering dithering() const;
 
   bool hasLossyInt() const;
+
+  inline bool operator==(const Quantization& q2) const;
 
 private:
   Factor m_level;
