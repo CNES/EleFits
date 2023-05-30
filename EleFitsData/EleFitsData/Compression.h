@@ -14,6 +14,28 @@ namespace Euclid {
 namespace Fits {
 namespace Compression {
 
+class Factor {
+
+public:
+  enum Type {
+    None,
+    Absolute,
+    Relative
+  };
+
+  static Factor none();
+  static Factor absolute(float value);
+  static Factor relative(float value);
+
+  Factor::Type type() const;
+  float value() const;
+
+private:
+  Factor(float value);
+
+  float m_value;
+};
+
 /**
  * @brief Dithering methods for quantization.
  */
@@ -36,18 +58,13 @@ public:
   Quantization();
 
   /**
-   * @brief Set globally the quantize level to the given value.
+   * @brief Set tile-wise the quantize level
    * @details
-   * A non-zero scale enables lossy compression of integer data.
+   * A relative factor will set the quantize level to: tile RMS_noise * 1/value.
+   * An absolute factor will set globally the quantize level to the given value.
+   * A none Factor disables lossy compression of integer data.
    */
-  void absoluteLevel(float qlevel);
-
-  /**
-   * @brief Set tile-wise the quantize level to: tile RMS_noise * 1/value.
-   * @details
-   * A non-zero scale enables lossy compression of integer data.
-   */
-  void relativeLevel(float qlevel);
+  void level(Factor level);
 
   /**
    * @brief Set the dithering method for the quantization.
@@ -60,14 +77,7 @@ public:
   /**
    * @brief Get the quantize level
    */
-  float level() const;
-
-  /**
-   * @brief Get if quantization is absolute or relative to noise.
-   * @details
-   * Always considered relative for qlevel of 0.
-   */
-  bool isAbsolute() const;
+  const Factor& level() const;
 
   /**
    * @brief Get the dithering method for the quantization.
@@ -77,49 +87,9 @@ public:
   bool hasLossyInt() const;
 
 private:
-  // Quantization(float qlevel);
-
-  float m_level;
+  Factor m_level;
   Dithering m_dithering;
   bool m_lossyInt;
-};
-
-/**
- * @brief Scale factor associated to the HCompress algorithm
-*/
-class Scale {
-
-public:
-  /**
-   * @brief Set globally the scaling factor to the given value.
-   * @details
-   * A non-zero scale enables lossy compression of integer data.
-   */
-  static Scale absolute(float factor);
-
-  /**
-   * @brief Set tile-wise the scaling factor to: tile RMS_noise * 1/value.
-   * @details
-   * A non-zero scale enables lossy compression of integer data.
-   */
-  static Scale relativeToNoise(float factor);
-
-  /**
-   * @brief Get the scaling factor
-   */
-  float factor() const;
-
-  /**
-   * @brief Get if the scaling is absolute or relative to noise
-   * @details
-   * Always considered relative for scale of 0.
-   */
-  bool isAbsolute() const;
-
-private:
-  Scale(float factor);
-
-  float m_factor;
 };
 
 /**
@@ -220,14 +190,23 @@ public:
 
   HCompress(const Position<2> shape);
 
-  void scale(Scale scale);
+  /**
+   * @brief Set tile-wise scaling for hcompress.
+   * @details
+   * A relative factor will set the scaling factor to: tile RMS_noise * 1/value.
+   * An absolute factor will set globally the scaling factor to the given value.
+   * A none factor disables scaling.
+   */
+  void scale(Factor scale);
+
   void enableSmoothing();
   void disableSmoothing();
-  const Scale& scale() const;
+
+  const Factor& scale() const;
   bool isSmooth() const;
 
 private:
-  Scale m_scale;
+  Factor m_scale;
   bool m_smooth;
 };
 

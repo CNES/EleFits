@@ -31,11 +31,11 @@ void setQuantize(fitsfile* fptr, const Euclid::Fits::Compression::Quantization& 
   int status = 0;
 
   // setting quantize level:
-  if (quant.isAbsolute()) {
-    fits_set_quantize_level(fptr, -quant.level(), &status);
+  if (quant.level().type() == Euclid::Fits::Compression::Factor::Type::Absolute) {
+    fits_set_quantize_level(fptr, -quant.level().value(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantize level");
   } else { // relative quantize level applied in this case
-    fits_set_quantize_level(fptr, quant.level(), &status);
+    fits_set_quantize_level(fptr, quant.level().value(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
   }
 
@@ -101,11 +101,11 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress& algo) 
   fits_set_tile_dim(fptr, 2, ndims.data(), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 
-  if (algo.scale().isAbsolute()) {
-    fits_set_hcomp_scale(fptr, -algo.scale().factor(), &status);
+  if (algo.scale().type() == Euclid::Fits::Compression::Factor::Type::Absolute) {
+    fits_set_hcomp_scale(fptr, -algo.scale().value(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
   } else { // relative scaling applied in this case
-    fits_set_hcomp_scale(fptr, algo.scale().factor(), &status);
+    fits_set_hcomp_scale(fptr, algo.scale().value(), &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
   }
 

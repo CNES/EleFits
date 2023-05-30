@@ -24,35 +24,26 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   Quantization quant;
 
   // default values:
-  BOOST_TEST(quant.level() == 0.f);
-  BOOST_TEST(quant.isAbsolute() == false);
+  BOOST_TEST(quant.level().value() == 0.f);
+  BOOST_TEST(quant.level().type() == Factor::Type::None);
   BOOST_TEST(quant.hasLossyInt() == false);
   BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
 
   // setting quantization level:
   const float positiveLevel = 5.f;
   const float zeroLevel = 0.f;
-  const float negativeLevel = -5.f;
 
-  quant.absoluteLevel(positiveLevel);
-  BOOST_TEST(quant.level() == positiveLevel);
-  BOOST_TEST(quant.isAbsolute() == true);
+  quant.level(Factor::none());
+  BOOST_TEST(quant.level().value() == zeroLevel);
+  BOOST_TEST(quant.level().type() == Factor::Type::None);
 
-  quant.absoluteLevel(zeroLevel);
-  BOOST_TEST(quant.level() == zeroLevel);
-  BOOST_TEST(quant.isAbsolute() == false); // zero is always considered relative
+  quant.level(Factor::absolute(positiveLevel));
+  BOOST_TEST(quant.level().value() == positiveLevel);
+  BOOST_TEST(quant.level().type() == Factor::Type::Absolute);
 
-  BOOST_CHECK_THROW(quant.absoluteLevel(negativeLevel), Euclid::Fits::FitsError);
-
-  quant.relativeLevel(positiveLevel);
-  BOOST_TEST(quant.level() == positiveLevel);
-  BOOST_TEST(quant.isAbsolute() == false);
-
-  quant.relativeLevel(zeroLevel);
-  BOOST_TEST(quant.level() == zeroLevel);
-  BOOST_TEST(quant.isAbsolute() == false); // zero is always considered relative
-
-  BOOST_CHECK_THROW(quant.relativeLevel(negativeLevel), Euclid::Fits::FitsError);
+  quant.level(Factor::relative(positiveLevel));
+  BOOST_TEST(quant.level().value() == positiveLevel);
+  BOOST_TEST(quant.level().type() == Factor::Type::Relative);
 
   // turning on/off lossyInt:
   quant.enableLossyInt();
@@ -71,31 +62,29 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
 }
 
-BOOST_AUTO_TEST_CASE(scale_test) {
+BOOST_AUTO_TEST_CASE(factor_test) {
 
   const float positiveFactor = 5.f;
   const float zeroFactor = 0.f;
   const float negativeFactor = -5.f;
 
-  const Scale absPositive_s = Scale::absolute(positiveFactor);
-  const Scale absZero_s = Scale::absolute(zeroFactor);
-  BOOST_CHECK_THROW(Scale::absolute(negativeFactor), Euclid::Fits::FitsError);
+  const Factor none_f = Factor::none();
+  BOOST_TEST(none_f.value() == zeroFactor);
+  BOOST_TEST(none_f.type() == Factor::Type::None);
 
-  BOOST_TEST(absPositive_s.factor() == positiveFactor);
-  BOOST_TEST(absPositive_s.isAbsolute() == true);
+  const Factor absolute_f = Factor::absolute(positiveFactor);
+  BOOST_CHECK_THROW(Factor::absolute(zeroFactor), Euclid::Fits::FitsError);
+  BOOST_CHECK_THROW(Factor::absolute(negativeFactor), Euclid::Fits::FitsError);
 
-  BOOST_TEST(absZero_s.factor() == zeroFactor);
-  BOOST_TEST(absZero_s.isAbsolute() == false); // zero always considered relative
+  BOOST_TEST(absolute_f.value() == positiveFactor);
+  BOOST_TEST(absolute_f.type() == Factor::Type::Absolute);
 
-  const Scale relPositive_s = Scale::relativeToNoise(positiveFactor);
-  const Scale relZero_s = Scale::relativeToNoise(zeroFactor);
-  BOOST_CHECK_THROW(Scale::relativeToNoise(negativeFactor), Euclid::Fits::FitsError);
+  const Factor relative_f = Factor::relative(positiveFactor);
+  BOOST_CHECK_THROW(Factor::relative(zeroFactor), Euclid::Fits::FitsError);
+  BOOST_CHECK_THROW(Factor::relative(negativeFactor), Euclid::Fits::FitsError);
 
-  BOOST_TEST(relPositive_s.factor() == positiveFactor);
-  BOOST_TEST(relPositive_s.isAbsolute() == false);
-
-  BOOST_TEST(relZero_s.factor() == zeroFactor);
-  BOOST_TEST(relZero_s.isAbsolute() == false);
+  BOOST_TEST(relative_f.value() == positiveFactor);
+  BOOST_TEST(relative_f.type() == Factor::Type::Relative);
 }
 
 template <typename TAlgo>
@@ -107,19 +96,19 @@ void testAlgoMixinParameters(const Position<2>& shape) {
   BOOST_TEST((algo.shape() == shape));
 
   // check default quantization values:
-  BOOST_TEST(algo.quantize().level() == 0.f); // FIXME: may be changed depending on algorithm (float algos)
-  BOOST_TEST(algo.quantize().isAbsolute() == false);
+  BOOST_TEST(algo.quantize().level().value() == 0.f); // FIXME: may be changed depending on algorithm (float algos)
+  BOOST_TEST(algo.quantize().level().type() == Factor::Type::None);
   BOOST_TEST(algo.quantize().hasLossyInt() == false);
   BOOST_TEST((algo.quantize().dithering() == Dithering::EveryPixel));
 
   // set/get quantization:
   Quantization quant;
-  quant.absoluteLevel(5.f);
+  quant.level(Factor::absolute(5.f));
   quant.enableLossyInt();
   quant.dithering(Dithering::None);
   algo.quantize(quant);
-  BOOST_TEST(algo.quantize().level() == quant.level());
-  BOOST_TEST(algo.quantize().isAbsolute() == quant.isAbsolute());
+  BOOST_TEST(algo.quantize().level().value() == quant.level().value());
+  BOOST_TEST(algo.quantize().level().type() == Factor::Type::Absolute);
   BOOST_TEST(algo.quantize().hasLossyInt() == quant.hasLossyInt());
   BOOST_TEST((algo.quantize().dithering() == quant.dithering()));
 }
@@ -155,16 +144,16 @@ BOOST_AUTO_TEST_CASE(hcompress_test) {
   HCompress algo(shape);
 
   // check default hcompress params values:
-  BOOST_TEST(algo.scale().factor() == 0.f);
-  BOOST_TEST(algo.scale().isAbsolute() == false);
+  BOOST_TEST(algo.scale().value() == 0.f);
+  BOOST_TEST(algo.scale().type() == Factor::Type::None);
   BOOST_TEST(algo.isSmooth() == false);
 
   // setters & getters:
-  Scale scale = Scale::absolute(5.f);
+  Factor scale = Factor::absolute(5.f);
   algo.scale(scale);
   algo.enableSmoothing();
-  BOOST_TEST(algo.scale().factor() == 5.f);
-  BOOST_TEST(algo.scale().isAbsolute() == true);
+  BOOST_TEST(algo.scale().value() == 5.f);
+  BOOST_TEST(algo.scale().type() == Factor::Type::Absolute);
   BOOST_TEST(algo.isSmooth() == true);
 }
 
@@ -204,7 +193,7 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Pos
   float actualQlevel;
   fits_get_quantize_level(fptr, &actualQlevel, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get quantize level");
-  BOOST_TEST(actualQlevel == algo.quantize().level());
+  BOOST_TEST(actualQlevel == algo.quantize().level().value());
 }
 
 // specific to the None algo
@@ -263,7 +252,8 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   float actualScale;
   fits_get_hcomp_scale(fptr, &actualScale, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get hcompress scale");
-  BOOST_TEST(actualScale == (algo.scale().isAbsolute() ? -algo.scale().factor() : algo.scale().factor()));
+  BOOST_TEST(
+      actualScale == ((algo.scale().type() == Factor::Type::Absolute) ? -algo.scale().value() : algo.scale().value()));
 
   // verify smoothing:
   int actualSmooth;
