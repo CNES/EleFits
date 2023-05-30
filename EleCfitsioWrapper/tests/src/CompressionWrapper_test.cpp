@@ -60,6 +60,13 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
 
   quant.dithering(Dithering::EveryPixel);
   BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
+
+  // verify that chaining setters works:
+  quant.level(Factor::none()).enableLossyInt().dithering(Dithering::None);
+  BOOST_TEST(quant.level().value() == zeroLevel);
+  BOOST_TEST(quant.level().type() == Factor::Type::None);
+  BOOST_TEST(quant.hasLossyInt() == true);
+  BOOST_TEST((quant.dithering() == Dithering::None));
 }
 
 BOOST_AUTO_TEST_CASE(factor_test) {

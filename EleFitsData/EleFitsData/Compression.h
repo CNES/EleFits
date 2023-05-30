@@ -64,15 +64,15 @@ public:
    * An absolute factor will set globally the quantize level to the given value.
    * A none Factor disables lossy compression of integer data.
    */
-  void level(Factor level);
+  Quantization& level(Factor level);
 
   /**
    * @brief Set the dithering method for the quantization.
    */
-  void dithering(Dithering);
+  Quantization& dithering(Dithering);
 
-  void enableLossyInt();
-  void disableLossyInt();
+  Quantization& enableLossyInt();
+  Quantization& disableLossyInt();
 
   /**
    * @brief Get the quantize level

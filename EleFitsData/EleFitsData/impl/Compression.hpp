@@ -66,20 +66,24 @@ Quantization::Quantization() : m_level(Factor::none()), m_dithering(Dithering::E
 //   m_level = qlevel;
 // }
 
-void Quantization::level(Factor level) {
+Quantization& Quantization::level(Factor level) {
   m_level = std::move(level);
+  return *this;
 }
 
-void Quantization::dithering(Dithering dither) {
+Quantization& Quantization::dithering(Dithering dither) {
   m_dithering = std::move(dither);
+  return *this;
 }
 
-void Quantization::enableLossyInt() {
+Quantization& Quantization::enableLossyInt() {
   m_lossyInt = true;
+  return *this;
 }
 
-void Quantization::disableLossyInt() {
+Quantization& Quantization::disableLossyInt() {
   m_lossyInt = false;
+  return *this;
 }
 
 const Factor& Quantization::level() const {
