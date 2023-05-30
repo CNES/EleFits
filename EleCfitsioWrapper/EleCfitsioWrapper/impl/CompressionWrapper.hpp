@@ -25,8 +25,8 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
-// function to factorize quantification for all floating-point algorithms
-void setQuantize(fitsfile* fptr, const Euclid::Fits::Compression::Quantification& quant) {
+// function to factorize quantization for all floating-point algorithms
+void setQuantize(fitsfile* fptr, const Euclid::Fits::Compression::Quantization& quant) {
 
   int status = 0;
 

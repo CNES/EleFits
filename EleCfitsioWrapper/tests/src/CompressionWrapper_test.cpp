@@ -7,6 +7,9 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
 
+// FIXME: Elefitsdata/Compression.h and EleCfitsioWrapper/CompressionWrapper.h are both tested here
+// because Compression.h cannot be imported alone
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(Compression_test)
@@ -16,9 +19,9 @@ BOOST_AUTO_TEST_SUITE(Compression_test)
 using namespace Euclid::Fits::Compression;
 using namespace Euclid::Fits;
 
-BOOST_AUTO_TEST_CASE(quantification_test) {
+BOOST_AUTO_TEST_CASE(quantization_test) {
 
-  Quantification quant;
+  Quantization quant;
 
   // default values:
   BOOST_TEST(quant.level() == 0.f);
@@ -26,7 +29,7 @@ BOOST_AUTO_TEST_CASE(quantification_test) {
   BOOST_TEST(quant.hasLossyInt() == false);
   BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
 
-  // setting quantification level:
+  // setting quantization level:
   const float positiveLevel = 5.f;
   const float zeroLevel = 0.f;
   const float negativeLevel = -5.f;
@@ -103,14 +106,14 @@ void testAlgoMixinParameters(const Position<2>& shape) {
   // verify shape of algo is correctly stored at construction
   BOOST_TEST((algo.shape() == shape));
 
-  // check default quantification values:
+  // check default quantization values:
   BOOST_TEST(algo.quantize().level() == 0.f); // FIXME: may be changed depending on algorithm (float algos)
   BOOST_TEST(algo.quantize().isAbsolute() == false);
   BOOST_TEST(algo.quantize().hasLossyInt() == false);
   BOOST_TEST((algo.quantize().dithering() == Dithering::EveryPixel));
 
-  // set/get quantification:
-  Quantification quant;
+  // set/get quantization:
+  Quantization quant;
   quant.absoluteLevel(5.f);
   quant.enableLossyInt();
   quant.dithering(Dithering::None);
@@ -197,7 +200,7 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Pos
   BOOST_TEST(actualShape[0] = shape.data()[0]);
   BOOST_TEST(actualShape[1] = shape.data()[1]);
 
-  // verify quantification level:
+  // verify quantization level:
   float actualQlevel;
   fits_get_quantize_level(fptr, &actualQlevel, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get quantize level");

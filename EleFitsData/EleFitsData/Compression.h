@@ -15,7 +15,7 @@ namespace Fits {
 namespace Compression {
 
 /**
- * @brief Dithering methods for quantification.
+ * @brief Dithering methods for quantization.
  */
 enum class Dithering {
   None, ///< Do not dither any pixel
@@ -24,16 +24,16 @@ enum class Dithering {
 };
 
 /**
- * @brief Quantification of floating-types for FloatAlgo
+ * @brief Quantization of floating-types for FloatAlgo
  * FIXME: add dither_offset
 */
-class Quantification {
+class Quantization {
 
 public:
   /**
-   * @brief Create quantification with default parameters
+   * @brief Create quantization with default parameters
    */
-  Quantification();
+  Quantization();
 
   /**
    * @brief Set globally the quantize level to the given value.
@@ -50,7 +50,7 @@ public:
   void relativeLevel(float qlevel);
 
   /**
-   * @brief Set the dithering method for the quantification.
+   * @brief Set the dithering method for the quantization.
    */
   void dithering(Dithering);
 
@@ -70,14 +70,14 @@ public:
   bool isAbsolute() const;
 
   /**
-   * @brief Get the dithering method for the quantification.
+   * @brief Get the dithering method for the quantization.
    */
   Dithering dithering() const;
 
   bool hasLossyInt() const;
 
 private:
-  // Quantification(float qlevel);
+  // Quantization(float qlevel);
 
   float m_level;
   Dithering m_dithering;
@@ -157,9 +157,9 @@ public:
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
-  void quantize(Quantification quantize);
+  void quantize(Quantization quantize);
   const Position<N>& shape() const;
-  const Quantification& quantize() const;
+  const Quantization& quantize() const;
 
 protected:
   void compress(void* fptr) const final;
@@ -176,9 +176,9 @@ private:
   Position<N> m_shape;
 
   /**
-   * @brief Stores all parameters concerning quantification for floating-point algorithms
+   * @brief Stores all parameters concerning quantization for floating-point algorithms
    */
-  Quantification m_quantize;
+  Quantization m_quantize;
 };
 
 /**

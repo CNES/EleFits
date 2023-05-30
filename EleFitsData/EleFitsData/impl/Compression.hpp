@@ -12,9 +12,9 @@ namespace Fits {
 namespace Compression {
 
 // TODO still have to verify default values for dithering and lossyInt
-Quantification::Quantification() : m_level(0.f), m_dithering(Dithering::EveryPixel), m_lossyInt(false) {}
+Quantization::Quantization() : m_level(0.f), m_dithering(Dithering::EveryPixel), m_lossyInt(false) {}
 
-void Quantification::absoluteLevel(float qlevel) {
+void Quantization::absoluteLevel(float qlevel) {
 
   if (qlevel < 0.f)
     throw FitsError("Absolute quantize level out of supported bounds");
@@ -22,7 +22,7 @@ void Quantification::absoluteLevel(float qlevel) {
   m_level = -qlevel; // absoluteness stored internally as negative value like in cfitsio
 }
 
-void Quantification::relativeLevel(float qlevel) {
+void Quantization::relativeLevel(float qlevel) {
 
   if (qlevel < 0.f)
     throw FitsError("Relative quantize level out of supported bounds");
@@ -30,31 +30,31 @@ void Quantification::relativeLevel(float qlevel) {
   m_level = qlevel;
 }
 
-void Quantification::dithering(Dithering dither) {
+void Quantization::dithering(Dithering dither) {
   m_dithering = std::move(dither);
 }
 
-void Quantification::enableLossyInt() {
+void Quantization::enableLossyInt() {
   m_lossyInt = true;
 }
 
-void Quantification::disableLossyInt() {
+void Quantization::disableLossyInt() {
   m_lossyInt = false;
 }
 
-float Quantification::level() const {
+float Quantization::level() const {
   return std::abs(m_level);
 }
 
-bool Quantification::isAbsolute() const {
+bool Quantization::isAbsolute() const {
   return m_level < 0.f;
 }
 
-Dithering Quantification::dithering() const {
+Dithering Quantization::dithering() const {
   return m_dithering;
 }
 
-bool Quantification::hasLossyInt() const {
+bool Quantization::hasLossyInt() const {
   return m_lossyInt;
 }
 
@@ -85,12 +85,12 @@ bool Scale::isAbsolute() const {
 }
 
 template <long N, typename TDerived>
-AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantize(Quantification()) {
+AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantize(Quantization()) {
   static_assert(N >= 0 and N <= 6, "N must be positive and less or equal to 6");
 }
 
 template <long N, typename TDerived>
-void AlgoMixin<N, TDerived>::quantize(Quantification quantize) {
+void AlgoMixin<N, TDerived>::quantize(Quantization quantize) {
   m_quantize = std::move(quantize);
 }
 
@@ -100,7 +100,7 @@ const Position<N>& AlgoMixin<N, TDerived>::shape() const {
 }
 
 template <long N, typename TDerived>
-const Quantification& AlgoMixin<N, TDerived>::quantize() const {
+const Quantization& AlgoMixin<N, TDerived>::quantize() const {
   return m_quantize;
 }
 
