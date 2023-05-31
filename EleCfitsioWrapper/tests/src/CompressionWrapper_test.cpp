@@ -95,6 +95,18 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   BOOST_TEST(quant.level().type() == Compression::Factor::Type::Relative);
   BOOST_TEST(quant.hasLossyInt() == true);
   BOOST_TEST((quant.dithering() == Compression::Dithering::None));
+
+  // testing == operator:
+  Compression::Quantization q1, q2, q3, q4, q5;
+  q1.level(Compression::Factor::absolute(3.f)).enableLossyInt().dithering(Compression::Dithering::EveryPixel);
+  q2.level(Compression::Factor::absolute(3.f)).enableLossyInt().dithering(Compression::Dithering::EveryPixel);
+  q3.level(Compression::Factor::absolute(4.f)).enableLossyInt().dithering(Compression::Dithering::EveryPixel);
+  q4.level(Compression::Factor::absolute(3.f)).disableLossyInt().dithering(Compression::Dithering::EveryPixel);
+  q5.level(Compression::Factor::absolute(3.f)).enableLossyInt().dithering(Compression::Dithering::None);
+  BOOST_TEST((q1 == q2));
+  BOOST_TEST(not(q1 == q3));
+  BOOST_TEST(not(q1 == q4));
+  BOOST_TEST(not(q1 == q5));
 }
 
 template <typename TAlgo>
@@ -106,10 +118,12 @@ void testAlgoMixinParameters(const Position<2>& shape) {
   BOOST_TEST((algo.shape() == shape));
 
   // check default quantization values:
-  BOOST_TEST(algo.quantize().level().value() == 0.f); // FIXME: may be changed depending on algorithm (float algos)
-  BOOST_TEST(algo.quantize().level().type() == Compression::Factor::Type::None);
-  BOOST_TEST(algo.quantize().hasLossyInt() == false);
-  BOOST_TEST((algo.quantize().dithering() == Compression::Dithering::EveryPixel));
+  BOOST_TEST(
+      (algo.quantize() ==
+       Compression::Quantization()
+           .level(Compression::Factor::none()) // FIXME: may be changed depending on algorithm (float algos)
+           .disableLossyInt()
+           .dithering(Compression::Dithering::EveryPixel)));
 
   // set/get quantization:
   Compression::Quantization quant;
@@ -117,10 +131,7 @@ void testAlgoMixinParameters(const Position<2>& shape) {
   quant.enableLossyInt();
   quant.dithering(Compression::Dithering::None);
   algo.quantize(quant);
-  BOOST_TEST(algo.quantize().level().value() == quant.level().value());
-  BOOST_TEST(algo.quantize().level().type() == Compression::Factor::Type::Absolute);
-  BOOST_TEST(algo.quantize().hasLossyInt() == quant.hasLossyInt());
-  BOOST_TEST((algo.quantize().dithering() == quant.dithering()));
+  BOOST_TEST((algo.quantize() == quant));
 }
 
 // specific to the None algo
