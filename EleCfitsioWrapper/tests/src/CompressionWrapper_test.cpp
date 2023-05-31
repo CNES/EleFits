@@ -16,7 +16,6 @@ BOOST_AUTO_TEST_SUITE(Compression_test)
 
 //-----------------------------------------------------------------------------
 
-using namespace Euclid::Fits::Compression;
 using namespace Euclid::Fits;
 
 BOOST_AUTO_TEST_CASE(factor_test) {
@@ -25,29 +24,29 @@ BOOST_AUTO_TEST_CASE(factor_test) {
   const float zeroFactor = 0.f;
   const float negativeFactor = -5.f;
 
-  const Factor none_f = Factor::none();
+  const Compression::Factor none_f = Compression::Factor::none();
   BOOST_TEST(none_f.value() == zeroFactor);
-  BOOST_TEST(none_f.type() == Factor::Type::None);
+  BOOST_TEST(none_f.type() == Compression::Factor::Type::None);
 
-  const Factor absolute_f = Factor::absolute(positiveFactor);
-  BOOST_CHECK_THROW(Factor::absolute(zeroFactor), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Factor::absolute(negativeFactor), Euclid::Fits::FitsError);
+  const Compression::Factor absolute_f = Compression::Factor::absolute(positiveFactor);
+  BOOST_CHECK_THROW(Compression::Factor::absolute(zeroFactor), Euclid::Fits::FitsError);
+  BOOST_CHECK_THROW(Compression::Factor::absolute(negativeFactor), Euclid::Fits::FitsError);
 
   BOOST_TEST(absolute_f.value() == positiveFactor);
-  BOOST_TEST(absolute_f.type() == Factor::Type::Absolute);
+  BOOST_TEST(absolute_f.type() == Compression::Factor::Type::Absolute);
 
-  const Factor relative_f = Factor::relative(positiveFactor);
-  BOOST_CHECK_THROW(Factor::relative(zeroFactor), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Factor::relative(negativeFactor), Euclid::Fits::FitsError);
+  const Compression::Factor relative_f = Compression::Factor::relative(positiveFactor);
+  BOOST_CHECK_THROW(Compression::Factor::relative(zeroFactor), Euclid::Fits::FitsError);
+  BOOST_CHECK_THROW(Compression::Factor::relative(negativeFactor), Euclid::Fits::FitsError);
 
   BOOST_TEST(relative_f.value() == positiveFactor);
-  BOOST_TEST(relative_f.type() == Factor::Type::Relative);
+  BOOST_TEST(relative_f.type() == Compression::Factor::Type::Relative);
 
   // testing == operator:
-  const Factor f1 = Factor::relative(5.f);
-  const Factor f2 = Factor::relative(5.f);
-  const Factor f3 = Factor::absolute(5.f);
-  const Factor f4 = Factor::relative(4.f);
+  const Compression::Factor f1 = Compression::Factor::relative(5.f);
+  const Compression::Factor f2 = Compression::Factor::relative(5.f);
+  const Compression::Factor f3 = Compression::Factor::absolute(5.f);
+  const Compression::Factor f4 = Compression::Factor::relative(4.f);
   BOOST_TEST((f1 == f2));
   BOOST_TEST(not(f1 == f3));
   BOOST_TEST(not(f1 == f4));
@@ -55,24 +54,24 @@ BOOST_AUTO_TEST_CASE(factor_test) {
 
 BOOST_AUTO_TEST_CASE(quantization_test) {
 
-  Quantization quant;
+  Compression::Quantization quant;
 
   // default values:
-  BOOST_TEST((quant.level() == Factor::none()));
+  BOOST_TEST((quant.level() == Compression::Factor::none()));
   BOOST_TEST(quant.hasLossyInt() == false);
-  BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
+  BOOST_TEST((quant.dithering() == Compression::Dithering::EveryPixel));
 
   // setting quantization level:
   const float positiveLevel = 5.f;
 
-  quant.level(Factor::absolute(positiveLevel));
-  BOOST_TEST((quant.level() == Factor::absolute(positiveLevel)));
+  quant.level(Compression::Factor::absolute(positiveLevel));
+  BOOST_TEST((quant.level() == Compression::Factor::absolute(positiveLevel)));
 
-  quant.level(Factor::relative(positiveLevel));
-  BOOST_TEST((quant.level() == Factor::relative(positiveLevel)));
+  quant.level(Compression::Factor::relative(positiveLevel));
+  BOOST_TEST((quant.level() == Compression::Factor::relative(positiveLevel)));
 
-  quant.level(Factor::none());
-  BOOST_TEST((quant.level() == Factor::none()));
+  quant.level(Compression::Factor::none());
+  BOOST_TEST((quant.level() == Compression::Factor::none()));
 
   // turning on/off lossyInt:
   quant.enableLossyInt();
@@ -81,21 +80,21 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   BOOST_TEST(quant.hasLossyInt() == false);
 
   // setting dithering:
-  quant.dithering(Dithering::None);
-  BOOST_TEST((quant.dithering() == Dithering::None));
+  quant.dithering(Compression::Dithering::None);
+  BOOST_TEST((quant.dithering() == Compression::Dithering::None));
 
-  quant.dithering(Dithering::NonZeroPixel);
-  BOOST_TEST((quant.dithering() == Dithering::NonZeroPixel));
+  quant.dithering(Compression::Dithering::NonZeroPixel);
+  BOOST_TEST((quant.dithering() == Compression::Dithering::NonZeroPixel));
 
-  quant.dithering(Dithering::EveryPixel);
-  BOOST_TEST((quant.dithering() == Dithering::EveryPixel));
+  quant.dithering(Compression::Dithering::EveryPixel);
+  BOOST_TEST((quant.dithering() == Compression::Dithering::EveryPixel));
 
   // verify that chaining setters works:
-  quant.level(Factor::relative(positiveLevel)).enableLossyInt().dithering(Dithering::None);
+  quant.level(Compression::Factor::relative(positiveLevel)).enableLossyInt().dithering(Compression::Dithering::None);
   BOOST_TEST(quant.level().value() == positiveLevel);
-  BOOST_TEST(quant.level().type() == Factor::Type::Relative);
+  BOOST_TEST(quant.level().type() == Compression::Factor::Type::Relative);
   BOOST_TEST(quant.hasLossyInt() == true);
-  BOOST_TEST((quant.dithering() == Dithering::None));
+  BOOST_TEST((quant.dithering() == Compression::Dithering::None));
 }
 
 template <typename TAlgo>
@@ -108,18 +107,18 @@ void testAlgoMixinParameters(const Position<2>& shape) {
 
   // check default quantization values:
   BOOST_TEST(algo.quantize().level().value() == 0.f); // FIXME: may be changed depending on algorithm (float algos)
-  BOOST_TEST(algo.quantize().level().type() == Factor::Type::None);
+  BOOST_TEST(algo.quantize().level().type() == Compression::Factor::Type::None);
   BOOST_TEST(algo.quantize().hasLossyInt() == false);
-  BOOST_TEST((algo.quantize().dithering() == Dithering::EveryPixel));
+  BOOST_TEST((algo.quantize().dithering() == Compression::Dithering::EveryPixel));
 
   // set/get quantization:
-  Quantization quant;
-  quant.level(Factor::absolute(5.f));
+  Compression::Quantization quant;
+  quant.level(Compression::Factor::absolute(5.f));
   quant.enableLossyInt();
-  quant.dithering(Dithering::None);
+  quant.dithering(Compression::Dithering::None);
   algo.quantize(quant);
   BOOST_TEST(algo.quantize().level().value() == quant.level().value());
-  BOOST_TEST(algo.quantize().level().type() == Factor::Type::Absolute);
+  BOOST_TEST(algo.quantize().level().type() == Compression::Factor::Type::Absolute);
   BOOST_TEST(algo.quantize().hasLossyInt() == quant.hasLossyInt());
   BOOST_TEST((algo.quantize().dithering() == quant.dithering()));
 }
@@ -135,12 +134,12 @@ void testAlgoMixinParameters() {
 }
 
 #define FOREACH_ALGO_2DIMS(MACRO, SHAPE, NDIM) \
-  MACRO<None>(); \
-  MACRO<Rice<NDIM>>(SHAPE); \
-  MACRO<HCompress>(SHAPE); \
-  MACRO<Plio<NDIM>>(SHAPE); \
-  MACRO<Gzip<NDIM>>(SHAPE); \
-  MACRO<ShuffledGzip<NDIM>>(SHAPE);
+  MACRO<Compression::None>(); \
+  MACRO<Compression::Rice<NDIM>>(SHAPE); \
+  MACRO<Compression::HCompress>(SHAPE); \
+  MACRO<Compression::Plio<NDIM>>(SHAPE); \
+  MACRO<Compression::Gzip<NDIM>>(SHAPE); \
+  MACRO<Compression::ShuffledGzip<NDIM>>(SHAPE);
 
 BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
@@ -152,19 +151,19 @@ BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 BOOST_AUTO_TEST_CASE(hcompress_test) {
 
   const Position<2>& shape {300, 200};
-  HCompress algo(shape);
+  Compression::HCompress algo(shape);
 
   // check default hcompress params values:
   BOOST_TEST(algo.scale().value() == 0.f);
-  BOOST_TEST(algo.scale().type() == Factor::Type::None);
+  BOOST_TEST(algo.scale().type() == Compression::Factor::Type::None);
   BOOST_TEST(algo.isSmooth() == false);
 
   // setters & getters:
-  Factor scale = Factor::absolute(5.f);
+  Compression::Factor scale = Compression::Factor::absolute(5.f);
   algo.scale(scale);
   algo.enableSmoothing();
   BOOST_TEST(algo.scale().value() == 5.f);
-  BOOST_TEST(algo.scale().type() == Factor::Type::Absolute);
+  BOOST_TEST(algo.scale().type() == Compression::Factor::Type::Absolute);
   BOOST_TEST(algo.isSmooth() == true);
 }
 
@@ -176,8 +175,7 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-using namespace Euclid::Fits::Compression;
-using namespace Euclid::Cfitsio::Compression;
+using namespace Euclid;
 
 template <typename TAlgo>
 void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Position<2>& shape) {
@@ -185,7 +183,7 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Pos
   int status = 0;
 
   TAlgo algo(shape);
-  compress(fptr, algo);
+  Cfitsio::Compression::compress(fptr, algo);
 
   // verify the correct compression algo is set:
   int actualComptype;
@@ -214,7 +212,7 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
   int status = 0;
 
   TAlgo algo;
-  compress(fptr, algo);
+  Cfitsio::Compression::compress(fptr, algo);
 
   // verify the correct compression algo is set:
   int actualComptype;
@@ -224,12 +222,12 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
 }
 
 #define FOREACH_ALGO_2DIMS_COMPRESS(MACRO, FPTR, SHAPE, NDIM) \
-  MACRO<None>(FPTR, NULL); \
-  MACRO<Rice<NDIM>>(FPTR, RICE_1, SHAPE); \
-  MACRO<HCompress>(FPTR, HCOMPRESS_1, SHAPE); \
-  MACRO<Plio<NDIM>>(FPTR, PLIO_1, SHAPE); \
-  MACRO<Gzip<NDIM>>(FPTR, GZIP_1, SHAPE); \
-  MACRO<ShuffledGzip<NDIM>>(FPTR, GZIP_2, SHAPE);
+  MACRO<Fits::Compression::None>(FPTR, NULL); \
+  MACRO<Fits::Compression::Rice<NDIM>>(FPTR, RICE_1, SHAPE); \
+  MACRO<Fits::Compression::HCompress>(FPTR, HCOMPRESS_1, SHAPE); \
+  MACRO<Fits::Compression::Plio<NDIM>>(FPTR, PLIO_1, SHAPE); \
+  MACRO<Fits::Compression::Gzip<NDIM>>(FPTR, GZIP_1, SHAPE); \
+  MACRO<Fits::Compression::ShuffledGzip<NDIM>>(FPTR, GZIP_2, SHAPE);
 
 BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 
@@ -256,15 +254,18 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
 
   const Euclid::Fits::Position<2>& shape {300, 200};
 
-  HCompress algo(shape);
-  compress(fptr, algo);
+  Fits::Compression::HCompress algo(shape);
+  Cfitsio::Compression::compress(fptr, algo);
 
   // verify scale factor:
   float actualScale;
   fits_get_hcomp_scale(fptr, &actualScale, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get hcompress scale");
   BOOST_TEST(
-      actualScale == ((algo.scale().type() == Factor::Type::Absolute) ? -algo.scale().value() : algo.scale().value()));
+      actualScale ==
+      ((algo.scale().type() == Fits::Compression::Factor::Type::Absolute) ?
+           -algo.scale().value() :
+           algo.scale().value()));
 
   // verify smoothing:
   int actualSmooth;
