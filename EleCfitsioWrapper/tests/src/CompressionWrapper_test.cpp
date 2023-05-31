@@ -65,11 +65,8 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   // setting quantization level:
   const float positiveLevel = 5.f;
 
-  // FIXME: Float comparison error ?
-  // quant.level(Factor::absolute(positiveLevel));
-  // BOOST_TEST((quant.level().value() == Factor::absolute(positiveLevel).value()));
-  // BOOST_TEST((quant.level().type() == Factor::absolute(positiveLevel).type()));
-  // BOOST_TEST((quant.level() == Factor::absolute(positiveLevel)));
+  quant.level(Factor::absolute(positiveLevel));
+  BOOST_TEST((quant.level() == Factor::absolute(positiveLevel)));
 
   quant.level(Factor::relative(positiveLevel));
   BOOST_TEST((quant.level() == Factor::relative(positiveLevel)));

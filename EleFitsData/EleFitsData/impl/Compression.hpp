@@ -48,7 +48,7 @@ float Factor::value() const {
 }
 
 inline bool Factor::operator==(const Factor& f2) const {
-  return (m_value == f2.value()) and (this->type() == f2.type());
+  return (m_value == f2.m_value) and (this->type() == f2.type());
 }
 
 // TODO still have to verify default values for dithering and lossyInt
