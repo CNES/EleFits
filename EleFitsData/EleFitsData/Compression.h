@@ -103,7 +103,7 @@ private:
  */
 class Algo {
 
-  friend class ImageHdu;
+  friend class MefFile;
 
 public:
   Algo() = default;
@@ -126,6 +126,8 @@ protected:
  */
 template <long N, typename TDerived>
 class AlgoMixin : Algo {
+
+  friend class MefFile;
 
 public:
   ELEFITS_VIRTUAL_DTOR(AlgoMixin)
