@@ -8,8 +8,8 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
 
-// FIXME: Elefitsdata/Compression.h and EleCfitsioWrapper/CompressionWrapper.h are both tested here
-// because Compression.h cannot be imported alone
+// FIXME: Elefitsdata/Compression.h and EleCfitsioWrapper/CompressionWrapper.h are
+// currently both tested here because Compression.h cannot be imported alone.
 
 //-----------------------------------------------------------------------------
 
@@ -110,9 +110,13 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   BOOST_TEST(not(q1 == q5));
 }
 
-template <typename TAlgo>
-void testAlgoMixinParameters(const Position<2>& shape) {
+template <typename TAlgo, long NDim>
+void testAlgoMixinParameters() {
 
+  Position<NDim> shape;
+  for (int i = 0; i < NDim; i++) {
+    shape[i] = 300;
+  }
   TAlgo algo(shape);
 
   // verify shape of algo is correctly stored at construction
@@ -145,19 +149,43 @@ void testAlgoMixinParameters() {
   BOOST_TEST((algo.shape() == Position<0>()));
 }
 
-#define FOREACH_ALGO_2DIMS(MACRO, SHAPE, NDIM) \
-  MACRO<Compression::None>(); \
-  MACRO<Compression::Rice<NDIM>>(SHAPE); \
-  MACRO<Compression::HCompress>(SHAPE); \
-  MACRO<Compression::Plio<NDIM>>(SHAPE); \
-  MACRO<Compression::Gzip<NDIM>>(SHAPE); \
-  MACRO<Compression::ShuffledGzip<NDIM>>(SHAPE);
-
 BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
-  const int ndim = 2;
-  const Position<ndim>& shape {300, 200};
-  FOREACH_ALGO_2DIMS(testAlgoMixinParameters, shape, ndim);
+  testAlgoMixinParameters<Compression::None>();
+
+  testAlgoMixinParameters<Compression::Rice<0>, 0>();
+  testAlgoMixinParameters<Compression::Rice<1>, 1>();
+  testAlgoMixinParameters<Compression::Rice<2>, 2>();
+  testAlgoMixinParameters<Compression::Rice<3>, 3>();
+  testAlgoMixinParameters<Compression::Rice<4>, 4>();
+  testAlgoMixinParameters<Compression::Rice<5>, 5>();
+  testAlgoMixinParameters<Compression::Rice<6>, 6>();
+
+  testAlgoMixinParameters<Compression::HCompress, 2>();
+
+  testAlgoMixinParameters<Compression::Plio<0>, 0>();
+  testAlgoMixinParameters<Compression::Plio<1>, 1>();
+  testAlgoMixinParameters<Compression::Plio<2>, 2>();
+  testAlgoMixinParameters<Compression::Plio<3>, 3>();
+  testAlgoMixinParameters<Compression::Plio<4>, 4>();
+  testAlgoMixinParameters<Compression::Plio<5>, 5>();
+  testAlgoMixinParameters<Compression::Plio<6>, 6>();
+
+  testAlgoMixinParameters<Compression::Gzip<0>, 0>();
+  testAlgoMixinParameters<Compression::Gzip<1>, 1>();
+  testAlgoMixinParameters<Compression::Gzip<2>, 2>();
+  testAlgoMixinParameters<Compression::Gzip<3>, 3>();
+  testAlgoMixinParameters<Compression::Gzip<4>, 4>();
+  testAlgoMixinParameters<Compression::Gzip<5>, 5>();
+  testAlgoMixinParameters<Compression::Gzip<6>, 6>();
+
+  testAlgoMixinParameters<Compression::ShuffledGzip<0>, 0>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<1>, 1>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<2>, 2>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<3>, 3>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<4>, 4>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<5>, 5>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<6>, 6>();
 }
 
 BOOST_AUTO_TEST_CASE(hcompress_test) {
@@ -187,10 +215,15 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 
 using namespace Euclid;
 
-template <typename TAlgo>
-void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Position<2>& shape) {
+template <typename TAlgo, long NDim>
+void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
 
   int status = 0;
+
+  Euclid::Fits::Position<NDim> shape;
+  for (int i = 0; i < NDim; i++) {
+    shape[i] = 300;
+  }
 
   TAlgo algo(shape);
   Cfitsio::Compression::compress(fptr, algo);
@@ -201,10 +234,11 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype, const Euclid::Fits::Pos
   BOOST_TEST(actualComptype == comptype);
 
   // verify tile size:
-  long actualShape[2];
-  fits_get_tile_dim(fptr, 2, actualShape, &status);
-  BOOST_TEST(actualShape[0] = shape.data()[0]);
-  BOOST_TEST(actualShape[1] = shape.data()[1]);
+  long actualShape[NDim];
+  fits_get_tile_dim(fptr, NDim, actualShape, &status);
+  for (int i = 0; i < NDim; i++) {
+    BOOST_TEST(actualShape[i] = shape.data()[i]);
+  }
 
   // verify quantization level:
   float actualQlevel;
@@ -227,21 +261,46 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
   BOOST_TEST(actualComptype == comptype);
 }
 
-#define FOREACH_ALGO_2DIMS_COMPRESS(MACRO, FPTR, SHAPE, NDIM) \
-  MACRO<Fits::Compression::None>(FPTR, NULL); \
-  MACRO<Fits::Compression::Rice<NDIM>>(FPTR, RICE_1, SHAPE); \
-  MACRO<Fits::Compression::HCompress>(FPTR, HCOMPRESS_1, SHAPE); \
-  MACRO<Fits::Compression::Plio<NDIM>>(FPTR, PLIO_1, SHAPE); \
-  MACRO<Fits::Compression::Gzip<NDIM>>(FPTR, GZIP_1, SHAPE); \
-  MACRO<Fits::Compression::ShuffledGzip<NDIM>>(FPTR, GZIP_2, SHAPE);
-
 BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 
   Euclid::Fits::Test::MinimalFile file;
 
-  const int ndim = 2;
-  const Euclid::Fits::Position<ndim>& shape {300, 200};
-  FOREACH_ALGO_2DIMS_COMPRESS(testAlgoMixinCompress, file.fptr, shape, ndim);
+  testAlgoMixinCompress<Fits::Compression::None>(file.fptr, NULL);
+
+  testAlgoMixinCompress<Fits::Compression::Rice<0>, 0>(file.fptr, RICE_1);
+  testAlgoMixinCompress<Fits::Compression::Rice<1>, 1>(file.fptr, RICE_1);
+  testAlgoMixinCompress<Fits::Compression::Rice<2>, 2>(file.fptr, RICE_1);
+  testAlgoMixinCompress<Fits::Compression::Rice<3>, 3>(file.fptr, RICE_1);
+  testAlgoMixinCompress<Fits::Compression::Rice<4>, 4>(file.fptr, RICE_1);
+  testAlgoMixinCompress<Fits::Compression::Rice<5>, 5>(file.fptr, RICE_1);
+  testAlgoMixinCompress<Fits::Compression::Rice<6>, 6>(file.fptr, RICE_1);
+
+  //  HCompress only supports 2dim compression
+  testAlgoMixinCompress<Fits::Compression::HCompress, 2>(file.fptr, HCOMPRESS_1);
+
+  testAlgoMixinCompress<Fits::Compression::Plio<0>, 0>(file.fptr, PLIO_1);
+  testAlgoMixinCompress<Fits::Compression::Plio<1>, 1>(file.fptr, PLIO_1);
+  testAlgoMixinCompress<Fits::Compression::Plio<2>, 2>(file.fptr, PLIO_1);
+  testAlgoMixinCompress<Fits::Compression::Plio<3>, 3>(file.fptr, PLIO_1);
+  testAlgoMixinCompress<Fits::Compression::Plio<4>, 4>(file.fptr, PLIO_1);
+  testAlgoMixinCompress<Fits::Compression::Plio<5>, 5>(file.fptr, PLIO_1);
+  testAlgoMixinCompress<Fits::Compression::Plio<6>, 6>(file.fptr, PLIO_1);
+
+  testAlgoMixinCompress<Fits::Compression::Gzip<0>, 0>(file.fptr, GZIP_1);
+  testAlgoMixinCompress<Fits::Compression::Gzip<1>, 1>(file.fptr, GZIP_1);
+  testAlgoMixinCompress<Fits::Compression::Gzip<2>, 2>(file.fptr, GZIP_1);
+  testAlgoMixinCompress<Fits::Compression::Gzip<3>, 3>(file.fptr, GZIP_1);
+  testAlgoMixinCompress<Fits::Compression::Gzip<4>, 4>(file.fptr, GZIP_1);
+  testAlgoMixinCompress<Fits::Compression::Gzip<5>, 5>(file.fptr, GZIP_1);
+  testAlgoMixinCompress<Fits::Compression::Gzip<6>, 6>(file.fptr, GZIP_1);
+
+  testAlgoMixinCompress<Fits::Compression::ShuffledGzip<0>, 0>(file.fptr, GZIP_2);
+  testAlgoMixinCompress<Fits::Compression::ShuffledGzip<1>, 1>(file.fptr, GZIP_2);
+  testAlgoMixinCompress<Fits::Compression::ShuffledGzip<2>, 2>(file.fptr, GZIP_2);
+  testAlgoMixinCompress<Fits::Compression::ShuffledGzip<3>, 3>(file.fptr, GZIP_2);
+  testAlgoMixinCompress<Fits::Compression::ShuffledGzip<4>, 4>(file.fptr, GZIP_2);
+  testAlgoMixinCompress<Fits::Compression::ShuffledGzip<5>, 5>(file.fptr, GZIP_2);
+  testAlgoMixinCompress<Fits::Compression::ShuffledGzip<6>, 6>(file.fptr, GZIP_2);
 }
 
 BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
@@ -267,10 +326,6 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   int actualSmooth;
   fits_get_hcomp_smooth(file.fptr, &actualSmooth, &status);
   BOOST_TEST(actualSmooth == algo.isSmooth());
-
-  // FIXME: No fitsfile close() because with it the test crashes ?
-  // fits_close_file(fptr, &status);
-  // Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot close file");
 }
 
 //-----------------------------------------------------------------------------

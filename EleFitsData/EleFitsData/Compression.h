@@ -30,7 +30,6 @@ public:
   Factor::Type type() const;
   float value() const;
 
-  // FIXME: properly compare floats here
   inline bool operator==(const Factor& f2) const;
 
 private:
@@ -50,6 +49,7 @@ enum class Dithering {
 
 /**
  * @brief Quantization of floating-types for FloatAlgo
+ * TODO: add multi argument constructor
  * FIXME: add dither_offset
 */
 class Quantization {
@@ -99,7 +99,7 @@ private:
 
 /**
  * @brief Base class for compression algorithms.
- * FIXME: friend class to remove or change depending on who will handle compress()
+ * FIXME: friend class to be removed or changed depending on who will handle compress()
  */
 class Algo {
 

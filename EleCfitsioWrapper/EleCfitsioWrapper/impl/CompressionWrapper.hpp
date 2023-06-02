@@ -69,8 +69,6 @@ void setQuantize(fitsfile* fptr, const Euclid::Fits::Compression::Quantization& 
 
 void compress(fitsfile* fptr, const Euclid::Fits::Compression::None&) {
 
-  // FIXME: just call fits_unset_compression_request() which resets everything instead ?
-
   int status = 0;
   fits_set_compression_type(fptr, NULL, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to None");
