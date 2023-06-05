@@ -12,6 +12,9 @@
 
 namespace Euclid {
 namespace Fits {
+
+class MefFile; // necessary for friend class declaration in Algo & AlgoMixin
+
 namespace Compression {
 
 class Factor {
@@ -103,7 +106,7 @@ private:
  */
 class Algo {
 
-  friend class MefFile;
+  friend class Euclid::Fits::MefFile;
 
 public:
   Algo() = default;
@@ -127,7 +130,7 @@ protected:
 template <long N, typename TDerived>
 class AlgoMixin : Algo {
 
-  friend class MefFile;
+  friend class Euclid::Fits::MefFile;
 
 public:
   ELEFITS_VIRTUAL_DTOR(AlgoMixin)
