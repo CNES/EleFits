@@ -17,7 +17,7 @@ namespace Compression {
 /**
  * @brief Set the compression algorithm to None.
  */
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo);
+inline void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo);
 
 /**
  * @brief Set the compression algorithm to Rice.
@@ -28,7 +28,7 @@ void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo);
 /**
  * @brief Set the compression algorithm to HCompress.
  */
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress& algo);
+inline void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress& algo);
 
 /**
  * @brief Set the compression algorithm to Plio.

@@ -48,7 +48,7 @@ void addGenericImageFromType(Fits::MefFile& f, std::string typeName, std::string
   logger.info("- Adding Image with type " + typeName);
 
   if (not areCompatible<T>(algoName))
-    f.startCompressing(Fits::Compression::None());
+    f.stopCompressing();
 
   // Create and add Raster with type T as extension:
   Fits::VecRaster<T, 2> raster2D({cols, rows});
@@ -127,9 +127,9 @@ public:
     } else {
 
       logger.info("# UNKNOWN COMPRESSION TYPE");
-      logger.info("(setting to None)");
+      logger.info("(disabling compression)");
       Fits::Compression::None algo;
-      f.startCompressing(algo);
+      f.stopCompressing();
     }
 
     // Adds an image for each Raster type to the mef file

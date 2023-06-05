@@ -26,17 +26,17 @@ public:
     Relative
   };
 
-  static Factor none();
-  static Factor absolute(float value);
-  static Factor relative(float value);
+  static inline Factor none();
+  static inline Factor absolute(float value);
+  static inline Factor relative(float value);
 
-  Factor::Type type() const;
-  float value() const;
+  inline Factor::Type type() const;
+  inline float value() const;
 
   inline bool operator==(const Factor& f2) const;
 
 private:
-  Factor(float value);
+  inline Factor(float value);
 
   float m_value;
 };
@@ -61,7 +61,7 @@ public:
   /**
    * @brief Create quantization with default parameters
    */
-  Quantization();
+  inline Quantization();
 
   /**
    * @brief Set tile-wise the quantize level
@@ -70,27 +70,27 @@ public:
    * An absolute factor will set globally the quantize level to the given value.
    * A none Factor disables lossy compression of integer data.
    */
-  Quantization& level(Factor level);
+  inline Quantization& level(Factor level);
 
   /**
    * @brief Set the dithering method for the quantization.
    */
-  Quantization& dithering(Dithering);
+  inline Quantization& dithering(Dithering);
 
-  Quantization& enableLossyInt();
-  Quantization& disableLossyInt();
+  inline Quantization& enableLossyInt();
+  inline Quantization& disableLossyInt();
 
   /**
    * @brief Get the quantize level
    */
-  const Factor& level() const;
+  inline const Factor& level() const;
 
   /**
    * @brief Get the dithering method for the quantization.
    */
-  Dithering dithering() const;
+  inline Dithering dithering() const;
 
-  bool hasLossyInt() const;
+  inline bool hasLossyInt() const;
 
   inline bool operator==(const Quantization& q2) const;
 
@@ -137,17 +137,17 @@ public:
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
-  void quantize(Quantization quantize);
-  const Position<N>& shape() const;
-  const Quantization& quantize() const;
+  inline void quantize(Quantization quantize);
+  inline const Position<N>& shape() const;
+  inline const Quantization& quantize() const;
 
 protected:
-  void compress(void* fptr) const final;
+  inline void compress(void* fptr) const final;
 
   /**
    * @brief Constructor.
    */
-  AlgoMixin<N, TDerived>(Position<N> shape);
+  inline AlgoMixin<N, TDerived>(Position<N> shape);
 
 private:
   /**
@@ -171,7 +171,7 @@ public:
   ELEFITS_COPYABLE(None)
   ELEFITS_MOVABLE(None)
 
-  None();
+  inline None();
 };
 
 /**
@@ -198,7 +198,7 @@ public:
   ELEFITS_COPYABLE(HCompress)
   ELEFITS_MOVABLE(HCompress)
 
-  HCompress(const Position<2> shape);
+  inline HCompress(const Position<2> shape);
 
   /**
    * @brief Set tile-wise scaling for hcompress.
@@ -207,13 +207,13 @@ public:
    * An absolute factor will set globally the scaling factor to the given value.
    * A none factor disables scaling.
    */
-  void scale(Factor scale);
+  inline void scale(Factor scale);
 
-  void enableSmoothing();
-  void disableSmoothing();
+  inline void enableSmoothing();
+  inline void disableSmoothing();
 
-  const Factor& scale() const;
-  bool isSmooth() const;
+  inline const Factor& scale() const;
+  inline bool isSmooth() const;
 
 private:
   Factor m_scale;
