@@ -32,7 +32,7 @@ bool areCompatible(std::string algoName) {
   // PLIO_1 must be used for integer image types with values between 0 and 2^24.
   if (algoName == "PLIO") {
 
-    // TODO this actually seems to depend on the size of images !!
+    // FIXME: this actually seems to depend on the size of images !!
     if (typeid(T) == typeid(std::uint32_t))
       return false;
   }

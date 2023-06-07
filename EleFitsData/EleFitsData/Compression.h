@@ -128,7 +128,7 @@ protected:
  * FIXME: add boolean attribute huge for fits_set_huge_hdu
  */
 template <long N, typename TDerived>
-class AlgoMixin : Algo {
+class AlgoMixin : public Algo {
 
   friend class Euclid::Fits::MefFile;
 
