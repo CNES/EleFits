@@ -25,6 +25,23 @@ namespace Euclid {
 namespace Cfitsio {
 namespace Compression {
 
+bool isCompressing(fitsfile* fptr) {
+
+  int currentAlgo;
+  int status = 0;
+
+  fits_get_compression_type(fptr, &currentAlgo, &status);
+  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
+
+  return currentAlgo != NULL;
+}
+
+void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr) { /*TODO*/
+}
+
+void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr) { /*TODO*/
+}
+
 // function to factorize quantization for all floating-point algorithms
 inline void setQuantize(fitsfile* fptr, const Euclid::Fits::Compression::Quantization& quant) {
 

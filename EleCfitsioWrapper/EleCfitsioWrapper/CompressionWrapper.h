@@ -15,6 +15,21 @@ namespace Cfitsio {
 namespace Compression {
 
 /**
+ * @brief Know if the cfitsio image compression is turned on.
+ */
+inline bool isCompressing(fitsfile* fptr);
+
+/**
+ * @brief Copies everything as binary in the current hdu of src and appends it to dst.
+ */
+inline void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr);
+
+/**
+ * @brief Same as binaryCopy, but takes context into account and only copies non-structural data.
+ */
+inline void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr);
+
+/**
  * @brief Set the compression algorithm to None.
  */
 inline void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo);

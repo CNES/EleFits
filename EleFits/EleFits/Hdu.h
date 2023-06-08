@@ -18,6 +18,8 @@
 namespace Euclid {
 namespace Fits {
 
+class MefFile; // necessary for friend class declaration in Hdu
+
 /**
  * @ingroup header_handlers
  * @brief Base class for `ImageHdu` and `BintableHdu`.
@@ -28,6 +30,10 @@ namespace Fits {
  * (refer to the documentation of the `Header` class).
  */
 class Hdu {
+
+  // A non-parent MefFile can be wanting to access the fitsfile of the parent MefFile of the hdu
+  // FIXME: approach might be changed in the future
+  friend class Euclid::Fits::MefFile;
 
 public:
   /// @cond

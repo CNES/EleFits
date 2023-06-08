@@ -9,6 +9,7 @@
 #include "EleFits/FitsFile.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageHdu.h"
+#include "EleFitsData/Compression.h"
 
 #include <memory>
 #include <vector>
@@ -217,6 +218,29 @@ public:
    */
   template <typename TRaster>
   const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster);
+
+  /**
+   * @brief Set the compression algorithm to be used when writting new image extensions.
+  */
+  inline void startCompressing(const Fits::Compression::Algo& algo);
+
+  /**
+  * @brief Disable compression when writting new image extensions.
+  */
+  inline void stopCompressing();
+
+  /**
+   * @brief Know if the image compression is turned on.
+  */
+  inline bool isCompressing() const;
+
+  /**
+  * @brief Append a copy of a given hdu.
+  * @details
+  * If the copied hdu is an ImageHdu, the current compression algorithm of the Meffile will be applied.
+  * If the copied hdu is a Primary, as its appended as a none primary, current compression will also be applied.
+  */
+  inline void appendCopy(const Hdu& hdu);
 
   /**
    * @brief Append a binary table extension with empty data unit (0 rows and possibly 0 columns).

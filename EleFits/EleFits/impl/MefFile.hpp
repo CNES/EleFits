@@ -4,6 +4,7 @@
 
 #if defined(_ELEFITS_MEFFILE_IMPL) || defined(CHECK_QUALITY)
 
+#include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleFits/MefFile.h"
 
@@ -111,6 +112,42 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
   // FIXME Is it more efficient to (1) create dataless HDU and then resize and fill data,
   // or (2) first write data and then shift it to accommodate records?
   // For now, we cannot resize uint64 images (CFITSIO bug), so option (1) cannot be tested.
+}
+
+void MefFile::startCompressing(const Fits::Compression::Algo& algo) {
+  algo.compress(m_fptr);
+}
+
+void MefFile::stopCompressing() {
+  startCompressing(Fits::Compression::None());
+}
+
+bool MefFile::isCompressing() const {
+  return Cfitsio::Compression::isCompressing(m_fptr);
+}
+
+void MefFile::appendCopy(const Hdu& hdu) {
+
+  if (hdu.matches(Fits::HduCategory::Primary) or hdu.matches(Fits::HduCategory::RawImage)) {
+
+    if (isCompressing()) {
+      Cfitsio::Compression::binaryCopy(hdu.m_fptr, m_fptr);
+    } else {
+      Cfitsio::Compression::contextualCopy(hdu.m_fptr, m_fptr);
+    }
+
+  } else if (hdu.matches(Fits::HduCategory::Bintable)) {
+
+    Cfitsio::Compression::binaryCopy(hdu.m_fptr, m_fptr);
+
+  } else if (hdu.matches(Fits::HduCategory::CompressedImageExt)) {
+
+    Cfitsio::Compression::contextualCopy(hdu.m_fptr, m_fptr);
+
+  } else {
+
+    throw FitsError("Hdu category not supported for copy");
+  }
 }
 
 template <typename... TInfos>

@@ -127,6 +127,24 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   BOOST_TEST(actualSmooth == algo.isSmooth());
 }
 
+BOOST_AUTO_TEST_CASE(iscompressing_test) {
+
+  Fits::Compression::None noneAlgo;
+  const Euclid::Fits::Position<2>& shape {300, 200};
+  Fits::Compression::HCompress algo(shape);
+
+  Euclid::Fits::Test::MinimalFile file;
+
+  Cfitsio::Compression::compress(file.fptr, noneAlgo);
+  BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == false);
+
+  Cfitsio::Compression::compress(file.fptr, algo);
+  BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == true);
+
+  Cfitsio::Compression::compress(file.fptr, noneAlgo);
+  BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == false);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()
