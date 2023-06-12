@@ -125,6 +125,7 @@ protected:
  * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM).
  * The value of N must therefore not exceed 6.
  * TODO: investigate how different tiling behaviours can be set at construction
+ * FIXME: add doc for tiling behaviour depending on shape given
  * FIXME: add boolean attribute huge for fits_set_huge_hdu
  */
 template <long N, typename TDerived>

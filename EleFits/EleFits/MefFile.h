@@ -240,7 +240,7 @@ public:
   * If the copied hdu is an ImageHdu, the current compression algorithm of the Meffile will be applied.
   * If the copied hdu is a Primary, as its appended as a none primary, current compression will also be applied.
   */
-  inline void appendCopy(const Hdu& hdu);
+  inline const Hdu& appendCopy(const Hdu& hdu);
 
   /**
    * @brief Append a binary table extension with empty data unit (0 rows and possibly 0 columns).
