@@ -128,7 +128,7 @@ bool MefFile::isCompressing() const {
 
 const Hdu& MefFile::appendCopy(const Hdu& hdu) {
 
-  // FIXME: currently not supporting compressed null images (can they exist)
+  // FIXME: currently not supporting compressed null images (can they exist ?)
   if (hdu.matches(Fits::HduCategory::Primary) or hdu.matches(Fits::HduCategory::RawImage)) {
 
     if (hdu.as<ImageHdu>().readSize() == 0) {

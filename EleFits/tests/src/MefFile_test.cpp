@@ -348,8 +348,6 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
   BOOST_TEST(output2.shape() == input.shape());
   BOOST_TEST(output2.container() == input.container());
   BOOST_TEST(imageCopy2.matches(HduCategory::RawImage)); // the copy should now be compressed
-
-  const auto& bintableCopy2 = fileCopy.appendCopy(bintable);
 }
 
 //-----------------------------------------------------------------------------

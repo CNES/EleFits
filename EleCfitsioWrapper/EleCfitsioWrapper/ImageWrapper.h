@@ -31,6 +31,11 @@ template <long N = 2>
 Fits::Position<N> readShape(fitsfile* fptr);
 
 /**
+ * @brief Know if the current image HDU is compressed
+*/
+inline bool isCompressedImage(fitsfile* fptr);
+
+/**
  * @brief Reshape the current image HDU.
  */
 template <typename T, long N = 2>

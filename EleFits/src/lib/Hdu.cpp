@@ -6,6 +6,7 @@
 
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleCfitsioWrapper/ImageWrapper.h"
 
 namespace Euclid {
 namespace Fits {
@@ -33,12 +34,23 @@ HduCategory Hdu::type() const {
 }
 
 HduCategory Hdu::readCategory() const {
+  touchThisHdu();
   HduCategory cat = m_type & m_status;
+
   if (m_cfitsioIndex == 1) {
     cat &= HduCategory::Primary;
   } else {
     cat &= HduCategory::Ext;
   }
+
+  if (m_type == HduCategory::Image) {
+    if (Cfitsio::ImageIo::isCompressedImage(m_fptr)) {
+      cat &= HduCategory::CompressedImageExt;
+    } else {
+      cat &= HduCategory::RawImage;
+    }
+  }
+
   return cat;
 }
 
