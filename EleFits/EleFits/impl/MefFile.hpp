@@ -6,6 +6,7 @@
 
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
+#include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleFits/MefFile.h"
 
 namespace Euclid {

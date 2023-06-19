@@ -2,6 +2,7 @@
 // This file is part of EleFits <github.com/CNES/EleFits>
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
+#include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleFits/FitsFileFixture.h"
 #include "EleFits/MefFile.h"
 #include "EleFitsData/TestRaster.h"
@@ -271,11 +272,7 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
 
   /* Empty Image in source MefFile */
   const auto& emptyImage = this->appendImageHeader("IMAGE", records);
-  // BOOST_TEST(emptyImage.readName() == "IMAGE");
-  // BOOST_TEST(emptyImage.readSize() == 0);
-  // BOOST_TEST(emptyImage.header().parse<int>("FOO").value == 3);
-  // BOOST_TEST(emptyImage.header().parse<int>("BAR").value == 41);
-  // BOOST_TEST(emptyImage.matches(HduCategory::RawImage));
+  BOOST_TEST(emptyImage.matches(HduCategory::RawImage));
 
   /* Random Image in source MefFile */
   Position<1> shape {10};
@@ -319,7 +316,6 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
   const auto output = imageCopy.as<ImageHdu>().raster().template read<double, 1>();
   BOOST_TEST(output.shape() == input.shape());
   BOOST_TEST(output.container() == input.container());
-
   BOOST_TEST(image.matches(HduCategory::RawImage));
 
   /* Copy bintable */
@@ -347,7 +343,34 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
   const auto output2 = imageCopy2.as<ImageHdu>().raster().template read<double, 1>();
   BOOST_TEST(output2.shape() == input.shape());
   BOOST_TEST(output2.container() == input.container());
-  BOOST_TEST(imageCopy2.matches(HduCategory::RawImage)); // the copy should now be compressed
+  BOOST_TEST(imageCopy2.matches(HduCategory::CompressedImageExt)); // the copy should now be compressed
+}
+
+// This tests the isCompressedImage function from the ImageWrapper
+BOOST_FIXTURE_TEST_CASE(isCompressedImage_test, Test::TemporaryMefFile) {
+
+  RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}}; // for images
+
+  Position<1> shape {10};
+  Test::RandomRaster<double, 1> raster(shape);
+
+  // turning compression on:
+  Compression::Gzip algo(-Position<6>::one());
+  this->startCompressing(algo);
+
+  // existing primary should still be uncompressed
+  BOOST_TEST(Euclid::Cfitsio::ImageIo::isCompressedImage(this->m_fptr) == false);
+
+  // added ext should be compressed
+  const auto& image2 = this->appendImage("SECOND", records, raster);
+  BOOST_TEST(Euclid::Cfitsio::ImageIo::isCompressedImage(this->m_fptr) == true);
+
+  // turning compression off
+  this->stopCompressing();
+
+  // added ext should not be compressed
+  const auto& image3 = this->appendImage("THIRD", records, raster);
+  BOOST_TEST(Euclid::Cfitsio::ImageIo::isCompressedImage(this->m_fptr) == false);
 }
 
 //-----------------------------------------------------------------------------

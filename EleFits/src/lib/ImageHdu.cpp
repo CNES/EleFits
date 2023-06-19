@@ -57,7 +57,11 @@ HduCategory ImageHdu::readCategory() const {
   } else {
     cat &= HduCategory::IntImage;
   }
-  cat &= HduCategory::RawImage; // TODO check compression when implemented
+  if (Cfitsio::ImageIo::isCompressedImage(m_fptr)) {
+    cat &= HduCategory::CompressedImageExt;
+  } else {
+    cat &= HduCategory::RawImage;
+  }
   return cat;
 }
 

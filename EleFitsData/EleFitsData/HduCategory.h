@@ -8,6 +8,7 @@
 #include "EleFitsData/FitsError.h"
 
 #include <functional> // function
+#include <string> // for debug printing
 #include <vector>
 
 namespace Euclid {
@@ -46,25 +47,23 @@ protected:
   /**
    * @brief Trinary values.
    */
-  enum class Trit
-  {
+  enum class Trit {
+    Unconstrained, ///< Unconstrained
     First, ///< First constrained option
-    Second, ///< Second constrained option
-    Unconstrained ///< Unconstrained
+    Second ///< Second constrained option
   };
 
   /**
    * @brief The positions of the trinary flags.
    */
-  enum class TritPosition
-  {
+  enum class TritPosition {
     PrimaryExt, ///< Primary / extension HDU
     MetadataData, ///< Metadata / data HDU
     ImageBintable, ///< Image / binary table HDU
     IntFloatImage, ///< Integer- / real-valued image
     RawCompressedImage, ///< Raw / compressed image
     UntouchedTouched, ///< Untouched / accessed HDU
-    ExisitedCreated, ///< Pre-existing / created HDU
+    ExistedCreated, ///< Pre-existing / created HDU
     ReadEdited, ///< Read / edited HDU
     TritCount ///< The number of Trits
   };
@@ -74,7 +73,10 @@ public:
    * @brief The exception thrown when trying to combine incompatible trits.
    */
   struct IncompatibleTrits : public FitsError {
-    IncompatibleTrits() : FitsError("Cannot combine incompatible trits.") {}
+    IncompatibleTrits(HduCategory::Trit lhs, HduCategory::Trit rhs) :
+        FitsError(
+            "Cannot combine incompatible trits (" + HduCategory::toString(lhs) + " and " + HduCategory::toString(rhs) +
+            ").") {}
   };
 
 protected:
@@ -141,6 +143,16 @@ public:
    */
   template <typename T>
   static HduCategory forClass();
+
+  /**
+   * @brief turns a Trit into an string (0 for Unconstrained, 1 for First, 2 for Second), only for debug purposes
+  */
+  static std::string toString(HduCategory::Trit);
+
+  /**
+   * @brief Used to print Trit values of HduCategory, only for debug purposes
+   */
+  std::string toString() const;
 
 protected:
   /**
