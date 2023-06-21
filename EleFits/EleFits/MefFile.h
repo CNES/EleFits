@@ -235,10 +235,11 @@ public:
   inline bool isCompressing() const;
 
   /**
-  * @brief Append a copy of a given hdu.
+  * @brief Append a copy of a given Hdu.
   * @details
-  * If the copied hdu is an ImageHdu, the current compression algorithm of the Meffile will be applied.
-  * If the copied hdu is a Primary, as its appended as a none primary, current compression will also be applied.
+  * If the copied Hdu is an ImageHdu, the current compression algorithm of the Meffile will be applied.
+  * If the copied Hdu is a Primary, as its appended as a none primary, current compression will also be applied.
+  * Does NOT support copying the Hdu to the SAME MefFile as the one it originates from.
   */
   inline const Hdu& appendCopy(const Hdu& hdu);
 

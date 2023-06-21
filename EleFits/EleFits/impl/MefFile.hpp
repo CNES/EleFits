@@ -132,25 +132,23 @@ const Hdu& MefFile::appendCopy(const Hdu& hdu) {
   // FIXME: currently not supporting compressed null images (can they exist ?)
   if (hdu.matches(Fits::HduCategory::Primary) or hdu.matches(Fits::HduCategory::RawImage)) {
 
-    if (hdu.as<ImageHdu>().readSize() == 0) {
-      Cfitsio::Compression::binaryCopy(hdu.m_fptr, m_fptr); // binary copy if image is empty
-    } else if (isCompressing()) {
-      Cfitsio::Compression::contextualCopy(hdu.m_fptr, m_fptr);
+    if (hdu.as<ImageHdu>().readSize() == 0 or not isCompressing()) {
+      Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr); // binary copy if image is empty or no compression applied
     } else {
-      Cfitsio::Compression::binaryCopy(hdu.m_fptr, m_fptr);
+      Cfitsio::HduAccess::contextualCopy(hdu.m_fptr, m_fptr);
     }
     const auto index = m_hdus.size();
     m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
 
   } else if (hdu.matches(Fits::HduCategory::Bintable)) {
 
-    Cfitsio::Compression::binaryCopy(hdu.m_fptr, m_fptr);
+    Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
     const auto index = m_hdus.size();
     m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
 
   } else if (hdu.matches(Fits::HduCategory::CompressedImageExt)) {
 
-    Cfitsio::Compression::contextualCopy(hdu.m_fptr, m_fptr);
+    Cfitsio::HduAccess::contextualCopy(hdu.m_fptr, m_fptr);
     const auto index = m_hdus.size();
     m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
 

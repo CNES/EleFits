@@ -269,35 +269,40 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
 
   Test::TemporaryMefFile fileCopy;
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}}; // for images
+  Compression::Gzip algo(-Position<6>::one());
+
+  /* Multi-column bintable in source MefFile */
+  const ColumnInfo<char> charInfo("CHAR");
+  const ColumnInfo<float> floatInfo("FLOAT");
+  const auto& bintable = this->appendBintableHeader("BINTABLE", records, charInfo, floatInfo);
 
   /* Empty Image in source MefFile */
-  const auto& emptyImage = this->appendImageHeader("IMAGE", records);
+  const auto& emptyImage = this->appendImageHeader("EMPTY", records);
   BOOST_TEST(emptyImage.matches(HduCategory::RawImage));
 
   /* Random Image in source MefFile */
   Position<1> shape {10};
   Test::RandomRaster<double, 1> raster(shape);
-  const auto& image = this->appendImage("ZERO", records, raster);
-  BOOST_TEST(image.readName() == "ZERO");
-  BOOST_TEST(image.readSize() == shapeSize(shape));
-  BOOST_TEST(image.readSize() == shapeSize(shape));
-  BOOST_TEST(image.header().template parse<int>("FOO").value == 3);
-  BOOST_TEST(image.header().template parse<int>("BAR").value == 41);
+  const auto& image = this->appendImage("IMAGE", records, raster);
   const auto input = image.raster().template read<double, 1>();
-  BOOST_TEST(input.shape() == shape);
-  BOOST_TEST(input.container() == raster.container());
+  BOOST_TEST(image.matches(HduCategory::RawImage));
 
-  /* Multi-column bintable in source MefFile */
-  const ColumnInfo<char> charInfo("CHAR");
-  const ColumnInfo<float> floatInfo("FLOAT");
-  const auto& bintable = this->appendBintableHeader("BINTABLE2", records, charInfo, floatInfo);
-  BOOST_TEST(bintable.readName() == "BINTABLE2");
-  BOOST_TEST(bintable.readRowCount() == 0);
-  BOOST_TEST(bintable.readColumnCount() == 2);
-  BOOST_TEST(bintable.columns().readName(0) == "CHAR");
-  BOOST_TEST(bintable.columns().readName(1) == "FLOAT");
-  BOOST_TEST(bintable.header().parse<int>("FOO").value == 3);
-  BOOST_TEST(bintable.header().parse<int>("BAR").value == 41);
+  /* Same Image in source but Compressed */
+  this->startCompressing(algo);
+  const auto& compImage = this->appendImage("ZIMAGE", records, raster);
+  BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
+
+  /* Copy bintable */
+  const auto& bintableCopy = fileCopy.appendCopy(bintable);
+  BOOST_TEST(bintableCopy.as<BintableHdu>().readName() == bintable.readName());
+  BOOST_TEST(bintableCopy.as<BintableHdu>().readRowCount() == bintable.readRowCount());
+  BOOST_TEST(bintableCopy.as<BintableHdu>().readColumnCount() == bintable.readColumnCount());
+  BOOST_TEST(bintableCopy.as<BintableHdu>().columns().readName(0) == bintable.columns().readName(0));
+  BOOST_TEST(bintableCopy.as<BintableHdu>().columns().readName(1) == bintable.columns().readName(1));
+  BOOST_TEST(
+      bintableCopy.as<BintableHdu>().header().parse<int>("FOO").value == bintable.header().parse<int>("FOO").value);
+  BOOST_TEST(
+      bintableCopy.as<BintableHdu>().header().parse<int>("BAR").value == bintable.header().parse<int>("BAR").value);
 
   /* Copy empty image */
   const auto& emptyCopy = fileCopy.appendCopy(emptyImage);
@@ -318,23 +323,8 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
   BOOST_TEST(output.container() == input.container());
   BOOST_TEST(image.matches(HduCategory::RawImage));
 
-  /* Copy bintable */
-  const auto& bintableCopy = fileCopy.appendCopy(bintable);
-  BOOST_TEST(bintableCopy.as<BintableHdu>().readName() == bintable.readName());
-  BOOST_TEST(bintableCopy.as<BintableHdu>().readRowCount() == bintable.readRowCount());
-  BOOST_TEST(bintableCopy.as<BintableHdu>().readColumnCount() == bintable.readColumnCount());
-  BOOST_TEST(bintableCopy.as<BintableHdu>().columns().readName(0) == bintable.columns().readName(0));
-  BOOST_TEST(bintableCopy.as<BintableHdu>().columns().readName(1) == bintable.columns().readName(1));
-  BOOST_TEST(
-      bintableCopy.as<BintableHdu>().header().parse<int>("FOO").value == bintable.header().parse<int>("FOO").value);
-  BOOST_TEST(
-      bintableCopy.as<BintableHdu>().header().parse<int>("BAR").value == bintable.header().parse<int>("BAR").value);
-
-  /* Turning Image Compression on */
-  Compression::Gzip algo(-Position<6>::one());
-  fileCopy.startCompressing(algo);
-
   /* Copy uncompressed to compressed */
+  fileCopy.startCompressing(algo);
   const auto& imageCopy2 = fileCopy.appendCopy(image);
   BOOST_TEST(imageCopy2.as<ImageHdu>().readName() == image.readName());
   BOOST_TEST(imageCopy2.as<ImageHdu>().readSize() == image.readSize());
@@ -344,6 +334,18 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
   BOOST_TEST(output2.shape() == input.shape());
   BOOST_TEST(output2.container() == input.container());
   BOOST_TEST(imageCopy2.matches(HduCategory::CompressedImageExt)); // the copy should now be compressed
+
+  /* Copy compressed to uncompressed */
+  fileCopy.stopCompressing();
+  const auto& imageCopy3 = fileCopy.appendCopy(compImage);
+  BOOST_TEST(imageCopy3.as<ImageHdu>().readName() == compImage.readName());
+  BOOST_TEST(imageCopy3.as<ImageHdu>().readSize() == compImage.readSize());
+  BOOST_TEST(imageCopy3.as<ImageHdu>().header().parse<int>("FOO").value == compImage.header().parse<int>("FOO").value);
+  BOOST_TEST(imageCopy3.as<ImageHdu>().header().parse<int>("BAR").value == compImage.header().parse<int>("BAR").value);
+  const auto output3 = imageCopy3.as<ImageHdu>().raster().template read<double, 1>();
+  BOOST_TEST(output3.shape() == input.shape());
+  BOOST_TEST(output3.container() == input.container());
+  BOOST_TEST(imageCopy3.matches(HduCategory::RawImage)); // the copy should now be uncompressed
 }
 
 // This tests the isCompressedImage function from the ImageWrapper
@@ -371,6 +373,10 @@ BOOST_FIXTURE_TEST_CASE(isCompressedImage_test, Test::TemporaryMefFile) {
   // added ext should not be compressed
   const auto& image3 = this->appendImage("THIRD", records, raster);
   BOOST_TEST(Euclid::Cfitsio::ImageIo::isCompressedImage(this->m_fptr) == false);
+
+  // disable unused variable warnings
+  (void)image2;
+  (void)image3;
 }
 
 //-----------------------------------------------------------------------------

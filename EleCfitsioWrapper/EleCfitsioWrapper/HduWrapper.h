@@ -153,6 +153,16 @@ template <typename TTuple, std::size_t size = std::tuple_size<TTuple>::value>
 void assignBintableExtension(fitsfile* fptr, const std::string& name, const TTuple& table);
 
 /**
+ * @brief Copies everything as binary in the current HDU of src and appends it to dst.
+ */
+void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr);
+
+/**
+ * @brief Same as binaryCopy, but takes context into account and only copies non-structural data.
+ */
+void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr);
+
+/**
  * @brief Delete the HDU at given index.
  */
 void deleteHdu(fitsfile* fptr, long index);
