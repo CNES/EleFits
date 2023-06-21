@@ -48,6 +48,8 @@ elements_add_executable(EleFitsRunBenchmark src/program/EleFitsRunBenchmark.cpp
 elements_add_executable(EleFitsRunLoopingBenchmark src/program/EleFitsRunLoopingBenchmark.cpp
                      INCLUDE_DIRS ElementsKernel EleFitsValidation
                      LINK_LIBRARIES ElementsKernel EleFitsValidation)
+elements_add_executable(CompressionRunBenchmark src/program/CompressionRunBenchmark.cpp
+                     LINK_LIBRARIES EleFitsValidation)
 
 #===============================================================================
 # Declare the Boost tests here
