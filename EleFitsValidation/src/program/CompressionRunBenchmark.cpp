@@ -5,6 +5,7 @@
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleFits/MefFile.h"
 #include "EleFitsUtils/ProgramOptions.h"
+#include "EleFitsValidation/Chronometer.h"
 #include "ElementsKernel/ProgramHeaders.h"
 
 #include <map>
@@ -48,8 +49,8 @@ public:
   // program options:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
     Fits::ProgramOptions options("Write mef with all supported image extensions.");
-    options.positional("input", value<std::string>()->default_value("/tmp/compression.fits"), "Input file");
-    options.positional("output", value<std::string>()->default_value("/tmp/compression.fits"), "Output file");
+    options.positional("input", value<std::string>(), "Input file");
+    options.positional("output", value<std::string>()->default_value("/tmp/compressionBenchmark.fits"), "Output file");
     options.named(
         "comptype",
         value<std::string>()->default_value("NONE"),
@@ -107,17 +108,27 @@ public:
       g.stopCompressing();
     }
 
+    Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
+
     // Copy without primary:
+    // chrono.start();
     // for (const auto& hdu : f.filter<Fits::Hdu>(Fits::HduCategory::Ext)) {
     //   g.appendCopy(hdu);
     // }
+    // chrono.stop();
 
     // Copy with primary (allows the primary to be compressed as well):
+    logger.info("# Compressing file..");
+    chrono.start();
     for (const auto& hdu : f) {
       g.appendCopy(hdu);
     }
+    chrono.stop();
 
-    logger.info("# File created");
+    double timeSec = chrono.mean() / 1000.0;
+
+    logger.info("# Compressed file created");
+    logger.info() << "# Time (in sec): " << timeSec;
 
     return ExitCode::OK;
   }
