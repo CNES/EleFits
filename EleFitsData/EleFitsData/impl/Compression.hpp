@@ -110,10 +110,20 @@ const Quantization& AlgoMixin<N, TDerived>::quantize() const {
   return m_quantize;
 }
 
+template <long N, typename TDerived>
+Position<N> AlgoMixin<N, TDerived>::rowWiseTiling() const {
+  return Position<6>({-1, 1, 1, 1, 1, 1}).slice<N>();
+}
+
 None::None() : AlgoMixin<0, None>(Position<0>()) {}
 
 template <long N>
+Rice<N>::Rice() : AlgoMixin<N, Rice<N>>(this->rowWiseTiling()) {}
+
+template <long N>
 Rice<N>::Rice(const Position<N> shape) : AlgoMixin<N, Rice<N>>(shape) {}
+
+HCompress::HCompress() : AlgoMixin<2, HCompress>(-Position<2>::one()), m_scale(Factor::none()), m_smooth(false) {}
 
 HCompress::HCompress(const Position<2> shape) :
     AlgoMixin<2, HCompress>(shape), m_scale(Factor::none()), m_smooth(false) {}
@@ -139,10 +149,19 @@ bool HCompress::isSmooth() const {
 }
 
 template <long N>
+Plio<N>::Plio() : AlgoMixin<N, Plio<N>>(this->rowWiseTiling()) {}
+
+template <long N>
 Plio<N>::Plio(const Position<N> shape) : AlgoMixin<N, Plio<N>>(shape) {}
 
 template <long N>
+Gzip<N>::Gzip() : AlgoMixin<N, Gzip<N>>(this->rowWiseTiling()) {}
+
+template <long N>
 Gzip<N>::Gzip(const Position<N> shape) : AlgoMixin<N, Gzip<N>>(shape) {}
+
+template <long N>
+ShuffledGzip<N>::ShuffledGzip() : AlgoMixin<N, ShuffledGzip<N>>(this->rowWiseTiling()) {}
 
 template <long N>
 ShuffledGzip<N>::ShuffledGzip(const Position<N> shape) : AlgoMixin<N, ShuffledGzip<N>>(shape) {}

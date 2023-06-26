@@ -124,8 +124,16 @@ protected:
  * Tiling shape is represented as a Position<N>.
  * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM).
  * The value of N must therefore not exceed 6.
+ * 
+ * Setting tiling policies: for each dimension;
+ * -1 means that the maximum number of pixel in this dimension will be used.
+ * n>0 means that the tiling will be of size n for this dimension.
+ * For instance:
+ * - a shape of -Fits::Position<N>::one() will create tiles of the maximum size (all pixels in 6 dimensions)
+ * - a shape of Fits::Position<6>::({-1,1,1,1,1,1}) will create row-wise tiling
+ * - a shape of Fits::Position<6>::({30,20,10,1,1,1}) will create a tiling of size 30 x 20 x 10
  * TODO: investigate how different tiling behaviours can be set at construction
- * FIXME: add doc for tiling behaviour depending on shape given
+ * FIXME: variable tiling dims with N=-1 currently not supported
  * FIXME: add boolean attribute huge for fits_set_huge_hdu
  */
 template <long N, typename TDerived>
@@ -146,9 +154,11 @@ protected:
   inline void compress(void* fptr) const final;
 
   /**
-   * @brief Constructor.
+   * @brief Constructor (specify the compression tiling shape).
    */
   inline AlgoMixin<N, TDerived>(Position<N> shape);
+
+  inline Position<N> rowWiseTiling() const;
 
 private:
   /**
@@ -178,7 +188,7 @@ public:
 /**
  * @brief The Rice algorithm.
  */
-template <long N>
+template <long N = 6>
 class Rice : public AlgoMixin<N, Rice<N>> {
 
 public:
@@ -186,6 +196,14 @@ public:
   ELEFITS_COPYABLE(Rice)
   ELEFITS_MOVABLE(Rice)
 
+  /**
+   * @brief Default constructor (tiling set to row-wise)
+   */
+  Rice();
+  /**
+   * @brief Construct by scpecifying compression tiling
+   * @see AlgoMixin
+   */
   Rice(const Position<N> shape);
 };
 
@@ -199,6 +217,14 @@ public:
   ELEFITS_COPYABLE(HCompress)
   ELEFITS_MOVABLE(HCompress)
 
+  /**
+   * @brief Default constructor (using the whole 2D images as tiling)
+   */
+  inline HCompress();
+  /**
+   * @brief Construct by scpecifying 2D compression tiling
+   * @see AlgoMixin
+   */
   inline HCompress(const Position<2> shape);
 
   /**
@@ -224,7 +250,7 @@ private:
 /**
  * @brief The Plio algorithm.
  */
-template <long N>
+template <long N = 6>
 class Plio : public AlgoMixin<N, Plio<N>> {
 
 public:
@@ -232,13 +258,21 @@ public:
   ELEFITS_COPYABLE(Plio)
   ELEFITS_MOVABLE(Plio)
 
+  /**
+   * @brief Default constructor (tiling set to row-wise)
+   */
+  Plio();
+  /**
+   * @brief Construct by scpecifying compression tiling
+   * @see AlgoMixin
+   */
   Plio(const Position<N> shape);
 };
 
 /**
  * @brief The Gzip algorithm.
  */
-template <long N>
+template <long N = 6>
 class Gzip : public AlgoMixin<N, Gzip<N>> {
 
 public:
@@ -246,14 +280,21 @@ public:
   ELEFITS_COPYABLE(Gzip)
   ELEFITS_MOVABLE(Gzip)
 
+  /**
+   * @brief Default constructor (tiling set to row-wise)
+   */
+  Gzip();
+  /**
+   * @brief Construct by scpecifying compression tiling
+   * @see AlgoMixin
+   */
   Gzip(const Position<N> shape);
 };
 
 /**
- * @brief The Gzip algorithm applied to "shuffled" pixel values,
- * where most significant bytes of each value appear first.
+ * @brief The Gzip algorithm applied to "shuffled" pixel values, where most significant bytes of each value appear first.
  */
-template <long N>
+template <long N = 6>
 class ShuffledGzip : public AlgoMixin<N, ShuffledGzip<N>> {
 
 public:
@@ -261,6 +302,14 @@ public:
   ELEFITS_COPYABLE(ShuffledGzip)
   ELEFITS_MOVABLE(ShuffledGzip)
 
+  /**
+   * @brief Default constructor (tiling set to row-wise)
+   */
+  ShuffledGzip();
+  /**
+   * @brief Construct by scpecifying compression tiling
+   * @see AlgoMixin
+   */
   ShuffledGzip(const Position<N> shape);
 };
 
