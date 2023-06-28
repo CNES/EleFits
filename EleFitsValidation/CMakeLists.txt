@@ -100,6 +100,7 @@ elements_install_scripts()
 #                             ElementsExamples.PythonProgramExample)
 #===============================================================================
 elements_add_python_program(EleFitsRunBatchBenchmark EleFitsValidation.EleFitsRunBatchBenchmark)
+elements_add_python_program(EleFitsRunBatchCompressionBenchmark EleFitsValidation.EleFitsRunBatchCompressionBenchmark)
 
 #===============================================================================
 # Add the elements_install_conf_files macro

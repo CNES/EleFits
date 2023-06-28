@@ -6,6 +6,7 @@
 #include "EleFits/MefFile.h"
 #include "EleFitsUtils/ProgramOptions.h"
 #include "EleFitsValidation/Chronometer.h"
+#include "EleFitsValidation/CsvAppender.h"
 #include "ElementsKernel/ProgramHeaders.h"
 
 #include <map>
@@ -15,7 +16,7 @@ using boost::program_options::value;
 
 using namespace Euclid;
 
-static Elements::Logging logger = Elements::Logging::getLogger("CompressionRunBenchmark");
+static Elements::Logging logger = Elements::Logging::getLogger("RunCompressionBenchmark");
 
 template <typename T>
 bool areCompatible(std::string algoName) {
@@ -52,10 +53,10 @@ public:
     options.positional("input", value<std::string>(), "Input file");
     options.positional("output", value<std::string>()->default_value("/tmp/compressionBenchmark.fits"), "Output file");
     options.named(
-        "comptype",
+        "case",
         value<std::string>()->default_value("NONE"),
         "Compression algorithm name (NONE/RICE/HCOMPRESS/PLIO/GZIP/SHUFFLEDGZIP)");
-
+    options.named("res", value<std::string>()->default_value("/tmp/compressionBenchmark.csv"), "Output result file");
     return options.asPair();
   }
 
@@ -63,7 +64,12 @@ public:
 
     const auto filenameSrc = args["input"].as<std::string>();
     const auto filenameDst = args["output"].as<std::string>();
-    const auto algoName = args["comptype"].as<std::string>();
+    const auto algoName = args["case"].as<std::string>();
+    const auto results = args["res"].as<std::string>();
+
+    Fits::Validation::CsvAppender writer(
+        results,
+        {"Filename", "File size (bytes)", "HDU count", "Comptype", "Compressed size (bytes)", "Elapsed (ms)"});
 
     logger.info("# Creating FITS file");
 
@@ -109,6 +115,7 @@ public:
     }
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
+    int hduCounter = 0;
 
     // Copy without primary:
     // chrono.start();
@@ -122,13 +129,20 @@ public:
     chrono.start();
     for (const auto& hdu : f) {
       g.appendCopy(hdu);
+      hduCounter++;
     }
     chrono.stop();
 
-    double timeSec = chrono.mean() / 1000.0;
+    // {"Filename", "File size (bytes)", "HDU count", "Comptype", "Compressed size (bytes)", "Elapsed (ms)"}
+    writer.writeRow(
+        filenameSrc,
+        boost::filesystem::file_size(filenameSrc),
+        hduCounter,
+        algoName,
+        boost::filesystem::file_size(filenameDst),
+        chrono.mean());
 
     logger.info("# Compressed file created");
-    logger.info() << "# Time (in sec): " << timeSec;
 
     return ExitCode::OK;
   }

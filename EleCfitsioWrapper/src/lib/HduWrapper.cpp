@@ -6,6 +6,9 @@
 
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleCfitsioWrapper/ImageWrapper.h"
+#include "EleCfitsioWrapper/TypeWrapper.h"
+#include "EleFitsData/Raster.h"
 
 namespace Euclid {
 namespace Cfitsio {
@@ -137,7 +140,17 @@ void createMetadataExtension(fitsfile* fptr, const std::string& name) {
 void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
   int status = 0;
   fits_copy_hdu(srcFptr, dstFptr, 0, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot copy hdu");
+  Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot copy hdu");
+}
+
+#define ARE_SAME_TYPEID(type, name) \
+  if (typeid(type) == Cfitsio::ImageIo::readTypeid(fptr)) { \
+    return Cfitsio::TypeCode<type>::forImage(); \
+  }
+
+int readTypeCode(fitsfile* fptr) {
+  ELEFITS_FOREACH_RASTER_TYPE(ARE_SAME_TYPEID)
+  throw Fits::FitsError("Unrecognized datatype for Hdu copy.");
 }
 
 // FIXME: use CFitsioWrapper functions & abstractions for improved robustness
@@ -153,54 +166,32 @@ void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
     naxes[ii] = 1;
 
   fits_get_img_param(srcFptr, 9, &bitpix, &naxis, naxes, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot get img params");
+  Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot get img params");
   long totpix = naxes[0] * naxes[1] * naxes[2] * naxes[3] * naxes[4] * naxes[5] * naxes[6] * naxes[7] * naxes[8];
 
   // Explicitly create new image, to support compression
   fits_create_img(dstFptr, bitpix, naxis, naxes, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot create img");
+  Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot create img");
 
   // Copy all the user keywords (not the structural keywords)
   fits_get_hdrspace(srcFptr, &nkeys, NULL, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot get hdrspace");
+  Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot get hdrspace");
 
   for (ii = 1; ii <= nkeys; ii++) {
     fits_read_record(srcFptr, ii, card, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read record");
+    Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read record");
     if (fits_get_keyclass(card) > TYP_CMPRS_KEY)
       fits_write_record(dstFptr, card, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot write record");
+    Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot write record");
   }
 
-  switch (bitpix) {
-    case BYTE_IMG:
-      datatype = TBYTE;
-      break;
-    case SHORT_IMG:
-      datatype = TSHORT;
-      break;
-    case LONG_IMG:
-      datatype = TINT;
-      break;
-    case FLOAT_IMG:
-      datatype = TFLOAT;
-      break;
-    case DOUBLE_IMG:
-      datatype = TDOUBLE;
-      break;
-  }
+  datatype = readTypeCode(srcFptr);
 
   const int bytepix = std::abs(bitpix) / 8;
 
   const long npix = totpix;
 
-  // FIXME: No turning off for scaling ?
-  // Turn off any scaling so that we copy the raw pixel values
-  // double bscale = 1.0, bzero = 0.0;
-  // fits_set_bscale(srcFptr, bscale, bzero, &status);
-  // Euclid::Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot set bscale");
-  // fits_set_bscale(dstFptr, bscale, bzero, &status);
-  // Euclid::Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot set bscale");
+  // No scaling desabling required here, because all datatype (specifically unsigned types as well) are taken into account
 
   // Allocate memory for the entire image (use double type to force memory alignment)
   double* array = (double*)calloc(npix, bytepix);
