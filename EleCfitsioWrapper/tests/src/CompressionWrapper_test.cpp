@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 
   Euclid::Fits::Test::MinimalFile file;
 
-  testAlgoMixinCompress<Fits::Compression::None>(file.fptr, NULL);
+  testAlgoMixinCompress<Fits::Compression::None>(file.fptr, int(NULL));
 
   testAlgoMixinCompress<Fits::Compression::Rice<0>, 0>(file.fptr, RICE_1);
   testAlgoMixinCompress<Fits::Compression::Rice<1>, 1>(file.fptr, RICE_1);
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) {
 
   int defaultAlgo;
   fits_get_compression_type(file.fptr, &defaultAlgo, &status);
-  BOOST_TEST(defaultAlgo == NULL);
+  BOOST_TEST(defaultAlgo == int(NULL));
 
   long defaultTileDim[MAX_COMPRESS_DIM];
   fits_get_tile_dim(file.fptr, MAX_COMPRESS_DIM, defaultTileDim, &status);

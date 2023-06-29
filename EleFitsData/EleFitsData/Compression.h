@@ -146,19 +146,23 @@ public:
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
-  inline void quantize(Quantization quantize);
-  inline const Position<N>& shape() const;
-  inline const Quantization& quantize() const;
+  void quantize(Quantization quantize);
+  const Position<N>& shape() const;
+  const Quantization& quantize() const;
 
 protected:
-  inline void compress(void* fptr) const final;
+  void compress(void* fptr) const final;
+  // FIXME define the function here instead of in the wrapper
+  // The function is not used anyway, and this simplifies compilation
+  // => Change compress(fitsfile*, TDerived) into compress(void*, TDerived)
+  // or forward declare fitsfile
 
   /**
    * @brief Constructor (specify the compression tiling shape).
    */
-  inline AlgoMixin<N, TDerived>(Position<N> shape);
+  AlgoMixin<N, TDerived>(Position<N> shape);
 
-  inline Position<N> rowWiseTiling() const;
+  Position<N> rowWiseTiling() const;
 
 private:
   /**

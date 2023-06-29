@@ -8,6 +8,19 @@
 
 using namespace Euclid::Fits;
 
+namespace Euclid {
+namespace Fits {
+namespace Compression {
+
+// Dummy definition to please compiler, although the method is not used here
+template <long N, typename TDerived>
+void AlgoMixin<N, TDerived>::compress(void*) const {}
+// FIXME rm when the function is defined in Compression.hpp
+
+} // namespace Compression
+} // namespace Fits
+} // namespace Euclid
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE(Compression_test)

@@ -33,7 +33,7 @@ bool isCompressing(fitsfile* fptr) {
   fits_get_compression_type(fptr, &currentAlgo, &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
 
-  return currentAlgo != NULL;
+  return currentAlgo != int(NULL);
 }
 
 // function to factorize quantization for all floating-point algorithms
@@ -81,7 +81,7 @@ inline void setQuantize(fitsfile* fptr, const Euclid::Fits::Compression::Quantiz
 void compress(fitsfile* fptr, const Euclid::Fits::Compression::None&) {
 
   int status = 0;
-  fits_set_compression_type(fptr, NULL, &status);
+  fits_set_compression_type(fptr, int(NULL), &status);
   Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to None");
 }
 
