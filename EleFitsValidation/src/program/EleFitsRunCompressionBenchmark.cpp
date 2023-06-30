@@ -14,10 +14,31 @@
 #include <string>
 
 using boost::program_options::value;
+#include <boost/lexical_cast.hpp>
 
 using namespace Euclid;
 
 static Elements::Logging logger = Elements::Logging::getLogger("RunCompressionBenchmark");
+
+template <typename T>
+std::string join(const std::vector<T>& values, const std::string& sep = ",") {
+  const auto begin = values.begin() + 1; // values[0] is used as initial value of accumulator
+  const auto end = values.end();
+  const auto init = std::to_string(values[0]);
+  return std::accumulate(begin, end, init, [&](const std::string& a, T b) {
+    return a + sep + std::to_string(b);
+  });
+}
+
+template <typename T>
+std::string joinString(const std::vector<T>& values, const std::string& sep = ",") {
+  const auto begin = values.begin() + 1; // values[0] is used as initial value of accumulator
+  const auto end = values.end();
+  const auto init = values[0];
+  return std::accumulate(begin, end, init, [&](const std::string& a, T b) {
+    return a + sep + b;
+  });
+}
 
 // template <typename T>
 // bool areCompatible(std::string algoName) {
@@ -99,7 +120,7 @@ public:
 
     Fits::Validation::CsvAppender writer(
         results,
-        {"Filename", "File size (bytes)", "HDU count", "Comptype", "Compressed size (bytes)", "Elapsed (ms)"});
+        {"Filename", "File size (bytes)", "Compressed size (bytes)", "HDU count", "Comptypes", "Elapsed (ms)"});
 
     logger.info("# Creating FITS file");
 
@@ -112,6 +133,7 @@ public:
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
+    std::vector<std::string> actualAlgos;
 
     // Copy without primary:
     // chrono.start();
@@ -122,31 +144,40 @@ public:
 
     // Copy with primary (allows the primary to be compressed as well):
     logger.info("# Compressing file..");
-    chrono.start();
     for (const auto& hdu : f) {
 
       try {
+
+        chrono.start();
         g.appendCopy(hdu);
+        chrono.stop();
+        actualAlgos.push_back(algoName);
+
       } catch (const Cfitsio::CfitsioError&) {
+
         logger.info("# defaulting to Gzip for current Hdu");
         Fits::Compression::Gzip defaultAlgo;
         g.startCompressing(defaultAlgo);
+
+        chrono.start();
         g.appendCopy(hdu);
+        chrono.stop();
+        actualAlgos.push_back("GZIP");
+
         setCompressionFromName(g, algoName);
       }
 
       hduCounter++;
     }
-    chrono.stop();
 
-    // {"Filename", "File size (bytes)", "HDU count", "Comptype", "Compressed size (bytes)", "Elapsed (ms)"}
+    // {"Filename", "File size (bytes)", "Compressed size (bytes)", "HDU count", "Comptypes", "Elapsed (ms)"});
     writer.writeRow(
         filenameSrc,
         boost::filesystem::file_size(filenameSrc),
-        hduCounter,
-        algoName,
         boost::filesystem::file_size(filenameDst),
-        chrono.mean());
+        hduCounter,
+        joinString(actualAlgos),
+        join(chrono.increments()));
 
     logger.info("# Compressed file created");
 
