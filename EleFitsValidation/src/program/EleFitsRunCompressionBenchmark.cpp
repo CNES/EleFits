@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "EleCfitsioWrapper/CompressionWrapper.h"
+#include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleFits/MefFile.h"
 #include "EleFitsUtils/ProgramOptions.h"
 #include "EleFitsValidation/Chronometer.h"
@@ -18,27 +19,56 @@ using namespace Euclid;
 
 static Elements::Logging logger = Elements::Logging::getLogger("RunCompressionBenchmark");
 
-template <typename T>
-bool areCompatible(std::string algoName) {
+// template <typename T>
+// bool areCompatible(std::string algoName) {
 
-  if (algoName == "NONE")
-    return true;
+//   if (algoName == "NONE")
+//     return true;
 
-  // 64-bit integers are not supported by CFITSIO for compression
-  if (typeid(T) == typeid(std::int64_t) || (typeid(T) == typeid(std::uint64_t)))
-    return false;
+//   // 64-bit integers are not supported by CFITSIO for compression
+//   if (typeid(T) == typeid(std::int64_t) || (typeid(T) == typeid(std::uint64_t)))
+//     return false;
 
-  // PLIO_1 must be used for integer image types with values between 0 and 2^24.
-  if (algoName == "PLIO") {
+//   // PLIO_1 must be used for integer image types with values between 0 and 2^24.
+//   if (algoName == "PLIO") {
 
-    // FIXME: this actually seems to depend on the size of images !!
-    if (typeid(T) == typeid(std::uint32_t))
-      return false;
+//     // FIXME: this actually seems to depend on the size of images !!
+//     if (typeid(T) == typeid(std::uint32_t))
+//       return false;
+//   }
+
+//   // GZIP, SHUFFLEDGZIP and RICE are general purpose algorithms
+//   // TODO verify if HCOMPRESS (2D compression) works with any x-dimensional image or not
+//   return true;
+// }
+
+void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
+  if (algoName == "RICE") {
+    Fits::Compression::Rice algo;
+    g.startCompressing(algo);
+
+  } else if (algoName == "HCOMPRESS") {
+    Fits::Compression::HCompress algo;
+    g.startCompressing(algo);
+
+  } else if (algoName == "PLIO") {
+    Fits::Compression::Plio algo;
+    g.startCompressing(algo);
+
+  } else if (algoName == "GZIP") {
+    Fits::Compression::Gzip algo;
+    g.startCompressing(algo);
+
+  } else if (algoName == "SHUFFLEDGZIP") {
+    Fits::Compression::ShuffledGzip algo;
+    g.startCompressing(algo);
+
+  } else {
+    logger.info("# UNKNOWN COMPRESSION TYPE");
+    logger.info("(disabling compression)");
+    Fits::Compression::None algo;
+    g.stopCompressing();
   }
-
-  // GZIP, SHUFFLEDGZIP and RICE are general purpose algorithms
-  // TODO verify if HCOMPRESS (2D compression) works with any x-dimensional image or not
-  return true;
 }
 
 /*
@@ -55,7 +85,7 @@ public:
     options.named(
         "case",
         value<std::string>()->default_value("NONE"),
-        "Compression algorithm name (NONE/RICE/HCOMPRESS/PLIO/GZIP/SHUFFLEDGZIP)");
+        "Compression algorithm name (RICE/HCOMPRESS/PLIO/GZIP/SHUFFLEDGZIP)");
     options.named("res", value<std::string>()->default_value("/tmp/compressionBenchmark.csv"), "Output result file");
     return options.asPair();
   }
@@ -77,42 +107,8 @@ public:
     Fits::MefFile f(filenameSrc, Fits::FileMode::Read);
     Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
 
-    if (algoName == "NONE") {
-      logger.info("# setting compression to None");
-      Fits::Compression::None algo;
-      g.startCompressing(algo);
-
-    } else if (algoName == "RICE") {
-      logger.info("# setting compression to Rice");
-      Fits::Compression::Rice algo;
-      g.startCompressing(algo);
-
-    } else if (algoName == "HCOMPRESS") {
-      logger.info("# setting compression to Hcompress");
-      Fits::Compression::HCompress algo;
-      g.startCompressing(algo);
-
-    } else if (algoName == "PLIO") {
-      logger.info("# setting compression to Plio");
-      Fits::Compression::Plio algo;
-      g.startCompressing(algo);
-
-    } else if (algoName == "GZIP") {
-      logger.info("# setting compression to Gzip");
-      Fits::Compression::Gzip algo;
-      g.startCompressing(algo);
-
-    } else if (algoName == "SHUFFLEDGZIP") {
-      logger.info("# setting compression to ShuffledGzip");
-      Fits::Compression::ShuffledGzip algo;
-      g.startCompressing(algo);
-
-    } else {
-      logger.info("# UNKNOWN COMPRESSION TYPE");
-      logger.info("(disabling compression)");
-      Fits::Compression::None algo;
-      g.stopCompressing();
-    }
+    logger.info("# setting compression to " + algoName);
+    setCompressionFromName(g, algoName);
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
@@ -128,7 +124,17 @@ public:
     logger.info("# Compressing file..");
     chrono.start();
     for (const auto& hdu : f) {
-      g.appendCopy(hdu);
+
+      try {
+        g.appendCopy(hdu);
+      } catch (const Cfitsio::CfitsioError&) {
+        logger.info("# defaulting to Gzip for current Hdu");
+        Fits::Compression::Gzip defaultAlgo;
+        g.startCompressing(defaultAlgo);
+        g.appendCopy(hdu);
+        setCompressionFromName(g, algoName);
+      }
+
       hduCounter++;
     }
     chrono.stop();
