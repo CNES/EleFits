@@ -4,7 +4,9 @@
 
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
+#include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFits/MefFile.h"
+#include "EleFitsData/HduCategory.h"
 #include "EleFitsUtils/ProgramOptions.h"
 #include "EleFitsValidation/Chronometer.h"
 #include "EleFitsValidation/CsvAppender.h"
@@ -17,6 +19,10 @@ using boost::program_options::value;
 #include <boost/lexical_cast.hpp>
 
 using namespace Euclid;
+
+#define IF_TYPEID_MATCHES_RETURN_BITPIX(type, name) \
+  if (typeid(type) == hdu.readTypeid()) \
+    return Cfitsio::TypeCode<type>::forImage();
 
 static Elements::Logging logger = Elements::Logging::getLogger("RunCompressionBenchmark");
 
@@ -38,6 +44,11 @@ std::string joinString(const std::vector<T>& values, const std::string& sep = ",
   return std::accumulate(begin, end, init, [&](const std::string& a, T b) {
     return a + sep + b;
   });
+}
+
+int getBitpix(Fits::ImageHdu hdu) {
+  ELEFITS_FOREACH_RASTER_TYPE(IF_TYPEID_MATCHES_RETURN_BITPIX)
+  return 0;
 }
 
 // template <typename T>
@@ -120,7 +131,15 @@ public:
 
     Fits::Validation::CsvAppender writer(
         results,
-        {"Filename", "File size (bytes)", "Compressed size (bytes)", "HDU count", "Comptypes", "Elapsed (ms)"});
+        {"Filename",
+         "Case",
+         "File size (bytes)",
+         "Compressed size (bytes)",
+         "HDU count",
+         "Bitpixs",
+         "Pixel counts",
+         "Comptypes",
+         "Elapsed (ms)"});
 
     logger.info("# Creating FITS file");
 
@@ -134,6 +153,8 @@ public:
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
     std::vector<std::string> actualAlgos;
+    std::vector<int> bitpixs;
+    std::vector<long> hduSizes;
 
     // Copy without primary:
     // chrono.start();
@@ -146,36 +167,53 @@ public:
     logger.info("# Compressing file..");
     for (const auto& hdu : f) {
 
-      try {
-
+      if (hdu.matches(Fits::HduCategory::Bintable)) {
         chrono.start();
         g.appendCopy(hdu);
         chrono.stop();
-        actualAlgos.push_back(algoName);
+        bitpixs.push_back(0);
+        hduSizes.push_back(0);
+        actualAlgos.push_back("NONE");
 
-      } catch (const Cfitsio::CfitsioError&) {
+      } else { // the hdu is an image
+        try {
 
-        logger.info("# fallback to ShuffledGzip for current Hdu");
-        Fits::Compression::ShuffledGzip defaultAlgo;
-        g.startCompressing(defaultAlgo);
+          chrono.start();
+          g.appendCopy(hdu);
+          chrono.stop();
+          bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
+          hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
+          actualAlgos.push_back(algoName);
 
-        chrono.start();
-        g.appendCopy(hdu);
-        chrono.stop();
-        actualAlgos.push_back("SHUFFLEDGZIP");
+        } catch (const Cfitsio::CfitsioError&) {
 
-        setCompressionFromName(g, algoName);
+          logger.info("# fallback to ShuffledGzip for current Hdu");
+          Fits::Compression::ShuffledGzip defaultAlgo;
+          g.startCompressing(defaultAlgo);
+
+          chrono.start();
+          g.appendCopy(hdu);
+          chrono.stop();
+          bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
+          hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
+          actualAlgos.push_back("SHUFFLEDGZIP");
+
+          setCompressionFromName(g, algoName);
+        }
       }
 
       hduCounter++;
     }
 
-    // {"Filename", "File size (bytes)", "Compressed size (bytes)", "HDU count", "Comptypes", "Elapsed (ms)"});
+    // {"Filename", "Case", "File size (bytes)", "Compressed size (bytes)", "HDU count", "Bitpixs", "Pixel counts", "Comptypes", "Elapsed (ms)"});
     writer.writeRow(
         filenameSrc,
+        algoName,
         boost::filesystem::file_size(filenameSrc),
         boost::filesystem::file_size(filenameDst),
         hduCounter,
+        join(bitpixs),
+        join(hduSizes),
         joinString(actualAlgos),
         join(chrono.increments()));
 
