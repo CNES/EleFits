@@ -22,7 +22,8 @@ using namespace Euclid;
 
 #define IF_TYPEID_MATCHES_RETURN_BITPIX(type, name) \
   if (typeid(type) == hdu.readTypeid()) \
-    return Cfitsio::TypeCode<type>::forImage();
+    return Cfitsio::TypeCode<type>::bitpix();
+// FIXME: return #name; as string instead ?
 
 static Elements::Logging logger = Elements::Logging::getLogger("RunCompressionBenchmark");
 
@@ -119,6 +120,8 @@ public:
         value<std::string>()->default_value("NONE"),
         "Compression algorithm name (RICE/HCOMPRESS/PLIO/GZIP/SHUFFLEDGZIP)");
     options.named("res", value<std::string>()->default_value("/tmp/compressionBenchmark.csv"), "Output result file");
+    // options
+    //     .named("resHdu", value<std::string>()->default_value("/tmp/compressionBenchmarkHdu.csv"), "Output result file");
     return options.asPair();
   }
 
@@ -128,6 +131,7 @@ public:
     const auto filenameDst = args["output"].as<std::string>();
     const auto algoName = args["case"].as<std::string>();
     const auto results = args["res"].as<std::string>();
+    // const auto resultsHdu = args["resHdu"].as<std::string>();
 
     Fits::Validation::CsvAppender writer(
         results,
@@ -136,10 +140,22 @@ public:
          "File size (bytes)",
          "Compressed size (bytes)",
          "HDU count",
-         "Bitpixs",
-         "Pixel counts",
+         "HDUs bitpix",
          "Comptypes",
+         "HDUs size (bytes)",
+         "HDUs compressed size (bytes)",
          "Elapsed (ms)"});
+
+    // Fits::Validation::CsvAppender writerHdu(
+    //     resultsHdu,
+    //     {"Filename",
+    //      "Case",
+    //      "Compressed size (bytes)",
+    //      "HDU count",
+    //      "Bitpixs",
+    //      "Pixel counts",
+    //      "Comptypes",
+    //      "Elapsed (ms)"});
 
     logger.info("# Creating FITS file");
 
@@ -153,8 +169,9 @@ public:
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
     std::vector<std::string> actualAlgos;
-    std::vector<int> bitpixs;
+    std::vector<long> bitpixs;
     std::vector<long> hduSizes;
+    std::vector<long> zHduSizes;
 
     // Copy without primary:
     // chrono.start();
@@ -169,20 +186,23 @@ public:
 
       if (hdu.matches(Fits::HduCategory::Bintable)) {
         chrono.start();
-        g.appendCopy(hdu);
+        auto zHdu = g.appendCopy(hdu);
         chrono.stop();
-        bitpixs.push_back(0);
-        hduSizes.push_back(0);
+        bitpixs.push_back(0); // FIXME what is the bitpix of bintable ?
+        hduSizes.push_back(hdu.readDataUnitSize());
+        zHduSizes.push_back(zHdu.readDataUnitSize());
         actualAlgos.push_back("NONE");
 
       } else { // the hdu is an image
         try {
 
           chrono.start();
-          g.appendCopy(hdu);
+          auto zHdu = g.appendCopy(hdu);
           chrono.stop();
           bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
-          hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
+          // hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
+          hduSizes.push_back(hdu.readDataUnitSize());
+          zHduSizes.push_back(zHdu.readDataUnitSize());
           actualAlgos.push_back(algoName);
 
         } catch (const Cfitsio::CfitsioError&) {
@@ -192,10 +212,12 @@ public:
           g.startCompressing(defaultAlgo);
 
           chrono.start();
-          g.appendCopy(hdu);
+          auto zHdu = g.appendCopy(hdu);
           chrono.stop();
           bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
-          hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
+          // hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
+          hduSizes.push_back(hdu.readDataUnitSize());
+          zHduSizes.push_back(zHdu.readDataUnitSize());
           actualAlgos.push_back("SHUFFLEDGZIP");
 
           setCompressionFromName(g, algoName);
@@ -205,7 +227,16 @@ public:
       hduCounter++;
     }
 
-    // {"Filename", "Case", "File size (bytes)", "Compressed size (bytes)", "HDU count", "Bitpixs", "Pixel counts", "Comptypes", "Elapsed (ms)"});
+    // {"Filename",
+    //  "Case",
+    //  "File size (bytes)",
+    //  "Compressed size (bytes)",
+    //  "HDU count",
+    //  "HDUs bitpix",
+    //  "Comptypes",
+    //  "HDUs size (bytes)",
+    //  "HDUs compressed size (bytes)",
+    //  "Elapsed (ms)"});
     writer.writeRow(
         filenameSrc,
         algoName,
@@ -213,8 +244,9 @@ public:
         boost::filesystem::file_size(filenameDst),
         hduCounter,
         join(bitpixs),
-        join(hduSizes),
         joinString(actualAlgos),
+        join(hduSizes),
+        join(zHduSizes),
         join(chrono.increments()));
 
     logger.info("# Compressed file created");

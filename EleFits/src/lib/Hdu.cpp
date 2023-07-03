@@ -62,6 +62,24 @@ long Hdu::readVersion() const {
   return Cfitsio::HduAccess::currentVersion(m_fptr);
 }
 
+long Hdu::readDataUnitSize() const {
+  touchThisHdu();
+  long bitpix = m_header.parse<long>("BITPIX");
+  long gcount = m_header.parseOr<long>("GCOUNT", 1);
+  long pcount = m_header.parseOr<long>("PCOUNT", 0);
+  long naxis = m_header.parse<long>("NAXIS");
+  long pixelCount;
+  if (naxis > 0) {
+    pixelCount = 1;
+    for (int i = 1; i <= naxis; i++) {
+      pixelCount *= m_header.parse<long>("NAXIS" + std::to_string(i));
+    }
+  } else {
+    pixelCount = 0;
+  }
+  return (std::abs(bitpix) * gcount * (pcount + pixelCount)) / 8;
+}
+
 void Hdu::updateName(const std::string& name) const {
   editThisHdu();
   Cfitsio::HduAccess::updateName(m_fptr, name);

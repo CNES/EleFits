@@ -151,6 +151,14 @@ public:
   long readVersion() const;
 
   /**
+   * @brief Read the number of bytes used by the Hdu.
+   * @details
+   * Total number of bits in the extension data array exclusive of fill that is needed after the data to complete the last record.
+   * According to doc: https://archive.stsci.edu/fits/fits_standard/node39.html#s:conf
+  */
+  long readDataUnitSize() const;
+
+  /**
    * @brief Write or update the extension name.
    */
   void updateName(const std::string& name) const;
