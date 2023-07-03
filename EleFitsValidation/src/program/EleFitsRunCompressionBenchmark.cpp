@@ -155,14 +155,14 @@ public:
 
       } catch (const Cfitsio::CfitsioError&) {
 
-        logger.info("# defaulting to Gzip for current Hdu");
-        Fits::Compression::Gzip defaultAlgo;
+        logger.info("# fallback to ShuffledGzip for current Hdu");
+        Fits::Compression::ShuffledGzip defaultAlgo;
         g.startCompressing(defaultAlgo);
 
         chrono.start();
         g.appendCopy(hdu);
         chrono.stop();
-        actualAlgos.push_back("GZIP");
+        actualAlgos.push_back("SHUFFLEDGZIP");
 
         setCompressionFromName(g, algoName);
       }

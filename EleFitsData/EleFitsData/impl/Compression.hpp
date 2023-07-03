@@ -47,7 +47,7 @@ float Factor::value() const {
   return std::abs(m_value);
 }
 
-inline bool Factor::operator==(const Factor& f2) const {
+bool Factor::operator==(const Factor& f2) const {
   return (m_value == f2.m_value) and (this->type() == f2.type());
 }
 
@@ -86,7 +86,7 @@ bool Quantization::hasLossyInt() const {
   return m_lossyInt;
 }
 
-inline bool Quantization::operator==(const Quantization& q2) const {
+bool Quantization::operator==(const Quantization& q2) const {
   return (m_level == q2.level()) and (m_dithering == q2.dithering()) and (m_lossyInt == q2.hasLossyInt());
 }
 
