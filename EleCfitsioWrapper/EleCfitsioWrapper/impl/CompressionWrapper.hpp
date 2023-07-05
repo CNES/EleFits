@@ -6,6 +6,7 @@
 
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
+#include "EleCfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {
 namespace Fits {
@@ -40,6 +41,10 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   int algo = int(NULL);
   fits_get_compression_type(fptr, &algo, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read compression type");
+  std::unique_ptr<Fits::Compression::Algo> out(new Fits::Compression::None());
+  if (algo == int(NULL)) {
+    return out;
+  }
 
   // Read tiling
   Fits::Position<-1> tiling(MAX_COMPRESS_DIM);
@@ -52,7 +57,23 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   fits_get_quantize_level(fptr, &factor, &status);
   Fits::Compression::Quantization quantization(
       factor > 0 ? Fits::Compression::Factor::relative(factor) : Fits::Compression::Factor::absolute(-factor));
-  // FIXME dithering, method, lossyInt
+  if (HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
+    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
+    if (method == "NO_DITHER") {
+      quantization.dithering(Fits::Compression::Dithering::None);
+    } else if (method == "SUBTRACTIVE_DITHER_1") {
+      quantization.dithering(Fits::Compression::Dithering::EveryPixel);
+    } else if (method == "SUBTRACTIVE_DITHER_2") {
+      quantization.dithering(Fits::Compression::Dithering::NonZeroPixel);
+    } else {
+      Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
+    }
+  }
+  if (HeaderIo::hasKeyword(fptr, "FZINT2F") && HeaderIo::parseRecord<bool>(fptr, "FZINT2F")) {
+    quantization.enableLossyInt();
+  } else {
+    quantization.disableLossyInt();
+  }
   CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
 
   // Read scaling
@@ -62,31 +83,26 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   // FIXME smoothing
   CfitsioError::mayThrow(status, fptr, "Cannot read compression scaling");
 
-  std::unique_ptr<Fits::Compression::Algo> out(new Fits::Compression::None());
-
   switch (algo) {
-    case int(NULL):
-      out.reset(new Fits::Compression::None());
-      break;
     case RICE_1:
       out.reset(new Fits::Compression::Rice<-1>(tiling));
       break;
     case HCOMPRESS_1:
       out.reset(new Fits::Compression::HCompress({tiling[0], tiling[1]}));
       fits_get_hcomp_scale(fptr, &factor, &status);
-      dynamic_cast<Fits::Compression::HCompress*>(out.get())->scale(scaling).quantize(quantization);
+      dynamic_cast<Fits::Compression::HCompress&>(*out).scale(scaling).quantize(quantization);
       break;
     case PLIO_1:
       out.reset(new Fits::Compression::Plio<-1>(tiling));
-      dynamic_cast<Fits::Compression::Plio<-1>*>(out.get())->quantize(quantization);
+      dynamic_cast<Fits::Compression::Plio<-1>&>(*out).quantize(quantization);
       break;
     case GZIP_1:
       out.reset(new Fits::Compression::Gzip<-1>(tiling));
-      dynamic_cast<Fits::Compression::Gzip<-1>*>(out.get())->quantize(quantization);
+      dynamic_cast<Fits::Compression::Gzip<-1>&>(*out).quantize(quantization);
       break;
     case GZIP_2:
       out.reset(new Fits::Compression::ShuffledGzip<-1>(tiling));
-      dynamic_cast<Fits::Compression::ShuffledGzip<-1>*>(out.get())->quantize(quantization);
+      dynamic_cast<Fits::Compression::ShuffledGzip<-1>&>(*out).quantize(quantization);
       break;
     default:
       throw Fits::FitsError("Unknown compression type");
