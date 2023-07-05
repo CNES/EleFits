@@ -18,25 +18,23 @@ Factor Factor::none() {
 }
 
 Factor Factor::absolute(float value) {
-
-  if (value <= 0.f)
+  if (value <= 0) {
     throw FitsError("Absolute factor value out of supported bounds");
-
+  }
   return Factor(-value); // absoluteness stored internally as negative value like in cfitsio
 }
 
 Factor Factor::relative(float value) {
-
-  if (value <= 0.f)
+  if (value <= 0) {
     throw FitsError("Relative factor value out of supported bounds");
-
+  }
   return Factor(value);
 }
 
 Factor::Type Factor::type() const {
-  if (m_value > 0.f) {
+  if (m_value > 0) {
     return Factor::Type::Relative;
-  } else if (m_value < 0.f) {
+  } else if (m_value < 0) {
     return Factor::Type::Absolute;
   } else {
     return Factor::Type::None;

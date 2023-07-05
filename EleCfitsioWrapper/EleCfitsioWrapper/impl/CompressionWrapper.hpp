@@ -52,11 +52,19 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   fits_get_tile_dim(fptr, MAX_COMPRESS_DIM, tiling.data(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read compression tiling");
 
-  // Read quantize
+  // Read quantization
   float factor = 0;
+  auto factorize = [](float f) {
+    if (f == 0) {
+      return Fits::Compression::Factor::none();
+    } else if (f < 0) {
+      return Fits::Compression::Factor::absolute(-f);
+    } else {
+      return Fits::Compression::Factor::relative(f);
+    }
+  };
   fits_get_quantize_level(fptr, &factor, &status);
-  Fits::Compression::Quantization quantization(
-      factor > 0 ? Fits::Compression::Factor::relative(factor) : Fits::Compression::Factor::absolute(-factor));
+  Fits::Compression::Quantization quantization = factorize(factor);
   if (HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
     const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
     if (method == "NO_DITHER") {
@@ -78,9 +86,8 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
 
   // Read scaling
   fits_get_hcomp_scale(fptr, &factor, &status);
-  auto scaling =
-      factor > 0 ? Fits::Compression::Factor::relative(factor) : Fits::Compression::Factor::absolute(-factor);
-  // FIXME smoothing
+  auto scaling = factorize(factor);
+  // FIXME smoothing?
   CfitsioError::mayThrow(status, fptr, "Cannot read compression scaling");
 
   switch (algo) {
@@ -90,19 +97,19 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
     case HCOMPRESS_1:
       out.reset(new Fits::Compression::HCompress({tiling[0], tiling[1]}));
       fits_get_hcomp_scale(fptr, &factor, &status);
-      dynamic_cast<Fits::Compression::HCompress&>(*out).scale(scaling).quantize(quantization);
+      dynamic_cast<Fits::Compression::HCompress&>(*out).scale(std::move(scaling)).quantize(std::move(quantization));
       break;
     case PLIO_1:
       out.reset(new Fits::Compression::Plio<-1>(tiling));
-      dynamic_cast<Fits::Compression::Plio<-1>&>(*out).quantize(quantization);
+      dynamic_cast<Fits::Compression::Plio<-1>&>(*out).quantize(std::move(quantization));
       break;
     case GZIP_1:
       out.reset(new Fits::Compression::Gzip<-1>(tiling));
-      dynamic_cast<Fits::Compression::Gzip<-1>&>(*out).quantize(quantization);
+      dynamic_cast<Fits::Compression::Gzip<-1>&>(*out).quantize(std::move(quantization));
       break;
     case GZIP_2:
       out.reset(new Fits::Compression::ShuffledGzip<-1>(tiling));
-      dynamic_cast<Fits::Compression::ShuffledGzip<-1>&>(*out).quantize(quantization);
+      dynamic_cast<Fits::Compression::ShuffledGzip<-1>&>(*out).quantize(std::move(quantization));
       break;
     default:
       throw Fits::FitsError("Unknown compression type");
