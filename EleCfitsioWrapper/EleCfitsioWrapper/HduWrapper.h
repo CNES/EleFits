@@ -56,6 +56,11 @@ std::string currentName(fitsfile* fptr);
 long currentVersion(fitsfile* fptr);
 
 /**
+ * @brief Get the byte size of the current HDU.
+ */
+std::size_t currentSize(fitsfile* fptr);
+
+/**
  * @brief Get the type of the current HDU (either Image or Bintable).
  * @return Either HduCategory::Image or HduCategory::Bintable.
  * @details

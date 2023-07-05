@@ -140,10 +140,10 @@ public:
          "File size (bytes)",
          "Compressed size (bytes)",
          "HDU count",
-         "HDUs bitpix",
+         "HDU bitpixs",
          "Comptypes",
-         "HDUs size (bytes)",
-         "HDUs compressed size (bytes)",
+         "HDU sizes (bytes)",
+         "HDU compressed sizes (bytes)",
          "Elapsed (ms)"});
 
     // Fits::Validation::CsvAppender writerHdu(
@@ -165,13 +165,16 @@ public:
 
     logger.info("# setting compression to " + algoName);
     setCompressionFromName(g, algoName);
+    // const std::string algoName = "NONE";
+    // logger.info("# setting compression to NONE");
+    // g.stopCompressing();
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
     std::vector<std::string> actualAlgos;
     std::vector<long> bitpixs;
-    std::vector<long> hduSizes;
-    std::vector<long> zHduSizes;
+    std::vector<std::size_t> hduSizes;
+    std::vector<std::size_t> zHduSizes;
 
     // Copy without primary:
     // chrono.start();
@@ -189,8 +192,8 @@ public:
         auto zHdu = g.appendCopy(hdu);
         chrono.stop();
         bitpixs.push_back(0); // FIXME what is the bitpix of bintable ?
-        hduSizes.push_back(hdu.readDataUnitSize());
-        zHduSizes.push_back(zHdu.readDataUnitSize());
+        hduSizes.push_back(hdu.readSizeInFile());
+        zHduSizes.push_back(zHdu.readSizeInFile());
         actualAlgos.push_back("NONE");
 
       } else { // the hdu is an image
@@ -201,8 +204,8 @@ public:
           chrono.stop();
           bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
           // hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
-          hduSizes.push_back(hdu.readDataUnitSize());
-          zHduSizes.push_back(zHdu.readDataUnitSize());
+          hduSizes.push_back(hdu.readSizeInFile());
+          zHduSizes.push_back(zHdu.readSizeInFile());
           actualAlgos.push_back(algoName);
 
         } catch (const Cfitsio::CfitsioError&) {
@@ -216,8 +219,8 @@ public:
           chrono.stop();
           bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
           // hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
-          hduSizes.push_back(hdu.readDataUnitSize());
-          zHduSizes.push_back(zHdu.readDataUnitSize());
+          hduSizes.push_back(hdu.readSizeInFile());
+          zHduSizes.push_back(zHdu.readSizeInFile());
           actualAlgos.push_back("SHUFFLEDGZIP");
 
           setCompressionFromName(g, algoName);
@@ -227,15 +230,18 @@ public:
       hduCounter++;
     }
 
+    f.close();
+    g.close();
+
     // {"Filename",
     //  "Case",
     //  "File size (bytes)",
     //  "Compressed size (bytes)",
     //  "HDU count",
-    //  "HDUs bitpix",
+    //  "HDU bitpixs",
     //  "Comptypes",
-    //  "HDUs size (bytes)",
-    //  "HDUs compressed size (bytes)",
+    //  "HDU sizes (bytes)",
+    //  "HDU compressed sizes (bytes)",
     //  "Elapsed (ms)"});
     writer.writeRow(
         filenameSrc,

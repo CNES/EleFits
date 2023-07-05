@@ -48,6 +48,37 @@ long currentVersion(fitsfile* fptr) {
   return 1;
 }
 
+std::size_t currentSize(fitsfile* fptr) {
+  int status = 0;
+  LONGLONG currentHeadStart;
+  LONGLONG nextHeadStart;
+
+  if (currentIndex(fptr) < count(fptr)) { // its not the the last hdu
+    fits_get_hduaddrll(fptr, &currentHeadStart, nullptr, nullptr, &status);
+    CfitsioError::mayThrow(status, fptr, "Cannot get Hdu address");
+    fits_movrel_hdu(fptr, static_cast<int>(1), nullptr, &status); // HDU indices are int
+    CfitsioError::mayThrow(status, fptr, "Cannot move to next HDU (step +1)");
+    fits_get_hduaddrll(fptr, &nextHeadStart, nullptr, nullptr, &status);
+    CfitsioError::mayThrow(status, fptr, "Cannot get Hdu address");
+    // currentHeadStart = fptr->Fptr->headstart[currentIndex(fptr) - 1];
+    // nextHeadStart = fptr->Fptr->headstart[currentIndex(fptr)];
+
+  } else { // its the last hdu
+    // FIXME: dataend arg (nextHeadStart) should be the end of file:
+    fits_get_hduaddrll(fptr, &currentHeadStart, nullptr, &nextHeadStart, &status);
+    CfitsioError::mayThrow(status, fptr, "Cannot get Hdu address");
+    // // return to current hdu
+    // fits_movrel_hdu(fptr, static_cast<int>(-1), nullptr, &status); // HDU indices are int
+    // CfitsioError::mayThrow(status, fptr, "Cannot move to previous HDU (step -1)");
+  }
+
+  // return to current hdu
+  fits_movrel_hdu(fptr, static_cast<int>(-1), nullptr, &status); // HDU indices are int
+  CfitsioError::mayThrow(status, fptr, "Cannot move to previous HDU (step -1)");
+
+  return static_cast<std::size_t>(nextHeadStart - currentHeadStart);
+}
+
 Fits::HduCategory currentType(fitsfile* fptr) {
   int type = 0;
   int status = 0;
