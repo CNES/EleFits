@@ -8,6 +8,7 @@
 #include "EleFitsData/Compression.h"
 
 #include <fitsio.h>
+#include <memory> // unique_ptr
 #include <string>
 
 namespace Euclid {
@@ -20,38 +21,49 @@ namespace Compression {
 inline bool isCompressing(fitsfile* fptr);
 
 /**
+ * @brief Read the current compression parameters.
+ */
+inline std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr);
+
+/**
+ * @brief Read the current compression tiling.
+ */
+template <long N>
+Fits::Position<N> readCompressionTiling(fitsfile* fptr);
+
+/**
  * @brief Set the compression algorithm to None.
  */
-inline void compress(fitsfile* fptr, const Euclid::Fits::Compression::None& algo);
+inline void compress(fitsfile* fptr, const Fits::Compression::None& algo);
 
 /**
  * @brief Set the compression algorithm to Rice.
  */
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo);
+void compress(fitsfile* fptr, const Fits::Compression::Rice<N>& algo);
 
 /**
  * @brief Set the compression algorithm to HCompress.
  */
-inline void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress& algo);
+inline void compress(fitsfile* fptr, const Fits::Compression::HCompress& algo);
 
 /**
  * @brief Set the compression algorithm to Plio.
  */
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>& algo);
+void compress(fitsfile* fptr, const Fits::Compression::Plio<N>& algo);
 
 /**
  * @brief Set the compression algorithm to Gzip.
  */
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo);
+void compress(fitsfile* fptr, const Fits::Compression::Gzip<N>& algo);
 
 /**
  * @brief Set the compression algorithm to ShuffledGzip.
  */
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>& algo);
+void compress(fitsfile* fptr, const Fits::Compression::ShuffledGzip<N>& algo);
 
 } // namespace Compression
 } // namespace Cfitsio

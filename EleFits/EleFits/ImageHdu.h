@@ -8,6 +8,7 @@
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageRaster.h"
+#include "EleFitsData/Compression.h"
 #include "EleFitsData/Raster.h"
 
 namespace Euclid {
@@ -89,6 +90,11 @@ public:
    * @copydoc Hdu::readCategory
    */
   HduCategory readCategory() const override;
+
+  /**
+   * @brief Read the compression parameters.
+   */
+  std::unique_ptr<Compression::Algo> readCompression() const;
 
   /**
    * @brief Redefine the image shape and type.

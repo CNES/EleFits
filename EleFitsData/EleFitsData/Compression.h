@@ -13,7 +13,10 @@
 namespace Euclid {
 namespace Fits {
 
-class MefFile; // necessary for friend class declaration in Algo & AlgoMixin
+/// @cond
+// Forward declaration for friendship in Algo
+class MefFile;
+/// @endcond
 
 namespace Compression {
 
@@ -31,6 +34,7 @@ public:
   static inline Factor relative(float value);
 
   inline Factor::Type type() const;
+
   inline float value() const;
 
   inline bool operator==(const Factor& f2) const;
@@ -59,9 +63,9 @@ class Quantization {
 
 public:
   /**
-   * @brief Create quantization with default parameters
+   * @brief Constructor.
    */
-  inline Quantization();
+  inline Quantization(Factor level = Factor::none());
 
   /**
    * @brief Set tile-wise the quantize level
@@ -78,6 +82,7 @@ public:
   inline Quantization& dithering(Dithering);
 
   inline Quantization& enableLossyInt();
+
   inline Quantization& disableLossyInt();
 
   /**
@@ -146,8 +151,10 @@ public:
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
-  void quantize(Quantization quantize);
+  TDerived& quantize(Quantization quantize);
+
   const Position<N>& shape() const;
+
   const Quantization& quantize() const;
 
 protected:
@@ -160,7 +167,7 @@ protected:
   /**
    * @brief Constructor (specify the compression tiling shape).
    */
-  AlgoMixin<N, TDerived>(Position<N> shape);
+  AlgoMixin(Position<N> shape);
 
   Position<N> rowWiseTiling() const;
 
@@ -238,12 +245,14 @@ public:
    * An absolute factor will set globally the scaling factor to the given value.
    * A none factor disables scaling.
    */
-  inline void scale(Factor scale);
+  inline HCompress& scale(Factor scale);
 
-  inline void enableSmoothing();
-  inline void disableSmoothing();
+  inline HCompress& enableSmoothing();
+
+  inline HCompress& disableSmoothing();
 
   inline const Factor& scale() const;
+
   inline bool isSmooth() const;
 
 private:
@@ -266,6 +275,7 @@ public:
    * @brief Default constructor (tiling set to row-wise)
    */
   Plio();
+
   /**
    * @brief Construct by scpecifying compression tiling
    * @see AlgoMixin

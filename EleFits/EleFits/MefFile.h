@@ -222,7 +222,7 @@ public:
   /**
    * @brief Set the compression algorithm to be used when writting new image extensions.
   */
-  inline void startCompressing(const Fits::Compression::Algo& algo);
+  inline void startCompressing(const Compression::Algo& algo);
 
   /**
   * @brief Disable compression when writting new image extensions.
@@ -230,7 +230,7 @@ public:
   inline void stopCompressing();
 
   /**
-   * @brief Know if the image compression is turned on.
+   * @brief Check whether the image compression is turned on.
   */
   inline bool isCompressing() const;
 

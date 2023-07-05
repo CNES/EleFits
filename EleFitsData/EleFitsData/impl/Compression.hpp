@@ -48,11 +48,12 @@ float Factor::value() const {
 }
 
 bool Factor::operator==(const Factor& f2) const {
-  return (m_value == f2.m_value) and (this->type() == f2.type());
+  return (m_value == f2.m_value) && (this->type() == f2.type());
 }
-
-// TODO still have to verify default values for dithering and lossyInt
-Quantization::Quantization() : m_level(Factor::none()), m_dithering(Dithering::EveryPixel), m_lossyInt(false) {}
+Quantization::Quantization(Factor level) :
+    m_level(std::move(level)), m_dithering(Dithering::EveryPixel), m_lossyInt(false) {
+  // FIXME verify default values for dithering and lossyInt
+}
 
 Quantization& Quantization::level(Factor level) {
   m_level = std::move(level);
@@ -87,17 +88,18 @@ bool Quantization::hasLossyInt() const {
 }
 
 bool Quantization::operator==(const Quantization& q2) const {
-  return (m_level == q2.level()) and (m_dithering == q2.dithering()) and (m_lossyInt == q2.hasLossyInt());
+  return (m_level == q2.level()) && (m_dithering == q2.dithering()) && (m_lossyInt == q2.hasLossyInt());
 }
 
 template <long N, typename TDerived>
 AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantize(Quantization()) {
-  static_assert(N >= 0 and N <= 6, "N must be positive and less or equal to 6");
+  static_assert(N == -1 || (N >= 0 && N <= 6), "N must be -1 or 6 at most");
 }
 
 template <long N, typename TDerived>
-void AlgoMixin<N, TDerived>::quantize(Quantization quantize) {
+TDerived& AlgoMixin<N, TDerived>::quantize(Quantization quantize) {
   m_quantize = std::move(quantize);
+  return dynamic_cast<TDerived&>(*this);
 }
 
 template <long N, typename TDerived>
@@ -128,16 +130,19 @@ HCompress::HCompress() : AlgoMixin<2, HCompress>(-Position<2>::one()), m_scale(F
 HCompress::HCompress(const Position<2> shape) :
     AlgoMixin<2, HCompress>(shape), m_scale(Factor::none()), m_smooth(false) {}
 
-void HCompress::scale(Factor scale) {
+HCompress& HCompress::scale(Factor scale) {
   m_scale = std::move(scale);
+  return *this;
 }
 
-void HCompress::enableSmoothing() {
+HCompress& HCompress::enableSmoothing() {
   m_smooth = true;
+  return *this;
 }
 
-void HCompress::disableSmoothing() {
+HCompress& HCompress::disableSmoothing() {
   m_smooth = false;
+  return *this;
 }
 
 const Factor& HCompress::scale() const {
