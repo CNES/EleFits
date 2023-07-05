@@ -14,13 +14,13 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 
 using namespace Euclid;
 
-template <typename TAlgo, long NDim>
+template <typename TAlgo, long N>
 void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
 
   int status = 0;
 
-  Euclid::Fits::Position<NDim> shape;
-  for (int i = 0; i < NDim; i++) {
+  Euclid::Fits::Position<N> shape;
+  for (int i = 0; i < N; i++) {
     shape[i] = 300;
   }
 
@@ -33,9 +33,9 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
   BOOST_TEST(actualComptype == comptype);
 
   // verify tile size:
-  long actualShape[NDim];
-  fits_get_tile_dim(fptr, NDim, actualShape, &status);
-  for (int i = 0; i < NDim; i++) {
+  Fits::Position<N> actualShape;
+  fits_get_tile_dim(fptr, N, actualShape.data(), &status);
+  for (int i = 0; i < N; i++) {
     BOOST_TEST(actualShape[i] = shape.data()[i]);
   }
 
@@ -137,12 +137,16 @@ BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
   Cfitsio::Compression::compress(file.fptr, noneAlgo);
   BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == false);
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::Compression::None*>(Cfitsio::Compression::readCompression(file.fptr).get()));
 
   Cfitsio::Compression::compress(file.fptr, algo);
   BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == true);
+  auto readAlgo = dynamic_cast<Fits::Compression::HCompress*>(Cfitsio::Compression::readCompression(file.fptr).get());
+  BOOST_TEST(readAlgo->shape() == algo.shape()); // FIXME compare algos as a whole
 
   Cfitsio::Compression::compress(file.fptr, noneAlgo);
   BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == false);
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::Compression::None*>(Cfitsio::Compression::readCompression(file.fptr).get()));
 }
 
 //-----------------------------------------------------------------------------

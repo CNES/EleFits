@@ -4,6 +4,8 @@
 
 #include "EleFits/ImageHdu.h"
 
+#include "EleCfitsioWrapper/CompressionWrapper.h"
+
 #include <functional> // multiplies
 #include <numeric> // accumulate
 
@@ -63,6 +65,11 @@ HduCategory ImageHdu::readCategory() const {
     cat &= HduCategory::RawImage;
   }
   return cat;
+}
+
+std::unique_ptr<Compression::Algo> ImageHdu::readCompression() const {
+  touchThisHdu();
+  return Cfitsio::Compression::readCompression(m_fptr);
 }
 
 template <>

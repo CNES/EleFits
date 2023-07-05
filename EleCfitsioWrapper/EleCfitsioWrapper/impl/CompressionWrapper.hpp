@@ -6,6 +6,7 @@
 
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
+#include "EleCfitsioWrapper/HeaderWrapper.h"
 
 namespace Euclid {
 namespace Fits {
@@ -26,140 +27,215 @@ namespace Cfitsio {
 namespace Compression {
 
 bool isCompressing(fitsfile* fptr) {
-
-  int currentAlgo;
   int status = 0;
+  int algo = int(NULL);
+  fits_get_compression_type(fptr, &algo, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression type");
+  return algo != int(NULL);
+}
 
-  fits_get_compression_type(fptr, &currentAlgo, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot get compression type");
+std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
 
-  return currentAlgo != int(NULL);
+  // Read algo
+  int status = 0;
+  int algo = int(NULL);
+  fits_get_compression_type(fptr, &algo, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression type");
+  std::unique_ptr<Fits::Compression::Algo> out(new Fits::Compression::None());
+  if (algo == int(NULL)) {
+    return out;
+  }
+
+  // Read tiling
+  Fits::Position<-1> tiling(MAX_COMPRESS_DIM);
+  std::fill(tiling.begin(), tiling.end(), 1); // FIXME useful?
+  fits_get_tile_dim(fptr, MAX_COMPRESS_DIM, tiling.data(), &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression tiling");
+
+  // Read quantize
+  float factor = 0;
+  fits_get_quantize_level(fptr, &factor, &status);
+  Fits::Compression::Quantization quantization(
+      factor > 0 ? Fits::Compression::Factor::relative(factor) : Fits::Compression::Factor::absolute(-factor));
+  if (HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
+    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
+    if (method == "NO_DITHER") {
+      quantization.dithering(Fits::Compression::Dithering::None);
+    } else if (method == "SUBTRACTIVE_DITHER_1") {
+      quantization.dithering(Fits::Compression::Dithering::EveryPixel);
+    } else if (method == "SUBTRACTIVE_DITHER_2") {
+      quantization.dithering(Fits::Compression::Dithering::NonZeroPixel);
+    } else {
+      Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
+    }
+  }
+  if (HeaderIo::hasKeyword(fptr, "FZINT2F") && HeaderIo::parseRecord<bool>(fptr, "FZINT2F")) {
+    quantization.enableLossyInt();
+  } else {
+    quantization.disableLossyInt();
+  }
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
+
+  // Read scaling
+  fits_get_hcomp_scale(fptr, &factor, &status);
+  auto scaling =
+      factor > 0 ? Fits::Compression::Factor::relative(factor) : Fits::Compression::Factor::absolute(-factor);
+  // FIXME smoothing
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression scaling");
+
+  switch (algo) {
+    case RICE_1:
+      out.reset(new Fits::Compression::Rice<-1>(tiling));
+      break;
+    case HCOMPRESS_1:
+      out.reset(new Fits::Compression::HCompress({tiling[0], tiling[1]}));
+      fits_get_hcomp_scale(fptr, &factor, &status);
+      dynamic_cast<Fits::Compression::HCompress&>(*out).scale(scaling).quantize(quantization);
+      break;
+    case PLIO_1:
+      out.reset(new Fits::Compression::Plio<-1>(tiling));
+      dynamic_cast<Fits::Compression::Plio<-1>&>(*out).quantize(quantization);
+      break;
+    case GZIP_1:
+      out.reset(new Fits::Compression::Gzip<-1>(tiling));
+      dynamic_cast<Fits::Compression::Gzip<-1>&>(*out).quantize(quantization);
+      break;
+    case GZIP_2:
+      out.reset(new Fits::Compression::ShuffledGzip<-1>(tiling));
+      dynamic_cast<Fits::Compression::ShuffledGzip<-1>&>(*out).quantize(quantization);
+      break;
+    default:
+      throw Fits::FitsError("Unknown compression type");
+  }
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression parameters");
+
+  return out;
 }
 
 // function to factorize quantization for all floating-point algorithms
-inline void setQuantize(fitsfile* fptr, const Euclid::Fits::Compression::Quantization& quant) {
+inline void setQuantize(fitsfile* fptr, const Fits::Compression::Quantization& quant) {
 
   int status = 0;
 
   // setting quantize level:
-  if (quant.level().type() == Euclid::Fits::Compression::Factor::Type::Absolute) {
+  if (quant.level().type() == Fits::Compression::Factor::Type::Absolute) {
     fits_set_quantize_level(fptr, -quant.level().value(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantize level");
+    CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantize level");
   } else { // relative quantize level applied in this case
     fits_set_quantize_level(fptr, quant.level().value(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
+    CfitsioError::mayThrow(status, fptr, "Cannot set relative quantize level");
   }
 
   // setting dithering method:
   // fits_set_quantize_method() is exact same as set_quantize_dither() (.._method() is the old name)
   switch (quant.dithering()) {
-    case Euclid::Fits::Compression::Dithering::EveryPixel:
+    case Fits::Compression::Dithering::EveryPixel:
 
       fits_set_quantize_method(fptr, SUBTRACTIVE_DITHER_1, &status);
-      Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to EveryPixel");
+      CfitsioError::mayThrow(status, fptr, "Cannot set dithering to EveryPixel");
       break;
 
-    case Euclid::Fits::Compression::Dithering::NonZeroPixel:
+    case Fits::Compression::Dithering::NonZeroPixel:
 
       fits_set_quantize_method(fptr, SUBTRACTIVE_DITHER_2, &status);
-      Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to NonZeroPixel");
+      CfitsioError::mayThrow(status, fptr, "Cannot set dithering to NonZeroPixel");
       break;
 
-    case Euclid::Fits::Compression::Dithering::None:
+    case Fits::Compression::Dithering::None:
 
       fits_set_quantize_method(fptr, NO_DITHER, &status);
-      Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set dithering to None");
+      CfitsioError::mayThrow(status, fptr, "Cannot set dithering to None");
       break;
   }
 
   // setting lossy int compression:
   // FIXME: how to verify that it is applied correctly to img?
   fits_set_lossy_int(fptr, quant.hasLossyInt(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set lossy int compression");
+  CfitsioError::mayThrow(status, fptr, "Cannot set lossy int compression");
 }
 
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::None&) {
+void compress(fitsfile* fptr, const Fits::Compression::None&) {
 
   int status = 0;
   fits_set_compression_type(fptr, int(NULL), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to None");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to None");
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Rice<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::Rice<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, RICE_1, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Rice");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Rice");
 
   Euclid::Fits::Position<N> ndims = algo.shape();
   fits_set_tile_dim(fptr, N, ndims.data(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 
   setQuantize(fptr, algo.quantize());
 }
 
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::HCompress& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::HCompress& algo) {
 
   int status = 0;
 
   fits_set_compression_type(fptr, HCOMPRESS_1, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
 
   Euclid::Fits::Position<2> ndims = algo.shape();
   fits_set_tile_dim(fptr, 2, ndims.data(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 
-  if (algo.scale().type() == Euclid::Fits::Compression::Factor::Type::Absolute) {
+  if (algo.scale().type() == Fits::Compression::Factor::Type::Absolute) {
     fits_set_hcomp_scale(fptr, -algo.scale().value(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
+    CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
   } else { // relative scaling applied in this case
     fits_set_hcomp_scale(fptr, algo.scale().value(), &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
+    CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
   }
 
   fits_set_hcomp_smooth(fptr, algo.isSmooth(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set smoothing for HCompress");
+  CfitsioError::mayThrow(status, fptr, "Cannot set smoothing for HCompress");
 
   setQuantize(fptr, algo.quantize());
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Plio<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::Plio<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
 
   Euclid::Fits::Position<N> ndims = algo.shape();
   fits_set_tile_dim(fptr, N, ndims.data(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::Gzip<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::Gzip<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_1, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
 
   Euclid::Fits::Position<N> ndims = algo.shape();
   fits_set_tile_dim(fptr, N, ndims.data(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 
   setQuantize(fptr, algo.quantize());
 }
 
 template <long N>
-void compress(fitsfile* fptr, const Euclid::Fits::Compression::ShuffledGzip<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::ShuffledGzip<N>& algo) {
 
   int status = 0;
   fits_set_compression_type(fptr, GZIP_2, &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
 
   Euclid::Fits::Position<N> ndims = algo.shape();
   fits_set_tile_dim(fptr, N, ndims.data(), &status);
-  Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression tile dimensions");
 
   setQuantize(fptr, algo.quantize());
 }

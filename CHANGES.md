@@ -1,5 +1,20 @@
 # Change log
 
+## 5.3
+
+### New features
+
+* Image HDU compression
+  * Added compression data classes `Compression::Algo`, `Gzip`, `Plio`...
+  * Added compression setters and getters `MefFile::startCompressing()`, `stopCompressing()`, `isCompressing()`, `ImageHdu::compression()`
+  * Implemented compression benchmark
+
+## 5.2
+
+### Breaking changes
+
+* Updated to Elements 6.2.1, requires C++17
+
 ## 5.1
 
 ### Bug fixes
