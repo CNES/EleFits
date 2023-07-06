@@ -120,13 +120,11 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   BOOST_TEST(not(q1 == q5));
 }
 
-template <typename TAlgo, long NDim>
+template <typename TAlgo>
 void testAlgoMixinParameters() {
 
-  Position<NDim> shape;
-  for (int i = 0; i < NDim; i++) {
-    shape[i] = 300;
-  }
+  Position<TAlgo::Dim> shape;
+  std::fill(shape.begin(), shape.end(), 300);
   TAlgo algo(shape);
 
   // verify shape of algo is correctly stored at construction
@@ -146,10 +144,10 @@ void testAlgoMixinParameters() {
 }
 
 // specific to the None algo
-template <typename TAlgo>
-void testAlgoMixinParameters() {
+template <>
+void testAlgoMixinParameters<Compression::None>() {
 
-  TAlgo algo;
+  Compression::None algo;
 
   // verify shape of algo is correctly stored at construction
   BOOST_TEST((algo.shape() == Position<0>()));
@@ -159,39 +157,39 @@ BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
   testAlgoMixinParameters<Compression::None>();
 
-  testAlgoMixinParameters<Compression::Rice<0>, 0>();
-  testAlgoMixinParameters<Compression::Rice<1>, 1>();
-  testAlgoMixinParameters<Compression::Rice<2>, 2>();
-  testAlgoMixinParameters<Compression::Rice<3>, 3>();
-  testAlgoMixinParameters<Compression::Rice<4>, 4>();
-  testAlgoMixinParameters<Compression::Rice<5>, 5>();
-  testAlgoMixinParameters<Compression::Rice<6>, 6>();
+  testAlgoMixinParameters<Compression::Rice<0>>();
+  testAlgoMixinParameters<Compression::Rice<1>>();
+  testAlgoMixinParameters<Compression::Rice<2>>();
+  testAlgoMixinParameters<Compression::Rice<3>>();
+  testAlgoMixinParameters<Compression::Rice<4>>();
+  testAlgoMixinParameters<Compression::Rice<5>>();
+  testAlgoMixinParameters<Compression::Rice<6>>();
 
-  testAlgoMixinParameters<Compression::HCompress, 2>();
+  testAlgoMixinParameters<Compression::HCompress>();
 
-  testAlgoMixinParameters<Compression::Plio<0>, 0>();
-  testAlgoMixinParameters<Compression::Plio<1>, 1>();
-  testAlgoMixinParameters<Compression::Plio<2>, 2>();
-  testAlgoMixinParameters<Compression::Plio<3>, 3>();
-  testAlgoMixinParameters<Compression::Plio<4>, 4>();
-  testAlgoMixinParameters<Compression::Plio<5>, 5>();
-  testAlgoMixinParameters<Compression::Plio<6>, 6>();
+  testAlgoMixinParameters<Compression::Plio<0>>();
+  testAlgoMixinParameters<Compression::Plio<1>>();
+  testAlgoMixinParameters<Compression::Plio<2>>();
+  testAlgoMixinParameters<Compression::Plio<3>>();
+  testAlgoMixinParameters<Compression::Plio<4>>();
+  testAlgoMixinParameters<Compression::Plio<5>>();
+  testAlgoMixinParameters<Compression::Plio<6>>();
 
-  testAlgoMixinParameters<Compression::Gzip<0>, 0>();
-  testAlgoMixinParameters<Compression::Gzip<1>, 1>();
-  testAlgoMixinParameters<Compression::Gzip<2>, 2>();
-  testAlgoMixinParameters<Compression::Gzip<3>, 3>();
-  testAlgoMixinParameters<Compression::Gzip<4>, 4>();
-  testAlgoMixinParameters<Compression::Gzip<5>, 5>();
-  testAlgoMixinParameters<Compression::Gzip<6>, 6>();
+  testAlgoMixinParameters<Compression::Gzip<0>>();
+  testAlgoMixinParameters<Compression::Gzip<1>>();
+  testAlgoMixinParameters<Compression::Gzip<2>>();
+  testAlgoMixinParameters<Compression::Gzip<3>>();
+  testAlgoMixinParameters<Compression::Gzip<4>>();
+  testAlgoMixinParameters<Compression::Gzip<5>>();
+  testAlgoMixinParameters<Compression::Gzip<6>>();
 
-  testAlgoMixinParameters<Compression::ShuffledGzip<0>, 0>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<1>, 1>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<2>, 2>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<3>, 3>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<4>, 4>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<5>, 5>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<6>, 6>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<0>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<1>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<2>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<3>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<4>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<5>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<6>>();
 }
 
 BOOST_AUTO_TEST_CASE(hcompress_test) {

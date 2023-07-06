@@ -226,6 +226,11 @@ template <long N, typename TDerived> // FIXME rm N?
 class AlgoMixin : public Algo {
 
 public:
+  /**
+   * @brief The dimension parameter of the tiling.
+   */
+  static constexpr long Dim = N;
+
   ELEFITS_VIRTUAL_DTOR(AlgoMixin)
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
