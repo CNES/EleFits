@@ -63,47 +63,49 @@ BOOST_AUTO_TEST_CASE(factor_test) {
 
 BOOST_AUTO_TEST_CASE(quantization_test) {
 
-  Compression::Quantization quant;
+  Compression::Quantization quantization;
 
   // default values:
-  BOOST_TEST((quant.level() == Compression::Factor::none()));
-  BOOST_TEST(quant.hasLossyInt() == false);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::EveryPixel));
+  BOOST_TEST((quantization.level() == Compression::Factor::relative(4))); // From CFITSIO doc
+  BOOST_TEST(quantization.hasLossyInt() == false);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::EveryPixel));
 
   // setting quantization level:
   const float positiveLevel = 5.f;
 
-  quant.level(Compression::Factor::absolute(positiveLevel));
-  BOOST_TEST((quant.level() == Compression::Factor::absolute(positiveLevel)));
+  quantization.level(Compression::Factor::absolute(positiveLevel));
+  BOOST_TEST((quantization.level() == Compression::Factor::absolute(positiveLevel)));
 
-  quant.level(Compression::Factor::relative(positiveLevel));
-  BOOST_TEST((quant.level() == Compression::Factor::relative(positiveLevel)));
+  quantization.level(Compression::Factor::relative(positiveLevel));
+  BOOST_TEST((quantization.level() == Compression::Factor::relative(positiveLevel)));
 
-  quant.level(Compression::Factor::none());
-  BOOST_TEST((quant.level() == Compression::Factor::none()));
+  quantization.level(Compression::Factor::none());
+  BOOST_TEST((quantization.level() == Compression::Factor::none()));
 
   // turning on/off lossyInt:
-  quant.enableLossyInt();
-  BOOST_TEST(quant.hasLossyInt() == true);
-  quant.disableLossyInt();
-  BOOST_TEST(quant.hasLossyInt() == false);
+  quantization.enableLossyInt();
+  BOOST_TEST(quantization.hasLossyInt() == true);
+  quantization.disableLossyInt();
+  BOOST_TEST(quantization.hasLossyInt() == false);
 
   // setting dithering:
-  quant.dithering(Compression::Dithering::None);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::None));
+  quantization.dithering(Compression::Dithering::None);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::None));
 
-  quant.dithering(Compression::Dithering::NonZeroPixel);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::NonZeroPixel));
+  quantization.dithering(Compression::Dithering::NonZeroPixel);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::NonZeroPixel));
 
-  quant.dithering(Compression::Dithering::EveryPixel);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::EveryPixel));
+  quantization.dithering(Compression::Dithering::EveryPixel);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::EveryPixel));
 
   // verify that chaining setters works:
-  quant.level(Compression::Factor::relative(positiveLevel)).enableLossyInt().dithering(Compression::Dithering::None);
-  BOOST_TEST(quant.level().value() == positiveLevel);
-  BOOST_TEST(quant.level().type() == Compression::Factor::Type::Relative);
-  BOOST_TEST(quant.hasLossyInt() == true);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::None));
+  quantization.level(Compression::Factor::relative(positiveLevel))
+      .enableLossyInt()
+      .dithering(Compression::Dithering::None);
+  BOOST_TEST(quantization.level().value() == positiveLevel);
+  BOOST_TEST(quantization.level().type() == Compression::Factor::Type::Relative);
+  BOOST_TEST(quantization.hasLossyInt() == true);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::None));
 
   // testing == operator:
   Compression::Quantization q1, q2, q3, q4, q5;
@@ -132,20 +134,15 @@ void testAlgoMixinParameters() {
   BOOST_TEST((shape2 == shape));
 
   // check default quantization values:
-  BOOST_TEST(
-      (algo.quantize() ==
-       Compression::Quantization()
-           .level(Compression::Factor::none()) // FIXME: may be changed depending on algorithm (float algos)
-           .disableLossyInt()
-           .dithering(Compression::Dithering::EveryPixel)));
+  BOOST_TEST((algo.quantization() == Compression::Quantization()));
 
   // set/get quantization:
-  Compression::Quantization quant;
-  quant.level(Compression::Factor::absolute(5.f));
-  quant.enableLossyInt();
-  quant.dithering(Compression::Dithering::None);
-  algo.quantize(quant);
-  BOOST_TEST((algo.quantize() == quant));
+  Compression::Quantization quantization;
+  quantization.level(Compression::Factor::absolute(5.f));
+  quantization.enableLossyInt();
+  quantization.dithering(Compression::Dithering::None);
+  algo.quantization(quantization);
+  BOOST_TEST((algo.quantization() == quantization));
 }
 
 // specific to the None algo

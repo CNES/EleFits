@@ -42,7 +42,7 @@ void testAlgoMixinCompress(fitsfile* fptr, int comptype) {
   // verify quantization level:
   float actualQlevel;
   fits_get_quantize_level(fptr, &actualQlevel, &status);
-  BOOST_TEST(actualQlevel == algo.quantize().level().value());
+  BOOST_TEST(actualQlevel == algo.quantization().level().value());
 }
 
 // specific to the None algo
