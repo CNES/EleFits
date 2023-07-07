@@ -221,6 +221,23 @@ public:
           actualAlgo = "SHUFFLEDGZIP";
 
           setCompressionFromName(g, algoName);
+
+        } catch (Fits::OutOfBoundsError& err) {
+          logger.info(err.what()); // TODO
+
+          logger.info("# fallback to ShuffledGzip for current Hdu");
+          Fits::Compression::ShuffledGzip<6> defaultAlgo;
+          g.startCompressing(defaultAlgo);
+
+          chrono.start();
+          auto zHdu = g.appendCopy(hdu);
+          chrono.stop();
+          bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
+          hduSize = hdu.readSizeInFile();
+          zHduSize = zHdu.readSizeInFile();
+          actualAlgo = "SHUFFLEDGZIP";
+
+          setCompressionFromName(g, algoName);
         }
 
         // {"Filename", "Case", "Bitpix", "Comptype", "HDU size (bytes)", "HDU compressed size (bytes)", "Elapsed (ms)"}

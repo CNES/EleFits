@@ -204,44 +204,64 @@ void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
   fits_create_img(dstFptr, bitpix, naxis, naxes, &status);
   Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot create img");
 
-  // Copy all the user keywords (not the structural keywords)
-  fits_get_hdrspace(srcFptr, &nkeys, NULL, &status);
-  Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot get hdrspace");
+  try {
 
-  for (ii = 1; ii <= nkeys; ii++) {
-    fits_read_record(srcFptr, ii, card, &status);
-    Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read record");
-    if (fits_get_keyclass(card) > TYP_CMPRS_KEY)
-      fits_write_record(dstFptr, card, &status);
-    Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot write record");
+    // Copy all the user keywords (not the structural keywords)
+    fits_get_hdrspace(srcFptr, &nkeys, NULL, &status);
+    Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot get hdrspace");
+
+    for (ii = 1; ii <= nkeys; ii++) {
+      fits_read_record(srcFptr, ii, card, &status);
+      Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read record");
+      if (fits_get_keyclass(card) > TYP_CMPRS_KEY)
+        fits_write_record(dstFptr, card, &status);
+      Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot write record");
+    }
+
+    datatype = readTypeCode(srcFptr);
+
+    const int bytepix = std::abs(bitpix) / 8;
+
+    const long npix = totpix;
+
+    // No scaling desabling required here, because all datatype (specifically unsigned types as well) are taken into account
+
+    // Allocate memory for the entire image (use double type to force memory alignment)
+    std::vector<double> array(npix * bytepix / sizeof(double));
+
+    int comptype; // used for specific PLIO compression case
+    fits_get_compression_type(dstFptr, &comptype, &status);
+    Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot get compression type");
+
+    long first = 1;
+    while (totpix > 0 && !status) {
+
+      // Read all or part of image then write it back to the output file
+      fits_read_img(srcFptr, datatype, first, npix, &nulval, array.data(), &anynul, &status);
+      Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read img");
+
+      if (comptype == PLIO_1) {
+        // PLIO only supports compression when values are less than 2^24:
+        const auto maxValue = std::max_element(array.begin(), array.end());
+        if (*maxValue > (1 << 24)) {
+          throw Fits::OutOfBoundsError("Plio not supported for this image pixel value", *maxValue, {0, 1 << 24});
+        }
+      }
+
+      fits_write_img(dstFptr, datatype, first, npix, array.data(), &status);
+      Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot write img");
+
+      totpix = totpix - npix;
+      first = first + npix;
+    }
+
+  } catch (Cfitsio::CfitsioError& e) {
+    deleteHdu(dstFptr, currentIndex(dstFptr));
+    throw e;
+  } catch (Fits::OutOfBoundsError& e) {
+    deleteHdu(dstFptr, currentIndex(dstFptr));
+    throw e;
   }
-
-  datatype = readTypeCode(srcFptr);
-
-  const int bytepix = std::abs(bitpix) / 8;
-
-  const long npix = totpix;
-
-  // No scaling desabling required here, because all datatype (specifically unsigned types as well) are taken into account
-
-  // Allocate memory for the entire image (use double type to force memory alignment)
-  double* array = (double*)calloc(npix, bytepix);
-
-  long first = 1;
-  while (totpix > 0 && !status) {
-
-    // Read all or part of image then write it back to the output file
-    fits_read_img(srcFptr, datatype, first, npix, &nulval, array, &anynul, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read img");
-
-    fits_write_img(dstFptr, datatype, first, npix, array, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot write img");
-
-    totpix = totpix - npix;
-    first = first + npix;
-  }
-
-  free(array);
 }
 
 void deleteHdu(fitsfile* fptr, long index) {
