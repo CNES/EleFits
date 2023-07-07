@@ -74,7 +74,24 @@ decompressed.assignImage({}, decompressed.as<ImageRaster>(1).read<2, float>());
 \subsection compression-internal-algos Algorithms and Parameters
 
 
-TODO
+EleFits, like CFITSIO, supports several compression algorithms.
+They are implemented as independent data classes responsible for storing the parameters.
+Let us first introduce briefly the various algorithms and parameters, before discussing the interfaces.
+
+All internal compression algorithms act on data regions named tiles,
+which are compressed and decompressed independently.
+Tiles are represented by their common shape (edge tiles may be cropped).
+Parameters can be set either globally for all tiles,
+or tile-wise, in which case they are relative to the noise level in the tile.
+
+Most algorithms support quantization.
+Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
+This is a first level of compression, where the least significant digits of a floating-point number are dropped.
+Quantization can also be turned off to enable lossless compression.
+On the other hand, integer-valued data can be quantized, by casting them as floating-point data,
+making compression necessarily lossy.
+
+TODO interface
 
 */
 

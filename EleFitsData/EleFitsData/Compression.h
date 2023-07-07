@@ -19,11 +19,13 @@ class MefFile;
 /// @endcond
 
 /**
+ * @ingroup image_compression
  * @brief FITS-internal, tiled compression of Image HDUs.
  */
 namespace Compression {
 
 /**
+ * @relates AlgoMixin
  * @brief Create a rowwise tiling.
  * @param rowCount The number of rows per tile
  */
@@ -37,6 +39,7 @@ Position<N> rowwiseTiling(long rowCount = 1) {
 }
 
 /**
+ * @relates AlgoMixin
  * @brief Create a whole-data array tiling.
  */
 template <long N>
@@ -45,6 +48,7 @@ Position<N> wholeDataTiling() {
 }
 
 /**
+ * @ingroup image_compression
  * @brief A factor which can be absolute or relative to the noise level in each tile.
  * 
  * A `relative()` factor yields: `absolute() = RMS_noise / relative()`.
@@ -105,6 +109,7 @@ private:
 };
 
 /**
+ * @ingroup image_compression
  * @brief Quantization dithering methods.
  */
 enum class Dithering {
@@ -114,6 +119,7 @@ enum class Dithering {
 };
 
 /**
+ * @ingroup image_compression
  * @brief Quantization of floating-point pixels.
  */
 class Quantization {
@@ -188,6 +194,7 @@ private:
 };
 
 /**
+ * @ingroup image_compression
  * @brief Interface for compression algorithms.
  */
 class Algo {
@@ -205,22 +212,15 @@ protected:
 };
 
 /**
- * @brief Generic Algo class holding the tiling shape.
- * @details
- * Tiling shape is represented as a Position<N>.
- * The maximum dimension possible with cfitsion is equal to 6 (MAX_COMPRESS_DIM).
- * The value of N must therefore not exceed 6.
+ * @ingroup image_compression
+ * @brief Intermediate class holding the tiling shape and quantization parameters.
  * 
- * Setting tiling policies: for each dimension;
- * -1 means that the maximum number of pixel in this dimension will be used.
- * n>0 means that the tiling will be of size n for this dimension.
- * For instance:
- * - a shape of -Fits::Position<N>::one() will create tiles of the maximum size (all pixels in 6 dimensions)
- * - a shape of Fits::Position<6>::({-1,1,1,1,1,1}) will create row-wise tiling
- * - a shape of Fits::Position<6>::({30,20,10,1,1,1}) will create a tiling of size 30 x 20 x 10
- * TODO: investigate how different tiling behaviours can be set at construction
- * FIXME: variable tiling dims with N=-1 currently not supported
- * FIXME: add boolean attribute huge for fits_set_huge_hdu
+ * Tiling shape is represented as a `Position<N>`.
+ * The maximum dimension possible is equal to 6 (which is an internal CFITSIO limitation).
+ * The value of `N` must therefore not exceed it.
+ * 
+ * @see rowwiseTiling()
+ * @see wholeDataTiling()
  */
 template <long N, typename TDerived> // FIXME rm N?
 class AlgoMixin : public Algo {
@@ -253,7 +253,10 @@ public:
   /**
    * @brief Set the quantization.
    */
-  TDerived& quantization(Quantization quantization); // FIXME move to children
+  TDerived& quantization(Quantization quantization);
+  // FIXME HCompress does not support NonZeroPixel dithering
+  // and therefore this method must be moved to the child classes
+  // with specific check in HCompress
 
 protected:
   /**
@@ -277,12 +280,13 @@ private:
   Position<N> m_shape;
 
   /**
-   * @brief Stores all parameters concerning quantization for floating-point algorithms
+   * @brief The quantization parameters.
    */
   Quantization m_quantization;
 };
 
 /**
+ * @ingroup image_compression
  * @brief No compression.
  */
 class None : public AlgoMixin<0, None> {
@@ -299,6 +303,7 @@ public:
 };
 
 /**
+ * @ingroup image_compression
  * @brief The Rice algorithm.
  */
 template <long N>
@@ -316,6 +321,7 @@ public:
 };
 
 /**
+ * @ingroup image_compression
  * @brief The HCompress algorithm.
  */
 class HCompress : public AlgoMixin<2, HCompress> {
@@ -367,7 +373,10 @@ private:
 };
 
 /**
- * @brief The Plio algorithm.
+ * @ingroup image_compression
+ * @brief The PLIO algorithm.
+ * 
+ * @warning Only integer values between 0 and 2^24 are supported.
  */
 template <long N>
 class Plio : public AlgoMixin<N, Plio<N>> {
@@ -384,6 +393,7 @@ public:
 };
 
 /**
+ * @ingroup image_compression
  * @brief The GZIP algorithm.
  */
 template <long N>
@@ -401,10 +411,11 @@ public:
 };
 
 /**
- * @brief The GZIP algorithm applied to "shuffled" pixel values, where most significant bytes of each value appear first.
+ * @ingroup image_compression
+ * @brief The GZIP algorithm applied to "shuffled" pixel values.
  * 
- * Generally, this algorithm is much more efficient in terms of compression factor than GZIP,
- * although it is a bit slower.
+ * Suffling means that value bytes are reordered such that most significant bytes of each value appear first.
+ * Generally, this algorithm is much more efficient in terms of compression factor than GZIP, although it is a bit slower.
  */
 template <long N>
 class ShuffledGzip : public AlgoMixin<N, ShuffledGzip<N>> {
