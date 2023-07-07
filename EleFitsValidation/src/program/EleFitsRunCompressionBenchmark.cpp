@@ -77,7 +77,7 @@ int getBitpix(Fits::ImageHdu hdu) {
 
 void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
   if (algoName == "RICE") {
-    Fits::Compression::Rice algo;
+    Fits::Compression::Rice<6> algo;
     g.startCompressing(algo);
 
   } else if (algoName == "HCOMPRESS") {
@@ -85,15 +85,15 @@ void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
     g.startCompressing(algo);
 
   } else if (algoName == "PLIO") {
-    Fits::Compression::Plio algo;
+    Fits::Compression::Plio<6> algo;
     g.startCompressing(algo);
 
   } else if (algoName == "GZIP") {
-    Fits::Compression::Gzip algo;
+    Fits::Compression::Gzip<6> algo;
     g.startCompressing(algo);
 
   } else if (algoName == "SHUFFLEDGZIP") {
-    Fits::Compression::ShuffledGzip algo;
+    Fits::Compression::ShuffledGzip<6> algo;
     g.startCompressing(algo);
 
   } else {
@@ -120,8 +120,10 @@ public:
         value<std::string>()->default_value("NONE"),
         "Compression algorithm name (RICE/HCOMPRESS/PLIO/GZIP/SHUFFLEDGZIP)");
     options.named("res", value<std::string>()->default_value("/tmp/compressionBenchmark.csv"), "Output result file");
-    // options
-    //     .named("resHdu", value<std::string>()->default_value("/tmp/compressionBenchmarkHdu.csv"), "Output result file");
+    options.named(
+        "resHdu",
+        value<std::string>()->default_value("/tmp/compressionBenchmarkHdu.csv"),
+        "Output result file per Hdu");
     return options.asPair();
   }
 
@@ -131,7 +133,7 @@ public:
     const auto filenameDst = args["output"].as<std::string>();
     const auto algoName = args["case"].as<std::string>();
     const auto results = args["res"].as<std::string>();
-    // const auto resultsHdu = args["resHdu"].as<std::string>();
+    const auto resultsHdu = args["resHdu"].as<std::string>();
 
     Fits::Validation::CsvAppender writer(
         results,
@@ -146,16 +148,9 @@ public:
          "HDU compressed sizes (bytes)",
          "Elapsed (ms)"});
 
-    // Fits::Validation::CsvAppender writerHdu(
-    //     resultsHdu,
-    //     {"Filename",
-    //      "Case",
-    //      "Compressed size (bytes)",
-    //      "HDU count",
-    //      "Bitpixs",
-    //      "Pixel counts",
-    //      "Comptypes",
-    //      "Elapsed (ms)"});
+    Fits::Validation::CsvAppender writerHdu(
+        resultsHdu,
+        {"Filename", "Case", "Bitpix", "Comptype", "HDU size (bytes)", "HDU compressed size (bytes)", "Elapsed (ms)"});
 
     logger.info("# Creating FITS file");
 
@@ -165,9 +160,6 @@ public:
 
     logger.info("# setting compression to " + algoName);
     setCompressionFromName(g, algoName);
-    // const std::string algoName = "NONE";
-    // logger.info("# setting compression to NONE");
-    // g.stopCompressing();
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
@@ -187,14 +179,19 @@ public:
     logger.info("# Compressing file..");
     for (const auto& hdu : f) {
 
+      long bitpix;
+      std::string actualAlgo;
+      long hduSize;
+      long zHduSize;
+
       if (hdu.matches(Fits::HduCategory::Bintable)) {
         chrono.start();
         auto zHdu = g.appendCopy(hdu);
         chrono.stop();
-        bitpixs.push_back(0); // FIXME what is the bitpix of bintable ?
-        hduSizes.push_back(hdu.readSizeInFile());
-        zHduSizes.push_back(zHdu.readSizeInFile());
-        actualAlgos.push_back("NONE");
+        bitpix = 0; // FIXME: what is the bitpix of bintable ?
+        hduSize = hdu.readSizeInFile();
+        zHduSize = zHdu.readSizeInFile();
+        actualAlgo = "NONE";
 
       } else { // the hdu is an image
         try {
@@ -202,30 +199,38 @@ public:
           chrono.start();
           auto zHdu = g.appendCopy(hdu);
           chrono.stop();
-          bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
-          // hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
-          hduSizes.push_back(hdu.readSizeInFile());
-          zHduSizes.push_back(zHdu.readSizeInFile());
-          actualAlgos.push_back(algoName);
+          bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
+          hduSize = hdu.readSizeInFile();
+          zHduSize = zHdu.readSizeInFile();
+          actualAlgo = algoName;
 
-        } catch (const Cfitsio::CfitsioError&) {
+        } catch (const Cfitsio::CfitsioError& err) { // FIXME: properly check if algo is supported
+
+          logger.info(err.what()); // TODO
 
           logger.info("# fallback to ShuffledGzip for current Hdu");
-          Fits::Compression::ShuffledGzip defaultAlgo;
+          Fits::Compression::ShuffledGzip<6> defaultAlgo;
           g.startCompressing(defaultAlgo);
 
           chrono.start();
           auto zHdu = g.appendCopy(hdu);
           chrono.stop();
-          bitpixs.push_back(getBitpix(hdu.as<Fits::ImageHdu>()));
-          // hduSizes.push_back(hdu.as<Fits::ImageHdu>().readSize());
-          hduSizes.push_back(hdu.readSizeInFile());
-          zHduSizes.push_back(zHdu.readSizeInFile());
-          actualAlgos.push_back("SHUFFLEDGZIP");
+          bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
+          hduSize = hdu.readSizeInFile();
+          zHduSize = zHdu.readSizeInFile();
+          actualAlgo = "SHUFFLEDGZIP";
 
           setCompressionFromName(g, algoName);
         }
+
+        // {"Filename", "Case", "Bitpix", "Comptype", "HDU size (bytes)", "HDU compressed size (bytes)", "Elapsed (ms)"}
+        writerHdu.writeRow(filenameSrc, algoName, bitpix, actualAlgo, hduSize, zHduSize, chrono.last().count());
       }
+
+      bitpixs.push_back(bitpix);
+      hduSizes.push_back(hduSize);
+      zHduSizes.push_back(zHduSize);
+      actualAlgos.push_back(actualAlgo);
 
       hduCounter++;
     }
