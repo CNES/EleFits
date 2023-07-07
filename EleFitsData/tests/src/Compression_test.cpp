@@ -63,47 +63,49 @@ BOOST_AUTO_TEST_CASE(factor_test) {
 
 BOOST_AUTO_TEST_CASE(quantization_test) {
 
-  Compression::Quantization quant;
+  Compression::Quantization quantization;
 
   // default values:
-  BOOST_TEST((quant.level() == Compression::Factor::none()));
-  BOOST_TEST(quant.hasLossyInt() == false);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::EveryPixel));
+  BOOST_TEST((quantization.level() == Compression::Factor::relative(4))); // From CFITSIO doc
+  BOOST_TEST(quantization.hasLossyInt() == false);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::EveryPixel));
 
   // setting quantization level:
   const float positiveLevel = 5.f;
 
-  quant.level(Compression::Factor::absolute(positiveLevel));
-  BOOST_TEST((quant.level() == Compression::Factor::absolute(positiveLevel)));
+  quantization.level(Compression::Factor::absolute(positiveLevel));
+  BOOST_TEST((quantization.level() == Compression::Factor::absolute(positiveLevel)));
 
-  quant.level(Compression::Factor::relative(positiveLevel));
-  BOOST_TEST((quant.level() == Compression::Factor::relative(positiveLevel)));
+  quantization.level(Compression::Factor::relative(positiveLevel));
+  BOOST_TEST((quantization.level() == Compression::Factor::relative(positiveLevel)));
 
-  quant.level(Compression::Factor::none());
-  BOOST_TEST((quant.level() == Compression::Factor::none()));
+  quantization.level(Compression::Factor::none());
+  BOOST_TEST((quantization.level() == Compression::Factor::none()));
 
   // turning on/off lossyInt:
-  quant.enableLossyInt();
-  BOOST_TEST(quant.hasLossyInt() == true);
-  quant.disableLossyInt();
-  BOOST_TEST(quant.hasLossyInt() == false);
+  quantization.enableLossyInt();
+  BOOST_TEST(quantization.hasLossyInt() == true);
+  quantization.disableLossyInt();
+  BOOST_TEST(quantization.hasLossyInt() == false);
 
   // setting dithering:
-  quant.dithering(Compression::Dithering::None);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::None));
+  quantization.dithering(Compression::Dithering::None);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::None));
 
-  quant.dithering(Compression::Dithering::NonZeroPixel);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::NonZeroPixel));
+  quantization.dithering(Compression::Dithering::NonZeroPixel);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::NonZeroPixel));
 
-  quant.dithering(Compression::Dithering::EveryPixel);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::EveryPixel));
+  quantization.dithering(Compression::Dithering::EveryPixel);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::EveryPixel));
 
   // verify that chaining setters works:
-  quant.level(Compression::Factor::relative(positiveLevel)).enableLossyInt().dithering(Compression::Dithering::None);
-  BOOST_TEST(quant.level().value() == positiveLevel);
-  BOOST_TEST(quant.level().type() == Compression::Factor::Type::Relative);
-  BOOST_TEST(quant.hasLossyInt() == true);
-  BOOST_TEST((quant.dithering() == Compression::Dithering::None));
+  quantization.level(Compression::Factor::relative(positiveLevel))
+      .enableLossyInt()
+      .dithering(Compression::Dithering::None);
+  BOOST_TEST(quantization.level().value() == positiveLevel);
+  BOOST_TEST(quantization.level().type() == Compression::Factor::Type::Relative);
+  BOOST_TEST(quantization.hasLossyInt() == true);
+  BOOST_TEST((quantization.dithering() == Compression::Dithering::None));
 
   // testing == operator:
   Compression::Quantization q1, q2, q3, q4, q5;
@@ -118,13 +120,11 @@ BOOST_AUTO_TEST_CASE(quantization_test) {
   BOOST_TEST(not(q1 == q5));
 }
 
-template <typename TAlgo, long NDim>
+template <typename TAlgo>
 void testAlgoMixinParameters() {
 
-  Position<NDim> shape;
-  for (int i = 0; i < NDim; i++) {
-    shape[i] = 300;
-  }
+  Position<TAlgo::Dim> shape;
+  std::fill(shape.begin(), shape.end(), 300);
   TAlgo algo(shape);
 
   // verify shape of algo is correctly stored at construction
@@ -132,27 +132,22 @@ void testAlgoMixinParameters() {
   BOOST_TEST((shape2 == shape));
 
   // check default quantization values:
-  BOOST_TEST(
-      (algo.quantize() ==
-       Compression::Quantization()
-           .level(Compression::Factor::none()) // FIXME: may be changed depending on algorithm (float algos)
-           .disableLossyInt()
-           .dithering(Compression::Dithering::EveryPixel)));
+  BOOST_TEST((algo.quantization() == Compression::Quantization()));
 
   // set/get quantization:
-  Compression::Quantization quant;
-  quant.level(Compression::Factor::absolute(5.f));
-  quant.enableLossyInt();
-  quant.dithering(Compression::Dithering::None);
-  algo.quantize(quant);
-  BOOST_TEST((algo.quantize() == quant));
+  Compression::Quantization quantization;
+  quantization.level(Compression::Factor::absolute(5.f));
+  quantization.enableLossyInt();
+  quantization.dithering(Compression::Dithering::None);
+  algo.quantization(quantization);
+  BOOST_TEST((algo.quantization() == quantization));
 }
 
 // specific to the None algo
-template <typename TAlgo>
-void testAlgoMixinParameters() {
+template <>
+void testAlgoMixinParameters<Compression::None>() {
 
-  TAlgo algo;
+  Compression::None algo;
 
   // verify shape of algo is correctly stored at construction
   BOOST_TEST((algo.shape() == Position<0>()));
@@ -162,39 +157,39 @@ BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
   testAlgoMixinParameters<Compression::None>();
 
-  testAlgoMixinParameters<Compression::Rice<0>, 0>();
-  testAlgoMixinParameters<Compression::Rice<1>, 1>();
-  testAlgoMixinParameters<Compression::Rice<2>, 2>();
-  testAlgoMixinParameters<Compression::Rice<3>, 3>();
-  testAlgoMixinParameters<Compression::Rice<4>, 4>();
-  testAlgoMixinParameters<Compression::Rice<5>, 5>();
-  testAlgoMixinParameters<Compression::Rice<6>, 6>();
+  testAlgoMixinParameters<Compression::Rice<0>>();
+  testAlgoMixinParameters<Compression::Rice<1>>();
+  testAlgoMixinParameters<Compression::Rice<2>>();
+  testAlgoMixinParameters<Compression::Rice<3>>();
+  testAlgoMixinParameters<Compression::Rice<4>>();
+  testAlgoMixinParameters<Compression::Rice<5>>();
+  testAlgoMixinParameters<Compression::Rice<6>>();
 
-  testAlgoMixinParameters<Compression::HCompress, 2>();
+  testAlgoMixinParameters<Compression::HCompress>();
 
-  testAlgoMixinParameters<Compression::Plio<0>, 0>();
-  testAlgoMixinParameters<Compression::Plio<1>, 1>();
-  testAlgoMixinParameters<Compression::Plio<2>, 2>();
-  testAlgoMixinParameters<Compression::Plio<3>, 3>();
-  testAlgoMixinParameters<Compression::Plio<4>, 4>();
-  testAlgoMixinParameters<Compression::Plio<5>, 5>();
-  testAlgoMixinParameters<Compression::Plio<6>, 6>();
+  testAlgoMixinParameters<Compression::Plio<0>>();
+  testAlgoMixinParameters<Compression::Plio<1>>();
+  testAlgoMixinParameters<Compression::Plio<2>>();
+  testAlgoMixinParameters<Compression::Plio<3>>();
+  testAlgoMixinParameters<Compression::Plio<4>>();
+  testAlgoMixinParameters<Compression::Plio<5>>();
+  testAlgoMixinParameters<Compression::Plio<6>>();
 
-  testAlgoMixinParameters<Compression::Gzip<0>, 0>();
-  testAlgoMixinParameters<Compression::Gzip<1>, 1>();
-  testAlgoMixinParameters<Compression::Gzip<2>, 2>();
-  testAlgoMixinParameters<Compression::Gzip<3>, 3>();
-  testAlgoMixinParameters<Compression::Gzip<4>, 4>();
-  testAlgoMixinParameters<Compression::Gzip<5>, 5>();
-  testAlgoMixinParameters<Compression::Gzip<6>, 6>();
+  testAlgoMixinParameters<Compression::Gzip<0>>();
+  testAlgoMixinParameters<Compression::Gzip<1>>();
+  testAlgoMixinParameters<Compression::Gzip<2>>();
+  testAlgoMixinParameters<Compression::Gzip<3>>();
+  testAlgoMixinParameters<Compression::Gzip<4>>();
+  testAlgoMixinParameters<Compression::Gzip<5>>();
+  testAlgoMixinParameters<Compression::Gzip<6>>();
 
-  testAlgoMixinParameters<Compression::ShuffledGzip<0>, 0>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<1>, 1>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<2>, 2>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<3>, 3>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<4>, 4>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<5>, 5>();
-  testAlgoMixinParameters<Compression::ShuffledGzip<6>, 6>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<0>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<1>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<2>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<3>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<4>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<5>>();
+  testAlgoMixinParameters<Compression::ShuffledGzip<6>>();
 }
 
 BOOST_AUTO_TEST_CASE(hcompress_test) {

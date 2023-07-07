@@ -18,35 +18,94 @@ namespace Fits {
 class MefFile;
 /// @endcond
 
+/**
+ * @brief FITS-internal, tiled compression of Image HDUs.
+ */
 namespace Compression {
 
+/**
+ * @brief Create a rowwise tiling.
+ * @param rowCount The number of rows per tile
+ */
+template <long N>
+Position<N> rowwiseTiling(long rowCount = 1) {
+  Position<N> out(N == -1 ? 2 : N);
+  std::fill(out.begin(), out.end(), 1);
+  out[0] = -1;
+  out[1] = rowCount;
+  return out;
+}
+
+/**
+ * @brief Create a whole-data array tiling.
+ */
+template <long N>
+Position<N> wholeDataTiling() {
+  return Position<N>::max();
+}
+
+/**
+ * @brief A factor which can be absolute or relative to the noise level in each tile.
+ * 
+ * A `relative()` factor yields: `absolute() = RMS_noise / relative()`.
+ * A `none()` factor can be used to disable the feature it represents.
+ */
 class Factor {
 
 public:
+  /**
+   * @brief The type of factor.
+   */
   enum Type {
-    None,
-    Absolute,
-    Relative
+    None, ///< Disable feature
+    Absolute, ///< Absolute value
+    Relative ///< Tile-relative value
   };
 
+  /**
+   * @brief Create a disabled factor.
+   */
   static inline Factor none();
+
+  /**
+   * @brief Create an absolute factor.
+   */
   static inline Factor absolute(float value);
+
+  /**
+   * @brief Create a relative factor.
+   */
   static inline Factor relative(float value);
 
+  /**
+   * @brief Get the factor type.
+   */
   inline Factor::Type type() const;
 
+  /**
+   * @brief Get the factor value.
+   */
   inline float value() const;
 
-  inline bool operator==(const Factor& f2) const;
+  /**
+   * @brief Check whether two factors are equal.
+   */
+  inline bool operator==(const Factor& rhs) const;
 
 private:
+  /**
+   * @brief Create a factor.
+   */
   inline Factor(float value);
 
+  /**
+   * @brief The factor value, which encodes the type as its sign.
+   */
   float m_value;
 };
 
 /**
- * @brief Dithering methods for quantization.
+ * @brief Quantization dithering methods.
  */
 enum class Dithering {
   None, ///< Do not dither any pixel
@@ -55,38 +114,42 @@ enum class Dithering {
 };
 
 /**
- * @brief Quantization of floating-types for FloatAlgo
- * TODO: add multi argument constructor
- * FIXME: add dither_offset
-*/
+ * @brief Quantization of floating-point pixels.
+ */
 class Quantization {
 
 public:
   /**
    * @brief Constructor.
+   * 
+   * Integer data compression is lossless by default.
    */
-  inline Quantization(Factor level = Factor::none());
+  inline Quantization(Factor level = Factor::relative(4), Dithering method = Dithering::EveryPixel);
 
   /**
-   * @brief Set tile-wise the quantize level
-   * @details
-   * A relative factor will set the quantize level to: tile RMS_noise * 1/value.
-   * An absolute factor will set globally the quantize level to the given value.
-   * A none Factor disables lossy compression of integer data.
+   * @brief Set the quantization level.
    */
   inline Quantization& level(Factor level);
 
   /**
-   * @brief Set the dithering method for the quantization.
+   * @brief Set the dithering method.
    */
-  inline Quantization& dithering(Dithering);
+  inline Quantization& dithering(Dithering method);
 
+  /**
+   * @brief Enable lossy compression of integer data.
+   * 
+   * This is accomplished by considering the values as floating points and then applying quantization.
+   */
   inline Quantization& enableLossyInt();
 
+  /**
+   * @brief Disable lossy compression of integer data.
+   */
   inline Quantization& disableLossyInt();
 
   /**
-   * @brief Get the quantize level
+   * @brief Get the quantization level
    */
   inline const Factor& level() const;
 
@@ -95,23 +158,41 @@ public:
    */
   inline Dithering dithering() const;
 
+  /**
+   * @brief Check whether lossy integral compression is enabled.
+   */
   inline bool hasLossyInt() const;
 
-  inline bool operator==(const Quantization& q2) const;
+  /**
+   * @brief Check whether two quatizations are equal.
+   */
+  inline bool operator==(const Quantization& rhs) const;
 
 private:
+  /**
+   * @brief The quantization level.
+   */
   Factor m_level;
+
+  /**
+   * @brief The quantization dithering method.
+   */
   Dithering m_dithering;
+
+  /**
+   * @brief The lossy integral compression flag.
+   */
   bool m_lossyInt;
+
+  // FIXME handle dither offset
 };
 
 /**
- * @brief Base class for compression algorithms.
- * FIXME: friend class to be removed or changed depending on who will handle compress()
+ * @brief Interface for compression algorithms.
  */
 class Algo {
 
-  friend class Euclid::Fits::MefFile;
+  friend class Euclid::Fits::MefFile; // TODO rm if/when possible
 
 public:
   Algo() = default;
@@ -141,35 +222,53 @@ protected:
  * FIXME: variable tiling dims with N=-1 currently not supported
  * FIXME: add boolean attribute huge for fits_set_huge_hdu
  */
-template <long N, typename TDerived>
+template <long N, typename TDerived> // FIXME rm N?
 class AlgoMixin : public Algo {
 
-  friend class Euclid::Fits::MefFile;
-
 public:
+  /**
+   * @brief The dimension parameter of the tiling.
+   */
+  static constexpr long Dim = N;
+
   ELEFITS_VIRTUAL_DTOR(AlgoMixin)
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
-  TDerived& quantize(Quantization quantize);
-
+  /**
+   * @brief Get the tiling.
+   */
   const Position<N>& shape() const;
 
-  const Quantization& quantize() const;
+  /**
+   * @brief Get the quantization.
+   */
+  const Quantization& quantization() const; // FIXME move to children
+
+  /**
+   * @brief Set the tiling.
+   */
+  TDerived& shape(Position<N> shape);
+
+  /**
+   * @brief Set the quantization.
+   */
+  TDerived& quantization(Quantization quantization); // FIXME move to children
 
 protected:
+  /**
+   * @brief Constructor.
+   */
+  AlgoMixin(Position<N> shape);
+
+  /**
+   * @brief Dependency inversion to call the wrapper's dispatch based on `TDerived`.
+   */
   void compress(void* fptr) const final;
   // FIXME define the function here instead of in the wrapper
   // The function is not used anyway, and this simplifies compilation
   // => Change compress(fitsfile*, TDerived) into compress(void*, TDerived)
   // or forward declare fitsfile
-
-  /**
-   * @brief Constructor (specify the compression tiling shape).
-   */
-  AlgoMixin(Position<N> shape);
-
-  Position<N> rowWiseTiling() const;
 
 private:
   /**
@@ -180,11 +279,11 @@ private:
   /**
    * @brief Stores all parameters concerning quantization for floating-point algorithms
    */
-  Quantization m_quantize;
+  Quantization m_quantization;
 };
 
 /**
- * @brief No compression
+ * @brief No compression.
  */
 class None : public AlgoMixin<0, None> {
 
@@ -193,13 +292,16 @@ public:
   ELEFITS_COPYABLE(None)
   ELEFITS_MOVABLE(None)
 
+  /**
+   * @brief Constructor.
+   */
   inline None();
 };
 
 /**
  * @brief The Rice algorithm.
  */
-template <long N = 6>
+template <long N>
 class Rice : public AlgoMixin<N, Rice<N>> {
 
 public:
@@ -208,14 +310,9 @@ public:
   ELEFITS_MOVABLE(Rice)
 
   /**
-   * @brief Default constructor (tiling set to row-wise)
+   * @brief Constructor.
    */
-  Rice();
-  /**
-   * @brief Construct by scpecifying compression tiling
-   * @see AlgoMixin
-   */
-  Rice(const Position<N> shape);
+  Rice(Position<N> shape = rowwiseTiling<N>());
 };
 
 /**
@@ -227,43 +324,52 @@ public:
   ELEFITS_VIRTUAL_DTOR(HCompress)
   ELEFITS_COPYABLE(HCompress)
   ELEFITS_MOVABLE(HCompress)
+  /**
+   * @brief Constructor.
+   */
+  inline HCompress(Position<2> shape = rowwiseTiling<2>(16));
 
   /**
-   * @brief Default constructor (using the whole 2D images as tiling)
+   * @brief Get the scaling factor.
    */
-  inline HCompress();
-  /**
-   * @brief Construct by scpecifying 2D compression tiling
-   * @see AlgoMixin
-   */
-  inline HCompress(const Position<2> shape);
+  inline const Factor& scale() const;
 
   /**
-   * @brief Set tile-wise scaling for hcompress.
-   * @details
-   * A relative factor will set the scaling factor to: tile RMS_noise * 1/value.
-   * An absolute factor will set globally the scaling factor to the given value.
-   * A none factor disables scaling.
+   * @brief Check whether the image is smoothed at reading.
+   */
+  inline bool isSmooth() const;
+
+  /**
+   * @brief Set the scaling factor.
    */
   inline HCompress& scale(Factor scale);
 
+  /**
+   * @brief Enable image smoothing at reading.
+   */
   inline HCompress& enableSmoothing();
 
+  /**
+   * @brief Disable image smoothing at reading.
+   */
   inline HCompress& disableSmoothing();
 
-  inline const Factor& scale() const;
-
-  inline bool isSmooth() const;
-
 private:
+  /**
+   * @brief The scale factor.
+   */
   Factor m_scale;
+
+  /**
+   * @brief The smoothing flag.
+   */
   bool m_smooth;
 };
 
 /**
  * @brief The Plio algorithm.
  */
-template <long N = 6>
+template <long N>
 class Plio : public AlgoMixin<N, Plio<N>> {
 
 public:
@@ -272,21 +378,15 @@ public:
   ELEFITS_MOVABLE(Plio)
 
   /**
-   * @brief Default constructor (tiling set to row-wise)
+   * @brief Constructor
    */
-  Plio();
-
-  /**
-   * @brief Construct by scpecifying compression tiling
-   * @see AlgoMixin
-   */
-  Plio(const Position<N> shape);
+  Plio(Position<N> shape = rowwiseTiling<N>());
 };
 
 /**
- * @brief The Gzip algorithm.
+ * @brief The GZIP algorithm.
  */
-template <long N = 6>
+template <long N>
 class Gzip : public AlgoMixin<N, Gzip<N>> {
 
 public:
@@ -295,20 +395,18 @@ public:
   ELEFITS_MOVABLE(Gzip)
 
   /**
-   * @brief Default constructor (tiling set to row-wise)
+   * @brief Constructor
    */
-  Gzip();
-  /**
-   * @brief Construct by scpecifying compression tiling
-   * @see AlgoMixin
-   */
-  Gzip(const Position<N> shape);
+  Gzip(Position<N> shape = rowwiseTiling<N>());
 };
 
 /**
- * @brief The Gzip algorithm applied to "shuffled" pixel values, where most significant bytes of each value appear first.
+ * @brief The GZIP algorithm applied to "shuffled" pixel values, where most significant bytes of each value appear first.
+ * 
+ * Generally, this algorithm is much more efficient in terms of compression factor than GZIP,
+ * although it is a bit slower.
  */
-template <long N = 6>
+template <long N>
 class ShuffledGzip : public AlgoMixin<N, ShuffledGzip<N>> {
 
 public:
@@ -317,14 +415,9 @@ public:
   ELEFITS_MOVABLE(ShuffledGzip)
 
   /**
-   * @brief Default constructor (tiling set to row-wise)
+   * @brief Constructor.
    */
-  ShuffledGzip();
-  /**
-   * @brief Construct by scpecifying compression tiling
-   * @see AlgoMixin
-   */
-  ShuffledGzip(const Position<N> shape);
+  ShuffledGzip(Position<N> shape = rowwiseTiling<N>());
 };
 
 } // namespace Compression

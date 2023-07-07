@@ -11,32 +11,28 @@ namespace Euclid {
 namespace Fits {
 namespace Compression {
 
-Factor::Factor(float value) : m_value(value) {}
-
 Factor Factor::none() {
   return Factor(0.f);
 }
 
 Factor Factor::absolute(float value) {
-
-  if (value <= 0.f)
+  if (value <= 0) {
     throw FitsError("Absolute factor value out of supported bounds");
-
+  }
   return Factor(-value); // absoluteness stored internally as negative value like in cfitsio
 }
 
 Factor Factor::relative(float value) {
-
-  if (value <= 0.f)
+  if (value <= 0) {
     throw FitsError("Relative factor value out of supported bounds");
-
+  }
   return Factor(value);
 }
 
 Factor::Type Factor::type() const {
-  if (m_value > 0.f) {
+  if (m_value > 0) {
     return Factor::Type::Relative;
-  } else if (m_value < 0.f) {
+  } else if (m_value < 0) {
     return Factor::Type::Absolute;
   } else {
     return Factor::Type::None;
@@ -47,21 +43,22 @@ float Factor::value() const {
   return std::abs(m_value);
 }
 
-bool Factor::operator==(const Factor& f2) const {
-  return (m_value == f2.m_value) && (this->type() == f2.type());
+bool Factor::operator==(const Factor& rhs) const {
+  return (m_value == rhs.m_value) && (this->type() == rhs.type());
 }
-Quantization::Quantization(Factor level) :
-    m_level(std::move(level)), m_dithering(Dithering::EveryPixel), m_lossyInt(false) {
-  // FIXME verify default values for dithering and lossyInt
-}
+
+Factor::Factor(float value) : m_value(value) {}
+
+Quantization::Quantization(Factor level, Dithering method) :
+    m_level(std::move(level)), m_dithering(method), m_lossyInt(false) {}
 
 Quantization& Quantization::level(Factor level) {
   m_level = std::move(level);
   return *this;
 }
 
-Quantization& Quantization::dithering(Dithering dither) {
-  m_dithering = std::move(dither);
+Quantization& Quantization::dithering(Dithering method) {
+  m_dithering = std::move(method);
   return *this;
 }
 
@@ -87,19 +84,8 @@ bool Quantization::hasLossyInt() const {
   return m_lossyInt;
 }
 
-bool Quantization::operator==(const Quantization& q2) const {
-  return (m_level == q2.level()) && (m_dithering == q2.dithering()) && (m_lossyInt == q2.hasLossyInt());
-}
-
-template <long N, typename TDerived>
-AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantize(Quantization()) {
-  static_assert(N == -1 || (N >= 0 && N <= 6), "N must be -1 or 6 at most");
-}
-
-template <long N, typename TDerived>
-TDerived& AlgoMixin<N, TDerived>::quantize(Quantization quantize) {
-  m_quantize = std::move(quantize);
-  return dynamic_cast<TDerived&>(*this);
+bool Quantization::operator==(const Quantization& rhs) const {
+  return (m_level == rhs.level()) && (m_dithering == rhs.dithering()) && (m_lossyInt == rhs.hasLossyInt());
 }
 
 template <long N, typename TDerived>
@@ -108,27 +94,42 @@ const Position<N>& AlgoMixin<N, TDerived>::shape() const {
 }
 
 template <long N, typename TDerived>
-const Quantization& AlgoMixin<N, TDerived>::quantize() const {
-  return m_quantize;
+const Quantization& AlgoMixin<N, TDerived>::quantization() const {
+  return m_quantization;
 }
 
 template <long N, typename TDerived>
-Position<N> AlgoMixin<N, TDerived>::rowWiseTiling() const {
-  return Position<6>({-1, 1, 1, 1, 1, 1}).slice<N>();
+TDerived& AlgoMixin<N, TDerived>::shape(Position<N> shape) {
+  m_shape = std::move(shape);
+  return dynamic_cast<TDerived&>(*this);
+}
+
+template <long N, typename TDerived>
+TDerived& AlgoMixin<N, TDerived>::quantization(Quantization quantization) {
+  m_quantization = std::move(quantization);
+  return dynamic_cast<TDerived&>(*this);
+}
+
+template <long N, typename TDerived>
+AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantization(Quantization()) {
+  static_assert(N == -1 || (N >= 0 && N <= 6), "N must be -1 or 6 at most");
 }
 
 None::None() : AlgoMixin<0, None>(Position<0>()) {}
 
 template <long N>
-Rice<N>::Rice() : AlgoMixin<N, Rice<N>>(this->rowWiseTiling()) {}
-
-template <long N>
-Rice<N>::Rice(const Position<N> shape) : AlgoMixin<N, Rice<N>>(shape) {}
-
-HCompress::HCompress() : AlgoMixin<2, HCompress>(-Position<2>::one()), m_scale(Factor::none()), m_smooth(false) {}
+Rice<N>::Rice(const Position<N> shape) : AlgoMixin<N, Rice<N>>(std::move(shape)) {}
 
 HCompress::HCompress(const Position<2> shape) :
-    AlgoMixin<2, HCompress>(shape), m_scale(Factor::none()), m_smooth(false) {}
+    AlgoMixin<2, HCompress>(std::move(shape)), m_scale(Factor::none()), m_smooth(false) {}
+
+const Factor& HCompress::scale() const {
+  return m_scale;
+}
+
+bool HCompress::isSmooth() const {
+  return m_smooth;
+}
 
 HCompress& HCompress::scale(Factor scale) {
   m_scale = std::move(scale);
@@ -145,31 +146,14 @@ HCompress& HCompress::disableSmoothing() {
   return *this;
 }
 
-const Factor& HCompress::scale() const {
-  return m_scale;
-}
-
-bool HCompress::isSmooth() const {
-  return m_smooth;
-}
+template <long N>
+Plio<N>::Plio(Position<N> shape) : AlgoMixin<N, Plio<N>>(std::move(shape)) {}
 
 template <long N>
-Plio<N>::Plio() : AlgoMixin<N, Plio<N>>(this->rowWiseTiling()) {}
+Gzip<N>::Gzip(Position<N> shape) : AlgoMixin<N, Gzip<N>>(std::move(shape)) {}
 
 template <long N>
-Plio<N>::Plio(const Position<N> shape) : AlgoMixin<N, Plio<N>>(shape) {}
-
-template <long N>
-Gzip<N>::Gzip() : AlgoMixin<N, Gzip<N>>(this->rowWiseTiling()) {}
-
-template <long N>
-Gzip<N>::Gzip(const Position<N> shape) : AlgoMixin<N, Gzip<N>>(shape) {}
-
-template <long N>
-ShuffledGzip<N>::ShuffledGzip() : AlgoMixin<N, ShuffledGzip<N>>(this->rowWiseTiling()) {}
-
-template <long N>
-ShuffledGzip<N>::ShuffledGzip(const Position<N> shape) : AlgoMixin<N, ShuffledGzip<N>>(shape) {}
+ShuffledGzip<N>::ShuffledGzip(Position<N> shape) : AlgoMixin<N, ShuffledGzip<N>>(std::move(shape)) {}
 
 } // namespace Compression
 } // namespace Fits
