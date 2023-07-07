@@ -1,0 +1,82 @@
+namespace Euclid {
+namespace Fits {
+
+/**
+
+\addtogroup image_compression
+
+
+\tableofcontents
+
+
+\section compression-intro External vs. Internal Compressions
+
+
+FITS supports two compression approaches:
+
+- External compression with GZIP of the entire file.
+  In this case, the whole uncompressed file is stored in memory.
+  At read time, it is initially decompressed and everything then occurs in memory (or disk with swapping).
+  At write time, the file is compressed and written to the file system at closure.
+- Internal compression with any of the supported algorithms.
+  This compression act at Image Extension level: the Primary HDU and the Binary table Extension cannot be compressed this way.
+  When a compressed HDU is accessed, only the required portion is decompressed/compressed on the fly.
+  Therefore, memory usage is minimized.
+
+Both compression approaches can be combined.
+
+
+\section compression-external External Compression
+
+
+External compression is transparent: if the filename ends with `.gz`, then external compression is enabled.
+From the API point of view, no change is required wrt. uncompressed files.
+
+
+\section compression-internal Internal Compression
+
+
+\subsection compression-internal-principle Principle
+
+
+Standard FITS files are made of HDUs which can be either images or tables.
+Binary tables can contain variable-length columns (which are not publically supported by EleFits):
+such columns can hold vector values of varying length.
+
+Internally compressed Image HDUs are partitioned into regular non-overlapping boxes called tiles (typically, rows).
+Each of the tiles is compressed with a given algorithm, and the compressed tile values are stored in a cell of a Binary table.
+The compressed tiles have different sizes since the compression rate depends on the actual pixel values,
+which is why variable-length columns are used.
+
+In practice, this means that a compressed Image HDU is effectively stored as a Binary table HDU,
+although with specific keywords stating that this is no classical table.
+Most viewers and libraries (including EleFits) provide an Image HDU interface for them,
+i.e. at reading, it is not necessary to know whether an Image is compressed or not.
+
+Given that the Primary HDU is necessarily an Image HDU, it cannot be compressed.
+Generally, if the Primary has to be internally compressed (e.g. for SIF files), then an extension is added after an empty Primary.
+Therefore, even lossless compression may be non-bijective:
+indeed, decompressing such a file would result in a MEF file with an empty Primary and decompressed Extension corresponding to the input Primary,
+instead of a single decompressed Primary.
+
+\code
+SifFile uncompressed("uncompressed.fits", FileMode::ReadOnly);
+
+MerFile compressed("compressed.fits", FileMode::Create);
+compressed.startCompressing(Compression::HCompress());
+compressed.assignImage({}, uncompressed.raster().read<2, float>());
+
+MefFile decompressed("decompressed.fits", FileMode::Create);
+decompressed.assignImage({}, decompressed.as<ImageRaster>(1).read<2, float>());
+\endcode
+
+
+\subsection compression-internal-algos Algorithms and Parameters
+
+
+TODO
+
+*/
+
+}
+}

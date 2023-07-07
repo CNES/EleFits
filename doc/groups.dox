@@ -48,6 +48,10 @@
 \ingroup handlers
 \brief Read and write binary table data units.
 
+\defgroup image_compression Image compression
+\ingroup handlers
+\brief Compress and decompress image HDUs.
+
 
 \defgroup guidelines Development guidelines
 \brief What to do, what not to, and why!
