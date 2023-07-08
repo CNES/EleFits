@@ -8,6 +8,7 @@
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/Position.h"
 
+#include <memory>
 #include <string>
 
 namespace Euclid {
@@ -54,6 +55,8 @@ Position<N> wholeDataTiling() {
  * A `relative()` factor yields: `absolute() = RMS_noise / relative()`.
  * A `none()` factor can be used to disable the feature it represents.
  */
+// FIXME for q, absolute = RMS / relative
+// but for s, absolue = RMS * relative
 class Factor {
 
 public:
@@ -430,6 +433,41 @@ public:
    */
   ShuffledGzip(Position<N> shape = rowwiseTiling<N>());
 };
+
+/**
+ * @brief Create a lossless algorithm well suited to the HDU properties.
+ * @param bitpix The uncompressed data BITPIX
+ * @param dimension The uncompressed data NAXIS
+ */
+inline std::unique_ptr<Algo> makeLosslessAlgo(long bitpix, long dimension) {
+  std::unique_ptr<Algo> out;
+  const auto q0 = Quantization(Factor::none());
+  if (bitpix > 0 && bitpix <= 24) {
+    out.reset(&(new Plio<-1>())->quantization(q0));
+  } else if (dimension >= 2) {
+    out.reset(&(new HCompress())->quantization(q0));
+  } else {
+    out.reset(&(new Rice<-1>())->quantization(q0));
+  }
+  return out;
+}
+
+/**
+ * @brief Create a possibly lossy algorithm well suited to the HDU properties.
+ * @param bitpix The uncompressed data BITPIX
+ * @param dimension The uncompressed data NAXIS
+ */
+inline std::unique_ptr<Algo> makeAlgo(long bitpix, long dimension) {
+  std::unique_ptr<Algo> out;
+  if (bitpix > 0 && bitpix <= 24) {
+    out.reset(&(new Plio<-1>())->quantization(Quantization(Factor::none())));
+  } else if (dimension >= 2) {
+    out.reset(&(new HCompress())->scale(Factor::relative(2.5)));
+  } else {
+    out.reset(new Rice<-1>());
+  }
+  return out;
+}
 
 } // namespace Compression
 } // namespace Fits
