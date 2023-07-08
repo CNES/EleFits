@@ -101,13 +101,13 @@ const Quantization& AlgoMixin<N, TDerived>::quantization() const {
 template <long N, typename TDerived>
 TDerived& AlgoMixin<N, TDerived>::shape(Position<N> shape) {
   m_shape = std::move(shape);
-  return dynamic_cast<TDerived&>(*this);
+  return static_cast<TDerived&>(*this);
 }
 
 template <long N, typename TDerived>
 TDerived& AlgoMixin<N, TDerived>::quantization(Quantization quantization) {
   m_quantization = std::move(quantization);
-  return dynamic_cast<TDerived&>(*this);
+  return static_cast<TDerived&>(*this);
 }
 
 template <long N, typename TDerived>
