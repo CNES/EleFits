@@ -1,5 +1,6 @@
 namespace Euclid {
 namespace Fits {
+namespace Compression {
 
 /**
 
@@ -14,13 +15,13 @@ namespace Fits {
 
 FITS supports two compression approaches:
 
-- External compression with GZIP of the entire file.
+- External compression by GZIPing of the entire file.
   In this case, the whole uncompressed file is stored in memory.
   At read time, it is initially decompressed and everything then occurs in memory (or disk with swapping).
-  At write time, the file is compressed and written to the file system at closure.
+  At write time, the file is compressed in memory, and then written entirely to the file system at closure.
 - Internal compression with any of the supported algorithms.
-  This compression act at Image Extension level: the Primary HDU and the Binary table Extension cannot be compressed this way.
-  When a compressed HDU is accessed, only the required portion is decompressed/compressed on the fly.
+  This compression acts at Image Extension level: the Primary HDU and the Binary table Extensions cannot be compressed this way.
+  When a compressed HDU is accessed, only the required region is decompressed/compressed on the fly.
   Therefore, memory usage is minimized.
 
 Both compression approaches can be combined.
@@ -52,6 +53,8 @@ In practice, this means that a compressed Image HDU is effectively stored as a B
 although with specific keywords stating that this is no classical table.
 Most viewers and libraries (including EleFits) provide an Image HDU interface for them,
 i.e. at reading, it is not necessary to know whether an Image is compressed or not.
+For writing, compression must be explicitely enabled before creating the HDU,
+but then classical write functions are used as if the HDU was not compressed.
 
 Given that the Primary HDU is necessarily an Image HDU, it cannot be compressed.
 Generally, if the Primary has to be internally compressed (e.g. for SIF files), then an extension is added after an empty Primary.
@@ -84,6 +87,9 @@ Tiles are represented by their common shape (edge tiles may be cropped).
 Parameters can be set either globally for all tiles,
 or tile-wise, in which case they are relative to the noise level in the tile.
 
+By default, compression of integer-valued images is lossless,
+while compression of floating point-valued images is lossy.
+
 Most algorithms support quantization.
 Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
 This is a first level of compression, where the least significant digits of a floating-point number are dropped.
@@ -91,9 +97,21 @@ Quantization can also be turned off to enable lossless compression.
 On the other hand, integer-valued data can be quantized, by casting them as floating-point data,
 making compression necessarily lossy.
 
+Once this step has been performed, the quantized values are effectively compressed by one of the supported algorithms:
+
+- GZIP (class `Gzip`) is the classical file compression algorithm.
+- Suffled GZIP (`ShuffledGzip`) first applies some byte reordering and generally shows a greater compression rate than GZIP.
+- `Rice` is the de facto standard FITS compression:
+  It is compatible with all data types and values and offers good performances.
+- PLIO (`Plio`) is designed for integer values, and more specifically bitmasks;
+  Values higher than 2^24 cannot be compressed with this algorithm.
+- `HCompress` is a somewhat more advanced algorithm, which may require more tuning than others,
+  and targets 2D images.
+
 TODO interface
 
 */
 
+}
 }
 }
