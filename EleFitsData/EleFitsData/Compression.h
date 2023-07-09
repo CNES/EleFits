@@ -20,12 +20,6 @@ class MefFile;
 /// @endcond
 
 /**
- * @ingroup image_compression
- * @brief FITS-internal, tiled compression of Image HDUs.
- */
-namespace Compression {
-
-/**
  * @relates Algo
  * @brief Create a rowwise tiling.
  * @param rowCount The number of rows per tile
@@ -506,7 +500,6 @@ inline std::unique_ptr<Algo> makeAlgo(long bitpix, long dimension) {
   return out;
 }
 
-} // namespace Compression
 } // namespace Fits
 } // namespace Euclid
 

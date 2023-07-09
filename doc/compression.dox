@@ -1,6 +1,5 @@
 namespace Euclid {
 namespace Fits {
-namespace Compression {
 
 /**
 
@@ -66,7 +65,7 @@ instead of a single decompressed Primary.
 SifFile uncompressed("uncompressed.fits", FileMode::ReadOnly);
 
 MerFile compressed("compressed.fits", FileMode::Create);
-compressed.startCompressing(Compression::HCompress());
+compressed.startCompressing(HCompress());
 compressed.assignImage({}, uncompressed.raster().read<2, float>());
 
 MefFile decompressed("decompressed.fits", FileMode::Create);
@@ -118,6 +117,5 @@ TODO interface
 
 */
 
-}
 }
 }

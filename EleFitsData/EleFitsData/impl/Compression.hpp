@@ -9,7 +9,6 @@
 
 namespace Euclid {
 namespace Fits {
-namespace Compression {
 
 Param Param::none() {
   return Param(0);
@@ -202,7 +201,6 @@ HCompress& HCompress::disableSmoothing() {
 Plio::Plio(Position<-1> tiling, Quantization quantization) :
     AlgoMixin<Plio>(std::move(tiling), std::move(quantization)) {}
 
-} // namespace Compression
 } // namespace Fits
 } // namespace Euclid
 

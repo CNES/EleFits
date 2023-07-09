@@ -269,7 +269,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
 
   Test::TemporaryMefFile fileCopy;
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}}; // for images
-  Compression::Gzip algo;
+  Gzip algo;
 
   /* Multi-column bintable in source MefFile */
   const ColumnInfo<char> charInfo("CHAR");
@@ -355,7 +355,7 @@ BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
   Test::RandomRaster<double, 1> raster(shape);
 
   // turning compression on:
-  Compression::Gzip algo;
+  Gzip algo;
   this->startCompressing(algo);
 
   // existing primary should still be uncompressed

@@ -13,7 +13,6 @@
 
 namespace Euclid {
 namespace Cfitsio {
-namespace Compression {
 
 /**
  * @brief Know if the cfitsio image compression is turned on.
@@ -23,7 +22,7 @@ inline bool isCompressing(fitsfile* fptr);
 /**
  * @brief Read the current compression parameters.
  */
-inline std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr);
+inline std::unique_ptr<Fits::Algo> readCompression(fitsfile* fptr);
 
 /**
  * @brief Read the current compression tiling.
@@ -33,34 +32,33 @@ inline Fits::Position<-1> readCompressionTiling(fitsfile* fptr);
 /**
  * @brief Set the compression algorithm to None.
  */
-inline void compress(fitsfile* fptr, const Fits::Compression::None& algo);
+inline void compress(fitsfile* fptr, const Fits::None& algo);
 
 /**
  * @brief Set the compression algorithm to Rice.
  */
-inline void compress(fitsfile* fptr, const Fits::Compression::Rice& algo);
+inline void compress(fitsfile* fptr, const Fits::Rice& algo);
 
 /**
  * @brief Set the compression algorithm to HCompress.
  */
-inline void compress(fitsfile* fptr, const Fits::Compression::HCompress& algo);
+inline void compress(fitsfile* fptr, const Fits::HCompress& algo);
 
 /**
  * @brief Set the compression algorithm to Plio.
  */
-inline void compress(fitsfile* fptr, const Fits::Compression::Plio& algo);
+inline void compress(fitsfile* fptr, const Fits::Plio& algo);
 
 /**
  * @brief Set the compression algorithm to Gzip.
  */
-inline void compress(fitsfile* fptr, const Fits::Compression::Gzip& algo);
+inline void compress(fitsfile* fptr, const Fits::Gzip& algo);
 
 /**
  * @brief Set the compression algorithm to ShuffledGzip.
  */
-inline void compress(fitsfile* fptr, const Fits::Compression::ShuffledGzip& algo);
+inline void compress(fitsfile* fptr, const Fits::ShuffledGzip& algo);
 
-} // namespace Compression
 } // namespace Cfitsio
 } // namespace Euclid
 

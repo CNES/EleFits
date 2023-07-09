@@ -5,7 +5,7 @@
 ### New features
 
 * Image HDU compression
-  * Added compression data classes `Compression::Algo`, `Gzip`, `Plio`...
+  * Added compression data classes `Quantization`, `Gzip`, `Plio`...
   * Added compression setters and getters `MefFile::startCompressing()`, `stopCompressing()`, `isCompressing()`, `ImageHdu::compression()`
   * Implemented compression benchmark
 

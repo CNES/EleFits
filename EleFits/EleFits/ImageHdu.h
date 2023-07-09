@@ -99,7 +99,7 @@ public:
   /**
    * @brief Read the compression parameters.
    */
-  std::unique_ptr<Compression::Algo> readCompression() const;
+  std::unique_ptr<Algo> readCompression() const;
 
   /**
    * @brief Redefine the image shape and type.
