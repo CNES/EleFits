@@ -92,6 +92,11 @@ public:
   HduCategory readCategory() const override;
 
   /**
+   * @brief Check whether the HDU is compressed.
+   */
+  bool isCompressed() const;
+
+  /**
    * @brief Read the compression parameters.
    */
   std::unique_ptr<Compression::Algo> readCompression() const;

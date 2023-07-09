@@ -13,8 +13,8 @@ namespace Fits {
 namespace Compression {
 
 // used to dispatch the compress() call for each AlgoMixin subclass TDerived
-template <long N, typename TDerived>
-void AlgoMixin<N, TDerived>::compress(void* fptr) const {
+template <typename TDerived>
+void AlgoMixin<TDerived>::compress(void* fptr) const {
   Euclid::Cfitsio::Compression::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
 }
 
@@ -93,7 +93,7 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
 
   switch (algo) {
     case RICE_1:
-      out.reset(new Fits::Compression::Rice<-1>(tiling));
+      out.reset(new Fits::Compression::Rice(tiling));
       break;
     case HCOMPRESS_1:
       out.reset(new Fits::Compression::HCompress({tiling[0], tiling[1]}));
@@ -101,16 +101,16 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
       dynamic_cast<Fits::Compression::HCompress&>(*out).scale(std::move(scaling)).quantization(std::move(quantization));
       break;
     case PLIO_1:
-      out.reset(new Fits::Compression::Plio<-1>(tiling));
-      dynamic_cast<Fits::Compression::Plio<-1>&>(*out).quantization(std::move(quantization));
+      out.reset(new Fits::Compression::Plio(tiling));
+      dynamic_cast<Fits::Compression::Plio&>(*out).quantization(std::move(quantization));
       break;
     case GZIP_1:
-      out.reset(new Fits::Compression::Gzip<-1>(tiling));
-      dynamic_cast<Fits::Compression::Gzip<-1>&>(*out).quantization(std::move(quantization));
+      out.reset(new Fits::Compression::Gzip(tiling));
+      dynamic_cast<Fits::Compression::Gzip&>(*out).quantization(std::move(quantization));
       break;
     case GZIP_2:
-      out.reset(new Fits::Compression::ShuffledGzip<-1>(tiling));
-      dynamic_cast<Fits::Compression::ShuffledGzip<-1>&>(*out).quantization(std::move(quantization));
+      out.reset(new Fits::Compression::ShuffledGzip(tiling));
+      dynamic_cast<Fits::Compression::ShuffledGzip&>(*out).quantization(std::move(quantization));
       break;
     default:
       throw Fits::FitsError("Unknown compression type");
@@ -120,11 +120,10 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   return out;
 }
 
-template <long N>
-void setTiling(fitsfile* fptr, const Fits::Position<N>& shape) {
+inline void setTiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
   int status = 0;
-  Euclid::Fits::Position<N> nonconstShape = shape;
-  fits_set_tile_dim(fptr, N, nonconstShape.data(), &status);
+  Euclid::Fits::Position<-1> nonconstShape = shape;
+  fits_set_tile_dim(fptr, nonconstShape.size(), nonconstShape.data(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression tiling");
 }
 
@@ -167,8 +166,7 @@ void compress(fitsfile* fptr, const Fits::Compression::None&) {
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to None");
 }
 
-template <long N>
-void compress(fitsfile* fptr, const Fits::Compression::Rice<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::Rice& algo) {
   int status = 0;
   fits_set_compression_type(fptr, RICE_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Rice");
@@ -198,16 +196,14 @@ void compress(fitsfile* fptr, const Fits::Compression::HCompress& algo) {
   CfitsioError::mayThrow(status, fptr, "Cannot set smoothing for HCompress");
 }
 
-template <long N>
-void compress(fitsfile* fptr, const Fits::Compression::Plio<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::Plio& algo) {
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
   setTiling(fptr, algo.shape());
 }
 
-template <long N>
-void compress(fitsfile* fptr, const Fits::Compression::Gzip<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::Gzip& algo) {
   int status = 0;
   fits_set_compression_type(fptr, GZIP_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
@@ -215,8 +211,7 @@ void compress(fitsfile* fptr, const Fits::Compression::Gzip<N>& algo) {
   setQuantize(fptr, algo.quantization());
 }
 
-template <long N>
-void compress(fitsfile* fptr, const Fits::Compression::ShuffledGzip<N>& algo) {
+void compress(fitsfile* fptr, const Fits::Compression::ShuffledGzip& algo) {
   int status = 0;
   fits_set_compression_type(fptr, GZIP_2, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");

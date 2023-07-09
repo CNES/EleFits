@@ -77,7 +77,7 @@ int getBitpix(Fits::ImageHdu hdu) {
 
 void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
   if (algoName == "RICE") {
-    Fits::Compression::Rice<6> algo;
+    Fits::Compression::Rice algo;
     g.startCompressing(algo);
 
   } else if (algoName == "HCOMPRESS") {
@@ -85,15 +85,15 @@ void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
     g.startCompressing(algo);
 
   } else if (algoName == "PLIO") {
-    Fits::Compression::Plio<6> algo;
+    Fits::Compression::Plio algo;
     g.startCompressing(algo);
 
   } else if (algoName == "GZIP") {
-    Fits::Compression::Gzip<6> algo;
+    Fits::Compression::Gzip algo;
     g.startCompressing(algo);
 
   } else if (algoName == "SHUFFLEDGZIP") {
-    Fits::Compression::ShuffledGzip<6> algo;
+    Fits::Compression::ShuffledGzip algo;
     g.startCompressing(algo);
 
   } else {
@@ -209,7 +209,7 @@ public:
           logger.info(err.what()); // TODO
 
           logger.info("# fallback to ShuffledGzip for current Hdu");
-          Fits::Compression::ShuffledGzip<6> defaultAlgo;
+          Fits::Compression::ShuffledGzip defaultAlgo;
           g.startCompressing(defaultAlgo);
 
           chrono.start();
@@ -226,7 +226,7 @@ public:
           logger.info(err.what()); // TODO
 
           logger.info("# fallback to ShuffledGzip for current Hdu");
-          Fits::Compression::ShuffledGzip<6> defaultAlgo;
+          Fits::Compression::ShuffledGzip defaultAlgo;
           g.startCompressing(defaultAlgo);
 
           chrono.start();

@@ -265,11 +265,11 @@ void checkAppendNullBintable(MefFile& f) {
   }
 ELEFITS_FOREACH_RASTER_TYPE(APPEND_BINTABLE_TEST)
 
-BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME split into cases
 
   Test::TemporaryMefFile fileCopy;
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}}; // for images
-  Compression::Gzip algo(-Position<6>::one());
+  Compression::Gzip algo;
 
   /* Multi-column bintable in source MefFile */
   const ColumnInfo<char> charInfo("CHAR");
@@ -294,31 +294,29 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
 
   /* Copy bintable */
   const auto& bintableCopy = fileCopy.appendCopy(bintable);
-  BOOST_TEST(bintableCopy.as<BintableHdu>().readName() == bintable.readName());
-  BOOST_TEST(bintableCopy.as<BintableHdu>().readRowCount() == bintable.readRowCount());
-  BOOST_TEST(bintableCopy.as<BintableHdu>().readColumnCount() == bintable.readColumnCount());
-  BOOST_TEST(bintableCopy.as<BintableHdu>().columns().readName(0) == bintable.columns().readName(0));
-  BOOST_TEST(bintableCopy.as<BintableHdu>().columns().readName(1) == bintable.columns().readName(1));
-  BOOST_TEST(
-      bintableCopy.as<BintableHdu>().header().parse<int>("FOO").value == bintable.header().parse<int>("FOO").value);
-  BOOST_TEST(
-      bintableCopy.as<BintableHdu>().header().parse<int>("BAR").value == bintable.header().parse<int>("BAR").value);
+  BOOST_TEST(bintableCopy.readName() == bintable.readName());
+  BOOST_TEST(bintableCopy.readRowCount() == bintable.readRowCount());
+  BOOST_TEST(bintableCopy.readColumnCount() == bintable.readColumnCount());
+  BOOST_TEST(bintableCopy.columns().readName(0) == bintable.columns().readName(0));
+  BOOST_TEST(bintableCopy.columns().readName(1) == bintable.columns().readName(1));
+  BOOST_TEST(bintableCopy.header().parse<int>("FOO").value == bintable.header().parse<int>("FOO").value);
+  BOOST_TEST(bintableCopy.header().parse<int>("BAR").value == bintable.header().parse<int>("BAR").value);
 
   /* Copy empty image */
   const auto& emptyCopy = fileCopy.appendCopy(emptyImage);
-  BOOST_TEST(emptyCopy.as<ImageHdu>().readName() == emptyImage.readName());
-  BOOST_TEST(emptyCopy.as<ImageHdu>().readSize() == emptyImage.readSize());
-  BOOST_TEST(emptyCopy.as<ImageHdu>().header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
-  BOOST_TEST(emptyCopy.as<ImageHdu>().header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
+  BOOST_TEST(emptyCopy.readName() == emptyImage.readName());
+  BOOST_TEST(emptyCopy.readSize() == emptyImage.readSize());
+  BOOST_TEST(emptyCopy.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
+  BOOST_TEST(emptyCopy.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
   BOOST_TEST(emptyCopy.matches(HduCategory::RawImage));
 
   /* Copy uncompressed to uncompressed */
   const auto& imageCopy = fileCopy.appendCopy(image);
-  BOOST_TEST(imageCopy.as<ImageHdu>().readName() == image.readName());
-  BOOST_TEST(imageCopy.as<ImageHdu>().readSize() == image.readSize());
-  BOOST_TEST(imageCopy.as<ImageHdu>().header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
-  BOOST_TEST(imageCopy.as<ImageHdu>().header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
-  const auto output = imageCopy.as<ImageHdu>().raster().template read<double, 1>();
+  BOOST_TEST(imageCopy.readName() == image.readName());
+  BOOST_TEST(imageCopy.readSize() == image.readSize());
+  BOOST_TEST(imageCopy.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
+  BOOST_TEST(imageCopy.header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
+  const auto output = imageCopy.raster().template read<double, 1>();
   BOOST_TEST(output.shape() == input.shape());
   BOOST_TEST(output.container() == input.container());
   BOOST_TEST(image.matches(HduCategory::RawImage));
@@ -326,11 +324,11 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
   /* Copy uncompressed to compressed */
   fileCopy.startCompressing(algo);
   const auto& imageCopy2 = fileCopy.appendCopy(image);
-  BOOST_TEST(imageCopy2.as<ImageHdu>().readName() == image.readName());
-  BOOST_TEST(imageCopy2.as<ImageHdu>().readSize() == image.readSize());
-  BOOST_TEST(imageCopy2.as<ImageHdu>().header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
-  BOOST_TEST(imageCopy2.as<ImageHdu>().header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
-  const auto output2 = imageCopy2.as<ImageHdu>().raster().template read<double, 1>();
+  BOOST_TEST(imageCopy2.readName() == image.readName());
+  BOOST_TEST(imageCopy2.readSize() == image.readSize());
+  BOOST_TEST(imageCopy2.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
+  BOOST_TEST(imageCopy2.header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
+  const auto output2 = imageCopy2.raster().template read<double, 1>();
   BOOST_TEST(output2.shape() == input.shape());
   BOOST_TEST(output2.container() == input.container());
   BOOST_TEST(imageCopy2.matches(HduCategory::CompressedImageExt)); // the copy should now be compressed
@@ -338,45 +336,41 @@ BOOST_FIXTURE_TEST_CASE(appendCopy_test, Test::TemporaryMefFile) {
   /* Copy compressed to uncompressed */
   fileCopy.stopCompressing();
   const auto& imageCopy3 = fileCopy.appendCopy(compImage);
-  BOOST_TEST(imageCopy3.as<ImageHdu>().readName() == compImage.readName());
-  BOOST_TEST(imageCopy3.as<ImageHdu>().readSize() == compImage.readSize());
-  BOOST_TEST(imageCopy3.as<ImageHdu>().header().parse<int>("FOO").value == compImage.header().parse<int>("FOO").value);
-  BOOST_TEST(imageCopy3.as<ImageHdu>().header().parse<int>("BAR").value == compImage.header().parse<int>("BAR").value);
-  const auto output3 = imageCopy3.as<ImageHdu>().raster().template read<double, 1>();
+  BOOST_TEST(imageCopy3.readName() == compImage.readName());
+  BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
+  BOOST_TEST(imageCopy3.header().parse<int>("FOO").value == compImage.header().parse<int>("FOO").value);
+  BOOST_TEST(imageCopy3.header().parse<int>("BAR").value == compImage.header().parse<int>("BAR").value);
+  const auto output3 = imageCopy3.raster().template read<double, 1>();
   BOOST_TEST(output3.shape() == input.shape());
   BOOST_TEST(output3.container() == input.container());
   BOOST_TEST(imageCopy3.matches(HduCategory::RawImage)); // the copy should now be uncompressed
 }
 
 // This tests the isCompressedImage function from the ImageWrapper
-BOOST_FIXTURE_TEST_CASE(isCompressedImage_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
 
-  RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}}; // for images
+  RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
 
   Position<1> shape {10};
   Test::RandomRaster<double, 1> raster(shape);
 
   // turning compression on:
-  Compression::Gzip algo(-Position<6>::one());
+  Compression::Gzip algo;
   this->startCompressing(algo);
 
   // existing primary should still be uncompressed
-  BOOST_TEST(Euclid::Cfitsio::ImageIo::isCompressedImage(this->m_fptr) == false);
+  BOOST_TEST(not this->primary().isCompressed());
 
   // added ext should be compressed
-  const auto& image2 = this->appendImage("SECOND", records, raster);
-  BOOST_TEST(Euclid::Cfitsio::ImageIo::isCompressedImage(this->m_fptr) == true);
+  const auto& image1 = this->appendImage("SECOND", records, raster);
+  BOOST_TEST(image1.isCompressed());
 
   // turning compression off
   this->stopCompressing();
 
   // added ext should not be compressed
-  const auto& image3 = this->appendImage("THIRD", records, raster);
-  BOOST_TEST(Euclid::Cfitsio::ImageIo::isCompressedImage(this->m_fptr) == false);
-
-  // disable unused variable warnings
-  (void)image2;
-  (void)image3;
+  const auto& image2 = this->appendImage("THIRD", records, raster);
+  BOOST_TEST(not image2.isCompressed());
 }
 
 //-----------------------------------------------------------------------------

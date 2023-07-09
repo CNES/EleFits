@@ -97,31 +97,31 @@ public:
     } else if (algoName == "RICE") {
 
       logger.info("# setting compression to Rice");
-      Fits::Compression::Rice algo(-Fits::Position<2>::one());
+      Fits::Compression::Rice algo;
       f.startCompressing(algo);
 
     } else if (algoName == "HCOMPRESS") {
 
       logger.info("# setting compression to Hcompress");
-      Fits::Compression::HCompress algo(-Fits::Position<2>::one());
+      Fits::Compression::HCompress algo;
       f.startCompressing(algo);
 
     } else if (algoName == "PLIO") {
 
       logger.info("# setting compression to Plio");
-      Fits::Compression::Plio algo(-Fits::Position<2>::one());
+      Fits::Compression::Plio algo;
       f.startCompressing(algo);
 
     } else if (algoName == "GZIP") {
 
       logger.info("# setting compression to Gzip");
-      Fits::Compression::Gzip algo(-Fits::Position<2>::one());
+      Fits::Compression::Gzip algo;
       f.startCompressing(algo);
 
     } else if (algoName == "SHUFFLEDGZIP") {
 
       logger.info("# setting compression to ShuffledGzip");
-      Fits::Compression::ShuffledGzip algo(-Fits::Position<2>::one());
+      Fits::Compression::ShuffledGzip algo;
       f.startCompressing(algo);
 
     } else {

@@ -12,7 +12,7 @@ namespace Fits {
 namespace Compression {
 
 Factor Factor::none() {
-  return Factor(0.f);
+  return Factor(0);
 }
 
 Factor Factor::absolute(float value) {
@@ -88,40 +88,39 @@ bool Quantization::operator==(const Quantization& rhs) const {
   return (m_level == rhs.level()) && (m_dithering == rhs.dithering()) && (m_lossyInt == rhs.hasLossyInt());
 }
 
-template <long N, typename TDerived>
-const Position<N>& AlgoMixin<N, TDerived>::shape() const {
+template <typename TDerived>
+const Position<-1>& AlgoMixin<TDerived>::shape() const {
   return m_shape;
 }
 
-template <long N, typename TDerived>
-const Quantization& AlgoMixin<N, TDerived>::quantization() const {
+template <typename TDerived>
+const Quantization& AlgoMixin<TDerived>::quantization() const {
   return m_quantization;
 }
 
-template <long N, typename TDerived>
-TDerived& AlgoMixin<N, TDerived>::shape(Position<N> shape) {
+template <typename TDerived>
+TDerived& AlgoMixin<TDerived>::shape(Position<-1> shape) {
   m_shape = std::move(shape);
   return static_cast<TDerived&>(*this);
 }
 
-template <long N, typename TDerived>
-TDerived& AlgoMixin<N, TDerived>::quantization(Quantization quantization) {
+template <typename TDerived>
+TDerived& AlgoMixin<TDerived>::quantization(Quantization quantization) {
   m_quantization = std::move(quantization);
   return static_cast<TDerived&>(*this);
 }
 
-template <long N, typename TDerived>
-AlgoMixin<N, TDerived>::AlgoMixin(Position<N> shape) : m_shape(std::move(shape)), m_quantization(Quantization()) {
-  static_assert(N == -1 || (N >= 0 && N <= 6), "N must be -1 or 6 at most");
+template <typename TDerived>
+AlgoMixin<TDerived>::AlgoMixin(Position<-1> shape) : m_shape(std::move(shape)), m_quantization(Quantization()) {
+  OutOfBoundsError::mayThrow("Tiling dimension error", m_shape.size(), {0, 6});
 }
 
-None::None() : AlgoMixin<0, None>(Position<0>()) {}
+None::None() : AlgoMixin<None>({}) {}
 
-template <long N>
-Rice<N>::Rice(const Position<N> shape) : AlgoMixin<N, Rice<N>>(std::move(shape)) {}
+Rice::Rice(const Position<-1> shape) : AlgoMixin<Rice>(std::move(shape)) {}
 
-HCompress::HCompress(const Position<2> shape) :
-    AlgoMixin<2, HCompress>(std::move(shape)), m_scale(Factor::none()), m_smooth(false) {}
+HCompress::HCompress(const Position<-1> shape) :
+    AlgoMixin<HCompress>(std::move(shape)), m_scale(Factor::none()), m_smooth(false) {}
 
 const Factor& HCompress::scale() const {
   return m_scale;
@@ -146,14 +145,11 @@ HCompress& HCompress::disableSmoothing() {
   return *this;
 }
 
-template <long N>
-Plio<N>::Plio(Position<N> shape) : AlgoMixin<N, Plio<N>>(std::move(shape)) {}
+Plio::Plio(Position<-1> shape) : AlgoMixin<Plio>(std::move(shape)) {}
 
-template <long N>
-Gzip<N>::Gzip(Position<N> shape) : AlgoMixin<N, Gzip<N>>(std::move(shape)) {}
+Gzip::Gzip(Position<-1> shape) : AlgoMixin<Gzip>(std::move(shape)) {}
 
-template <long N>
-ShuffledGzip<N>::ShuffledGzip(Position<N> shape) : AlgoMixin<N, ShuffledGzip<N>>(std::move(shape)) {}
+ShuffledGzip::ShuffledGzip(Position<-1> shape) : AlgoMixin<ShuffledGzip>(std::move(shape)) {}
 
 } // namespace Compression
 } // namespace Fits

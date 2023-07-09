@@ -67,6 +67,11 @@ HduCategory ImageHdu::readCategory() const {
   return cat;
 }
 
+bool ImageHdu::isCompressed() const {
+  touchThisHdu();
+  return Cfitsio::ImageIo::isCompressedImage(m_fptr);
+}
+
 std::unique_ptr<Compression::Algo> ImageHdu::readCompression() const {
   touchThisHdu();
   return Cfitsio::Compression::readCompression(m_fptr);
