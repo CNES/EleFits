@@ -15,14 +15,14 @@ Param Param::none() {
   return Param(0);
 }
 
-Param Param::absolute(float value) {
+Param Param::absolute(double value) {
   if (value <= 0) {
     throw FitsError("Absolute parameter value must be strictly positive");
   }
   return Param(-value); // Absoluteness stored internally as negative value like in FITS
 }
 
-Param Param::relative(float value) {
+Param Param::relative(double value) {
   if (value <= 0) {
     throw FitsError("Relative parameter value must be strictly positive");
   }
@@ -39,7 +39,7 @@ Param::Type Param::type() const {
   }
 }
 
-float Param::value() const {
+double Param::value() const {
   return std::abs(m_value);
 }
 
@@ -55,7 +55,7 @@ bool Param::operator!=(const Param& rhs) const {
   return not(*this == rhs);
 }
 
-Param::Param(float value) : m_value(value) {}
+Param::Param(double value) : m_value(value) {}
 
 Quantization::Quantization() : Quantization::Quantization(Param::none(), Dithering::None) {}
 

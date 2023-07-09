@@ -68,12 +68,12 @@ public:
   /**
    * @brief Create an absolute parameter.
    */
-  static inline Param absolute(float value);
+  static inline Param absolute(double value);
 
   /**
    * @brief Create a relative parameter.
    */
-  static inline Param relative(float value);
+  static inline Param relative(double value);
 
   /**
    * @brief Get the parameter type.
@@ -83,7 +83,7 @@ public:
   /**
    * @brief Get the parameter value.
    */
-  inline float value() const;
+  inline double value() const;
 
   /**
    * @brief Cast as a Boolean, i.e. `false` iff type is `None`.
@@ -104,12 +104,12 @@ private:
   /**
    * @brief Create a parameter.
    */
-  inline explicit Param(float value);
+  inline explicit Param(double value);
 
   /**
    * @brief The parameter value, which encodes the type as its sign.
    */
-  float m_value;
+  double m_value;
 };
 
 /**
