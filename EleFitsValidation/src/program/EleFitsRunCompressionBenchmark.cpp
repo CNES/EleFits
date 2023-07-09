@@ -99,7 +99,7 @@ void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
   } else {
     logger.info("# UNKNOWN COMPRESSION TYPE");
     logger.info("(disabling compression)");
-    Fits::None algo;
+    Fits::NoCompression algo;
     g.stopCompressing();
   }
 }

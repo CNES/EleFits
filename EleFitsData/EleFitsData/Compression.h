@@ -15,12 +15,12 @@ namespace Euclid {
 namespace Fits {
 
 /// @cond
-// Forward declaration for friendship in Algo
+// Forward declaration for friendship in Compression
 class MefFile;
 /// @endcond
 
 /**
- * @relates Algo
+ * @relates Compression
  * @brief Create a rowwise tiling.
  * @param rowCount The number of rows per tile
  */
@@ -29,7 +29,7 @@ inline Position<-1> rowwiseTiling(long rowCount = 1) {
 }
 
 /**
- * @relates Algo
+ * @relates Compression
  * @brief Create a whole-data array tiling.
  */
 inline Position<-1> maxTiling() {
@@ -206,15 +206,15 @@ private:
  * @see rowwiseTiling()
  * @see maxTiling()
  */
-class Algo {
+class Compression {
 
   friend class Euclid::Fits::MefFile; // TODO rm if/when possible
 
 public:
-  explicit Algo() = default;
-  ELEFITS_VIRTUAL_DTOR(Algo)
-  ELEFITS_COPYABLE(Algo)
-  ELEFITS_MOVABLE(Algo)
+  explicit Compression() = default;
+  ELEFITS_VIRTUAL_DTOR(Compression)
+  ELEFITS_COPYABLE(Compression)
+  ELEFITS_MOVABLE(Compression)
 
   /**
    * @brief Get the tiling.
@@ -235,7 +235,7 @@ protected:
   /**
    * @brief Constructor.
    */
-  inline explicit Algo(Position<-1> tiling, Quantization quantization);
+  inline explicit Compression(Position<-1> tiling, Quantization quantization);
 
   /**
    * @brief Enable compression by CFITSIO.
@@ -258,16 +258,16 @@ protected:
  * @brief Intermediate class for internal dispatching.
  */
 template <typename TDerived>
-class AlgoMixin : public Algo {
+class AlgoMixin : public Compression {
 
 public:
   ELEFITS_VIRTUAL_DTOR(AlgoMixin)
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
-  using Algo::tiling;
+  using Compression::tiling;
 
-  using Algo::quantization;
+  using Compression::quantization;
 
   /**
    * @brief Set the tiling.
@@ -299,31 +299,31 @@ protected:
  * @ingroup image_compression
  * @brief No compression.
  */
-class None : public AlgoMixin<None> {
+class NoCompression : public AlgoMixin<NoCompression> {
 
 public:
-  ELEFITS_VIRTUAL_DTOR(None)
-  ELEFITS_COPYABLE(None)
-  ELEFITS_MOVABLE(None)
+  ELEFITS_VIRTUAL_DTOR(NoCompression)
+  ELEFITS_COPYABLE(NoCompression)
+  ELEFITS_MOVABLE(NoCompression)
 
   /**
    * @brief Constructor.
    */
-  inline explicit None();
+  inline explicit NoCompression();
 
-  using Algo::tiling;
+  using Compression::tiling;
 
-  using Algo::quantization;
-
-  /**
-   * @brief Disabled setter.
-   */
-  inline None& tiling(Position<-1>) override;
+  using Compression::quantization;
 
   /**
    * @brief Disabled setter.
    */
-  inline None& quantization(Quantization) override;
+  inline NoCompression& tiling(Position<-1>) override;
+
+  /**
+   * @brief Disabled setter.
+   */
+  inline NoCompression& quantization(Quantization) override;
 };
 
 /**
@@ -395,7 +395,7 @@ public:
    */
   inline explicit HCompress(Position<-1> tiling = rowwiseTiling(16), Quantization quantization = Quantization());
 
-  using Algo::quantization;
+  using Compression::quantization;
 
   /**
    * @brief Check whether compression is lossless.
@@ -470,8 +470,8 @@ public:
  * @param bitpix The uncompressed data BITPIX
  * @param dimension The uncompressed data NAXIS
  */
-inline std::unique_ptr<Algo> makeLosslessAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Algo> out;
+inline std::unique_ptr<Compression> makeLosslessAlgo(long bitpix, long dimension) {
+  std::unique_ptr<Compression> out;
   if (bitpix > 0 && bitpix <= 24) {
     out.reset(new Plio());
   } else if (dimension >= 2) {
@@ -487,8 +487,8 @@ inline std::unique_ptr<Algo> makeLosslessAlgo(long bitpix, long dimension) {
  * @param bitpix The uncompressed data BITPIX
  * @param dimension The uncompressed data NAXIS
  */
-inline std::unique_ptr<Algo> makeAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Algo> out;
+inline std::unique_ptr<Compression> makeAlgo(long bitpix, long dimension) {
+  std::unique_ptr<Compression> out;
   const auto q4 = Quantization(Param::relative(4));
   if (bitpix > 0 && bitpix <= 24) {
     out.reset(new Plio());

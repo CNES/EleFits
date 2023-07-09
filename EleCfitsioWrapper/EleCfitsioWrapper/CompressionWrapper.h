@@ -22,7 +22,7 @@ inline bool isCompressing(fitsfile* fptr);
 /**
  * @brief Read the current compression parameters.
  */
-inline std::unique_ptr<Fits::Algo> readCompression(fitsfile* fptr);
+inline std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr);
 
 /**
  * @brief Read the current compression tiling.
@@ -30,9 +30,9 @@ inline std::unique_ptr<Fits::Algo> readCompression(fitsfile* fptr);
 inline Fits::Position<-1> readCompressionTiling(fitsfile* fptr);
 
 /**
- * @brief Set the compression algorithm to None.
+ * @brief Set the compression algorithm to NoCompression.
  */
-inline void compress(fitsfile* fptr, const Fits::None& algo);
+inline void compress(fitsfile* fptr, const Fits::NoCompression& algo);
 
 /**
  * @brief Set the compression algorithm to Rice.

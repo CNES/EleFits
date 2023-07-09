@@ -90,8 +90,8 @@ public:
 
     if (algoName == "NONE") {
 
-      logger.info("# setting compression to None");
-      Fits::None algo;
+      logger.info("# setting compression to NoCompression");
+      Fits::NoCompression algo;
       f.startCompressing(algo);
 
     } else if (algoName == "RICE") {
@@ -128,7 +128,7 @@ public:
 
       logger.info("# UNKNOWN COMPRESSION TYPE");
       logger.info("(disabling compression)");
-      Fits::None algo;
+      Fits::NoCompression algo;
       f.stopCompressing();
     }
 

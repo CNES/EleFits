@@ -115,12 +115,12 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
   // For now, we cannot resize uint64 images (CFITSIO bug), so option (1) cannot be tested.
 }
 
-void MefFile::startCompressing(const Fits::Algo& algo) {
+void MefFile::startCompressing(const Fits::Compression& algo) {
   algo.compress(m_fptr);
 }
 
 void MefFile::stopCompressing() {
-  startCompressing(Fits::None());
+  startCompressing(Fits::NoCompression());
 }
 
 bool MefFile::isCompressing() const {

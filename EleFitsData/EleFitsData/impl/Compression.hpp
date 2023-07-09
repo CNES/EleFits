@@ -101,20 +101,20 @@ bool Quantization::operator!=(const Quantization& rhs) const {
   return not(*this == rhs);
 }
 
-Algo::Algo(Position<-1> tiling, Quantization quantization) :
+Compression::Compression(Position<-1> tiling, Quantization quantization) :
     m_tiling(std::move(tiling)), m_quantization(std::move(quantization)) {
   OutOfBoundsError::mayThrow("Tiling dimension error", m_tiling.size(), {0, 6});
 }
 
-const Position<-1>& Algo::tiling() const {
+const Position<-1>& Compression::tiling() const {
   return m_tiling;
 }
 
-const Quantization& Algo::quantization() const {
+const Quantization& Compression::quantization() const {
   return m_quantization;
 }
 
-bool Algo::isLossless() const {
+bool Compression::isLossless() const {
   return not m_quantization;
 }
 
@@ -132,16 +132,16 @@ TDerived& AlgoMixin<TDerived>::quantization(Quantization quantization) {
 
 template <typename TDerived>
 AlgoMixin<TDerived>::AlgoMixin(Position<-1> tiling, Quantization quantization) :
-    Algo(std::move(tiling), std::move(quantization)) {}
+    Compression(std::move(tiling), std::move(quantization)) {}
 
-None::None() : AlgoMixin<None>({}, Quantization()) {}
+NoCompression::NoCompression() : AlgoMixin<NoCompression>({}, Quantization()) {}
 
-None& None::tiling(Position<-1>) {
+NoCompression& NoCompression::tiling(Position<-1>) {
   throw FitsError("Cannot set tiling for diabled compression");
   return *this;
 }
 
-None& None::quantization(Quantization) {
+NoCompression& NoCompression::quantization(Quantization) {
   throw FitsError("Cannot set quantization for diabled compression");
   return *this;
 }
@@ -164,7 +164,7 @@ bool HCompress::isLossless() const {
   if (m_scale) {
     return false;
   }
-  return Algo::isLossless();
+  return Compression::isLossless();
 }
 
 const Param& HCompress::scale() const {

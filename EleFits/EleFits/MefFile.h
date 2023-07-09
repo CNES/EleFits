@@ -222,7 +222,7 @@ public:
   /**
    * @brief Set the compression algorithm to be used when writting new image extensions.
   */
-  inline void startCompressing(const Algo& algo);
+  inline void startCompressing(const Compression& algo);
 
   /**
   * @brief Disable compression when writting new image extensions.

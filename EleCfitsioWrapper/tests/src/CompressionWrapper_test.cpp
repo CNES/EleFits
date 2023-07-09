@@ -42,11 +42,11 @@ void testAlgoMixinCompress(long dimension, fitsfile* fptr, int comptype) {
 }
 
 template <>
-void testAlgoMixinCompress<Fits::None>(long, fitsfile* fptr, int comptype) {
+void testAlgoMixinCompress<Fits::NoCompression>(long, fitsfile* fptr, int comptype) {
 
   int status = 0;
 
-  Fits::None algo;
+  Fits::NoCompression algo;
   Cfitsio::compress(fptr, algo);
 
   // verify the correct compression algo is set:
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 
   Euclid::Fits::Test::MinimalFile file;
 
-  testAlgoMixinCompress<Fits::None>(0, file.fptr, int(NULL));
+  testAlgoMixinCompress<Fits::NoCompression>(0, file.fptr, int(NULL));
 
   testAlgoMixinCompress<Fits::Rice>(0, file.fptr, RICE_1);
   testAlgoMixinCompress<Fits::Rice>(1, file.fptr, RICE_1);
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
 
 BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
-  Fits::None noneAlgo;
+  Fits::NoCompression noneAlgo;
   const Euclid::Fits::Position<-1>& shape {300, 200};
   Fits::HCompress algo(shape);
 
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
   Cfitsio::compress(file.fptr, noneAlgo);
   BOOST_TEST(not Cfitsio::isCompressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::None*>(Cfitsio::readCompression(file.fptr).get()));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::readCompression(file.fptr).get()));
 
   Cfitsio::compress(file.fptr, algo);
   BOOST_TEST(Cfitsio::isCompressing(file.fptr));
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
   Cfitsio::compress(file.fptr, noneAlgo);
   BOOST_TEST(not Cfitsio::isCompressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::None*>(Cfitsio::readCompression(file.fptr).get()));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::readCompression(file.fptr).get()));
 }
 
 //-----------------------------------------------------------------------------

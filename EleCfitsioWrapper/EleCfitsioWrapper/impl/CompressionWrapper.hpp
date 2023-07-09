@@ -30,14 +30,14 @@ bool isCompressing(fitsfile* fptr) {
   return algo != int(NULL);
 }
 
-std::unique_ptr<Fits::Algo> readCompression(fitsfile* fptr) {
+std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
 
   // Read algo
   int status = 0;
   int algo = int(NULL);
   fits_get_compression_type(fptr, &algo, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read compression type");
-  std::unique_ptr<Fits::Algo> out(new Fits::None());
+  std::unique_ptr<Fits::Compression> out(new Fits::NoCompression());
   if (algo == int(NULL)) {
     return out;
   }
@@ -152,10 +152,10 @@ inline void setQuantize(fitsfile* fptr, const Fits::Quantization& quantization) 
   CfitsioError::mayThrow(status, fptr, "Cannot set dithering method");
 }
 
-void compress(fitsfile* fptr, const Fits::None&) {
+void compress(fitsfile* fptr, const Fits::NoCompression&) {
   int status = 0;
   fits_set_compression_type(fptr, int(NULL), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to None");
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to NoCompression");
 }
 
 void compress(fitsfile* fptr, const Fits::Rice& algo) {

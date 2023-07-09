@@ -124,11 +124,11 @@ void testAlgoMixinParameters(long dimension = 0) {
   BOOST_TEST((algo.quantization() == quantization));
 }
 
-// specific to the None algo
+// specific to the NoCompression algo
 template <>
-void testAlgoMixinParameters<None>(long) {
+void testAlgoMixinParameters<NoCompression>(long) {
 
-  None algo;
+  NoCompression algo;
 
   // verify shape of algo is correctly stored at construction
   BOOST_TEST((algo.tiling() == Position<-1>()));
@@ -136,7 +136,7 @@ void testAlgoMixinParameters<None>(long) {
 
 BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
-  testAlgoMixinParameters<None>();
+  testAlgoMixinParameters<NoCompression>();
 
   testAlgoMixinParameters<Rice>(0);
   testAlgoMixinParameters<Rice>(1);
