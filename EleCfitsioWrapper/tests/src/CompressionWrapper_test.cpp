@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(iscompressing_test) {
   BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr));
   const auto readAlgo = Cfitsio::Compression::readCompression(file.fptr);
   const auto readHc = dynamic_cast<Fits::Compression::HCompress&>(*readAlgo);
-  BOOST_TEST(readHc.shape() == algo.shape()); // FIXME compare algos as a whole
+  BOOST_TEST(readHc.tiling() == algo.tiling()); // FIXME compare algos as a whole
 
   Cfitsio::Compression::compress(file.fptr, noneAlgo);
   BOOST_TEST(not Cfitsio::Compression::isCompressing(file.fptr));
