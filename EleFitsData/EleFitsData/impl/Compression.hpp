@@ -102,19 +102,26 @@ bool Quantization::operator!=(const Quantization& rhs) const {
   return not(*this == rhs);
 }
 
-template <typename TDerived>
-const Position<-1>& AlgoMixin<TDerived>::shape() const {
-  return m_shape;
+Algo::Algo(Position<-1> tiling, Quantization quantization) :
+    m_tiling(std::move(tiling)), m_quantization(std::move(quantization)) {
+  OutOfBoundsError::mayThrow("Tiling dimension error", m_tiling.size(), {0, 6});
 }
 
-template <typename TDerived>
-const Quantization& AlgoMixin<TDerived>::quantization() const {
+const Position<-1>& Algo::tiling() const {
+  return m_tiling;
+}
+
+const Quantization& Algo::quantization() const {
   return m_quantization;
 }
 
+bool Algo::isLossless() const {
+  return not m_quantization;
+}
+
 template <typename TDerived>
-TDerived& AlgoMixin<TDerived>::shape(Position<-1> shape) {
-  m_shape = std::move(shape);
+TDerived& AlgoMixin<TDerived>::tiling(Position<-1> tiling) {
+  m_tiling = std::move(tiling);
   return static_cast<TDerived&>(*this);
 }
 
@@ -125,16 +132,41 @@ TDerived& AlgoMixin<TDerived>::quantization(Quantization quantization) {
 }
 
 template <typename TDerived>
-AlgoMixin<TDerived>::AlgoMixin(Position<-1> shape) : m_shape(std::move(shape)), m_quantization(Quantization()) {
-  OutOfBoundsError::mayThrow("Tiling dimension error", m_shape.size(), {0, 6});
+AlgoMixin<TDerived>::AlgoMixin(Position<-1> tiling, Quantization quantization) :
+    Algo(std::move(tiling), std::move(quantization)) {}
+
+None::None() : AlgoMixin<None>({}, Quantization()) {}
+
+None& None::tiling(Position<-1>) {
+  throw FitsError("Cannot set tiling for diabled compression");
+  return *this;
 }
 
-None::None() : AlgoMixin<None>({}) {}
+None& None::quantization(Quantization) {
+  throw FitsError("Cannot set quantization for diabled compression");
+  return *this;
+}
 
-Rice::Rice(const Position<-1> shape) : AlgoMixin<Rice>(std::move(shape)) {}
+Gzip::Gzip(Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<Gzip>(std::move(tiling), std::move(quantization)) {}
 
-HCompress::HCompress(const Position<-1> shape) :
-    AlgoMixin<HCompress>(std::move(shape)), m_scale(Param::none()), m_smooth(false) {}
+ShuffledGzip::ShuffledGzip(Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<ShuffledGzip>(std::move(tiling), std::move(quantization)) {}
+
+Rice::Rice(Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<Rice>(std::move(tiling), std::move(quantization)) {}
+
+HCompress::HCompress(Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(Param::none()), m_smooth(false) {
+  this->quantization(std::move(quantization));
+}
+
+bool HCompress::isLossless() const {
+  if (m_scale) {
+    return false;
+  }
+  return Algo::isLossless();
+}
 
 const Param& HCompress::scale() const {
   return m_scale;
@@ -149,6 +181,14 @@ HCompress& HCompress::scale(Param scale) {
   return *this;
 }
 
+HCompress& HCompress::quantization(Quantization quantization) {
+  if (quantization.dithering() == Dithering::NonZeroPixel) {
+    throw FitsError("H-compress does not support non-zero pixel dithering");
+  }
+  AlgoMixin<HCompress>::quantization(quantization);
+  return *this;
+}
+
 HCompress& HCompress::enableSmoothing() {
   m_smooth = true;
   return *this;
@@ -159,11 +199,8 @@ HCompress& HCompress::disableSmoothing() {
   return *this;
 }
 
-Plio::Plio(Position<-1> shape) : AlgoMixin<Plio>(std::move(shape)) {}
-
-Gzip::Gzip(Position<-1> shape) : AlgoMixin<Gzip>(std::move(shape)) {}
-
-ShuffledGzip::ShuffledGzip(Position<-1> shape) : AlgoMixin<ShuffledGzip>(std::move(shape)) {}
+Plio::Plio(Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<Plio>(std::move(tiling), std::move(quantization)) {}
 
 } // namespace Compression
 } // namespace Fits

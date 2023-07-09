@@ -132,6 +132,10 @@ enum class Dithering {
 class Quantization {
 
 public:
+  ELEFITS_VIRTUAL_DTOR(Quantization)
+  ELEFITS_COPYABLE(Quantization)
+  ELEFITS_MOVABLE(Quantization)
+
   /**
    * @brief Default, lossless compression constructor.
    */
@@ -201,6 +205,12 @@ private:
 /**
  * @ingroup image_compression
  * @brief Interface for compression algorithms.
+ * 
+ * Tiling shape is represented as a `Position<-1>`.
+ * The maximum dimension possible is equal to 6 (which is an internal CFITSIO limitation).
+ * 
+ * @see rowwiseTiling()
+ * @see maxTiling()
  */
 class Algo {
 
@@ -212,22 +222,48 @@ public:
   ELEFITS_COPYABLE(Algo)
   ELEFITS_MOVABLE(Algo)
 
+  /**
+   * @brief Get the tiling.
+   */
+  inline const Position<-1>& tiling() const;
+
+  /**
+   * @brief Get the quantization.
+   */
+  inline const Quantization& quantization() const;
+
+  /**
+   * @brief Check whether the compression is lossless.
+   */
+  inline virtual bool isLossless() const;
+
 protected:
+  /**
+   * @brief Constructor.
+   */
+  inline explicit Algo(Position<-1> tiling, Quantization quantization);
+
+  /**
+   * @brief Enable compression by CFITSIO.
+   */
   virtual void compress(void* fptr) const = 0;
+
+  /**
+   * @brief The tiling shape.
+   */
+  Position<-1> m_tiling;
+
+  /**
+   * @brief The quantization parameters.
+   */
+  Quantization m_quantization;
 };
 
 /**
  * @ingroup image_compression
- * @brief Intermediate class holding the tiling shape and quantization parameters.
- * 
- * Tiling shape is represented as a `Position<N>`.
- * The maximum dimension possible is equal to 6 (which is an internal CFITSIO limitation).
- * The value of `N` must therefore not exceed it.
- * 
- * @see rowwiseTiling()
- * @see maxTiling()
+ * @brief Intermediate class for internal dispatching.
  */
-template <typename TDerived> // FIXME rm N?
+template <typename TDerived>
 class AlgoMixin : public Algo {
 
 public:
@@ -235,54 +271,34 @@ public:
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
 
-  /**
-   * @brief Get the tiling.
-   */
-  const Position<-1>& shape() const;
+  using Algo::tiling;
 
-  /**
-   * @brief Get the quantization.
-   */
-  const Quantization& quantization() const; // FIXME move to children
+  using Algo::quantization;
 
   /**
    * @brief Set the tiling.
    */
-  TDerived& shape(Position<-1> shape);
+  inline virtual TDerived& tiling(Position<-1> shape);
 
   /**
    * @brief Set the quantization.
    */
-  TDerived& quantization(Quantization quantization);
-  // FIXME HCompress does not support NonZeroPixel dithering
-  // and therefore this method must be moved to the child classes
-  // with specific check in HCompress
+  inline virtual TDerived& quantization(Quantization quantization);
 
 protected:
   /**
    * @brief Constructor.
    */
-  explicit AlgoMixin(Position<-1> shape);
+  inline explicit AlgoMixin(Position<-1> tiling, Quantization quantization);
 
   /**
    * @brief Dependency inversion to call the wrapper's dispatch based on `TDerived`.
    */
-  void compress(void* fptr) const final;
+  inline void compress(void* fptr) const final;
   // FIXME define the function here instead of in the wrapper
   // The function is not used anyway, and this simplifies compilation
   // => Change compress(fitsfile*, TDerived) into compress(void*, TDerived)
   // or forward declare fitsfile
-
-private:
-  /**
-   * @brief The shape of the tiles.
-   */
-  Position<-1> m_shape;
-
-  /**
-   * @brief The quantization parameters.
-   */
-  Quantization m_quantization;
 };
 
 /**
@@ -300,6 +316,57 @@ public:
    * @brief Constructor.
    */
   inline explicit None();
+
+  using Algo::tiling;
+
+  using Algo::quantization;
+
+  /**
+   * @brief Disabled setter.
+   */
+  inline None& tiling(Position<-1>) override;
+
+  /**
+   * @brief Disabled setter.
+   */
+  inline None& quantization(Quantization) override;
+};
+
+/**
+ * @ingroup image_compression
+ * @brief The GZIP algorithm.
+ */
+class Gzip : public AlgoMixin<Gzip> {
+
+public:
+  ELEFITS_VIRTUAL_DTOR(Gzip)
+  ELEFITS_COPYABLE(Gzip)
+  ELEFITS_MOVABLE(Gzip)
+
+  /**
+   * @brief Constructor
+   */
+  inline explicit Gzip(Position<-1> tiling = rowwiseTiling(), Quantization quantization = Quantization());
+};
+
+/**
+ * @ingroup image_compression
+ * @brief The GZIP algorithm applied to "shuffled" pixel values.
+ * 
+ * Suffling means that value bytes are reordered such that most significant bytes of each value appear first.
+ * Generally, this algorithm is much more efficient in terms of compression factor than GZIP, although it is a bit slower.
+ */
+class ShuffledGzip : public AlgoMixin<ShuffledGzip> { // FIXME merge with Gzip with option to shuffle
+
+public:
+  ELEFITS_VIRTUAL_DTOR(ShuffledGzip)
+  ELEFITS_COPYABLE(ShuffledGzip)
+  ELEFITS_MOVABLE(ShuffledGzip)
+
+  /**
+   * @brief Constructor.
+   */
+  inline explicit ShuffledGzip(Position<-1> tiling = rowwiseTiling(), Quantization quantization = Quantization());
 };
 
 /**
@@ -316,12 +383,12 @@ public:
   /**
    * @brief Constructor.
    */
-  inline explicit Rice(Position<-1> shape = rowwiseTiling());
+  inline explicit Rice(Position<-1> tiling = rowwiseTiling(), Quantization quantization = Quantization());
 };
 
 /**
  * @ingroup image_compression
- * @brief The HCompress algorithm.
+ * @brief The H-compress algorithm.
  */
 class HCompress : public AlgoMixin<HCompress> {
 
@@ -332,7 +399,14 @@ public:
   /**
    * @brief Constructor.
    */
-  inline explicit HCompress(Position<-1> shape = rowwiseTiling(16));
+  inline explicit HCompress(Position<-1> tiling = rowwiseTiling(16), Quantization quantization = Quantization());
+
+  using Algo::quantization;
+
+  /**
+   * @brief Check whether compression is lossless.
+   */
+  inline bool isLossless() const override;
 
   /**
    * @brief Get the scaling parameter.
@@ -343,6 +417,13 @@ public:
    * @brief Check whether the image is smoothed at reading.
    */
   inline bool isSmooth() const;
+
+  /**
+   * @brief Set the quantization.
+   * 
+   * H-compress does not support `Dithering::NonZeroPixel`.
+   */
+  inline HCompress& quantization(Quantization quantization) override;
 
   /**
    * @brief Set the scaling parameter.
@@ -387,44 +468,7 @@ public:
   /**
    * @brief Constructor
    */
-  inline explicit Plio(Position<-1> shape = rowwiseTiling());
-};
-
-/**
- * @ingroup image_compression
- * @brief The GZIP algorithm.
- */
-class Gzip : public AlgoMixin<Gzip> {
-
-public:
-  ELEFITS_VIRTUAL_DTOR(Gzip)
-  ELEFITS_COPYABLE(Gzip)
-  ELEFITS_MOVABLE(Gzip)
-
-  /**
-   * @brief Constructor
-   */
-  inline explicit Gzip(Position<-1> shape = rowwiseTiling());
-};
-
-/**
- * @ingroup image_compression
- * @brief The GZIP algorithm applied to "shuffled" pixel values.
- * 
- * Suffling means that value bytes are reordered such that most significant bytes of each value appear first.
- * Generally, this algorithm is much more efficient in terms of compression factor than GZIP, although it is a bit slower.
- */
-class ShuffledGzip : public AlgoMixin<ShuffledGzip> { // FIXME merge with Gzip with option to shuffle
-
-public:
-  ELEFITS_VIRTUAL_DTOR(ShuffledGzip)
-  ELEFITS_COPYABLE(ShuffledGzip)
-  ELEFITS_MOVABLE(ShuffledGzip)
-
-  /**
-   * @brief Constructor.
-   */
-  inline explicit ShuffledGzip(Position<-1> shape = rowwiseTiling());
+  inline explicit Plio(Position<-1> tiling = rowwiseTiling(), Quantization quantization = Quantization());
 };
 
 /**

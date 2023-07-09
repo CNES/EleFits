@@ -112,7 +112,7 @@ void testAlgoMixinParameters(long dimension = 0) {
   TAlgo algo(shape);
 
   // verify shape of algo is correctly stored at construction
-  const auto shape2 = algo.shape();
+  const auto shape2 = algo.tiling();
   BOOST_TEST((shape2 == shape));
 
   // check default quantization values:
@@ -133,7 +133,7 @@ void testAlgoMixinParameters<Compression::None>(long) {
   Compression::None algo;
 
   // verify shape of algo is correctly stored at construction
-  BOOST_TEST((algo.shape() == Position<-1>()));
+  BOOST_TEST((algo.tiling() == Position<-1>()));
 }
 
 BOOST_AUTO_TEST_CASE(algo_mixin_test) {

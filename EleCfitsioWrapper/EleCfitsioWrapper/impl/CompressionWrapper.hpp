@@ -50,7 +50,8 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   Fits::Position<-1> tiling(MAX_COMPRESS_DIM);
   std::fill(tiling.begin(), tiling.end(), 1); // FIXME useful?
   fits_get_tile_dim(fptr, MAX_COMPRESS_DIM, tiling.data(), &status);
-  // FIXME handle ROW and WHOLE
+  // FIXME remove useless 1's down to dimension 2
+  // FIXME handle ROW and WHOLE as {-1, 1} and {-1}, respectively
   CfitsioError::mayThrow(status, fptr, "Cannot read compression tiling");
 
   // Read quantization
@@ -165,7 +166,7 @@ void compress(fitsfile* fptr, const Fits::Compression::Rice& algo) {
   int status = 0;
   fits_set_compression_type(fptr, RICE_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Rice");
-  setTiling(fptr, algo.shape());
+  setTiling(fptr, algo.tiling());
   setQuantize(fptr, algo.quantization());
 }
 
@@ -176,7 +177,7 @@ void compress(fitsfile* fptr, const Fits::Compression::HCompress& algo) {
   fits_set_compression_type(fptr, HCOMPRESS_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
 
-  setTiling(fptr, algo.shape());
+  setTiling(fptr, algo.tiling());
   setQuantize(fptr, algo.quantization());
 
   if (algo.scale().type() == Fits::Compression::Param::Type::Absolute) {
@@ -195,14 +196,14 @@ void compress(fitsfile* fptr, const Fits::Compression::Plio& algo) {
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
-  setTiling(fptr, algo.shape());
+  setTiling(fptr, algo.tiling());
 }
 
 void compress(fitsfile* fptr, const Fits::Compression::Gzip& algo) {
   int status = 0;
   fits_set_compression_type(fptr, GZIP_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
-  setTiling(fptr, algo.shape());
+  setTiling(fptr, algo.tiling());
   setQuantize(fptr, algo.quantization());
 }
 
@@ -210,7 +211,7 @@ void compress(fitsfile* fptr, const Fits::Compression::ShuffledGzip& algo) {
   int status = 0;
   fits_set_compression_type(fptr, GZIP_2, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
-  setTiling(fptr, algo.shape());
+  setTiling(fptr, algo.tiling());
   setQuantize(fptr, algo.quantization());
 }
 
