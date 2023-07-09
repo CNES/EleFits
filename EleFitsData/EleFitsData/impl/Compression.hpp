@@ -43,32 +43,42 @@ float Factor::value() const {
   return std::abs(m_value);
 }
 
+inline Factor::operator bool() const {
+  return m_value != 0;
+}
+
 bool Factor::operator==(const Factor& rhs) const {
-  return (m_value == rhs.m_value) && (this->type() == rhs.type());
+  return m_value == rhs.m_value;
+}
+
+bool Factor::operator!=(const Factor& rhs) const {
+  return not(*this == rhs);
 }
 
 Factor::Factor(float value) : m_value(value) {}
 
-Quantization::Quantization(Factor level, Dithering method) :
-    m_level(std::move(level)), m_dithering(method), m_lossyInt(false) {}
+Quantization::Quantization() : Quantization::Quantization(Factor::none(), Dithering::None) {}
+
+Quantization::Quantization(Factor level) :
+    Quantization::Quantization(level, level ? Dithering::EveryPixel : Dithering::None) {}
+
+Quantization::Quantization(Factor level, Dithering method) : m_level(std::move(level)), m_dithering(Dithering::None) {
+  dithering(method); // Enables compatibility check
+}
 
 Quantization& Quantization::level(Factor level) {
   m_level = std::move(level);
+  if (not m_level) {
+    m_dithering = Dithering::None;
+  }
   return *this;
 }
 
 Quantization& Quantization::dithering(Dithering method) {
+  if (not m_level && method != Dithering::None) {
+    throw FitsError("Cannot set dithering method when quantization is deactivated");
+  }
   m_dithering = std::move(method);
-  return *this;
-}
-
-Quantization& Quantization::enableLossyInt() {
-  m_lossyInt = true;
-  return *this;
-}
-
-Quantization& Quantization::disableLossyInt() {
-  m_lossyInt = false;
   return *this;
 }
 
@@ -80,12 +90,16 @@ Dithering Quantization::dithering() const {
   return m_dithering;
 }
 
-bool Quantization::hasLossyInt() const {
-  return m_lossyInt;
+Quantization::operator bool() const {
+  return m_level;
 }
 
 bool Quantization::operator==(const Quantization& rhs) const {
-  return (m_level == rhs.level()) && (m_dithering == rhs.dithering()) && (m_lossyInt == rhs.hasLossyInt());
+  return (m_level == rhs.m_level) && (m_dithering == rhs.m_dithering);
+}
+
+bool Quantization::operator!=(const Quantization& rhs) const {
+  return not(*this == rhs);
 }
 
 template <typename TDerived>

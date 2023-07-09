@@ -26,7 +26,7 @@ class MefFile;
 namespace Compression {
 
 /**
- * @relates AlgoMixin
+ * @relates Algo
  * @brief Create a rowwise tiling.
  * @param rowCount The number of rows per tile
  */
@@ -35,10 +35,10 @@ inline Position<-1> rowwiseTiling(long rowCount = 1) {
 }
 
 /**
- * @relates AlgoMixin
+ * @relates Algo
  * @brief Create a whole-data array tiling.
  */
-inline Position<-1> wholeDataTiling() {
+inline Position<-1> maxTiling() {
   return Position<-1> {-1};
 }
 
@@ -89,15 +89,25 @@ public:
   inline float value() const;
 
   /**
+   * @brief Cast as a Boolean, i.e. `false` iff type is `None`.
+  */
+  inline operator bool() const;
+
+  /**
    * @brief Check whether two factors are equal.
    */
   inline bool operator==(const Factor& rhs) const;
+
+  /**
+   * @brief Check whether two factors are different.
+   */
+  inline bool operator!=(const Factor& rhs) const;
 
 private:
   /**
    * @brief Create a factor.
    */
-  inline Factor(float value);
+  inline explicit Factor(float value);
 
   /**
    * @brief The factor value, which encodes the type as its sign.
@@ -117,39 +127,30 @@ enum class Dithering {
 
 /**
  * @ingroup image_compression
- * @brief Quantization of floating-point pixels.
+ * @brief Quantization of pixels.
+ * 
+ * As opposed to CFITSIO, EleFits creates lossless algorithms by default,
+ * including for floating point values.
  */
 class Quantization {
 
 public:
   /**
-   * @brief Constructor.
+   * @brief Default, lossless compression constructor.
+   */
+  inline explicit Quantization();
+
+  /**
+   * @brief Level-based constructor.
    * 
-   * Integer data compression is lossless by default.
+   * The default dithering for lossy compression is `Dithering::EveryPixel`.
    */
-  inline Quantization(Factor level = Factor::relative(4), Dithering method = Dithering::EveryPixel);
+  inline explicit Quantization(Factor level);
 
   /**
-   * @brief Set the quantization level.
+   * @brief Full constructor.
    */
-  inline Quantization& level(Factor level);
-
-  /**
-   * @brief Set the dithering method.
-   */
-  inline Quantization& dithering(Dithering method);
-
-  /**
-   * @brief Enable lossy compression of integer data.
-   * 
-   * This is accomplished by considering the values as floating points and then applying quantization.
-   */
-  inline Quantization& enableLossyInt();
-
-  /**
-   * @brief Disable lossy compression of integer data.
-   */
-  inline Quantization& disableLossyInt();
+  inline explicit Quantization(Factor level, Dithering method);
 
   /**
    * @brief Get the quantization level
@@ -162,14 +163,29 @@ public:
   inline Dithering dithering() const;
 
   /**
-   * @brief Check whether lossy integral compression is enabled.
+   * @brief Check whether quantization is enabled.
    */
-  inline bool hasLossyInt() const;
+  inline operator bool() const;
+
+  /**
+   * @brief Set the quantization level.
+   */
+  inline Quantization& level(Factor level);
+
+  /**
+   * @brief Set the dithering method.
+   */
+  inline Quantization& dithering(Dithering method);
 
   /**
    * @brief Check whether two quatizations are equal.
    */
   inline bool operator==(const Quantization& rhs) const;
+
+  /**
+   * @brief Check whether two quatizations are different.
+   */
+  inline bool operator!=(const Quantization& rhs) const;
 
 private:
   /**
@@ -182,12 +198,7 @@ private:
    */
   Dithering m_dithering;
 
-  /**
-   * @brief The lossy integral compression flag.
-   */
-  bool m_lossyInt;
-
-  // FIXME handle dither offset
+  // FIXME handle dither offset and seed
 };
 
 /**
@@ -199,7 +210,7 @@ class Algo {
   friend class Euclid::Fits::MefFile; // TODO rm if/when possible
 
 public:
-  Algo() = default;
+  explicit Algo() = default;
   ELEFITS_VIRTUAL_DTOR(Algo)
   ELEFITS_COPYABLE(Algo)
   ELEFITS_MOVABLE(Algo)
@@ -217,7 +228,7 @@ protected:
  * The value of `N` must therefore not exceed it.
  * 
  * @see rowwiseTiling()
- * @see wholeDataTiling()
+ * @see maxTiling()
  */
 template <typename TDerived> // FIXME rm N?
 class AlgoMixin : public Algo {
@@ -254,7 +265,7 @@ protected:
   /**
    * @brief Constructor.
    */
-  AlgoMixin(Position<-1> shape);
+  explicit AlgoMixin(Position<-1> shape);
 
   /**
    * @brief Dependency inversion to call the wrapper's dispatch based on `TDerived`.
@@ -291,7 +302,7 @@ public:
   /**
    * @brief Constructor.
    */
-  inline None();
+  inline explicit None();
 };
 
 /**
@@ -308,7 +319,7 @@ public:
   /**
    * @brief Constructor.
    */
-  inline Rice(Position<-1> shape = rowwiseTiling());
+  inline explicit Rice(Position<-1> shape = rowwiseTiling());
 };
 
 /**
@@ -324,7 +335,7 @@ public:
   /**
    * @brief Constructor.
    */
-  inline HCompress(Position<-1> shape = rowwiseTiling(16));
+  inline explicit HCompress(Position<-1> shape = rowwiseTiling(16));
 
   /**
    * @brief Get the scaling factor.
@@ -379,7 +390,7 @@ public:
   /**
    * @brief Constructor
    */
-  inline Plio(Position<-1> shape = rowwiseTiling());
+  inline explicit Plio(Position<-1> shape = rowwiseTiling());
 };
 
 /**
@@ -396,7 +407,7 @@ public:
   /**
    * @brief Constructor
    */
-  inline Gzip(Position<-1> shape = rowwiseTiling());
+  inline explicit Gzip(Position<-1> shape = rowwiseTiling());
 };
 
 /**
@@ -416,7 +427,7 @@ public:
   /**
    * @brief Constructor.
    */
-  inline ShuffledGzip(Position<-1> shape = rowwiseTiling());
+  inline explicit ShuffledGzip(Position<-1> shape = rowwiseTiling());
 };
 
 /**
@@ -426,13 +437,12 @@ public:
  */
 inline std::unique_ptr<Algo> makeLosslessAlgo(long bitpix, long dimension) {
   std::unique_ptr<Algo> out;
-  const auto q0 = Quantization(Factor::none());
   if (bitpix > 0 && bitpix <= 24) {
-    out.reset(&(new Plio())->quantization(q0));
+    out.reset(new Plio());
   } else if (dimension >= 2) {
-    out.reset(&(new HCompress())->quantization(q0));
+    out.reset(new HCompress());
   } else {
-    out.reset(&(new Rice())->quantization(q0));
+    out.reset(new Rice());
   }
   return out;
 }
@@ -444,12 +454,13 @@ inline std::unique_ptr<Algo> makeLosslessAlgo(long bitpix, long dimension) {
  */
 inline std::unique_ptr<Algo> makeAlgo(long bitpix, long dimension) {
   std::unique_ptr<Algo> out;
+  const auto q4 = Quantization(Factor::relative(4));
   if (bitpix > 0 && bitpix <= 24) {
-    out.reset(&(new Plio())->quantization(Quantization(Factor::none())));
+    out.reset(new Plio());
   } else if (dimension >= 2) {
-    out.reset(&(new HCompress())->scale(Factor::relative(2.5)));
+    out.reset(&(new HCompress())->quantization(std::move(q4)).scale(Factor::relative(2.5)));
   } else {
-    out.reset(new Rice());
+    out.reset(&(new Rice())->quantization(std::move(q4)));
   }
   return out;
 }

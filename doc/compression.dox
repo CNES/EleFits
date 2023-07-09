@@ -94,14 +94,11 @@ then the compression tile should relate to the processing tile such that compres
 Parameters can be set either globally for all tiles,
 or tile-wise, in which case they are relative to the noise level in the tile.
 
-By default, compression of integer-valued images is lossless,
-while compression of floating point-valued images is lossy.
-This is the consequence of quantization.
+As opposed to CFITSIO, by default, compression is lossless whatever the pixel type.
+Lossy compression is available, for any pixel type, by enabling quantization.
 Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
 This is a first level of compression, where the least significant digits of a floating-point number are dropped.
-Quantization can also be turned off to enable lossless compression.
-On the other hand, integer-valued data can be quantized, by casting them as floating-point data,
-making compression necessarily lossy.
+Quantization can be turned on for integer-valued data, too, in which case they are first cast as floating-point data.
 
 Once this step has been performed, the quantized, integral values are effectively compressed losslessly by one of the supported algorithms:
 

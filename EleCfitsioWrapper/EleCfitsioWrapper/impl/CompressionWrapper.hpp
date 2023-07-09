@@ -65,8 +65,8 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
     }
   };
   fits_get_quantize_level(fptr, &factor, &status);
-  Fits::Compression::Quantization quantization = factorize(factor);
-  if (HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
+  Fits::Compression::Quantization quantization(factorize(factor));
+  if (quantization && HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
     const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
     if (method == "NO_DITHER") {
       quantization.dithering(Fits::Compression::Dithering::None);
@@ -77,11 +77,6 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
     } else {
       Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
     }
-  }
-  if (HeaderIo::hasKeyword(fptr, "FZINT2F") && HeaderIo::parseRecord<bool>(fptr, "FZINT2F")) {
-    quantization.enableLossyInt();
-  } else {
-    quantization.disableLossyInt();
   }
   CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
 
@@ -135,29 +130,29 @@ inline void setQuantize(fitsfile* fptr, const Fits::Compression::Quantization& q
   if (quantization.level().type() == Fits::Compression::Factor::Type::Absolute) {
     fits_set_quantize_level(fptr, -quantization.level().value(), &status);
     CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantization level");
-  } else { // relative quantization level applied in this case
+  } else { // None or relative quantization level
     fits_set_quantize_level(fptr, quantization.level().value(), &status);
     CfitsioError::mayThrow(status, fptr, "Cannot set relative quantization level");
   }
+
+  // Set lossy int compression
+  fits_set_lossy_int(fptr, quantization, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot set lossy integer compression flag");
 
   // Set dithering method
   // fits_set_quantize_method() is exact same as set_quantize_dither() (.._method() is the old name)
   switch (quantization.dithering()) {
     case Fits::Compression::Dithering::EveryPixel:
-      fits_set_quantize_method(fptr, SUBTRACTIVE_DITHER_1, &status);
+      fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_1, &status);
       break;
     case Fits::Compression::Dithering::NonZeroPixel:
-      fits_set_quantize_method(fptr, SUBTRACTIVE_DITHER_2, &status);
+      fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_2, &status);
       break;
     case Fits::Compression::Dithering::None:
-      fits_set_quantize_method(fptr, NO_DITHER, &status);
+      fits_set_quantize_dither(fptr, NO_DITHER, &status);
       break;
   }
   CfitsioError::mayThrow(status, fptr, "Cannot set dithering method");
-
-  // Set lossy int compression
-  fits_set_lossy_int(fptr, quantization.hasLossyInt(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot set lossy integer compression flag");
 }
 
 void compress(fitsfile* fptr, const Fits::Compression::None&) {

@@ -131,17 +131,17 @@ BOOST_AUTO_TEST_CASE(iscompressing_test) {
   Euclid::Fits::Test::MinimalFile file;
 
   Cfitsio::Compression::compress(file.fptr, noneAlgo);
-  BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == false);
+  BOOST_TEST(not Cfitsio::Compression::isCompressing(file.fptr));
   BOOST_CHECK_NO_THROW(dynamic_cast<Fits::Compression::None*>(Cfitsio::Compression::readCompression(file.fptr).get()));
 
   Cfitsio::Compression::compress(file.fptr, algo);
-  BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == true);
+  BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr));
   const auto readAlgo = Cfitsio::Compression::readCompression(file.fptr);
   const auto readHc = dynamic_cast<Fits::Compression::HCompress&>(*readAlgo);
   BOOST_TEST(readHc.shape() == algo.shape()); // FIXME compare algos as a whole
 
   Cfitsio::Compression::compress(file.fptr, noneAlgo);
-  BOOST_TEST(Cfitsio::Compression::isCompressing(file.fptr) == false);
+  BOOST_TEST(not Cfitsio::Compression::isCompressing(file.fptr));
   BOOST_CHECK_NO_THROW(dynamic_cast<Fits::Compression::None*>(Cfitsio::Compression::readCompression(file.fptr).get()));
 }
 
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_SUITE(Compression_learning_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(default_values_learning_test) {
+BOOST_AUTO_TEST_CASE(default_values_learning_test) { // FIXME set compression types first
 
   // verify max image dimension supported for compression
   BOOST_TEST(MAX_COMPRESS_DIM == 6);
