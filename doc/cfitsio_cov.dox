@@ -27,7 +27,7 @@ Legend:
   - **HDU count** (flawed in CFITSIO, fixed in EleFits)
   - **HDU index**
   - **HDU type**
-  - Copy HDUs
+  - **Copy HDUs**
   - **Copy header** (and with keyword filtering)
   - *Delete HDU*
 - Keyword Reading Routines
@@ -56,7 +56,7 @@ Legend:
   - **Read image**
   - **Copy image region**
 - Image Compression
-  - Compress image
+  - **Compress image**
   - **Decompress image**
 - Binary Table Routines (ASCII tables not supported)
   - **Create table extension**
@@ -86,6 +86,7 @@ Not supported.
 \section cfitsio-wcs World Coordinate System Routines
 
 Not supported, but deprecated in CFITSIO.
+Compatible with wcslib.
 
 \section cfitsio-grouping Hierarchical Grouping Routines
 

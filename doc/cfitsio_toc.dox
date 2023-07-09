@@ -28,7 +28,7 @@ namespace Fits {
   - HDU access and creation: \ref file_handlers
   - Header keyword records read/write: \ref header_handlers
   - Primary array or image extension: \ref image_handlers
-  - Image Compression: *not supported*
+  - Image Compression: \ref compression
   - ASCII table extension: *not supported*
   - Binary table extension: \ref bintable_handlers
 - The iterator function: *not supported*
