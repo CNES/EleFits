@@ -107,12 +107,12 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   Fits::Compression::HCompress algo(shape);
   Cfitsio::Compression::compress(file.fptr, algo);
 
-  // verify scale factor:
+  // verify scale parameter:
   float actualScale;
   fits_get_hcomp_scale(file.fptr, &actualScale, &status);
   BOOST_TEST(
       actualScale ==
-      ((algo.scale().type() == Fits::Compression::Factor::Type::Absolute) ?
+      ((algo.scale().type() == Fits::Compression::Param::Type::Absolute) ?
            -algo.scale().value() :
            algo.scale().value()));
 

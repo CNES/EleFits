@@ -33,29 +33,29 @@ BOOST_AUTO_TEST_CASE(factor_test) {
   const float zeroFactor = 0.f;
   const float negativeFactor = -5.f;
 
-  const Compression::Factor none_f = Compression::Factor::none();
+  const Compression::Param none_f = Compression::Param::none();
   BOOST_TEST(none_f.value() == zeroFactor);
-  BOOST_TEST(none_f.type() == Compression::Factor::Type::None);
+  BOOST_TEST(none_f.type() == Compression::Param::Type::None);
 
-  const Compression::Factor absolute_f = Compression::Factor::absolute(positiveFactor);
-  BOOST_CHECK_THROW(Compression::Factor::absolute(zeroFactor), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Compression::Factor::absolute(negativeFactor), Euclid::Fits::FitsError);
+  const Compression::Param absolute_f = Compression::Param::absolute(positiveFactor);
+  BOOST_CHECK_THROW(Compression::Param::absolute(zeroFactor), Euclid::Fits::FitsError);
+  BOOST_CHECK_THROW(Compression::Param::absolute(negativeFactor), Euclid::Fits::FitsError);
 
   BOOST_TEST(absolute_f.value() == positiveFactor);
-  BOOST_TEST(absolute_f.type() == Compression::Factor::Type::Absolute);
+  BOOST_TEST(absolute_f.type() == Compression::Param::Type::Absolute);
 
-  const Compression::Factor relative_f = Compression::Factor::relative(positiveFactor);
-  BOOST_CHECK_THROW(Compression::Factor::relative(zeroFactor), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Compression::Factor::relative(negativeFactor), Euclid::Fits::FitsError);
+  const Compression::Param relative_f = Compression::Param::relative(positiveFactor);
+  BOOST_CHECK_THROW(Compression::Param::relative(zeroFactor), Euclid::Fits::FitsError);
+  BOOST_CHECK_THROW(Compression::Param::relative(negativeFactor), Euclid::Fits::FitsError);
 
   BOOST_TEST(relative_f.value() == positiveFactor);
-  BOOST_TEST(relative_f.type() == Compression::Factor::Type::Relative);
+  BOOST_TEST(relative_f.type() == Compression::Param::Type::Relative);
 
   // testing == operator:
-  const Compression::Factor f1 = Compression::Factor::relative(5.f);
-  const Compression::Factor f2 = Compression::Factor::relative(5.f);
-  const Compression::Factor f3 = Compression::Factor::absolute(5.f);
-  const Compression::Factor f4 = Compression::Factor::relative(4.f);
+  const Compression::Param f1 = Compression::Param::relative(5.f);
+  const Compression::Param f2 = Compression::Param::relative(5.f);
+  const Compression::Param f3 = Compression::Param::absolute(5.f);
+  const Compression::Param f4 = Compression::Param::relative(4.f);
   BOOST_TEST((f1 == f2));
   BOOST_TEST(not(f1 == f3));
   BOOST_TEST(not(f1 == f4));
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(default_quantization_test) {
 }
 
 BOOST_AUTO_TEST_CASE(default_dithering_test) {
-  const auto level = Compression::Factor::absolute(4); // CFITSIO default
+  const auto level = Compression::Param::absolute(4); // CFITSIO default
   Compression::Quantization q(level);
   BOOST_TEST(q);
   BOOST_TEST(q.level() == level);
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(default_dithering_test) {
 }
 
 BOOST_AUTO_TEST_CASE(quantization_level_test) {
-  const auto level = Compression::Factor::relative(4);
+  const auto level = Compression::Param::relative(4);
   Compression::Quantization q;
   q.level(level);
   BOOST_TEST((q.level() == level));
@@ -90,12 +90,12 @@ BOOST_AUTO_TEST_CASE(quantization_level_test) {
 
 BOOST_AUTO_TEST_CASE(quantization_equality_test) {
   Compression::Quantization q0;
-  Compression::Quantization q0n(Compression::Factor::none(), Compression::Dithering::None);
-  Compression::Quantization q3(Compression::Factor::absolute(3));
-  Compression::Quantization q4(Compression::Factor::absolute(4));
-  Compression::Quantization q4n(Compression::Factor::absolute(4), Compression::Dithering::None);
-  Compression::Quantization q4e(Compression::Factor::absolute(4), Compression::Dithering::EveryPixel);
-  Compression::Quantization q4nz(Compression::Factor::absolute(4), Compression::Dithering::NonZeroPixel);
+  Compression::Quantization q0n(Compression::Param::none(), Compression::Dithering::None);
+  Compression::Quantization q3(Compression::Param::absolute(3));
+  Compression::Quantization q4(Compression::Param::absolute(4));
+  Compression::Quantization q4n(Compression::Param::absolute(4), Compression::Dithering::None);
+  Compression::Quantization q4e(Compression::Param::absolute(4), Compression::Dithering::EveryPixel);
+  Compression::Quantization q4nz(Compression::Param::absolute(4), Compression::Dithering::NonZeroPixel);
   BOOST_TEST((q0 == q0n));
   BOOST_TEST((q0 != q4n));
   BOOST_TEST((q3 != q4));
@@ -120,7 +120,7 @@ void testAlgoMixinParameters(long dimension = 0) {
 
   // set/get quantization:
   Compression::Quantization quantization;
-  quantization.level(Compression::Factor::absolute(5));
+  quantization.level(Compression::Param::absolute(5));
   quantization.dithering(Compression::Dithering::None);
   algo.quantization(quantization);
   BOOST_TEST((algo.quantization() == quantization));
@@ -181,11 +181,11 @@ BOOST_AUTO_TEST_CASE(hcompress_test) {
   Compression::HCompress algo(shape);
 
   // check default hcompress params values:
-  BOOST_TEST((algo.scale() == Compression::Factor::none()));
+  BOOST_TEST((algo.scale() == Compression::Param::none()));
   BOOST_TEST(algo.isSmooth() == false);
 
   // setters & getters:
-  Compression::Factor scale = Compression::Factor::absolute(5.f);
+  Compression::Param scale = Compression::Param::absolute(5.f);
   algo.scale(scale);
   algo.enableSmoothing();
   BOOST_TEST((algo.scale() == scale));

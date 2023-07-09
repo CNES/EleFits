@@ -44,18 +44,15 @@ inline Position<-1> maxTiling() {
 
 /**
  * @ingroup image_compression
- * @brief A factor which can be absolute or relative to the noise level in each tile.
- * 
- * A `relative()` factor yields: `absolute() = RMS_noise / relative()`.
- * A `none()` factor can be used to disable the feature it represents.
+ * @brief A parameter which can be absolute or relative to the noise level in each tile.
  */
 // FIXME for q, absolute = RMS / relative
 // but for s, absolue = RMS * relative
-class Factor {
+class Param {
 
 public:
   /**
-   * @brief The type of factor.
+   * @brief The type of parameter.
    */
   enum Type {
     None, ///< Disable feature
@@ -64,27 +61,27 @@ public:
   };
 
   /**
-   * @brief Create a disabled factor.
+   * @brief Create a disabled parameter.
    */
-  static inline Factor none();
+  static inline Param none();
 
   /**
-   * @brief Create an absolute factor.
+   * @brief Create an absolute parameter.
    */
-  static inline Factor absolute(float value);
+  static inline Param absolute(float value);
 
   /**
-   * @brief Create a relative factor.
+   * @brief Create a relative parameter.
    */
-  static inline Factor relative(float value);
+  static inline Param relative(float value);
 
   /**
-   * @brief Get the factor type.
+   * @brief Get the parameter type.
    */
-  inline Factor::Type type() const;
+  inline Param::Type type() const;
 
   /**
-   * @brief Get the factor value.
+   * @brief Get the parameter value.
    */
   inline float value() const;
 
@@ -96,21 +93,21 @@ public:
   /**
    * @brief Check whether two factors are equal.
    */
-  inline bool operator==(const Factor& rhs) const;
+  inline bool operator==(const Param& rhs) const;
 
   /**
    * @brief Check whether two factors are different.
    */
-  inline bool operator!=(const Factor& rhs) const;
+  inline bool operator!=(const Param& rhs) const;
 
 private:
   /**
-   * @brief Create a factor.
+   * @brief Create a parameter.
    */
-  inline explicit Factor(float value);
+  inline explicit Param(float value);
 
   /**
-   * @brief The factor value, which encodes the type as its sign.
+   * @brief The parameter value, which encodes the type as its sign.
    */
   float m_value;
 };
@@ -145,17 +142,17 @@ public:
    * 
    * The default dithering for lossy compression is `Dithering::EveryPixel`.
    */
-  inline explicit Quantization(Factor level);
+  inline explicit Quantization(Param level);
 
   /**
    * @brief Full constructor.
    */
-  inline explicit Quantization(Factor level, Dithering method);
+  inline explicit Quantization(Param level, Dithering method);
 
   /**
    * @brief Get the quantization level
    */
-  inline const Factor& level() const;
+  inline const Param& level() const;
 
   /**
    * @brief Get the dithering method for the quantization.
@@ -170,7 +167,7 @@ public:
   /**
    * @brief Set the quantization level.
    */
-  inline Quantization& level(Factor level);
+  inline Quantization& level(Param level);
 
   /**
    * @brief Set the dithering method.
@@ -191,7 +188,7 @@ private:
   /**
    * @brief The quantization level.
    */
-  Factor m_level;
+  Param m_level;
 
   /**
    * @brief The quantization dithering method.
@@ -338,9 +335,9 @@ public:
   inline explicit HCompress(Position<-1> shape = rowwiseTiling(16));
 
   /**
-   * @brief Get the scaling factor.
+   * @brief Get the scaling parameter.
    */
-  inline const Factor& scale() const;
+  inline const Param& scale() const;
 
   /**
    * @brief Check whether the image is smoothed at reading.
@@ -348,9 +345,9 @@ public:
   inline bool isSmooth() const;
 
   /**
-   * @brief Set the scaling factor.
+   * @brief Set the scaling parameter.
    */
-  inline HCompress& scale(Factor scale);
+  inline HCompress& scale(Param scale);
 
   /**
    * @brief Enable image smoothing at reading.
@@ -364,9 +361,9 @@ public:
 
 private:
   /**
-   * @brief The scale factor.
+   * @brief The scale parameter.
    */
-  Factor m_scale;
+  Param m_scale;
 
   /**
    * @brief The smoothing flag.
@@ -454,11 +451,11 @@ inline std::unique_ptr<Algo> makeLosslessAlgo(long bitpix, long dimension) {
  */
 inline std::unique_ptr<Algo> makeAlgo(long bitpix, long dimension) {
   std::unique_ptr<Algo> out;
-  const auto q4 = Quantization(Factor::relative(4));
+  const auto q4 = Quantization(Param::relative(4));
   if (bitpix > 0 && bitpix <= 24) {
     out.reset(new Plio());
   } else if (dimension >= 2) {
-    out.reset(&(new HCompress())->quantization(std::move(q4)).scale(Factor::relative(2.5)));
+    out.reset(&(new HCompress())->quantization(std::move(q4)).scale(Param::relative(2.5)));
   } else {
     out.reset(&(new Rice())->quantization(std::move(q4)));
   }

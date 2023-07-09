@@ -54,18 +54,18 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   CfitsioError::mayThrow(status, fptr, "Cannot read compression tiling");
 
   // Read quantization
-  float factor = 0;
-  auto factorize = [](float f) {
-    if (f == 0) {
-      return Fits::Compression::Factor::none();
-    } else if (f < 0) {
-      return Fits::Compression::Factor::absolute(-f);
+  float f = 0;
+  auto parametrize = [](float p) {
+    if (p == 0) {
+      return Fits::Compression::Param::none();
+    } else if (p < 0) {
+      return Fits::Compression::Param::absolute(-p);
     } else {
-      return Fits::Compression::Factor::relative(f);
+      return Fits::Compression::Param::relative(p);
     }
   };
-  fits_get_quantize_level(fptr, &factor, &status);
-  Fits::Compression::Quantization quantization(factorize(factor));
+  fits_get_quantize_level(fptr, &f, &status);
+  Fits::Compression::Quantization quantization(parametrize(f));
   if (quantization && HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
     const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
     if (method == "NO_DITHER") {
@@ -81,8 +81,8 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
   CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
 
   // Read scaling
-  fits_get_hcomp_scale(fptr, &factor, &status);
-  auto scaling = factorize(factor);
+  fits_get_hcomp_scale(fptr, &f, &status);
+  auto scaling = parametrize(f);
   // FIXME smoothing?
   CfitsioError::mayThrow(status, fptr, "Cannot read compression scaling");
 
@@ -92,7 +92,7 @@ std::unique_ptr<Fits::Compression::Algo> readCompression(fitsfile* fptr) {
       break;
     case HCOMPRESS_1:
       out.reset(new Fits::Compression::HCompress({tiling[0], tiling[1]}));
-      fits_get_hcomp_scale(fptr, &factor, &status);
+      fits_get_hcomp_scale(fptr, &f, &status);
       dynamic_cast<Fits::Compression::HCompress&>(*out).scale(std::move(scaling)).quantization(std::move(quantization));
       break;
     case PLIO_1:
@@ -127,7 +127,7 @@ inline void setQuantize(fitsfile* fptr, const Fits::Compression::Quantization& q
   int status = 0;
 
   // Set quantization level
-  if (quantization.level().type() == Fits::Compression::Factor::Type::Absolute) {
+  if (quantization.level().type() == Fits::Compression::Param::Type::Absolute) {
     fits_set_quantize_level(fptr, -quantization.level().value(), &status);
     CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantization level");
   } else { // None or relative quantization level
@@ -179,7 +179,7 @@ void compress(fitsfile* fptr, const Fits::Compression::HCompress& algo) {
   setTiling(fptr, algo.shape());
   setQuantize(fptr, algo.quantization());
 
-  if (algo.scale().type() == Fits::Compression::Factor::Type::Absolute) {
+  if (algo.scale().type() == Fits::Compression::Param::Type::Absolute) {
     fits_set_hcomp_scale(fptr, -algo.scale().value(), &status);
     CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
   } else { // None or relative scaling applied in this case

@@ -11,62 +11,62 @@ namespace Euclid {
 namespace Fits {
 namespace Compression {
 
-Factor Factor::none() {
-  return Factor(0);
+Param Param::none() {
+  return Param(0);
 }
 
-Factor Factor::absolute(float value) {
+Param Param::absolute(float value) {
   if (value <= 0) {
-    throw FitsError("Absolute factor value out of supported bounds");
+    throw FitsError("Absolute parameter value must be strictly positive");
   }
-  return Factor(-value); // absoluteness stored internally as negative value like in cfitsio
+  return Param(-value); // Absoluteness stored internally as negative value like in FITS
 }
 
-Factor Factor::relative(float value) {
+Param Param::relative(float value) {
   if (value <= 0) {
-    throw FitsError("Relative factor value out of supported bounds");
+    throw FitsError("Relative parameter value must be strictly positive");
   }
-  return Factor(value);
+  return Param(value);
 }
 
-Factor::Type Factor::type() const {
+Param::Type Param::type() const {
   if (m_value > 0) {
-    return Factor::Type::Relative;
+    return Param::Type::Relative;
   } else if (m_value < 0) {
-    return Factor::Type::Absolute;
+    return Param::Type::Absolute;
   } else {
-    return Factor::Type::None;
+    return Param::Type::None;
   }
 }
 
-float Factor::value() const {
+float Param::value() const {
   return std::abs(m_value);
 }
 
-inline Factor::operator bool() const {
+inline Param::operator bool() const {
   return m_value != 0;
 }
 
-bool Factor::operator==(const Factor& rhs) const {
+bool Param::operator==(const Param& rhs) const {
   return m_value == rhs.m_value;
 }
 
-bool Factor::operator!=(const Factor& rhs) const {
+bool Param::operator!=(const Param& rhs) const {
   return not(*this == rhs);
 }
 
-Factor::Factor(float value) : m_value(value) {}
+Param::Param(float value) : m_value(value) {}
 
-Quantization::Quantization() : Quantization::Quantization(Factor::none(), Dithering::None) {}
+Quantization::Quantization() : Quantization::Quantization(Param::none(), Dithering::None) {}
 
-Quantization::Quantization(Factor level) :
+Quantization::Quantization(Param level) :
     Quantization::Quantization(level, level ? Dithering::EveryPixel : Dithering::None) {}
 
-Quantization::Quantization(Factor level, Dithering method) : m_level(std::move(level)), m_dithering(Dithering::None) {
+Quantization::Quantization(Param level, Dithering method) : m_level(std::move(level)), m_dithering(Dithering::None) {
   dithering(method); // Enables compatibility check
 }
 
-Quantization& Quantization::level(Factor level) {
+Quantization& Quantization::level(Param level) {
   m_level = std::move(level);
   if (not m_level) {
     m_dithering = Dithering::None;
@@ -82,7 +82,7 @@ Quantization& Quantization::dithering(Dithering method) {
   return *this;
 }
 
-const Factor& Quantization::level() const {
+const Param& Quantization::level() const {
   return m_level;
 }
 
@@ -134,9 +134,9 @@ None::None() : AlgoMixin<None>({}) {}
 Rice::Rice(const Position<-1> shape) : AlgoMixin<Rice>(std::move(shape)) {}
 
 HCompress::HCompress(const Position<-1> shape) :
-    AlgoMixin<HCompress>(std::move(shape)), m_scale(Factor::none()), m_smooth(false) {}
+    AlgoMixin<HCompress>(std::move(shape)), m_scale(Param::none()), m_smooth(false) {}
 
-const Factor& HCompress::scale() const {
+const Param& HCompress::scale() const {
   return m_scale;
 }
 
@@ -144,7 +144,7 @@ bool HCompress::isSmooth() const {
   return m_smooth;
 }
 
-HCompress& HCompress::scale(Factor scale) {
+HCompress& HCompress::scale(Param scale) {
   m_scale = std::move(scale);
   return *this;
 }
