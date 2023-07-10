@@ -217,6 +217,20 @@ public:
   ELEFITS_MOVABLE(Compression)
 
   /**
+   * @brief Create a lossless algorithm well suited to the HDU properties.
+   * @param bitpix The uncompressed data BITPIX
+   * @param dimension The uncompressed data NAXIS
+   */
+  inline static std::unique_ptr<Compression> makeLosslessAlgo(long bitpix, long dimension);
+
+  /**
+   * @brief Create a possibly lossy algorithm well suited to the HDU properties.
+   * @param bitpix The uncompressed data BITPIX
+   * @param dimension The uncompressed data NAXIS
+   */
+  inline static std::unique_ptr<Compression> makeAlgo(long bitpix, long dimension);
+
+  /**
    * @brief Get the tiling.
    */
   inline const Position<-1>& tiling() const;
@@ -272,23 +286,23 @@ public:
   /**
    * @brief Set the tiling.
    */
-  inline virtual TDerived& tiling(Position<-1> shape);
+  virtual TDerived& tiling(Position<-1> shape);
 
   /**
    * @brief Set the quantization.
    */
-  inline virtual TDerived& quantization(Quantization quantization);
+  virtual TDerived& quantization(Quantization quantization);
 
 protected:
   /**
    * @brief Constructor.
    */
-  inline explicit AlgoMixin(Position<-1> tiling, Quantization quantization);
+  explicit AlgoMixin(Position<-1> tiling, Quantization quantization);
 
   /**
    * @brief Dependency inversion to call the wrapper's dispatch based on `TDerived`.
    */
-  inline void compress(void* fptr) const final;
+  void compress(void* fptr) const final;
   // FIXME define the function here instead of in the wrapper
   // The function is not used anyway, and this simplifies compilation
   // => Change compress(fitsfile*, TDerived) into compress(void*, TDerived)
@@ -464,41 +478,6 @@ public:
    */
   inline explicit Plio(Position<-1> tiling = rowwiseTiling(), Quantization quantization = Quantization());
 };
-
-/**
- * @brief Create a lossless algorithm well suited to the HDU properties.
- * @param bitpix The uncompressed data BITPIX
- * @param dimension The uncompressed data NAXIS
- */
-inline std::unique_ptr<Compression> makeLosslessAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Compression> out;
-  if (bitpix > 0 && bitpix <= 24) {
-    out.reset(new Plio());
-  } else if (dimension >= 2) {
-    out.reset(new HCompress());
-  } else {
-    out.reset(new Rice());
-  }
-  return out;
-}
-
-/**
- * @brief Create a possibly lossy algorithm well suited to the HDU properties.
- * @param bitpix The uncompressed data BITPIX
- * @param dimension The uncompressed data NAXIS
- */
-inline std::unique_ptr<Compression> makeAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Compression> out;
-  const auto q4 = Quantization(Param::relative(4));
-  if (bitpix > 0 && bitpix <= 24) {
-    out.reset(new Plio());
-  } else if (dimension >= 2) {
-    out.reset(&(new HCompress())->quantization(std::move(q4)).scale(Param::relative(2.5)));
-  } else {
-    out.reset(&(new Rice())->quantization(std::move(q4)));
-  }
-  return out;
-}
 
 } // namespace Fits
 } // namespace Euclid

@@ -12,10 +12,9 @@ namespace Euclid {
 
 namespace Fits {
 
-// used to dispatch the compress() call for each AlgoMixin subclass TDerived
 template <typename TDerived>
 void AlgoMixin<TDerived>::compress(void* fptr) const {
-  Euclid::Cfitsio::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
+  Cfitsio::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
 }
 
 } // namespace Fits
@@ -166,6 +165,22 @@ void compress(fitsfile* fptr, const Fits::Rice& algo) {
   setQuantize(fptr, algo.quantization());
 }
 
+void compress(fitsfile* fptr, const Fits::Gzip& algo) {
+  int status = 0;
+  fits_set_compression_type(fptr, GZIP_1, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
+  setTiling(fptr, algo.tiling());
+  setQuantize(fptr, algo.quantization());
+}
+
+void compress(fitsfile* fptr, const Fits::ShuffledGzip& algo) {
+  int status = 0;
+  fits_set_compression_type(fptr, GZIP_2, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
+  setTiling(fptr, algo.tiling());
+  setQuantize(fptr, algo.quantization());
+}
+
 void compress(fitsfile* fptr, const Fits::HCompress& algo) {
 
   int status = 0;
@@ -193,22 +208,6 @@ void compress(fitsfile* fptr, const Fits::Plio& algo) {
   fits_set_compression_type(fptr, PLIO_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
   setTiling(fptr, algo.tiling());
-}
-
-void compress(fitsfile* fptr, const Fits::Gzip& algo) {
-  int status = 0;
-  fits_set_compression_type(fptr, GZIP_1, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
-}
-
-void compress(fitsfile* fptr, const Fits::ShuffledGzip& algo) {
-  int status = 0;
-  fits_set_compression_type(fptr, GZIP_2, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
 }
 
 } // namespace Cfitsio

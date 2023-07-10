@@ -9,7 +9,6 @@
 
 #include <fitsio.h>
 #include <memory> // unique_ptr
-#include <string>
 
 namespace Euclid {
 namespace Cfitsio {
@@ -30,34 +29,34 @@ inline std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr);
 inline Fits::Position<-1> readCompressionTiling(fitsfile* fptr);
 
 /**
- * @brief Set the compression algorithm to NoCompression.
+ * @brief Set the compression algorithm to `NoCompression`.
  */
 inline void compress(fitsfile* fptr, const Fits::NoCompression& algo);
 
 /**
- * @brief Set the compression algorithm to Rice.
- */
-inline void compress(fitsfile* fptr, const Fits::Rice& algo);
-
-/**
- * @brief Set the compression algorithm to HCompress.
- */
-inline void compress(fitsfile* fptr, const Fits::HCompress& algo);
-
-/**
- * @brief Set the compression algorithm to Plio.
- */
-inline void compress(fitsfile* fptr, const Fits::Plio& algo);
-
-/**
- * @brief Set the compression algorithm to Gzip.
+ * @brief Set the compression algorithm to `Gzip`.
  */
 inline void compress(fitsfile* fptr, const Fits::Gzip& algo);
 
 /**
- * @brief Set the compression algorithm to ShuffledGzip.
+ * @brief Set the compression algorithm to `ShuffledGzip`.
  */
 inline void compress(fitsfile* fptr, const Fits::ShuffledGzip& algo);
+
+/**
+ * @brief Set the compression algorithm to `Rice`.
+ */
+inline void compress(fitsfile* fptr, const Fits::Rice& algo);
+
+/**
+ * @brief Set the compression algorithm to `HCompress`.
+ */
+inline void compress(fitsfile* fptr, const Fits::HCompress& algo);
+
+/**
+ * @brief Set the compression algorithm to `Plio`.
+ */
+inline void compress(fitsfile* fptr, const Fits::Plio& algo);
 
 } // namespace Cfitsio
 } // namespace Euclid

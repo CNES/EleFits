@@ -190,6 +190,18 @@ BOOST_AUTO_TEST_CASE(hcompress_test) {
   BOOST_TEST(algo.isSmooth() == true);
 }
 
+BOOST_AUTO_TEST_CASE(algo_maker_test) {
+  for (const auto& bitpix : {-64, -32, 8, 16, 32, 64}) {
+    for (long n = 0; n <= 6; ++n) {
+      const auto algo = Compression::makeAlgo(bitpix, n);
+      const auto lossless = Compression::makeLosslessAlgo(bitpix, n);
+      BOOST_TEST((typeid(*algo) != typeid(NoCompression())));
+      BOOST_TEST((typeid(*lossless) != typeid(NoCompression())));
+      BOOST_TEST(lossless->isLossless());
+    }
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

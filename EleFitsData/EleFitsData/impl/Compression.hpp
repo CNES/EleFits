@@ -101,6 +101,33 @@ bool Quantization::operator!=(const Quantization& rhs) const {
   return not(*this == rhs);
 }
 
+std::unique_ptr<Compression> Compression::makeLosslessAlgo(long bitpix, long dimension) {
+  std::unique_ptr<Compression> out;
+  if (bitpix < 0) {
+    out.reset(new ShuffledGzip()); // FIXME Gzip?
+  } else if (bitpix <= 24) {
+    out.reset(new Plio());
+  } else if (dimension >= 2) {
+    out.reset(new HCompress());
+  } else {
+    out.reset(new Rice());
+  }
+  return out;
+}
+
+std::unique_ptr<Compression> Compression::makeAlgo(long bitpix, long dimension) {
+  std::unique_ptr<Compression> out;
+  const auto q4 = Quantization(Param::relative(4));
+  if (bitpix > 0 && bitpix <= 24) {
+    out.reset(new Plio());
+  } else if (dimension >= 2) {
+    out.reset(&(new HCompress())->quantization(std::move(q4)).scale(Param::relative(2.5)));
+  } else {
+    out.reset(&(new Rice())->quantization(std::move(q4)));
+  }
+  return out;
+}
+
 Compression::Compression(Position<-1> tiling, Quantization quantization) :
     m_tiling(std::move(tiling)), m_quantization(std::move(quantization)) {
   OutOfBoundsError::mayThrow("Tiling dimension error", m_tiling.size(), {0, 6});
