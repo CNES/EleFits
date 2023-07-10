@@ -241,6 +241,7 @@ public:
   * If the copied HDU is a Primary, as its appended as an Image HDU, and current compression is also applied.
   * 
   * @warning Does NOT support copying the HDU to the SAME MefFile as the one it originates from.
+  * @warning When copying an empty image, compression is NEVER applied.
   */
   template <typename THdu = Hdu>
   const THdu& appendCopy(const THdu& hdu);

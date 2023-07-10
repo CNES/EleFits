@@ -117,7 +117,7 @@ public:
     options.positional("output", value<std::string>()->default_value("/tmp/compressionBenchmark.fits"), "Output file");
     options.named(
         "case",
-        value<std::string>()->default_value("NONE"),
+        value<std::string>()->default_value("GZIP"),
         "Compression algorithm name (RICE/HCOMPRESS/PLIO/GZIP/SHUFFLEDGZIP)");
     options.named("res", value<std::string>()->default_value("/tmp/compressionBenchmark.csv"), "Output result file");
     options.named(

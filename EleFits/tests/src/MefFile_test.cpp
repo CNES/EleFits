@@ -302,7 +302,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(bintableCopy.header().parse<int>("FOO").value == bintable.header().parse<int>("FOO").value);
   BOOST_TEST(bintableCopy.header().parse<int>("BAR").value == bintable.header().parse<int>("BAR").value);
 
-  /* Copy empty image */
+  /* Copy empty uncompressed to uncompressed */
   const auto& emptyCopy = fileCopy.appendCopy(emptyImage);
   BOOST_TEST(emptyCopy.readName() == emptyImage.readName());
   BOOST_TEST(emptyCopy.readSize() == emptyImage.readSize());
@@ -320,6 +320,15 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(output.shape() == input.shape());
   BOOST_TEST(output.container() == input.container());
   BOOST_TEST(image.matches(HduCategory::RawImage));
+
+  /* Copy empty to compressed */
+  fileCopy.startCompressing(algo);
+  const auto& imageCopy4 = fileCopy.appendCopy(emptyImage);
+  BOOST_TEST(imageCopy4.readName() == emptyImage.readName());
+  BOOST_TEST(imageCopy4.readSize() == emptyImage.readSize());
+  BOOST_TEST(imageCopy4.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
+  BOOST_TEST(imageCopy4.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
+  BOOST_TEST(imageCopy4.matches(HduCategory::RawImage)); // empty images are actually NOT compressed
 
   /* Copy uncompressed to compressed */
   fileCopy.startCompressing(algo);

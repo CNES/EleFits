@@ -193,9 +193,6 @@ void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
   char card[81];
 
   // Get image dimensions and total number of pixels in image
-  for (ii = 0; ii < 9; ii++)
-    naxes[ii] = 1;
-
   fits_get_img_param(srcFptr, 9, &bitpix, &naxis, naxes, &status);
   Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot get img params");
   long totpix = naxes[0] * naxes[1] * naxes[2] * naxes[3] * naxes[4] * naxes[5] * naxes[6] * naxes[7] * naxes[8];
@@ -233,30 +230,25 @@ void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
     fits_get_compression_type(dstFptr, &comptype, &status);
     Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot get compression type");
 
-    long first = 1;
-    while (totpix > 0 && !status) {
+    const long first = 1;
 
-      // Read all or part of image then write it back to the output file
-      fits_read_img(srcFptr, datatype, first, npix, &nulval, array.data(), &anynul, &status);
-      Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read img");
+    // Read all or part of image then write it back to the output file
+    fits_read_img(srcFptr, datatype, first, npix, &nulval, array.data(), &anynul, &status);
+    Cfitsio::CfitsioError::mayThrow(status, srcFptr, "Cannot read img");
 
-      if (comptype == PLIO_1) {
-        // PLIO only supports compression when values are less than 2^24:
-        const auto maxValue = std::max_element(array.begin(), array.end());
-        if (*maxValue > (1 << 24)) {
-          throw Fits::OutOfBoundsError("Plio not supported for this image pixel value", *maxValue, {0, 1 << 24});
-        }
+    if (comptype == PLIO_1) {
+      // PLIO only supports compression when values are less than 2^24:
+      const auto maxValue = std::max_element(array.begin(), array.end());
+      if (*maxValue > (1 << 24)) {
+        throw Fits::OutOfBoundsError("Plio not supported for this image pixel value", *maxValue, {0, 1 << 24});
       }
-
-      fits_write_img(dstFptr, datatype, first, npix, array.data(), &status);
-      Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot write img");
-
-      totpix = totpix - npix;
-      first = first + npix;
     }
 
+    fits_write_img(dstFptr, datatype, first, npix, array.data(), &status);
+    Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot write img");
+
   } catch (Cfitsio::CfitsioError& e) {
-    deleteHdu(dstFptr, currentIndex(dstFptr));
+    // deleteHdu(dstFptr, currentIndex(dstFptr)); // unnecessary ?
     throw e;
   } catch (Fits::OutOfBoundsError& e) {
     deleteHdu(dstFptr, currentIndex(dstFptr));
