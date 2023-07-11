@@ -24,6 +24,34 @@ BOOST_AUTO_TEST_SUITE(Compression_test)
 
 //-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE(disabled_scaling_test) {
+  Compression::Scaling scale = 0;
+  BOOST_TEST(not scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Absolute));
+  BOOST_TEST((scale.value() == 0));
+}
+
+BOOST_AUTO_TEST_CASE(absolute_scaling_test) {
+  Compression::Scaling scale = 8;
+  BOOST_TEST(scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Absolute));
+  BOOST_TEST((scale.value() == 8));
+}
+
+BOOST_AUTO_TEST_CASE(factor_scaling_test) {
+  Compression::Scaling scale = Compression::rms * 2.5;
+  BOOST_TEST(scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Factor));
+  BOOST_TEST((scale.value() == 2.5));
+}
+
+BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
+  Compression::Scaling scale = Compression::rms / 4;
+  BOOST_TEST(scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Inverse));
+  BOOST_TEST((scale.value() == 4));
+}
+
 BOOST_AUTO_TEST_CASE(param_type_test) {
 
   const double positiveValue = 5;

@@ -201,6 +201,32 @@ public:
   ELEFITS_MOVABLE(Compression)
 
   /**
+   * @brief Helper class for scaling parameters.
+   * 
+   * A scaling can be disabled, or provided as an absolute value,
+   * or provided as a tile noise RMS-relative value.
+   * 
+   * Instance `Compression::rms` eases the making of such parameters:
+   * 
+   * \code
+   * auto disabledScaling = 0;
+   * auto absoluteScaling = 4;
+   * auto relativeScaling = Compression::rms / 4;
+   * \endcode
+  */
+  class Scaling;
+
+  /**
+   * @brief Helper class for tile noise RMS-relative scaling.
+   */
+  struct TileRms;
+
+  /**
+   * @brief Helper instance for tile noise RMS-relative scaling.
+   */
+  static TileRms rms;
+
+  /**
    * @brief Create a lossless algorithm well suited to the HDU properties.
    * @param bitpix The uncompressed data BITPIX
    * @param dimension The uncompressed data NAXIS
@@ -276,6 +302,72 @@ protected:
    * @brief The quantization parameters.
    */
   Quantization m_quantization;
+};
+
+class Compression::Scaling {
+public:
+  /**
+   * @brief The type of scaling value.
+   */
+  enum class Type {
+    Absolute, ///< Absolute
+    Factor, ///< Relative as factor: absolute = RMS * value
+    Inverse ///< Relative as inverse: absolute = RMS / value
+  };
+
+  /**
+   * @brief Constructor.
+   */
+  Scaling(double value, Type type = Type::Absolute) :
+      m_type(type), m_value(value) {} // Purposedly not explicit to support implicit cast from double
+
+  /**
+   * @brief Check whether the scaling is enabled (i.e. the value is not null).
+   */
+  operator bool() const {
+    return m_value;
+  }
+
+  /**
+   * @brief Get the scaling type.
+   */
+  Type type() const {
+    return m_type;
+  }
+
+  /**
+   * @brief Get the scaling value.
+  */
+  double value() const {
+    return m_value;
+  }
+
+private:
+  /**
+   * @brief The value type.
+   */
+  Type m_type;
+
+  /**
+   * @brief The scaling value.
+   */
+  double m_value;
+};
+
+struct Compression::TileRms {
+  /**
+   * @brief Create a scaling factor.
+   */
+  Compression::Scaling operator*(double f) const {
+    return Scaling(f, Scaling::Type::Factor);
+  }
+
+  /**
+   * @brief Create a scaling inverse factor.
+   */
+  Compression::Scaling operator/(double f) const {
+    return Scaling(f, Scaling::Type::Inverse);
+  }
 };
 
 /**

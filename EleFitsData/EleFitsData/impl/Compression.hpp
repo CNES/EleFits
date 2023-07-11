@@ -101,6 +101,8 @@ bool Quantization::operator!=(const Quantization& rhs) const {
   return not(*this == rhs);
 }
 
+inline Compression::TileRms rms; // Definition
+
 std::unique_ptr<Compression> Compression::makeLosslessAlgo(long bitpix, long dimension) {
 
   // No data
