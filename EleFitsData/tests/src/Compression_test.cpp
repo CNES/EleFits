@@ -36,6 +36,7 @@ BOOST_AUTO_TEST_CASE(absolute_scaling_test) {
   BOOST_TEST(scale);
   BOOST_TEST((scale.type() == Compression::Scaling::Type::Absolute));
   BOOST_TEST((scale.value() == 8));
+  BOOST_CHECK_THROW((Compression::Scaling(-scale)), FitsError);
 }
 
 BOOST_AUTO_TEST_CASE(factor_scaling_test) {
@@ -43,6 +44,7 @@ BOOST_AUTO_TEST_CASE(factor_scaling_test) {
   BOOST_TEST(scale);
   BOOST_TEST((scale.type() == Compression::Scaling::Type::Factor));
   BOOST_TEST((scale.value() == 2.5));
+  BOOST_CHECK_THROW((Compression::rms * -scale), FitsError);
 }
 
 BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
@@ -50,78 +52,59 @@ BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
   BOOST_TEST(scale);
   BOOST_TEST((scale.type() == Compression::Scaling::Type::Inverse));
   BOOST_TEST((scale.value() == 4));
+  BOOST_CHECK_THROW((Compression::rms / -scale), FitsError);
 }
 
-BOOST_AUTO_TEST_CASE(param_type_test) {
-
-  const double positiveValue = 5;
-  const double zeroValue = 0;
-  const double negativeValue = -5;
-
-  const auto none = Param::none();
-  BOOST_TEST(none.value() == zeroValue);
-  BOOST_TEST(none.type() == Param::Type::None);
-
-  const auto absolute = Param::absolute(positiveValue);
-  BOOST_CHECK_THROW(Param::absolute(zeroValue), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Param::absolute(negativeValue), Euclid::Fits::FitsError);
-
-  BOOST_TEST(absolute.value() == positiveValue);
-  BOOST_TEST(absolute.type() == Param::Type::Absolute);
-
-  const auto relative = Param::relative(positiveValue);
-  BOOST_CHECK_THROW(Param::relative(zeroValue), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Param::relative(negativeValue), Euclid::Fits::FitsError);
-
-  BOOST_TEST(relative.value() == positiveValue);
-  BOOST_TEST(relative.type() == Param::Type::Relative);
-}
-
-BOOST_AUTO_TEST_CASE(param_equality_test) {
-  const auto r4 = Param::relative(4);
-  const auto r5 = Param::relative(5);
-  const auto r5b = Param::relative(5);
-  const auto a5 = Param::absolute(5);
-  BOOST_TEST((r5 == r5b));
-  BOOST_TEST((r5 != a5));
-  BOOST_TEST((r5 != r4));
+BOOST_AUTO_TEST_CASE(scaling_equality_test) {
+  const auto a0 = Compression::Scaling(0);
+  const auto a1 = Compression::Scaling(1);
+  const auto f1 = Compression::rms * 1;
+  const auto f2 = Compression::rms * 2;
+  const auto f2b = Compression::rms * 2;
+  const auto i1 = Compression::rms / 1;
+  const auto i2 = Compression::rms / 0.5;
+  BOOST_TEST((a0 != a1));
+  BOOST_TEST((a1 != f1));
+  BOOST_TEST((f1 != f2));
+  BOOST_TEST((f2 == f2b));
+  BOOST_TEST((f1 == i1));
+  BOOST_TEST((f2 == i2));
 }
 
 BOOST_AUTO_TEST_CASE(default_quantization_test) {
-  Quantization q;
+  Compression::Quantization q;
   BOOST_TEST(not q);
   BOOST_TEST(not q.level());
-  BOOST_TEST((q.dithering() == Dithering::None));
-  BOOST_CHECK_THROW(q.dithering(Dithering::EveryPixel), FitsError); // Cannot dither disabled q
+  BOOST_TEST((q.dithering() == Compression::Dithering::None));
+  BOOST_CHECK_THROW(q.dithering(Compression::Dithering::EveryPixel), FitsError); // Cannot dither disabled q
 }
 
 BOOST_AUTO_TEST_CASE(default_dithering_test) {
-  const auto level = Param::absolute(4); // CFITSIO default
-  Quantization q(level);
+  Compression::Scaling level(4);
+  Compression::Quantization q(level);
   BOOST_TEST(q);
   BOOST_TEST(q.level() == level);
-  BOOST_TEST((q.dithering() == Dithering::EveryPixel));
+  BOOST_TEST((q.dithering() == Compression::Dithering::EveryPixel));
 }
 
-BOOST_AUTO_TEST_CASE(quantization_level_test) {
-  const auto level = Param::relative(4);
-  Quantization q;
-  q.level(level);
+BOOST_AUTO_TEST_CASE(quantization_dithering_test) {
+  const auto level = Compression::rms / 4; // CFITSIO default
+  Compression::Quantization q(level);
   BOOST_TEST((q.level() == level));
-  BOOST_TEST((q.dithering() == Dithering::None));
-  q.dithering(Dithering::NonZeroPixel);
+  BOOST_TEST((q.dithering() == Compression::Dithering::None));
+  q.dithering(Compression::Dithering::NonZeroPixel);
   BOOST_TEST((q.level() == level));
-  BOOST_TEST((q.dithering() == Dithering::NonZeroPixel));
+  BOOST_TEST((q.dithering() == Compression::Dithering::NonZeroPixel));
 }
 
 BOOST_AUTO_TEST_CASE(quantization_equality_test) {
-  Quantization q0;
-  Quantization q0n(Param::none(), Dithering::None);
-  Quantization q3(Param::absolute(3));
-  Quantization q4(Param::absolute(4));
-  Quantization q4n(Param::absolute(4), Dithering::None);
-  Quantization q4e(Param::absolute(4), Dithering::EveryPixel);
-  Quantization q4nz(Param::absolute(4), Dithering::NonZeroPixel);
+  Compression::Quantization q0;
+  Compression::Quantization q0n(0, Compression::Dithering::None);
+  Compression::Quantization q3(3);
+  Compression::Quantization q4(4);
+  Compression::Quantization q4n(4, Compression::Dithering::None);
+  Compression::Quantization q4e(4, Compression::Dithering::EveryPixel);
+  Compression::Quantization q4nz(4, Compression::Dithering::NonZeroPixel);
   BOOST_TEST((q0 == q0n));
   BOOST_TEST((q0 != q4n));
   BOOST_TEST((q3 != q4));
@@ -142,12 +125,12 @@ void testAlgoMixinParameters(long dimension = 0) {
   BOOST_TEST((shape2 == shape));
 
   // check default quantization values:
-  BOOST_TEST((algo.quantization() == Quantization()));
+  BOOST_TEST((algo.quantization() == Compression::Quantization()));
 
   // set/get quantization:
-  Quantization quantization;
-  quantization.level(Param::absolute(5));
-  quantization.dithering(Dithering::None);
+  Compression::Quantization quantization;
+  quantization.level(5);
+  quantization.dithering(Compression::Dithering::None);
   algo.quantization(quantization);
   BOOST_TEST((algo.quantization() == quantization));
 }
@@ -188,14 +171,14 @@ BOOST_AUTO_TEST_CASE(hcompress_test) {
   HCompress algo(shape);
 
   // check default hcompress params values:
-  BOOST_TEST((algo.scale() == Param::none()));
+  BOOST_TEST((algo.scaling() == Compression::Scaling(0)));
   BOOST_TEST(algo.isSmooth() == false);
 
   // setters & getters:
-  Param scale = Param::absolute(5);
-  algo.scale(scale);
+  Compression::Scaling scale = 5;
+  algo.scaling(scale);
   algo.enableSmoothing();
-  BOOST_TEST((algo.scale() == scale));
+  BOOST_TEST((algo.scaling() == scale));
   BOOST_TEST(algo.isSmooth() == true);
 }
 
