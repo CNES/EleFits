@@ -143,22 +143,22 @@ public:
   };
 
   /**
- * @ingroup image_compression
- * @brief Quantization of pixels.
- * 
- * As opposed to CFITSIO, EleFits creates lossless algorithms by default,
- * including for floating point values.
- * Lossy compression has to be manually enabled by setting a non-null quantization level.
- * The level can be set either globally, as a double, or tile-wise, relative to the noise level:
- * 
- * \code
- * Compression::Quantization disabled;
- * Compression::Quantization absolute(1);
- * Compression::Quantization relative(Compression::rms / 4); // CFITSIO's default
- * \endcode
- * 
- * When quantization is enabled, dithering is applied by default to all pixels.
- */
+   * @ingroup image_compression
+   * @brief %Quantization parameters.
+   * 
+   * As opposed to CFITSIO, EleFits creates lossless algorithms by default,
+   * including for floating point values.
+   * Lossy compression has to be manually enabled by setting a non-null quantization level.
+   * The level can be set either globally, as a double, or tile-wise, relative to the noise level:
+   * 
+   * \code
+   * Compression::Quantization disabled;
+   * Compression::Quantization absolute(1);
+   * Compression::Quantization relative(Compression::rms / 4); // CFITSIO's default
+   * \endcode
+   * 
+   * When quantization is enabled, dithering is applied by default to all pixels.
+   */
   class Quantization {
 
   public:
@@ -284,7 +284,7 @@ public:
   inline const Quantization& quantization() const;
 
   /**
-   * @brief Check whether the compression is lossless.
+   * @brief Check whether the compression is lossless for.
    */
   inline virtual bool isLossless() const;
 

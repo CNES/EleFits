@@ -84,17 +84,18 @@ All internal compression algorithms act on data regions named tiles,
 which are compressed and decompressed independently.
 Tiles are represented by their common shape (edge tiles may be cropped).
 Generally, the default tile is a row.
-When the images to be compressed have a small width, such a tile might be too small.
+When the images to be compressed have a small width (say, less than a thousand pixels), such a tile might be too small.
 In this case, using larger tiles is recommended.
-For smallest images, the whole data can even be used.
+For smallest images (a few thousands of pixels at most), the whole data can even be used.
 When image processing is planned to be performed tile-wise (e.g. row-by-row),
 then the compression tile should relate to the processing tile such that compression and processing tile borders match as often as possible.
 
 As opposed to CFITSIO, by default, compression is lossless whatever the pixel type.
+If one tries to use some lossless algorithm with incompatible data type (e.g. H-compress with `double`), an error is thrown. 
 Lossy compression is available, for any pixel type, by enabling quantization.
 Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
 This is a first level of compression, where the least significant digits of a floating-point number are dropped.
-Quantization can be turned on for integer-valued data, too, in which case they are first cast as floating-point data.
+Quantization can be turned on for integral-valued data, too, in which case they are first cast as floating-point data.
 
 Once this step has been performed, the quantized, integral values are effectively compressed losslessly by one of the supported algorithms:
 
@@ -105,15 +106,40 @@ Once this step has been performed, the quantized, integral values are effectivel
   It generally offers better performances than GZIP.
 - H-compress (`HCompress`) is a somewhat more advanced algorithm, which may require more tuning than others,
   and explicitely targets 2D images;
-  It may be lossless with integer values when both quantization and scaling are disabled.
+  It is lossless with integer values when both quantization and scaling are disabled.
 - PLIO (`Plio`) is designed for integer values, and more specifically bitmasks;
   Values higher than 2^24 cannot be compressed with this algorithm;
   It is not recommended to use quantization with PLIO.
 
+<table class="fieldtable">
+<tr><th>Class<th>Integral data<th>Floating point data
+<tr><td>`Gzip`<td>Lossless iff quantization is disabled.<td>Lossless iff quantization is disabled.
+<tr><td>`ShuffledGzip`<td>Lossless iff quantization is disabled.<td>Lossless iff quantization is disabled.
+<tr><td>`Rice`<td>Lossless iff quantization is disabled.<td>Lossy
+<tr><td>`HCompress`<td>Lossless iff quantization and scaling are disabled.<td>Lossy
+<tr><td>`Plio`<td>Lossless iff quantization is disabled.<td>Lossy
+</table>
+
 @see R. L. White, P. Greenfield, W. Pence, D. Tody, R. Seaman.
 _Tiled Image Convention for Storing Compressed Images in FITS Binary Tables._
 
-TODO interface
+
+\subsection compression-interface Interface
+
+
+As mentioned in the previous section, compression algorithms are represented by dedicated classes.
+In addition, `NoCompression` can be used to disable internal compression.
+All those classes implement the `Compression` interface.
+Generic compression parameters are the tiling shape (as a `Position<-1>` object)
+and quantization (as a `Compression::Quantization` object).
+More details can be found in the classes and methods documentation (see list below).
+
+Once the `Compression` instance is created, it must be passed to `MefFile::startCompressing()`.
+From this point, newly created Image HDUs will automatically be compressed.
+Note that it is not possible to convert an uncompressed Image HDU into a compressed one,
+and compression must be activated before creating HDUs.
+The compression algorithm or parameters can be changed for subsequent HDUs by calling again `MefFile::startCompressing()`.
+Disabling compression can be done with `NoCompression` or by calling `MefFile::stopCompressing()`.
 
 */
 
