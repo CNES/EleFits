@@ -148,6 +148,16 @@ public:
  * 
  * As opposed to CFITSIO, EleFits creates lossless algorithms by default,
  * including for floating point values.
+ * Lossy compression has to be manually enabled by setting a non-null quantization level.
+ * The level can be set either globally, as a double, or tile-wise, relative to the noise level:
+ * 
+ * \code
+ * Compression::Quantization disabled;
+ * Compression::Quantization absolute(1);
+ * Compression::Quantization relative(Compression::rms / 4); // CFITSIO's default
+ * \endcode
+ * 
+ * When quantization is enabled, dithering is applied by default to all pixels.
  */
   class Quantization {
 
@@ -376,6 +386,8 @@ public:
 /**
  * @ingroup image_compression
  * @brief The GZIP algorithm.
+ * 
+ * Along with `ShuffledGzip`, this is the only algorithm which supports lossless compression of floating point data.
  */
 class Gzip : public AlgoMixin<Gzip> {
 
@@ -395,7 +407,7 @@ public:
  * @brief The GZIP algorithm applied to "shuffled" pixel values.
  * 
  * Suffling means that value bytes are reordered such that most significant bytes of each value appear first.
- * Generally, this algorithm is much more efficient in terms of compression factor than GZIP, although it is a bit slower.
+ * Generally, this algorithm is more efficient in terms of compression factor than GZIP, although it is a bit slower.
  */
 class ShuffledGzip : public AlgoMixin<ShuffledGzip> { // FIXME merge with Gzip with option to shuffle
 
@@ -430,6 +442,19 @@ public:
 /**
  * @ingroup image_compression
  * @brief The H-compress algorithm.
+ * 
+ * This algorithm relies on some scaling parameter.
+ * When scaling is enabled, H-compress is lossy irrespective of quantization.
+ * In order to use H-compress losslessly, quantization and scaling must be zeroed,
+ * and the data values must be integers.
+ * 
+ * Analogously to quantization, the scaling can be set globally or tile-wise.
+ * In this case, it is generally provided as a multiplicative factor instead of an inverse:
+ * 
+ * \code
+ * HCompress algo;
+ * HCompress().scaling(Compression::rms * 2.5);
+ * \endcode
  */
 class HCompress : public AlgoMixin<HCompress> {
 
@@ -496,6 +521,9 @@ private:
 /**
  * @ingroup image_compression
  * @brief The PLIO algorithm.
+ * 
+ * This algorithm was designed specifically for bitmasks,
+ * and performs well for rasters with constant regions.
  * 
  * @warning Only integer values between 0 and 2^24 are supported.
  */

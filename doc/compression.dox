@@ -90,9 +90,6 @@ For smallest images, the whole data can even be used.
 When image processing is planned to be performed tile-wise (e.g. row-by-row),
 then the compression tile should relate to the processing tile such that compression and processing tile borders match as often as possible.
 
-Parameters can be set either globally for all tiles,
-or tile-wise, in which case they are relative to the noise level in the tile.
-
 As opposed to CFITSIO, by default, compression is lossless whatever the pixel type.
 Lossy compression is available, for any pixel type, by enabling quantization.
 Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
@@ -101,14 +98,17 @@ Quantization can be turned on for integer-valued data, too, in which case they a
 
 Once this step has been performed, the quantized, integral values are effectively compressed losslessly by one of the supported algorithms:
 
-- GZIP (class `Gzip`) is the classical file compression algorithm.
+- GZIP (class `Gzip`) is the classical file compression algorithm and can be applied without quantization.
 - Suffled GZIP (`ShuffledGzip`) first applies some byte reordering and generally shows a greater compression rate than GZIP.
 - `Rice` is the de facto standard FITS compression algorithm:
-  It is compatible with all data types and values and offers better performances than GZIP.
+  It is lossy for floating point values and can be lossless for integer values;
+  It generally offers better performances than GZIP.
+- H-compress (`HCompress`) is a somewhat more advanced algorithm, which may require more tuning than others,
+  and explicitely targets 2D images;
+  It may be lossless with integer values when both quantization and scaling are disabled.
 - PLIO (`Plio`) is designed for integer values, and more specifically bitmasks;
-  Values higher than 2^24 cannot be compressed with this algorithm.
-- `HCompress` is a somewhat more advanced algorithm, which may require more tuning than others,
-  and explicitely targets 2D images.
+  Values higher than 2^24 cannot be compressed with this algorithm;
+  It is not recommended to use quantization with PLIO.
 
 @see R. L. White, P. Greenfield, W. Pence, D. Tody, R. Seaman.
 _Tiled Image Convention for Storing Compressed Images in FITS Binary Tables._
