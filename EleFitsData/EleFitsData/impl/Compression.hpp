@@ -102,30 +102,88 @@ bool Quantization::operator!=(const Quantization& rhs) const {
 }
 
 std::unique_ptr<Compression> Compression::makeLosslessAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Compression> out;
-  if (bitpix < 0) {
-    out.reset(new ShuffledGzip()); // FIXME Gzip?
-  } else if (bitpix <= 24) {
-    out.reset(new Plio());
-  } else if (dimension >= 2) {
-    out.reset(new HCompress());
-  } else {
-    out.reset(new Rice());
+
+  // No data
+  if (dimension == 0) {
+    return std::make_unique<NoCompression>();
   }
-  return out;
+
+  // Floating point
+  if (bitpix < 0) {
+    return std::make_unique<ShuffledGzip>(); // FIXME Gzip?
+  }
+
+  // Mask
+  if (bitpix <= 24) {
+    return std::make_unique<Plio>();
+  }
+
+  // 2D or more
+  if (dimension >= 2) {
+    return std::make_unique<HCompress>();
+  }
+
+  // Fallback
+  return std::make_unique<Rice>();
 }
 
 std::unique_ptr<Compression> Compression::makeAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Compression> out;
-  const auto q4 = Quantization(Param::relative(4));
-  if (bitpix > 0 && bitpix <= 24) {
-    out.reset(new Plio());
-  } else if (dimension >= 2) {
-    out.reset(&(new HCompress())->quantization(std::move(q4)).scale(Param::relative(2.5)));
-  } else {
-    out.reset(&(new Rice())->quantization(std::move(q4)));
+
+  // No data
+  if (dimension == 0) {
+    return std::make_unique<NoCompression>();
   }
+
+  // Mask
+  if (bitpix > 0 && bitpix <= 24) {
+    return std::make_unique<Plio>();
+  }
+
+  const auto q4 = Quantization(Param::relative(4));
+
+  // 2D or more
+  if (dimension >= 2) {
+    auto out = std::make_unique<HCompress>();
+    out->quantization(std::move(q4));
+    out->scale(Param::relative(2.5));
+    return out;
+  }
+
+  // Fallback
+  auto out = std::make_unique<Rice>();
+  out->quantization(std::move(q4));
   return out;
+}
+
+template <typename TRaster>
+std::unique_ptr<Compression> Compression::makeLosslessAlgo(const TRaster& raster) {
+
+  // No data
+  if (raster.size() == 0) {
+    return std::make_unique<NoCompression>();
+  }
+
+  // Mask
+  const auto b = bitpix(raster);
+  const auto n = raster.dimension();
+  if (b > 0) {
+    const auto max = *std::max_element(raster.begin(), raster.end());
+    if (max < (1 << 24)) {
+      return std::make_unique<Plio>();
+    }
+  }
+
+  // Fallback
+  return makeLosslessAlgo(b, n);
+}
+
+template <typename TRaster>
+std::unique_ptr<Compression> Compression::makeAlgo(const TRaster& raster) {
+  const auto b = bitpix(raster);
+  if (b > 0) {
+    return makeLosslessAlgo(raster);
+  }
+  return makeAlgo(b, raster.dimension());
 }
 
 Compression::Compression(Position<-1> tiling, Quantization quantization) :

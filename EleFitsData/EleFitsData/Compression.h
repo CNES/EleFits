@@ -7,6 +7,7 @@
 
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/Position.h"
+#include "EleFitsData/Raster.h"
 
 #include <memory>
 #include <string>
@@ -205,6 +206,18 @@ public:
    * @param dimension The uncompressed data NAXIS
    */
   inline static std::unique_ptr<Compression> makeLosslessAlgo(long bitpix, long dimension);
+
+  /**
+   * @brief Create a lossless algorithm well suited to a given raster.
+   */
+  template <typename TRaster>
+  static std::unique_ptr<Compression> makeLosslessAlgo(const TRaster& raster);
+
+  /**
+   * @brief Create a possibly lossy algorithm well suited to a given raster.
+   */
+  template <typename TRaster>
+  static std::unique_ptr<Compression> makeAlgo(const TRaster& raster);
 
   /**
    * @brief Create a possibly lossy algorithm well suited to the HDU properties.
