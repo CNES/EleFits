@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(quantization_dithering_test) {
   const auto level = Compression::rms / 4; // CFITSIO default
   Compression::Quantization q(level);
   BOOST_TEST((q.level() == level));
-  BOOST_TEST((q.dithering() == Compression::Dithering::None));
+  BOOST_TEST((q.dithering() == Compression::Dithering::EveryPixel));
   q.dithering(Compression::Dithering::NonZeroPixel);
   BOOST_TEST((q.level() == level));
   BOOST_TEST((q.dithering() == Compression::Dithering::NonZeroPixel));

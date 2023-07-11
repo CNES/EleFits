@@ -10,7 +10,11 @@
 namespace Euclid {
 namespace Fits {
 
-Compression::Scaling::Scaling(double value, Type type) : m_type(type), m_value(value) {}
+Compression::Scaling::Scaling(double value, Type type) : m_type(type), m_value(value) {
+  if (value < 0) {
+    throw FitsError("Scaling value must be positive or null");
+  }
+}
 
 Compression::Scaling::operator bool() const {
   return m_value;
@@ -25,12 +29,24 @@ double Compression::Scaling::value() const {
 }
 
 bool Compression::Scaling::operator==(const Compression::Scaling& rhs) const {
-  if (m_value != rhs.m_value) {
+
+  // Both disabled
+  if (not *this && not rhs) {
+    return true;
+  }
+
+  // Same type
+  if (m_type == rhs.m_type) {
+    return m_value == rhs.m_value;
+  }
+
+  // One absolute and one relative
+  if (m_type == Type::Absolute || rhs.m_type == Type::Absolute) {
     return false;
   }
-  if (m_value == 0)
-    return true;
-  return m_type == rhs.m_type;
+
+  // One factor and one inverse
+  return m_value == 1. / rhs.m_value;
 }
 
 bool Compression::Scaling::operator!=(const Compression::Scaling& rhs) const {
