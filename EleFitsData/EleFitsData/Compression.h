@@ -20,23 +20,6 @@ class MefFile;
 /// @endcond
 
 /**
- * @relates Compression
- * @brief Create a rowwise tiling.
- * @param rowCount The number of rows per tile
- */
-inline Position<-1> rowwiseTiling(long rowCount = 1) {
-  return Position<-1> {-1, rowCount};
-}
-
-/**
- * @relates Compression
- * @brief Create a whole-data array tiling.
- */
-inline Position<-1> maxTiling() {
-  return Position<-1> {-1};
-}
-
-/**
  * @ingroup image_compression
  * @brief A parameter which can be absolute or relative to the noise level in each tile.
  */
@@ -229,6 +212,21 @@ public:
    * @param dimension The uncompressed data NAXIS
    */
   inline static std::unique_ptr<Compression> makeAlgo(long bitpix, long dimension);
+
+  /**
+   * @brief Create a rowwise tiling.
+   * @param rowCount The number of rows per tile
+   */
+  inline static Position<-1> rowwiseTiling(long rowCount = 1) {
+    return Position<-1> {-1, rowCount};
+  }
+
+  /**
+   * @brief Create a whole-data array tiling.
+   */
+  inline static Position<-1> maxTiling() {
+    return Position<-1> {-1};
+  }
 
   /**
    * @brief Get the tiling.
