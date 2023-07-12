@@ -112,6 +112,11 @@ public:
    */
   std::vector<std::pair<std::string, long>> readHduNamesVersions();
 
+  /**
+   * @brief Check whether the image compression is turned on.
+   */
+  inline bool isCompressing() const;
+
   /// @group_elements
 
   /**
@@ -193,6 +198,16 @@ public:
   /// @group_modifiers
 
   /**
+   * @brief Set the compression algorithm to be used when writting new image extensions.
+   */
+  inline void startCompressing(const Compression& algo);
+
+  /**
+   * @brief Disable compression when writting new image extensions.
+   */
+  inline void stopCompressing();
+
+  /**
    * @brief Append a new image extension with empty data unit (`NAXIS = 0`).
    */
   template <typename T = unsigned char>
@@ -218,21 +233,6 @@ public:
    */
   template <typename TRaster>
   const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster);
-
-  /**
-   * @brief Set the compression algorithm to be used when writting new image extensions.
-  */
-  inline void startCompressing(const Compression& algo);
-
-  /**
-  * @brief Disable compression when writting new image extensions.
-  */
-  inline void stopCompressing();
-
-  /**
-   * @brief Check whether the image compression is turned on.
-  */
-  inline bool isCompressing() const;
 
   /**
   * @brief Append a copy of a given HDU.
