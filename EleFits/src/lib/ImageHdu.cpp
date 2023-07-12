@@ -42,6 +42,10 @@ const std::type_info& ImageHdu::readTypeid() const {
   return m_raster.readTypeid();
 }
 
+long ImageHdu::readBitpix() const {
+  return m_raster.readBitpix();
+}
+
 long ImageHdu::readSize() const {
   return m_raster.readSize();
 }

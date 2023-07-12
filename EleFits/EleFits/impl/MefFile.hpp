@@ -136,7 +136,7 @@ const THdu& MefFile::appendCopy(const THdu& hdu) {
     Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
     m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   } else {
-    if (hdu.matches(HduCategory::RawImage) && not isCompressing()) {
+    if (hdu.matches(HduCategory::RawImage) && (not isCompressing() || hdu.matches(HduCategory::Metadata))) {
       Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
     } else {
       Cfitsio::HduAccess::contextualCopy(hdu.m_fptr, m_fptr);

@@ -26,6 +26,14 @@ const std::type_info& readTypeid(fitsfile* fptr) {
   throw Fits::FitsError("Unknown BITPIX: " + std::to_string(bitpix));
 }
 
+long readBitpix(fitsfile* fptr) {
+  int status = 0;
+  int bitpix = 0;
+  fits_get_img_type(fptr, &bitpix, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read image type");
+  return bitpix;
+}
+
 template <>
 Fits::Position<-1> readShape<-1>(fitsfile* fptr) {
   int status = 0;
