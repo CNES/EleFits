@@ -53,7 +53,7 @@ std::size_t currentSize(fitsfile* fptr) {
   LONGLONG currentHeadStart;
   LONGLONG nextHeadStart;
 
-  long currentIdx = currentIndex(fptr);
+  const auto currentIdx = currentIndex(fptr);
 
   if (currentIdx < count(fptr)) { // its not the the last hdu
     fits_get_hduaddrll(fptr, &currentHeadStart, nullptr, nullptr, &status);
@@ -167,7 +167,7 @@ void createMetadataExtension(fitsfile* fptr, const std::string& name) {
 void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
   int status = 0;
   fits_copy_hdu(srcFptr, dstFptr, 0, &status);
-  Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot copy hdu");
+  Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot copy HDU");
 }
 
 #define ARE_SAME_TYPEID(type, name) \
@@ -177,7 +177,7 @@ void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
 
 int readTypeCode(fitsfile* fptr) {
   ELEFITS_FOREACH_RASTER_TYPE(ARE_SAME_TYPEID)
-  throw Fits::FitsError("Unrecognized datatype for Hdu copy.");
+  throw Fits::FitsError("Unrecognized datatype for HDU copy.");
 }
 
 // FIXME: use CFitsioWrapper functions & abstractions for improved robustness
@@ -232,6 +232,12 @@ void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr) {
 
   fits_write_img(dstFptr, datatype, first, npix, array.data(), &status);
   Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot write img");
+}
+
+void setHugeHdu(fitsfile* fptr, bool isHuge) {
+  int status = 0;
+  fits_set_huge_hdu(fptr, isHuge, &status);
+  Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set huge HDU");
 }
 
 void deleteHdu(fitsfile* fptr, long index) {

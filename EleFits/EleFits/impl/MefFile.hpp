@@ -139,6 +139,9 @@ const THdu& MefFile::appendCopy(const THdu& hdu) {
     if (hdu.matches(HduCategory::RawImage) && (not isCompressing() || hdu.matches(HduCategory::Metadata))) {
       Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
     } else {
+      // // setting to huge hdu if hdu size > 2^32
+      // if (hdu.readSizeInFile() > (1ULL << 32))
+      //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true);
       Cfitsio::HduAccess::contextualCopy(hdu.m_fptr, m_fptr);
     }
     m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
