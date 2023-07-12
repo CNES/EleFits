@@ -166,7 +166,7 @@ std::unique_ptr<Compression> Compression::makeLosslessAlgo(const TRaster& raster
   // Mask
   const auto b = bitpix(raster);
   const auto n = raster.dimension();
-  if (b > 0) {
+  if (b > 0 && raster.data()) {
     const auto max = *std::max_element(raster.begin(), raster.end());
     if (max < (1 << 24)) {
       return std::make_unique<Plio>();
@@ -175,6 +175,20 @@ std::unique_ptr<Compression> Compression::makeLosslessAlgo(const TRaster& raster
 
   // Fallback
   return makeLosslessAlgo(b, n);
+
+  // FIXME HCompress needs tiles of at least 4x4
+  // And, according to astropy:
+  // # If the image has less than 30
+  // # rows, then the entire image will be compressed as a single
+  // # tile.  Otherwise the tiles will consist of 16 rows of the
+  // # image.  This keeps the tiles to a reasonable size, and it
+  // # also includes enough rows to allow good compression
+  // # efficiency.  It the last tile of the image happens to contain
+  // # less than 4 rows, then find another tile size with between 14
+  // # and 30 rows (preferably even), so that the last tile has at
+  // # least 4 rows.
+
+  // FIXME increase tiling if width or size is small
 }
 
 template <typename TRaster>
