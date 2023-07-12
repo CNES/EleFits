@@ -12,10 +12,9 @@ namespace Euclid {
 
 namespace Fits {
 
-// used to dispatch the compress() call for each AlgoMixin subclass TDerived
 template <typename TDerived>
 void AlgoMixin<TDerived>::compress(void* fptr) const {
-  Euclid::Cfitsio::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
+  Cfitsio::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
 }
 
 } // namespace Fits
@@ -37,9 +36,8 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   int algo = int(NULL);
   fits_get_compression_type(fptr, &algo, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot read compression type");
-  std::unique_ptr<Fits::Compression> out(new Fits::NoCompression());
   if (algo == int(NULL)) {
-    return out;
+    return std::make_unique<Fits::NoCompression>();
   }
 
   // Read tiling
@@ -51,65 +49,45 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   CfitsioError::mayThrow(status, fptr, "Cannot read compression tiling");
 
   // Read quantization
-  float f = 0;
-  auto parametrize = [](float p) {
-    if (p == 0) {
-      return Fits::Param::none();
-    } else if (p < 0) {
-      return Fits::Param::absolute(-p);
-    } else {
-      return Fits::Param::relative(p);
-    }
-  };
-  fits_get_quantize_level(fptr, &f, &status);
-  Fits::Quantization quantization(parametrize(f));
+  float scale = 0;
+  fits_get_quantize_level(fptr, &scale, &status);
+  Fits::Compression::Quantization quantization(
+      scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms / scale);
   if (quantization && HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
     const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
     if (method == "NO_DITHER") {
-      quantization.dithering(Fits::Dithering::None);
+      quantization.dithering(Fits::Compression::Dithering::None);
     } else if (method == "SUBTRACTIVE_DITHER_1") {
-      quantization.dithering(Fits::Dithering::EveryPixel);
+      quantization.dithering(Fits::Compression::Dithering::EveryPixel);
     } else if (method == "SUBTRACTIVE_DITHER_2") {
-      quantization.dithering(Fits::Dithering::NonZeroPixel);
+      quantization.dithering(Fits::Compression::Dithering::NonZeroPixel);
     } else {
       Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
     }
   }
   CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
 
-  // Read scaling
-  fits_get_hcomp_scale(fptr, &f, &status);
-  auto scaling = parametrize(f);
-  // FIXME smoothing?
-  CfitsioError::mayThrow(status, fptr, "Cannot read compression scaling");
-
-  switch (algo) {
-    case RICE_1:
-      out.reset(new Fits::Rice(tiling));
-      break;
-    case HCOMPRESS_1:
-      out.reset(new Fits::HCompress({tiling[0], tiling[1]}));
-      fits_get_hcomp_scale(fptr, &f, &status);
-      dynamic_cast<Fits::HCompress&>(*out).scale(std::move(scaling)).quantization(std::move(quantization));
-      break;
-    case PLIO_1:
-      out.reset(new Fits::Plio(tiling));
-      dynamic_cast<Fits::Plio&>(*out).quantization(std::move(quantization));
-      break;
-    case GZIP_1:
-      out.reset(new Fits::Gzip(tiling));
-      dynamic_cast<Fits::Gzip&>(*out).quantization(std::move(quantization));
-      break;
-    case GZIP_2:
-      out.reset(new Fits::ShuffledGzip(tiling));
-      dynamic_cast<Fits::ShuffledGzip&>(*out).quantization(std::move(quantization));
-      break;
-    default:
-      throw Fits::FitsError("Unknown compression type");
+  if (algo == RICE_1) {
+    return std::make_unique<Fits::Rice>(std::move(tiling), std::move(quantization));
   }
-  CfitsioError::mayThrow(status, fptr, "Cannot read compression parameters");
-
-  return out;
+  if (algo == HCOMPRESS_1) {
+    auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {tiling[0], tiling[1]}, std::move(quantization));
+    fits_get_hcomp_scale(fptr, &scale, &status);
+    CfitsioError::mayThrow(status, fptr, "Cannot read H-compress scaling");
+    out->scaling(scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms * scale);
+    // FIXME smoothing?
+    return out;
+  }
+  if (algo == PLIO_1) {
+    return std::make_unique<Fits::Plio>(std::move(tiling), std::move(quantization));
+  }
+  if (algo == GZIP_1) {
+    return std::make_unique<Fits::Gzip>(std::move(tiling), std::move(quantization));
+  }
+  if (algo == GZIP_2) {
+    return std::make_unique<Fits::ShuffledGzip>(std::move(tiling), std::move(quantization));
+  }
+  throw Fits::FitsError("Unknown compression type");
 }
 
 inline void setTiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
@@ -119,33 +97,39 @@ inline void setTiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
   CfitsioError::mayThrow(status, fptr, "Cannot set compression tiling");
 }
 
-inline void setQuantize(fitsfile* fptr, const Fits::Quantization& quantization) {
+inline void setQuantize(fitsfile* fptr, const Fits::Compression::Quantization& quantization) {
 
   int status = 0;
 
   // Set quantization level
-  if (quantization.level().type() == Fits::Param::Type::Absolute) {
-    fits_set_quantize_level(fptr, -quantization.level().value(), &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot set absolute quantization level");
-  } else { // None or relative quantization level
-    fits_set_quantize_level(fptr, quantization.level().value(), &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot set relative quantization level");
+  const auto value = quantization.level().value();
+  switch (quantization.level().type()) {
+    case Fits::Compression::Scaling::Type::Absolute:
+      fits_set_quantize_level(fptr, -value, &status);
+      break;
+    case Fits::Compression::Scaling::Type::Factor:
+      fits_set_quantize_level(fptr, 1. / value, &status);
+      break;
+    case Fits::Compression::Scaling::Type::Inverse:
+      fits_set_quantize_level(fptr, value, &status);
+      break;
   }
+  CfitsioError::mayThrow(status, fptr, "Cannot set quantization level");
 
-  // Set lossy int compression
+  // Set lossy int compression if quantization is enabled
   fits_set_lossy_int(fptr, quantization, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set lossy integer compression flag");
 
   // Set dithering method
-  // fits_set_quantize_method() is exact same as set_quantize_dither() (.._method() is the old name)
+  // fits_set_quantize_method() is the deprecated name of set_quantize_dither()
   switch (quantization.dithering()) {
-    case Fits::Dithering::EveryPixel:
+    case Fits::Compression::Dithering::EveryPixel:
       fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_1, &status);
       break;
-    case Fits::Dithering::NonZeroPixel:
+    case Fits::Compression::Dithering::NonZeroPixel:
       fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_2, &status);
       break;
-    case Fits::Dithering::None:
+    case Fits::Compression::Dithering::None:
       fits_set_quantize_dither(fptr, NO_DITHER, &status);
       break;
   }
@@ -156,6 +140,22 @@ void compress(fitsfile* fptr, const Fits::NoCompression&) {
   int status = 0;
   fits_set_compression_type(fptr, int(NULL), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to NoCompression");
+}
+
+void compress(fitsfile* fptr, const Fits::Gzip& algo) {
+  int status = 0;
+  fits_set_compression_type(fptr, GZIP_1, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
+  setTiling(fptr, algo.tiling());
+  setQuantize(fptr, algo.quantization());
+}
+
+void compress(fitsfile* fptr, const Fits::ShuffledGzip& algo) {
+  int status = 0;
+  fits_set_compression_type(fptr, GZIP_2, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
+  setTiling(fptr, algo.tiling());
+  setQuantize(fptr, algo.quantization());
 }
 
 void compress(fitsfile* fptr, const Fits::Rice& algo) {
@@ -172,41 +172,31 @@ void compress(fitsfile* fptr, const Fits::HCompress& algo) {
 
   fits_set_compression_type(fptr, HCOMPRESS_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
-
   setTiling(fptr, algo.tiling());
   setQuantize(fptr, algo.quantization());
 
-  if (algo.scale().type() == Fits::Param::Type::Absolute) {
-    fits_set_hcomp_scale(fptr, -algo.scale().value(), &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot set absolute scale for HCompress");
-  } else { // None or relative scaling applied in this case
-    fits_set_hcomp_scale(fptr, algo.scale().value(), &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot set relative scale for HCompress");
+  const auto value = algo.scaling().value();
+  switch (algo.scaling().type()) {
+    case Fits::Compression::Scaling::Type::Absolute:
+      fits_set_hcomp_scale(fptr, -value, &status);
+      break;
+    case Fits::Compression::Scaling::Type::Factor:
+      fits_set_hcomp_scale(fptr, value, &status);
+      break;
+    case Fits::Compression::Scaling::Type::Inverse:
+      fits_set_hcomp_scale(fptr, 1. / value, &status);
+      break;
   }
+  CfitsioError::mayThrow(status, fptr, "Cannot set H-compress scale");
 
   fits_set_hcomp_smooth(fptr, algo.isSmooth(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot set smoothing for HCompress");
+  CfitsioError::mayThrow(status, fptr, "Cannot set H-compress smoothing recommendation");
 }
 
 void compress(fitsfile* fptr, const Fits::Plio& algo) {
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
-  setTiling(fptr, algo.tiling());
-}
-
-void compress(fitsfile* fptr, const Fits::Gzip& algo) {
-  int status = 0;
-  fits_set_compression_type(fptr, GZIP_1, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
-}
-
-void compress(fitsfile* fptr, const Fits::ShuffledGzip& algo) {
-  int status = 0;
-  fits_set_compression_type(fptr, GZIP_2, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
   setTiling(fptr, algo.tiling());
   setQuantize(fptr, algo.quantization());
 }

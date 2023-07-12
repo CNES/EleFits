@@ -10,62 +10,62 @@
 namespace Euclid {
 namespace Fits {
 
-Param Param::none() {
-  return Param(0);
-}
-
-Param Param::absolute(double value) {
-  if (value <= 0) {
-    throw FitsError("Absolute parameter value must be strictly positive");
-  }
-  return Param(-value); // Absoluteness stored internally as negative value like in FITS
-}
-
-Param Param::relative(double value) {
-  if (value <= 0) {
-    throw FitsError("Relative parameter value must be strictly positive");
-  }
-  return Param(value);
-}
-
-Param::Type Param::type() const {
-  if (m_value > 0) {
-    return Param::Type::Relative;
-  } else if (m_value < 0) {
-    return Param::Type::Absolute;
-  } else {
-    return Param::Type::None;
+Compression::Scaling::Scaling(double value, Type type) : m_type(type), m_value(value) {
+  if (value < 0) {
+    throw FitsError("Scaling value must be positive or null");
   }
 }
 
-double Param::value() const {
-  return std::abs(m_value);
+Compression::Scaling::operator bool() const {
+  return m_value;
 }
 
-inline Param::operator bool() const {
-  return m_value != 0;
+Compression::Scaling::Type Compression::Scaling::type() const {
+  return m_type;
 }
 
-bool Param::operator==(const Param& rhs) const {
-  return m_value == rhs.m_value;
+double Compression::Scaling::value() const {
+  return m_value;
 }
 
-bool Param::operator!=(const Param& rhs) const {
+bool Compression::Scaling::operator==(const Compression::Scaling& rhs) const {
+
+  // Both disabled
+  if (not *this && not rhs) {
+    return true;
+  }
+
+  // Same type
+  if (m_type == rhs.m_type) {
+    return m_value == rhs.m_value;
+  }
+
+  // One absolute and one relative
+  if (m_type == Type::Absolute || rhs.m_type == Type::Absolute) {
+    return false;
+  }
+
+  // One factor and one inverse
+  return m_value == 1. / rhs.m_value;
+}
+
+bool Compression::Scaling::operator!=(const Compression::Scaling& rhs) const {
   return not(*this == rhs);
 }
 
-Param::Param(double value) : m_value(value) {}
+inline Compression::TileRms rms; // Definition
 
-Quantization::Quantization() : Quantization::Quantization(Param::none(), Dithering::None) {}
+Compression::Quantization::Quantization() : Quantization::Quantization(Compression::Scaling(0), Dithering::None) {}
 
-Quantization::Quantization(Param level) :
-    Quantization::Quantization(level, level ? Dithering::EveryPixel : Dithering::None) {}
+Compression::Quantization::Quantization(Compression::Scaling level) :
+    Compression::Quantization::Quantization(level, level ? Dithering::EveryPixel : Dithering::None) {}
 
-Quantization::Quantization(Param level, Dithering method) : m_level(std::move(level)), m_dithering(Dithering::None) {
+Compression::Quantization::Quantization(Compression::Scaling level, Compression::Dithering method) :
+    m_level(std::move(level)), m_dithering(Dithering::None) {
   dithering(method); // Enables compatibility check
 }
 
-Quantization& Quantization::level(Param level) {
+Compression::Quantization& Compression::Quantization::level(Compression::Scaling level) {
   m_level = std::move(level);
   if (not m_level) {
     m_dithering = Dithering::None;
@@ -73,7 +73,7 @@ Quantization& Quantization::level(Param level) {
   return *this;
 }
 
-Quantization& Quantization::dithering(Dithering method) {
+Compression::Quantization& Compression::Quantization::dithering(Dithering method) {
   if (not m_level && method != Dithering::None) {
     throw FitsError("Cannot set dithering method when quantization is deactivated");
   }
@@ -81,24 +81,109 @@ Quantization& Quantization::dithering(Dithering method) {
   return *this;
 }
 
-const Param& Quantization::level() const {
+const Compression::Scaling& Compression::Quantization::level() const {
   return m_level;
 }
 
-Dithering Quantization::dithering() const {
+Compression::Dithering Compression::Quantization::dithering() const {
   return m_dithering;
 }
 
-Quantization::operator bool() const {
+Compression::Quantization::operator bool() const {
   return m_level;
 }
 
-bool Quantization::operator==(const Quantization& rhs) const {
+bool Compression::Quantization::operator==(const Compression::Quantization& rhs) const {
   return (m_level == rhs.m_level) && (m_dithering == rhs.m_dithering);
 }
 
-bool Quantization::operator!=(const Quantization& rhs) const {
+bool Compression::Quantization::operator!=(const Compression::Quantization& rhs) const {
   return not(*this == rhs);
+}
+
+std::unique_ptr<Compression> Compression::makeLosslessAlgo(long bitpix, long dimension) {
+
+  // No data
+  if (dimension == 0) {
+    return std::make_unique<NoCompression>();
+  }
+
+  // Floating point
+  if (bitpix < 0) {
+    return std::make_unique<ShuffledGzip>(); // FIXME Gzip?
+  }
+
+  // Mask
+  if (bitpix <= 24) {
+    return std::make_unique<Plio>();
+  }
+
+  // 2D or more
+  if (dimension >= 2) {
+    return std::make_unique<HCompress>();
+  }
+
+  // Fallback
+  return std::make_unique<Rice>();
+}
+
+std::unique_ptr<Compression> Compression::makeAlgo(long bitpix, long dimension) {
+
+  // No data
+  if (dimension == 0) {
+    return std::make_unique<NoCompression>();
+  }
+
+  // Mask
+  if (bitpix > 0 && bitpix <= 24) {
+    return std::make_unique<Plio>();
+  }
+
+  const auto q4 = Compression::Quantization(Compression::rms / 4);
+
+  // 2D or more
+  if (dimension >= 2) {
+    auto out = std::make_unique<HCompress>();
+    out->quantization(std::move(q4));
+    out->scaling(Compression::rms * 2.5);
+    return out;
+  }
+
+  // Fallback
+  auto out = std::make_unique<Rice>();
+  out->quantization(std::move(q4));
+  return out;
+}
+
+template <typename TRaster>
+std::unique_ptr<Compression> Compression::makeLosslessAlgo(const TRaster& raster) {
+
+  // No data
+  if (raster.size() == 0) {
+    return std::make_unique<NoCompression>();
+  }
+
+  // Mask
+  const auto b = bitpix(raster);
+  const auto n = raster.dimension();
+  if (b > 0) {
+    const auto max = *std::max_element(raster.begin(), raster.end());
+    if (max < (1 << 24)) {
+      return std::make_unique<Plio>();
+    }
+  }
+
+  // Fallback
+  return makeLosslessAlgo(b, n);
+}
+
+template <typename TRaster>
+std::unique_ptr<Compression> Compression::makeAlgo(const TRaster& raster) {
+  const auto b = bitpix(raster);
+  if (b > 0) {
+    return makeLosslessAlgo(raster);
+  }
+  return makeAlgo(b, raster.dimension());
 }
 
 Compression::Compression(Position<-1> tiling, Quantization quantization) :
@@ -110,7 +195,7 @@ const Position<-1>& Compression::tiling() const {
   return m_tiling;
 }
 
-const Quantization& Compression::quantization() const {
+const Compression::Quantization& Compression::quantization() const {
   return m_quantization;
 }
 
@@ -156,7 +241,8 @@ Rice::Rice(Position<-1> tiling, Quantization quantization) :
     AlgoMixin<Rice>(std::move(tiling), std::move(quantization)) {}
 
 HCompress::HCompress(Position<-1> tiling, Quantization quantization) :
-    AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(Param::none()), m_smooth(false) {
+    AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(Compression::Scaling(0)),
+    m_smooth(false) {
   this->quantization(std::move(quantization));
 }
 
@@ -167,7 +253,7 @@ bool HCompress::isLossless() const {
   return Compression::isLossless();
 }
 
-const Param& HCompress::scale() const {
+const Compression::Scaling& HCompress::scaling() const {
   return m_scale;
 }
 
@@ -175,7 +261,7 @@ bool HCompress::isSmooth() const {
   return m_smooth;
 }
 
-HCompress& HCompress::scale(Param scale) {
+HCompress& HCompress::scaling(Compression::Scaling scale) {
   m_scale = std::move(scale);
   return *this;
 }

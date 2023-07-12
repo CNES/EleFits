@@ -7,6 +7,7 @@
 
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/Position.h"
+#include "EleFitsData/Raster.h"
 
 #include <memory>
 #include <string>
@@ -18,183 +19,6 @@ namespace Fits {
 // Forward declaration for friendship in Compression
 class MefFile;
 /// @endcond
-
-/**
- * @relates Compression
- * @brief Create a rowwise tiling.
- * @param rowCount The number of rows per tile
- */
-inline Position<-1> rowwiseTiling(long rowCount = 1) {
-  return Position<-1> {-1, rowCount};
-}
-
-/**
- * @relates Compression
- * @brief Create a whole-data array tiling.
- */
-inline Position<-1> maxTiling() {
-  return Position<-1> {-1};
-}
-
-/**
- * @ingroup image_compression
- * @brief A parameter which can be absolute or relative to the noise level in each tile.
- */
-// FIXME for q, absolute = RMS / relative
-// but for s, absolue = RMS * relative
-class Param {
-
-public:
-  /**
-   * @brief The type of parameter.
-   */
-  enum Type {
-    None, ///< Disable feature
-    Absolute, ///< Absolute value
-    Relative ///< Tile-relative value
-  };
-
-  /**
-   * @brief Create a disabled parameter.
-   */
-  static inline Param none();
-
-  /**
-   * @brief Create an absolute parameter.
-   */
-  static inline Param absolute(double value);
-
-  /**
-   * @brief Create a relative parameter.
-   */
-  static inline Param relative(double value);
-
-  /**
-   * @brief Get the parameter type.
-   */
-  inline Param::Type type() const;
-
-  /**
-   * @brief Get the parameter value.
-   */
-  inline double value() const;
-
-  /**
-   * @brief Cast as a Boolean, i.e. `false` iff type is `None`.
-  */
-  inline operator bool() const;
-
-  /**
-   * @brief Check whether two factors are equal.
-   */
-  inline bool operator==(const Param& rhs) const;
-
-  /**
-   * @brief Check whether two factors are different.
-   */
-  inline bool operator!=(const Param& rhs) const;
-
-private:
-  /**
-   * @brief Create a parameter.
-   */
-  inline explicit Param(double value);
-
-  /**
-   * @brief The parameter value, which encodes the type as its sign.
-   */
-  double m_value;
-};
-
-/**
- * @ingroup image_compression
- * @brief Quantization dithering methods.
- */
-enum class Dithering {
-  None, ///< Do not dither any pixel
-  NonZeroPixel, ///< Dither only non-zero pixels
-  EveryPixel ///< Dither all pixels
-};
-
-/**
- * @ingroup image_compression
- * @brief Quantization of pixels.
- * 
- * As opposed to CFITSIO, EleFits creates lossless algorithms by default,
- * including for floating point values.
- */
-class Quantization {
-
-public:
-  ELEFITS_VIRTUAL_DTOR(Quantization)
-  ELEFITS_COPYABLE(Quantization)
-  ELEFITS_MOVABLE(Quantization)
-
-  /**
-   * @brief Default, lossless compression constructor.
-   */
-  inline explicit Quantization();
-
-  /**
-   * @brief Level-based constructor.
-   * 
-   * The default dithering for lossy compression is `Dithering::EveryPixel`.
-   */
-  inline explicit Quantization(Param level);
-
-  /**
-   * @brief Full constructor.
-   */
-  inline explicit Quantization(Param level, Dithering method);
-
-  /**
-   * @brief Get the quantization level
-   */
-  inline const Param& level() const;
-
-  /**
-   * @brief Get the dithering method for the quantization.
-   */
-  inline Dithering dithering() const;
-
-  /**
-   * @brief Check whether quantization is enabled.
-   */
-  inline operator bool() const;
-
-  /**
-   * @brief Set the quantization level.
-   */
-  inline Quantization& level(Param level);
-
-  /**
-   * @brief Set the dithering method.
-   */
-  inline Quantization& dithering(Dithering method);
-
-  /**
-   * @brief Check whether two quatizations are equal.
-   */
-  inline bool operator==(const Quantization& rhs) const;
-
-  /**
-   * @brief Check whether two quatizations are different.
-   */
-  inline bool operator!=(const Quantization& rhs) const;
-
-private:
-  /**
-   * @brief The quantization level.
-   */
-  Param m_level;
-
-  /**
-   * @brief The quantization dithering method.
-   */
-  Dithering m_dithering;
-
-  // FIXME handle dither offset and seed
-};
 
 /**
  * @ingroup image_compression
@@ -217,6 +41,239 @@ public:
   ELEFITS_MOVABLE(Compression)
 
   /**
+   * @brief Helper class for scaling parameters.
+   * 
+   * A scaling can be disabled, or provided as an absolute value,
+   * or provided as a tile noise RMS-relative value.
+   * 
+   * Instance `Compression::rms` eases the making of such parameters:
+   * 
+   * \code
+   * auto disabledScaling = 0;
+   * auto absoluteScaling = 4;
+   * auto relativeScaling = Compression::rms / 4;
+   * \endcode
+  */
+  class Scaling {
+  public:
+    /**
+     * @brief The type of scaling value.
+     */
+    enum class Type {
+      Absolute, ///< Absolute
+      Factor, ///< Relative as factor: absolute = RMS * value
+      Inverse ///< Relative as inverse: absolute = RMS / value
+    };
+
+    /**
+     * @brief Constructor.
+     */
+    inline Scaling(double value, Type type = Type::Absolute);
+    // Purposedly not explicit to support implicit cast from double
+
+    /**
+     * @brief Check whether the scaling is enabled (i.e. the value is not null).
+     */
+    inline operator bool() const;
+
+    /**
+     * @brief Get the scaling type.
+     */
+    inline Type type() const;
+
+    /**
+     * @brief Get the scaling value.
+    */
+    inline double value() const;
+
+    /**
+     * @brief Check whether two parameters are equal.
+     */
+    inline bool operator==(const Scaling& rhs) const;
+
+    /**
+     * @brief Check whether two parameters are different.
+     */
+    inline bool operator!=(const Scaling& rhs) const;
+
+  private:
+    /**
+     * @brief The value type.
+     */
+    Type m_type;
+
+    /**
+     * @brief The scaling value.
+     */
+    double m_value;
+  };
+
+  /**
+   * @brief Helper class for tile noise RMS-relative scaling.
+   */
+  struct TileRms {
+    /**
+     * @brief Create a scaling factor.
+     */
+    Compression::Scaling operator*(double f) const {
+      return Scaling(f, Scaling::Type::Factor);
+    }
+
+    /**
+     * @brief Create a scaling inverse factor.
+     */
+    Compression::Scaling operator/(double f) const {
+      return Scaling(f, Scaling::Type::Inverse);
+    }
+  };
+
+  /**
+   * @brief Helper instance for tile noise RMS-relative scaling.
+   */
+  static TileRms rms;
+
+  /**
+   * @ingroup image_compression
+   * @brief Quantization dithering methods.
+   */
+  enum class Dithering {
+    None, ///< Do not dither any pixel
+    NonZeroPixel, ///< Dither only non-zero pixels
+    EveryPixel ///< Dither all pixels
+  };
+
+  /**
+   * @ingroup image_compression
+   * @brief %Quantization parameters.
+   * 
+   * As opposed to CFITSIO, EleFits creates lossless algorithms by default,
+   * including for floating point values.
+   * Lossy compression has to be manually enabled by setting a non-null quantization level.
+   * The level can be set either globally, as a double, or tile-wise, relative to the noise level:
+   * 
+   * \code
+   * Compression::Quantization disabled;
+   * Compression::Quantization absolute(1);
+   * Compression::Quantization relative(Compression::rms / 4); // CFITSIO's default
+   * \endcode
+   * 
+   * When quantization is enabled, dithering is applied by default to all pixels.
+   */
+  class Quantization {
+
+  public:
+    ELEFITS_VIRTUAL_DTOR(Quantization)
+    ELEFITS_COPYABLE(Quantization)
+    ELEFITS_MOVABLE(Quantization)
+
+    /**
+     * @brief Default, lossless compression constructor.
+     */
+    inline explicit Quantization();
+
+    /**
+     * @brief Level-based constructor.
+     * 
+     * The default dithering for lossy compression is `Dithering::EveryPixel`.
+     */
+    inline explicit Quantization(Compression::Scaling level);
+
+    /**
+     * @brief Full constructor.
+     */
+    inline explicit Quantization(Compression::Scaling level, Dithering method);
+
+    /**
+     * @brief Get the quantization level
+     */
+    inline const Compression::Scaling& level() const;
+
+    /**
+     * @brief Get the dithering method for the quantization.
+     */
+    inline Dithering dithering() const;
+
+    /**
+     * @brief Check whether quantization is enabled.
+     */
+    inline operator bool() const;
+
+    /**
+     * @brief Set the quantization level.
+     */
+    inline Quantization& level(Compression::Scaling level);
+
+    /**
+     * @brief Set the dithering method.
+     */
+    inline Quantization& dithering(Dithering method);
+
+    /**
+     * @brief Check whether two quatizations are equal.
+     */
+    inline bool operator==(const Quantization& rhs) const;
+
+    /**
+     * @brief Check whether two quatizations are different.
+     */
+    inline bool operator!=(const Quantization& rhs) const;
+
+  private:
+    /**
+     * @brief The quantization level.
+     */
+    Compression::Scaling m_level;
+
+    /**
+     * @brief The quantization dithering method.
+     */
+    Dithering m_dithering;
+
+    // FIXME handle dither offset and seed
+  };
+
+  /**
+   * @brief Create a lossless algorithm well suited to the HDU properties.
+   * @param bitpix The uncompressed data BITPIX
+   * @param dimension The uncompressed data NAXIS
+   */
+  inline static std::unique_ptr<Compression> makeLosslessAlgo(long bitpix, long dimension);
+
+  /**
+   * @brief Create a lossless algorithm well suited to a given raster.
+   */
+  template <typename TRaster>
+  static std::unique_ptr<Compression> makeLosslessAlgo(const TRaster& raster);
+
+  /**
+   * @brief Create a possibly lossy algorithm well suited to a given raster.
+   */
+  template <typename TRaster>
+  static std::unique_ptr<Compression> makeAlgo(const TRaster& raster);
+
+  /**
+   * @brief Create a possibly lossy algorithm well suited to the HDU properties.
+   * @param bitpix The uncompressed data BITPIX
+   * @param dimension The uncompressed data NAXIS
+   */
+  inline static std::unique_ptr<Compression> makeAlgo(long bitpix, long dimension);
+
+  /**
+   * @brief Create a rowwise tiling.
+   * @param rowCount The number of rows per tile
+   */
+  inline static Position<-1> rowwiseTiling(long rowCount = 1) {
+    return Position<-1> {-1, rowCount};
+  }
+
+  /**
+   * @brief Create a whole-data array tiling.
+   */
+  inline static Position<-1> maxTiling() {
+    return Position<-1> {-1};
+  }
+
+  /**
    * @brief Get the tiling.
    */
   inline const Position<-1>& tiling() const;
@@ -227,7 +284,7 @@ public:
   inline const Quantization& quantization() const;
 
   /**
-   * @brief Check whether the compression is lossless.
+   * @brief Check whether the compression is lossless for.
    */
   inline virtual bool isLossless() const;
 
@@ -272,23 +329,23 @@ public:
   /**
    * @brief Set the tiling.
    */
-  inline virtual TDerived& tiling(Position<-1> shape);
+  virtual TDerived& tiling(Position<-1> shape);
 
   /**
    * @brief Set the quantization.
    */
-  inline virtual TDerived& quantization(Quantization quantization);
+  virtual TDerived& quantization(Quantization quantization);
 
 protected:
   /**
    * @brief Constructor.
    */
-  inline explicit AlgoMixin(Position<-1> tiling, Quantization quantization);
+  explicit AlgoMixin(Position<-1> tiling, Quantization quantization);
 
   /**
    * @brief Dependency inversion to call the wrapper's dispatch based on `TDerived`.
    */
-  inline void compress(void* fptr) const final;
+  void compress(void* fptr) const final;
   // FIXME define the function here instead of in the wrapper
   // The function is not used anyway, and this simplifies compilation
   // => Change compress(fitsfile*, TDerived) into compress(void*, TDerived)
@@ -329,6 +386,8 @@ public:
 /**
  * @ingroup image_compression
  * @brief The GZIP algorithm.
+ * 
+ * Along with `ShuffledGzip`, this is the only algorithm which supports lossless compression of floating point data.
  */
 class Gzip : public AlgoMixin<Gzip> {
 
@@ -348,7 +407,7 @@ public:
  * @brief The GZIP algorithm applied to "shuffled" pixel values.
  * 
  * Suffling means that value bytes are reordered such that most significant bytes of each value appear first.
- * Generally, this algorithm is much more efficient in terms of compression factor than GZIP, although it is a bit slower.
+ * Generally, this algorithm is more efficient in terms of compression factor than GZIP, although it is a bit slower.
  */
 class ShuffledGzip : public AlgoMixin<ShuffledGzip> { // FIXME merge with Gzip with option to shuffle
 
@@ -383,6 +442,19 @@ public:
 /**
  * @ingroup image_compression
  * @brief The H-compress algorithm.
+ * 
+ * This algorithm relies on some scaling parameter.
+ * When scaling is enabled, H-compress is lossy irrespective of quantization.
+ * In order to use H-compress losslessly, quantization and scaling must be zeroed,
+ * and the data values must be integers.
+ * 
+ * Analogously to quantization, the scaling can be set globally or tile-wise.
+ * In this case, it is generally provided as a multiplicative factor instead of an inverse:
+ * 
+ * \code
+ * HCompress algo;
+ * HCompress().scaling(Compression::rms * 2.5);
+ * \endcode
  */
 class HCompress : public AlgoMixin<HCompress> {
 
@@ -405,7 +477,7 @@ public:
   /**
    * @brief Get the scaling parameter.
    */
-  inline const Param& scale() const;
+  inline const Compression::Scaling& scaling() const;
 
   /**
    * @brief Check whether the image is smoothed at reading.
@@ -417,12 +489,12 @@ public:
    * 
    * H-compress does not support `Dithering::NonZeroPixel`.
    */
-  inline HCompress& quantization(Quantization quantization) override;
+  inline HCompress& quantization(Compression::Quantization quantization) override;
 
   /**
    * @brief Set the scaling parameter.
    */
-  inline HCompress& scale(Param scale);
+  inline HCompress& scaling(Compression::Scaling scale);
 
   /**
    * @brief Enable image smoothing at reading.
@@ -438,7 +510,7 @@ private:
   /**
    * @brief The scale parameter.
    */
-  Param m_scale;
+  Compression::Scaling m_scale;
 
   /**
    * @brief The smoothing flag.
@@ -449,6 +521,9 @@ private:
 /**
  * @ingroup image_compression
  * @brief The PLIO algorithm.
+ * 
+ * This algorithm was designed specifically for bitmasks,
+ * and performs well for rasters with constant regions.
  * 
  * @warning Only integer values between 0 and 2^24 are supported.
  */
@@ -464,41 +539,6 @@ public:
    */
   inline explicit Plio(Position<-1> tiling = rowwiseTiling(), Quantization quantization = Quantization());
 };
-
-/**
- * @brief Create a lossless algorithm well suited to the HDU properties.
- * @param bitpix The uncompressed data BITPIX
- * @param dimension The uncompressed data NAXIS
- */
-inline std::unique_ptr<Compression> makeLosslessAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Compression> out;
-  if (bitpix > 0 && bitpix <= 24) {
-    out.reset(new Plio());
-  } else if (dimension >= 2) {
-    out.reset(new HCompress());
-  } else {
-    out.reset(new Rice());
-  }
-  return out;
-}
-
-/**
- * @brief Create a possibly lossy algorithm well suited to the HDU properties.
- * @param bitpix The uncompressed data BITPIX
- * @param dimension The uncompressed data NAXIS
- */
-inline std::unique_ptr<Compression> makeAlgo(long bitpix, long dimension) {
-  std::unique_ptr<Compression> out;
-  const auto q4 = Quantization(Param::relative(4));
-  if (bitpix > 0 && bitpix <= 24) {
-    out.reset(new Plio());
-  } else if (dimension >= 2) {
-    out.reset(&(new HCompress())->quantization(std::move(q4)).scale(Param::relative(2.5)));
-  } else {
-    out.reset(&(new Rice())->quantization(std::move(q4)));
-  }
-  return out;
-}
 
 } // namespace Fits
 } // namespace Euclid

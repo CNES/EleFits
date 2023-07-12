@@ -14,7 +14,6 @@ namespace Fits {
 // Dummy definition to please compiler, although the method is not used here
 template <typename TDerived>
 void AlgoMixin<TDerived>::compress(void*) const {}
-// FIXME rm when the function is defined in Compression.hpp
 
 } // namespace Fits
 } // namespace Euclid
@@ -25,75 +24,87 @@ BOOST_AUTO_TEST_SUITE(Compression_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(factor_test) {
+BOOST_AUTO_TEST_CASE(disabled_scaling_test) {
+  Compression::Scaling scale = 0;
+  BOOST_TEST(not scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Absolute));
+  BOOST_TEST((scale.value() == 0));
+}
 
-  const float positiveFactor = 5.f;
-  const float zeroFactor = 0.f;
-  const float negativeFactor = -5.f;
+BOOST_AUTO_TEST_CASE(absolute_scaling_test) {
+  Compression::Scaling scale = 8;
+  BOOST_TEST(scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Absolute));
+  BOOST_TEST((scale.value() == 8));
+  BOOST_CHECK_THROW((Compression::Scaling(-scale)), FitsError);
+}
 
-  const Param none_f = Param::none();
-  BOOST_TEST(none_f.value() == zeroFactor);
-  BOOST_TEST(none_f.type() == Param::Type::None);
+BOOST_AUTO_TEST_CASE(factor_scaling_test) {
+  Compression::Scaling scale = Compression::rms * 2.5;
+  BOOST_TEST(scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Factor));
+  BOOST_TEST((scale.value() == 2.5));
+  BOOST_CHECK_THROW((Compression::rms * -scale), FitsError);
+}
 
-  const Param absolute_f = Param::absolute(positiveFactor);
-  BOOST_CHECK_THROW(Param::absolute(zeroFactor), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Param::absolute(negativeFactor), Euclid::Fits::FitsError);
+BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
+  Compression::Scaling scale = Compression::rms / 4;
+  BOOST_TEST(scale);
+  BOOST_TEST((scale.type() == Compression::Scaling::Type::Inverse));
+  BOOST_TEST((scale.value() == 4));
+  BOOST_CHECK_THROW((Compression::rms / -scale), FitsError);
+}
 
-  BOOST_TEST(absolute_f.value() == positiveFactor);
-  BOOST_TEST(absolute_f.type() == Param::Type::Absolute);
-
-  const Param relative_f = Param::relative(positiveFactor);
-  BOOST_CHECK_THROW(Param::relative(zeroFactor), Euclid::Fits::FitsError);
-  BOOST_CHECK_THROW(Param::relative(negativeFactor), Euclid::Fits::FitsError);
-
-  BOOST_TEST(relative_f.value() == positiveFactor);
-  BOOST_TEST(relative_f.type() == Param::Type::Relative);
-
-  // testing == operator:
-  const Param f1 = Param::relative(5.f);
-  const Param f2 = Param::relative(5.f);
-  const Param f3 = Param::absolute(5.f);
-  const Param f4 = Param::relative(4.f);
-  BOOST_TEST((f1 == f2));
-  BOOST_TEST(not(f1 == f3));
-  BOOST_TEST(not(f1 == f4));
+BOOST_AUTO_TEST_CASE(scaling_equality_test) {
+  const auto a0 = Compression::Scaling(0);
+  const auto a1 = Compression::Scaling(1);
+  const auto f1 = Compression::rms * 1;
+  const auto f2 = Compression::rms * 2;
+  const auto f2b = Compression::rms * 2;
+  const auto i1 = Compression::rms / 1;
+  const auto i2 = Compression::rms / 0.5;
+  BOOST_TEST((a0 != a1));
+  BOOST_TEST((a1 != f1));
+  BOOST_TEST((f1 != f2));
+  BOOST_TEST((f2 == f2b));
+  BOOST_TEST((f1 == i1));
+  BOOST_TEST((f2 == i2));
 }
 
 BOOST_AUTO_TEST_CASE(default_quantization_test) {
-  Quantization q;
+  Compression::Quantization q;
   BOOST_TEST(not q);
   BOOST_TEST(not q.level());
-  BOOST_TEST((q.dithering() == Dithering::None));
-  BOOST_CHECK_THROW(q.dithering(Dithering::EveryPixel), FitsError); // Cannot dither disabled q
+  BOOST_TEST((q.dithering() == Compression::Dithering::None));
+  BOOST_CHECK_THROW(q.dithering(Compression::Dithering::EveryPixel), FitsError); // Cannot dither disabled q
 }
 
 BOOST_AUTO_TEST_CASE(default_dithering_test) {
-  const auto level = Param::absolute(4); // CFITSIO default
-  Quantization q(level);
+  Compression::Scaling level(4);
+  Compression::Quantization q(level);
   BOOST_TEST(q);
   BOOST_TEST(q.level() == level);
-  BOOST_TEST((q.dithering() == Dithering::EveryPixel));
+  BOOST_TEST((q.dithering() == Compression::Dithering::EveryPixel));
 }
 
-BOOST_AUTO_TEST_CASE(quantization_level_test) {
-  const auto level = Param::relative(4);
-  Quantization q;
-  q.level(level);
+BOOST_AUTO_TEST_CASE(quantization_dithering_test) {
+  const auto level = Compression::rms / 4; // CFITSIO default
+  Compression::Quantization q(level);
   BOOST_TEST((q.level() == level));
-  BOOST_TEST((q.dithering() == Dithering::None));
-  q.dithering(Dithering::NonZeroPixel);
+  BOOST_TEST((q.dithering() == Compression::Dithering::EveryPixel));
+  q.dithering(Compression::Dithering::NonZeroPixel);
   BOOST_TEST((q.level() == level));
-  BOOST_TEST((q.dithering() == Dithering::NonZeroPixel));
+  BOOST_TEST((q.dithering() == Compression::Dithering::NonZeroPixel));
 }
 
 BOOST_AUTO_TEST_CASE(quantization_equality_test) {
-  Quantization q0;
-  Quantization q0n(Param::none(), Dithering::None);
-  Quantization q3(Param::absolute(3));
-  Quantization q4(Param::absolute(4));
-  Quantization q4n(Param::absolute(4), Dithering::None);
-  Quantization q4e(Param::absolute(4), Dithering::EveryPixel);
-  Quantization q4nz(Param::absolute(4), Dithering::NonZeroPixel);
+  Compression::Quantization q0;
+  Compression::Quantization q0n(0, Compression::Dithering::None);
+  Compression::Quantization q3(3);
+  Compression::Quantization q4(4);
+  Compression::Quantization q4n(4, Compression::Dithering::None);
+  Compression::Quantization q4e(4, Compression::Dithering::EveryPixel);
+  Compression::Quantization q4nz(4, Compression::Dithering::NonZeroPixel);
   BOOST_TEST((q0 == q0n));
   BOOST_TEST((q0 != q4n));
   BOOST_TEST((q3 != q4));
@@ -114,12 +125,12 @@ void testAlgoMixinParameters(long dimension = 0) {
   BOOST_TEST((shape2 == shape));
 
   // check default quantization values:
-  BOOST_TEST((algo.quantization() == Quantization()));
+  BOOST_TEST((algo.quantization() == Compression::Quantization()));
 
   // set/get quantization:
-  Quantization quantization;
-  quantization.level(Param::absolute(5));
-  quantization.dithering(Dithering::None);
+  Compression::Quantization quantization;
+  quantization.level(5);
+  quantization.dithering(Compression::Dithering::None);
   algo.quantization(quantization);
   BOOST_TEST((algo.quantization() == quantization));
 }
@@ -127,10 +138,7 @@ void testAlgoMixinParameters(long dimension = 0) {
 // specific to the NoCompression algo
 template <>
 void testAlgoMixinParameters<NoCompression>(long) {
-
   NoCompression algo;
-
-  // verify shape of algo is correctly stored at construction
   BOOST_TEST((algo.tiling() == Position<-1>()));
 }
 
@@ -138,39 +146,23 @@ BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
   testAlgoMixinParameters<NoCompression>();
 
-  testAlgoMixinParameters<Rice>(0);
-  testAlgoMixinParameters<Rice>(1);
-  testAlgoMixinParameters<Rice>(2);
-  testAlgoMixinParameters<Rice>(3);
-  testAlgoMixinParameters<Rice>(4);
-  testAlgoMixinParameters<Rice>(5);
-  testAlgoMixinParameters<Rice>(6);
+  for (long n = 0; n <= 6; ++n) {
+    testAlgoMixinParameters<Rice>(n);
+  }
 
   testAlgoMixinParameters<HCompress>(2);
 
-  testAlgoMixinParameters<Plio>(0);
-  testAlgoMixinParameters<Plio>(1);
-  testAlgoMixinParameters<Plio>(2);
-  testAlgoMixinParameters<Plio>(3);
-  testAlgoMixinParameters<Plio>(4);
-  testAlgoMixinParameters<Plio>(5);
-  testAlgoMixinParameters<Plio>(6);
+  for (long n = 0; n <= 6; ++n) {
+    testAlgoMixinParameters<Plio>(n);
+  }
 
-  testAlgoMixinParameters<Gzip>(0);
-  testAlgoMixinParameters<Gzip>(1);
-  testAlgoMixinParameters<Gzip>(2);
-  testAlgoMixinParameters<Gzip>(3);
-  testAlgoMixinParameters<Gzip>(4);
-  testAlgoMixinParameters<Gzip>(5);
-  testAlgoMixinParameters<Gzip>(6);
+  for (long n = 0; n <= 6; ++n) {
+    testAlgoMixinParameters<Gzip>(n);
+  }
 
-  testAlgoMixinParameters<ShuffledGzip>(0);
-  testAlgoMixinParameters<ShuffledGzip>(1);
-  testAlgoMixinParameters<ShuffledGzip>(2);
-  testAlgoMixinParameters<ShuffledGzip>(3);
-  testAlgoMixinParameters<ShuffledGzip>(4);
-  testAlgoMixinParameters<ShuffledGzip>(5);
-  testAlgoMixinParameters<ShuffledGzip>(6);
+  for (long n = 0; n <= 6; ++n) {
+    testAlgoMixinParameters<ShuffledGzip>(n);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(hcompress_test) {
@@ -179,15 +171,98 @@ BOOST_AUTO_TEST_CASE(hcompress_test) {
   HCompress algo(shape);
 
   // check default hcompress params values:
-  BOOST_TEST((algo.scale() == Param::none()));
+  BOOST_TEST((algo.scaling() == Compression::Scaling(0)));
   BOOST_TEST(algo.isSmooth() == false);
 
   // setters & getters:
-  Param scale = Param::absolute(5.f);
-  algo.scale(scale);
+  Compression::Scaling scale = 5;
+  algo.scaling(scale);
   algo.enableSmoothing();
-  BOOST_TEST((algo.scale() == scale));
+  BOOST_TEST((algo.scaling() == scale));
   BOOST_TEST(algo.isSmooth() == true);
+}
+
+BOOST_AUTO_TEST_CASE(algo_maker_test) {
+  for (const auto& bitpix : {-64, -32, 8, 16, 32, 64}) {
+    for (long n = 1; n <= 6; ++n) {
+      const auto algo = Compression::makeAlgo(bitpix, n);
+      const auto lossless = Compression::makeLosslessAlgo(bitpix, n);
+      BOOST_CHECK_THROW(dynamic_cast<const NoCompression&>(*algo), std::bad_cast);
+      BOOST_CHECK_THROW(dynamic_cast<const NoCompression&>(*lossless), std::bad_cast);
+      BOOST_TEST(lossless->isLossless());
+    }
+  }
+}
+
+template <typename T, long N>
+void checkRasterAlgoMaker(T value) {
+
+  Position<N> shape(N == -1 ? 2 : N);
+  std::fill(shape.begin(), shape.end(), 2);
+
+  VecRaster<T, N> raster(std::move(shape));
+  std::fill(raster.begin(), raster.end(), value);
+
+  const auto algo = Compression::makeAlgo(raster);
+  const auto lossless = Compression::makeLosslessAlgo(raster);
+
+  if (N == 0) {
+    BOOST_CHECK_NO_THROW(dynamic_cast<const NoCompression&>(*algo));
+    BOOST_CHECK_NO_THROW(dynamic_cast<const NoCompression&>(*lossless));
+  } else if (std::is_integral_v<T> && value < std::pow(2, 24)) {
+    BOOST_CHECK_NO_THROW(dynamic_cast<const Plio&>(*algo));
+    BOOST_CHECK_NO_THROW(dynamic_cast<const Plio&>(*lossless));
+  } else {
+    BOOST_CHECK_THROW(dynamic_cast<const Plio&>(*algo), std::bad_cast);
+    BOOST_CHECK_THROW(dynamic_cast<const Plio&>(*lossless), std::bad_cast);
+    BOOST_CHECK_THROW(dynamic_cast<const NoCompression&>(*algo), std::bad_cast);
+    BOOST_CHECK_THROW(dynamic_cast<const NoCompression&>(*lossless), std::bad_cast);
+    BOOST_TEST(lossless->isLossless());
+  }
+}
+
+template <typename T, long N>
+void checkLimitRastersAlgoMaker() {
+  checkRasterAlgoMaker<T, N>(1);
+  checkRasterAlgoMaker<T, N>(std::numeric_limits<T>::max());
+}
+
+BOOST_AUTO_TEST_CASE(raster_algo_maker_test) {
+
+  checkLimitRastersAlgoMaker<char, -1>();
+  checkLimitRastersAlgoMaker<char, 0>();
+  checkLimitRastersAlgoMaker<char, 1>();
+  checkLimitRastersAlgoMaker<char, 2>();
+
+  checkLimitRastersAlgoMaker<short, -1>();
+  checkLimitRastersAlgoMaker<short, 0>();
+  checkLimitRastersAlgoMaker<short, 1>();
+  checkLimitRastersAlgoMaker<short, 2>();
+
+  checkLimitRastersAlgoMaker<int, -1>();
+  checkLimitRastersAlgoMaker<int, 0>();
+  checkLimitRastersAlgoMaker<int, 1>();
+  checkLimitRastersAlgoMaker<int, 2>();
+
+  checkLimitRastersAlgoMaker<long, -1>();
+  checkLimitRastersAlgoMaker<long, 0>();
+  checkLimitRastersAlgoMaker<long, 1>();
+  checkLimitRastersAlgoMaker<long, 2>();
+
+  checkLimitRastersAlgoMaker<long long, -1>();
+  checkLimitRastersAlgoMaker<long long, 0>();
+  checkLimitRastersAlgoMaker<long long, 1>();
+  checkLimitRastersAlgoMaker<long long, 2>();
+
+  checkLimitRastersAlgoMaker<float, -1>();
+  checkLimitRastersAlgoMaker<float, 0>();
+  checkLimitRastersAlgoMaker<float, 1>();
+  checkLimitRastersAlgoMaker<float, 2>();
+
+  checkLimitRastersAlgoMaker<double, -1>();
+  checkLimitRastersAlgoMaker<double, 0>();
+  checkLimitRastersAlgoMaker<double, 1>();
+  checkLimitRastersAlgoMaker<double, 2>();
 }
 
 //-----------------------------------------------------------------------------
