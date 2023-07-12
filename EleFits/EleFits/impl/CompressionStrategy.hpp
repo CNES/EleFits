@@ -33,8 +33,8 @@ std::unique_ptr<Compression> BasicCompressionStrategy::operator()(const ImageHdu
 template <typename T>
 std::unique_ptr<ShuffledGzip> BasicCompressionStrategy::gzip(const ImageHdu::Initializer<T>& init) {
   auto out = std::make_unique<ShuffledGzip>();
-  adaptTiling(*out, init);
-  adaptQuantization<T>(*out);
+  out->tiling(tiling(init));
+  out->quantization(quantization<T>());
   return out;
 }
 
@@ -44,8 +44,8 @@ std::unique_ptr<Rice> BasicCompressionStrategy::rice(const ImageHdu::Initializer
     return nullptr;
   }
   auto out = std::make_unique<Rice>();
-  adaptTiling(*out, init);
-  adaptQuantization<T>(*out);
+  out->tiling(tiling(init));
+  out->quantization(quantization<T>());
   return out;
 }
 
@@ -59,9 +59,9 @@ std::unique_ptr<HCompress> BasicCompressionStrategy::hcompress(const ImageHdu::I
     return nullptr;
   }
   auto out = std::make_unique<HCompress>();
-  adaptHCompressTiling(*out, init);
-  adaptQuantization<T>(*out);
-  adaptHCompressScaling<T>(*out);
+  out->tiling(hcompressTiling(init));
+  out->quantization(quantization<T>());
+  out->scaling(hcompressScaling<T>());
   return out;
 }
 
@@ -71,28 +71,73 @@ std::unique_ptr<Plio> BasicCompressionStrategy::plio(const ImageHdu::Initializer
     return nullptr;
   }
   auto out = std::make_unique<Plio>();
-  adaptTiling(*out, init);
+  out->tiling(tiling(init));
   return out;
 }
 
 template <typename T>
-void BasicCompressionStrategy::adaptQuantization(Compression& algo) const {
-  // FIXME
+Compression::Quantization BasicCompressionStrategy::quantization() const {
+  if constexpr (std::is_integral_v<T>) {
+    if (m_type != Type::Lossy) {
+      return Compression::Quantization(0);
+    }
+    Compression::Quantization q(Compression::rms / 4);
+    q.dithering(Compression::Dithering::NonZeroPixel); // Keep nulls for integers
+    return q;
+  } else {
+    if (m_type == Type::Lossless) {
+      return Compression::Quantization(0);
+    }
+    return Compression::Quantization(Compression::rms / 4);
+  }
 }
 
 template <typename T>
-void BasicCompressionStrategy::adaptTiling(Compression& algo, const ImageHdu::Initializer<T>& init) const {
-  // FIXME
+Position<-1> BasicCompressionStrategy::tiling(const ImageHdu::Initializer<T>& init) const {
+  static constexpr long minSize = 10000;
+  if (init.raster.size() <= minSize) {
+    return Compression::maxTiling();
+  }
+  // FIXME reach minSize using higher dimensions
+  return Compression::rowwiseTiling();
 }
 
 template <typename T>
-void BasicCompressionStrategy::adaptHCompressTiling(HCompress& algo, const ImageHdu::Initializer<T>& init) const {
-  // FIXME
+Position<-1> BasicCompressionStrategy::hcompressTiling(const ImageHdu::Initializer<T>& init) const {
+
+  auto shape = init.raster.shape();
+
+  // Small image
+  if (shape[1] <= 30) {
+    // FIXME what about large rows?
+    return Compression::maxTiling();
+  }
+
+  // Find acceptable row count
+  for (auto rows : {16, 24, 20, 30, 28, 26, 22, 18, 14}) {
+    auto modulo = shape[1] % rows;
+    if (modulo == 0 || modulo >= 4) {
+      return Compression::rowwiseTiling(rows);
+    }
+  }
+
+  // Fallback
+  return Compression::rowwiseTiling(17);
 }
 
 template <typename T>
-void BasicCompressionStrategy::adaptHCompressScaling(HCompress& algo) const {
-  // FIXME
+Compression::Scaling BasicCompressionStrategy::hcompressScaling() const {
+  if constexpr (std::is_integral_v<T>) {
+    if (m_type != Type::Lossy) {
+      return 0;
+    }
+    return Compression::rms * 2.5;
+  } else {
+    if (m_type == Type::Lossless) {
+      return 0;
+    }
+    return Compression::rms * 2.5;
+  }
 }
 
 } // namespace Fits

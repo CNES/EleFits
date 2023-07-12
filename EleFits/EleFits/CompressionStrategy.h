@@ -15,11 +15,11 @@ namespace Fits {
  * @brief The interface for implementing compression strategies.
  */
 struct CompressionStrategy {
-#define ELEFITS_DECLARE_CALL_OPERATOR(T, name) \
+#define ELEFITS_DECLARE_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
-  virtual std::unique_ptr<Compression> operator()(const ImageHdu::Initializer<T>& init) = 0;
-  ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_DECLARE_CALL_OPERATOR)
-#undef ELEFITS_DECLARE_CALL_OPERATOR
+  virtual std::unique_ptr<Compression> visit(const ImageHdu::Initializer<T>& init) = 0;
+  ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_DECLARE_VISIT)
+#undef ELEFITS_DECLARE_VISIT
 };
 
 /**
@@ -30,13 +30,13 @@ struct CompressionStrategy {
  */
 template <typename TDerived>
 struct CompressionStrategyMixin : public CompressionStrategy {
-#define ELEFITS_IMPLEMENT_CALL_OPERATOR(T, name) \
+#define ELEFITS_IMPLEMENT_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
-  std::unique_ptr<Compression> operator()(const ImageHdu::Initializer<T>& init) override { \
+  std::unique_ptr<Compression> visit(const ImageHdu::Initializer<T>& init) override { \
     return static_cast<TDerived&>(*this)(init); \
   }
-  ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_IMPLEMENT_CALL_OPERATOR)
-#undef ELEFITS_IMPLEMENT_CALL_OPERATOR
+  ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_IMPLEMENT_VISIT)
+#undef ELEFITS_IMPLEMENT_VISIT
 };
 
 /**
@@ -119,25 +119,25 @@ private:
    * @brief Adapt the quantization to the pixel type and strategy type.
    */
   template <typename T>
-  void adaptQuantization(Compression& algo) const;
+  Compression::Quantization quantization() const;
 
   /**
    * @brief Adapt the tiling to the raster shape.
    */
   template <typename T>
-  void adaptTiling(Compression& algo, const ImageHdu::Initializer<T>& init) const;
+  Position<-1> tiling(const ImageHdu::Initializer<T>& init) const;
 
   /**
    * @brief Adapt the H-compress tiling to the raster shape.
    */
   template <typename T>
-  void adaptHCompressTiling(HCompress& algo, const ImageHdu::Initializer<T>& init) const;
+  Position<-1> hcompressTiling(const ImageHdu::Initializer<T>& init) const;
 
   /**
    * @brief Adapt the H-compress scaling to the raster shape.
    */
   template <typename T>
-  void adaptHCompressScaling(HCompress& algo) const;
+  Compression::Scaling hcompressScaling() const;
 
   Type m_type;
 };
