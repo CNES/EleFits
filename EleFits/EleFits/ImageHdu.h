@@ -76,6 +76,11 @@ public:
   const std::type_info& readTypeid() const;
 
   /**
+   * @brief Read the image cfitsio bitpix value.
+   */
+  long readBitpix() const;
+
+  /**
    * @brief Read the number of pixels in the image.
    */
   long readSize() const;

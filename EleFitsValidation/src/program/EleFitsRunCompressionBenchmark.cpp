@@ -52,55 +52,69 @@ int getBitpix(Fits::ImageHdu hdu) {
   return 0;
 }
 
-// template <typename T>
-// bool areCompatible(std::string algoName) {
+bool areCompatible(std::string algoName, long bitpix, bool isLossless) {
 
-//   if (algoName == "NONE")
-//     return true;
+  if (algoName == "NONE")
+    return true;
 
-//   // 64-bit integers are not supported by CFITSIO for compression
-//   if (typeid(T) == typeid(std::int64_t) || (typeid(T) == typeid(std::uint64_t)))
-//     return false;
+  // 64-bit integers are not supported by CFITSIO for compression
+  if (bitpix == 64)
+    return false;
 
-//   // PLIO_1 must be used for integer image types with values between 0 and 2^24.
-//   if (algoName == "PLIO") {
+  // PLIO_1 must be used for integer image types with values between 0 and 2^24.
+  if (algoName == "PLIO") {
 
-//     // FIXME: this actually seems to depend on the size of images !!
-//     if (typeid(T) == typeid(std::uint32_t))
-//       return false;
-//   }
+    // FIXME: some int32 could work but we're excluding them here for simplicity
+    if (bitpix == 32 || bitpix == -32 || bitpix == -64)
+      return false;
+  }
 
-//   // GZIP, SHUFFLEDGZIP and RICE are general purpose algorithms
-//   // TODO verify if HCOMPRESS (2D compression) works with any x-dimensional image or not
-//   return true;
-// }
+  // If lossless & floating-type, only gzip can be applied
+  if (isLossless && (bitpix == -32 || bitpix == -64)) {
+    if (algoName == "RICE" || algoName == "HCOMPRESS")
+      return false;
+  }
+  // GZIP, SHUFFLEDGZIP and RICE are general purpose algorithms
+  return true;
+}
 
-void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
-  if (algoName == "RICE") {
+// FIXME: get isLossless elsewhere
+bool setCompressionFromName(Fits::MefFile& g, std::string algoName) {
+
+  if (algoName == "NONE") {
+    g.stopCompressing();
+    return true;
+
+  } else if (algoName == "RICE") {
     Fits::Rice algo;
     g.startCompressing(algo);
+    return algo.isLossless();
 
   } else if (algoName == "HCOMPRESS") {
     Fits::HCompress algo;
     g.startCompressing(algo);
+    return algo.isLossless();
 
   } else if (algoName == "PLIO") {
     Fits::Plio algo;
     g.startCompressing(algo);
+    return algo.isLossless();
 
   } else if (algoName == "GZIP") {
     Fits::Gzip algo;
     g.startCompressing(algo);
+    return algo.isLossless();
 
   } else if (algoName == "SHUFFLEDGZIP") {
     Fits::ShuffledGzip algo;
     g.startCompressing(algo);
+    return algo.isLossless();
 
   } else {
     logger.info("# UNKNOWN COMPRESSION TYPE");
     logger.info("(disabling compression)");
-    Fits::NoCompression algo;
     g.stopCompressing();
+    return true;
   }
 }
 
@@ -159,7 +173,7 @@ public:
     Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
 
     logger.info("# setting compression to " + algoName);
-    setCompressionFromName(g, algoName);
+    auto isLossless = setCompressionFromName(g, algoName);
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
@@ -194,7 +208,8 @@ public:
         actualAlgo = "NONE";
 
       } else { // the hdu is an image
-        try {
+
+        if (areCompatible(algoName, hdu.as<Fits::ImageHdu>().readBitpix(), isLossless)) {
 
           chrono.start();
           auto zHdu = g.appendCopy(hdu);
@@ -204,27 +219,7 @@ public:
           zHduSize = zHdu.readSizeInFile();
           actualAlgo = algoName;
 
-        } catch (const Cfitsio::CfitsioError& err) { // FIXME: properly check if algo is supported
-
-          logger.info(err.what()); // TODO
-
-          logger.info("# fallback to ShuffledGzip for current Hdu");
-          Fits::ShuffledGzip defaultAlgo;
-          g.startCompressing(defaultAlgo);
-
-          chrono.start();
-          auto zHdu = g.appendCopy(hdu);
-          chrono.stop();
-          bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
-          hduSize = hdu.readSizeInFile();
-          zHduSize = zHdu.readSizeInFile();
-          actualAlgo = "SHUFFLEDGZIP";
-
-          setCompressionFromName(g, algoName);
-
-        } catch (Fits::OutOfBoundsError& err) {
-          logger.info(err.what()); // TODO
-
+        } else {
           logger.info("# fallback to ShuffledGzip for current Hdu");
           Fits::ShuffledGzip defaultAlgo;
           g.startCompressing(defaultAlgo);

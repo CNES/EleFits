@@ -25,6 +25,11 @@ namespace ImageIo {
 const std::type_info& readTypeid(fitsfile* fptr);
 
 /**
+ * @brief Read the cfitsio bitpix value of the current image HDU.
+ */
+long readBitpix(fitsfile* fptr);
+
+/**
  * @brief Read the shape of the current image HDU.
  */
 template <long N = 2>
