@@ -80,8 +80,7 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
   const auto index = m_hdus.size();
   if (m_strategy) {
     Position<-1> dynamicShape(shape.begin(), shape.end());
-    PtrRaster<T, -1> raster(dynamicShape);
-    ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, raster};
+    ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
     m_strategy->visit(init)->compress(m_fptr);
   }
   Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
@@ -113,8 +112,7 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
   if (m_strategy) {
     using T = std::decay_t<typename TRaster::Value>;
     Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
-    PtrRaster<T, -1> dynamicRaster(dynamicShape, dynamicRaster.data()); // FIXME won't work with patches
-    ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicRaster};
+    ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
     m_strategy->visit(init)->compress(m_fptr);
   }
   Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());

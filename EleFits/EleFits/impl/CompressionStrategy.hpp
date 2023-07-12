@@ -14,7 +14,7 @@ std::unique_ptr<Compression> BasicCompressionStrategy::operator()(const ImageHdu
 
   // Too small to be compressed
   static constexpr long blockSize = 2880;
-  if (init.raster.data() && init.raster.size() / sizeof(T) <= blockSize) {
+  if (shapeSize(init.shape) / sizeof(T) <= blockSize) {
     return std::make_unique<NoCompression>();
   }
 
@@ -54,8 +54,8 @@ std::unique_ptr<HCompress> BasicCompressionStrategy::hcompress(const ImageHdu::I
   if (std::is_floating_point_v<T> && m_type == Type::Lossless) {
     return nullptr;
   }
-  const auto shape = init.raster.shape();
-  if (shape.size() < 2 || shape[0] < 4 || shape[1] < 4) {
+  const auto& shape = init.shape;
+  if (shapeSize(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
     return nullptr;
   }
   auto out = std::make_unique<HCompress>();
@@ -70,6 +70,7 @@ std::unique_ptr<Plio> BasicCompressionStrategy::plio(const ImageHdu::Initializer
   if (std::is_floating_point_v<T> || m_type == Type::Lossy) {
     return nullptr;
   }
+  // FIXME check values: if no data or max >= 2**24, nullptr
   auto out = std::make_unique<Plio>();
   out->tiling(tiling(init));
   return out;
@@ -95,7 +96,7 @@ Compression::Quantization BasicCompressionStrategy::quantization() const {
 template <typename T>
 Position<-1> BasicCompressionStrategy::tiling(const ImageHdu::Initializer<T>& init) const {
   static constexpr long minSize = 10000;
-  if (init.raster.size() <= minSize) {
+  if (shapeSize(init.shape) <= minSize) {
     return Compression::maxTiling();
   }
   // FIXME reach minSize using higher dimensions
@@ -105,7 +106,7 @@ Position<-1> BasicCompressionStrategy::tiling(const ImageHdu::Initializer<T>& in
 template <typename T>
 Position<-1> BasicCompressionStrategy::hcompressTiling(const ImageHdu::Initializer<T>& init) const {
 
-  auto shape = init.raster.shape();
+  const auto& shape = init.shape;
 
   // Small image
   if (shape[1] <= 30) {

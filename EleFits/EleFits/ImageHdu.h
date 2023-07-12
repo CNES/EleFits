@@ -81,13 +81,14 @@ public:
     const RecordSeq& records;
 
     /**
-     * @brief The shape, and data if available.
-     * 
-     * If the HDU is initialized with no data,
-     * then the raster points to `nullptr`
-     * but the shape is valid.
+     * @brief The shape.
      */
-    PtrRaster<T, -1> raster;
+    Position<-1> shape;
+
+    /**
+     * @brief The data, if any.
+     */
+    const T* data;
   };
 
   /**
