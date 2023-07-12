@@ -167,6 +167,8 @@ void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr);
  */
 void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr);
 
+void setHugeHdu(fitsfile* fptr, bool isHuge);
+
 /**
  * @brief Delete the HDU at given index.
  */
