@@ -77,8 +77,14 @@ const ImageHdu& MefFile::appendImageHeader(const std::string& name, const Record
 
 template <typename T, long N>
 const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
-  Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   const auto index = m_hdus.size();
+  if (m_strategy) {
+    Position<-1> dynamicShape(shape.begin(), shape.end());
+    PtrRaster<T, -1> raster(dynamicShape);
+    ImageHdu::Initializer<T> init {index, name, records, raster};
+    (*m_strategy)(init)->compress(m_fptr);
+  }
+  Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   hdu.header().writeSeq(records);
@@ -103,8 +109,15 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
 
 template <typename TRaster>
 const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster) {
-  Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   const auto index = m_hdus.size();
+  if (m_strategy) {
+    using T = std::decay_t<typename TRaster::Value>;
+    Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
+    PtrRaster<T, -1> dynamicRaster(dynamicShape, dynamicRaster.data()); // FIXME won't work with patches
+    ImageHdu::Initializer<T> init {index, name, records, dynamicRaster};
+    (*m_strategy)(init)->compress(m_fptr);
+  }
+  Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   hdu.header().writeSeq(records);
@@ -116,7 +129,12 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
 }
 
 void MefFile::startCompressing(const Fits::Compression& algo) {
+  m_strategy.reset();
   algo.compress(m_fptr);
+}
+
+void MefFile::startCompressing(std::unique_ptr<CompressionStrategy> strategy) {
+  m_strategy = std::move(strategy);
 }
 
 void MefFile::stopCompressing() {

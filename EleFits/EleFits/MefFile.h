@@ -6,10 +6,10 @@
 #define _ELEFITS_MEFFILE_H
 
 #include "EleFits/BintableHdu.h"
+#include "EleFits/CompressionStrategy.h"
 #include "EleFits/FitsFile.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageHdu.h"
-#include "EleFitsData/Compression.h"
 
 #include <memory>
 #include <vector>
@@ -199,8 +199,15 @@ public:
 
   /**
    * @brief Set the compression algorithm to be used when writting new image extensions.
+   * 
+   * @warning If any, the compression strategy is destroyed by this method.
    */
   inline void startCompressing(const Compression& algo);
+
+  /**
+   * @brief Set the compression strategy to be used when writting new image extensions.
+   */
+  inline void startCompressing(std::unique_ptr<CompressionStrategy> strategy);
 
   /**
    * @brief Disable compression when writting new image extensions.
@@ -388,6 +395,11 @@ protected:
    * m_hdus is 0-based while Cfitsio HDUs are 1-based.
    */
   std::vector<std::unique_ptr<Hdu>> m_hdus;
+
+  /**
+   * @brief The compression strategy
+   */
+  std::unique_ptr<CompressionStrategy> m_strategy;
 };
 
 } // namespace Fits

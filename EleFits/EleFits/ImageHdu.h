@@ -73,12 +73,12 @@ public:
     /**
      * @brief The extension name, or an empty string.
      */
-    std::string& name;
+    const std::string& name;
 
     /**
      * @brief The possibly empty sequence of records.
      */
-    RecordSeq& records;
+    const RecordSeq& records;
 
     /**
      * @brief The shape, and data if available.
