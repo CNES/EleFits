@@ -60,6 +60,37 @@ public:
   /// @endcond
 
   /**
+   * @brief A structure which holds everything known at image extension initialization.
+   */
+  template <typename T>
+  struct Initializer {
+
+    /**
+     * @brief The extension index.
+     */
+    long index;
+
+    /**
+     * @brief The extension name, or an empty string.
+     */
+    std::string& name;
+
+    /**
+     * @brief The possibly empty sequence of records.
+     */
+    RecordSeq& records;
+
+    /**
+     * @brief The shape, and data if available.
+     * 
+     * If the HDU is initialized with no data,
+     * then the raster points to `nullptr`
+     * but the shape is valid.
+     */
+    PtrRaster<T, -1> raster;
+  };
+
+  /**
    * @brief Destructor.
    */
   virtual ~ImageHdu() = default;
