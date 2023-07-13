@@ -44,6 +44,8 @@ elements_add_library(EleFits src/lib/*.cpp
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
+elements_add_executable(EleFitsCompress src/program/EleFitsCompress.cpp
+                     LINK_LIBRARIES ElementsKernel EleFits)
 elements_add_executable(EleFitsPrintSupportedTypes src/program/EleFitsPrintSupportedTypes.cpp
                      LINK_LIBRARIES ElementsKernel EleFits)
 elements_add_executable(EleFitsReadStructure src/program/EleFitsReadStructure.cpp
