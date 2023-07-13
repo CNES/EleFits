@@ -71,10 +71,23 @@ std::unique_ptr<HCompress> BasicCompressionStrategy::hcompress(const ImageHdu::I
 
 template <typename T>
 std::unique_ptr<Plio> BasicCompressionStrategy::plio(const ImageHdu::Initializer<T>& init) {
-  if (std::is_floating_point_v<T> || m_type == Type::Lossy) {
+  // if (std::is_floating_point_v<T>) {
+  //   return nullptr;
+  // }
+  // if constexpr (bitpix<T>() >= 24) {
+  //   if (not init.data) {
+  //     return nullptr;
+  //   }
+  //   const auto max = std::max_element(init.data, init.data + shapeSize(init.shape));
+  //   if (*max >= (std::size_t(1) << 24)) {
+  //     return nullptr;
+  //   }
+  // }
+
+  // Not sure this is a mask (very conservative)
+  if constexpr (bitpix<T>() != 8) {
     return nullptr;
   }
-  // FIXME check values: if no data or max >= 2**24, nullptr
   auto out = std::make_unique<Plio>();
   out->tiling(tiling(init));
   return out;
