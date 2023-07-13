@@ -46,7 +46,7 @@ struct CompressionStrategyMixin : public CompressionStrategy {
  * Otherwise, the fallback algorithm is returned.
  */
 template <typename TAlgo, typename TFallback = ShuffledGzip>
-class FallbackCompressionStrategy : public CompressionStrategyMixin<FallbackCompressionStrategy> {
+class FallbackCompressionStrategy : public CompressionStrategyMixin<FallbackCompressionStrategy<TAlgo, TFallback>> {
 
 public:
   /**
@@ -68,7 +68,7 @@ public:
    */
   template <typename T>
   std::unique_ptr<Compression> operator()(const ImageHdu::Initializer<T>& init) {
-    if compatible (init) {
+    if (isCompatible(init)) {
       return std::make_unique<TAlgo>(m_algo);
     }
     return std::make_unique<TFallback>(m_fallback);
@@ -78,8 +78,9 @@ public:
    * @brief Check whether the default algorithm is compatible with the HDU.
    */
   template <typename T>
-  bool compatible(const ImageHdu::Initializer<T>& init) {
+  bool isCompatible(const ImageHdu::Initializer<T>& init) {
     // FIXME
+    return false;
   }
 
 private:
