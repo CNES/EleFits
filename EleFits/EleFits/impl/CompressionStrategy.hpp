@@ -14,8 +14,12 @@ std::unique_ptr<Compression> BasicCompressionStrategy::operator()(const ImageHdu
 
   // Too small to be compressed
   static constexpr long blockSize = 2880;
-  if (shapeSize(init.shape) / sizeof(T) <= blockSize) {
+  const auto size = shapeSize(init.shape) / sizeof(T);
+  if (size <= blockSize) {
     return std::make_unique<NoCompression>();
+  }
+  if (size > (std::size_t(1) << 32)) {
+    // FIXME enable huge_hdu
   }
 
   // Chain of responsibility: Plio > HCompress > Rice > ShuffledGzip

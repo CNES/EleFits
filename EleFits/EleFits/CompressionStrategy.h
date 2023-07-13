@@ -40,6 +40,61 @@ struct CompressionStrategyMixin : public CompressionStrategy {
 };
 
 /**
+ * @brief Strategy to set constantly the same algorithm unless incompatible with the HDU.
+ * 
+ * For each HDU, if the default algorithm is compatible, it is return.
+ * Otherwise, the fallback algorithm is returned.
+ */
+template <typename TAlgo, typename TFallback = ShuffledGzip>
+class FallbackCompressionStrategy : public CompressionStrategyMixin<FallbackCompressionStrategy> {
+
+public:
+  /**
+   * @brief Create a strategy with a fallback derived from the default.
+   * 
+   * The fallback algorithm takes its tiling and quantization from the default one.
+   */
+  FallbackCompressionStrategy(TAlgo algo) :
+      m_algo(std::move(algo)), m_fallback(m_algo.tiling(), m_algo.quantization()) {}
+
+  /**
+   * @brief Create a strategy given explicit default and fallback algorithms.
+   */
+  FallbackCompressionStrategy(TAlgo algo, TFallback fallback) :
+      m_algo(std::move(algo)), m_fallback(std::move(fallback)) {}
+
+  /**
+   * @brief Create the algorithm.
+   */
+  template <typename T>
+  std::unique_ptr<Compression> operator()(const ImageHdu::Initializer<T>& init) {
+    if compatible (init) {
+      return std::make_unique<TAlgo>(m_algo);
+    }
+    return std::make_unique<TFallback>(m_fallback);
+  }
+
+  /**
+   * @brief Check whether the default algorithm is compatible with the HDU.
+   */
+  template <typename T>
+  bool compatible(const ImageHdu::Initializer<T>& init) {
+    // FIXME
+  }
+
+private:
+  /**
+   * @brief The default.
+   */
+  TAlgo m_algo;
+
+  /**
+   * @brief The fallback.
+   */
+  TFallback m_fallback;
+};
+
+/**
  * @brief A basic compression strategy.
  * 
  * This strategy selects the most appropriate compression algorithm at extension creation
