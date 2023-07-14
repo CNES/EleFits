@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
   Cfitsio::compress(file.fptr, noneAlgo);
   BOOST_TEST(not Cfitsio::isCompressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::readCompression(file.fptr).get()));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression&>(*Cfitsio::readCompression(file.fptr)));
 }
 
 //-----------------------------------------------------------------------------

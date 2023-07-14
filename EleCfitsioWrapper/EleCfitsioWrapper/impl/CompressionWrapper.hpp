@@ -7,6 +7,7 @@
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
+#include "EleFitsUtils/StringUtils.h"
 
 namespace Euclid {
 
@@ -31,31 +32,47 @@ bool isCompressing(fitsfile* fptr) {
 
 std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
 
-  // Read algo
-  int status = 0;
-  int algo = int(NULL);
-  fits_get_compression_type(fptr, &algo, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read compression type");
-  if (algo == int(NULL)) {
+  /* Is compressed? */
+
+  if (not HeaderIo::hasKeyword(fptr, "ZCMPTYPE")) {
     return std::make_unique<Fits::NoCompression>();
   }
+  const std::string name = HeaderIo::parseRecord<std::string>(fptr, "ZCMPTYPE");
+  if (name == "NONE" || name == "NOCOMPRESS") {
+    return std::make_unique<Fits::NoCompression>();
+  }
+  // FIXME use ZIMAGE?
 
-  // Read tiling
-  Fits::Position<-1> tiling(MAX_COMPRESS_DIM);
-  std::fill(tiling.begin(), tiling.end(), 1); // FIXME useful?
-  fits_get_tile_dim(fptr, MAX_COMPRESS_DIM, tiling.data(), &status);
-  // FIXME remove useless 1's down to dimension 2
-  // FIXME handle ROW and WHOLE as {-1, 1} and {-1}, respectively
-  CfitsioError::mayThrow(status, fptr, "Cannot read compression tiling");
+  /* Tiling */
 
-  // Read quantization
-  float scale = 0;
-  fits_get_quantize_level(fptr, &scale, &status);
+  const auto dimension = std::min<long>(HeaderIo::parseRecord<long>(fptr, "ZNAXIS"), MAX_COMPRESS_DIM);
+  // FIXME FZTILE or ZTILEn???
+  // std::string tiling = HeaderIo::parseRecord<std::string>(fptr, "FZTILE");
+  Fits::Position<-1> shape(dimension);
+  for (long i = 0; i < dimension; ++i) {
+    shape[i] = 1;
+    try {
+      shape[i] = HeaderIo::parseRecord<long>(fptr, std::string("ZTILE") + std::to_string(i + 1));
+    } catch (CfitsioError&) {
+    }
+  }
+  // FIXME check that ZTILE7 does not exist
+  // FIXME remove trailing 1's
+  // FIXME detect rowwiseTiling and maxTiling
+
+  /* Quantization */
+
+  double level = 0;
+  // FIXME double level = parseValue<double>("NOISEBIT", 0)
   Fits::Compression::Quantization quantization(
-      scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms / scale);
-  if (quantization && HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
-    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
-    if (method == "NO_DITHER") {
+      level <= 0 ? Fits::Compression::Scaling(-level) : Fits::Compression::rms / level);
+
+  // FIXME seed
+
+  // FZQMETHD - 'SUBTRACTIVE_DITHER_1', 'SUBTRACTIVE_DITHER_2', 'NO_DITHER'
+  if (quantization && HeaderIo::hasKeyword(fptr, "ZQUANTIZE")) {
+    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "ZQUANTIZE");
+    if (method == "NO_DITHER" || method == "NONE") {
       quantization.dithering(Fits::Compression::Dithering::None);
     } else if (method == "SUBTRACTIVE_DITHER_1") {
       quantization.dithering(Fits::Compression::Dithering::EveryPixel);
@@ -65,28 +82,28 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
       Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
     }
   }
-  CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
 
-  if (algo == RICE_1) {
-    return std::make_unique<Fits::Rice>(std::move(tiling), std::move(quantization));
+  if (name == "GZIP_1") {
+    return std::make_unique<Fits::Gzip>(std::move(shape), std::move(quantization));
   }
-  if (algo == HCOMPRESS_1) {
-    auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {tiling[0], tiling[1]}, std::move(quantization));
-    fits_get_hcomp_scale(fptr, &scale, &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot read H-compress scaling");
+  if (name == "GZIP_2") {
+    return std::make_unique<Fits::ShuffledGzip>(std::move(shape), std::move(quantization));
+  }
+  if (name == "RICE_1") {
+    return std::make_unique<Fits::Rice>(std::move(shape), std::move(quantization));
+  }
+  if (name == "HCOMPRESS_1") {
+    // FIXME read ZNAMEn until matches SCALE, return associated ZVALn
+    // => parseParam<double>("SCALE", 0);
+    const double scale = 0;
+    auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {shape[0], shape[1]}, std::move(quantization));
     out->scaling(scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms * scale);
-    // FIXME smoothing?
     return out;
   }
-  if (algo == PLIO_1) {
-    return std::make_unique<Fits::Plio>(std::move(tiling), std::move(quantization));
+  if (name == "PLIO_1") {
+    return std::make_unique<Fits::Plio>(std::move(shape), std::move(quantization));
   }
-  if (algo == GZIP_1) {
-    return std::make_unique<Fits::Gzip>(std::move(tiling), std::move(quantization));
-  }
-  if (algo == GZIP_2) {
-    return std::make_unique<Fits::ShuffledGzip>(std::move(tiling), std::move(quantization));
-  }
+
   throw Fits::FitsError("Unknown compression type");
 }
 
