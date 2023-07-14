@@ -32,26 +32,27 @@ std::string readAlgoName(const ImageHdu& hdu) {
     return "None";
   }
 
-  auto algo = hdu.readCompression();
+  const auto algo = hdu.readCompression();
+  const std::string losslessness = algo->isLossless() ? "Lossless " : "Lossy ";
 
   if (dynamic_cast<Gzip*>(algo.get())) {
-    return "GZIP";
+    return losslessness + "GZIP";
   }
 
   if (dynamic_cast<ShuffledGzip*>(algo.get())) {
-    return "Shuffled GZIP";
+    return losslessness + "Shuffled GZIP";
   }
 
   if (dynamic_cast<Rice*>(algo.get())) {
-    return "Rice";
+    return losslessness + "Rice";
   }
 
   if (dynamic_cast<HCompress*>(algo.get())) {
-    return "H-compress";
+    return losslessness + "H-compress";
   }
 
   if (dynamic_cast<Plio*>(algo.get())) {
-    return "PLIO";
+    return losslessness + "PLIO";
   }
 
   return "Unknown";
