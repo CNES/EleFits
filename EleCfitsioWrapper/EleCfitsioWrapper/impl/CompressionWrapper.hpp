@@ -77,7 +77,9 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
 
   /* Quantization */
 
-  const auto level = parseValueOr<double>(fptr, "NOISEBIT", 0);
+  const auto level = parseValueOr<double>(fptr, "NOISEBIT", 4);
+  // FIXME not set by CFITSIO (but set by astropy)
+  // Use 4 as default instead of 0 to detect lossy compression through dithering
   Fits::Compression::Quantization quantization(
       level <= 0 ? Fits::Compression::Scaling(-level) : Fits::Compression::rms / level);
 
@@ -85,9 +87,12 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
 
   /* Dithering */
 
-  if (quantization && HeaderIo::hasKeyword(fptr, "ZQUANTIZE")) {
-    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "ZQUANTIZE");
-    if (method == "NO_DITHER" || method == "NONE") { // NONE is not standard but happens
+  if (HeaderIo::hasKeyword(fptr, "ZQUANTIZ")) {
+    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "ZQUANTIZ");
+    if (method == "NONE") {
+      // NONE is not standard but happens to indicate null quantization (level = 0)
+      quantization = Fits::Compression::Quantization(0);
+    } else if (method == "NO_DITHER") {
       quantization.dithering(Fits::Compression::Dithering::None);
     } else if (method == "SUBTRACTIVE_DITHER_1") {
       quantization.dithering(Fits::Compression::Dithering::EveryPixel);
@@ -96,6 +101,8 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
     } else {
       Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
     }
+  } else {
+    quantization = Fits::Compression::Quantization(0);
   }
 
   if (name == "GZIP_1") {

@@ -19,7 +19,7 @@ FITS supports two compression approaches:
   At read time, it is initially decompressed and everything then occurs in memory (or disk with swapping).
   At write time, the file is compressed in memory, and then written entirely to the file system at closure.
 - Internal compression with any of the supported algorithms.
-  This compression acts at image Extension level: the Primary HDU and the binary table Extensions cannot be compressed this way.
+  This compression acts at image extension level: the Primary HDU and the binary table extensions cannot be compressed this way.
   When a compressed HDU is accessed, only the required region is decompressed/compressed on the fly.
   Therefore, memory usage is minimized.
 
@@ -69,7 +69,7 @@ but then classical write functions are used as if the HDU was not compressed.
 Given that the Primary HDU is necessarily an image HDU, it cannot be compressed.
 Generally, if the Primary has to be internally compressed (e.g. for SIF files), then an extension is added after an empty Primary.
 Therefore, even lossless compression may be non-idempotent:
-indeed, decompressing such a file would result in a MEF file with an empty Primary and decompressed Extension corresponding to the input Primary,
+indeed, decompressing such a file would result in a MEF file with an empty Primary and decompressed extension corresponding to the input Primary,
 instead of a single decompressed Primary.
 
 \code
