@@ -30,6 +30,23 @@ bool isCompressing(fitsfile* fptr) {
   return algo != int(NULL);
 }
 
+template <typename T>
+T parseValueOr(fitsfile* fptr, const std::string& key, T fallback) {
+  auto name = [](int i) {
+    return std::string("ZNAME") + std::to_string(i);
+  };
+  auto val = [](int i) {
+    return std::string("ZVAL") + std::to_string(i);
+  };
+  for (int i = 1; HeaderIo::hasKeyword(fptr, name(i)); ++i) {
+    const std::string value = HeaderIo::parseRecord<std::string>(fptr, name(i)).value;
+    if (value == key) {
+      return HeaderIo::parseRecord<T>(fptr, val(i));
+    }
+  }
+  return fallback;
+}
+
 std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
 
   /* Is compressed? */
@@ -46,8 +63,6 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   /* Tiling */
 
   const auto dimension = std::min<long>(HeaderIo::parseRecord<long>(fptr, "ZNAXIS"), MAX_COMPRESS_DIM);
-  // FIXME FZTILE or ZTILEn???
-  // std::string tiling = HeaderIo::parseRecord<std::string>(fptr, "FZTILE");
   Fits::Position<-1> shape(dimension);
   for (long i = 0; i < dimension; ++i) {
     shape[i] = 1;
@@ -62,17 +77,17 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
 
   /* Quantization */
 
-  double level = 0;
-  // FIXME double level = parseValue<double>("NOISEBIT", 0)
+  const auto level = parseValueOr<double>(fptr, "NOISEBIT", 0);
   Fits::Compression::Quantization quantization(
       level <= 0 ? Fits::Compression::Scaling(-level) : Fits::Compression::rms / level);
 
   // FIXME seed
 
-  // FZQMETHD - 'SUBTRACTIVE_DITHER_1', 'SUBTRACTIVE_DITHER_2', 'NO_DITHER'
+  /* Dithering */
+
   if (quantization && HeaderIo::hasKeyword(fptr, "ZQUANTIZE")) {
     const std::string method = HeaderIo::parseRecord<std::string>(fptr, "ZQUANTIZE");
-    if (method == "NO_DITHER" || method == "NONE") {
+    if (method == "NO_DITHER" || method == "NONE") { // NONE is not standard but happens
       quantization.dithering(Fits::Compression::Dithering::None);
     } else if (method == "SUBTRACTIVE_DITHER_1") {
       quantization.dithering(Fits::Compression::Dithering::EveryPixel);
@@ -93,9 +108,7 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
     return std::make_unique<Fits::Rice>(std::move(shape), std::move(quantization));
   }
   if (name == "HCOMPRESS_1") {
-    // FIXME read ZNAMEn until matches SCALE, return associated ZVALn
-    // => parseParam<double>("SCALE", 0);
-    const double scale = 0;
+    const auto scale = parseValueOr<double>(fptr, "SCALE", 0);
     auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {shape[0], shape[1]}, std::move(quantization));
     out->scaling(scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms * scale);
     return out;
