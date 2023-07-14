@@ -19,7 +19,7 @@ FITS supports two compression approaches:
   At read time, it is initially decompressed and everything then occurs in memory (or disk with swapping).
   At write time, the file is compressed in memory, and then written entirely to the file system at closure.
 - Internal compression with any of the supported algorithms.
-  This compression acts at Image Extension level: the Primary HDU and the Binary table Extensions cannot be compressed this way.
+  This compression acts at image Extension level: the Primary HDU and the binary table Extensions cannot be compressed this way.
   When a compressed HDU is accessed, only the required region is decompressed/compressed on the fly.
   Therefore, memory usage is minimized.
 
@@ -39,23 +39,34 @@ From the API point of view, no change is required wrt. uncompressed files.
 \subsection compression-internal-principle Principle
 
 
+For a start, here is how the FITS standard definition document (v4.0) introduces the internal compression:
+
+> The general principle is to first divide the N-dimensional image into a rectangular grid of subimages or "tiles."
+> Each tile is then compressed as a block of data, and the resulting compressed byte stream is stored in a row of a variable-length column in a FITS binary table.
+> By dividing the image into tiles it is possible to extract and decompress subsections of the image without having to decompress the whole image.
+> The default tiling pattern treats each row of a two-dimensional image (or higher-dimensional cube) as a tile, such that each tile contains NAXIS1 pixels.
+> This default may not be optimal for some applications or compression algorithms, so any other rectangular tiling pattern may be defined [...].
+> In the case of relatively small images it may suffice to compress the entire image as a single tile, resulting in an output binary table containing a single row.
+> In the case of three-dimensional data cubes, it may be advantageous to treat each plane of the cube as a separate tile
+> if application software typically needs to access the cube on a plane-by-plane basis.
+
 Standard FITS files are made of HDUs which can be either images or tables.
 Binary tables can contain variable-length columns (which are not publically supported by EleFits):
 such columns can hold vector values of varying length.
 
-Internally compressed Image HDUs are partitioned into regular non-overlapping boxes called tiles (typically, rows).
-Each of the tiles is compressed with a given algorithm, and the compressed tile values are stored in a cell of a Binary table.
+Internally compressed image HDUs are partitioned into regular non-overlapping boxes called tiles (typically, rows).
+Each of the tiles is compressed with a given algorithm, and the compressed tile values are stored in a cell of a binary table.
 The compressed tiles have different sizes since the compression rate depends on the actual pixel values,
 which is why variable-length columns are used.
 
-In practice, this means that a compressed Image HDU is effectively stored as a Binary table HDU,
+In practice, this means that a compressed image HDU is effectively stored as a binary table HDU,
 although with specific keywords stating that this is no classical table.
-Most viewers and libraries (including EleFits) provide an Image HDU interface for them,
-i.e. at reading, it is not necessary to know whether an Image is compressed or not.
+Most viewers and libraries (including EleFits) provide an image HDU interface for them,
+i.e. at reading, it is not necessary to know whether an image is compressed or not.
 For writing, compression must be explicitely enabled before creating the HDU,
 but then classical write functions are used as if the HDU was not compressed.
 
-Given that the Primary HDU is necessarily an Image HDU, it cannot be compressed.
+Given that the Primary HDU is necessarily an image HDU, it cannot be compressed.
 Generally, if the Primary has to be internally compressed (e.g. for SIF files), then an extension is added after an empty Primary.
 Therefore, even lossless compression may be non-idempotent:
 indeed, decompressing such a file would result in a MEF file with an empty Primary and decompressed Extension corresponding to the input Primary,
@@ -135,8 +146,8 @@ and quantization (as a `Compression::Quantization` object).
 More details can be found in the classes and methods documentation (see list below).
 
 Once the `Compression` instance is created, it must be passed to `MefFile::startCompressing()`.
-From this point, newly created Image HDUs will automatically be compressed.
-Note that it is not possible to convert an uncompressed Image HDU into a compressed one,
+From this point, newly created image HDUs will automatically be compressed.
+Note that it is not possible to convert an uncompressed image HDU into a compressed one,
 and compression must be activated before creating HDUs.
 The compression algorithm or parameters can be changed for subsequent HDUs by calling again `MefFile::startCompressing()`.
 Disabling compression can be done with `NoCompression` or by calling `MefFile::stopCompressing()`.
