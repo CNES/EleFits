@@ -19,7 +19,12 @@ namespace Cfitsio {
 inline bool isCompressing(fitsfile* fptr);
 
 /**
- * @brief Read the current compression parameters.
+ * @brief Get the current compression parameters.
+ */
+inline std::unique_ptr<Fits::Compression> getCompression(fitsfile* fptr);
+
+/**
+ * @brief Read the compression parameters of the current HDU.
  */
 inline std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr);
 

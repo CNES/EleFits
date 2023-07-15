@@ -30,6 +30,67 @@ bool isCompressing(fitsfile* fptr) {
   return algo != int(NULL);
 }
 
+std::unique_ptr<Fits::Compression> getCompression(fitsfile* fptr) {
+
+  // Read algo
+  int status = 0;
+  int algo = int(NULL);
+  fits_get_compression_type(fptr, &algo, &status);
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression type");
+  if (algo == int(NULL)) {
+    return std::make_unique<Fits::NoCompression>();
+  }
+
+  // Read tiling
+  Fits::Position<-1> tiling(MAX_COMPRESS_DIM);
+  std::fill(tiling.begin(), tiling.end(), 1); // FIXME useful?
+  fits_get_tile_dim(fptr, MAX_COMPRESS_DIM, tiling.data(), &status);
+  // FIXME remove useless 1's down to dimension 2
+  // FIXME handle ROW and WHOLE as {-1, 1} and {-1}, respectively
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression tiling");
+
+  // Read quantization
+  float scale = 0;
+  fits_get_quantize_level(fptr, &scale, &status);
+  Fits::Compression::Quantization quantization(
+      scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms / scale);
+  if (quantization && HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
+    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
+    if (method == "NO_DITHER") {
+      quantization.dithering(Fits::Compression::Dithering::None);
+    } else if (method == "SUBTRACTIVE_DITHER_1") {
+      quantization.dithering(Fits::Compression::Dithering::EveryPixel);
+    } else if (method == "SUBTRACTIVE_DITHER_2") {
+      quantization.dithering(Fits::Compression::Dithering::NonZeroPixel);
+    } else {
+      Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
+    }
+  }
+  CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
+
+  if (algo == RICE_1) {
+    return std::make_unique<Fits::Rice>(std::move(tiling), std::move(quantization));
+  }
+  if (algo == HCOMPRESS_1) {
+    auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {tiling[0], tiling[1]}, std::move(quantization));
+    fits_get_hcomp_scale(fptr, &scale, &status);
+    CfitsioError::mayThrow(status, fptr, "Cannot read H-compress scaling");
+    out->scaling(scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms * scale);
+    // FIXME smoothing?
+    return out;
+  }
+  if (algo == PLIO_1) {
+    return std::make_unique<Fits::Plio>(std::move(tiling), std::move(quantization));
+  }
+  if (algo == GZIP_1) {
+    return std::make_unique<Fits::Gzip>(std::move(tiling), std::move(quantization));
+  }
+  if (algo == GZIP_2) {
+    return std::make_unique<Fits::ShuffledGzip>(std::move(tiling), std::move(quantization));
+  }
+  throw Fits::FitsError("Unknown compression type");
+}
+
 template <typename T>
 T parseValueOr(fitsfile* fptr, const std::string& key, T fallback) {
   auto name = [](int i) {

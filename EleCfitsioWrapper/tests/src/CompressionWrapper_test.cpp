@@ -132,17 +132,17 @@ BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
   Cfitsio::compress(file.fptr, noneAlgo);
   BOOST_TEST(not Cfitsio::isCompressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::readCompression(file.fptr).get()));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::getCompression(file.fptr).get()));
 
   Cfitsio::compress(file.fptr, algo);
   BOOST_TEST(Cfitsio::isCompressing(file.fptr));
-  const auto readAlgo = Cfitsio::readCompression(file.fptr);
+  const auto readAlgo = Cfitsio::getCompression(file.fptr);
   const auto readHc = dynamic_cast<Fits::HCompress&>(*readAlgo);
   BOOST_TEST(readHc.tiling() == algo.tiling()); // FIXME compare algos as a whole
 
   Cfitsio::compress(file.fptr, noneAlgo);
   BOOST_TEST(not Cfitsio::isCompressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression&>(*Cfitsio::readCompression(file.fptr)));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression&>(*Cfitsio::getCompression(file.fptr)));
 }
 
 //-----------------------------------------------------------------------------
