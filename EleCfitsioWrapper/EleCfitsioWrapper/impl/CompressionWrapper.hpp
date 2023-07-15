@@ -77,9 +77,16 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
 
   /* Quantization */
 
-  const auto level = parseValueOr<double>(fptr, "NOISEBIT", 4);
+  bool quantized = false;
+  const long columnCount = HeaderIo::parseRecord<long>(fptr, "TFIELDS");
+  for (long i = 1; i <= columnCount; ++i) {
+    const std::string columnName = HeaderIo::parseRecord<std::string>(fptr, std::string("TTYPE") + std::to_string(i));
+    if (columnName == "ZSCALE") {
+      quantized = true;
+    }
+  }
+  const auto level = parseValueOr<double>(fptr, "NOISEBIT", quantized ? 4 : 0);
   // FIXME not set by CFITSIO (but set by astropy)
-  // Use 4 as default instead of 0 to detect lossy compression through dithering
   Fits::Compression::Quantization quantization(
       level <= 0 ? Fits::Compression::Scaling(-level) : Fits::Compression::rms / level);
 
@@ -102,7 +109,7 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
       Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
     }
   } else {
-    quantization = Fits::Compression::Quantization(0);
+    quantization.dithering(Fits::Compression::Dithering::None);
   }
 
   if (name == "GZIP_1") {
