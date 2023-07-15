@@ -12,6 +12,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
+ * @ingroup image_compression
  * @brief The interface for implementing compression strategies.
  */
 struct CompressionStrategy {
@@ -23,6 +24,7 @@ struct CompressionStrategy {
 };
 
 /**
+ * @ingroup image_compression
  * @brief A mixin to simplify `CompressionStrategy` implementation.
  * 
  * This class is a visitor-like mixin to mimic virtual method template.
@@ -40,6 +42,7 @@ struct CompressionStrategyMixin : public CompressionStrategy {
 };
 
 /**
+ * @ingroup image_compression
  * @brief Strategy to set constantly the same algorithm unless incompatible with the HDU.
  * 
  * For each HDU, if the default algorithm is compatible, it is return.
@@ -96,6 +99,7 @@ private:
 };
 
 /**
+ * @ingroup image_compression
  * @brief A basic compression strategy.
  * 
  * This strategy selects the most appropriate compression algorithm at extension creation

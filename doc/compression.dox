@@ -135,7 +135,7 @@ Once this step has been performed, the quantized, integral values are effectivel
 _Tiled Image Convention for Storing Compressed Images in FITS Binary Tables._
 
 
-\subsection compression-interface Interface
+\subsection compression-interface Compression Interface
 
 
 As mentioned in the previous section, compression algorithms are represented by dedicated classes.
@@ -151,6 +151,19 @@ Note that it is not possible to convert an uncompressed image HDU into a compres
 and compression must be activated before creating HDUs.
 The compression algorithm or parameters can be changed for subsequent HDUs by calling again `MefFile::startCompressing()`.
 Disabling compression can be done with `NoCompression` or by calling `MefFile::stopCompressing()`.
+
+While this interface mimics CFITSIO's, it is not the most efficient approach.
+Instead of applying always the same compression to all images, or manually setting the compression before creating any image extension,
+it is possible to define once for all which compression to apply according to user-defined criteria: data type, image size, extension name...
+This is the purpose of the so-called compression strategies.
+
+
+\subsection strategy-interface Compression Strategy Interface
+
+
+TODO
+
+
 
 */
 
