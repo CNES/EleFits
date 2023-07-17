@@ -192,11 +192,11 @@ void writeMefFile(const std::string& filename) {
 
   /* Fill the header and data units */
 
-  const auto& image1 = f.assignImageExt("IMAGE1", rasters.int32Raster3D);
+  const auto& image1 = f.appendImage("IMAGE1", {}, rasters.int32Raster3D);
 
   /* Fill the header only (for now) */
 
-  const auto& image2 = f.initImageExt<std::int16_t>("IMAGE2", rasters.int16Raster2D.shape());
+  const auto& image2 = f.appendNullImage<std::int16_t>("IMAGE2", {}, rasters.int16Raster2D.shape());
 
   //! [Create image extensions]
 
@@ -214,12 +214,13 @@ void writeMefFile(const std::string& filename) {
 
   /* Fill the header and data units */
 
-  const auto& table1 = f.assignBintableExt("TABLE1", columns.stringColumn, columns.int32Column, columns.float32Column);
+  const auto& table1 = f.appendBintable("TABLE1", {}, columns.stringColumn, columns.int32Column, columns.float32Column);
 
   /* Fill the header unit only (for now) */
 
-  const auto& table2 = f.initBintableExt(
+  const auto& table2 = f.appendBintableHeader(
       "TABLE2",
+      {},
       columns.stringColumn.info(),
       columns.int32Column.info(),
       columns.float32Column.info());

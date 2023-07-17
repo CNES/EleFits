@@ -12,6 +12,10 @@
 namespace Euclid {
 namespace Fits {
 
+bool MefFile::isCompressing() const {
+  return Cfitsio::isCompressing(m_fptr);
+}
+
 template <class T>
 const T& MefFile::access(long index) {
   if (index < 0) { // Backward indexing
@@ -61,9 +65,22 @@ const T& MefFile::access(const std::string& name, long version) {
   return hduPtr->as<T>();
 }
 
-template <typename THdu>
-HduSelector<THdu> MefFile::filter(const HduFilter& filter) {
-  return {*this, filter * HduCategory::forClass<THdu>()};
+template <typename T>
+HduSelector<T> MefFile::filter(const HduFilter& filter) {
+  return {*this, filter * HduCategory::forClass<T>()};
+}
+
+void MefFile::startCompressing(const Fits::Compression& algo) {
+  m_strategy.reset();
+  algo.compress(m_fptr);
+}
+
+void MefFile::startCompressing(std::unique_ptr<CompressionStrategy> strategy) {
+  m_strategy = std::move(strategy);
+}
+
+void MefFile::stopCompressing() {
+  startCompressing(Fits::NoCompression());
 }
 
 template <typename T>
@@ -129,25 +146,8 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
   // For now, we cannot resize uint64 images (CFITSIO bug), so option (1) cannot be tested.
 }
 
-void MefFile::startCompressing(const Fits::Compression& algo) {
-  m_strategy.reset();
-  algo.compress(m_fptr);
-}
-
-void MefFile::startCompressing(std::unique_ptr<CompressionStrategy> strategy) {
-  m_strategy = std::move(strategy);
-}
-
-void MefFile::stopCompressing() {
-  startCompressing(Fits::NoCompression());
-}
-
-bool MefFile::isCompressing() const {
-  return Cfitsio::isCompressing(m_fptr);
-}
-
-template <typename THdu>
-const THdu& MefFile::appendCopy(const THdu& hdu) {
+template <typename T>
+const T& MefFile::appendCopy(const T& hdu) {
 
   const auto index = m_hdus.size();
 
@@ -166,7 +166,7 @@ const THdu& MefFile::appendCopy(const THdu& hdu) {
     m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   }
 
-  return access<THdu>(Cfitsio::HduAccess::currentIndex(m_fptr) - 1);
+  return access<T>(Cfitsio::HduAccess::currentIndex(m_fptr) - 1);
 }
 
 template <typename... TInfos>
@@ -217,43 +217,6 @@ const BintableHdu& MefFile::appendBintable(const std::string& name, const Record
   return hdu;
   // FIXME use appendBintableExt(name, records, columns...) or inverse dependency
 }
-
-template <typename T, long N>
-const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<N>& shape) {
-  return appendNullImage<T>(name, {}, shape);
-}
-
-template <typename TRaster>
-const ImageHdu& MefFile::assignImageExt(const std::string& name, const TRaster& raster) {
-  return appendImage(name, {}, raster);
-}
-
-template <typename... TInfos>
-const BintableHdu& MefFile::initBintableExt(const std::string& name, const TInfos&... infos) {
-  return appendBintableHeader(name, {}, infos...);
-}
-
-template <typename... TColumns>
-const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns&... columns) {
-  return appendBintable(name, {}, columns...);
-}
-
-template <typename TColumns, std::size_t count>
-const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns& columns) {
-  return appendBintable(name, {}, columns);
-}
-
-#ifndef DECLARE_ASSIGN_IMAGE_EXT
-#define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, -1>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 2>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 3>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, -1>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 2>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 3>&);
-ELEFITS_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
-#undef DECLARE_ASSIGN_IMAGE_EXT
-#endif
 
 } // namespace Fits
 } // namespace Euclid

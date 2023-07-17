@@ -79,7 +79,7 @@ Ultimate optimization when creating an HDU is to complete the header unit first 
 
 \code
 // Initialize the header unit (write some standard records)
-const auto &ext = f.initImageHdu<float, 3>(name);
+const auto &ext = f.appendImageHeader<float, 3>(name);
 
 // Write user records
 ext.header().writeSeq(record1, record2, record3);

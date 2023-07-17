@@ -47,23 +47,5 @@ const ImageHdu& MefFile::primary() {
   return access<ImageHdu>(0);
 }
 
-const Hdu& MefFile::initRecordExt(const std::string& name) {
-  return appendImageHeader<>(name);
-}
-
-const long MefFile::primaryIndex;
-
-#ifndef COMPILE_ASSIGN_IMAGE_EXT
-#define COMPILE_ASSIGN_IMAGE_EXT(type, unused) \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, -1>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 2>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 3>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, -1>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 2>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 3>&);
-ELEFITS_FOREACH_RASTER_TYPE(COMPILE_ASSIGN_IMAGE_EXT)
-#undef COMPILE_ASSIGN_IMAGE_EXT
-#endif
-
 } // namespace Fits
 } // namespace Euclid

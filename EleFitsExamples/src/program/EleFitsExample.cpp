@@ -54,7 +54,7 @@ public:
       Test::SmallTable table; // Predefined table for testing purpose
       logger.info() << "Creating binary table extension: SMALLTBL";
       //! [Create binary table ext]
-      f.assignBintableExt("SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
+      f.appendBintable("SMALLTBL", {}, table.numCol, table.radecCol, table.nameCol, table.distMagCol);
       //! [Create binary table ext]
 
       logger.info();
@@ -62,7 +62,7 @@ public:
       Test::SmallRaster raster; // Predefined image raster for testing purpose
       logger.info() << "Creating image extension: SMALLIMG";
       //! [Create image ext]
-      const auto& ext = f.assignImageExt("SMALLIMG", raster);
+      const auto& ext = f.appendImage("SMALLIMG", {}, raster);
       //! [Create image ext]
       logger.info() << "Writing record: STRING = string";
       Record<std::string> strRecord("STRING", "string");

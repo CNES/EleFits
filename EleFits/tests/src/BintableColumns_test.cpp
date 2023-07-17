@@ -59,7 +59,7 @@ BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable) {
 BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
   const Test::SmallTable table;
   const auto initSize = static_cast<long>(table.names.size());
-  const auto& ext = assignBintableExt("TABLE", table.nameCol, table.radecCol);
+  const auto& ext = appendBintable("TABLE", {}, table.nameCol, table.radecCol);
   const auto& columns = ext.columns();
   BOOST_TEST(columns.readRowCount() == initSize);
   columns.writeSegmentSeq(-1, table.nameCol, table.radecCol);
@@ -236,11 +236,11 @@ void checkVectorWriteRead<std::uint64_t>(const BintableColumns& du) {
     checkTupleWriteRead<type>(columns, firstColumn, lastColumn); \
   } \
   BOOST_FIXTURE_TEST_CASE(name##_array_write_read_test, Test::TemporaryMefFile) { \
-    const auto& ext = this->initBintableExt("ARRAY"); \
+    const auto& ext = this->appendBintableHeader("ARRAY"); \
     checkArrayWriteRead<type>(ext.columns()); \
   } \
   BOOST_FIXTURE_TEST_CASE(name##_vector_write_read_test, Test::TemporaryMefFile) { \
-    const auto& ext = this->initBintableExt("VECTOR"); \
+    const auto& ext = this->appendBintableHeader("VECTOR"); \
     checkVectorWriteRead<type>(ext.columns()); \
   }
 

@@ -38,7 +38,7 @@ void writeBintable(const std::string& filename, long rows) {
   const auto col5 = randomColumn<float>("PHZ_MEDIAN", rows);
   const auto col6 = randomColumn<float>("PHZ_LENSMC_CORRECTION", rows);
   const auto col7 = randomColumn<float>("SHE_LENSMC_WEIGHT", rows);
-  f.assignBintableExt("", col1, col2, col3, col4, col5, col6, col7); // Unnamed extension
+  f.appendBintable("", {}, col1, col2, col3, col4, col5, col6, col7); // Unnamed extension
 }
 
 /**
@@ -80,7 +80,7 @@ void writeSomeRecords(const Header& header) {
 void writeImage(const std::string& filename, const Position<3>& shape) {
   MefFile f(filename, FileMode::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
-  const auto& ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
+  const auto& ext = f.appendImage("KAPPA_PATCH", {}, raster); // Named extension
   writeSomeRecords(ext.header());
 }
 

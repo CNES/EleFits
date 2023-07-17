@@ -110,7 +110,7 @@ BOOST_FIXTURE_TEST_CASE(keyword_with_symbol_is_read_back_test, Test::TemporarySi
 }
 
 BOOST_FIXTURE_TEST_CASE(hdu_is_renamed_test, Test::TemporaryMefFile) {
-  const auto& h = this->initRecordExt("A");
+  const auto& h = this->appendImageHeader("A");
   BOOST_TEST(h.index() == 1);
   BOOST_TEST(h.readName() == "A");
   h.updateName("B");

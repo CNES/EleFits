@@ -10,6 +10,10 @@
   * Implemented compression benchmark
 * New program `EleFitsCompress` compresses FITS files according to the desired strategy
 
+### Cleaning
+
+* Deprecated `MefFile` members were removed
+
 ## 5.2
 
 ### Breaking changes

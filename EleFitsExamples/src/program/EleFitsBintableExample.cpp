@@ -42,7 +42,7 @@ const Fits::BintableHdu& writeBintable(Fits::MefFile& f, const std::string& extN
   auto multidimCol = makeColumn(multidimInfo, std::move(multidimData));
 
   /* Create the table */
-  return f.assignBintableExt(extName, stringCol, scalarCol, vectorCol, multidimCol);
+  return f.appendBintable(extName, {}, stringCol, scalarCol, vectorCol, multidimCol);
 }
 
 /*

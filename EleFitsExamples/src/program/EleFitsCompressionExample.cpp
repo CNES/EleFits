@@ -53,7 +53,7 @@ void addGenericImageFromType(Fits::MefFile& f, std::string typeName, std::string
   // Create and add Raster with type T as extension:
   Fits::VecRaster<T, 2> raster2D({cols, rows});
   std::iota(raster2D.begin(), raster2D.end(), 0);
-  f.assignImageExt(typeName + "_IMAGE", raster2D);
+  f.appendImage(typeName + "_IMAGE", {}, raster2D);
 }
 
 /*
