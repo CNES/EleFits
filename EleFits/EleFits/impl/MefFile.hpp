@@ -14,6 +14,9 @@ namespace Fits {
 
 template <class T>
 const T& MefFile::access(long index) {
+  if (index < 0) { // Backward indexing
+    index += hduCount();
+  }
   Cfitsio::HduAccess::gotoIndex(m_fptr, index + 1); // CFITSIO index is 1-based
   const auto hduType = Cfitsio::HduAccess::currentType(m_fptr);
   auto& ptr = m_hdus[index];
