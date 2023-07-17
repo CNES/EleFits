@@ -4,9 +4,11 @@
 
 ### New features
 
+* `MefFile` supports backward indexing (e.g. `const auto& hdu = f[-2]`)
 * Image HDU compression
   * Added compression data classes `Quantization`, `Gzip`, `Plio`...
   * Added compression setters and getters `MefFile::startCompressing()`, `stopCompressing()`, `isCompressing()`, `ImageHdu::compression()`
+  * `EleFitsReadStructure` prints the compression type (algorithm and losslessness)
   * Implemented compression benchmark
 * New program `EleFitsCompress` compresses FITS files according to the desired strategy
 
@@ -22,7 +24,7 @@
 
 ### New features
 
-* Structured bindings are officially supported
+* Structured bindings are supported
 
 ## 5.1
 
