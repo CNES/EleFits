@@ -24,7 +24,7 @@ class HduSelector;
 /**
  * @ingroup file_handlers
  * @brief Multi-Extension FITS file reader-writer.
- * @details
+ * 
  * In addition to `FitsFile`'s methods, this class provides HDU access and creation services.
  * 
  * A `MefFile` can roughly be seen as a sequence of
@@ -89,7 +89,7 @@ public:
 
   /**
    * @brief Get the number of HDUs.
-   * @details
+   * 
    * As opposed to CFITSIO's HDU counting, the number is not read by this function:
    * it is initialized by the constructor and then updated at each modification through `MefFile` methods.
    * This way, incomplete HDUs are also taken into account where CFITSIO would exclude them.
@@ -99,14 +99,14 @@ public:
 
   /**
    * @brief Read the name of each HDU.
-   * @details
+   * 
    * Unnamed HDUs are taken into account: an empty string is returned for them.
    */
   std::vector<std::string> readHduNames();
 
   /**
    * @brief Read the name and version of each HDU.
-   * @details
+   * 
    * When there is no name specified, an empty string is returned.
    * When there is no version specified, 1 is returned.
    */
@@ -124,11 +124,15 @@ public:
    * @tparam T The type of HDU or header or data unit handler, i.e.
    * `ImageHdu`, `ImageRaster`, `BintableHdu`, `BintableColumns`, `Hdu` or `Header` to just handle metadata.
    * @return A reference to the HDU reader-writer.
-   * @details
+   * 
+   * Backward indexing is enabled.
    * The default handler is `Hdu`, in which case the returned HDU can still be cast to another handler, e.g.:
    * \code
-   * const auto &ext = f.access<>(1);
-   * ext.as<ImageHdu>().readRaster<float>();
+   * const auto &ext = f.access<>(-1); // Same as f[-1]
+   * auto raster = ext.as<ImageHdu>().raster().read<float>();
+   * 
+   * // Shortcut
+   * auto raster = f.access<ImageRaster>(-1).read<float>();
    * \endcode
    * @see operator[]
    */
@@ -145,7 +149,7 @@ public:
    * @tparam T The type of HDU or data unit
    * @param name The HDU name
    * @param version The HDU version, or 0 to not check the version
-   * @details
+   * 
    * The template parameter is used to disambiguate when two extensions of different types have the same name.
    * For example, in a file with an image extension and a binary table extension both named "EXT",
    * `find<ImageHdu>("EXT")` returns the image extension,
@@ -164,7 +168,7 @@ public:
 
   /**
    * @brief Access the only HDU with given name, type and version.
-   * @details
+   * 
    * Throws an exception if several HDUs with given name exists.
    * @warning
    * In order to ensure uniqueness of the name, all HDUs are visited,
@@ -222,7 +226,7 @@ public:
 
   /**
    * @brief Append and new image extension and fill the data unit with null values.
-   * @details
+   * 
    * The null value is defined as follows:
    * - For integer images, if the `BLANK` record is among the provided ones,
    *   then its value is used unscaled (`BZERO` is not taken into account);
@@ -262,7 +266,7 @@ public:
 
   /**
    * @brief Append a binary table extension and fill it with null values.
-   * @details
+   * 
    * The null value is defined as follows:
    * - For integer columns, if the `TNULLn` record is among the provided ones,
    *   then its value is used unscaled (`TZEROn` is not taken into account);
@@ -317,7 +321,7 @@ public:
 
   /**
    * @brief Append a new ImageHdu with given name and shape.
-   * @details
+   * 
    * To not only initialize the HDU but also write data, use assignImageExt instead.
    * @deprecated See appendImageExt
    */
@@ -334,7 +338,7 @@ public:
 
   /**
    * @brief Append a BintableHdu with given name and columns info.
-   * @details
+   * 
    * To not only initialize the HDU but also write data, use assignBintableExt instead.
    * @deprecated See appendBintableHeader
    */
@@ -367,7 +371,7 @@ public:
 
   /**
    * @brief The index of the Primary HDU.
-   * @details
+   * 
    * The HDU indices are now 0-based while they used to be 1-based.
    * This constant makes migration smoother.
    * It can be used to loop safely over the HDUs:
