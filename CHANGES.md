@@ -8,12 +8,17 @@
   * Added compression data classes `Quantization`, `Gzip`, `Plio`...
   * Added compression setters and getters `MefFile::startCompressing()`, `stopCompressing()`, `isCompressing()`, `ImageHdu::compression()`
   * Implemented compression benchmark
+* New program `EleFitsCompress` compresses FITS files according to the desired strategy
 
 ## 5.2
 
 ### Breaking changes
 
 * Updated to Elements 6.2.1, requires C++17
+
+### New features
+
+* Structured bindings are officially supported
 
 ## 5.1
 

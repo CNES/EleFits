@@ -138,6 +138,24 @@ to take advantage of an internal buffer:
 columns.writeSeq(columnA, columnB, columnC);
 ```
 
+```cpp
+// Given:
+// - BintableColumns columns: The binary table data unit handler
+
+auto [columnA, columnB, columnC] = columns.readSeq(as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
+```
+
+Entries of mutidimensional columns can be accessed as rasters directly:
+
+```cpp
+// Given:
+// - BintableColumns columns: The binary table data unit handler
+
+auto column = columns.read<double, 2>("THUMBNAILS");
+auto raster = column.entry(42);
+auto pixel = raster[{3, 14}];
+```
+
 ## License
 
 [LGPL-3.0-or-later](LICENSE.md)

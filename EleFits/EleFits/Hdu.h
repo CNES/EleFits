@@ -108,7 +108,7 @@ public:
    * @details
    * This is more specific than the type of the HDU.
    * The category is a bitmask which encodes more properties,
-   * e.g. Primary is more specific than Image, and MetadataPrimary is even more specific.
+   * e.g. `Primary` is more specific than `Image`, and `MetadataPrimary` is even more specific.
    * The result of this function should not be tested with operator ==, but rather with HduFilter::accepts().
    * Often, the method matches can be used directly.
    * 
