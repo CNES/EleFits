@@ -81,6 +81,8 @@ public:
       } else {
         compressed.appendCopy(hdu);
       }
+      const auto& h = compressed.access<Header>(-1);
+      h.writeSeq(hdu.header().parseAll(~KeywordCategory::Mandatory & ~KeywordCategory::Reserved));
     }
 
     raw.close();
