@@ -75,9 +75,7 @@ void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, c
   BOOST_TEST(du.readRowCount() == rowCount);
 
   /* Read */
-  const auto res = du.readSeq(as<T>(last.info().name), as<T>(first.info().name));
-  const auto& res0 = std::get<0>(res);
-  const auto& res1 = std::get<1>(res);
+  const auto [res0, res1] = du.readSeq(as<T>(last.info().name), as<T>(first.info().name)); // Structured binding
   BOOST_TEST((res0.info() == last.info()));
   BOOST_TEST((res1.info() == first.info()));
   BOOST_TEST(res0.vector() == last.vector());
