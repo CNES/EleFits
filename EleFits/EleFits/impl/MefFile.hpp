@@ -149,7 +149,28 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
 template <typename T>
 const T& MefFile::appendCopy(const T& hdu) {
 
+#define ELEFITS_SET_STRATEGY_ALGO(T, name) \
+  if (image.readTypeid() == typeid(T)) { \
+    const auto raster = image.raster().template read<T, -1>(); \
+    Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end()); \
+    ImageHdu::Initializer<T> init { \
+        static_cast<long>(index), \
+        hdu.readName(), \
+        hdu.header().parseAll(KeywordCategory::User), \
+        dynamicShape, \
+        raster.data()}; \
+    m_strategy->visit(init)->compress(m_fptr); \
+  }
+
   const auto index = m_hdus.size();
+
+  if (m_strategy) {
+
+    if (hdu.type() == HduCategory::Image) {
+      const auto& image = hdu.template as<ImageHdu>();
+      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_SET_STRATEGY_ALGO)
+    }
+  }
 
   if (hdu.matches(HduCategory::Bintable)) {
     Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
