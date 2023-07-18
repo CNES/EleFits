@@ -64,6 +64,10 @@ std::unique_ptr<HCompress> BasicCompressionStrategy::hcompress(const ImageHdu::I
   }
   auto out = std::make_unique<HCompress>();
   out->tiling(hcompressTiling(init));
+  auto q = quantization<T>();
+  if (q.dithering() == Compression::Dithering::NonZeroPixel) {
+    q.dithering(Compression::Dithering::EveryPixel);
+  }
   out->quantization(quantization<T>());
   out->scaling(hcompressScaling<T>());
   return out;
