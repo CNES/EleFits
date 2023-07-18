@@ -383,7 +383,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
 
   /* Setting up compression strategy */
-  fileCopy.startCompressing(BasicCompressionStrategy::lossy());
+  fileCopy.startCompressing(BasicCompressionStrategy::lossless());
 
   /* Copy bintable */
   const auto& bintableCopy = fileCopy.appendCopy(bintable);
