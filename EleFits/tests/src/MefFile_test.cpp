@@ -371,7 +371,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   BOOST_TEST(emptyImage.matches(HduCategory::RawImage));
 
   /* Random Image in source MefFile */
-  Position<2> shape {4000, 3000};
+  Position<2> shape {2000, 3000};
   Test::RandomRaster<double, 2> raster(shape);
   const auto& image = this->appendImage("IMAGE", records, raster);
   const auto input = image.raster().template read<double, 2>();
@@ -383,7 +383,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
 
   /* Setting up compression strategy */
-  this->startCompressing(BasicCompressionStrategy::lossy());
+  fileCopy.startCompressing(BasicCompressionStrategy::lossy());
 
   /* Copy bintable */
   const auto& bintableCopy = fileCopy.appendCopy(bintable);
@@ -403,7 +403,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   BOOST_TEST(emptyCopy.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
   BOOST_TEST(emptyCopy.matches(HduCategory::RawImage));
 
-  /* Copy uncompressed */
+  // /* Copy uncompressed */
   const auto& imageCopy = fileCopy.appendCopy(image);
   BOOST_TEST(imageCopy.readName() == image.readName());
   BOOST_TEST(imageCopy.readSize() == image.readSize());
@@ -412,7 +412,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   const auto output = imageCopy.raster().template read<double, 2>();
   BOOST_TEST(output.shape() == input.shape());
   BOOST_TEST(output.container() == input.container());
-  BOOST_TEST(imageCopy.matches(HduCategory::RawImage));
+  BOOST_TEST(imageCopy.matches(HduCategory::CompressedImageExt));
 
   /* Copy compressed */
   const auto& imageCopy3 = fileCopy.appendCopy(compImage);
@@ -423,7 +423,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   const auto output3 = imageCopy3.raster().template read<double, 2>();
   BOOST_TEST(output3.shape() == input.shape());
   BOOST_TEST(output3.container() == input.container());
-  BOOST_TEST(imageCopy3.matches(HduCategory::RawImage)); // the copy should now be uncompressed
+  BOOST_TEST(imageCopy3.matches(HduCategory::CompressedImageExt));
 }
 
 // This tests the isCompressedImage function from the ImageWrapper
