@@ -115,7 +115,9 @@ public:
   std::vector<std::pair<std::string, long>> readHduNamesVersions();
 
   /**
-   * @brief Check whether the image compression is turned on.
+   * @brief Check whether the internal compression is turned on.
+   * 
+   * Returns `true` iff a compression algorithm or a compression strategy was enabled.
    */
   inline bool isCompressing() const;
 

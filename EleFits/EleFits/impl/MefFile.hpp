@@ -13,7 +13,7 @@ namespace Euclid {
 namespace Fits {
 
 bool MefFile::isCompressing() const {
-  return Cfitsio::isCompressing(m_fptr);
+  return Cfitsio::isCompressing(m_fptr) || m_strategy;
 }
 
 template <class T>
@@ -149,28 +149,7 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
 template <typename T>
 const T& MefFile::appendCopy(const T& hdu) {
 
-#define ELEFITS_SET_STRATEGY_ALGO(T, name) \
-  if (image.readTypeid() == typeid(T)) { \
-    const auto raster = image.raster().template read<T, -1>(); \
-    Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end()); \
-    ImageHdu::Initializer<T> init { \
-        static_cast<long>(index), \
-        hdu.readName(), \
-        hdu.header().parseAll(KeywordCategory::User), \
-        dynamicShape, \
-        raster.data()}; \
-    m_strategy->visit(init)->compress(m_fptr); \
-  }
-
   const auto index = m_hdus.size();
-
-  if (m_strategy) {
-
-    if (hdu.type() == HduCategory::Image) {
-      const auto& image = hdu.template as<ImageHdu>();
-      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_SET_STRATEGY_ALGO)
-    }
-  }
 
   if (hdu.matches(HduCategory::Bintable)) {
     Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
@@ -178,16 +157,27 @@ const T& MefFile::appendCopy(const T& hdu) {
   } else {
     if (hdu.matches(HduCategory::RawImage) && (not isCompressing() || hdu.matches(HduCategory::Metadata))) {
       Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
+      m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
     } else {
       // // setting to huge hdu if hdu size > 2^32
       // if (hdu.readSizeInFile() > (1ULL << 32))
       //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true);
-      Cfitsio::HduAccess::contextualCopy(hdu.m_fptr, m_fptr);
+
+      const auto& image = hdu.template as<ImageHdu>();
+
+#define ELEFITS_SET_STRATEGY_ALGO(type, name) \
+  if (image.readTypeid() == typeid(type)) { \
+    appendImage( \
+        hdu.readName(), \
+        hdu.header().parseAll(KeywordCategory::User), \
+        image.raster().template read<type, -1>()); \
+  }
+      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_SET_STRATEGY_ALGO)
+#undef ELEFITS_SET_STRATEGY_ALGO
     }
-    m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   }
 
-  return access<T>(Cfitsio::HduAccess::currentIndex(m_fptr) - 1);
+  return access<T>(index);
 }
 
 template <typename... TInfos>
