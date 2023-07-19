@@ -52,69 +52,68 @@ int getBitpix(Fits::ImageHdu hdu) {
   return 0;
 }
 
-bool areCompatible(std::string algoName, long bitpix, bool isLossless) {
+std::string readAlgoName(const Fits::ImageHdu& hdu) {
 
-  if (algoName == "NONE")
-    return true;
-
-  // 64-bit integers are not supported by CFITSIO for compression
-  if (bitpix == 64)
-    return false;
-
-  // PLIO_1 must be used for integer image types with values between 0 and 2^24.
-  if (algoName == "PLIO") {
-
-    // FIXME: some int32 could work but we're excluding them here for simplicity
-    if (bitpix == 32 || bitpix == -32 || bitpix == -64)
-      return false;
+  if (not hdu.isCompressed()) {
+    return "NONE";
   }
 
-  // If lossless & floating-type, only gzip can be applied
-  if (isLossless && (bitpix == -32 || bitpix == -64)) {
-    if (algoName == "RICE" || algoName == "HCOMPRESS")
-      return false;
-  }
-  // GZIP, SHUFFLEDGZIP and RICE are general purpose algorithms
-  return true;
+  const auto algo = hdu.readCompression();
+  //const std::string losslessness = algo->isLossless() ? "Lossless " : "Lossy ";
+
+  // if (dynamic_cast<Fits::Gzip*>(algo.get())) {
+  //   return "GZIP";
+  // }
+
+  // if (dynamic_cast<Fits::ShuffledGzip*>(algo.get())) {
+  //   return "SHUFFLEDGZIP";
+  // }
+
+  // if (dynamic_cast<Fits::Rice*>(algo.get())) {
+  //   return "RICE";
+  // }
+
+  // if (dynamic_cast<Fits::HCompress*>(algo.get())) {
+  //   return "HCOMPRESS";
+  // }
+
+  // if (dynamic_cast<Fits::Plio*>(algo.get())) {
+  //   return "PLIO";
+  // }
+
+  return "Unknown";
 }
 
 // FIXME: get isLossless elsewhere
-bool setCompressionFromName(Fits::MefFile& g, std::string algoName) {
+void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
 
   if (algoName == "NONE") {
     g.stopCompressing();
-    return true;
 
   } else if (algoName == "RICE") {
     Fits::Rice algo;
-    g.startCompressing(algo);
-    return algo.isLossless();
+    g.startCompressing(std::make_unique<Fits::FallbackCompressionStrategy<Fits::Rice>>(algo));
 
   } else if (algoName == "HCOMPRESS") {
     Fits::HCompress algo;
-    g.startCompressing(algo);
-    return algo.isLossless();
+    g.startCompressing(std::make_unique<Fits::FallbackCompressionStrategy<Fits::HCompress>>(algo));
 
   } else if (algoName == "PLIO") {
     Fits::Plio algo;
-    g.startCompressing(algo);
-    return algo.isLossless();
+    g.startCompressing(std::make_unique<Fits::FallbackCompressionStrategy<Fits::Plio>>(algo));
 
   } else if (algoName == "GZIP") {
     Fits::Gzip algo;
     g.startCompressing(algo);
-    return algo.isLossless();
 
   } else if (algoName == "SHUFFLEDGZIP") {
     Fits::ShuffledGzip algo;
     g.startCompressing(algo);
-    return algo.isLossless();
 
   } else {
     logger.info("# UNKNOWN COMPRESSION TYPE");
     logger.info("(disabling compression)");
     g.stopCompressing();
-    return true;
   }
 }
 
@@ -173,7 +172,7 @@ public:
     Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
 
     logger.info("# setting compression to " + algoName);
-    auto isLossless = setCompressionFromName(g, algoName);
+    setCompressionFromName(g, algoName);
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
@@ -209,31 +208,14 @@ public:
 
       } else { // the hdu is an image
 
-        if (areCompatible(algoName, hdu.as<Fits::ImageHdu>().readBitpix(), isLossless)) {
-
-          chrono.start();
-          auto zHdu = g.appendCopy(hdu);
-          chrono.stop();
-          bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
-          hduSize = hdu.readSizeInFile();
-          zHduSize = zHdu.readSizeInFile();
-          actualAlgo = algoName;
-
-        } else {
-          logger.info("# fallback to ShuffledGzip for current Hdu");
-          Fits::ShuffledGzip defaultAlgo;
-          g.startCompressing(defaultAlgo);
-
-          chrono.start();
-          auto zHdu = g.appendCopy(hdu);
-          chrono.stop();
-          bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
-          hduSize = hdu.readSizeInFile();
-          zHduSize = zHdu.readSizeInFile();
-          actualAlgo = "SHUFFLEDGZIP";
-
-          setCompressionFromName(g, algoName);
-        }
+        chrono.start();
+        auto zHdu = g.appendCopy(hdu);
+        chrono.stop();
+        bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
+        hduSize = hdu.readSizeInFile();
+        zHduSize = zHdu.readSizeInFile();
+        actualAlgo = readAlgoName(zHdu.as<Fits::ImageHdu>()); // zHdu.as() throws std::bad_cast
+        logger.info("# HEY6");
 
         // {"Filename", "Case", "Bitpix", "Comptype", "HDU size (bytes)", "HDU compressed size (bytes)", "Elapsed (ms)"}
         writerHdu.writeRow(filenameSrc, algoName, bitpix, actualAlgo, hduSize, zHduSize, chrono.last().count());
