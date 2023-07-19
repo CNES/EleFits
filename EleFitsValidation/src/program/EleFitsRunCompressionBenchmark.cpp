@@ -16,7 +16,6 @@
 #include <string>
 
 using boost::program_options::value;
-#include <boost/lexical_cast.hpp>
 
 using namespace Euclid;
 
@@ -55,31 +54,31 @@ int getBitpix(Fits::ImageHdu hdu) {
 std::string readAlgoName(const Fits::ImageHdu& hdu) {
 
   if (not hdu.isCompressed()) {
-    return "NONE";
+    return "Uncompressed";
   }
 
   const auto algo = hdu.readCompression();
-  //const std::string losslessness = algo->isLossless() ? "Lossless " : "Lossy ";
+  const std::string losslessness = algo->isLossless() ? "Lossless " : "Lossy ";
 
-  // if (dynamic_cast<Fits::Gzip*>(algo.get())) {
-  //   return "GZIP";
-  // }
+  if (dynamic_cast<Fits::Gzip*>(algo.get())) {
+    return losslessness + "GZIP";
+  }
 
-  // if (dynamic_cast<Fits::ShuffledGzip*>(algo.get())) {
-  //   return "SHUFFLEDGZIP";
-  // }
+  if (dynamic_cast<Fits::ShuffledGzip*>(algo.get())) {
+    return losslessness + "SHUFFLEDGZIP";
+  }
 
-  // if (dynamic_cast<Fits::Rice*>(algo.get())) {
-  //   return "RICE";
-  // }
+  if (dynamic_cast<Fits::Rice*>(algo.get())) {
+    return losslessness + "RICE";
+  }
 
-  // if (dynamic_cast<Fits::HCompress*>(algo.get())) {
-  //   return "HCOMPRESS";
-  // }
+  if (dynamic_cast<Fits::HCompress*>(algo.get())) {
+    return losslessness + "HCOMPRESS";
+  }
 
-  // if (dynamic_cast<Fits::Plio*>(algo.get())) {
-  //   return "PLIO";
-  // }
+  if (dynamic_cast<Fits::Plio*>(algo.get())) {
+    return losslessness + "PLIO";
+  }
 
   return "Unknown";
 }
@@ -111,7 +110,7 @@ void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
     g.startCompressing(algo);
 
   } else {
-    logger.info("# UNKNOWN COMPRESSION TYPE");
+    logger.info("UNKNOWN COMPRESSION TYPE");
     logger.info("(disabling compression)");
     g.stopCompressing();
   }
@@ -165,13 +164,13 @@ public:
         resultsHdu,
         {"Filename", "Case", "Bitpix", "Comptype", "HDU size (bytes)", "HDU compressed size (bytes)", "Elapsed (ms)"});
 
-    logger.info("# Creating FITS file");
+    logger.info("Creating FITS file...");
 
     // Create mef file to write the extensions in
     Fits::MefFile f(filenameSrc, Fits::FileMode::Read);
     Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
 
-    logger.info("# setting compression to " + algoName);
+    logger.info("Setting compression to: " + algoName);
     setCompressionFromName(g, algoName);
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
@@ -189,7 +188,8 @@ public:
     // chrono.stop();
 
     // Copy with primary (allows the primary to be compressed as well):
-    logger.info("# Compressing file..");
+    logger.info("Compressing file...");
+    const auto hduCount = f.hduCount();
     for (const auto& hdu : f) {
 
       long bitpix;
@@ -197,28 +197,25 @@ public:
       long hduSize;
       long zHduSize;
 
-      if (hdu.matches(Fits::HduCategory::Bintable)) {
+      if (hdu.type() == Fits::HduCategory::Bintable) {
         chrono.start();
-        auto zHdu = g.appendCopy(hdu);
+        const auto& zHdu = g.appendCopy(hdu);
         chrono.stop();
         bitpix = 0; // FIXME: what is the bitpix of bintable ?
         hduSize = hdu.readSizeInFile();
         zHduSize = zHdu.readSizeInFile();
         actualAlgo = "NONE";
-
+        logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": Uncompressed binary table";
       } else { // the hdu is an image
-
         chrono.start();
-        auto zHdu = g.appendCopy(hdu);
+        const auto& zHdu = g.appendCopy(hdu);
         chrono.stop();
         bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
         hduSize = hdu.readSizeInFile();
         zHduSize = zHdu.readSizeInFile();
         actualAlgo = readAlgoName(zHdu.as<Fits::ImageHdu>()); // zHdu.as() throws std::bad_cast
-        logger.info("# HEY6");
-
-        // {"Filename", "Case", "Bitpix", "Comptype", "HDU size (bytes)", "HDU compressed size (bytes)", "Elapsed (ms)"}
         writerHdu.writeRow(filenameSrc, algoName, bitpix, actualAlgo, hduSize, zHduSize, chrono.last().count());
+        logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": " << actualAlgo;
       }
 
       bitpixs.push_back(bitpix);
@@ -232,16 +229,6 @@ public:
     f.close();
     g.close();
 
-    // {"Filename",
-    //  "Case",
-    //  "File size (bytes)",
-    //  "Compressed size (bytes)",
-    //  "HDU count",
-    //  "HDU bitpixs",
-    //  "Comptypes",
-    //  "HDU sizes (bytes)",
-    //  "HDU compressed sizes (bytes)",
-    //  "Elapsed (ms)"});
     writer.writeRow(
         filenameSrc,
         algoName,
@@ -254,7 +241,7 @@ public:
         join(zHduSizes),
         join(chrono.increments()));
 
-    logger.info("# Compressed file created");
+    logger.info("Done.");
 
     return ExitCode::OK;
   }
