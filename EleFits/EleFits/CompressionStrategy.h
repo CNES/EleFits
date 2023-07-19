@@ -44,20 +44,36 @@ struct CompressionStrategyMixin : public CompressionStrategy {
 /**
  * @ingroup image_compression
  * @brief Strategy to set constantly the same algorithm unless incompatible with the HDU.
+ * @tparam TAlgo The default compression algorithm
+ * @tparam TFallback The fallback compression algorithm
  * 
- * For each HDU, if the default algorithm is compatible, it is return.
+ * For each HDU, if the default algorithm is compatible, it is returned.
  * Otherwise, the fallback algorithm is returned.
+ * The latter must never fail, typically be a GZIP variant or `NoCompression`.
+ * 
+ * \par_example
+ * \code
+ * f.startCompressing(FallbackCompressionStrategy<Rice>::make());
+ * \endcode
  */
 template <typename TAlgo, typename TFallback = ShuffledGzip>
 class FallbackCompressionStrategy : public CompressionStrategyMixin<FallbackCompressionStrategy<TAlgo, TFallback>> {
 
 public:
   /**
+   * @brief Create a pointer to a strategy with a fallback derived from the default.
+   * @param parameters The parameters of the default algorithm
+   */
+  template <typename... Ts>
+  static std::unique_ptr<FallbackCompressionStrategy<TAlgo, TFallback>> make(Ts&&... parameters) {
+    return std::make_unique<FallbackCompressionStrategy<TAlgo, TFallback>>(TAlgo(std::forward<Ts>(parameters)...));
+  }
+  /**
    * @brief Create a strategy with a fallback derived from the default.
    * 
    * The fallback algorithm takes its tiling and quantization from the default one.
    */
-  FallbackCompressionStrategy(TAlgo algo) :
+  FallbackCompressionStrategy(TAlgo algo = TAlgo()) :
       m_algo(std::move(algo)), m_fallback(m_algo.tiling(), m_algo.quantization()) {}
 
   /**
@@ -110,16 +126,29 @@ private:
  * Otherwise, try the following algorithms in this order: `Plio`, `HCompress`, `Rice`.
  * If none of them is suitable (e.g. because lossless compression was requested even for floats),
  * then the `ShuffledGzip` is returned.
+ * 
+ * Makers `lossless()`, `losslessInt()` and `lossy()` simplify interfaces with `MefFile`
+ * by creating the required `std::unique_ptr`:
+ * 
+ * \code
+ * f.startCompressing(BasicCompressionStrategy::losslessInt());
+ * \endcode
  */
 class BasicCompressionStrategy : public CompressionStrategyMixin<BasicCompressionStrategy> {
 
 private:
+  /**
+   * @brief Compression type.
+   */
   enum class Type {
-    Lossless,
-    LosslessInt,
-    Lossy
+    Lossless, ///< Always lossless
+    LosslessInt, ///< Lossless for integers, possibly lossy otherwise
+    Lossy ///< Always possibly lossy
   };
 
+  /**
+   * @brief Constructor.
+   */
   BasicCompressionStrategy(Type type) : m_type(type) {}
 
 public:

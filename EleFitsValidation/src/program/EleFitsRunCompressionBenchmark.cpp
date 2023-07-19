@@ -88,30 +88,19 @@ void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
 
   if (algoName == "NONE") {
     g.stopCompressing();
-
   } else if (algoName == "RICE") {
-    Fits::Rice algo;
-    g.startCompressing(std::make_unique<Fits::FallbackCompressionStrategy<Fits::Rice>>(algo));
-
+    g.startCompressing(Fits::FallbackCompressionStrategy<Fits::Rice>::make());
   } else if (algoName == "HCOMPRESS") {
-    Fits::HCompress algo;
-    g.startCompressing(std::make_unique<Fits::FallbackCompressionStrategy<Fits::HCompress>>(algo));
-
+    g.startCompressing(Fits::FallbackCompressionStrategy<Fits::HCompress>::make());
   } else if (algoName == "PLIO") {
-    Fits::Plio algo;
-    g.startCompressing(std::make_unique<Fits::FallbackCompressionStrategy<Fits::Plio>>(algo));
-
+    g.startCompressing(Fits::FallbackCompressionStrategy<Fits::Plio>::make());
   } else if (algoName == "GZIP") {
-    Fits::Gzip algo;
-    g.startCompressing(algo);
-
+    g.startCompressing(Fits::Gzip());
   } else if (algoName == "SHUFFLEDGZIP") {
-    Fits::ShuffledGzip algo;
-    g.startCompressing(algo);
-
+    g.startCompressing(Fits::ShuffledGzip());
   } else {
-    logger.info("UNKNOWN COMPRESSION TYPE");
-    logger.info("(disabling compression)");
+    logger.warn("UNKNOWN COMPRESSION TYPE");
+    logger.warn("(disabling compression)");
     g.stopCompressing();
   }
 }
