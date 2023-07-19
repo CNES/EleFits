@@ -14,7 +14,7 @@ std::unique_ptr<Compression> BasicCompressionStrategy::operator()(const ImageHdu
 
   // Too small to be compressed
   static constexpr long blockSize = 2880;
-  const auto size = shapeSize(init.shape) / sizeof(T);
+  const auto size = shapeSize(init.shape) * sizeof(T);
   if (size <= blockSize) {
     return std::make_unique<NoCompression>();
   }
