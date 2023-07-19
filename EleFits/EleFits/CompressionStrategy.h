@@ -98,7 +98,42 @@ public:
    */
   template <typename T>
   bool isCompatible(const ImageHdu::Initializer<T>& init) {
-    // FIXME
+
+    // Universal algos: none or GZIP
+    if constexpr (
+        std::is_same_v<TAlgo, NoCompression> || std::is_same_v<TAlgo, Gzip> || std::is_same_v<TAlgo, ShuffledGzip>) {
+      return true;
+    }
+
+    // Rice or H-compress
+    if constexpr (std::is_same_v<TAlgo, Rice> || std::is_same_v<TAlgo, HCompress>) {
+      return std::is_integral_v<T> || not m_algo.isLossless();
+    }
+
+    // PLIO
+    if constexpr (std::is_same_v<TAlgo, Plio>) {
+
+      // Floats
+      if constexpr (bitpix<T>() < 0) {
+        return false;
+      }
+
+      // Small enough ints
+      if constexpr (bitpix<T>() < 24) {
+        return true;
+      }
+
+      // Unable to check
+      if (not init.data) {
+        return false;
+      }
+
+      // Check max
+      const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
+      return max < (std::size_t(1) << 24);
+    }
+
+    // Unknown algo
     return false;
   }
 
