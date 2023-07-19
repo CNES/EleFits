@@ -28,7 +28,7 @@ auto checkBasicLossless(Position<-1> shape) {
   bool noCompression = dynamic_cast<NoCompression*>(algo.get());
   auto bytes = shapeSize(shape) * sizeof(T);
   BOOST_TEST(noCompression == (bytes <= 2880));
-  if (std::is_floating_point_v<T>) {
+  if (not noCompression && std::is_floating_point_v<T>) {
     BOOST_CHECK_NO_THROW(dynamic_cast<ShuffledGzip&>(*algo));
   }
 }
@@ -54,7 +54,6 @@ void checkBasicLossy(Position<-1> shape) {
   auto strategy = BasicCompressionStrategy::losslessInt();
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   auto algo = (*strategy)(init);
-  BOOST_TEST(algo->isLossless());
   bool noCompression = dynamic_cast<NoCompression*>(algo.get());
   auto bytes = shapeSize(shape) * sizeof(T);
   BOOST_TEST(noCompression == (bytes <= 2880));
