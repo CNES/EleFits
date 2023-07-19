@@ -89,11 +89,11 @@ void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
   if (algoName == "NONE") {
     g.stopCompressing();
   } else if (algoName == "RICE") {
-    g.startCompressing(Fits::FallbackCompressionStrategy<Fits::Rice>::make());
+    g.strategy(Fits::FallbackCompressionStrategy<Fits::Rice>());
   } else if (algoName == "HCOMPRESS") {
-    g.startCompressing(Fits::FallbackCompressionStrategy<Fits::HCompress>::make());
+    g.strategy(Fits::FallbackCompressionStrategy<Fits::HCompress>());
   } else if (algoName == "PLIO") {
-    g.startCompressing(Fits::FallbackCompressionStrategy<Fits::Plio>::make());
+    g.strategy(Fits::FallbackCompressionStrategy<Fits::Plio>());
   } else if (algoName == "GZIP") {
     g.startCompressing(Fits::Gzip());
   } else if (algoName == "SHUFFLEDGZIP") {

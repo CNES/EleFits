@@ -75,8 +75,9 @@ void MefFile::startCompressing(const Fits::Compression& algo) {
   algo.compress(m_fptr);
 }
 
-void MefFile::startCompressing(std::unique_ptr<CompressionStrategy> strategy) {
-  m_strategy = std::move(strategy);
+template <typename TStrategy>
+void MefFile::strategy(TStrategy&& strategy) {
+  m_strategy.reset(new TStrategy(std::forward<TStrategy>(strategy)));
 }
 
 void MefFile::stopCompressing() {
@@ -101,7 +102,7 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
   if (m_strategy) {
     Position<-1> dynamicShape(shape.begin(), shape.end());
     ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
-    m_strategy->visit(init)->compress(m_fptr);
+    m_strategy->visit(init).compress(m_fptr);
   }
   Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -133,7 +134,7 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
     using T = std::decay_t<typename TRaster::Value>;
     Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
     ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
-    m_strategy->visit(init)->compress(m_fptr);
+    m_strategy->visit(init).compress(m_fptr);
   }
   Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));

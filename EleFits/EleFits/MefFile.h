@@ -230,7 +230,8 @@ public:
    * 
    * Compression can be turned off with `stopCompressing()`.
    */
-  inline void startCompressing(std::unique_ptr<CompressionStrategy> strategy);
+  template <typename TStrategy>
+  void strategy(TStrategy&& strategy);
 
   /**
    * @brief Disable compression.

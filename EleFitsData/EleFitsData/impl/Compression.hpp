@@ -254,9 +254,8 @@ ShuffledGzip::ShuffledGzip(Position<-1> tiling, Quantization quantization) :
 Rice::Rice(Position<-1> tiling, Quantization quantization) :
     AlgoMixin<Rice>(std::move(tiling), std::move(quantization)) {}
 
-HCompress::HCompress(Position<-1> tiling, Quantization quantization) :
-    AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(Compression::Scaling(0)),
-    m_smooth(false) {
+HCompress::HCompress(Position<-1> tiling, Quantization quantization, Compression::Scaling scaling) :
+    AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(std::move(scaling)), m_smooth(false) {
   this->quantization(std::move(quantization));
 }
 

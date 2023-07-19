@@ -18,7 +18,7 @@ namespace Fits {
 struct CompressionStrategy {
 #define ELEFITS_DECLARE_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
-  virtual std::unique_ptr<Compression> visit(const ImageHdu::Initializer<T>& init) = 0;
+  virtual const Compression& visit(const ImageHdu::Initializer<T>& init) = 0;
   ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_DECLARE_VISIT)
 #undef ELEFITS_DECLARE_VISIT
 };
@@ -34,7 +34,7 @@ template <typename TDerived>
 struct CompressionStrategyMixin : public CompressionStrategy {
 #define ELEFITS_IMPLEMENT_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
-  std::unique_ptr<Compression> visit(const ImageHdu::Initializer<T>& init) override { \
+  const Compression& visit(const ImageHdu::Initializer<T>& init) override { \
     return static_cast<TDerived&>(*this)(init); \
   }
   ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_IMPLEMENT_VISIT)
@@ -53,21 +53,13 @@ struct CompressionStrategyMixin : public CompressionStrategy {
  * 
  * \par_example
  * \code
- * f.startCompressing(FallbackCompressionStrategy<Rice>::make());
+ * f.strategy(FallbackCompressionStrategy<Rice>::make());
  * \endcode
  */
 template <typename TAlgo, typename TFallback = ShuffledGzip>
 class FallbackCompressionStrategy : public CompressionStrategyMixin<FallbackCompressionStrategy<TAlgo, TFallback>> {
 
 public:
-  /**
-   * @brief Create a pointer to a strategy with a fallback derived from the default.
-   * @param parameters The parameters of the default algorithm
-   */
-  template <typename... Ts>
-  static std::unique_ptr<FallbackCompressionStrategy<TAlgo, TFallback>> make(Ts&&... parameters) {
-    return std::make_unique<FallbackCompressionStrategy<TAlgo, TFallback>>(TAlgo(std::forward<Ts>(parameters)...));
-  }
   /**
    * @brief Create a strategy with a fallback derived from the default.
    * 
@@ -86,11 +78,11 @@ public:
    * @brief Create the algorithm.
    */
   template <typename T>
-  std::unique_ptr<Compression> operator()(const ImageHdu::Initializer<T>& init) {
+  const Compression& operator()(const ImageHdu::Initializer<T>& init) {
     if (isCompatible(init)) {
-      return std::make_unique<TAlgo>(m_algo);
+      return m_algo;
     }
-    return std::make_unique<TFallback>(m_fallback);
+    return m_fallback;
   }
 
   /**
@@ -166,7 +158,7 @@ private:
  * by creating the required `std::unique_ptr`:
  * 
  * \code
- * f.startCompressing(BasicCompressionStrategy::losslessInt());
+ * f.strategy(BasicCompressionStrategy::losslessInt());
  * \endcode
  */
 class BasicCompressionStrategy : public CompressionStrategyMixin<BasicCompressionStrategy> {
@@ -184,59 +176,59 @@ private:
   /**
    * @brief Constructor.
    */
-  BasicCompressionStrategy(Type type) : m_type(type) {}
+  BasicCompressionStrategy(Type type) : m_type(type), m_algo() {}
 
 public:
   /**
    * @brief Create a lossless strategy.
    */
-  static std::unique_ptr<BasicCompressionStrategy> lossless() {
-    return std::unique_ptr<BasicCompressionStrategy>(new BasicCompressionStrategy(Type::Lossless));
+  static BasicCompressionStrategy lossless() {
+    return BasicCompressionStrategy(Type::Lossless);
   }
 
   /**
    * @brief Create a strategy which is lossless for integers and possibly lossy for floating point numbers.
    */
-  static std::unique_ptr<BasicCompressionStrategy> losslessInt() {
-    return std::unique_ptr<BasicCompressionStrategy>(new BasicCompressionStrategy(Type::LosslessInt));
+  static BasicCompressionStrategy losslessInt() {
+    return BasicCompressionStrategy(Type::LosslessInt);
   }
 
   /**
    * @brief Create a possibly lossy strategy.
    */
-  static std::unique_ptr<BasicCompressionStrategy> lossy() {
-    return std::unique_ptr<BasicCompressionStrategy>(new BasicCompressionStrategy(Type::Lossy));
+  static BasicCompressionStrategy lossy() {
+    return BasicCompressionStrategy(Type::Lossy);
   }
 
   /**
    * @brief Create the compression algorithm.
    */
   template <typename T>
-  std::unique_ptr<Compression> operator()(const ImageHdu::Initializer<T>& init);
+  const Compression& operator()(const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `ShuffledGzip` algorithm if compatible.
    */
   template <typename T>
-  std::unique_ptr<ShuffledGzip> gzip(const ImageHdu::Initializer<T>& init);
+  const std::unique_ptr<Compression>& gzip(const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `Rice` algorithm if compatible.
    */
   template <typename T>
-  std::unique_ptr<Rice> rice(const ImageHdu::Initializer<T>& init);
+  const std::unique_ptr<Compression>& rice(const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `HCompress` algorithm if compatible.
    */
   template <typename T>
-  std::unique_ptr<HCompress> hcompress(const ImageHdu::Initializer<T>& init);
+  const std::unique_ptr<Compression>& hcompress(const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `Plio` algorithm if compatible.
    */
   template <typename T>
-  std::unique_ptr<Plio> plio(const ImageHdu::Initializer<T>& init);
+  const std::unique_ptr<Compression>& plio(const ImageHdu::Initializer<T>& init);
 
 private:
   /**
@@ -263,7 +255,15 @@ private:
   template <typename T>
   Compression::Scaling hcompressScaling() const;
 
+  /**
+   * @brief The compression type.
+   */
   Type m_type;
+
+  /**
+   * @brief The algorithm cache.
+   */
+  std::unique_ptr<Compression> m_algo;
 };
 
 } // namespace Fits

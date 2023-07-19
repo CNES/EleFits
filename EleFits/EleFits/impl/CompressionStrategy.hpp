@@ -10,71 +10,66 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T>
-std::unique_ptr<Compression> BasicCompressionStrategy::operator()(const ImageHdu::Initializer<T>& init) {
+const Compression& BasicCompressionStrategy::operator()(const ImageHdu::Initializer<T>& init) {
 
   // Too small to be compressed
   static constexpr long blockSize = 2880;
   const auto size = shapeSize(init.shape) * sizeof(T);
   if (size <= blockSize) {
-    return std::make_unique<NoCompression>();
+    m_algo = std::make_unique<NoCompression>();
+    return *m_algo;
   }
   if (size > (std::size_t(1) << 32)) {
     // FIXME enable huge_hdu
   }
 
   // Chain of responsibility: Plio > HCompress > Rice > ShuffledGzip
-  std::unique_ptr<Compression> out;
-  if (not(out = plio(init))) {
-    if (not(out = hcompress(init))) {
-      if (not(out = rice(init))) {
-        out = gzip(init);
-      }
-    }
+  if (not plio(init) && not hcompress(init) && not rice(init)) {
+    gzip(init);
   }
-  return out;
+  return *m_algo;
 }
 
 template <typename T>
-std::unique_ptr<ShuffledGzip> BasicCompressionStrategy::gzip(const ImageHdu::Initializer<T>& init) {
-  auto out = std::make_unique<ShuffledGzip>();
-  out->tiling(tiling(init));
-  out->quantization(quantization<T>());
-  return out;
+const std::unique_ptr<Compression>& BasicCompressionStrategy::gzip(const ImageHdu::Initializer<T>& init) {
+  m_algo = std::make_unique<ShuffledGzip>(tiling(init), quantization<T>());
+  return m_algo;
 }
 
 template <typename T>
-std::unique_ptr<Rice> BasicCompressionStrategy::rice(const ImageHdu::Initializer<T>& init) {
+const std::unique_ptr<Compression>& BasicCompressionStrategy::rice(const ImageHdu::Initializer<T>& init) {
   if (std::is_floating_point_v<T> && m_type == Type::Lossless) {
-    return nullptr;
+    m_algo.reset();
+    return m_algo;
   }
-  auto out = std::make_unique<Rice>();
-  out->tiling(tiling(init));
-  out->quantization(quantization<T>());
-  return out;
+  m_algo = std::make_unique<Rice>(tiling(init), quantization<T>());
+  return m_algo;
 }
 
 template <typename T>
-std::unique_ptr<HCompress> BasicCompressionStrategy::hcompress(const ImageHdu::Initializer<T>& init) {
+const std::unique_ptr<Compression>& BasicCompressionStrategy::hcompress(const ImageHdu::Initializer<T>& init) {
+
   if (std::is_floating_point_v<T> && m_type == Type::Lossless) {
-    return nullptr;
+    m_algo.reset();
+    return m_algo;
   }
+
   const auto& shape = init.shape;
   if (shapeSize(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
-    return nullptr;
+    m_algo.reset();
+    return m_algo;
   }
-  auto out = std::make_unique<HCompress>();
-  out->tiling(hcompressTiling(init));
+
   auto q = quantization<T>();
   if (q.dithering() == Compression::Dithering::NonZeroPixel) {
     q.dithering(Compression::Dithering::EveryPixel);
   }
-  out->quantization(quantization<T>());
-  out->scaling(hcompressScaling<T>());
-  return out;
+  m_algo = std::make_unique<HCompress>(hcompressTiling(init), q, hcompressScaling<T>());
+  return m_algo;
 }
 
 template <typename T>
-std::unique_ptr<Plio> BasicCompressionStrategy::plio(const ImageHdu::Initializer<T>& init) {
+const std::unique_ptr<Compression>& BasicCompressionStrategy::plio(const ImageHdu::Initializer<T>& init) {
   // if (std::is_floating_point_v<T>) {
   //   return nullptr;
   // }
@@ -90,11 +85,11 @@ std::unique_ptr<Plio> BasicCompressionStrategy::plio(const ImageHdu::Initializer
 
   // Not sure this is a mask (very conservative)
   if constexpr (bitpix<T>() != 8) {
-    return nullptr;
+    m_algo.reset();
+    return m_algo;
   }
-  auto out = std::make_unique<Plio>();
-  out->tiling(tiling(init));
-  return out;
+  m_algo = std::make_unique<Plio>(tiling(init));
+  return m_algo;
 }
 
 template <typename T>

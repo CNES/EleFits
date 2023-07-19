@@ -465,7 +465,10 @@ public:
   /**
    * @brief Constructor.
    */
-  inline explicit HCompress(Position<-1> tiling = rowwiseTiling(16), Quantization quantization = Quantization());
+  inline explicit HCompress(
+      Position<-1> tiling = rowwiseTiling(16),
+      Quantization quantization = Quantization(),
+      Compression::Scaling scaling = Compression::Scaling(0));
 
   using Compression::quantization;
 
