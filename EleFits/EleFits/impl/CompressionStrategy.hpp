@@ -70,23 +70,29 @@ const std::unique_ptr<Compression>& CompressAptly::hcompress(const ImageHdu::Ini
 
 template <typename T>
 const std::unique_ptr<Compression>& CompressAptly::plio(const ImageHdu::Initializer<T>& init) {
-  // if (std::is_floating_point_v<T>) {
-  //   return nullptr;
-  // }
-  // if constexpr (bitpix<T>() >= 24) {
-  //   if (not init.data) {
-  //     return nullptr;
-  //   }
-  //   const auto max = std::max_element(init.data, init.data + shapeSize(init.shape));
-  //   if (*max >= (std::size_t(1) << 24)) {
-  //     return nullptr;
-  //   }
-  // }
 
-  if constexpr (bitpix<T>() < 0 || bitpix<T>() > 24) {
+  constexpr auto bp = bitpix<T>();
+
+  // Float or too large int
+  if constexpr (bp < 0 || bp > 32) {
     m_algo.reset();
     return m_algo;
   }
+
+  // Maybe
+  if constexpr (bp > 16) {
+    if (not init.data) {
+      m_algo.reset();
+      return m_algo;
+    }
+    const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
+    if (max >= (std::size_t(1) << 24)) {
+      m_algo.reset();
+      return m_algo;
+    }
+  }
+
+  // OK
   m_algo = std::make_unique<Plio>(tiling(init));
   return m_algo;
 }
