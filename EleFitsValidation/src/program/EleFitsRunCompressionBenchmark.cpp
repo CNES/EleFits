@@ -85,23 +85,18 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
 
 // FIXME: get isLossless elsewhere
 void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
-
-  if (algoName == "NONE") {
-    g.stopCompressing(); // FIXME usefull?
+  if (algoName == "GZIP") {
+    g.strategy(Fits::Compress<Fits::Gzip>());
+  } else if (algoName == "SHUFFLEDGZIP") {
+    g.strategy(Fits::Compress<Fits::ShuffledGzip>());
   } else if (algoName == "RICE") {
     g.strategy(Fits::Compress<Fits::Rice, Fits::ShuffledGzip>());
   } else if (algoName == "HCOMPRESS") {
     g.strategy(Fits::Compress<Fits::HCompress, Fits::ShuffledGzip>());
   } else if (algoName == "PLIO") {
     g.strategy(Fits::Compress<Fits::Plio, Fits::ShuffledGzip>());
-  } else if (algoName == "GZIP") {
-    g.startCompressing(Fits::Gzip());
-  } else if (algoName == "SHUFFLEDGZIP") {
-    g.startCompressing(Fits::ShuffledGzip());
-  } else {
-    logger.warn("UNKNOWN COMPRESSION TYPE");
-    logger.warn("(disabling compression)");
-    g.stopCompressing();
+  } else if (algoName != "NONE") {
+    throw Fits::FitsError(std::string("Unknown compression type: ") + algoName);
   }
 }
 
