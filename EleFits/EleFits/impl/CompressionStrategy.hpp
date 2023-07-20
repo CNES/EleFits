@@ -83,8 +83,7 @@ const std::unique_ptr<Compression>& CompressAptly::plio(const ImageHdu::Initiali
   //   }
   // }
 
-  // Not sure this is a mask (very conservative)
-  if constexpr (bitpix<T>() != 8) {
+  if constexpr (bitpix<T>() < 0 || bitpix<T>() > 24) {
     m_algo.reset();
     return m_algo;
   }
@@ -105,18 +104,26 @@ Compression::Quantization CompressAptly::quantization() const {
     if (m_type == Type::Lossless) {
       return Compression::Quantization(0);
     }
-    return Compression::Quantization(Compression::rms / 4);
+    return Compression::Quantization(Compression::rms / 16); // More conservative, imcopy default
   }
 }
 
 template <typename T>
 Position<-1> CompressAptly::tiling(const ImageHdu::Initializer<T>& init) const {
-  static constexpr long minSize = 10000;
+
+  static constexpr long minSize = 1024 * 1024;
   if (shapeSize(init.shape) <= minSize) {
     return Compression::maxTiling();
   }
+
+  const auto rowWidth = init.shape[0];
+  const auto rowSize = rowWidth * sizeof(T);
+  const auto rowCount = minSize / rowSize + 1;
+  printf("APTLY %li x %li\n", rowWidth, rowCount);
+
   // FIXME reach minSize using higher dimensions
-  return Compression::rowwiseTiling();
+
+  return {rowWidth, rowCount};
 }
 
 template <typename T>

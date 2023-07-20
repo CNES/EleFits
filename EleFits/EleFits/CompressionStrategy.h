@@ -79,6 +79,12 @@ public:
   template <typename T>
   const Compression& operator()(const ImageHdu::Initializer<T>& init) {
     if (shouldCompress(m_prime, init)) {
+      if (m_prime.tiling() == Compression::rowwiseTiling()) {
+        const auto rowSize = init.shape[0] * sizeof(T);
+        static constexpr auto minTileSize = 1024 * 1024;
+        const auto rowCount = minTileSize / rowSize + 1;
+        m_prime.tiling(Compression::rowwiseTiling(rowCount));
+      }
       return m_prime;
     }
     return m_fallbacks(init);
@@ -106,22 +112,30 @@ public:
   /**
    * @brief Constructor.
    */
-  Compress(TAlgo algo = TAlgo()) : m_algo(std::move(algo)) {}
+  Compress(TAlgo algo = TAlgo()) : m_prime(std::move(algo)) {}
 
   /**
    * @brief Create the compression algorithm.
    */
   template <typename T>
   const Compression& operator()(const ImageHdu::Initializer<T>& init) {
-    if (not shouldCompress(m_algo, init)) {
+    if (m_prime.tiling() == Compression::rowwiseTiling()) { // FIXME duplicates
+      const auto rowWidth = init.shape[0];
+      const auto rowSize = rowWidth * sizeof(T);
+      static constexpr auto minTileSize = 1024 * 1024;
+      const auto rowCount = minTileSize / rowSize + 1;
+      printf("%li x %li\n", rowWidth, rowCount);
+      m_prime.tiling({rowWidth, rowCount});
+    }
+    if (not shouldCompress(m_prime, init)) {
       static NoCompression none;
       return none;
     }
-    return m_algo;
+    return m_prime;
   }
 
 private:
-  TAlgo m_algo;
+  TAlgo m_prime;
 };
 
 template <typename TAlgo, typename T>
