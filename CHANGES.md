@@ -2,6 +2,10 @@
 
 ## 5.3
 
+## Bug fixes
+
+* `parseAll()` threw when parsing long string user keywords
+
 ### New features
 
 * `MefFile` supports backward indexing (e.g. `const auto& hdu = f[-2]`)
