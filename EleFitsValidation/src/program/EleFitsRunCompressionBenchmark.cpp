@@ -84,19 +84,21 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
 }
 
 // FIXME: get isLossless elsewhere
-void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
-  if (algoName == "GZIP") {
+void setStrategy(Fits::MefFile& g, const std::string& testCase) {
+  if (testCase == "APTLY") {
+    g.strategy();
+  } else if (testCase == "GZIP") {
     g.strategy(Fits::Compress<Fits::Gzip>());
-  } else if (algoName == "SHUFFLEDGZIP") {
+  } else if (testCase == "SHUFFLEDGZIP") {
     g.strategy(Fits::Compress<Fits::ShuffledGzip>());
-  } else if (algoName == "RICE") {
+  } else if (testCase == "RICE") {
     g.strategy(Fits::Compress<Fits::Rice, Fits::ShuffledGzip>());
-  } else if (algoName == "HCOMPRESS") {
+  } else if (testCase == "HCOMPRESS") {
     g.strategy(Fits::Compress<Fits::HCompress, Fits::ShuffledGzip>());
-  } else if (algoName == "PLIO") {
+  } else if (testCase == "PLIO") {
     g.strategy(Fits::Compress<Fits::Plio, Fits::ShuffledGzip>());
-  } else if (algoName != "NONE") {
-    throw Fits::FitsError(std::string("Unknown compression type: ") + algoName);
+  } else if (testCase != "NONE") {
+    throw Fits::FitsError(std::string("Unknown compression type: ") + testCase);
   }
 }
 
@@ -108,18 +110,21 @@ class EleFitsCompressionExample : public Elements::Program {
 public:
   // program options:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    Fits::ProgramOptions options("Write mef with all supported image extensions.");
+    Fits::ProgramOptions options("Compress a FITS file using given strategy.");
     options.positional("input", value<std::string>(), "Input file");
     options.positional("output", value<std::string>()->default_value("/tmp/compressionBenchmark.fits"), "Output file");
     options.named(
         "case",
         value<std::string>()->default_value("GZIP"),
-        "Compression algorithm name (RICE/HCOMPRESS/PLIO/GZIP/SHUFFLEDGZIP)");
-    options.named("res", value<std::string>()->default_value("/tmp/compressionBenchmark.csv"), "Output result file");
+        "Compression strategy (NONE/APTLY/GZIP/SHUFFLEDGZIP/RICE/HCOMPRESS/PLIO)");
+    options.named(
+        "res",
+        value<std::string>()->default_value("/tmp/compressionBenchmark.csv"),
+        "File-level metrics output file");
     options.named(
         "resHdu",
         value<std::string>()->default_value("/tmp/compressionBenchmarkHdu.csv"),
-        "Output result file per Hdu");
+        "HDU-level metrics output file");
     return options.asPair();
   }
 
@@ -127,7 +132,7 @@ public:
 
     const auto filenameSrc = args["input"].as<std::string>();
     const auto filenameDst = args["output"].as<std::string>();
-    const auto algoName = args["case"].as<std::string>();
+    const auto testCase = args["case"].as<std::string>();
     const auto results = args["res"].as<std::string>();
     const auto resultsHdu = args["resHdu"].as<std::string>();
 
@@ -153,13 +158,11 @@ public:
     // Create mef file to write the extensions in
     Fits::MefFile f(filenameSrc, Fits::FileMode::Read);
     Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
-
-    logger.info("Setting compression to: " + algoName);
-    setCompressionFromName(g, algoName);
+    setStrategy(g, testCase);
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
-    std::vector<std::string> actualAlgos;
+    std::vector<std::string> algos;
     std::vector<long> bitpixs;
     std::vector<std::size_t> hduSizes;
     std::vector<std::size_t> zHduSizes;
@@ -177,7 +180,7 @@ public:
     for (const auto& hdu : f) {
 
       long bitpix;
-      std::string actualAlgo;
+      std::string algo;
       long hduSize;
       long zHduSize;
 
@@ -185,10 +188,10 @@ public:
         chrono.start();
         const auto& zHdu = g.appendCopy(hdu);
         chrono.stop();
-        bitpix = 0; // FIXME: what is the bitpix of bintable ?
+        bitpix = 0;
         hduSize = hdu.readSizeInFile();
         zHduSize = zHdu.readSizeInFile();
-        actualAlgo = "NONE";
+        algo = "NONE";
         logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": Uncompressed binary table";
       } else { // the hdu is an image
         chrono.start();
@@ -197,15 +200,15 @@ public:
         bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
         hduSize = hdu.readSizeInFile();
         zHduSize = zHdu.readSizeInFile();
-        actualAlgo = readAlgoName(zHdu.as<Fits::ImageHdu>()); // zHdu.as() throws std::bad_cast
-        writerHdu.writeRow(filenameSrc, algoName, bitpix, actualAlgo, hduSize, zHduSize, chrono.last().count());
-        logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": " << actualAlgo;
+        algo = readAlgoName(zHdu.as<Fits::ImageHdu>());
+        writerHdu.writeRow(filenameSrc, testCase, bitpix, algo, hduSize, zHduSize, chrono.last().count());
+        logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": " << algo;
       }
 
       bitpixs.push_back(bitpix);
       hduSizes.push_back(hduSize);
       zHduSizes.push_back(zHduSize);
-      actualAlgos.push_back(actualAlgo);
+      algos.push_back(algo);
 
       hduCounter++;
     }
@@ -215,12 +218,12 @@ public:
 
     writer.writeRow(
         filenameSrc,
-        algoName,
+        testCase,
         boost::filesystem::file_size(filenameSrc),
         boost::filesystem::file_size(filenameDst),
         hduCounter,
         join(bitpixs),
-        joinString(actualAlgos),
+        joinString(algos),
         join(hduSizes),
         join(zHduSizes),
         join(chrono.increments()));
