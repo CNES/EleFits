@@ -53,7 +53,7 @@ struct CompressionStrategyMixin : public CompressionStrategy {
  * 
  * \par_example
  * \code
- * f.strategy(FallbackCompressionStrategy<Rice>::make());
+ * f.strategy(FallbackCompressionStrategy<Rice>());
  * \endcode
  */
 template <typename TAlgo, typename TFallback = ShuffledGzip>
