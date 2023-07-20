@@ -192,7 +192,7 @@ bool canCompress(const Plio& algo, const ImageHdu::Initializer<T>& init) {
  * If none of them is suitable (e.g. because lossless compression was requested even for floats),
  * then the `ShuffledGzip` is returned.
  * 
- * Strategies are created with makers `lossless()`, `losslessInt()` and `lossy`, e.g.:
+ * Strategies are created with makers `lossless()`, `losslessInt()` and `lossy()`, e.g.:
  * 
  * \code
  * f.strategy(CompressAptly::losslessInt());

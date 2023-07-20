@@ -135,7 +135,7 @@ Once this step has been performed, the quantized, integral values are effectivel
 _Tiled Image Convention for Storing Compressed Images in FITS Binary Tables._
 
 
-\subsection compression-interface Compression Interface
+\subsection compression-interface Interface
 
 
 As mentioned in the previous section, compression algorithms are represented by dedicated classes.
@@ -145,7 +145,18 @@ Generic compression parameters are the tiling shape (as a `Position<-1>` object)
 and quantization (as a `Compression::Quantization` object).
 More details can be found in the classes and methods documentation (see list below).
 
-Once the `Compression` instance is created, it must be passed to `MefFile::startCompressing()`.
+Once the `Compression` instance is created, it can be passed to a `MefFile` through a so-called compression strategy.
+The strategy is a very powerful object which adapts the compression algorithm to the HDU being created.
+The simplest strategy, `Compress`, consists in applying the same compression algorithm to all HDUs unless impossible.
+`Compress` also accepts a list of algorithms, in order to select the preferred algorithm which works, e.g.
+`Compress<Plio, Rice>` will activate PLIO if possible, and Rice otherwise (or not comress at all if the HDU is very small).
+
+More elaborated strategies can be user-defined by extending the base class `CompressionStrategy`
+(e.g. to use PLIO only for HDUs whose name ends with "MASK").
+The generic strategy `CompressAptly` is the recommended default strategy.
+It draws on the various papers pointed by the FITS support office,
+and has variants for lossless and lossy compressions.
+
 From this point, newly created image HDUs will automatically be compressed.
 Note that it is not possible to convert an uncompressed image HDU into a compressed one,
 and compression must be activated before creating HDUs.

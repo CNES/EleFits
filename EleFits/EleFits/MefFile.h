@@ -211,6 +211,18 @@ public:
   /// @group_modifiers
 
   /**
+   * @brief Set the compression strategy to be used when writting new image extensions.
+   * @tparam TStrategy An implementation of `CompressionStrategy`
+   * 
+   * From the call on, all new image extensions are created as compressed image extensions,
+   * where the compression algorithm is deduced from the extension properties (type, size, records...).
+   * 
+   * Compression can be turned off with `stopCompressing()`.
+   */
+  template <typename TStrategy = CompressAptly>
+  void strategy(TStrategy&& strategy = CompressAptly::lossless());
+
+  /**
    * @brief Set the compression algorithm to be used when writting new image extensions.
    * 
    * From the call on, all new image extensions are created as compressed image extensions.
@@ -223,18 +235,7 @@ public:
   inline void startCompressing(const Compression& algo);
 
   /**
-   * @brief Set the compression strategy to be used when writting new image extensions.
-   * 
-   * From the call on, all new image extensions are created as compressed image extensions,
-   * where the compression algorithm is deduced from the extension properties (type, size, records...).
-   * 
-   * Compression can be turned off with `stopCompressing()`.
-   */
-  template <typename TStrategy>
-  void strategy(TStrategy&& strategy);
-
-  /**
-   * @brief Disable compression.
+   * @brief Disable compression, including compression strategies.
    */
   inline void stopCompressing();
 
