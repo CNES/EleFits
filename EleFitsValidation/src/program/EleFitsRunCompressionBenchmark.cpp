@@ -98,7 +98,7 @@ void setStrategy(Fits::MefFile& g, const std::string& testCase) {
   } else if (testCase == "PLIO") {
     g.strategy(Fits::Compress<Fits::Plio, Fits::ShuffledGzip>());
   } else if (testCase != "NONE") {
-    throw Fits::FitsError(std::string("Unknown compression type: ") + testCase);
+    throw Fits::FitsError(std::string("Unknown test case: ") + testCase);
   }
 }
 
