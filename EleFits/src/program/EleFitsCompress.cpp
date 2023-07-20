@@ -42,11 +42,11 @@ public:
 
     MefFile compressed(output, FileMode::Create);
     if (lossless == 'y') {
-      compressed.strategy(BasicCompressionStrategy::lossless());
+      compressed.strategy(CompressAptly::lossless());
     } else if (lossless == 'i') {
-      compressed.strategy(BasicCompressionStrategy::losslessInt());
+      compressed.strategy(CompressAptly::losslessInt());
     } else if (lossless == 'n') {
-      compressed.strategy(BasicCompressionStrategy::lossy());
+      compressed.strategy(CompressAptly::lossy());
     } else {
       throw FitsError("Unknown compression type");
     }
