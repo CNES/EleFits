@@ -87,13 +87,13 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
 void setCompressionFromName(Fits::MefFile& g, std::string algoName) {
 
   if (algoName == "NONE") {
-    g.stopCompressing();
+    g.stopCompressing(); // FIXME usefull?
   } else if (algoName == "RICE") {
-    g.strategy(Fits::FallbackCompressionStrategy<Fits::Rice>());
+    g.strategy(Fits::Compress<Fits::Rice, Fits::ShuffledGzip>());
   } else if (algoName == "HCOMPRESS") {
-    g.strategy(Fits::FallbackCompressionStrategy<Fits::HCompress>());
+    g.strategy(Fits::Compress<Fits::HCompress, Fits::ShuffledGzip>());
   } else if (algoName == "PLIO") {
-    g.strategy(Fits::FallbackCompressionStrategy<Fits::Plio>());
+    g.strategy(Fits::Compress<Fits::Plio, Fits::ShuffledGzip>());
   } else if (algoName == "GZIP") {
     g.startCompressing(Fits::Gzip());
   } else if (algoName == "SHUFFLEDGZIP") {
