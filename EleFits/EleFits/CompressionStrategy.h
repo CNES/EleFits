@@ -89,7 +89,7 @@ public:
    * @brief Check whether the default algorithm is compatible with the HDU.
    */
   template <typename T>
-  bool isCompatible(const ImageHdu::Initializer<T>& init) {
+  bool isCompatible(const ImageHdu::Initializer<T>& init) const {
 
     // Universal algos: none or GZIP
     if constexpr (
