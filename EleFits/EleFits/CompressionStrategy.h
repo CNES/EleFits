@@ -54,20 +54,16 @@ template <typename TPrime, typename... TFallbacks>
 class Compress : public CompressionStrategyMixin<Compress<TPrime, TFallbacks...>> {
 public:
   /**
-   * @brief Create a strategy with a fallback derived from the prime.
-   * 
-   * The fallback algorithms inherit their tiling and quantization from the prime.
+   * @brief Create a strategy with default-initialized fallbacks.
    */
-  explicit Compress(TPrime prime = TPrime()) :
-      m_prime(std::move(prime)), m_fallbacks(TFallbacks(m_prime.tiling(), m_prime.quantization())...) {}
+  explicit Compress(TPrime prime = TPrime()) : m_prime(std::move(prime)), m_fallbacks(TFallbacks()...) {}
 
   /**
    * @brief Create a strategy with explicit parameters.
    * @param prime The primary algorithm
    * @param fallbacks The fallback algorithms
    * 
-   * If not all fallback algorithms are specified,
-   * then the last ones inherit the tiling and quantization from the last specified algorithm.
+   * If not all fallback algorithms are specified, then the last ones are default-initialized.
    */
   template <typename... Ts>
   explicit Compress(TPrime prime, Ts&&... fallbacks) :
@@ -80,9 +76,9 @@ public:
   const Compression& operator()(const ImageHdu::Initializer<T>& init) {
     if (shouldCompress(m_prime, init)) {
       if (m_prime.tiling() == Compression::rowwiseTiling()) {
-        const auto rowSize = init.shape[0] * sizeof(T);
-        static constexpr auto minTileSize = 1024 * 1024;
-        const auto rowCount = minTileSize / rowSize + 1;
+        const long rowSize = init.shape[0] * sizeof(T);
+        static constexpr long minTileSize = 1024 * 1024;
+        const long rowCount = minTileSize / rowSize + 1;
         m_prime.tiling(Compression::rowwiseTiling(rowCount));
       }
       return m_prime;
@@ -120,10 +116,10 @@ public:
   template <typename T>
   const Compression& operator()(const ImageHdu::Initializer<T>& init) {
     if (m_prime.tiling() == Compression::rowwiseTiling()) { // FIXME duplicates
-      const auto rowWidth = init.shape[0];
-      const auto rowSize = rowWidth * sizeof(T);
-      static constexpr auto minTileSize = 1024 * 1024;
-      const auto rowCount = minTileSize / rowSize + 1;
+      const long rowWidth = init.shape[0];
+      const long rowSize = rowWidth * sizeof(T);
+      static constexpr long minTileSize = 1024 * 1024;
+      const long rowCount = minTileSize / rowSize + 1;
       printf("%li x %li\n", rowWidth, rowCount);
       m_prime.tiling({rowWidth, rowCount});
     }
@@ -173,26 +169,27 @@ bool canCompress(const HCompress& algo, const ImageHdu::Initializer<T>& init) {
 }
 
 template <typename T>
-bool canCompress(const Plio& algo, const ImageHdu::Initializer<T>& init) {
+bool canCompress(const Plio&, const ImageHdu::Initializer<T>& init) {
 
-  // Floats
-  if constexpr (bitpix<T>() < 0) {
+  constexpr auto bp = bitpix<T>();
+
+  // Float or too large int
+  if constexpr (bp < 0 || bp > 32) {
     return false;
   }
 
-  // Small enough ints
-  if constexpr (bitpix<T>() < 24) {
-    return true;
+  // Maybe
+  if constexpr (bp > 16) {
+    if (not init.data) {
+      return false;
+    }
+    const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
+    if (max >= (T(1) << 24)) {
+      return false;
+    }
   }
 
-  // Unable to check
-  if (not init.data) {
-    return false;
-  }
-
-  // Check max
-  const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
-  return max < (std::size_t(1) << 24);
+  return true;
 }
 /// @endcond
 

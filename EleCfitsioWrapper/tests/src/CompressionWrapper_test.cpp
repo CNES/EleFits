@@ -180,6 +180,29 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) { // FIXME set compression ty
   BOOST_TEST(defaultScale == 0.0);
 }
 
+BOOST_AUTO_TEST_CASE(default_tiling_following_hcompress_test) {
+  Euclid::Fits::Test::MinimalFile file;
+  int status = 0;
+  int tile1, tile2;
+  long shape[2] = {100, 100};
+  long tiling[2] = {-1, 1};
+  fits_set_compression_type(file.fptr, HCOMPRESS_1, &status);
+  fits_set_tile_dim(file.fptr, 2, tiling, &status);
+  fits_create_img(file.fptr, BYTE_IMG, 2, shape, &status);
+  fits_read_key(file.fptr, TINT, "ZTILE1", &tile1, nullptr, &status);
+  fits_read_key(file.fptr, TINT, "ZTILE2", &tile2, nullptr, &status);
+  BOOST_TEST(tile1 == shape[0]);
+  BOOST_TEST(tile2 == 16);
+
+  fits_set_compression_type(file.fptr, GZIP_2, &status);
+  fits_set_tile_dim(file.fptr, 2, tiling, &status);
+  fits_create_img(file.fptr, BYTE_IMG, 2, shape, &status);
+  fits_read_key(file.fptr, TINT, "ZTILE1", &tile1, nullptr, &status);
+  fits_read_key(file.fptr, TINT, "ZTILE2", &tile2, nullptr, &status);
+  BOOST_TEST(tile1 == shape[0]);
+  BOOST_TEST(tile2 == 1);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

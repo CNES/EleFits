@@ -53,8 +53,8 @@ void closeAndDelete(fitsfile*& fptr) {
   mayThrowReadonlyError(fptr);
   int status = 0;
   fits_delete_file(fptr, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot close and delete file");
   fptr = nullptr;
+  CfitsioError::mayThrow(status, fptr, "Cannot close and delete file");
 }
 
 std::string name(fitsfile* fptr) {

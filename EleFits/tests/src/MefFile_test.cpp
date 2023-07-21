@@ -378,7 +378,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   BOOST_TEST(image.matches(HduCategory::RawImage));
 
   /* Same Image in source but Compressed */
-  this->startCompressing(algo);
+  this->strategy(Compress<Gzip>(algo));
   const auto& compImage = this->appendImage("ZIMAGE", records, raster);
   BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
 
@@ -403,7 +403,8 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   BOOST_TEST(emptyCopy.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
   BOOST_TEST(emptyCopy.matches(HduCategory::RawImage));
 
-  // /* Copy uncompressed */
+  /* Copy uncompressed */
+  BOOST_TEST(not image.isCompressed());
   const auto& imageCopy = fileCopy.appendCopy(image);
   BOOST_TEST(imageCopy.readName() == image.readName());
   BOOST_TEST(imageCopy.readSize() == image.readSize());
@@ -415,6 +416,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) 
   BOOST_TEST(imageCopy.matches(HduCategory::CompressedImageExt));
 
   /* Copy compressed */
+  BOOST_TEST(compImage.isCompressed());
   const auto& imageCopy3 = fileCopy.appendCopy(compImage);
   BOOST_TEST(imageCopy3.readName() == compImage.readName());
   BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
