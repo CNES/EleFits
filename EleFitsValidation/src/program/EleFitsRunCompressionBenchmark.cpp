@@ -54,7 +54,7 @@ int getBitpix(Fits::ImageHdu hdu) {
 std::string readAlgoName(const Fits::ImageHdu& hdu) {
 
   if (not hdu.isCompressed()) {
-    return "Uncompressed";
+    return "NONE";
   }
 
   const auto algo = hdu.readCompression();
