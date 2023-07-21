@@ -54,20 +54,16 @@ template <typename TPrime, typename... TFallbacks>
 class Compress : public CompressionStrategyMixin<Compress<TPrime, TFallbacks...>> {
 public:
   /**
-   * @brief Create a strategy with a fallback derived from the prime.
-   * 
-   * The fallback algorithms inherit their tiling and quantization from the prime.
+   * @brief Create a strategy with default-initialized fallbacks.
    */
-  explicit Compress(TPrime prime = TPrime()) :
-      m_prime(std::move(prime)), m_fallbacks(TFallbacks(m_prime.tiling(), m_prime.quantization())...) {}
+  explicit Compress(TPrime prime = TPrime()) : m_prime(std::move(prime)), m_fallbacks(TFallbacks()...) {}
 
   /**
    * @brief Create a strategy with explicit parameters.
    * @param prime The primary algorithm
    * @param fallbacks The fallback algorithms
    * 
-   * If not all fallback algorithms are specified,
-   * then the last ones inherit the tiling and quantization from the last specified algorithm.
+   * If not all fallback algorithms are specified, then the last ones are default-initialized.
    */
   template <typename... Ts>
   explicit Compress(TPrime prime, Ts&&... fallbacks) :
