@@ -153,30 +153,44 @@ public:
          "Case",
          "File size (bytes)",
          "Compressed size (bytes)",
+         "Compression ratio",
          "HDU count",
          "HDU bitpixs",
          "Comptypes",
          "HDU sizes (bytes)",
          "HDU compressed sizes (bytes)",
-         "Elapsed (ms)"});
+         "HDU ratios",
+         "Elapsed (ms)",
+         "Walltime (ms)"});
 
     Fits::Validation::CsvAppender writerHdu(
         resultsHdu,
-        {"Filename", "Case", "Bitpix", "Comptype", "HDU size (bytes)", "HDU compressed size (bytes)", "Elapsed (ms)"});
-
-    logger.info("Creating FITS file...");
-
-    // Create mef file to write the extensions in
-    Fits::MefFile f(filenameSrc, Fits::FileMode::Read);
-    Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
-    setStrategy(g, testCase, lossy);
+        {"Filename",
+         "Case",
+         "Bitpix",
+         "Comptype",
+         "HDU size (bytes)",
+         "HDU compressed size (bytes)",
+         "Compression ratio",
+         "Elapsed (ms)",
+         "Throughput (MB/s)"});
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
+    Fits::Validation::Chronometer<std::chrono::milliseconds> chronoAll;
     int hduCounter = 0;
     std::vector<std::string> algos;
     std::vector<long> bitpixs;
     std::vector<std::size_t> hduSizes;
     std::vector<std::size_t> zHduSizes;
+    std::vector<double> hduRatios;
+
+    logger.info("Creating FITS file...");
+
+    // Create mef file to write the extensions in
+    chronoAll.start();
+    Fits::MefFile f(filenameSrc, Fits::FileMode::Read);
+    Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
+    setStrategy(g, testCase, lossy);
 
     // Copy without primary:
     // chrono.start();
@@ -194,6 +208,7 @@ public:
       std::string algo;
       long hduSize;
       long zHduSize;
+      double ratio;
 
       if (hdu.type() == Fits::HduCategory::Bintable) {
         chrono.start();
@@ -202,6 +217,7 @@ public:
         bitpix = 0;
         hduSize = hdu.readSizeInFile();
         zHduSize = zHdu.readSizeInFile();
+        ratio = static_cast<double>(hduSize) / zHduSize;
         algo = "NONE";
         logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": Uncompressed binary table";
       } else { // the hdu is an image
@@ -211,14 +227,18 @@ public:
         bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
         hduSize = hdu.readSizeInFile();
         zHduSize = zHdu.readSizeInFile();
+        ratio = static_cast<double>(hduSize) / zHduSize;
+        double throughput = static_cast<double>(hduSize) / chrono.last().count() / 1000; // B/ms -> MB/s
         algo = readAlgoName(zHdu.as<Fits::ImageHdu>());
-        writerHdu.writeRow(filenameSrc, testCase, bitpix, algo, hduSize, zHduSize, chrono.last().count());
+        writerHdu
+            .writeRow(filenameSrc, testCase, bitpix, algo, hduSize, zHduSize, ratio, chrono.last().count(), throughput);
         logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": " << algo;
       }
 
       bitpixs.push_back(bitpix);
       hduSizes.push_back(hduSize);
       zHduSizes.push_back(zHduSize);
+      hduRatios.push_back(ratio);
       algos.push_back(algo);
 
       hduCounter++;
@@ -226,18 +246,26 @@ public:
 
     f.close();
     g.close();
+    chronoAll.stop();
+
+    long srcSize = boost::filesystem::file_size(filenameSrc);
+    long dstSize = boost::filesystem::file_size(filenameDst);
+    double compRatio = static_cast<double>(srcSize) / dstSize;
 
     writer.writeRow(
         filenameSrc,
         testCase,
-        boost::filesystem::file_size(filenameSrc),
-        boost::filesystem::file_size(filenameDst),
+        srcSize,
+        dstSize,
+        compRatio,
         hduCounter,
         join(bitpixs),
         joinString(algos),
         join(hduSizes),
         join(zHduSizes),
-        join(chrono.increments()));
+        join(hduRatios),
+        join(chrono.increments()),
+        chronoAll.last().count());
 
     logger.info("Done.");
 
