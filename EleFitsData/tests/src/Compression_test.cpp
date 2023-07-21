@@ -33,26 +33,26 @@ BOOST_AUTO_TEST_CASE(disabled_scaling_test) {
 
 BOOST_AUTO_TEST_CASE(absolute_scaling_test) {
   Compression::Scaling scale = 8;
-  BOOST_TEST(scale);
+  BOOST_TEST(bool(scale));
   BOOST_TEST((scale.type() == Compression::Scaling::Type::Absolute));
   BOOST_TEST((scale.value() == 8));
-  BOOST_CHECK_THROW((Compression::Scaling(-scale)), FitsError);
+  BOOST_CHECK_THROW((Compression::Scaling(-scale.value())), FitsError);
 }
 
 BOOST_AUTO_TEST_CASE(factor_scaling_test) {
   Compression::Scaling scale = Compression::rms * 2.5;
-  BOOST_TEST(scale);
+  BOOST_TEST(bool(scale));
   BOOST_TEST((scale.type() == Compression::Scaling::Type::Factor));
   BOOST_TEST((scale.value() == 2.5));
-  BOOST_CHECK_THROW((Compression::rms * -scale), FitsError);
+  BOOST_CHECK_THROW((Compression::rms * -scale.value()), FitsError);
 }
 
 BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
   Compression::Scaling scale = Compression::rms / 4;
-  BOOST_TEST(scale);
+  BOOST_TEST(bool(scale));
   BOOST_TEST((scale.type() == Compression::Scaling::Type::Inverse));
   BOOST_TEST((scale.value() == 4));
-  BOOST_CHECK_THROW((Compression::rms / -scale), FitsError);
+  BOOST_CHECK_THROW((Compression::rms / -scale.value()), FitsError);
 }
 
 BOOST_AUTO_TEST_CASE(scaling_equality_test) {
@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE(default_quantization_test) {
 BOOST_AUTO_TEST_CASE(default_dithering_test) {
   Compression::Scaling level(4);
   Compression::Quantization q(level);
-  BOOST_TEST(q);
-  BOOST_TEST(q.level() == level);
+  BOOST_TEST(bool(q));
+  BOOST_TEST((q.level() == level));
   BOOST_TEST((q.dithering() == Compression::Dithering::EveryPixel));
 }
 

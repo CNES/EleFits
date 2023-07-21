@@ -74,7 +74,7 @@ public:
     /**
      * @brief Check whether the scaling is enabled (i.e. the value is not null).
      */
-    inline operator bool() const;
+    inline explicit operator bool() const;
 
     /**
      * @brief Get the scaling type.
@@ -196,7 +196,7 @@ public:
     /**
      * @brief Check whether quantization is enabled.
      */
-    inline operator bool() const;
+    inline explicit operator bool() const;
 
     /**
      * @brief Set the quantization level.

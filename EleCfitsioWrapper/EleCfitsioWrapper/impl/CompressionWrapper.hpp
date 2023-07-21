@@ -222,7 +222,7 @@ inline void setQuantize(fitsfile* fptr, const Fits::Compression::Quantization& q
   CfitsioError::mayThrow(status, fptr, "Cannot set quantization level");
 
   // Set lossy int compression if quantization is enabled
-  fits_set_lossy_int(fptr, quantization, &status);
+  fits_set_lossy_int(fptr, bool(quantization), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set lossy integer compression flag");
 
   // Set dithering method

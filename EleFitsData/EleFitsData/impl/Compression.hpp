@@ -90,7 +90,7 @@ Compression::Dithering Compression::Quantization::dithering() const {
 }
 
 Compression::Quantization::operator bool() const {
-  return m_level;
+  return bool(m_level);
 }
 
 bool Compression::Quantization::operator==(const Compression::Quantization& rhs) const {

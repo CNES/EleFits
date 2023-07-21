@@ -86,8 +86,8 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
 // FIXME: get isLossless elsewhere
 void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
 
-  Fits::Compression::Quantization q(lossy ? Fits::Compression::rms / 16 : Fits::Compression::Scaling(0));
-  Fits::Compression::Scaling s(lossy ? Fits::Compression::rms * 2.5 : Fits::Compression::Scaling(0));
+  Fits::Compression::Quantization q(lossy ? Fits::Compression::rms / 16 : 0);
+  Fits::Compression::Scaling s(lossy ? Fits::Compression::rms * 2.5 : 0);
   Fits::Plio plio(Fits::Compression::rowwiseTiling(), q);
   Fits::HCompress hc(Fits::Compression::rowwiseTiling(16), q, s);
   Fits::Rice rice(Fits::Compression::rowwiseTiling(), q);
