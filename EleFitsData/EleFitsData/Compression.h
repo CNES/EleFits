@@ -23,6 +23,7 @@ class MefFile;
 /// @endcond
 
 /**
+ * @ingroup image_compression
  * @brief Helper class for tile-related parameters.
  */
 struct Tile {
@@ -31,10 +32,10 @@ struct Tile {
    * 
    * \par_example
    * \code
-   * auto disabled = Scaling(0);
-   * auto absolute = Scaling(2);
-   * auto relative1 = Tile::rms;
-   * auto relative4 = Tile::rms / 4;
+   * auto disabled = Quantization(0);
+   * auto absolute = Quantization(100);
+   * auto relative1 = Quantization(Tile::rms);
+   * auto relative4 = Quantization(Tile::rms / 4);
    * \endcode
    */
   static Scaling rms;
@@ -250,12 +251,13 @@ public:
  * In order to use H-compress losslessly, quantization and scaling must be zeroed,
  * and the data values must be integers.
  * 
- * Analogously to quantization, the scaling can be set globally or tile-wise.
- * In this case, it is generally provided as a multiplicative factor instead of an inverse:
+ * Analogously to quantization, the scaling can be set globally or tile-wise, which is recommended.
+ * In the latter case, it is generally provided as a multiplicative factor of the noise RMS:
  * 
  * \code
  * HCompress algo;
- * HCompress().scaling(Compression::rms * 2.5);
+ * algo.quantization(Tile::rms / 4);
+ * algo.scaling(Tile::rms * 2.5);
  * \endcode
  */
 class HCompress : public AlgoMixin<HCompress> {

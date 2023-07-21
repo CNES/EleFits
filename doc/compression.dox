@@ -66,25 +66,8 @@ i.e. at reading, it is not necessary to know whether an image is compressed or n
 For writing, compression must be explicitely enabled before creating the HDU,
 but then classical write functions are used as if the HDU was not compressed.
 
-Given that the Primary HDU is necessarily an image HDU, it cannot be compressed.
-Generally, if the Primary has to be internally compressed (e.g. for SIF files), then an extension is added after an empty Primary.
-Therefore, even lossless compression may be non-idempotent:
-indeed, decompressing such a file would result in a MEF file with an empty Primary and decompressed extension corresponding to the input Primary,
-instead of a single decompressed Primary.
 
-\code
-SifFile uncompressed("uncompressed.fits", FileMode::ReadOnly);
-
-MerFile compressed("compressed.fits", FileMode::Create);
-compressed.startCompressing(HCompress());
-compressed.assignImage({}, uncompressed.raster().read<2, float>());
-
-MefFile decompressed("decompressed.fits", FileMode::Create);
-decompressed.assignImage({}, decompressed.as<ImageRaster>(1).read<2, float>());
-\endcode
-
-
-\subsection compression-internal-algos Algorithms and Parameters
+\subsection compression-algos Algorithms and Parameters
 
 
 EleFits, like CFITSIO, supports several compression algorithms.
@@ -94,7 +77,7 @@ Let us first introduce briefly the various algorithms and parameters, before dis
 All internal compression algorithms act on data regions named tiles,
 which are compressed and decompressed independently.
 Tiles are represented by their common shape (edge tiles may be cropped).
-Generally, the default tile is a row.
+Generally, the default tile is a row or an amount of consecutive rows.
 When the images to be compressed have a small width (say, less than a thousand pixels), such a tile might be too small.
 In this case, using larger tiles is recommended.
 For smallest images (a few thousands of pixels at most), the whole data can even be used.
@@ -106,7 +89,9 @@ If one tries to use some lossless algorithm with incompatible data type (e.g. H-
 Lossy compression is available, for any pixel type, by enabling quantization.
 Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
 This is a first level of compression, where the least significant digits of a floating-point number are dropped.
-Quantization can be turned on for integral-valued data, too, in which case they are first cast as floating-point data.
+
+When quantization is turned on and an integral image extension is created, it is first converted to floating point data.
+However, in general, benchmarks show that lossless integer compression is almost as good as lossy integer compression.
 
 Once this step has been performed, the quantized, integral values are effectively compressed losslessly by one of the supported algorithms:
 
@@ -154,26 +139,63 @@ The simplest strategy, `Compress`, consists in applying the same compression alg
 More elaborated strategies can be user-defined by extending the base class `CompressionStrategy`
 (e.g. to use PLIO only for HDUs whose name ends with "MASK").
 The generic strategy `CompressAptly` is the recommended default strategy.
-It draws on the various papers pointed by the FITS support office,
+It draws on the various papers pointed by the FITS support office and on internal benchmarks,
 and has variants for lossless and lossy compressions.
 
-From this point, newly created image HDUs will automatically be compressed.
+As soon as the strategy is enabled (with `MefFile::strategy()`), newly created image HDUs will automatically be compressed.
 Note that it is not possible to convert an uncompressed image HDU into a compressed one,
 and compression must be activated before creating HDUs.
-The compression algorithm or parameters can be changed for subsequent HDUs by calling again `MefFile::startCompressing()`.
-Disabling compression can be done with `NoCompression` or by calling `MefFile::stopCompressing()`.
-
-While this interface mimics CFITSIO's, it is not the most efficient approach.
-Instead of applying always the same compression to all images, or manually setting the compression before creating any image extension,
-it is possible to define once for all which compression to apply according to user-defined criteria: data type, image size, extension name...
-This is the purpose of the so-called compression strategies.
 
 
-\subsection strategy-interface Compression Strategy Interface
+\section compression-guidelines Guidelines
 
 
-TODO
+\subsection compression-guidelines-primary Don't Compress the Primary
 
+
+Given that the Primary HDU is necessarily an image HDU, it cannot be compressed.
+Generally, if the Primary has to be internally compressed (e.g. for SIF files), then an extension is added after an empty Primary.
+Therefore, even lossless compression may be non-idempotent:
+indeed, decompressing such a file would result in a MEF file with an empty Primary and decompressed extension corresponding to the input Primary,
+instead of a single decompressed Primary.
+Therefore, it is recommended to avoid writing data to the Primary HDU,
+or at least to not compress it and copy it verbatim (which is the default behavior of `EleFitsCompress`).
+This way, compressing and decompressing the file returns the original file.
+
+\code
+# Default: copy the Primary
+EleFitsCompress uncompressed.fits compressed.fits
+EleFitsDecompress compressed.fits decompressed.fits
+# decompressed.fits = uncompressed.fits
+
+# Compress the Primary, too
+EleFitsCompress uncompressed.fits compressed.fits --primary
+EleFitsDecompress compressed.fits decompressed.fits
+# decompressed.fits = empty Primary + uncompressed.fits
+\endcode
+
+
+\subsection compression-guidelines-lossyint Use Lossless Compression for Integers
+
+
+As stated above, lossy compression of integral data brings little improvement over lossless compression.
+
+
+\subsection compression-guidelines-lossyfloat Give a Chance to Lossy Compression for Floating Points
+
+
+Although scary, lossy compression of floating point images generally preserves signal very well,
+while producing much higher compression rates than lossless compression, even with very conservative quantization.
+As an order of magnitude, expect a compression ratio of around 10 with quantization = RMS / 16,
+instead of just above 1 with quantization turned of.
+
+
+\subsection compression-guidelines-aptly Try CompressAptly!
+
+
+This is the default recommendation when you have no specific knowledge on the data stationnarity.
+It was designed with care based on already published studies, and tuned with internal benchmarks.
+More specifically, following the previous guideline, try `CompressAptly::losslessInt()`!
 
 
 */

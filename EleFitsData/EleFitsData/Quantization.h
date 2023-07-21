@@ -26,7 +26,7 @@ namespace Fits {
  * \code
  * Quantization disabled;
  * Quantization absolute(1);
- * Quantization relative(Compression::rms / 4); // CFITSIO's default
+ * Quantization relative(Tile::rms / 4);
  * \endcode
  * 
  * When quantization is enabled, dithering is applied by default to all pixels.
@@ -35,7 +35,6 @@ class Quantization {
 
 public:
   /**
-   * @ingroup image_compression
    * @brief Quantization dithering methods.
    */
   enum class Dithering {
