@@ -86,7 +86,7 @@ const std::unique_ptr<Compression>& CompressAptly::plio(const ImageHdu::Initiali
       return m_algo;
     }
     const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
-    if (max >= (std::size_t(1) << 24)) {
+    if (max >= (T(1) << 24)) {
       m_algo.reset();
       return m_algo;
     }
@@ -122,9 +122,9 @@ Position<-1> CompressAptly::tiling(const ImageHdu::Initializer<T>& init) const {
     return Compression::maxTiling();
   }
 
-  const auto rowWidth = init.shape[0];
-  const auto rowSize = rowWidth * sizeof(T);
-  const auto rowCount = minSize / rowSize + 1;
+  const long rowWidth = init.shape[0];
+  const long rowSize = rowWidth * sizeof(T);
+  const long rowCount = minSize / rowSize + 1;
   printf("APTLY %li x %li\n", rowWidth, rowCount);
 
   // FIXME reach minSize using higher dimensions
