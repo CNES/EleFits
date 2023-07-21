@@ -125,7 +125,6 @@ Position<-1> CompressAptly::tiling(const ImageHdu::Initializer<T>& init) const {
   const long rowWidth = init.shape[0];
   const long rowSize = rowWidth * sizeof(T);
   const long rowCount = minSize / rowSize + 1;
-  printf("APTLY %li x %li\n", rowWidth, rowCount);
 
   // FIXME reach minSize using higher dimensions
 
