@@ -147,6 +147,9 @@ bool shouldCompress(const TAlgo& algo, const ImageHdu::Initializer<T>& init) {
   if (shapeSize(init.shape) * sizeof(T) <= blockSize) {
     return false;
   }
+  if constexpr (bitpix<T>() == 64) { // CFITSIO does not support 64-bit integer compression
+    return false;
+  }
   return canCompress(algo, init);
 }
 
