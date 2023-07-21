@@ -38,7 +38,7 @@ def defineSpecificProgramOptions():
                         'The result file can be used to rerun the same benchmark.')
     parser.add_argument('--output', default='/tmp/test.fits', help='The filename of the FITS files to be generated.')
     parser.add_argument('--res', default='/tmp/compressionBenchmark.csv', help='The filename of the benchmark results TSV.')
-    parser.add_argument('--externalGzip', action='store_true')
+    parser.add_argument('--externalGzip', action='store_true', help='Adds external Gzip case when encountering NONE case')
     #parser.add_argument('--plot', default='/tmp/plot.eps', help='The filename of the benchmark results plotting file.')
     return parser
 
@@ -57,7 +57,7 @@ def mainMethod(args):
                 logger.info('')
                 subprocess.call(cmd, shell=True)
 
-                if args.externalGzip:
+                if args.externalGzip and testCase["Comptype"]=="NONE":
                     # same command but also applying external gzip to file:
                     cmd = makeCommand(testCase, args.output+".gz", args.res, 'INFO')  # TODO get log level from args
                     logger.info('')
