@@ -45,6 +45,8 @@ BOOST_AUTO_TEST_CASE(factor_scaling_test) {
   BOOST_TEST((scale.type() == Scaling::Type::Factor));
   BOOST_TEST((scale.value() == 2.5));
   BOOST_CHECK_THROW((Tile::rms * -scale.value()), FitsError);
+  auto identity = scale / 2.5;
+  BOOST_TEST(identity.isIdentity());
 }
 
 BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
@@ -53,6 +55,8 @@ BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
   BOOST_TEST((scale.type() == Scaling::Type::Inverse));
   BOOST_TEST((scale.value() == 4));
   BOOST_CHECK_THROW((Tile::rms / -scale.value()), FitsError);
+  auto identity = scale * 4;
+  BOOST_TEST(identity.isIdentity());
 }
 
 BOOST_AUTO_TEST_CASE(scaling_equality_test) {
