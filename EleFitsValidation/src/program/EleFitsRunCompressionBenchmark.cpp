@@ -85,27 +85,29 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
 
 // FIXME: get isLossless elsewhere
 void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
+
   Fits::Compression::Quantization q(lossy ? Fits::Compression::rms / 16 : Fits::Compression::Scaling(0));
   Fits::Compression::Scaling s(lossy ? Fits::Compression::rms * 2.5 : Fits::Compression::Scaling(0));
+  Fits::Plio plio(Fits::Compression::rowwiseTiling(), q);
+  Fits::HCompress hc(Fits::Compression::rowwiseTiling(16), q, s);
+  Fits::Rice rice(Fits::Compression::rowwiseTiling(), q);
+  Fits::ShuffledGzip sgzip(Fits::Compression::rowwiseTiling(), q);
+  Fits::Gzip gzip(Fits::Compression::rowwiseTiling(), q);
+
   if (testCase == "APTLY") {
     g.strategy(lossy ? Fits::CompressAptly::losslessInt() : Fits::CompressAptly::lossless());
   } else if (testCase == "FULL") {
-    g.strategy(Fits::Compress<Fits::Plio, Fits::HCompress, Fits::Rice, Fits::ShuffledGzip>(
-        Fits::Plio(Fits::Compression::rowwiseTiling(), q),
-        Fits::HCompress(Fits::Compression::rowwiseTiling(16), q, s),
-        Fits::Rice(Fits::Compression::rowwiseTiling(), q),
-        Fits::ShuffledGzip(Fits::Compression::rowwiseTiling(), q)));
+    g.strategy(Fits::Compress<Fits::Plio, Fits::HCompress, Fits::Rice, Fits::ShuffledGzip>(plio, hc, rice, sgzip));
   } else if (testCase == "GZIP") {
-    g.strategy(Fits::Compress<Fits::Gzip>(Fits::Gzip(Fits::Compression::rowwiseTiling(), q)));
+    g.strategy(Fits::Compress<Fits::Gzip>(gzip));
   } else if (testCase == "SHUFFLEDGZIP") {
-    g.strategy(Fits::Compress<Fits::ShuffledGzip>(Fits::ShuffledGzip(Fits::Compression::rowwiseTiling(), q)));
+    g.strategy(Fits::Compress<Fits::ShuffledGzip>(sgzip));
   } else if (testCase == "RICE") {
-    g.strategy(Fits::Compress<Fits::Rice, Fits::ShuffledGzip>(Fits::Rice(Fits::Compression::rowwiseTiling(), q)));
+    g.strategy(Fits::Compress<Fits::Rice, Fits::ShuffledGzip>(rice, sgzip));
   } else if (testCase == "HCOMPRESS") {
-    g.strategy(Fits::Compress<Fits::HCompress, Fits::ShuffledGzip>(
-        Fits::HCompress(Fits::Compression::rowwiseTiling(16), q, s)));
+    g.strategy(Fits::Compress<Fits::HCompress, Fits::ShuffledGzip>(hc, sgzip));
   } else if (testCase == "PLIO") {
-    g.strategy(Fits::Compress<Fits::Plio, Fits::ShuffledGzip>(Fits::Plio(Fits::Compression::rowwiseTiling(), q)));
+    g.strategy(Fits::Compress<Fits::Plio, Fits::ShuffledGzip>(plio, sgzip));
   } else if (testCase != "NONE") {
     throw Fits::FitsError(std::string("Unknown test case: ") + testCase);
   }
