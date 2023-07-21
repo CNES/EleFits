@@ -120,7 +120,6 @@ public:
       const long rowSize = rowWidth * sizeof(T);
       static constexpr long minTileSize = 1024 * 1024;
       const long rowCount = minTileSize / rowSize + 1;
-      printf("%li x %li\n", rowWidth, rowCount);
       m_prime.tiling({rowWidth, rowCount});
     }
     if (not shouldCompress(m_prime, init)) {
