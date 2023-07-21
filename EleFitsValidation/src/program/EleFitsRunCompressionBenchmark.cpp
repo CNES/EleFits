@@ -84,11 +84,11 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
 }
 
 // FIXME: get isLossless elsewhere
-void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossyFloat) {
-  Fits::Compression::Quantization q(lossyFloat ? Fits::Compression::rms / 16 : Fits::Compression::Scaling(0));
-  Fits::Compression::Scaling s(lossyFloat ? Fits::Compression::rms * 2.5 : Fits::Compression::Scaling(0));
+void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
+  Fits::Compression::Quantization q(lossy ? Fits::Compression::rms / 16 : Fits::Compression::Scaling(0));
+  Fits::Compression::Scaling s(lossy ? Fits::Compression::rms * 2.5 : Fits::Compression::Scaling(0));
   if (testCase == "APTLY") {
-    g.strategy(lossyFloat ? Fits::CompressAptly::losslessInt() : Fits::CompressAptly::lossless());
+    g.strategy(lossy ? Fits::CompressAptly::losslessInt() : Fits::CompressAptly::lossless());
   } else if (testCase == "FULL") {
     g.strategy(Fits::Compress<Fits::Plio, Fits::HCompress, Fits::Rice, Fits::ShuffledGzip>(
         Fits::Plio(Fits::Compression::rowwiseTiling(), q),
@@ -126,7 +126,7 @@ public:
         "case",
         value<std::string>()->default_value("GZIP"),
         "Compression strategy (NONE/FULL/APTLY/GZIP/SHUFFLEDGZIP/RICE/HCOMPRESS/PLIO)");
-    options.flag("lossy", "Allow lossy compression of floating point data");
+    options.flag("lossy", "Allow lossy compression");
     options.named(
         "res",
         value<std::string>()->default_value("/tmp/compressionBenchmark.csv"),
@@ -143,7 +143,7 @@ public:
     const auto filenameSrc = args["input"].as<std::string>();
     const auto filenameDst = args["output"].as<std::string>();
     const auto testCase = args["case"].as<std::string>();
-    const bool lossyFloat = args["lossy"].as<bool>();
+    const bool lossy = args["lossy"].as<bool>();
     const auto results = args["res"].as<std::string>();
     const auto resultsHdu = args["resHdu"].as<std::string>();
 
@@ -169,7 +169,7 @@ public:
     // Create mef file to write the extensions in
     Fits::MefFile f(filenameSrc, Fits::FileMode::Read);
     Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
-    setStrategy(g, testCase, lossyFloat);
+    setStrategy(g, testCase, lossy);
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     int hduCounter = 0;
