@@ -75,11 +75,11 @@ public:
   template <typename T>
   const Compression& operator()(const ImageHdu::Initializer<T>& init) {
     if (shouldCompress(m_prime, init)) {
-      if (m_prime.tiling() == Compression::rowwiseTiling()) {
+      if (m_prime.tiling() == Tile::rowwise()) {
         const long rowSize = init.shape[0] * sizeof(T);
         static constexpr long minTileSize = 1024 * 1024;
         const long rowCount = minTileSize / rowSize + 1;
-        m_prime.tiling(Compression::rowwiseTiling(rowCount));
+        m_prime.tiling(Tile::rowwise(rowCount));
       }
       return m_prime;
     }
@@ -115,7 +115,7 @@ public:
    */
   template <typename T>
   const Compression& operator()(const ImageHdu::Initializer<T>& init) {
-    if (m_prime.tiling() == Compression::rowwiseTiling()) { // FIXME duplicates
+    if (m_prime.tiling() == Tile::rowwise()) { // FIXME duplicates
       const long rowWidth = init.shape[0];
       const long rowSize = rowWidth * sizeof(T);
       static constexpr long minTileSize = 1024 * 1024;
@@ -285,7 +285,7 @@ private:
    * @brief Adapt the quantization to the pixel type and strategy type.
    */
   template <typename T>
-  Compression::Quantization quantization() const;
+  Quantization quantization() const;
 
   /**
    * @brief Adapt the tiling to the raster shape.
@@ -303,7 +303,7 @@ private:
    * @brief Adapt the H-compress scaling to the raster shape.
    */
   template <typename T>
-  Compression::Scaling hcompressScaling() const;
+  Scaling hcompressScaling() const;
 
   /**
    * @brief The compression type.

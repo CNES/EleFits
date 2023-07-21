@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   fits_get_hcomp_scale(file.fptr, &actualScale, &status);
   BOOST_TEST(
       actualScale ==
-      ((algo.scaling().type() == Fits::Compression::Scaling::Type::Absolute) ?
+      ((algo.scaling().type() == Fits::Scaling::Type::Absolute) ?
            -algo.scaling().value() :
            algo.scaling().value()));
 

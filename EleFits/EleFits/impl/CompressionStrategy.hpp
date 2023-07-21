@@ -61,8 +61,8 @@ const std::unique_ptr<Compression>& CompressAptly::hcompress(const ImageHdu::Ini
   }
 
   auto q = quantization<T>();
-  if (q.dithering() == Compression::Dithering::NonZeroPixel) {
-    q.dithering(Compression::Dithering::EveryPixel);
+  if (q.dithering() == Quantization::Dithering::NonZeroPixel) {
+    q.dithering(Quantization::Dithering::EveryPixel);
   }
   m_algo = std::make_unique<HCompress>(hcompressTiling(init), q, hcompressScaling<T>());
   return m_algo;
@@ -98,19 +98,19 @@ const std::unique_ptr<Compression>& CompressAptly::plio(const ImageHdu::Initiali
 }
 
 template <typename T>
-Compression::Quantization CompressAptly::quantization() const {
+Quantization CompressAptly::quantization() const {
   if constexpr (std::is_integral_v<T>) {
     if (m_type != Type::Lossy) {
-      return Compression::Quantization(0);
+      return Quantization(0);
     }
-    Compression::Quantization q(Compression::rms / 4);
-    q.dithering(Compression::Dithering::NonZeroPixel); // Keep nulls for integers
+    Quantization q(Tile::rms / 4);
+    q.dithering(Quantization::Dithering::NonZeroPixel); // Keep nulls for integers
     return q;
   } else {
     if (m_type == Type::Lossless) {
-      return Compression::Quantization(0);
+      return Quantization(0);
     }
-    return Compression::Quantization(Compression::rms / 16); // More conservative, imcopy default
+    return Quantization(Tile::rms / 16); // More conservative, imcopy default
   }
 }
 
@@ -119,7 +119,7 @@ Position<-1> CompressAptly::tiling(const ImageHdu::Initializer<T>& init) const {
 
   static constexpr long minSize = 1024 * 1024;
   if (shapeSize(init.shape) <= minSize) {
-    return Compression::maxTiling();
+    return Tile::whole();
   }
 
   const long rowWidth = init.shape[0];
@@ -139,33 +139,33 @@ Position<-1> CompressAptly::hcompressTiling(const ImageHdu::Initializer<T>& init
   // Small image
   if (shape[1] <= 30) {
     // FIXME what about large rows?
-    return Compression::maxTiling();
+    return Tile::whole();
   }
 
   // Find acceptable row count
   for (auto rows : {16, 24, 20, 30, 28, 26, 22, 18, 14}) {
     auto modulo = shape[1] % rows;
     if (modulo == 0 || modulo >= 4) {
-      return Compression::rowwiseTiling(rows);
+      return Tile::rowwise(rows);
     }
   }
 
   // Fallback
-  return Compression::rowwiseTiling(17);
+  return Tile::rowwise(17);
 }
 
 template <typename T>
-Compression::Scaling CompressAptly::hcompressScaling() const {
+Scaling CompressAptly::hcompressScaling() const {
   if constexpr (std::is_integral_v<T>) {
     if (m_type != Type::Lossy) {
       return 0;
     }
-    return Compression::rms * 2.5;
+    return Tile::rms * 2.5;
   } else {
     if (m_type == Type::Lossless) {
       return 0;
     }
-    return Compression::rms * 2.5;
+    return Tile::rms * 2.5;
   }
 }
 

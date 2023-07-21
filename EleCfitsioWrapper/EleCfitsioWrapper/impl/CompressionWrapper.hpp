@@ -52,16 +52,15 @@ std::unique_ptr<Fits::Compression> getCompression(fitsfile* fptr) {
   // Read quantization
   float scale = 0;
   fits_get_quantize_level(fptr, &scale, &status);
-  Fits::Compression::Quantization quantization(
-      scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms / scale);
+  Fits::Quantization quantization(scale <= 0 ? Fits::Scaling(-scale) : Fits::Tile::rms / scale);
   if (quantization && HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
     const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
     if (method == "NO_DITHER") {
-      quantization.dithering(Fits::Compression::Dithering::None);
+      quantization.dithering(Fits::Quantization::Dithering::None);
     } else if (method == "SUBTRACTIVE_DITHER_1") {
-      quantization.dithering(Fits::Compression::Dithering::EveryPixel);
+      quantization.dithering(Fits::Quantization::Dithering::EveryPixel);
     } else if (method == "SUBTRACTIVE_DITHER_2") {
-      quantization.dithering(Fits::Compression::Dithering::NonZeroPixel);
+      quantization.dithering(Fits::Quantization::Dithering::NonZeroPixel);
     } else {
       Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
     }
@@ -75,7 +74,7 @@ std::unique_ptr<Fits::Compression> getCompression(fitsfile* fptr) {
     auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {tiling[0], tiling[1]}, std::move(quantization));
     fits_get_hcomp_scale(fptr, &scale, &status);
     CfitsioError::mayThrow(status, fptr, "Cannot read H-compress scaling");
-    out->scaling(scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms * scale);
+    out->scaling(scale <= 0 ? Fits::Scaling(-scale) : Fits::Tile::rms * scale);
     // FIXME smoothing?
     return out;
   }
@@ -134,7 +133,7 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   }
   // FIXME check that ZTILE7 does not exist
   // FIXME remove trailing 1's
-  // FIXME detect rowwiseTiling and maxTiling
+  // FIXME detect Tile::rowwise() and Tile::whole()
 
   /* Quantization */
 
@@ -148,8 +147,7 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   }
   const auto level = parseValueOr<double>(fptr, "NOISEBIT", quantized ? 4 : 0);
   // FIXME not set by CFITSIO (but set by astropy)
-  Fits::Compression::Quantization quantization(
-      level <= 0 ? Fits::Compression::Scaling(-level) : Fits::Compression::rms / level);
+  Fits::Quantization quantization(level <= 0 ? Fits::Scaling(-level) : Fits::Tile::rms / level);
 
   // FIXME seed
 
@@ -159,18 +157,18 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
     const std::string method = HeaderIo::parseRecord<std::string>(fptr, "ZQUANTIZ");
     if (method == "NONE") {
       // NONE is not standard but happens to indicate null quantization (level = 0)
-      quantization = Fits::Compression::Quantization(0);
+      quantization = Fits::Quantization(0);
     } else if (method == "NO_DITHER") {
-      quantization.dithering(Fits::Compression::Dithering::None);
+      quantization.dithering(Fits::Quantization::Dithering::None);
     } else if (method == "SUBTRACTIVE_DITHER_1") {
-      quantization.dithering(Fits::Compression::Dithering::EveryPixel);
+      quantization.dithering(Fits::Quantization::Dithering::EveryPixel);
     } else if (method == "SUBTRACTIVE_DITHER_2") {
-      quantization.dithering(Fits::Compression::Dithering::NonZeroPixel);
+      quantization.dithering(Fits::Quantization::Dithering::NonZeroPixel);
     } else {
       Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
     }
   } else {
-    quantization.dithering(Fits::Compression::Dithering::None);
+    quantization.dithering(Fits::Quantization::Dithering::None);
   }
 
   if (name == "GZIP_1") {
@@ -185,7 +183,7 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   if (name == "HCOMPRESS_1") {
     const auto scale = parseValueOr<double>(fptr, "SCALE", 0);
     auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {shape[0], shape[1]}, std::move(quantization));
-    out->scaling(scale <= 0 ? Fits::Compression::Scaling(-scale) : Fits::Compression::rms * scale);
+    out->scaling(scale <= 0 ? Fits::Scaling(-scale) : Fits::Tile::rms * scale);
     return out;
   }
   if (name == "PLIO_1") {
@@ -202,20 +200,20 @@ inline void setTiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
   CfitsioError::mayThrow(status, fptr, "Cannot set compression tiling");
 }
 
-inline void setQuantize(fitsfile* fptr, const Fits::Compression::Quantization& quantization) {
+inline void setQuantize(fitsfile* fptr, const Fits::Quantization& quantization) {
 
   int status = 0;
 
   // Set quantization level
   const auto value = quantization.level().value();
   switch (quantization.level().type()) {
-    case Fits::Compression::Scaling::Type::Absolute:
+    case Fits::Scaling::Type::Absolute:
       fits_set_quantize_level(fptr, -value, &status);
       break;
-    case Fits::Compression::Scaling::Type::Factor:
+    case Fits::Scaling::Type::Factor:
       fits_set_quantize_level(fptr, 1. / value, &status);
       break;
-    case Fits::Compression::Scaling::Type::Inverse:
+    case Fits::Scaling::Type::Inverse:
       fits_set_quantize_level(fptr, value, &status);
       break;
   }
@@ -228,13 +226,13 @@ inline void setQuantize(fitsfile* fptr, const Fits::Compression::Quantization& q
   // Set dithering method
   // fits_set_quantize_method() is the deprecated name of set_quantize_dither()
   switch (quantization.dithering()) {
-    case Fits::Compression::Dithering::EveryPixel:
+    case Fits::Quantization::Dithering::EveryPixel:
       fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_1, &status);
       break;
-    case Fits::Compression::Dithering::NonZeroPixel:
+    case Fits::Quantization::Dithering::NonZeroPixel:
       fits_set_quantize_dither(fptr, SUBTRACTIVE_DITHER_2, &status);
       break;
-    case Fits::Compression::Dithering::None:
+    case Fits::Quantization::Dithering::None:
       fits_set_quantize_dither(fptr, NO_DITHER, &status);
       break;
   }
@@ -282,13 +280,13 @@ void compress(fitsfile* fptr, const Fits::HCompress& algo) {
 
   const auto value = algo.scaling().value();
   switch (algo.scaling().type()) {
-    case Fits::Compression::Scaling::Type::Absolute:
+    case Fits::Scaling::Type::Absolute:
       fits_set_hcomp_scale(fptr, -value, &status);
       break;
-    case Fits::Compression::Scaling::Type::Factor:
+    case Fits::Scaling::Type::Factor:
       fits_set_hcomp_scale(fptr, value, &status);
       break;
-    case Fits::Compression::Scaling::Type::Inverse:
+    case Fits::Scaling::Type::Inverse:
       fits_set_hcomp_scale(fptr, 1. / value, &status);
       break;
   }

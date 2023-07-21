@@ -86,13 +86,13 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
 // FIXME: get isLossless elsewhere
 void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
 
-  Fits::Compression::Quantization q(lossy ? Fits::Compression::rms / 16 : 0);
-  Fits::Compression::Scaling s(lossy ? Fits::Compression::rms * 2.5 : 0);
-  Fits::Plio plio(Fits::Compression::rowwiseTiling(), q);
-  Fits::HCompress hc(Fits::Compression::rowwiseTiling(16), q, s);
-  Fits::Rice rice(Fits::Compression::rowwiseTiling(), q);
-  Fits::ShuffledGzip sgzip(Fits::Compression::rowwiseTiling(), q);
-  Fits::Gzip gzip(Fits::Compression::rowwiseTiling(), q);
+  Fits::Quantization q(lossy ? Fits::Tile::rms / 16 : 0);
+  Fits::Scaling s(lossy ? Fits::Tile::rms * 2.5 : 0);
+  Fits::Plio plio(Fits::Tile::rowwise(), q);
+  Fits::HCompress hc(Fits::Tile::rowwise(16), q, s);
+  Fits::Rice rice(Fits::Tile::rowwise(), q);
+  Fits::ShuffledGzip sgzip(Fits::Tile::rowwise(), q);
+  Fits::Gzip gzip(Fits::Tile::rowwise(), q);
 
   if (testCase == "APTLY") {
     g.strategy(lossy ? Fits::CompressAptly::losslessInt() : Fits::CompressAptly::lossless());

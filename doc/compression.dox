@@ -142,7 +142,7 @@ As mentioned in the previous section, compression algorithms are represented by 
 In addition, `NoCompression` can be used to disable internal compression.
 All those classes implement the `Compression` interface.
 Generic compression parameters are the tiling shape (as a `Position<-1>` object)
-and quantization (as a `Compression::Quantization` object).
+and quantization (as a `Quantization` object).
 More details can be found in the classes and methods documentation (see list below).
 
 Once the `Compression` instance is created, it can be passed to a `MefFile` through a so-called compression strategy.
