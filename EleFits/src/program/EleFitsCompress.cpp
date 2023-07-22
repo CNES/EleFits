@@ -42,7 +42,7 @@ public:
 
     MefFile compressed(output, FileMode::Create);
     if (lossless == 'y') {
-      compressed.strategy();
+      compressed.strategy(CompressAptly::lossless());
     } else if (lossless == 'i') {
       compressed.strategy(CompressAptly::losslessInt());
     } else if (lossless == 'n') {

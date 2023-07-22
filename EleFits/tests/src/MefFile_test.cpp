@@ -288,7 +288,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(image.matches(HduCategory::RawImage));
 
   /* Same Image in source but Compressed */
-  this->startCompressing(algo);
+  this->strategy(algo);
   const auto& compImage = this->appendImage("ZIMAGE", records, raster);
   BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
 
@@ -322,7 +322,8 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(imageCopy.matches(HduCategory::RawImage));
 
   /* Copy empty to compressed */
-  fileCopy.startCompressing(algo);
+  // fileCopy.strategy().clear(); // FIXME
+  fileCopy.strategy(algo);
   const auto& imageCopy4 = fileCopy.appendCopy(emptyImage);
   BOOST_TEST(imageCopy4.readName() == emptyImage.readName());
   BOOST_TEST(imageCopy4.readSize() == emptyImage.readSize());
@@ -331,7 +332,8 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(imageCopy4.matches(HduCategory::RawImage)); // empty images are actually NOT compressed
 
   /* Copy uncompressed to compressed */
-  fileCopy.startCompressing(algo);
+  // fileCopy.strategy().clear(); // FIXME
+  fileCopy.strategy(algo);
   const auto& imageCopy2 = fileCopy.appendCopy(image);
   BOOST_TEST(imageCopy2.readName() == image.readName());
   BOOST_TEST(imageCopy2.readSize() == image.readSize());
@@ -343,7 +345,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(imageCopy2.matches(HduCategory::CompressedImageExt)); // the copy should now be compressed
 
   /* Copy compressed to uncompressed */
-  fileCopy.stopCompressing();
+  // fileCopy.strategy().clear(); // FIXME
   const auto& imageCopy3 = fileCopy.appendCopy(compImage);
   BOOST_TEST(imageCopy3.readName() == compImage.readName());
   BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
@@ -438,7 +440,7 @@ BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
 
   // turning compression on:
   Gzip algo;
-  this->startCompressing(algo);
+  this->strategy(algo);
 
   // existing primary should still be uncompressed
   BOOST_TEST(not this->primary().isCompressed());
@@ -448,7 +450,7 @@ BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
   BOOST_TEST(image1.isCompressed());
 
   // turning compression off
-  this->stopCompressing();
+  // fileCopy.strategy().clear(); // FIXME
 
   // added ext should not be compressed
   const auto& image2 = this->appendImage("THIRD", records, raster);

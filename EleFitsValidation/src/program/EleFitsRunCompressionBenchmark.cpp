@@ -97,17 +97,17 @@ void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
   if (testCase == "APTLY") {
     g.strategy(lossy ? Fits::CompressAptly::losslessInt() : Fits::CompressAptly::lossless());
   } else if (testCase == "FULL") {
-    g.strategy(Fits::Compress<Fits::Plio, Fits::HCompress, Fits::Rice, Fits::ShuffledGzip>(plio, hc, rice, sgzip));
+    g.strategy(plio, hc, rice, sgzip);
   } else if (testCase == "GZIP") {
-    g.strategy(Fits::Compress<Fits::Gzip>(gzip));
+    g.strategy(gzip);
   } else if (testCase == "SHUFFLEDGZIP") {
-    g.strategy(Fits::Compress<Fits::ShuffledGzip>(sgzip));
+    g.strategy(sgzip);
   } else if (testCase == "RICE") {
-    g.strategy(Fits::Compress<Fits::Rice, Fits::ShuffledGzip>(rice, sgzip));
+    g.strategy(rice, sgzip);
   } else if (testCase == "HCOMPRESS") {
-    g.strategy(Fits::Compress<Fits::HCompress, Fits::ShuffledGzip>(hc, sgzip));
+    g.strategy(hc, sgzip);
   } else if (testCase == "PLIO") {
-    g.strategy(Fits::Compress<Fits::Plio, Fits::ShuffledGzip>(plio, sgzip));
+    g.strategy(plio, sgzip);
   } else if (testCase != "NONE") {
     throw Fits::FitsError(std::string("Unknown test case: ") + testCase);
   }

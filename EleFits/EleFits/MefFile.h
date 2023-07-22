@@ -114,13 +114,6 @@ public:
    */
   std::vector<std::pair<std::string, long>> readHduNamesVersions();
 
-  /**
-   * @brief Check whether the internal compression is turned on.
-   * 
-   * Returns `true` iff a compression algorithm or a compression strategy was enabled.
-   */
-  inline bool isCompressing() const;
-
   /// @group_elements
 
   /**
@@ -217,27 +210,11 @@ public:
    * From the call on, all new image extensions are created as compressed image extensions,
    * where the compression algorithm is deduced from the extension properties (type, size, records...).
    * 
-   * Compression can be turned off with `stopCompressing()`.
+   * If the first algorithm is not suitable, then the second one is tested, and so on.
+   * If the last algorithm is not suitable, then no compression is applied.
    */
-  template <typename TStrategy = CompressAptly>
-  void strategy(TStrategy&& strategy = CompressAptly::lossless());
-
-  /**
-   * @brief Set the compression algorithm to be used when writting new image extensions.
-   * 
-   * From the call on, all new image extensions are created as compressed image extensions.
-   * Compression can then be turned off with `stopCompressing()`.
-   * 
-   * @warning If any, the compression strategy is destroyed by this method.
-   * 
-   * @see CompressionStrategy
-   */
-  inline void startCompressing(const Compression& algo);
-
-  /**
-   * @brief Disable compression, including compression strategies.
-   */
-  inline void stopCompressing();
+  template <typename TAlgo, typename... TFallbacks>
+  void strategy(TAlgo&& algo, TFallbacks&&... fallbacks);
 
   /**
    * @brief Append a new image extension with empty data unit (`NAXIS = 0`).
@@ -329,6 +306,12 @@ protected:
   const T& appendExt(T extension);
 
   /**
+   * @brief Compress according to the strategy.
+   */
+  template <typename T>
+  inline bool compress(const ImageHdu::Initializer<T>& init) const;
+
+  /**
    * @brief Vector of `Hdu`s (castable to `ImageHdu` or `BintableHdu`).
    * @warning
    * m_hdus is 0-based while Cfitsio HDUs are 1-based.
@@ -338,7 +321,7 @@ protected:
   /**
    * @brief The compression strategy
    */
-  std::unique_ptr<CompressionStrategy> m_strategy;
+  std::vector<std::unique_ptr<CompressionStrategy>> m_compression;
 };
 
 } // namespace Fits

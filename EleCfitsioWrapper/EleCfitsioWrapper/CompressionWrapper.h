@@ -2,8 +2,8 @@
 // This file is part of EleFits <github.com/CNES/EleFits>
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef COMPRESSIONWRAPPER_H
-#define COMPRESSIONWRAPPER_H
+#ifndef _ELECFITSIOWRAPPER_COMPRESSIONWRAPPER_H
+#define _ELECFITSIOWRAPPER_COMPRESSIONWRAPPER_H
 
 #include "EleFitsData/Compression.h"
 
@@ -67,9 +67,9 @@ inline void compress(fitsfile* fptr, const Fits::Plio& algo);
 } // namespace Euclid
 
 /// @cond INTERNAL
-#define COMPRESSIONWRAPPER_IMPL
+#define _ELECFITSIOWRAPPER_COMPRESSIONWRAPPER_IMPL
 #include "EleCfitsioWrapper/impl/CompressionWrapper.hpp"
-#undef COMPRESSIONWRAPPER_IMPL
+#undef _ELECFITSIOWRAPPER_COMPRESSIONWRAPPER_IMPL
 /// @endcond
 
 #endif

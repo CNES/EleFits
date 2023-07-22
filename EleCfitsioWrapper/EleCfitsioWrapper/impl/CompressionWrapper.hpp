@@ -2,7 +2,7 @@
 // This file is part of EleFits <github.com/CNES/EleFits>
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#if defined(COMPRESSIONWRAPPER_IMPL) || defined(CHECK_QUALITY)
+#if defined(_ELECFITSIOWRAPPER_COMPRESSIONWRAPPER_IMPL) || defined(CHECK_QUALITY)
 
 #include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
@@ -10,16 +10,6 @@
 #include "EleFitsUtils/StringUtils.h"
 
 namespace Euclid {
-
-namespace Fits {
-
-template <typename TDerived>
-void AlgoMixin<TDerived>::compress(void* fptr) const {
-  Cfitsio::compress((fitsfile*)fptr, static_cast<const TDerived&>(*this));
-}
-
-} // namespace Fits
-
 namespace Cfitsio {
 
 bool isCompressing(fitsfile* fptr) {

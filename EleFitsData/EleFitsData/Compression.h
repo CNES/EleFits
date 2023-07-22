@@ -98,11 +98,6 @@ protected:
   inline explicit Compression(Position<-1> tiling, Quantization quantization);
 
   /**
-   * @brief Enable compression by CFITSIO.
-   */
-  virtual void compress(void* fptr) const = 0;
-
-  /**
    * @brief The tiling shape.
    */
   Position<-1> m_tiling;
@@ -144,15 +139,6 @@ protected:
    * @brief Constructor.
    */
   explicit AlgoMixin(Position<-1> tiling, Quantization quantization);
-
-  /**
-   * @brief Dependency inversion to call the wrapper's dispatch based on `TDerived`.
-   */
-  void compress(void* fptr) const final;
-  // FIXME define the function here instead of in the wrapper
-  // The function is not used anyway, and this simplifies compilation
-  // => Change compress(fitsfile*, TDerived) into compress(void*, TDerived)
-  // or forward declare fitsfile
 };
 
 /**

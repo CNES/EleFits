@@ -5,6 +5,7 @@
 #ifndef _ELEFITS_COMPRESSIONSTRATEGY_H
 #define _ELEFITS_COMPRESSIONSTRATEGY_H
 
+#include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleFits/ImageHdu.h"
 #include "EleFitsData/Compression.h"
 
@@ -18,7 +19,7 @@ namespace Fits {
 struct CompressionStrategy {
 #define ELEFITS_DECLARE_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
-  virtual const Compression& visit(const ImageHdu::Initializer<T>& init) = 0;
+  virtual bool visit(fitsfile* fptr, const ImageHdu::Initializer<T>& init) = 0;
   ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_DECLARE_VISIT)
 #undef ELEFITS_DECLARE_VISIT
 };
@@ -33,9 +34,9 @@ struct CompressionStrategy {
 template <typename TDerived>
 struct CompressionStrategyMixin : public CompressionStrategy {
 #define ELEFITS_IMPLEMENT_VISIT(T, name) \
-  /** @brief Create a compression algorithm according to some initializer. */ \
-  const Compression& visit(const ImageHdu::Initializer<T>& init) override { \
-    return static_cast<TDerived&>(*this)(init); \
+  /** @brief Compress if the strategy is compatible with the initializer. */ \
+  bool visit(fitsfile* fptr, const ImageHdu::Initializer<T>& init) override { \
+    return static_cast<TDerived&>(*this)(fptr, init); \
   }
   ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_IMPLEMENT_VISIT)
 #undef ELEFITS_IMPLEMENT_VISIT
@@ -43,111 +44,53 @@ struct CompressionStrategyMixin : public CompressionStrategy {
 
 /**
  * @ingroup image_compression
- * @brief A compression strategy with a chain of algorithms.
- * @tparam TPrime Primary compression algorithm
- * @tparam TFallbacks Ordered list of fallback compression algorithms
- * 
- * If the primary algorithm is not suitable, then the first fallback algorithm is tested, then the second one, and so on.
- * If the last fallback algorithm is not suitable, then no compression is applied.
- */
-template <typename TPrime, typename... TFallbacks>
-class Compress : public CompressionStrategyMixin<Compress<TPrime, TFallbacks...>> {
-public:
-  /**
-   * @brief Create a strategy with default-initialized fallbacks.
-   */
-  explicit Compress(TPrime prime = TPrime()) : m_prime(std::move(prime)), m_fallbacks(TFallbacks()...) {}
-
-  /**
-   * @brief Create a strategy with explicit parameters.
-   * @param prime The primary algorithm
-   * @param fallbacks The fallback algorithms
-   * 
-   * If not all fallback algorithms are specified, then the last ones are default-initialized.
-   */
-  template <typename... Ts>
-  explicit Compress(TPrime prime, Ts&&... fallbacks) :
-      m_prime(std::move(prime)), m_fallbacks(std::forward<Ts>(fallbacks)...) {}
-
-  /**
-   * @brief Create the compression algorithm.
-   */
-  template <typename T>
-  const Compression& operator()(const ImageHdu::Initializer<T>& init) {
-    if (shouldCompress(m_prime, init)) {
-      if (m_prime.tiling() == Tile::rowwise()) {
-        const long rowSize = init.shape[0] * sizeof(T);
-        static constexpr long minTileSize = 1024 * 1024;
-        const long rowCount = minTileSize / rowSize + 1;
-        m_prime.tiling(Tile::rowwise(rowCount));
-      }
-      return m_prime;
-    }
-    return m_fallbacks(init);
-  }
-
-private:
-  /**
-   * @brief The prime.
-   */
-  TPrime m_prime;
-
-  /**
-   * @brief The fallbacks.
-   */
-  Compress<TFallbacks...> m_fallbacks;
-};
-
-/// @cond
-/**
- * @brief Single-algorithm specialization.
+ * @brief A compression strategy with a single algorithm.
+ * @tparam TAlgo The algorithm type
  */
 template <typename TAlgo>
-class Compress<TAlgo> : public CompressionStrategyMixin<Compress<TAlgo>> {
+class Compress : public CompressionStrategyMixin<Compress<TAlgo>> {
 public:
   /**
    * @brief Constructor.
    */
-  Compress(TAlgo algo = TAlgo()) : m_prime(std::move(algo)) {}
+  template <typename... Ts>
+  explicit Compress(Ts&&... args) : m_algo(std::forward<Ts>(args)...) {}
 
   /**
-   * @brief Create the compression algorithm.
+   * @brief Try compressing.
+   * 
+   * If the algorithm is not compatible with the initializer,
+   * then no compression is performed and `false` is returned.
    */
   template <typename T>
-  const Compression& operator()(const ImageHdu::Initializer<T>& init) {
-    if (m_prime.tiling() == Tile::rowwise()) { // FIXME duplicates
-      const long rowWidth = init.shape[0];
-      const long rowSize = rowWidth * sizeof(T);
-      static constexpr long minTileSize = 1024 * 1024;
-      const long rowCount = minTileSize / rowSize + 1;
-      m_prime.tiling({rowWidth, rowCount});
+  bool operator()(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+
+    if constexpr (std::is_same_v<std::decay_t<decltype(m_algo)>, NoCompression>) {
+      Cfitsio::compress(fptr, m_algo);
+      return true;
     }
-    if (not shouldCompress(m_prime, init)) {
-      static NoCompression none;
-      return none;
+
+    static constexpr std::size_t blockSize = 2880;
+    if (shapeSize(init.shape) * sizeof(T) <= blockSize) {
+      return false;
     }
-    return m_prime;
+
+    if (not canCompress(m_algo, init)) {
+      return false;
+    }
+
+    Cfitsio::compress(fptr, m_algo);
+    return true;
   }
 
 private:
-  TAlgo m_prime;
+  /**
+   * @brief The algo.
+   */
+  TAlgo m_algo;
 };
 
-template <typename TAlgo, typename T>
-bool shouldCompress(const TAlgo& algo, const ImageHdu::Initializer<T>& init) {
-  if constexpr (std::is_same_v<TAlgo, NoCompression>) {
-    return true;
-  }
-  static constexpr std::size_t blockSize = 2880;
-  if (shapeSize(init.shape) * sizeof(T) <= blockSize) {
-    return false;
-  }
-  if constexpr (bitpix<T>() == 64) { // CFITSIO does not support 64-bit integer compression
-    return false;
-  }
-  return canCompress(algo, init);
-}
-
+/// @cond
 template <typename TAlgo, typename T>
 bool canCompress(const TAlgo&, const ImageHdu::Initializer<T>&) {
   return true;
@@ -226,7 +169,7 @@ private:
   /**
    * @brief Constructor.
    */
-  CompressAptly(Type type) : m_type(type), m_algo() {}
+  CompressAptly(Type type) : m_type(type) {}
 
 public:
   /**
@@ -251,34 +194,34 @@ public:
   }
 
   /**
-   * @brief Create the compression algorithm.
+   * @brief Compress if possible.
    */
   template <typename T>
-  const Compression& operator()(const ImageHdu::Initializer<T>& init);
+  bool operator()(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `ShuffledGzip` algorithm if compatible.
    */
   template <typename T>
-  const std::unique_ptr<Compression>& gzip(const ImageHdu::Initializer<T>& init);
+  bool gzip(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `Rice` algorithm if compatible.
    */
   template <typename T>
-  const std::unique_ptr<Compression>& rice(const ImageHdu::Initializer<T>& init);
+  bool rice(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `HCompress` algorithm if compatible.
    */
   template <typename T>
-  const std::unique_ptr<Compression>& hcompress(const ImageHdu::Initializer<T>& init);
+  bool hcompress(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
 
   /**
    * @brief Create a `Plio` algorithm if compatible.
    */
   template <typename T>
-  const std::unique_ptr<Compression>& plio(const ImageHdu::Initializer<T>& init);
+  bool plio(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
 
 private:
   /**
@@ -309,11 +252,6 @@ private:
    * @brief The compression type.
    */
   Type m_type;
-
-  /**
-   * @brief The algorithm cache.
-   */
-  std::unique_ptr<Compression> m_algo;
 };
 
 } // namespace Fits

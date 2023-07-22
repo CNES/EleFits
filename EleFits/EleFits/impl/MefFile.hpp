@@ -12,10 +12,6 @@
 namespace Euclid {
 namespace Fits {
 
-bool MefFile::isCompressing() const {
-  return Cfitsio::isCompressing(m_fptr) || m_strategy;
-}
-
 template <class T>
 const T& MefFile::access(long index) {
   if (index < 0) { // Backward indexing
@@ -70,18 +66,16 @@ HduSelector<T> MefFile::filter(const HduFilter& filter) {
   return {*this, filter * HduCategory::forClass<T>()};
 }
 
-void MefFile::startCompressing(const Fits::Compression& algo) {
-  m_strategy.reset();
-  algo.compress(m_fptr);
-}
-
-template <typename TStrategy>
-void MefFile::strategy(TStrategy&& strategy) {
-  m_strategy.reset(new TStrategy(std::forward<TStrategy>(strategy)));
-}
-
-void MefFile::stopCompressing() {
-  startCompressing(Fits::NoCompression());
+template <typename TAlgo, typename... TFallbacks>
+void MefFile::strategy(TAlgo&& algo, TFallbacks&&... fallbacks) {
+  if constexpr (std::is_base_of_v<Compression, std::decay_t<TAlgo>>) {
+    m_compression.push_back(std::make_unique<Compress<TAlgo>>(std::forward<TAlgo>(algo)));
+  } else {
+    m_compression.push_back(std::make_unique<TAlgo>(std::forward<TAlgo>(algo)));
+  }
+  if constexpr (sizeof...(TFallbacks) > 0) {
+    strategy(std::forward<TFallbacks>(fallbacks)...);
+  }
 }
 
 template <typename T>
@@ -99,10 +93,10 @@ const ImageHdu& MefFile::appendImageHeader(const std::string& name, const Record
 template <typename T, long N>
 const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
   const auto index = m_hdus.size();
-  if (m_strategy) {
+  if (not m_compression.empty()) {
     Position<-1> dynamicShape(shape.begin(), shape.end());
     ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
-    m_strategy->visit(init).compress(m_fptr);
+    compress(init);
   }
   Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -130,11 +124,11 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
 template <typename TRaster>
 const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster) {
   const auto index = m_hdus.size();
-  if (m_strategy) {
+  if (not m_compression.empty()) {
     using T = std::decay_t<typename TRaster::Value>;
     Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
     ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
-    m_strategy->visit(init).compress(m_fptr);
+    compress(init);
   }
   Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -156,7 +150,7 @@ const T& MefFile::appendCopy(const T& hdu) {
     Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
     m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   } else {
-    if (hdu.matches(HduCategory::RawImage) && (not isCompressing() || hdu.matches(HduCategory::Metadata))) {
+    if (hdu.matches(HduCategory::RawImage) && (m_compression.empty() || hdu.matches(HduCategory::Metadata))) {
       Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
       m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
     } else {
@@ -228,6 +222,17 @@ const BintableHdu& MefFile::appendBintable(const std::string& name, const Record
   hdu.header().writeSeq(records);
   return hdu;
   // FIXME use appendBintableExt(name, records, columns...) or inverse dependency
+}
+
+template <typename T>
+bool MefFile::compress(const ImageHdu::Initializer<T>& init) const {
+  for (const auto& c : m_compression) {
+    if (c->visit(m_fptr, init)) {
+      return true;
+    }
+  }
+  Compress<NoCompression>()(m_fptr, init);
+  return false;
 }
 
 } // namespace Fits

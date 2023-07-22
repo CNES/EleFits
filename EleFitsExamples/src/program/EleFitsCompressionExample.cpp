@@ -47,8 +47,9 @@ void addGenericImageFromType(Fits::MefFile& f, std::string typeName, std::string
 
   logger.info("- Adding Image with type " + typeName);
 
-  if (not areCompatible<T>(algoName))
-    f.stopCompressing();
+  if (not areCompatible<T>(algoName)) {
+    // f.stopCompressing(); // FIXME
+  }
 
   // Create and add Raster with type T as extension:
   Fits::VecRaster<T, 2> raster2D({cols, rows});
@@ -92,44 +93,43 @@ public:
 
       logger.info("# setting compression to NoCompression");
       Fits::NoCompression algo;
-      f.startCompressing(algo);
+      f.strategy(algo);
 
     } else if (algoName == "RICE") {
 
       logger.info("# setting compression to Rice");
       Fits::Rice algo;
-      f.startCompressing(algo);
+      f.strategy(algo);
 
     } else if (algoName == "HCOMPRESS") {
 
       logger.info("# setting compression to Hcompress");
       Fits::HCompress algo;
-      f.startCompressing(algo);
+      f.strategy(algo);
 
     } else if (algoName == "PLIO") {
 
       logger.info("# setting compression to Plio");
       Fits::Plio algo;
-      f.startCompressing(algo);
+      f.strategy(algo);
 
     } else if (algoName == "GZIP") {
 
       logger.info("# setting compression to Gzip");
       Fits::Gzip algo;
-      f.startCompressing(algo);
+      f.strategy(algo);
 
     } else if (algoName == "SHUFFLEDGZIP") {
 
       logger.info("# setting compression to ShuffledGzip");
       Fits::ShuffledGzip algo;
-      f.startCompressing(algo);
+      f.strategy(algo);
 
     } else {
 
       logger.info("# UNKNOWN COMPRESSION TYPE");
       logger.info("(disabling compression)");
       Fits::NoCompression algo;
-      f.stopCompressing();
     }
 
     // Adds an image for each Raster type to the mef file
