@@ -97,11 +97,9 @@ const ImageHdu& MefFile::appendImageHeader(const std::string& name, const Record
 template <typename T, long N>
 const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
   const auto index = m_hdus.size();
-  if (not m_strategy.m_compression.empty()) {
-    Position<-1> dynamicShape(shape.begin(), shape.end());
-    ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
-    m_strategy.compress(m_fptr, init);
-  }
+  Position<-1> dynamicShape(shape.begin(), shape.end());
+  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
+  m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
@@ -128,12 +126,10 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
 template <typename TRaster>
 const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster) {
   const auto index = m_hdus.size();
-  if (not m_strategy.m_compression.empty()) {
-    using T = std::decay_t<typename TRaster::Value>;
-    Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
-    ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
-    m_strategy.compress(m_fptr, init);
-  }
+  using T = std::decay_t<typename TRaster::Value>;
+  Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
+  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
+  m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();

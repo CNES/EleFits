@@ -281,7 +281,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(emptyImage.matches(HduCategory::RawImage));
 
   /* Random Image in source MefFile */
-  Position<1> shape {10};
+  Position<1> shape {2881}; // More than a block
   Test::RandomRaster<double, 1> raster(shape);
   const auto& image = this->appendImage("IMAGE", records, raster);
   const auto input = image.raster().template read<double, 1>();

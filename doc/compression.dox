@@ -119,6 +119,9 @@ Once this step has been performed, the quantized, integral values are effectivel
 @see R. L. White, P. Greenfield, W. Pence, D. Tody, R. Seaman.
 _Tiled Image Convention for Storing Compressed Images in FITS Binary Tables._
 
+\warning
+64-bit integers cannot be compressed due to a CFITSIO limitation.
+
 
 \subsection compression-interface Interface
 
