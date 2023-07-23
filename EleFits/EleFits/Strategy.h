@@ -43,8 +43,10 @@ public:
   void append(TAction&& action) {
     if constexpr (std::is_base_of_v<Compression, std::decay_t<TAction>>) {
       m_compression.push_back(std::make_unique<Compress<TAction>>(std::forward<TAction>(action)));
-    } else {
+    } else if constexpr (std::is_base_of_v<CompressionStrategy, std::decay_t<TAction>>) {
       m_compression.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
+    } else {
+      throw FitsError("Actions not implemented!");
     }
   }
 
