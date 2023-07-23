@@ -105,21 +105,13 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   hdu.header().writeSeq(records);
 
-  // if (std::is_floating_point<T>::value != records.has("BLANK")) { // != is XOR
-  //   int status = 0;
-  //   fits_write_img_null(m_fptr, 0, 1, shapeSize(shape), &status);
-  //   if (status != 0) {
-  //     throw FitsError("Cannot write nulls."); // FIXME
-  //   }
-  // } else
-
-  // fits_write_img_null does not support compression
+  // CFITSIO's fits_write_img_null does not support compression
   if (shapeSize(shape) != 0) {
     VecRaster<T, N> raster(shape);
     if constexpr (std::is_floating_point_v<T>) {
       std::fill(raster.begin(), raster.end(), std::numeric_limits<T>::quiet_NaN());
     } else if (records.has("BLANK")) {
-      const auto blank = records.as<T>("BLANK");
+      const auto blank = records.as<T>("BLANK") - offset<T>();
       std::fill(raster.begin(), raster.end(), blank);
     }
     hdu.raster().write(raster);
