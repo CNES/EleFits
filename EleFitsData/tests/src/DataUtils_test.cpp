@@ -151,6 +151,29 @@ BOOST_AUTO_TEST_CASE(seq_dispatch_test) {
   dispatchSeq(std::vector<float> {1, 3.14}, false);
 }
 
+BOOST_AUTO_TEST_CASE(bitpix_bzero_test) {
+  BOOST_TEST(bitpix<unsigned char>() == 8);
+  BOOST_TEST(offset<unsigned char>() == 0);
+  BOOST_TEST(bitpix<char>() == 8);
+  BOOST_TEST(offset<char>() == 128);
+  BOOST_TEST(bitpix<std::int16_t>() == 16);
+  BOOST_TEST(offset<std::int16_t>() == 0);
+  BOOST_TEST(bitpix<std::uint16_t>() == 16);
+  BOOST_TEST(offset<std::uint16_t>() == -32768);
+  BOOST_TEST(bitpix<std::int32_t>() == 32);
+  BOOST_TEST(offset<std::int32_t>() == 0);
+  BOOST_TEST(bitpix<std::uint32_t>() == 32);
+  BOOST_TEST(offset<std::uint32_t>() == -2147483648);
+  BOOST_TEST(bitpix<std::int64_t>() == 64);
+  BOOST_TEST(offset<std::int64_t>() == 0);
+  BOOST_TEST(bitpix<std::uint64_t>() == 64);
+  BOOST_TEST((offset<std::uint64_t>() == -9223372036854775808));
+  BOOST_TEST(bitpix<float>() == -32);
+  BOOST_TEST(offset<float>() == 0);
+  BOOST_TEST(bitpix<double>() == -64);
+  BOOST_TEST(offset<double>() == 0);
+}
+
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_SUITE_END()

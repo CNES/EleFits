@@ -394,25 +394,10 @@ PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) { // FIXME ca
 
 /**
  * @relates Raster
- * @brief Get the `BITPIX` value of a given type.
- */
-template <typename T>
-constexpr long bitpix() {
-  if constexpr (std::is_integral_v<T>) {
-    return 8 * static_cast<int>(sizeof(T));
-  }
-  if constexpr (std::is_floating_point_v<T>) {
-    return -8 * static_cast<int>(sizeof(T));
-  }
-  return 0;
-}
-
-/**
- * @relates Raster
  * @brief Get the `BITPIX` value of a given raster.
  */
 template <typename TRaster>
-constexpr long bitpix(const TRaster&) {
+constexpr long bitpix(const TRaster&) { // FIXME move to ImageHdu?
   return bitpix<std::decay_t<typename TRaster::Value>>();
 }
 

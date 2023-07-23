@@ -5,6 +5,7 @@
 #if defined(_ELEFITS_COMPRESSIONSTRATEGY_IMPL) || defined(CHECK_QUALITY)
 
 #include "EleFits/CompressionStrategy.h"
+#include "EleFitsData/DataUtils.h"
 
 namespace Euclid {
 namespace Fits {

@@ -7,6 +7,7 @@
 
 #include <algorithm> // transform
 #include <array>
+#include <limits>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -57,6 +58,63 @@ namespace Fits {
   classname(classname&&) = delete; \
   /** @brief Deleted move assignment operator. */ \
   classname& operator=(classname&&) = delete;
+
+/**
+ * @brief Get the `BITPIX` value of a given type.
+ */
+template <typename T>
+constexpr long bitpix() {
+  if constexpr (std::is_integral_v<T>) {
+    return 8 * static_cast<int>(sizeof(T));
+  }
+  if constexpr (std::is_floating_point_v<T>) {
+    return -8 * static_cast<int>(sizeof(T));
+  }
+  return 0;
+}
+
+/// @cond
+template <typename T>
+struct ChangeSignednessImpl {
+  using Type = std::conditional_t<std::is_signed_v<T>, std::make_unsigned_t<T>, std::make_signed_t<T>>;
+};
+
+template <>
+struct ChangeSignednessImpl<float> {
+  using Type = float;
+};
+
+template <>
+struct ChangeSignednessImpl<double> {
+  using Type = double;
+};
+/// @endcond
+
+/**
+ * @brief Inverse the signedness of integers, do nothing for floating points.
+ */
+template <typename T>
+using ChangeSignedness = typename ChangeSignednessImpl<T>::Type;
+
+/**
+ * @brief Get the opposite of the `BZERO` value of a given type.
+ */
+template <typename T>
+constexpr ChangeSignedness<T> offset() {
+  if constexpr (std::is_floating_point_v<T>) {
+    return 0;
+  } else if constexpr (sizeof(T) == 1) {
+    if constexpr (std::is_signed_v<T>) {
+      return 128;
+    } else {
+      return 0;
+    }
+  } else if constexpr (std::is_signed_v<T>) {
+    return 0;
+  } else {
+    return std::numeric_limits<std::make_signed_t<T>>::min();
+  }
+}
 
 /**
  * @ingroup data_classes
