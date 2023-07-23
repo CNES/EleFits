@@ -408,27 +408,16 @@ BOOST_AUTO_TEST_CASE(copy_compressed_to_raw_test) {
 // This tests the isCompressedImage function from the ImageWrapper
 BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
 
-  RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
+  Test::RandomRaster<double, 1> raster({2881});
 
-  Position<1> shape {2881};
-  Test::RandomRaster<double, 1> raster(shape);
-
-  // turning compression on:
-  Gzip algo;
-  this->strategy(algo);
-
-  // existing primary should still be uncompressed
+  this->strategy(Gzip());
   BOOST_TEST(not this->primary().isCompressed());
 
-  // added ext should be compressed
-  const auto& image1 = this->appendImage("SECOND", records, raster);
+  const auto& image1 = this->appendImage("", {}, raster);
   BOOST_TEST(image1.isCompressed());
 
-  // turning compression off
   this->strategy().clear();
-
-  // added ext should not be compressed
-  const auto& image2 = this->appendImage("THIRD", records, raster);
+  const auto& image2 = this->appendImage("", {}, raster);
   BOOST_TEST(not image2.isCompressed());
 }
 
