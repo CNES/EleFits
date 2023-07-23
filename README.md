@@ -89,6 +89,23 @@ with fitsio.FITS(filename, 'rw') as fits:
 In addition, exclusive features are provided to simplify the implementation of classical use cases.
 A few examples are given below.
 
+Strategies are predefined or user-defined list of actions to be performed automatically.
+Among strategies, compression strategies enables internal compression of image HDUs:
+
+```cpp
+// Given:
+// - std::string filename: A file name
+// - Raster<float> data: A 2D intensity image
+// - Raster<char> mask: A 2D mask image
+
+MefFile f(filename, FileMode::Edit);
+f.strategy(CompressAptly::lossless(), ValidateChecksums());
+f.appendImage("", {}, image); // Automatically compresses with shuffled GZIP
+f.appendImage("", {}, mask); // Automatically compresses with PLIO
+const auto& p = f.primary(); // Automatically validates Primary's checksums, if any
+f.close(); // Automatically updates checksums of edited HDUs
+```
+
 Files are iterable, and selectors enable looping over filtered HDUs
 (here, newly created image HDUs):
 
@@ -133,16 +150,16 @@ to take advantage of an internal buffer:
 ```cpp
 // Given:
 // - BintableColumns columns: The binary table data unit handler
-// - Column columnA, columnB, columnC: Column containers of various value types
 
-columns.writeSeq(columnA, columnB, columnC);
+auto [columnA, columnB, columnC] = columns.readSeq(as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
 ```
 
 ```cpp
 // Given:
 // - BintableColumns columns: The binary table data unit handler
+// - Column columnA, columnB, columnC: Column containers of various value types
 
-auto [columnA, columnB, columnC] = columns.readSeq(as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
+columns.writeSeq(columnA, columnB, columnC);
 ```
 
 Entries of mutidimensional columns can be accessed as rasters directly:
