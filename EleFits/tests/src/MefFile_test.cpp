@@ -322,7 +322,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(imageCopy.matches(HduCategory::RawImage));
 
   /* Copy empty to compressed */
-  // fileCopy.strategy().clear(); // FIXME
+  fileCopy.strategy().clear();
   fileCopy.strategy(algo);
   const auto& imageCopy4 = fileCopy.appendCopy(emptyImage);
   BOOST_TEST(imageCopy4.readName() == emptyImage.readName());
@@ -332,7 +332,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(imageCopy4.matches(HduCategory::RawImage)); // empty images are actually NOT compressed
 
   /* Copy uncompressed to compressed */
-  // fileCopy.strategy().clear(); // FIXME
+  fileCopy.strategy().clear();
   fileCopy.strategy(algo);
   const auto& imageCopy2 = fileCopy.appendCopy(image);
   BOOST_TEST(imageCopy2.readName() == image.readName());
@@ -345,7 +345,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(imageCopy2.matches(HduCategory::CompressedImageExt)); // the copy should now be compressed
 
   /* Copy compressed to uncompressed */
-  // fileCopy.strategy().clear(); // FIXME
+  fileCopy.strategy().clear();
   const auto& imageCopy3 = fileCopy.appendCopy(compImage);
   BOOST_TEST(imageCopy3.readName() == compImage.readName());
   BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
@@ -450,7 +450,7 @@ BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
   BOOST_TEST(image1.isCompressed());
 
   // turning compression off
-  // fileCopy.strategy().clear(); // FIXME
+  this->strategy().clear();
 
   // added ext should not be compressed
   const auto& image2 = this->appendImage("THIRD", records, raster);

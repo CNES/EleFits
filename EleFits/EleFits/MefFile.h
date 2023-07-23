@@ -6,10 +6,10 @@
 #define _ELEFITS_MEFFILE_H
 
 #include "EleFits/BintableHdu.h"
-#include "EleFits/CompressionStrategy.h"
 #include "EleFits/FitsFile.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageHdu.h"
+#include "EleFits/Strategy.h"
 
 #include <memory>
 #include <vector>
@@ -85,7 +85,7 @@ public:
   /**
    * @copydoc FitsFile::FitsFile
    */
-  MefFile(const std::string& filename, FileMode permission = FileMode::Read);
+  MefFile(const std::string& filename, FileMode permission = FileMode::Read); // FIXME strategy
 
   /// @group_properties
 
@@ -201,20 +201,23 @@ public:
   template <typename T = Hdu>
   HduSelector<T> filter(const HduFilter& categories = HduCategory::Any);
 
+  /**
+   * @brief Get the strategy.
+   */
+  inline const Strategy& strategy() const;
+
+  /**
+   * @copybrief strategy()
+   */
+  inline Strategy& strategy();
+
   /// @group_modifiers
 
   /**
-   * @brief Set the compression strategy to be used when writting new image extensions.
-   * @tparam TStrategy An implementation of `CompressionStrategy`
-   * 
-   * From the call on, all new image extensions are created as compressed image extensions,
-   * where the compression algorithm is deduced from the extension properties (type, size, records...).
-   * 
-   * If the first algorithm is not suitable, then the second one is tested, and so on.
-   * If the last algorithm is not suitable, then no compression is applied.
+   * @brief Append actions to the strategy.
    */
-  template <typename TAlgo, typename... TFallbacks>
-  void strategy(TAlgo&& algo, TFallbacks&&... fallbacks);
+  template <typename TAction, typename... TActions>
+  void strategy(TAction&& action0, TActions&&... actions);
 
   /**
    * @brief Append a new image extension with empty data unit (`NAXIS = 0`).
@@ -306,12 +309,6 @@ protected:
   const T& appendExt(T extension);
 
   /**
-   * @brief Compress according to the strategy.
-   */
-  template <typename T>
-  inline bool compress(const ImageHdu::Initializer<T>& init) const;
-
-  /**
    * @brief Vector of `Hdu`s (castable to `ImageHdu` or `BintableHdu`).
    * @warning
    * m_hdus is 0-based while Cfitsio HDUs are 1-based.
@@ -319,9 +316,9 @@ protected:
   std::vector<std::unique_ptr<Hdu>> m_hdus;
 
   /**
-   * @brief The compression strategy
+   * @brief The strategy.
    */
-  std::vector<std::unique_ptr<CompressionStrategy>> m_compression;
+  Strategy m_strategy;
 };
 
 } // namespace Fits
