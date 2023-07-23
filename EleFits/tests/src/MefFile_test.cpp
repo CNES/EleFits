@@ -357,77 +357,52 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(imageCopy3.matches(HduCategory::RawImage)); // the copy should now be uncompressed
 }
 
-BOOST_FIXTURE_TEST_CASE(append_copy_with_strategy_test, Test::TemporaryMefFile) { // FIXME split into cases
+void checkAppendCopy(bool zin, bool zout) {
 
-  Test::TemporaryMefFile fileCopy;
-  RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}}; // for images
-  Gzip algo;
+  VecRaster<float> raster({2881, 1});
+  Test::TemporaryMefFile in;
+  Test::TemporaryMefFile out;
 
-  /* Multi-column bintable in source MefFile */
-  const ColumnInfo<char> charInfo("CHAR");
-  const ColumnInfo<float> floatInfo("FLOAT");
-  const auto& bintable = this->appendBintableHeader("BINTABLE", records, charInfo, floatInfo);
+  if (zin) {
+    in.strategy(Gzip());
+  }
 
-  /* Empty Image in source MefFile */
-  const auto& emptyImage = this->appendImageHeader("EMPTY", records);
-  BOOST_TEST(emptyImage.matches(HduCategory::RawImage));
+  const auto& image = in.appendImage("", {}, raster);
+  BOOST_TEST(image.isCompressed() == zin);
+  BOOST_TEST(image.matches(HduCategory::CompressedImageExt) == zin);
+  const auto& blank = in.appendNullImage<float>("", {}, raster.shape());
+  BOOST_TEST(blank.isCompressed() == zin);
+  BOOST_TEST(blank.matches(HduCategory::CompressedImageExt) == zin);
 
-  /* Random Image in source MefFile */
-  Position<2> shape {2000, 3000};
-  Test::RandomRaster<double, 2> raster(shape);
-  const auto& image = this->appendImage("IMAGE", records, raster);
-  const auto input = image.raster().template read<double, 2>();
-  BOOST_TEST(image.matches(HduCategory::RawImage));
+  if (zout) {
+    out.strategy(ShuffledGzip());
+  }
 
-  /* Same Image in source but Compressed */
-  this->strategy(Compress<Gzip>(algo));
-  const auto& compImage = this->appendImage("ZIMAGE", records, raster);
-  BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
+  const auto& imageCopy = out.appendCopy(image);
+  BOOST_TEST(imageCopy.isCompressed() == zout);
+  BOOST_TEST(imageCopy.matches(HduCategory::CompressedImageExt) == zout);
+  const auto& blankCopy = out.appendCopy(blank);
+  BOOST_TEST(blankCopy.isCompressed() == zout);
+  BOOST_TEST(blankCopy.matches(HduCategory::CompressedImageExt) == zout);
 
-  /* Setting up compression strategy */
-  fileCopy.strategy(CompressAptly::lossless());
+  BOOST_TEST(imageCopy.raster().read<float>() == raster);
+  BOOST_TEST(blankCopy.raster().read<float>().shape() == raster.shape());
+}
 
-  /* Copy bintable */
-  const auto& bintableCopy = fileCopy.appendCopy(bintable);
-  BOOST_TEST(bintableCopy.readName() == bintable.readName());
-  BOOST_TEST(bintableCopy.readRowCount() == bintable.readRowCount());
-  BOOST_TEST(bintableCopy.readColumnCount() == bintable.readColumnCount());
-  BOOST_TEST(bintableCopy.columns().readName(0) == bintable.columns().readName(0));
-  BOOST_TEST(bintableCopy.columns().readName(1) == bintable.columns().readName(1));
-  BOOST_TEST(bintableCopy.header().parse<int>("FOO").value == bintable.header().parse<int>("FOO").value);
-  BOOST_TEST(bintableCopy.header().parse<int>("BAR").value == bintable.header().parse<int>("BAR").value);
+BOOST_AUTO_TEST_CASE(copy_raw_to_raw_test) {
+  checkAppendCopy(false, false);
+}
 
-  /* Copy empty uncompressed */
-  const auto& emptyCopy = fileCopy.appendCopy(emptyImage);
-  BOOST_TEST(emptyCopy.readName() == emptyImage.readName());
-  BOOST_TEST(emptyCopy.readSize() == emptyImage.readSize());
-  BOOST_TEST(emptyCopy.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
-  BOOST_TEST(emptyCopy.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
-  BOOST_TEST(emptyCopy.matches(HduCategory::RawImage));
+BOOST_AUTO_TEST_CASE(copy_raw_to_compressed_test) {
+  checkAppendCopy(false, true);
+}
 
-  /* Copy uncompressed */
-  BOOST_TEST(not image.isCompressed());
-  const auto& imageCopy = fileCopy.appendCopy(image);
-  BOOST_TEST(imageCopy.readName() == image.readName());
-  BOOST_TEST(imageCopy.readSize() == image.readSize());
-  BOOST_TEST(imageCopy.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
-  BOOST_TEST(imageCopy.header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
-  const auto output = imageCopy.raster().template read<double, 2>();
-  BOOST_TEST(output.shape() == input.shape());
-  BOOST_TEST(output.container() == input.container());
-  BOOST_TEST(imageCopy.matches(HduCategory::CompressedImageExt));
+BOOST_AUTO_TEST_CASE(copy_compressed_to_compressed_test) {
+  checkAppendCopy(true, true);
+}
 
-  /* Copy compressed */
-  BOOST_TEST(compImage.isCompressed());
-  const auto& imageCopy3 = fileCopy.appendCopy(compImage);
-  BOOST_TEST(imageCopy3.readName() == compImage.readName());
-  BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
-  BOOST_TEST(imageCopy3.header().parse<int>("FOO").value == compImage.header().parse<int>("FOO").value);
-  BOOST_TEST(imageCopy3.header().parse<int>("BAR").value == compImage.header().parse<int>("BAR").value);
-  const auto output3 = imageCopy3.raster().template read<double, 2>();
-  BOOST_TEST(output3.shape() == input.shape());
-  BOOST_TEST(output3.container() == input.container());
-  BOOST_TEST(imageCopy3.matches(HduCategory::CompressedImageExt));
+BOOST_AUTO_TEST_CASE(copy_compressed_to_raw_test) {
+  checkAppendCopy(true, false);
 }
 
 // This tests the isCompressedImage function from the ImageWrapper
@@ -435,7 +410,7 @@ BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
 
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
 
-  Position<1> shape {10};
+  Position<1> shape {2881};
   Test::RandomRaster<double, 1> raster(shape);
 
   // turning compression on:
