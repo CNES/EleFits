@@ -83,7 +83,6 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
   return "Unknown";
 }
 
-// FIXME: get isLossless elsewhere
 void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
 
   Fits::Quantization q(lossy ? Fits::Tile::rms / 16 : 0);
@@ -230,7 +229,8 @@ public:
         hduSize = hdu.readSizeInFile();
         zHduSize = zHdu.readSizeInFile();
         ratio = static_cast<double>(hduSize) / zHduSize;
-        double throughput = static_cast<double>(hduSize) / chrono.last().count() / 1000; // B/ms -> MB/s
+        double throughput = static_cast<double>(hduSize) / chrono.last().count() / 1000; // converted from B/ms to MB/s
+        // warning: if elapsed less than 1ms, divides by zero -> throughput infinite
         algo = readAlgoName(zHdu.as<Fits::ImageHdu>());
         writerHdu
             .writeRow(filenameSrc, testCase, bitpix, algo, hduSize, zHduSize, ratio, chrono.last().count(), throughput);

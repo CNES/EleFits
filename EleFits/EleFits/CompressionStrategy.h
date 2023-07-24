@@ -70,6 +70,10 @@ public:
       return true;
     }
 
+    if constexpr (bitpix<T>() == 64) { // CFITSIO does not support 64-bit integer compression
+      return false;
+    }
+
     static constexpr std::size_t blockSize = 2880;
     if (shapeSize(init.shape) * sizeof(T) <= blockSize) {
       return false;
