@@ -98,7 +98,7 @@ void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
   } else if (testCase == "FULL") {
     g.strategy(std::move(plio), std::move(hc), std::move(rice), std::move(sgzip));
   } else if (testCase == "GZIP") {
-    g.strategy(gzip);
+    g.strategy(std::move(gzip));
   } else if (testCase == "SHUFFLEDGZIP") {
     g.strategy(std::move(sgzip));
   } else if (testCase == "RICE") {
