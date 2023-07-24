@@ -128,6 +128,7 @@ public:
         value<std::string>()->default_value("GZIP"),
         "Compression strategy (NONE/FULL/APTLY/GZIP/SHUFFLEDGZIP/RICE/HCOMPRESS/PLIO)");
     options.flag("lossy", "Allow lossy compression");
+    options.flag("extGZIP", "Apply external gzip to output file");
     options.named(
         "res",
         value<std::string>()->default_value("/tmp/compressionBenchmark.csv"),
@@ -141,8 +142,11 @@ public:
 
   ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
+    const bool extGzip = args["extGZIP"].as<bool>();
     const auto filenameSrc = args["input"].as<std::string>();
-    const auto filenameDst = args["output"].as<std::string>();
+    auto filenameDst = args["output"].as<std::string>();
+    if (extGzip)
+      filenameDst += ".gz";
     const auto testCase = args["case"].as<std::string>();
     const bool lossy = args["lossy"].as<bool>();
     const auto results = args["res"].as<std::string>();
@@ -152,22 +156,25 @@ public:
         results,
         {"Filename",
          "Case",
+         "Lossy",
+         "ExtGZIP",
          "File size (bytes)",
          "Compressed size (bytes)",
          "Compression ratio",
+         "Walltime (ms)",
          "HDU count",
          "HDU bitpixs",
          "Comptypes",
          "HDU sizes (bytes)",
          "HDU compressed sizes (bytes)",
          "HDU ratios",
-         "Elapsed (ms)",
-         "Walltime (ms)"});
+         "Elapsed (ms)"});
 
     Fits::Validation::CsvAppender writerHdu(
         resultsHdu,
         {"Filename",
          "Case",
+         "Lossy",
          "Bitpix",
          "Comptype",
          "HDU size (bytes)",
@@ -232,8 +239,17 @@ public:
         double throughput = static_cast<double>(hduSize) / chrono.last().count() / 1000; // converted from B/ms to MB/s
         // warning: if elapsed less than 1ms, divides by zero -> throughput infinite
         algo = readAlgoName(zHdu.as<Fits::ImageHdu>());
-        writerHdu
-            .writeRow(filenameSrc, testCase, bitpix, algo, hduSize, zHduSize, ratio, chrono.last().count(), throughput);
+        writerHdu.writeRow(
+            filenameSrc,
+            testCase,
+            lossy,
+            bitpix,
+            algo,
+            hduSize,
+            zHduSize,
+            ratio,
+            chrono.last().count(),
+            throughput);
         logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": " << algo;
       }
 
@@ -257,17 +273,19 @@ public:
     writer.writeRow(
         filenameSrc,
         testCase,
+        lossy,
+        extGzip,
         srcSize,
         dstSize,
         compRatio,
+        chronoAll.last().count(),
         hduCounter,
         join(bitpixs),
         joinString(algos),
         join(hduSizes),
         join(zHduSizes),
         join(hduRatios),
-        join(chrono.increments()),
-        chronoAll.last().count());
+        join(chrono.increments()));
 
     logger.info("Done.");
 

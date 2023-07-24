@@ -17,16 +17,22 @@ def scientificNotation(value):
         b = int(float(b))
     return f'{b}e{int(e)}'
 
+def str2bool(v):
+  return v.lower() in ("yes", "true", "t", "1")
 
 def makeCommand(testCase, output, results, log_level):
     """Run a test case specified as a dictionary with following keys:
     "Filename", "Comptype"
     "Test setup", "HDU type", "HDU count", "Value count / HDU"
     """
-    # FIXME: add tiling & isLossless
+    # FIXME: add tiling
     cmd = f'EleFitsRunCompressionBenchmark "{testCase["Filename"]}" {output}'
     cmd += f' --case "{testCase["Comptype"]}"'
     cmd += f' --res {results} --log-level {log_level}'
+    if str2bool(testCase["Lossy"]):
+        cmd += f' --lossy'
+    if str2bool(testCase["ExtGZIP"]):
+        cmd += f' --extGZIP'
     return cmd
 
 
@@ -34,11 +40,10 @@ def defineSpecificProgramOptions():
     parser = argparse.ArgumentParser()
     parser.add_argument('--tests', default=None,
                         help='The set of test configurations as a TSV file '
-                        '(columns are: "Filename", "Comptype"). '
+                        '(columns are: "Filename", "Comptype", "Lossy", "ExtGZIP). '
                         'The result file can be used to rerun the same benchmark.')
     parser.add_argument('--output', default='/tmp/test.fits', help='The filename of the FITS files to be generated.')
     parser.add_argument('--res', default='/tmp/compressionBenchmark.csv', help='The filename of the benchmark results TSV.')
-    parser.add_argument('--externalGzip', action='store_true', help='Adds external Gzip case when encountering NONE case')
     #parser.add_argument('--plot', default='/tmp/plot.eps', help='The filename of the benchmark results plotting file.')
     return parser
 
@@ -56,14 +61,6 @@ def mainMethod(args):
                 logger.info(cmd)
                 logger.info('')
                 subprocess.call(cmd, shell=True)
-
-                if args.externalGzip and testCase["Comptype"]=="NONE":
-                    # same command but also applying external gzip to file:
-                    cmd = makeCommand(testCase, args.output+".gz", args.res, 'INFO')  # TODO get log level from args
-                    logger.info('')
-                    logger.info(cmd)
-                    logger.info('')
-                    subprocess.call(cmd, shell=True)
 
     # if args.plot is not None:
     #     results = defaultdict(DataFrame)
