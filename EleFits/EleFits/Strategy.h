@@ -5,6 +5,7 @@
 #ifndef _ELEFITS_STRATEGY_H
 #define _ELEFITS_STRATEGY_H
 
+#include "EleFits/Action.h"
 #include "EleFits/CompressionStrategy.h"
 
 #include <memory>
@@ -31,7 +32,7 @@ public:
   /**
    * @brief Constructor.
    */
-  Strategy() : m_compression() {}
+  Strategy() : m_compression(), m_actions() {}
 
   /**
    * @brief Append an action.
@@ -46,7 +47,7 @@ public:
     } else if constexpr (std::is_base_of_v<CompressionStrategy, std::decay_t<TAction>>) {
       m_compression.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
     } else {
-      throw FitsError("Actions not implemented!");
+      m_actions.push_back(std::make_unique<Action>(std::forward<TAction>(action)));
     }
   }
 
@@ -70,9 +71,14 @@ private:
   }
 
   /**
-   * @brief The compression strategy
+   * @brief The compression strategy.
    */
   std::vector<std::unique_ptr<CompressionStrategy>> m_compression;
+
+  /**
+   * @brief The actions.
+   */
+  std::vector<std::unique_ptr<Action>> m_actions;
 };
 
 } // namespace Fits
