@@ -78,14 +78,19 @@ public:
   /// @group_construction
 
   /**
-   * @copydoc FitsFile::~FitsFile
+   * @copydoc FitsFile::~FitsFile()
    */
-  virtual ~MefFile() = default;
+  virtual ~MefFile();
 
   /**
-   * @copydoc FitsFile::FitsFile
+   * @copydoc FitsFile::FitsFile()
    */
   MefFile(const std::string& filename, FileMode permission = FileMode::Read); // FIXME strategy
+
+  /**
+   * @copydoc FitsFile::close()
+   */
+  void close() override;
 
   /// @group_properties
 
@@ -301,6 +306,11 @@ public:
   /// @}
 
 protected:
+  /**
+   * @copydoc FitsFile::open()
+   */
+  void open(const std::string& filename, FileMode permission) override;
+
   /**
    * @brief Append an extension.
    * @return A reference to the new HDU of type T.

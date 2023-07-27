@@ -9,10 +9,32 @@
 namespace Euclid {
 namespace Fits {
 
+void MefFile::open(const std::string& filename, FileMode permission) {
+  FitsFile::open(filename, permission);
+  for (const auto& hdu : *this) {
+    m_strategy.afterOpening(hdu);
+  }
+}
+
+void MefFile::close() {
+  for (const auto& hdu : *this) {
+    m_strategy.beforeClosing(hdu);
+  }
+  FitsFile::close();
+}
+
+MefFile::~MefFile() {
+  close();
+}
+
 MefFile::MefFile(const std::string& filename, FileMode permission) :
     FitsFile(filename, permission),
     m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))), // 1 for create, count() for open
-    m_strategy() {}
+    m_strategy() {
+  if (m_permission != FileMode::Read) {
+    strategy(CiteEleFits()); // FIXME document
+  }
+}
 
 long MefFile::hduCount() const {
   return m_hdus.size();

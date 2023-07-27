@@ -28,6 +28,7 @@ const T& MefFile::access(long index) {
     } else {
       ptr.reset(new Hdu(Hdu::Token {}, m_fptr, index));
     }
+    m_strategy.afterAccessing(*ptr);
   }
   return ptr->as<T>();
 }

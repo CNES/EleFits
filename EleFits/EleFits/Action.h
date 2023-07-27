@@ -32,6 +32,10 @@ public:
   ELEFITS_VIRTUAL_DTOR(Action)
   ELEFITS_COPYABLE(Action)
   ELEFITS_MOVABLE(Action)
+
+  /**
+   * @brief Constructor.
+  */
   Action() = default;
 
   /**
@@ -51,7 +55,10 @@ public:
 };
 
 /**
- * @brief An action which verifies existing checksums.
+ * @brief An action which verifies and updates existing checksums.
+ * 
+ * Before accessing an HDU for the first time, its checksums are verified, if any.
+ * Before closing the file, checksums of edited HDUs are updated, if any.
  */
 class VerifyChecksums : public Action {
 
@@ -73,18 +80,6 @@ public:
       }
     }
   }
-};
-
-/**
- * @brief An action which updates existing checksums of edited HDUs.
- */
-class UpdateChecksums : public Action {
-
-public:
-  ELEFITS_VIRTUAL_DTOR(UpdateChecksums)
-  ELEFITS_COPYABLE(UpdateChecksums)
-  ELEFITS_MOVABLE(UpdateChecksums)
-  UpdateChecksums() = default;
 
   /**
    * @brief If the HDU was edited, update its checksums before closing.
@@ -108,13 +103,17 @@ public:
   ELEFITS_VIRTUAL_DTOR(CiteEleFits)
   ELEFITS_COPYABLE(CiteEleFits)
   ELEFITS_MOVABLE(CiteEleFits)
+
+  /**
+   * @brief Constructor.
+   */
   CiteEleFits() : m_time(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())) {}
 
   /**
    * @brief Write a HISTORY record to the Primary header.
    */
   void beforeClosing(const Hdu& hdu) override {
-    if (hdu.matches(HduCategory::Primary)) {
+    if (hdu.index() == 0) {
       std::string msg = toDateString(m_time);
       msg += " This file was edited by EleFits <github.com/CNES/EleFits>";
       hdu.header().writeHistory(msg);

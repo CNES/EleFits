@@ -47,12 +47,33 @@ public:
     } else if constexpr (std::is_base_of_v<CompressionStrategy, std::decay_t<TAction>>) {
       m_compression.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
     } else {
-      m_actions.push_back(std::make_unique<Action>(std::forward<TAction>(action)));
+      m_actions.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
     }
   }
 
+  /**
+   * @brief Clear the strategy.
+   */
   void clear() {
     m_compression.clear();
+  }
+
+  void afterOpening(const Hdu& hdu) {
+    for (auto& a : m_actions) {
+      a->afterOpening(hdu);
+    }
+  }
+
+  void afterAccessing(const Hdu& hdu) {
+    for (auto& a : m_actions) {
+      a->afterAccessing(hdu);
+    }
+  }
+
+  void beforeClosing(const Hdu& hdu) {
+    for (auto& a : m_actions) {
+      a->beforeClosing(hdu);
+    }
   }
 
 private:

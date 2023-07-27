@@ -45,8 +45,7 @@ std::string version();
 /**
  * @brief FITS file read/write permissions.
  */
-enum class FileMode
-{
+enum class FileMode {
   Read, ///< Open an existing file with read-only permission
   Edit, ///< Open an existing file with write permission
   Create, ///< Create a new file (overwrite forbidden)
@@ -121,12 +120,12 @@ public:
    * @details
    * Files opened with `FileMode::Temporary` are deleted after closing by this method.
    */
-  void close();
+  virtual void close();
 
   /**
    * @brief Close and delete the file.
    */
-  void closeAndDelete();
+  void closeAndDelete(); // FIXME virtual?
 
   /**
    * @brief Get CFITSIO's `fitsfile*`.
@@ -161,7 +160,7 @@ protected:
    * @warning
    * In any case, relying on the constructors and destructors by managing the object lifetime is preferable.
    */
-  void open(const std::string& filename, FileMode permission);
+  virtual void open(const std::string& filename, FileMode permission);
 
   /**
    * @brief The CFITSIO file handler.
