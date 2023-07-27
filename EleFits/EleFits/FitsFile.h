@@ -181,6 +181,17 @@ protected:
    * @brief An open flag to nullify m_fptr at close.
    */
   bool m_open;
+
+private:
+  /**
+   * @brief Non virtual implementation of `open()`.
+   */
+  void openImpl(const std::string& filename, FileMode permission);
+
+  /**
+   * @brief Non virtual implementation of `close()`.
+   */
+  void closeImpl();
 };
 
 /**

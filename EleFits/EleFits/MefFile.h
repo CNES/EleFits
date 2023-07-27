@@ -325,6 +325,17 @@ protected:
    */
   std::vector<std::unique_ptr<Hdu>> m_hdus;
 
+private:
+  /**
+   * @brief Non virtual implementation of `open()`.
+   */
+  void openImpl(const std::string& filename, FileMode permission);
+
+  /**
+   * @brief Non virtual implementation of `close()`.
+   */
+  void closeImpl();
+
   /**
    * @brief The strategy.
    */

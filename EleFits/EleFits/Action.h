@@ -66,6 +66,10 @@ public:
   ELEFITS_VIRTUAL_DTOR(VerifyChecksums)
   ELEFITS_COPYABLE(VerifyChecksums)
   ELEFITS_MOVABLE(VerifyChecksums)
+
+  /**
+   * @brief Constructor.
+   */
   VerifyChecksums() = default;
 
   /**
