@@ -44,7 +44,7 @@ public:
   void append(TAction&& action) {
     if constexpr (std::is_base_of_v<Compression, std::decay_t<TAction>>) {
       m_compression.push_back(std::make_unique<Compress<TAction>>(std::forward<TAction>(action)));
-    } else if constexpr (std::is_base_of_v<CompressionStrategy, std::decay_t<TAction>>) {
+    } else if constexpr (std::is_base_of_v<CompressionAction, std::decay_t<TAction>>) {
       m_compression.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
     } else {
       m_actions.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
@@ -94,7 +94,7 @@ private:
   /**
    * @brief The compression strategy.
    */
-  std::vector<std::unique_ptr<CompressionStrategy>> m_compression;
+  std::vector<std::unique_ptr<CompressionAction>> m_compression;
 
   /**
    * @brief The actions.

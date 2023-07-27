@@ -89,7 +89,7 @@ with fitsio.FITS(filename, 'rw') as fits:
 In addition, exclusive features are provided to simplify the implementation of classical use cases.
 A few examples are given below.
 
-Strategies are predefined or user-defined list of actions to be performed automatically.
+Strategies are predefined or user-defined lists of actions to be performed automatically.
 Among strategies, compression strategies enables internal compression of image HDUs:
 
 ```cpp

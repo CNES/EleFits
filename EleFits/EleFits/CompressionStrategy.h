@@ -16,7 +16,7 @@ namespace Fits {
  * @ingroup image_compression
  * @brief The interface for implementing compression strategies.
  */
-struct CompressionStrategy {
+struct CompressionAction {
 #define ELEFITS_DECLARE_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
   virtual bool visit(fitsfile* fptr, const ImageHdu::Initializer<T>& init) = 0;
@@ -26,13 +26,13 @@ struct CompressionStrategy {
 
 /**
  * @ingroup image_compression
- * @brief A mixin to simplify `CompressionStrategy` implementation.
+ * @brief A mixin to simplify `CompressionAction` implementation.
  * 
  * This class is a visitor-like mixin to mimic virtual method template.
  * Instead of overloading each call operator of the interface, only one template method is needed.
  */
 template <typename TDerived>
-struct CompressionStrategyMixin : public CompressionStrategy {
+struct CompressionActionMixin : public CompressionAction {
 #define ELEFITS_IMPLEMENT_VISIT(T, name) \
   /** @brief Compress if the strategy is compatible with the initializer. */ \
   bool visit(fitsfile* fptr, const ImageHdu::Initializer<T>& init) override { \
@@ -48,7 +48,7 @@ struct CompressionStrategyMixin : public CompressionStrategy {
  * @tparam TAlgo The algorithm type
  */
 template <typename TAlgo>
-class Compress : public CompressionStrategyMixin<Compress<TAlgo>> {
+class Compress : public CompressionActionMixin<Compress<TAlgo>> {
 public:
   /**
    * @brief Constructor.
@@ -158,7 +158,7 @@ bool canCompress(const Plio&, const ImageHdu::Initializer<T>& init) {
  * f.strategy(CompressAptly::losslessInt());
  * \endcode
  */
-class CompressAptly : public CompressionStrategyMixin<CompressAptly> {
+class CompressAptly : public CompressionActionMixin<CompressAptly> {
 
 private:
   /**

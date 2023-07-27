@@ -10,12 +10,16 @@
 
 * `MefFile` supports backward indexing (e.g. `const auto& hdu = f[-2]`)
 * Strategy allows enabling and performing automatically predefined or user-defined actions, like compression or checksum validation
+  * Added method `MefFile::strategy()` and classes `Strategy`, `CompressionAction` and `Action`
+  * Action `ValidateChecksums` automatically validates and updates checksums
+  * Action `CiteEleFits` adds a citation to the Primary (enabled by default)
+  * Compression actions specify image HDU compression
 * Image HDU compression
   * Added compression data classes `Quantization`, `Gzip`, `Plio`...
   * Added compression strategies `Compress` and `CompressAptly`
   * `EleFitsReadStructure` prints the compression type (algorithm and losslessness)
   * Implemented compression benchmark
-* New program `EleFitsCompress` compresses FITS files according to the desired strategy
+  * New program `EleFitsCompress` compresses FITS files according to the desired strategy
 
 ### Cleaning
 

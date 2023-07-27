@@ -134,20 +134,31 @@ and quantization (as a `Quantization` object).
 More details can be found in the classes and methods documentation (see list below).
 
 Once the `Compression` instance is created, it can be passed to a `MefFile` through a so-called compression strategy.
-The strategy is a very powerful object which adapts the compression algorithm to the HDU being created.
-The simplest strategy, `Compress`, consists in applying the same compression algorithm to all HDUs unless impossible.
-`Compress` also accepts a list of algorithms, in order to select the preferred algorithm which works, e.g.
-`Compress<Plio, Rice>` will activate PLIO if possible, and Rice otherwise (or not comress at all if the HDU is very small).
+The strategy is a very powerful object which adapts the compression algorithm to the HDU being created (see \ref strategy).
+It is composed of a list (possily a singleton) of compression actions, which are tried one after the other.
+If an action is successful, trying stops.
+The simplest compression action is made of a single compression algorithm, `Compress`,
+which consists in applying the same compression algorithm to all HDUs unless impossible.
+A list of such actions can build up a compression strategy which selects the preferred algorithm which works.
+For example, registering `Compress<Plio>` and then `Compress<Rice>` will activate PLIO if possible, and Rice otherwise,
+or not comress at all if the HDU is very small.
 
-More elaborated strategies can be user-defined by extending the base class `CompressionStrategy`
+More elaborated actions can be user-defined by extending the base class `CompressionAction`
 (e.g. to use PLIO only for HDUs whose name ends with "MASK").
-The generic strategy `CompressAptly` is the recommended default strategy.
+The generic action `CompressAptly` is the recommended default.
 It draws on the various papers pointed by the FITS support office and on internal benchmarks,
 and has variants for lossless and lossy compressions.
 
 As soon as the strategy is enabled (with `MefFile::strategy()`), newly created image HDUs will automatically be compressed.
-Note that it is not possible to convert an uncompressed image HDU into a compressed one,
+Note that it is not possible to convert an uncompressed image HDU into a compressed one in place,
 and compression must be activated before creating HDUs.
+The aforementioned strategy can be enabled as follows:
+
+\code
+MefFile f(filename, FileMode::Create);
+f.strategy(Compress<Plio>(), Compress<Rice>());
+f.appendImage("", {}, raster);
+\endcode
 
 
 \section compression-guidelines Guidelines
