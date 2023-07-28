@@ -25,6 +25,9 @@ void MefFile::close() {
 }
 
 void MefFile::closeImpl() {
+  if (not m_open) {
+    return;
+  }
   for (const auto& hdu : *this) {
     m_strategy.beforeClosing(hdu);
   }
@@ -42,7 +45,7 @@ MefFile::MefFile(const std::string& filename, FileMode permission) :
   if (m_permission != FileMode::Read) {
     strategy(CiteEleFits()); // FIXME document
   }
-  openImpl(m_filename, m_permission)
+  // openImpl(m_filename, m_permission); // FIXME triggers already open error
 }
 
 long MefFile::hduCount() const {
