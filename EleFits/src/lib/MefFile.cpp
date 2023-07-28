@@ -42,7 +42,7 @@ MefFile::MefFile(const std::string& filename, FileMode permission) :
   if (m_permission != FileMode::Read) {
     strategy(CiteEleFits()); // FIXME document
   }
-  openImpl(m_filename, m_permission)
+  openImpl(m_filename, m_permission);
 }
 
 long MefFile::hduCount() const {
