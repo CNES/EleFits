@@ -177,11 +177,6 @@ protected:
    */
   FileMode m_permission;
 
-  /**
-   * @brief An open flag to nullify m_fptr at close.
-   */
-  bool m_open;
-
 private:
   /**
    * @brief Non virtual implementation of `open()`.
