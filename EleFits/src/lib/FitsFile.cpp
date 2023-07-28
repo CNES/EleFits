@@ -100,6 +100,9 @@ void FitsFile::close() {
 }
 
 void FitsFile::closeImpl() {
+  if (not m_fptr) {
+    m_open = false;
+  }
   if (not m_open) {
     return;
   }

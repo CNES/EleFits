@@ -25,6 +25,9 @@ void MefFile::close() {
 }
 
 void MefFile::closeImpl() {
+  if (not m_fptr) {
+    m_open = false;
+  }
   if (not m_open) {
     return;
   }

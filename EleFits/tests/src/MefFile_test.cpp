@@ -32,8 +32,8 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   this->close();
   // Reopen as read-only
   MefFile f(this->filename(), FileMode::Read);
-  const auto output = this->primary().readRaster<float, 2>();
-  f.closeAndDelete();
+  const auto output = f.primary().readRaster<float, 2>();
+  remove(this->filename().c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
@@ -54,8 +54,8 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   BOOST_TEST(ext1.index() == 1);
   BOOST_TEST(this->hduCount() == 2);
   this->close();
-  // Reopen as read-only
-  MefFile f(this->filename(), FileMode::Read);
+  // Reopen as edit
+  MefFile f(this->filename(), FileMode::Edit);
   BOOST_TEST(f.hduCount() == 2);
   const auto& ext2 = f.appendImage("IMG2", {}, raster);
   BOOST_TEST(ext2.index() == 2);
