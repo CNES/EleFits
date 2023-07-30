@@ -34,6 +34,7 @@ Interface:
 - Const-correctness
 - Consistent type management (not mixing C types and FITS types)
 - Exceptions
+- Structured bindings, e.g.: `auto [ra, dec] = h.parseSeq<float>("RA", "DEC");`
 - Data classes: `Record`, `Raster`, `Column`...
 - Structured handlers: `MefFile`, `ImageHdu`, `Header`...
 
@@ -41,6 +42,7 @@ File:
 
 - HDU counting (CFITSIO counting excludes empty or incomplete HDUs)
 - HDU selection and iteration
+- Strategies: pre-registed actions to be performed automatically
 
 Header:
 
