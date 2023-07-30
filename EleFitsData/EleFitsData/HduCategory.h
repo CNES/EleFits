@@ -17,7 +17,7 @@ namespace Fits {
 /**
  * @ingroup iterators
  * @brief An extensible HDU categorization for filtering and iteration.
- * @details
+ * 
  * A category is defined as a sequence of trits (trinary bits),
  * which can take one of two specified values, or be unconstrained.
  * For example, the type of an HDU can be image, binary table or unconstrained.
@@ -25,8 +25,8 @@ namespace Fits {
  * Predefined trits are provided; user trits can also be added by extending the class.
  * 
  * Predefined categories are provided as static members,
- * e.g. HduCategory::Primary or HduCategory::RawImage.
- * An HduCategory should not be created with a constructor,
+ * e.g. `HduCategory::Primary` or `HduCategory::RawImage`.
+ * An `HduCategory` should not be created with a constructor,
  * but rather by combining those categories with (trinary) bitwise operators.
  * For example, an integer-valued, non-empty image extension
  * can be created using one of the following formulae:
@@ -36,10 +36,10 @@ namespace Fits {
  * HduCategory intDataImageExt = HduCategory::ImageExt & ~HduCategory::FloatPrimary;
  * \endcode
  * 
- * Method isInstance is provided to test whether a category validates a model.
- * Yet, in general, Hdu::matches is an adequate shortcut.
+ * Method `isInstance()` is provided to test whether a category validates a model.
+ * Yet, in general, `Hdu::matches()` is an adequate shortcut.
  * 
- * More complex, multi-category filters can be created as HduFilter objects.
+ * More complex, multi-category filters can be created as `HduFilter` objects.
  */
 class HduCategory {
 
@@ -73,10 +73,7 @@ public:
    * @brief The exception thrown when trying to combine incompatible trits.
    */
   struct IncompatibleTrits : public FitsError {
-    IncompatibleTrits(HduCategory::Trit lhs, HduCategory::Trit rhs) :
-        FitsError(
-            "Cannot combine incompatible trits (" + HduCategory::toString(lhs) + " and " + HduCategory::toString(rhs) +
-            ").") {}
+    IncompatibleTrits() : FitsError("Cannot combine incompatible trits.") {}
   };
 
 protected:
@@ -92,6 +89,13 @@ protected:
 
 public:
   /**
+   * @brief Get the HDU type: either `Image` or `Bintable` or `Any`.
+   * 
+   * The returned category can be equality-tested, i.e. `category.type() == HduCategory::Image` is safe.
+   */
+  HduCategory type() const;
+
+  /**
    * @brief Toggle flags.
    */
   HduCategory operator~() const;
@@ -102,7 +106,7 @@ public:
   HduCategory& operator&=(const HduCategory& rhs);
 
   /**
-   * @copydoc operator&=
+   * @copybrief operator&=
    */
   HduCategory operator&(const HduCategory& rhs) const;
 
@@ -112,9 +116,19 @@ public:
   HduCategory& operator|=(const HduCategory& rhs);
 
   /**
-   * @copydoc operator|=
+   * @copybrief operator|=
    */
   HduCategory operator|(const HduCategory& rhs) const;
+
+  /**
+   * @brief Overwrite category (copy constrained flags).
+   */
+  HduCategory& operator<<=(const HduCategory& rhs);
+
+  /**
+   * @copybrief operator<<=
+   */
+  HduCategory operator<<(const HduCategory& rhs) const;
 
   /**
    * @brief Equality operator.
@@ -144,20 +158,10 @@ public:
   template <typename T>
   static HduCategory forClass();
 
-  /**
-   * @brief turns a Trit into an string (0 for Unconstrained, 1 for First, 2 for Second), only for debug purposes
-  */
-  static std::string toString(HduCategory::Trit);
-
-  /**
-   * @brief Used to print Trit values of HduCategory, only for debug purposes
-   */
-  std::string toString() const;
-
 protected:
   /**
    * @brief The trinary flag mask.
-   * @details
+   * 
    * The trit positions are given by the TritPosition enumerators
    */
   std::vector<Trit> m_mask;
@@ -165,7 +169,7 @@ protected:
 private:
   /**
    * @brief Toggle if flag is constrained, do nothing otherwise.
-   * @details
+   * 
    * This is a trinary not:
    * - ~First = Second,
    * - ~Second = First,
@@ -175,7 +179,7 @@ private:
 
   /**
    * @brief Restrict a flag.
-   * @details
+   * 
    * This is a symetric trinary and:
    * - Constrained & Unconstrained = Constrained,
    * - Unconstrained & Unconstrained = Unconstrained,
@@ -187,7 +191,7 @@ private:
 
   /**
    * @brief Extend a flag.
-   * @details
+   * 
    * This is a symetric trinary or:
    * - Constrained | Unconstrained = Unconstrained,
    * - Unconstraied | Unconstrained = Unconstrained,
@@ -196,6 +200,14 @@ private:
    * - First | Second = Unconstrained.
    */
   static Trit extendFlag(Trit lhs, Trit rhs);
+
+  /**
+   * @brief Overwrite a flag if it is constrained.
+   * 
+   * - LHS @ Constrained = Constrained
+   * - LHS @ Unconstrained = LHS
+   */
+  static Trit overwriteFlag(Trit lhs, Trit rhs);
 
   /**
    * @brief Apply an unary operator to the flag mask.
@@ -247,7 +259,7 @@ public:
 /**
  * @ingroup iterators
  * @brief HDU filter built from HDU categories.
- * @details
+ * 
  * The class defines two lists of categories: accepted and rejected categories.
  * They are used in method accepts to check whether an HDU is of at least one accepted categories,
  * and of no rejected categories.
@@ -271,19 +283,19 @@ public:
   HduFilter& operator+=(const HduCategory& accept);
 
   /**
-   * @copydoc operator+=
+   * @copybrief operator+=
    */
   HduFilter operator+(const HduCategory& accept) const;
 
   /**
    * @brief Add a constraint to all accepted categories.
-   * @details
+   * 
    * For each accepted category, applies operator &.
    */
   HduFilter& operator*=(const HduCategory& constraint);
 
   /**
-   * @copydoc operator*=
+   * @copybrief operator*=
    */
   HduFilter operator*(const HduCategory& constraint) const;
 
@@ -309,13 +321,13 @@ public:
 
   /**
    * @brief Add a constraint to all rejected categories.
-   * @details
+   * 
    * For each rejected category, applies operator &.
    */
   HduFilter& operator/=(const HduCategory& constraint);
 
   /**
-   * @copydoc operator/=
+   * @copybrief operator/=
    */
   HduFilter operator/(const HduCategory& constraint) const;
 

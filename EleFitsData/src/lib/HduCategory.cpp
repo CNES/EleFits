@@ -9,11 +9,20 @@
 namespace Euclid {
 namespace Fits {
 
-HduCategory::HduCategory() :
-    m_mask(static_cast<std::size_t>(HduCategory::TritPosition::TritCount), HduCategory::Trit::Unconstrained) {}
+HduCategory::HduCategory() : m_mask(static_cast<std::size_t>(TritPosition::TritCount), Trit::Unconstrained) {}
 
 HduCategory::HduCategory(HduCategory::TritPosition position, HduCategory::Trit value) : HduCategory() {
   m_mask[static_cast<int>(position)] = value;
+}
+
+HduCategory HduCategory::type() const {
+  auto trit = m_mask[static_cast<std::size_t>(TritPosition::ImageBintable)];
+  if (trit == Trit::First) {
+    return HduCategory::Image;
+  } else if (trit == Trit::Second) {
+    return HduCategory::Bintable;
+  }
+  return HduCategory();
 }
 
 HduCategory HduCategory::operator~() const {
@@ -38,6 +47,16 @@ HduCategory& HduCategory::operator|=(const HduCategory& rhs) {
 HduCategory HduCategory::operator|(const HduCategory& rhs) const {
   HduCategory res(*this);
   res |= rhs;
+  return res;
+}
+
+HduCategory& HduCategory::operator<<=(const HduCategory& rhs) {
+  return transform(rhs, overwriteFlag);
+}
+
+HduCategory HduCategory::operator<<(const HduCategory& rhs) const {
+  HduCategory res(*this);
+  res <<= rhs;
   return res;
 }
 
@@ -80,11 +99,15 @@ HduCategory::Trit HduCategory::restrictFlag(HduCategory::Trit lhs, HduCategory::
     return lhs;
   }
 
-  throw HduCategory::IncompatibleTrits(lhs, rhs);
+  throw HduCategory::IncompatibleTrits();
 }
 
 HduCategory::Trit HduCategory::extendFlag(HduCategory::Trit lhs, HduCategory::Trit rhs) {
   return lhs == rhs ? lhs : Trit::Unconstrained;
+}
+
+HduCategory::Trit HduCategory::overwriteFlag(Trit lhs, Trit rhs) {
+  return rhs == Trit::Unconstrained ? lhs : rhs;
 }
 
 HduCategory& HduCategory::transform(std::function<Trit(Trit)> op) {
@@ -161,18 +184,6 @@ HduCategory HduCategory::forClass<BintableHdu>() {
 template <>
 HduCategory HduCategory::forClass<BintableColumns>() {
   return HduCategory::Bintable;
-}
-
-std::string HduCategory::toString(HduCategory::Trit trit) {
-  return std::to_string(static_cast<int>(trit));
-}
-
-std::string HduCategory::toString() const {
-  std::string text = "";
-  for (auto trit : m_mask) {
-    text += HduCategory::toString(trit) + " ";
-  }
-  return text;
 }
 
 HduFilter::HduFilter(const HduCategory& category) : m_accept {category}, m_reject {} {}
