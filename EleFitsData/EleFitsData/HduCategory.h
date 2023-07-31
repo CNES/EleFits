@@ -16,13 +16,11 @@ namespace Fits {
 
 /**
  * @ingroup iterators
- * @brief An extensible HDU categorization for filtering and iteration.
+ * @brief An HDU categorization for filtering and iteration.
  * 
  * A category is defined as a sequence of trits (trinary bits),
  * which can take one of two specified values, or be unconstrained.
  * For example, the type of an HDU can be image, binary table or unconstrained.
- * 
- * Predefined trits are provided; user trits can also be added by extending the class.
  * 
  * Predefined categories are provided as static members,
  * e.g. `HduCategory::Primary` or `HduCategory::RawImage`.
@@ -89,7 +87,7 @@ protected:
 
 public:
   /**
-   * @brief Get the HDU type: either `Image` or `Bintable` or `Any`.
+   * @brief Get the HDU type: either `Image` or `Bintable` or `Any` if unknown.
    * 
    * The returned category can be equality-tested, i.e. `category.type() == HduCategory::Image` is safe.
    */
@@ -261,7 +259,7 @@ public:
  * @brief HDU filter built from HDU categories.
  * 
  * The class defines two lists of categories: accepted and rejected categories.
- * They are used in method accepts to check whether an HDU is of at least one accepted categories,
+ * They are used in method `accepts()` to check whether an HDU is of at least one accepted categories,
  * and of no rejected categories.
  */
 class HduFilter {
