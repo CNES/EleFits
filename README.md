@@ -99,7 +99,7 @@ Among strategies, compression strategies enables internal compression of image H
 // - Raster<char> mask: A 2D mask image
 
 MefFile f(filename, FileMode::Edit);
-f.strategy(CompressAptly::lossless(), ValidateChecksums());
+f.strategy(CompressAptly(), ValidateChecksums());
 f.appendImage("", {}, image); // Automatically compresses with shuffled GZIP
 f.appendImage("", {}, mask); // Automatically compresses with PLIO
 const auto& p = f.primary(); // Automatically validates Primary's checksums, if any

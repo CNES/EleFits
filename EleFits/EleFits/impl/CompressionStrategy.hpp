@@ -37,7 +37,7 @@ std::unique_ptr<Compress<ShuffledGzip>> CompressAptly::gzip(const ImageHdu::Init
 
 template <typename T>
 std::unique_ptr<Compress<Rice>> CompressAptly::rice(const ImageHdu::Initializer<T>& init) {
-  if (std::is_floating_point_v<T> && m_type == Type::Lossless) {
+  if (std::is_floating_point_v<T> && m_type == CompressionType::Lossless) {
     return nullptr;
   }
   return std::make_unique<Compress<Rice>>(tiling(init), quantization<T>());
@@ -46,7 +46,7 @@ std::unique_ptr<Compress<Rice>> CompressAptly::rice(const ImageHdu::Initializer<
 template <typename T>
 std::unique_ptr<Compress<HCompress>> CompressAptly::hcompress(const ImageHdu::Initializer<T>& init) {
 
-  if (std::is_floating_point_v<T> && m_type == Type::Lossless) {
+  if (std::is_floating_point_v<T> && m_type == CompressionType::Lossless) {
     return nullptr;
   }
 
@@ -90,14 +90,14 @@ std::unique_ptr<Compress<Plio>> CompressAptly::plio(const ImageHdu::Initializer<
 template <typename T>
 Quantization CompressAptly::quantization() const {
   if constexpr (std::is_integral_v<T>) {
-    if (m_type != Type::Lossy) {
+    if (m_type != CompressionType::Lossy) {
       return Quantization(0);
     }
     Quantization q(Tile::rms / 4);
     q.dithering(Quantization::Dithering::NonZeroPixel); // Keep nulls for integers
     return q;
   } else {
-    if (m_type == Type::Lossless) {
+    if (m_type == CompressionType::Lossless) {
       return Quantization(0);
     }
     return Quantization(Tile::rms / 16); // More conservative, imcopy default
@@ -147,12 +147,12 @@ Position<-1> CompressAptly::hcompressTiling(const ImageHdu::Initializer<T>& init
 template <typename T>
 Scaling CompressAptly::hcompressScaling() const {
   if constexpr (std::is_integral_v<T>) {
-    if (m_type != Type::Lossy) {
+    if (m_type != CompressionType::Lossy) {
       return 0;
     }
     return Tile::rms * 2.5;
   } else {
-    if (m_type == Type::Lossless) {
+    if (m_type == CompressionType::Lossless) {
       return 0;
     }
     return Tile::rms * 2.5;

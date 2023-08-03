@@ -221,8 +221,8 @@ public:
   /**
    * @brief Append actions to the strategy.
    */
-  template <typename TAction, typename... TActions>
-  void strategy(TAction&& action0, TActions&&... actions);
+  template <typename TAction0, typename... TActions>
+  void strategy(TAction0&& action0, TActions&&... actions);
 
   /**
    * @brief Append a new image extension with empty data unit (`NAXIS = 0`).

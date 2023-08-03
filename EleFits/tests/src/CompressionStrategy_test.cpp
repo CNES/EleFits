@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_SUITE(CompressionStrategy_test)
  */
 template <typename T>
 auto checkBasicLossless(Position<-1> shape) {
-  auto strategy = CompressAptly::lossless();
+  auto strategy = CompressAptly();
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
   BOOST_TEST(algo.isLossless());
@@ -38,7 +38,7 @@ auto checkBasicLossless(Position<-1> shape) {
  */
 template <typename T>
 void checkBasicLosslessInt(Position<-1> shape) {
-  auto strategy = CompressAptly::losslessInt();
+  auto strategy = CompressAptly(CompressionType::LosslessInt);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
   if (std::is_integral_v<T>) {
@@ -51,7 +51,7 @@ void checkBasicLosslessInt(Position<-1> shape) {
 
 template <typename T>
 void checkBasicLossy(Position<-1> shape) {
-  auto strategy = CompressAptly::losslessInt();
+  auto strategy = CompressAptly(CompressionType::LosslessInt);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
   bool noCompression = dynamic_cast<const NoCompression*>(&algo);
@@ -81,13 +81,13 @@ template <typename T, typename TAction>
 void checkCanCompress(TAction action) {
   ImageHdu::Initializer<T> zero {1, "", {}, {2880 / sizeof(T)}, nullptr};
   BOOST_TEST(not action.compression(zero));
-  ImageHdu::Initializer<T> one {1, "", {}, {2880, 4}, nullptr};
+  ImageHdu::Initializer<T> one {1, "", {}, {2880 / sizeof(T), 4}, nullptr};
   BOOST_TEST(bool(action.compression(one)));
 }
 
 template <typename T, typename TAction>
 void checkCannotCompress(TAction action) {
-  ImageHdu::Initializer<T> many {1, "", {}, {2880, 2880}, nullptr};
+  ImageHdu::Initializer<T> many {1, "", {}, {2880 / sizeof(T), 2880 / sizeof(T)}, nullptr};
   BOOST_TEST(not action.compression(many));
 }
 

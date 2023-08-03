@@ -14,7 +14,19 @@ namespace Fits {
 
 /**
  * @ingroup image_compression
- * @brief The interface for implementing compression strategies.
+ * @brief The interface for implementing compression actions.
+ * 
+ * To create a custom action, better inherit `CompressionActionMixin`, which simplifies implementation.
+ * In this case, the only method which must be provided is:
+ * 
+ * \code
+ * template <typename T>
+ * bool apply(fitsfile*, const ImageHdu::Initializer<T>&);
+ * \endcode
+ * 
+ * Internally, it must call `Cfitsio::compress(fitsfile*, const Compression&)`
+ * (maybe through `Compress::apply(fitsfile*, const Compression&)` and return `true` whenever possible.
+ * If the action is not compatible with the initializer, then it must simply return `false`.
  */
 class CompressionAction {
 public:
@@ -56,8 +68,8 @@ public:
 
 /**
  * @ingroup image_compression
- * @brief A compression strategy with a single algorithm.
- * @tparam TAlgo The algorithm type
+ * @brief A compression action made of a single algorithm.
+ * @tparam TAlgo The compression algorithm
  */
 template <typename TAlgo>
 class Compress : public CompressionActionMixin<Compress<TAlgo>> {
@@ -71,6 +83,24 @@ public:
    */
   template <typename... Ts>
   explicit Compress(Ts&&... args) : m_algo(std::forward<Ts>(args)...) {}
+
+  /**
+   * @brief Try compressing.
+   * 
+   * If the algorithm is not compatible with the initializer,
+   * then no compression is performed and `false` is returned.
+   */
+  template <typename T>
+  bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+
+    // Compress if possible
+    if (auto algo = compression(init)) {
+      Cfitsio::compress(fptr, *algo);
+      return true;
+    }
+
+    return false;
+  }
 
   /**
    * @brief Try creating a compression algorithm.
@@ -99,35 +129,17 @@ public:
     return std::make_unique<TAlgo>(m_algo);
   }
 
-  /**
-   * @brief Try compressing.
-   * 
-   * If the algorithm is not compatible with the initializer,
-   * then no compression is performed and `false` is returned.
-   */
-  template <typename T>
-  bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
-
-    // Compress if possible
-    if (auto algo = compression(init)) {
-      Cfitsio::compress(fptr, *algo);
-      return true;
-    }
-
-    return false;
-  }
-
 private:
   /**
-   * @brief The algo.
+   * @brief The algorithm.
    */
   TAlgo m_algo;
 };
 
 /**
  * @ingroup image_compression
- * @brief A compression strategy for integral values with a single algorithm.
- * @tparam TAlgo The algorithm type
+ * @brief A restriction of `Compress` to integral values.
+ * @see Compress
  */
 template <typename TAlgo>
 class CompressInts : public CompressionActionMixin<CompressInts<TAlgo>> {
@@ -136,17 +148,15 @@ public:
   ELEFITS_COPYABLE(CompressInts)
   ELEFITS_MOVABLE(CompressInts)
 
+  /**
+   * @brief Constructor.
+   */
   template <typename... Ts>
   explicit CompressInts(Ts&&... args) : m_compress(std::forward<Ts>(args)...) {}
 
-  template <typename T>
-  std::unique_ptr<TAlgo> compression(const ImageHdu::Initializer<T>& init) {
-    if constexpr (not std::is_integral_v<T>) {
-      return nullptr;
-    }
-    return m_compress.compression(init);
-  }
-
+  /**
+   * @copydoc Compress::apply()
+   */
   template <typename T>
   bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
     if constexpr (not std::is_integral_v<T>) {
@@ -155,14 +165,28 @@ public:
     return m_compress.apply(fptr, init);
   }
 
+  /**
+   * @copydoc Compress::compression()
+   */
+  template <typename T>
+  std::unique_ptr<TAlgo> compression(const ImageHdu::Initializer<T>& init) {
+    if constexpr (not std::is_integral_v<T>) {
+      return nullptr;
+    }
+    return m_compress.compression(init);
+  }
+
 private:
+  /**
+   * @brief The parent compression action.
+   */
   Compress<TAlgo> m_compress;
 };
 
 /**
  * @ingroup image_compression
- * @brief A compression strategy for integral values with a single algorithm.
- * @tparam TAlgo The algorithm type
+ * @brief A restriction of `Compress` to floating point values.
+ * @see Compress
  */
 template <typename TAlgo>
 class CompressFloats : public CompressionActionMixin<CompressFloats<TAlgo>> {
@@ -171,17 +195,15 @@ public:
   ELEFITS_COPYABLE(CompressFloats)
   ELEFITS_MOVABLE(CompressFloats)
 
+  /**
+   * @brief Constructor.
+   */
   template <typename... Ts>
   explicit CompressFloats(Ts&&... args) : m_compress(std::forward<Ts>(args)...) {}
 
-  template <typename T>
-  std::unique_ptr<TAlgo> compression(const ImageHdu::Initializer<T>& init) {
-    if constexpr (not std::is_floating_point_v<T>) {
-      return nullptr;
-    }
-    return m_compress.compression(init);
-  }
-
+  /**
+   * @copydoc Compress::apply()
+   */
   template <typename T>
   bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
     if constexpr (not std::is_floating_point_v<T>) {
@@ -190,7 +212,21 @@ public:
     return m_compress.apply(fptr, init);
   }
 
+  /**
+   * @copydoc Compress::compression()
+   */
+  template <typename T>
+  std::unique_ptr<TAlgo> compression(const ImageHdu::Initializer<T>& init) {
+    if constexpr (not std::is_floating_point_v<T>) {
+      return nullptr;
+    }
+    return m_compress.compression(init);
+  }
+
 private:
+  /**
+   * @brief The parent compression action.
+   */
   Compress<TAlgo> m_compress;
 };
 
@@ -251,50 +287,20 @@ bool canCompress(const Plio&, const ImageHdu::Initializer<T>& init) {
  * Otherwise, the following algorithms are tried in this order: `Plio`, `HCompress`, `Rice`.
  * If none of them is suitable (e.g. because lossless compression was requested even for floats),
  * then the `ShuffledGzip` is returned.
- * 
- * Strategies are created with makers `lossless()`, `losslessInt()` and `lossy()`, e.g.:
- * 
- * \code
- * f.strategy(CompressAptly::losslessInt());
- * \endcode
  */
 class CompressAptly : public CompressionActionMixin<CompressAptly> {
 
-private:
-  /**
-   * @brief Compression type.
-   */
-  enum class Type {
-    Lossless, ///< Always lossless
-    LosslessInt, ///< Lossless for integers, possibly lossy otherwise
-    Lossy ///< Always possibly lossy
-  };
-
+public:
   /**
    * @brief Constructor.
    */
-  CompressAptly(Type type) : m_type(type) {}
-
-public:
-  /**
-   * @brief Create a lossless strategy.
-   */
-  static CompressAptly lossless() {
-    return CompressAptly(Type::Lossless);
-  }
-
-  /**
-   * @brief Create a strategy which is lossless for integers and possibly lossy for floating point numbers.
-   */
-  static CompressAptly losslessInt() {
-    return CompressAptly(Type::LosslessInt);
-  }
+  explicit CompressAptly(CompressionType type = CompressionType::Lossless) : m_type(type) {}
 
   /**
    * @brief Create a possibly lossy strategy.
    */
   static CompressAptly lossy() {
-    return CompressAptly(Type::Lossy);
+    return CompressAptly(CompressionType::Lossy);
   }
 
   /**
@@ -355,7 +361,7 @@ private:
   /**
    * @brief The compression type.
    */
-  Type m_type;
+  CompressionType m_type;
 };
 
 } // namespace Fits

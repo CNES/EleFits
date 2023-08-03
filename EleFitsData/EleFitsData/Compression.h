@@ -17,10 +17,14 @@
 namespace Euclid {
 namespace Fits {
 
-/// @cond
-// Forward declaration for friendship in Compression
-class MefFile;
-/// @endcond
+/**
+ * @brief Compression type.
+ */
+enum class CompressionType {
+  Lossless, ///< Always lossless
+  LosslessInt, ///< Lossless for integers, possibly lossy otherwise
+  Lossy ///< Always possibly lossy
+};
 
 /**
  * @ingroup image_compression
@@ -67,8 +71,6 @@ struct Tile {
  * @see Tile::whole()
  */
 class Compression {
-
-  friend class Euclid::Fits::MefFile; // TODO rm if/when possible
 
 public:
   explicit Compression() = default;
