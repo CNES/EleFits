@@ -119,8 +119,14 @@ BOOST_AUTO_TEST_CASE(lossless_compression_ability_test) {
   checkCannotCompress<float>(CompressInts<Gzip>());
 
   checkCannotCompress<std::uint16_t>(CompressFloats<Gzip>());
-  checkCannotCompress<long long>(CompressFloats<Gzip>());
+  checkCannotCompress<std::int64_t>(CompressFloats<Gzip>());
   checkCanCompress<float>(CompressFloats<Gzip>());
+}
+
+BOOST_AUTO_TEST_CASE(lossy_compression_ability_test) {
+  checkCanCompress<float>(Compress<Rice>(Tile::rowwise(), Quantization(4)));
+  checkCanCompress<float>(Compress<HCompress>(Tile::rowwise(16), Quantization(4)));
+  checkCannotCompress<float>(Compress<Plio>(Tile::rowwise(), Quantization(4)));
 }
 
 //-----------------------------------------------------------------------------
