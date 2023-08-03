@@ -11,84 +11,80 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T>
-bool CompressAptly::operator()(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+bool CompressAptly::apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
 
-  // Too small to be compressed
-  static constexpr long blockSize = 2880;
-  const auto size = shapeSize(init.shape) * sizeof(T);
-  if (size <= blockSize) {
-    return false;
-  }
-  if (size > (std::size_t(1) << 32)) {
-    // FIXME enable huge_hdu
+  // if (shapeSize(init.shape) > (std::size_t(1) << 32)) {
+  // FIXME enable huge_hdu
+  // }
+
+  if (auto action = plio(init)) {
+    return action->apply(fptr, init);
   }
 
-  // Chain of responsibility: Plio > HCompress > Rice > ShuffledGzip
-  if (not plio(fptr, init) && not hcompress(fptr, init) && not rice(fptr, init)) {
-    gzip(fptr, init);
+  if (auto action = hcompress(init)) {
+    return action->apply(fptr, init);
   }
-  return true;
+  if (auto action = rice(init)) {
+    return action->apply(fptr, init);
+  }
+  return gzip(init)->apply(fptr, init);
 }
 
 template <typename T>
-bool CompressAptly::gzip(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
-  Compress<ShuffledGzip>(tiling(init), quantization<T>())(fptr, init);
-  return true;
+std::unique_ptr<Compress<ShuffledGzip>> CompressAptly::gzip(const ImageHdu::Initializer<T>& init) {
+  return std::make_unique<Compress<ShuffledGzip>>(tiling(init), quantization<T>());
 }
 
 template <typename T>
-bool CompressAptly::rice(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+std::unique_ptr<Compress<Rice>> CompressAptly::rice(const ImageHdu::Initializer<T>& init) {
   if (std::is_floating_point_v<T> && m_type == Type::Lossless) {
-    return false;
+    return nullptr;
   }
-  Compress<Rice>(tiling(init), quantization<T>())(fptr, init);
-  return true;
+  return std::make_unique<Compress<Rice>>(tiling(init), quantization<T>());
 }
 
 template <typename T>
-bool CompressAptly::hcompress(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+std::unique_ptr<Compress<HCompress>> CompressAptly::hcompress(const ImageHdu::Initializer<T>& init) {
 
   if (std::is_floating_point_v<T> && m_type == Type::Lossless) {
-    return false;
+    return nullptr;
   }
 
   const auto& shape = init.shape;
   if (shapeSize(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
-    return false;
+    return nullptr;
   }
 
   auto q = quantization<T>();
   if (q.dithering() == Quantization::Dithering::NonZeroPixel) {
     q.dithering(Quantization::Dithering::EveryPixel);
   }
-  Compress<HCompress>(hcompressTiling(init), q, hcompressScaling<T>())(fptr, init);
-  return true;
+  return std::make_unique<Compress<HCompress>>(hcompressTiling(init), q, hcompressScaling<T>());
 }
 
 template <typename T>
-bool CompressAptly::plio(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+std::unique_ptr<Compress<Plio>> CompressAptly::plio(const ImageHdu::Initializer<T>& init) {
 
   constexpr auto bp = bitpix<T>();
 
   // Float or too large int
   if constexpr (bp < 0 || bp > 32) {
-    return false;
+    return nullptr;
   }
 
   // Maybe
   if constexpr (bp > 16) {
     if (not init.data) {
-      return false;
+      return nullptr;
     }
     const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
     if (max >= (T(1) << 24)) {
-      return false;
+      return nullptr;
     }
   }
 
   // OK
-  Compress<Plio>(tiling(init))(fptr, init);
-  return true;
+  return std::make_unique<Compress<Plio>>(tiling(init));
 }
 
 template <typename T>

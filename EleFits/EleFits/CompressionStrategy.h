@@ -16,10 +16,16 @@ namespace Fits {
  * @ingroup image_compression
  * @brief The interface for implementing compression strategies.
  */
-struct CompressionAction {
+class CompressionAction {
+public:
+  ELEFITS_VIRTUAL_DTOR(CompressionAction)
+  ELEFITS_COPYABLE(CompressionAction)
+  ELEFITS_MOVABLE(CompressionAction)
+  CompressionAction() = default;
+
 #define ELEFITS_DECLARE_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
-  virtual bool visit(fitsfile* fptr, const ImageHdu::Initializer<T>& init) = 0;
+  virtual bool operator()(fitsfile* fptr, const ImageHdu::Initializer<T>& init) = 0;
   ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_DECLARE_VISIT)
 #undef ELEFITS_DECLARE_VISIT
 };
@@ -32,11 +38,17 @@ struct CompressionAction {
  * Instead of overloading each call operator of the interface, only one template method is needed.
  */
 template <typename TDerived>
-struct CompressionActionMixin : public CompressionAction {
+class CompressionActionMixin : public CompressionAction {
+public:
+  ELEFITS_VIRTUAL_DTOR(CompressionActionMixin)
+  ELEFITS_COPYABLE(CompressionActionMixin)
+  ELEFITS_MOVABLE(CompressionActionMixin)
+  CompressionActionMixin() = default;
+
 #define ELEFITS_IMPLEMENT_VISIT(T, name) \
   /** @brief Compress if the strategy is compatible with the initializer. */ \
-  bool visit(fitsfile* fptr, const ImageHdu::Initializer<T>& init) override { \
-    return static_cast<TDerived&>(*this)(fptr, init); \
+  bool operator()(fitsfile* fptr, const ImageHdu::Initializer<T>& init) override { \
+    return static_cast<TDerived&>(*this).apply(fptr, init); \
   }
   ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_IMPLEMENT_VISIT)
 #undef ELEFITS_IMPLEMENT_VISIT
@@ -50,11 +62,42 @@ struct CompressionActionMixin : public CompressionAction {
 template <typename TAlgo>
 class Compress : public CompressionActionMixin<Compress<TAlgo>> {
 public:
+  ELEFITS_VIRTUAL_DTOR(Compress)
+  ELEFITS_COPYABLE(Compress)
+  ELEFITS_MOVABLE(Compress)
+
   /**
    * @brief Constructor.
    */
   template <typename... Ts>
   explicit Compress(Ts&&... args) : m_algo(std::forward<Ts>(args)...) {}
+
+  /**
+   * @brief Try creating a compression algorithm.
+   * 
+   * If the algorithm is not compatible with the initializer,
+   * then `nullptr` is returned.
+   */
+  template <typename T>
+  std::unique_ptr<TAlgo> compression(const ImageHdu::Initializer<T>& init) {
+
+    // CFITSIO does not support 64-bit integer compression
+    if constexpr (bitpix<T>() == 64) {
+      return nullptr;
+    }
+
+    // No compression of data units less than one block long
+    static constexpr std::size_t blockSize = 2880;
+    if (shapeSize(init.shape) * sizeof(T) <= blockSize) {
+      return nullptr;
+    }
+
+    if (not canCompress(m_algo, init)) {
+      return nullptr;
+    }
+
+    return std::make_unique<TAlgo>(m_algo);
+  }
 
   /**
    * @brief Try compressing.
@@ -63,28 +106,15 @@ public:
    * then no compression is performed and `false` is returned.
    */
   template <typename T>
-  bool operator()(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+  bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
 
-    if constexpr (std::is_same_v<std::decay_t<decltype(m_algo)>, NoCompression>) {
-      Cfitsio::compress(fptr, m_algo);
+    // Compress if possible
+    if (auto algo = compression(init)) {
+      Cfitsio::compress(fptr, *algo);
       return true;
     }
 
-    if constexpr (bitpix<T>() == 64) { // CFITSIO does not support 64-bit integer compression
-      return false;
-    }
-
-    static constexpr std::size_t blockSize = 2880;
-    if (shapeSize(init.shape) * sizeof(T) <= blockSize) {
-      return false;
-    }
-
-    if (not canCompress(m_algo, init)) {
-      return false;
-    }
-
-    Cfitsio::compress(fptr, m_algo);
-    return true;
+    return false;
   }
 
 private:
@@ -92,6 +122,76 @@ private:
    * @brief The algo.
    */
   TAlgo m_algo;
+};
+
+/**
+ * @ingroup image_compression
+ * @brief A compression strategy for integral values with a single algorithm.
+ * @tparam TAlgo The algorithm type
+ */
+template <typename TAlgo>
+class CompressInts : public CompressionActionMixin<CompressInts<TAlgo>> {
+public:
+  ELEFITS_VIRTUAL_DTOR(CompressInts)
+  ELEFITS_COPYABLE(CompressInts)
+  ELEFITS_MOVABLE(CompressInts)
+
+  template <typename... Ts>
+  explicit CompressInts(Ts&&... args) : m_compress(std::forward<Ts>(args)...) {}
+
+  template <typename T>
+  std::unique_ptr<TAlgo> compression(const ImageHdu::Initializer<T>& init) {
+    if constexpr (not std::is_integral_v<T>) {
+      return nullptr;
+    }
+    return m_compress.compression(init);
+  }
+
+  template <typename T>
+  bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+    if constexpr (not std::is_integral_v<T>) {
+      return false;
+    }
+    return m_compress.apply(fptr, init);
+  }
+
+private:
+  Compress<TAlgo> m_compress;
+};
+
+/**
+ * @ingroup image_compression
+ * @brief A compression strategy for integral values with a single algorithm.
+ * @tparam TAlgo The algorithm type
+ */
+template <typename TAlgo>
+class CompressFloats : public CompressionActionMixin<CompressFloats<TAlgo>> {
+public:
+  ELEFITS_VIRTUAL_DTOR(CompressFloats)
+  ELEFITS_COPYABLE(CompressFloats)
+  ELEFITS_MOVABLE(CompressFloats)
+
+  template <typename... Ts>
+  explicit CompressFloats(Ts&&... args) : m_compress(std::forward<Ts>(args)...) {}
+
+  template <typename T>
+  std::unique_ptr<TAlgo> compression(const ImageHdu::Initializer<T>& init) {
+    if constexpr (not std::is_floating_point_v<T>) {
+      return nullptr;
+    }
+    return m_compress.compression(init);
+  }
+
+  template <typename T>
+  bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+    if constexpr (not std::is_floating_point_v<T>) {
+      return false;
+    }
+    return m_compress.apply(fptr, init);
+  }
+
+private:
+  Compress<TAlgo> m_compress;
 };
 
 /// @cond
@@ -201,31 +301,31 @@ public:
    * @brief Compress if possible.
    */
   template <typename T>
-  bool operator()(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
+  bool apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
 
   /**
-   * @brief Create a `ShuffledGzip` algorithm if compatible.
+   * @brief Create a `ShuffledGzip` action if compatible.
    */
   template <typename T>
-  bool gzip(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
+  std::unique_ptr<Compress<ShuffledGzip>> gzip(const ImageHdu::Initializer<T>& init);
 
   /**
-   * @brief Create a `Rice` algorithm if compatible.
+   * @brief Create a `Rice` action if compatible.
    */
   template <typename T>
-  bool rice(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
+  std::unique_ptr<Compress<Rice>> rice(const ImageHdu::Initializer<T>& init);
 
   /**
-   * @brief Create a `HCompress` algorithm if compatible.
+   * @brief Create a `HCompress` action if compatible.
    */
   template <typename T>
-  bool hcompress(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
+  std::unique_ptr<Compress<HCompress>> hcompress(const ImageHdu::Initializer<T>& init);
 
   /**
-   * @brief Create a `Plio` algorithm if compatible.
+   * @brief Create a `Plio` action if compatible.
    */
   template <typename T>
-  bool plio(fitsfile* fptr, const ImageHdu::Initializer<T>& init);
+  std::unique_ptr<Compress<Plio>> plio(const ImageHdu::Initializer<T>& init);
 
 private:
   /**

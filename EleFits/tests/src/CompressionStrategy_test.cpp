@@ -75,7 +75,53 @@ void checkBasic(Position<-1> shape) {
     checkBasic<type>({2880, 4}); \
   }
 
-// ELEFITS_FOREACH_RASTER_TYPE(BASIC_LOSSLESSNESS_TEST) // FIXME reenable
+// ELEFITS_FOREACH_RASTER_TYPE(BASIC_LOSSLESSNESS_TEST) // FIXME re-enable
+
+template <typename T, typename TAction>
+void checkCanCompress(TAction action) {
+  ImageHdu::Initializer<T> zero {1, "", {}, {2880 / sizeof(T)}, nullptr};
+  BOOST_TEST(not action.compression(zero));
+  ImageHdu::Initializer<T> one {1, "", {}, {2880, 4}, nullptr};
+  BOOST_TEST(bool(action.compression(one)));
+}
+
+template <typename T, typename TAction>
+void checkCannotCompress(TAction action) {
+  ImageHdu::Initializer<T> many {1, "", {}, {2880, 2880}, nullptr};
+  BOOST_TEST(not action.compression(many));
+}
+
+BOOST_AUTO_TEST_CASE(lossless_compression_ability_test) {
+
+  checkCanCompress<std::uint16_t>(Compress<Gzip>());
+  checkCannotCompress<std::int64_t>(Compress<Gzip>());
+  checkCanCompress<float>(Compress<Gzip>());
+
+  checkCanCompress<std::uint16_t>(Compress<ShuffledGzip>());
+  checkCannotCompress<std::int64_t>(Compress<ShuffledGzip>());
+  checkCanCompress<float>(Compress<ShuffledGzip>());
+
+  checkCanCompress<std::uint16_t>(Compress<Rice>());
+  checkCannotCompress<std::int64_t>(Compress<Rice>());
+  checkCannotCompress<float>(Compress<Rice>());
+
+  checkCanCompress<std::uint16_t>(Compress<HCompress>());
+  checkCannotCompress<std::int64_t>(Compress<HCompress>());
+  checkCannotCompress<float>(Compress<HCompress>());
+
+  checkCanCompress<std::uint16_t>(Compress<Plio>());
+  checkCannotCompress<std::int32_t>(Compress<Plio>());
+  checkCannotCompress<std::int64_t>(Compress<Plio>());
+  checkCannotCompress<float>(Compress<Plio>());
+
+  checkCanCompress<std::uint16_t>(CompressInts<Gzip>());
+  checkCannotCompress<std::int64_t>(CompressInts<Gzip>());
+  checkCannotCompress<float>(CompressInts<Gzip>());
+
+  checkCannotCompress<std::uint16_t>(CompressFloats<Gzip>());
+  checkCannotCompress<long long>(CompressFloats<Gzip>());
+  checkCanCompress<float>(CompressFloats<Gzip>());
+}
 
 //-----------------------------------------------------------------------------
 

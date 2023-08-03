@@ -42,12 +42,13 @@ public:
    */
   template <typename TAction>
   void append(TAction&& action) {
-    if constexpr (std::is_base_of_v<Compression, std::decay_t<TAction>>) {
-      m_compression.push_back(std::make_unique<Compress<TAction>>(std::forward<TAction>(action)));
-    } else if constexpr (std::is_base_of_v<CompressionAction, std::decay_t<TAction>>) {
-      m_compression.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
+    using Decay = std::decay_t<TAction>;
+    if constexpr (std::is_base_of_v<Compression, Decay>) {
+      m_compression.push_back(std::make_unique<Compress<Decay>>(std::forward<TAction>(action)));
+    } else if constexpr (std::is_base_of_v<CompressionAction, Decay>) {
+      m_compression.push_back(std::make_unique<Decay>(std::forward<TAction>(action)));
     } else {
-      m_actions.push_back(std::make_unique<TAction>(std::forward<TAction>(action)));
+      m_actions.push_back(std::make_unique<Decay>(std::forward<TAction>(action)));
     }
   }
 
@@ -83,7 +84,7 @@ private:
   template <typename T>
   bool compress(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
     for (const auto& c : m_compression) {
-      if (c->visit(fptr, init)) {
+      if ((*c)(fptr, init)) {
         return true;
       }
     }
