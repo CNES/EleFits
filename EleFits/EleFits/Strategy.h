@@ -39,9 +39,12 @@ public:
   void append(TAction&& action) {
     using Decay = std::decay_t<TAction>;
     if constexpr (std::is_same_v<Strategy, Decay>) {
-      // m_compression.insert(m_compression.end(), action.m_compression.begin(), action.m_compression.end());
-      // m_actions.insert(m_actions.end(), action.m_actions.begin(), action.m_actions.end());
-      *this = std::move(action); // FIXME append
+      for (auto&& e : action.m_compression) {
+        m_compression.push_back(std::move(e));
+      }
+      for (auto&& e : action.m_actions) {
+        m_actions.push_back(std::move(e));
+      }
     } else if constexpr (std::is_base_of_v<Compression, Decay>) {
       m_compression.push_back(std::make_unique<Compress<Decay>>(std::forward<TAction>(action)));
     } else if constexpr (std::is_base_of_v<CompressionAction, Decay>) {
@@ -58,18 +61,36 @@ public:
     m_compression.clear();
   }
 
+  /**
+   * @copydoc Action::afterOpening();
+   */
   void afterOpening(const Hdu& hdu) {
     for (auto& a : m_actions) {
       a->afterOpening(hdu);
     }
   }
 
+  /**
+   * @copydoc Action::afterAccessing();
+   */
   void afterAccessing(const Hdu& hdu) {
     for (auto& a : m_actions) {
       a->afterAccessing(hdu);
     }
   }
 
+  /**
+   * @copydoc Action::afterCreating();
+   */
+  void afterCreating(const Hdu& hdu) {
+    for (auto& a : m_actions) {
+      a->afterCreating(hdu);
+    }
+  }
+
+  /**
+   * @copydoc Action::beforeClosing();
+   */
   void beforeClosing(const Hdu& hdu) {
     for (auto& a : m_actions) {
       a->beforeClosing(hdu);

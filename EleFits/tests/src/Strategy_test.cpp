@@ -18,7 +18,7 @@ struct AfterOpening : Action {
   }
 };
 
-const std::string AfterOpening::keyword = "OPEN";
+const std::string AfterOpening::keyword = "OPENED";
 
 struct AfterAccessing : Action {
   static const std::string keyword;
@@ -28,12 +28,23 @@ struct AfterAccessing : Action {
   }
 };
 
-const std::string AfterAccessing::keyword = "ACCESS";
+const std::string AfterAccessing::keyword = "ACCESSED";
+
+struct AfterCreating : Action {
+  static const std::string keyword;
+  static constexpr int value = 2;
+  void afterCreating(const Hdu& hdu) {
+    hdu.header().write(keyword, value);
+  }
+};
+
+const std::string AfterCreating::keyword = "CREATED";
 
 Strategy makeStrategy() {
   Strategy out;
   out.append(AfterOpening());
   out.append(AfterAccessing());
+  out.append(AfterCreating());
   return out;
 }
 
@@ -43,28 +54,62 @@ BOOST_AUTO_TEST_SUITE(Strategy_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(immediate_action_test) {
-  MefFile mef("/tmp/action.fits", FileMode::Temporary, AfterOpening(), AfterAccessing());
-  BOOST_TEST(mef.primary().header().has(AfterOpening::keyword));
-  BOOST_TEST(mef.primary().header().has(AfterAccessing::keyword));
-  const auto& table = mef.appendBintableHeader();
-  BOOST_TEST(not table.header().has(AfterOpening::keyword));
-  BOOST_TEST(table.header().has(AfterAccessing::keyword));
-  const auto& image = mef.appendImageHeader();
-  BOOST_TEST(not image.header().has(AfterOpening::keyword));
-  BOOST_TEST(table.header().has(AfterAccessing::keyword));
+BOOST_AUTO_TEST_CASE(ctor_actions_test) {
+
+  MefFile mef("/tmp/action.fits", FileMode::Temporary, AfterOpening(), AfterAccessing(), AfterCreating());
+  const auto& primary = mef.primary().header();
+  const auto& table = mef.appendBintableHeader().header();
+  const auto& image = mef.appendImageHeader().header();
+  const auto& accessed = mef[1].header();
+  Test::TemporaryMefFile src;
+  const auto& copied = mef.appendCopy(src.primary()).header();
+
+  BOOST_TEST(primary.has(AfterOpening::keyword));
+  BOOST_TEST(primary.has(AfterAccessing::keyword));
+  BOOST_TEST(not primary.has(AfterCreating::keyword)); // FIXME is it what we want?
+
+  BOOST_TEST(not table.has(AfterOpening::keyword));
+  BOOST_TEST(not table.has(AfterAccessing::keyword));
+  BOOST_TEST(table.has(AfterCreating::keyword));
+
+  BOOST_TEST(not image.has(AfterOpening::keyword));
+  BOOST_TEST(not image.has(AfterAccessing::keyword));
+  BOOST_TEST(image.has(AfterCreating::keyword));
+
+  BOOST_TEST(not accessed.has(AfterAccessing::keyword));
+
+  BOOST_TEST(not copied.has(AfterOpening::keyword));
+  BOOST_TEST(copied.has(AfterAccessing::keyword));
+  BOOST_TEST(not copied.has(AfterCreating::keyword));
 }
 
-BOOST_AUTO_TEST_CASE(immediate_strategy_test) {
+BOOST_AUTO_TEST_CASE(ctor_strategy_test) {
+
   MefFile mef("/tmp/strategy.fits", FileMode::Temporary, makeStrategy());
-  BOOST_TEST(mef.primary().header().has(AfterOpening::keyword));
-  BOOST_TEST(mef.primary().header().has(AfterAccessing::keyword));
-  const auto& table = mef.appendBintableHeader();
-  BOOST_TEST(not table.header().has(AfterOpening::keyword));
-  BOOST_TEST(table.header().has(AfterAccessing::keyword));
-  const auto& image = mef.appendImageHeader();
-  BOOST_TEST(not image.header().has(AfterOpening::keyword));
-  BOOST_TEST(table.header().has(AfterAccessing::keyword));
+  const auto& primary = mef.primary().header();
+  const auto& table = mef.appendBintableHeader().header();
+  const auto& image = mef.appendImageHeader().header();
+  const auto& accessed = mef[1].header();
+  Test::TemporaryMefFile src;
+  const auto& copied = mef.appendCopy(src.primary()).header();
+
+  BOOST_TEST(primary.has(AfterOpening::keyword));
+  BOOST_TEST(primary.has(AfterAccessing::keyword));
+  BOOST_TEST(not primary.has(AfterCreating::keyword)); // FIXME is it what we want?
+
+  BOOST_TEST(not table.has(AfterOpening::keyword));
+  BOOST_TEST(not table.has(AfterAccessing::keyword));
+  BOOST_TEST(table.has(AfterCreating::keyword));
+
+  BOOST_TEST(not image.has(AfterOpening::keyword));
+  BOOST_TEST(not image.has(AfterAccessing::keyword));
+  BOOST_TEST(image.has(AfterCreating::keyword));
+
+  BOOST_TEST(not accessed.has(AfterAccessing::keyword));
+
+  BOOST_TEST(not copied.has(AfterOpening::keyword));
+  BOOST_TEST(copied.has(AfterAccessing::keyword));
+  BOOST_TEST(not copied.has(AfterCreating::keyword));
 }
 
 //-----------------------------------------------------------------------------

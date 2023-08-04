@@ -40,13 +40,24 @@ public:
 
   /**
    * @brief Action performed just after openning the file.
+   * 
+   * At that time, for new files, the Primary HDU exists.
    */
   virtual void afterOpening(const Hdu&) {}
 
   /**
-   * @brief Action performed just after accessing the HDU for the first time.
+   * @brief Action performed just after accessing an HDU for the first time.
+   * 
+   * @warning Created HDUs are not considered, but copied HDUs are.
    */
   virtual void afterAccessing(const Hdu&) {}
+
+  /**
+   * @brief Action performed just after creating an HDU.
+   * 
+   * @warning Copied HDUs are not considered.
+   */
+  virtual void afterCreating(const Hdu&) {}
 
   /**
    * @brief Action performed just before closing the file.

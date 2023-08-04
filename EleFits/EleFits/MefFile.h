@@ -323,13 +323,6 @@ protected:
   void open(const std::string& filename, FileMode permission) override;
 
   /**
-   * @brief Append an extension.
-   * @return A reference to the new HDU of type T.
-   */
-  template <class T = Hdu>
-  const T& appendExt(T extension);
-
-  /**
    * @brief Vector of `Hdu`s (castable to `ImageHdu` or `BintableHdu`).
    * @warning
    * m_hdus is 0-based while Cfitsio HDUs are 1-based.
