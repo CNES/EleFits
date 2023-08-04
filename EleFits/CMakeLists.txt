@@ -115,6 +115,10 @@ elements_add_unit_test(SifFile tests/src/SifFile_test.cpp
                      EXECUTABLE EleFits_SifFile_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
+elements_add_unit_test(Strategy tests/src/Strategy_test.cpp 
+                    EXECUTABLE EleFits_Strategy_test
+                    LINK_LIBRARIES EleFits
+                    TYPE Boost)
 elements_add_unit_test(TestBintable tests/src/TestBintable_test.cpp 
                      EXECUTABLE EleFits_TestBintable_test
                      LINK_LIBRARIES EleFits

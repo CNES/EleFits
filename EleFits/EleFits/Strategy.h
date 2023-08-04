@@ -30,11 +30,6 @@ class Strategy {
 
 public:
   /**
-   * @brief Constructor.
-   */
-  Strategy() : m_compression(), m_actions() {}
-
-  /**
    * @brief Append an action.
    * 
    * If the action is some compression algorithm, it is wrapped into a compression action.
@@ -43,7 +38,11 @@ public:
   template <typename TAction>
   void append(TAction&& action) {
     using Decay = std::decay_t<TAction>;
-    if constexpr (std::is_base_of_v<Compression, Decay>) {
+    if constexpr (std::is_same_v<Strategy, Decay>) {
+      // m_compression.insert(m_compression.end(), action.m_compression.begin(), action.m_compression.end());
+      // m_actions.insert(m_actions.end(), action.m_actions.begin(), action.m_actions.end());
+      *this = std::move(action); // FIXME append
+    } else if constexpr (std::is_base_of_v<Compression, Decay>) {
       m_compression.push_back(std::make_unique<Compress<Decay>>(std::forward<TAction>(action)));
     } else if constexpr (std::is_base_of_v<CompressionAction, Decay>) {
       m_compression.push_back(std::make_unique<Decay>(std::forward<TAction>(action)));
