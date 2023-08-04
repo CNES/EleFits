@@ -12,6 +12,22 @@
 namespace Euclid {
 namespace Fits {
 
+template <typename... TActions>
+MefFile::MefFile(const std::string& filename, FileMode permission, TActions&&... actions) :
+    FitsFile(filename, permission), // FIXME create Primary after strategy is set?
+    m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))), // 1 for create, count() for open
+    m_strategy() {
+  if (m_permission != FileMode::Read) {
+    strategy(CiteEleFits()); // FIXME document
+  }
+  if constexpr (sizeof...(TActions)) {
+    strategy(actions...);
+    for (const auto& hdu : *this) {
+      m_strategy.afterOpening(hdu);
+    }
+  }
+}
+
 template <class T>
 const T& MefFile::access(long index) {
   if (index < 0) { // Backward indexing

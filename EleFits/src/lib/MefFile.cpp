@@ -38,16 +38,6 @@ MefFile::~MefFile() {
   closeImpl();
 }
 
-MefFile::MefFile(const std::string& filename, FileMode permission) :
-    FitsFile(filename, permission),
-    m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))), // 1 for create, count() for open
-    m_strategy() {
-  if (m_permission != FileMode::Read) {
-    strategy(CiteEleFits()); // FIXME document
-  }
-  // openImpl(m_filename, m_permission); // FIXME triggers already open error
-}
-
 long MefFile::hduCount() const {
   return m_hdus.size();
 }

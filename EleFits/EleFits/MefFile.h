@@ -64,12 +64,19 @@ class HduSelector;
  * - Complete: A header unit is created,
  *   as well as a data unit which is filled with provided values.
  * 
+ * `MefFile` also follows a so-called strategy (see \ref strategy),
+ * which is made of actions triggered automatically at various moments (e.g. at file closure).
+ * One or some of them may be compression actions,
+ * which enable internal compression of image extensions (see \ref compression).
+ * The strategy can be defined at construction, or with methods `strategy()`.
+ * 
  * @note
  * Single Image FITS files can be handled by this class, but `SifFile` is better suited:
  * it is safer and provides shortcuts.
  * 
  * @see \ref handlers
  * @see \ref iterators
+ * @see \ref strategy
  * @see \ref optim
  */
 class MefFile : public FitsFile {
@@ -83,9 +90,13 @@ public:
   virtual ~MefFile();
 
   /**
-   * @copydoc FitsFile::FitsFile()
+   * @copybrief FitsFile::FitsFile()
+   * @param filename The file name
+   * @param mode The opening mode
+   * @param actions The strategy or list of actions
    */
-  MefFile(const std::string& filename, FileMode permission = FileMode::Read); // FIXME strategy
+  template <typename... TActions>
+  explicit MefFile(const std::string& filename, FileMode mode, TActions&&... actions);
 
   /**
    * @copydoc FitsFile::close()
