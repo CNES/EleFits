@@ -12,7 +12,7 @@
 namespace Euclid {
 namespace Cfitsio {
 
-bool isCompressing(fitsfile* fptr) {
+bool is_compressing(fitsfile* fptr) {
   int status = 0;
   int algo = int(NULL);
   fits_get_compression_type(fptr, &algo, &status);
@@ -20,7 +20,7 @@ bool isCompressing(fitsfile* fptr) {
   return algo != int(NULL);
 }
 
-std::unique_ptr<Fits::Compression> getCompression(fitsfile* fptr) {
+std::unique_ptr<Fits::Compression> get_compression(fitsfile* fptr) {
 
   // Read algo
   int status = 0;
@@ -97,7 +97,7 @@ T parseValueOr(fitsfile* fptr, const std::string& key, T fallback) {
   return fallback;
 }
 
-std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
+std::unique_ptr<Fits::Compression> read_compression(fitsfile* fptr) {
 
   /* Is compressed? */
 
@@ -128,10 +128,10 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   /* Quantization */
 
   bool quantized = false;
-  const long columnCount = HeaderIo::parseRecord<long>(fptr, "TFIELDS");
-  for (long i = 1; i <= columnCount; ++i) {
-    const std::string columnName = HeaderIo::parseRecord<std::string>(fptr, std::string("TTYPE") + std::to_string(i));
-    if (columnName == "ZSCALE") {
+  const long column_count = HeaderIo::parseRecord<long>(fptr, "TFIELDS");
+  for (long i = 1; i <= column_count; ++i) {
+    const std::string column_name = HeaderIo::parseRecord<std::string>(fptr, std::string("TTYPE") + std::to_string(i));
+    if (column_name == "ZSCALE") {
       quantized = true;
     }
   }
@@ -183,14 +183,14 @@ std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr) {
   throw Fits::FitsError("Unknown compression type");
 }
 
-inline void setTiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
+inline void set_tiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
   int status = 0;
   Euclid::Fits::Position<-1> nonconstShape = shape;
   fits_set_tile_dim(fptr, nonconstShape.size(), nonconstShape.data(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression tiling");
 }
 
-inline void setQuantize(fitsfile* fptr, const Fits::Quantization& quantization) {
+inline void set_quantize(fitsfile* fptr, const Fits::Quantization& quantization) {
 
   int status = 0;
 
@@ -239,24 +239,24 @@ void compress(fitsfile* fptr, const Fits::Gzip& algo) {
   int status = 0;
   fits_set_compression_type(fptr, GZIP_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Gzip");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
+  set_tiling(fptr, algo.tiling());
+  set_quantize(fptr, algo.quantization());
 }
 
 void compress(fitsfile* fptr, const Fits::ShuffledGzip& algo) {
   int status = 0;
   fits_set_compression_type(fptr, GZIP_2, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to ShuffledGzip");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
+  set_tiling(fptr, algo.tiling());
+  set_quantize(fptr, algo.quantization());
 }
 
 void compress(fitsfile* fptr, const Fits::Rice& algo) {
   int status = 0;
   fits_set_compression_type(fptr, RICE_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Rice");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
+  set_tiling(fptr, algo.tiling());
+  set_quantize(fptr, algo.quantization());
 }
 
 void compress(fitsfile* fptr, const Fits::HCompress& algo) {
@@ -265,8 +265,8 @@ void compress(fitsfile* fptr, const Fits::HCompress& algo) {
 
   fits_set_compression_type(fptr, HCOMPRESS_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to HCompress");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
+  set_tiling(fptr, algo.tiling());
+  set_quantize(fptr, algo.quantization());
 
   const auto value = algo.scaling().value();
   switch (algo.scaling().type()) {
@@ -282,7 +282,7 @@ void compress(fitsfile* fptr, const Fits::HCompress& algo) {
   }
   CfitsioError::mayThrow(status, fptr, "Cannot set H-compress scale");
 
-  fits_set_hcomp_smooth(fptr, algo.isSmooth(), &status);
+  fits_set_hcomp_smooth(fptr, algo.is_smooth(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set H-compress smoothing recommendation");
 }
 
@@ -290,8 +290,8 @@ void compress(fitsfile* fptr, const Fits::Plio& algo) {
   int status = 0;
   fits_set_compression_type(fptr, PLIO_1, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot set compression type to Plio");
-  setTiling(fptr, algo.tiling());
-  setQuantize(fptr, algo.quantization());
+  set_tiling(fptr, algo.tiling());
+  set_quantize(fptr, algo.quantization());
 }
 
 } // namespace Cfitsio

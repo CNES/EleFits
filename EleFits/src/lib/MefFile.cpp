@@ -10,10 +10,10 @@ namespace Euclid {
 namespace Fits {
 
 void MefFile::open(const std::string& filename, FileMode permission) {
-  openImpl(filename, permission);
+  open_impl(filename, permission);
 }
 
-void MefFile::openImpl(const std::string& filename, FileMode permission) {
+void MefFile::open_impl(const std::string& filename, FileMode permission) {
   FitsFile::open(filename, permission);
   for (const auto& hdu : *this) {
     m_strategy.opened(hdu);
@@ -21,10 +21,10 @@ void MefFile::openImpl(const std::string& filename, FileMode permission) {
 }
 
 void MefFile::close() {
-  closeImpl();
+  close_impl();
 }
 
-void MefFile::closeImpl() {
+void MefFile::close_impl() {
   if (not m_fptr) {
     return;
   }
@@ -35,7 +35,7 @@ void MefFile::closeImpl() {
 }
 
 MefFile::~MefFile() {
-  closeImpl();
+  close_impl();
 }
 
 long MefFile::hduCount() const {

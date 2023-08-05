@@ -46,10 +46,10 @@ struct Tile {
 
   /**
    * @brief Create a rowwise tiling.
-   * @param rowCount The number of rows per tile
+   * @param row_count The number of rows per tile
    */
-  inline static Position<-1> rowwise(long rowCount = 1) {
-    return Position<-1> {-1, rowCount};
+  inline static Position<-1> rowwise(long row_count = 1) {
+    return Position<-1> {-1, row_count};
   }
 
   /**
@@ -91,7 +91,7 @@ public:
   /**
    * @brief Check whether the compression is lossless for.
    */
-  inline virtual bool isLossless() const;
+  inline virtual bool is_lossless() const;
 
 protected:
   /**
@@ -267,7 +267,7 @@ public:
   /**
    * @brief Check whether compression is lossless.
    */
-  inline bool isLossless() const override;
+  inline bool is_lossless() const override;
 
   /**
    * @brief Get the scaling parameter.
@@ -277,7 +277,7 @@ public:
   /**
    * @brief Check whether the image is smoothed at reading.
    */
-  inline bool isSmooth() const;
+  inline bool is_smooth() const;
 
   /**
    * @brief Set the quantization.
@@ -294,12 +294,12 @@ public:
   /**
    * @brief Enable image smoothing at reading.
    */
-  inline HCompress& enableSmoothing();
+  inline HCompress& enable_smoothing();
 
   /**
    * @brief Disable image smoothing at reading.
    */
-  inline HCompress& disableSmoothing();
+  inline HCompress& disable_smoothing();
 
 private:
   /**

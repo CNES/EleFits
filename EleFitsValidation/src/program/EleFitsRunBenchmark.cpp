@@ -21,13 +21,13 @@ using boost::program_options::value;
 
 using namespace Euclid::Fits;
 
-Validation::BenchmarkFactory initFactory() {
+Validation::BenchmarkFactory init_factory() {
   Validation::BenchmarkFactory factory;
-  factory.registerBenchmark<Validation::CfitsioBenchmark>("CFITSIO row-wise", 1);
-  factory.registerBenchmark<Validation::CfitsioBenchmark>("CFITSIO column-wise", -1);
-  factory.registerBenchmark<Validation::CfitsioBenchmark>("CFITSIO optimal", 0);
-  factory.registerBenchmark<Validation::EleFitsColwiseBenchmark>("EleFits column-wise");
-  factory.registerBenchmark<Validation::EleFitsBenchmark>("EleFits optimal");
+  factory.register_benchmark<Validation::CfitsioBenchmark>("CFITSIO row-wise", 1);
+  factory.register_benchmark<Validation::CfitsioBenchmark>("CFITSIO column-wise", -1);
+  factory.register_benchmark<Validation::CfitsioBenchmark>("CFITSIO optimal", 0);
+  factory.register_benchmark<Validation::EleFitsColwiseBenchmark>("EleFits column-wise");
+  factory.register_benchmark<Validation::EleFitsBenchmark>("EleFits optimal");
   return factory;
 }
 
@@ -60,23 +60,23 @@ public:
 
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsRunBenchmark");
 
-    const auto testSetup = args["setup"].as<std::string>();
-    const auto imageCount = args["images"].as<int>();
+    const auto test_setup = args["setup"].as<std::string>();
+    const auto image_count = args["images"].as<int>();
     const auto pixelCount = args["pixels"].as<int>();
-    const auto tableCount = args["tables"].as<int>();
-    const auto rowCount = args["rows"].as<int>();
+    const auto table_count = args["tables"].as<int>();
+    const auto row_count = args["rows"].as<int>();
     const auto filename = args["output"].as<std::string>();
     const auto results = args["res"].as<std::string>();
 
     logger.info("Setting up the benchmark...");
 
-    const auto factory = initFactory(); // TODO pass factory to CTor of the program, with initFactory() as default
+    const auto factory = init_factory(); // TODO pass factory to CTor of the program, with initFactory() as default
     for (const auto& k : factory.keys()) {
       logger.info(k);
     }
-    auto benchmark = factory.createBenchmark(testSetup, filename);
+    auto benchmark = factory.create_benchmark(test_setup, filename);
     if (not benchmark) {
-      throw Validation::TestCaseNotImplemented(std::string("No setup named: ") + testSetup);
+      throw Validation::TestCaseNotImplemented(std::string("No setup named: ") + test_setup);
     }
     Validation::CsvAppender writer(
         results,
@@ -95,7 +95,7 @@ public:
          "Standard deviation (ms)",
          "Samples (ms)"});
 
-    if (imageCount) {
+    if (image_count) {
 
       logger.info("Generating raster...");
 
@@ -104,15 +104,15 @@ public:
       logger.info("Writing image HDUs...");
 
       try {
-        const auto chrono = benchmark->writeImages(imageCount, raster);
+        const auto chrono = benchmark->write_images(image_count, raster);
         writer.writeRow(
             "TODO",
-            testSetup,
+            test_setup,
             "Write",
             "Image",
-            imageCount,
+            image_count,
             pixelCount,
-            imageCount * pixelCount,
+            image_count * pixelCount,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),
@@ -127,15 +127,15 @@ public:
       logger.info("Reading image HDUs...");
 
       try {
-        const auto chrono = benchmark->readImages(1, imageCount);
+        const auto chrono = benchmark->read_images(1, image_count);
         writer.writeRow(
             "TODO",
-            testSetup,
+            test_setup,
             "Read",
             "Image",
-            imageCount,
+            image_count,
             pixelCount,
-            imageCount * pixelCount,
+            image_count * pixelCount,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),
@@ -147,11 +147,11 @@ public:
         logger.warn() << e.what();
       }
 
-    } else if (tableCount) {
+    } else if (table_count) {
 
       logger.info("Generating columns...");
 
-      const auto table = Test::RandomTable(1, rowCount);
+      const auto table = Test::RandomTable(1, row_count);
       const Validation::BColumns columns = std::make_tuple(
           std::move(table.getColumn<unsigned char>()),
           std::move(table.getColumn<std::int32_t>()),
@@ -167,15 +167,15 @@ public:
       logger.info("Writing binary table HDUs...");
 
       try {
-        const auto chrono = benchmark->writeBintables(tableCount, columns);
+        const auto chrono = benchmark->write_bintables(table_count, columns);
         writer.writeRow(
             "TODO",
-            testSetup,
+            test_setup,
             "Write",
             "Binary table",
-            tableCount,
-            rowCount * Validation::columnCount,
-            tableCount * rowCount * Validation::columnCount,
+            table_count,
+            row_count * Validation::ColumnCount,
+            table_count * row_count * Validation::ColumnCount,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),
@@ -190,15 +190,15 @@ public:
       logger.info("Reading binary table HDUs...");
 
       try {
-        const auto chrono = benchmark->readBintables(1 + imageCount, tableCount);
+        const auto chrono = benchmark->read_bintables(1 + image_count, table_count);
         writer.writeRow(
             "TODO",
-            testSetup,
+            test_setup,
             "Read",
             "Binary table",
-            tableCount,
-            rowCount * Validation::columnCount,
-            tableCount * rowCount * Validation::columnCount,
+            table_count,
+            row_count * Validation::ColumnCount,
+            table_count * row_count * Validation::ColumnCount,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),

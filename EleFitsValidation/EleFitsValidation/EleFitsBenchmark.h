@@ -41,25 +41,25 @@ public:
   virtual void close() override;
 
   /**
-   * @copybrief Benchmark::writeBintable
+   * @copybrief Benchmark::write_bintable
    * @details
    * Write the columns one-by-one to disable buffering.
    */
-  virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
+  virtual BChronometer::Unit write_bintable(const BColumns& columns) override;
 
   /**
-   * @copybrief Benchmark::readBintable
+   * @copybrief Benchmark::read_bintable
    * @details
    * Read the columns one-by-one to disable buffering.
    */
-  virtual BColumns readBintable(long index) override;
+  virtual BColumns read_bintable(long index) override;
 
 protected:
   /**
    * @brief The type and index of the i-th column.
    */
   template <long i>
-  Indexed<typename std::tuple_element<i, BColumns>::type::Value> colIndexed() const;
+  Indexed<typename std::tuple_element<i, BColumns>::type::Value> col_indexed() const;
 
 protected:
   /**
@@ -85,24 +85,24 @@ public:
   explicit EleFitsBenchmark(const std::string& filename);
 
   /**
-   * @copybrief Benchmark::writeImage
+   * @copybrief Benchmark::write_image
    */
-  virtual BChronometer::Unit writeImage(const BRaster& raster) override;
+  virtual BChronometer::Unit write_image(const BRaster& raster) override;
 
   /**
-   * @copybrief Benchmark::writeBintable
+   * @copybrief Benchmark::write_bintable
    */
-  virtual BChronometer::Unit writeBintable(const BColumns& columns) override;
+  virtual BChronometer::Unit write_bintable(const BColumns& columns) override;
 
   /**
-   * @copybrief Benchmark::readImage
+   * @copybrief Benchmark::read_image
    */
-  virtual BRaster readImage(long index) override;
+  virtual BRaster read_image(long index) override;
 
   /**
-   * @copybrief Benchmark::readBintable
+   * @copybrief Benchmark::read_bintable
    */
-  virtual BColumns readBintable(long index) override;
+  virtual BColumns read_bintable(long index) override;
 };
 
 } // namespace Validation

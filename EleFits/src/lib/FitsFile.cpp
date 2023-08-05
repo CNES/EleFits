@@ -27,11 +27,11 @@ void ReadOnlyError::mayThrow(const std::string& prefix, FileMode mode) {
 
 FitsFile::FitsFile(const std::string& filename, FileMode permission) :
     m_fptr(nullptr), m_filename(filename), m_permission(permission) {
-  openImpl(filename, permission);
+  open_impl(filename, permission);
 }
 
 FitsFile::~FitsFile() {
-  closeImpl();
+  close_impl();
 }
 
 std::string FitsFile::filename() const {
@@ -60,10 +60,10 @@ void FitsFile::reopen() {
 }
 
 void FitsFile::open(const std::string& filename, FileMode permission) {
-  openImpl(filename, permission);
+  open_impl(filename, permission);
 }
 
-void FitsFile::openImpl(const std::string& filename, FileMode permission) {
+void FitsFile::open_impl(const std::string& filename, FileMode permission) {
   if (m_fptr) {
     throw FitsError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
   }
@@ -95,10 +95,10 @@ void FitsFile::openImpl(const std::string& filename, FileMode permission) {
 }
 
 void FitsFile::close() {
-  closeImpl();
+  close_impl();
 }
 
-void FitsFile::closeImpl() {
+void FitsFile::close_impl() {
   if (not m_fptr) {
     return;
   }

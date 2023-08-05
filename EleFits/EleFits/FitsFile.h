@@ -181,12 +181,12 @@ private:
   /**
    * @brief Non virtual implementation of `open()`.
    */
-  void openImpl(const std::string& filename, FileMode permission);
+  void open_impl(const std::string& filename, FileMode permission);
 
   /**
    * @brief Non virtual implementation of `close()`.
    */
-  void closeImpl();
+  void close_impl();
 };
 
 /**

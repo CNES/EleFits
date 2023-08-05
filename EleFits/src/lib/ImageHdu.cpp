@@ -78,7 +78,7 @@ bool ImageHdu::isCompressed() const {
 
 std::unique_ptr<Compression> ImageHdu::readCompression() const {
   touchThisHdu();
-  return Cfitsio::readCompression(m_fptr);
+  return Cfitsio::read_compression(m_fptr);
 }
 
 template <>

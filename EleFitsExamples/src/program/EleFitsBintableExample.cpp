@@ -19,7 +19,7 @@ using namespace Euclid;
  * When several columns are written at once, the operation is optimized through an internal buffer,
  * which makes it much faster than writing columns one by one.
  */
-const Fits::BintableHdu& writeBintable(Fits::MefFile& f, const std::string& extName, long rows) {
+const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& extName, long rows) {
 
   /* A string column */
   auto stringInfo = Fits::makeColumnInfo<std::string>("STRING", "", 6);
@@ -50,7 +50,7 @@ const Fits::BintableHdu& writeBintable(Fits::MefFile& f, const std::string& extN
  * 
  * This function also shows how to work with standalone data pointers instead of `Column` objects,
  * thanks to the `makeColumn()` builder function.
- * It is also possible to append or insert several columns at once, analogously to what's done in `writeBintable()`.
+ * It is also possible to append or insert several columns at once, analogously to what's done in `write_bintable()`.
  */
 template <typename TInfo, typename T>
 void appendColumn(const Fits::BintableColumns& du, const TInfo& info, const T* data) {
@@ -134,7 +134,7 @@ public:
 
     logger.info("Creating a binary table HDU...");
     const auto extName = "TABLE" + std::to_string(f.hduCount());
-    const auto& bintable = writeBintable(f, extName, rows);
+    const auto& bintable = write_bintable(f, extName, rows);
 
     logger.info("Appending a column...");
     Fits::ColumnInfo<double> info("BACK", "unit");

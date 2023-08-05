@@ -59,7 +59,7 @@ std::unique_ptr<Compress<HCompress>> CompressAptly::hcompress(const ImageHdu::In
   if (q.dithering() == Quantization::Dithering::NonZeroPixel) {
     q.dithering(Quantization::Dithering::EveryPixel);
   }
-  return std::make_unique<Compress<HCompress>>(hcompressTiling(init), q, hcompressScaling<T>());
+  return std::make_unique<Compress<HCompress>>(hcompress_tiling(init), q, hcompress_scaling<T>());
 }
 
 template <typename T>
@@ -107,22 +107,22 @@ Quantization CompressAptly::quantization() const {
 template <typename T>
 Position<-1> CompressAptly::tiling(const ImageHdu::Initializer<T>& init) const {
 
-  static constexpr long minSize = 1024 * 1024;
-  if (shapeSize(init.shape) <= minSize) {
+  static constexpr long min_size = 1024 * 1024;
+  if (shapeSize(init.shape) <= min_size) {
     return Tile::whole();
   }
 
-  const long rowWidth = init.shape[0];
-  const long rowSize = rowWidth * sizeof(T);
-  const long rowCount = minSize / rowSize + 1;
+  const long row_width = init.shape[0];
+  const long row_size = row_width * sizeof(T);
+  const long row_count = min_size / row_size + 1;
 
-  // FIXME reach minSize using higher dimensions
+  // FIXME reach min_size using higher dimensions
 
-  return {rowWidth, rowCount};
+  return {row_width, row_count};
 }
 
 template <typename T>
-Position<-1> CompressAptly::hcompressTiling(const ImageHdu::Initializer<T>& init) const {
+Position<-1> CompressAptly::hcompress_tiling(const ImageHdu::Initializer<T>& init) const {
 
   const auto& shape = init.shape;
 
@@ -145,7 +145,7 @@ Position<-1> CompressAptly::hcompressTiling(const ImageHdu::Initializer<T>& init
 }
 
 template <typename T>
-Scaling CompressAptly::hcompressScaling() const {
+Scaling CompressAptly::hcompress_scaling() const {
   if constexpr (std::is_integral_v<T>) {
     if (m_type != CompressionType::Lossy) {
       return 0;

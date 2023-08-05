@@ -40,7 +40,7 @@ struct AfterCreating : Action {
 
 const std::string AfterCreating::keyword = "CREATED";
 
-Strategy makeStrategy() {
+Strategy make_strategy() {
   Strategy out;
   out.append(AfterOpening());
   out.append(AfterAccessing());
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(ctor_actions_test) {
 
 BOOST_AUTO_TEST_CASE(ctor_strategy_test) {
 
-  MefFile mef("/tmp/strategy.fits", FileMode::Temporary, makeStrategy());
+  MefFile mef("/tmp/strategy.fits", FileMode::Temporary, make_strategy());
   const auto& primary = mef.primary().header();
   const auto& table = mef.appendBintableHeader().header();
   const auto& image = mef.appendImageHeader().header();

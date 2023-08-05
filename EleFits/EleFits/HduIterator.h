@@ -19,7 +19,7 @@ namespace Fits {
  * Functions begin(HduSelector) and end(HduSelector) are provided, so that it is possible to loop over HDUs as follows:
  * \code
  * MefFile f(...);
- * for (const auto& hdu : f.selectAs<ImageHdu>(HduCategory::ImageExt)) {
+ * for (const auto& hdu : f.filter<ImageHdu>(HduCategory::ImageExt)) {
  *   ... // hdu is an image extension of type ImageHdu
  * }
  * \endcode

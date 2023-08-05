@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(factor_scaling_test) {
   BOOST_TEST((scale.value() == 2.5));
   BOOST_CHECK_THROW((Tile::rms * -scale.value()), FitsError);
   auto identity = scale / 2.5;
-  BOOST_TEST(identity.isIdentity());
+  BOOST_TEST(identity.is_identity());
 }
 
 BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(inverse_scaling_test) {
   BOOST_TEST((scale.value() == 4));
   BOOST_CHECK_THROW((Tile::rms / -scale.value()), FitsError);
   auto identity = scale * 4;
-  BOOST_TEST(identity.isIdentity());
+  BOOST_TEST(identity.is_identity());
 }
 
 BOOST_AUTO_TEST_CASE(scaling_equality_test) {
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(quantization_equality_test) {
 }
 
 template <typename TAlgo>
-void testAlgoMixinParameters(long dimension = 0) {
+void test_algo_mixin_parameters(long dimension = 0) {
 
   Position<-1> shape(dimension);
   std::fill(shape.begin(), shape.end(), 300);
@@ -131,31 +131,31 @@ void testAlgoMixinParameters(long dimension = 0) {
 
 // specific to the NoCompression algo
 template <>
-void testAlgoMixinParameters<NoCompression>(long) {
+void test_algo_mixin_parameters<NoCompression>(long) {
   NoCompression algo;
   BOOST_TEST((algo.tiling() == Position<-1>()));
 }
 
 BOOST_AUTO_TEST_CASE(algo_mixin_test) {
 
-  testAlgoMixinParameters<NoCompression>();
+  test_algo_mixin_parameters<NoCompression>();
 
   for (long n = 0; n <= 6; ++n) {
-    testAlgoMixinParameters<Rice>(n);
+    test_algo_mixin_parameters<Rice>(n);
   }
 
-  testAlgoMixinParameters<HCompress>(2);
+  test_algo_mixin_parameters<HCompress>(2);
 
   for (long n = 0; n <= 6; ++n) {
-    testAlgoMixinParameters<Plio>(n);
-  }
-
-  for (long n = 0; n <= 6; ++n) {
-    testAlgoMixinParameters<Gzip>(n);
+    test_algo_mixin_parameters<Plio>(n);
   }
 
   for (long n = 0; n <= 6; ++n) {
-    testAlgoMixinParameters<ShuffledGzip>(n);
+    test_algo_mixin_parameters<Gzip>(n);
+  }
+
+  for (long n = 0; n <= 6; ++n) {
+    test_algo_mixin_parameters<ShuffledGzip>(n);
   }
 }
 
@@ -166,14 +166,14 @@ BOOST_AUTO_TEST_CASE(hcompress_test) {
 
   // check default hcompress params values:
   BOOST_TEST((algo.scaling() == Scaling(0)));
-  BOOST_TEST(algo.isSmooth() == false);
+  BOOST_TEST(algo.is_smooth() == false);
 
   // setters & getters:
   Scaling scale = 5;
   algo.scaling(scale);
-  algo.enableSmoothing();
+  algo.enable_smoothing();
   BOOST_TEST((algo.scaling() == scale));
-  BOOST_TEST(algo.isSmooth() == true);
+  BOOST_TEST(algo.is_smooth() == true);
 }
 
 //-----------------------------------------------------------------------------

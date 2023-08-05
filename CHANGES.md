@@ -4,7 +4,7 @@
 
 ## Bug fixes
 
-* `parseAll()` threw when parsing long string user keywords
+* `parseAll()` threw when parsing long string user-defined keywords
 
 ### New features
 
@@ -24,6 +24,7 @@
 ### Cleaning
 
 * Deprecated `MefFile` members were removed
+* Preparing switch (back) to snake case for functions for better integration with the standard library
 
 ## 5.2
 

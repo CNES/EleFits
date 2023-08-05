@@ -16,22 +16,22 @@ namespace Cfitsio {
 /**
  * @brief Know if the cfitsio image compression is turned on.
  */
-inline bool isCompressing(fitsfile* fptr);
+inline bool is_compressing(fitsfile* fptr);
 
 /**
  * @brief Get the current compression parameters.
  */
-inline std::unique_ptr<Fits::Compression> getCompression(fitsfile* fptr);
+inline std::unique_ptr<Fits::Compression> get_compression(fitsfile* fptr);
 
 /**
  * @brief Read the compression parameters of the current HDU.
  */
-inline std::unique_ptr<Fits::Compression> readCompression(fitsfile* fptr);
+inline std::unique_ptr<Fits::Compression> read_compression(fitsfile* fptr);
 
 /**
  * @brief Read the current compression tiling.
  */
-inline Fits::Position<-1> readCompressionTiling(fitsfile* fptr);
+inline Fits::Position<-1> read_compression_tiling(fitsfile* fptr);
 
 /**
  * @brief Set the compression algorithm to `NoCompression`.

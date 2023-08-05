@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 using namespace Euclid;
 
 template <typename TAlgo>
-void testAlgoMixinCompress(long dimension, fitsfile* fptr, int comptype) {
+void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype) {
 
   int status = 0;
 
@@ -26,23 +26,23 @@ void testAlgoMixinCompress(long dimension, fitsfile* fptr, int comptype) {
   Cfitsio::compress(fptr, algo);
 
   // verify the correct compression algo is set:
-  int actualComptype;
-  fits_get_compression_type(fptr, &actualComptype, &status);
-  BOOST_TEST(actualComptype == comptype);
+  int actual_comptype;
+  fits_get_compression_type(fptr, &actual_comptype, &status);
+  BOOST_TEST(actual_comptype == comptype);
 
   // verify tile size:
-  Fits::Position<-1> actualShape(dimension);
-  fits_get_tile_dim(fptr, actualShape.size(), actualShape.data(), &status);
-  BOOST_TEST(actualShape == shape);
+  Fits::Position<-1> actual_shape(dimension);
+  fits_get_tile_dim(fptr, actual_shape.size(), actual_shape.data(), &status);
+  BOOST_TEST(actual_shape == shape);
 
   // verify quantization level:
-  float actualQlevel;
-  fits_get_quantize_level(fptr, &actualQlevel, &status);
-  BOOST_TEST(actualQlevel == algo.quantization().level().value());
+  float actual_qlevel;
+  fits_get_quantize_level(fptr, &actual_qlevel, &status);
+  BOOST_TEST(actual_qlevel == algo.quantization().level().value());
 }
 
 template <>
-void testAlgoMixinCompress<Fits::NoCompression>(long, fitsfile* fptr, int comptype) {
+void test_algo_mixin_compress<Fits::NoCompression>(long, fitsfile* fptr, int comptype) {
 
   int status = 0;
 
@@ -50,51 +50,51 @@ void testAlgoMixinCompress<Fits::NoCompression>(long, fitsfile* fptr, int compty
   Cfitsio::compress(fptr, algo);
 
   // verify the correct compression algo is set:
-  int actualComptype;
-  fits_get_compression_type(fptr, &actualComptype, &status);
-  BOOST_TEST(actualComptype == comptype);
+  int actual_comptype;
+  fits_get_compression_type(fptr, &actual_comptype, &status);
+  BOOST_TEST(actual_comptype == comptype);
 }
 
 BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 
   Euclid::Fits::Test::MinimalFile file;
 
-  testAlgoMixinCompress<Fits::NoCompression>(0, file.fptr, int(NULL));
+  test_algo_mixin_compress<Fits::NoCompression>(0, file.fptr, int(NULL));
 
-  testAlgoMixinCompress<Fits::Rice>(0, file.fptr, RICE_1);
-  testAlgoMixinCompress<Fits::Rice>(1, file.fptr, RICE_1);
-  testAlgoMixinCompress<Fits::Rice>(2, file.fptr, RICE_1);
-  testAlgoMixinCompress<Fits::Rice>(3, file.fptr, RICE_1);
-  testAlgoMixinCompress<Fits::Rice>(4, file.fptr, RICE_1);
-  testAlgoMixinCompress<Fits::Rice>(5, file.fptr, RICE_1);
-  testAlgoMixinCompress<Fits::Rice>(6, file.fptr, RICE_1);
+  test_algo_mixin_compress<Fits::Rice>(0, file.fptr, RICE_1);
+  test_algo_mixin_compress<Fits::Rice>(1, file.fptr, RICE_1);
+  test_algo_mixin_compress<Fits::Rice>(2, file.fptr, RICE_1);
+  test_algo_mixin_compress<Fits::Rice>(3, file.fptr, RICE_1);
+  test_algo_mixin_compress<Fits::Rice>(4, file.fptr, RICE_1);
+  test_algo_mixin_compress<Fits::Rice>(5, file.fptr, RICE_1);
+  test_algo_mixin_compress<Fits::Rice>(6, file.fptr, RICE_1);
 
   //  HCompress only supports 2dim compression
-  testAlgoMixinCompress<Fits::HCompress>(2, file.fptr, HCOMPRESS_1);
+  test_algo_mixin_compress<Fits::HCompress>(2, file.fptr, HCOMPRESS_1);
 
-  testAlgoMixinCompress<Fits::Plio>(0, file.fptr, PLIO_1);
-  testAlgoMixinCompress<Fits::Plio>(1, file.fptr, PLIO_1);
-  testAlgoMixinCompress<Fits::Plio>(2, file.fptr, PLIO_1);
-  testAlgoMixinCompress<Fits::Plio>(3, file.fptr, PLIO_1);
-  testAlgoMixinCompress<Fits::Plio>(4, file.fptr, PLIO_1);
-  testAlgoMixinCompress<Fits::Plio>(5, file.fptr, PLIO_1);
-  testAlgoMixinCompress<Fits::Plio>(6, file.fptr, PLIO_1);
+  test_algo_mixin_compress<Fits::Plio>(0, file.fptr, PLIO_1);
+  test_algo_mixin_compress<Fits::Plio>(1, file.fptr, PLIO_1);
+  test_algo_mixin_compress<Fits::Plio>(2, file.fptr, PLIO_1);
+  test_algo_mixin_compress<Fits::Plio>(3, file.fptr, PLIO_1);
+  test_algo_mixin_compress<Fits::Plio>(4, file.fptr, PLIO_1);
+  test_algo_mixin_compress<Fits::Plio>(5, file.fptr, PLIO_1);
+  test_algo_mixin_compress<Fits::Plio>(6, file.fptr, PLIO_1);
 
-  testAlgoMixinCompress<Fits::Gzip>(0, file.fptr, GZIP_1);
-  testAlgoMixinCompress<Fits::Gzip>(1, file.fptr, GZIP_1);
-  testAlgoMixinCompress<Fits::Gzip>(2, file.fptr, GZIP_1);
-  testAlgoMixinCompress<Fits::Gzip>(3, file.fptr, GZIP_1);
-  testAlgoMixinCompress<Fits::Gzip>(4, file.fptr, GZIP_1);
-  testAlgoMixinCompress<Fits::Gzip>(5, file.fptr, GZIP_1);
-  testAlgoMixinCompress<Fits::Gzip>(6, file.fptr, GZIP_1);
+  test_algo_mixin_compress<Fits::Gzip>(0, file.fptr, GZIP_1);
+  test_algo_mixin_compress<Fits::Gzip>(1, file.fptr, GZIP_1);
+  test_algo_mixin_compress<Fits::Gzip>(2, file.fptr, GZIP_1);
+  test_algo_mixin_compress<Fits::Gzip>(3, file.fptr, GZIP_1);
+  test_algo_mixin_compress<Fits::Gzip>(4, file.fptr, GZIP_1);
+  test_algo_mixin_compress<Fits::Gzip>(5, file.fptr, GZIP_1);
+  test_algo_mixin_compress<Fits::Gzip>(6, file.fptr, GZIP_1);
 
-  testAlgoMixinCompress<Fits::ShuffledGzip>(0, file.fptr, GZIP_2);
-  testAlgoMixinCompress<Fits::ShuffledGzip>(1, file.fptr, GZIP_2);
-  testAlgoMixinCompress<Fits::ShuffledGzip>(2, file.fptr, GZIP_2);
-  testAlgoMixinCompress<Fits::ShuffledGzip>(3, file.fptr, GZIP_2);
-  testAlgoMixinCompress<Fits::ShuffledGzip>(4, file.fptr, GZIP_2);
-  testAlgoMixinCompress<Fits::ShuffledGzip>(5, file.fptr, GZIP_2);
-  testAlgoMixinCompress<Fits::ShuffledGzip>(6, file.fptr, GZIP_2);
+  test_algo_mixin_compress<Fits::ShuffledGzip>(0, file.fptr, GZIP_2);
+  test_algo_mixin_compress<Fits::ShuffledGzip>(1, file.fptr, GZIP_2);
+  test_algo_mixin_compress<Fits::ShuffledGzip>(2, file.fptr, GZIP_2);
+  test_algo_mixin_compress<Fits::ShuffledGzip>(3, file.fptr, GZIP_2);
+  test_algo_mixin_compress<Fits::ShuffledGzip>(4, file.fptr, GZIP_2);
+  test_algo_mixin_compress<Fits::ShuffledGzip>(5, file.fptr, GZIP_2);
+  test_algo_mixin_compress<Fits::ShuffledGzip>(6, file.fptr, GZIP_2);
 }
 
 BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
@@ -108,41 +108,39 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   Cfitsio::compress(file.fptr, algo);
 
   // verify scale parameter:
-  float actualScale;
-  fits_get_hcomp_scale(file.fptr, &actualScale, &status);
+  float actual_scale;
+  fits_get_hcomp_scale(file.fptr, &actual_scale, &status);
   BOOST_TEST(
-      actualScale ==
-      ((algo.scaling().type() == Fits::Scaling::Type::Absolute) ?
-           -algo.scaling().value() :
-           algo.scaling().value()));
+      actual_scale ==
+      ((algo.scaling().type() == Fits::Scaling::Type::Absolute) ? -algo.scaling().value() : algo.scaling().value()));
 
   // verify smoothing:
-  int actualSmooth;
-  fits_get_hcomp_smooth(file.fptr, &actualSmooth, &status);
-  BOOST_TEST(actualSmooth == algo.isSmooth());
+  int actual_smoothing;
+  fits_get_hcomp_smooth(file.fptr, &actual_smoothing, &status);
+  BOOST_TEST(actual_smoothing == algo.is_smooth());
 }
 
 BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
-  Fits::NoCompression noneAlgo;
+  Fits::NoCompression none;
   const Euclid::Fits::Position<-1>& shape {300, 200};
   Fits::HCompress algo(shape);
 
   Euclid::Fits::Test::MinimalFile file;
 
-  Cfitsio::compress(file.fptr, noneAlgo);
-  BOOST_TEST(not Cfitsio::isCompressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::getCompression(file.fptr).get()));
+  Cfitsio::compress(file.fptr, none);
+  BOOST_TEST(not Cfitsio::is_compressing(file.fptr));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::get_compression(file.fptr).get()));
 
   Cfitsio::compress(file.fptr, algo);
-  BOOST_TEST(Cfitsio::isCompressing(file.fptr));
-  const auto readAlgo = Cfitsio::getCompression(file.fptr);
-  const auto readHc = dynamic_cast<Fits::HCompress&>(*readAlgo);
-  BOOST_TEST(readHc.tiling() == algo.tiling()); // FIXME compare algos as a whole
+  BOOST_TEST(Cfitsio::is_compressing(file.fptr));
+  const auto read_algo = Cfitsio::get_compression(file.fptr);
+  const auto read_hc = dynamic_cast<Fits::HCompress&>(*read_algo);
+  BOOST_TEST(read_hc.tiling() == algo.tiling()); // FIXME compare algos as a whole
 
-  Cfitsio::compress(file.fptr, noneAlgo);
-  BOOST_TEST(not Cfitsio::isCompressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression&>(*Cfitsio::getCompression(file.fptr)));
+  Cfitsio::compress(file.fptr, none);
+  BOOST_TEST(not Cfitsio::is_compressing(file.fptr));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression&>(*Cfitsio::get_compression(file.fptr)));
 }
 
 //-----------------------------------------------------------------------------
@@ -161,23 +159,23 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) { // FIXME set compression ty
   int status = 0;
   Euclid::Fits::Test::MinimalFile file;
 
-  int defaultAlgo;
-  fits_get_compression_type(file.fptr, &defaultAlgo, &status);
-  BOOST_TEST(defaultAlgo == int(NULL));
+  int default_algo;
+  fits_get_compression_type(file.fptr, &default_algo, &status);
+  BOOST_TEST(default_algo == int(NULL));
 
-  long defaultTileDim[MAX_COMPRESS_DIM];
-  fits_get_tile_dim(file.fptr, MAX_COMPRESS_DIM, defaultTileDim, &status);
+  long default_tile_dim[MAX_COMPRESS_DIM];
+  fits_get_tile_dim(file.fptr, MAX_COMPRESS_DIM, default_tile_dim, &status);
   for (int i = 0; i < MAX_COMPRESS_DIM; i++) {
-    BOOST_TEST(defaultTileDim[i] == 0); // ie. defaultTileDim = {0,0,0,0,0,0}
+    BOOST_TEST(default_tile_dim[i] == 0); // ie. default_tile_dim = {0,0,0,0,0,0}
   }
 
-  float defaultLevel;
-  fits_get_quantize_level(file.fptr, &defaultLevel, &status);
-  BOOST_TEST(defaultLevel == 0.0);
+  float default_qlevel;
+  fits_get_quantize_level(file.fptr, &default_qlevel, &status);
+  BOOST_TEST(default_qlevel == 0.0);
 
-  float defaultScale;
-  fits_get_hcomp_scale(file.fptr, &defaultScale, &status);
-  BOOST_TEST(defaultScale == 0.0);
+  float default_scale;
+  fits_get_hcomp_scale(file.fptr, &default_scale, &status);
+  BOOST_TEST(default_scale == 0.0);
 }
 
 BOOST_AUTO_TEST_CASE(default_tiling_following_hcompress_test) {

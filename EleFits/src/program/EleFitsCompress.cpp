@@ -37,8 +37,8 @@ public:
 
     /* Open files */
     MefFile raw(input, FileMode::Read);
-    const auto hduCount = raw.hduCount();
-    logger.info() << "HDU count: " << hduCount;
+    const auto hdu_count = raw.hduCount();
+    logger.info() << "HDU count: " << hdu_count;
 
     MefFile compressed(output, FileMode::Create);
     if (lossless == 'y') {
@@ -54,7 +54,7 @@ public:
     // FIXME handle Primary
 
     /* Loop over HDUs */
-    for (long i = 1; i < hduCount; ++i) {
+    for (long i = 1; i < hdu_count; ++i) {
 
       /* Read name (if present) */
       const auto& hdu = raw.access<>(i);

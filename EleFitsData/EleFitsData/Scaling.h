@@ -48,7 +48,7 @@ public:
   /**
    * @brief Check whether the scaling is identity (factor or inverse with value 1).
   */
-  inline bool isIdentity() const;
+  inline bool is_identity() const;
 
   /**
    * @brief Get the scaling type.

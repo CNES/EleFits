@@ -19,8 +19,8 @@ CsvAppender& CsvAppender::operator<<(const T& value) {
 template <typename... Ts>
 CsvAppender& CsvAppender::writeRow(const Ts&... values) {
   // TODO check size
-  using mockUnpack = int[];
-  (void)mockUnpack {(operator<<(values), 0)...};
+  using mock_unpack = int[];
+  (void)mock_unpack {(operator<<(values), 0)...};
   return operator<<(std::endl);
 }
 

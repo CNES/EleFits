@@ -117,12 +117,12 @@ public:
     }
 
     // No compression of data units less than one block long
-    static constexpr std::size_t blockSize = 2880;
-    if (shapeSize(init.shape) * sizeof(T) <= blockSize) {
+    static constexpr std::size_t block_size = 2880;
+    if (shapeSize(init.shape) * sizeof(T) <= block_size) {
       return nullptr;
     }
 
-    if (not canCompress(m_algo, init)) {
+    if (not can_compress(m_algo, init)) {
       return nullptr;
     }
 
@@ -232,26 +232,26 @@ private:
 
 /// @cond
 template <typename TAlgo, typename T>
-bool canCompress(const TAlgo&, const ImageHdu::Initializer<T>&) {
+bool can_compress(const TAlgo&, const ImageHdu::Initializer<T>&) {
   return true;
 }
 
 template <typename T>
-bool canCompress(const Rice& algo, const ImageHdu::Initializer<T>&) {
-  return std::is_integral_v<T> || not algo.isLossless();
+bool can_compress(const Rice& algo, const ImageHdu::Initializer<T>&) {
+  return std::is_integral_v<T> || not algo.is_lossless();
 }
 
 template <typename T>
-bool canCompress(const HCompress& algo, const ImageHdu::Initializer<T>& init) {
+bool can_compress(const HCompress& algo, const ImageHdu::Initializer<T>& init) {
   const auto& shape = init.shape;
   if (shapeSize(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
     return false;
   }
-  return std::is_integral_v<T> || not algo.isLossless();
+  return std::is_integral_v<T> || not algo.is_lossless();
 }
 
 template <typename T>
-bool canCompress(const Plio&, const ImageHdu::Initializer<T>& init) {
+bool can_compress(const Plio&, const ImageHdu::Initializer<T>& init) {
 
   constexpr auto bp = bitpix<T>();
 
@@ -350,13 +350,13 @@ private:
    * @brief Adapt the H-compress tiling to the raster shape.
    */
   template <typename T>
-  Position<-1> hcompressTiling(const ImageHdu::Initializer<T>& init) const;
+  Position<-1> hcompress_tiling(const ImageHdu::Initializer<T>& init) const;
 
   /**
    * @brief Adapt the H-compress scaling to the raster shape.
    */
   template <typename T>
-  Scaling hcompressScaling() const;
+  Scaling hcompress_scaling() const;
 
   /**
    * @brief The compression type.

@@ -135,20 +135,20 @@ public:
    */
   void closing(const Hdu& hdu) override {
     if (hdu.index() == 0) {
-      std::string msg = toDateString(m_time);
+      std::string msg = date_to_string(m_time);
       msg += " This file was edited by EleFits <github.com/CNES/EleFits>";
       hdu.header().writeHistory(msg);
     }
   }
 
 private:
-  static std::string toDateString(const std::time_t& time) {
+  static std::string date_to_string(const std::time_t& time) {
     char str[std::size("yyyy-mm-dd")];
     std::strftime(std::data(str), std::size(str), "%F", std::gmtime(&time));
     return str;
   }
 
-  static std::string toDateTimeString(const std::time_t& time) {
+  static std::string datetime_to_string(const std::time_t& time) {
     char str[std::size("yyyy-mm-ddThh:mm:ss")];
     std::strftime(std::data(str), std::size(str), "%FT%T", std::gmtime(&time));
     return str;

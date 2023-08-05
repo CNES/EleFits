@@ -25,7 +25,7 @@ const Quantization& Compression::quantization() const {
   return m_quantization;
 }
 
-bool Compression::isLossless() const {
+bool Compression::is_lossless() const {
   return not m_quantization;
 }
 
@@ -71,18 +71,18 @@ HCompress::HCompress(Position<-1> tiling, Quantization quantization, Scaling sca
   this->quantization(std::move(quantization));
 }
 
-bool HCompress::isLossless() const {
+bool HCompress::is_lossless() const {
   if (m_scale) {
     return false;
   }
-  return Compression::isLossless();
+  return Compression::is_lossless();
 }
 
 const Scaling& HCompress::scaling() const {
   return m_scale;
 }
 
-bool HCompress::isSmooth() const {
+bool HCompress::is_smooth() const {
   return m_smooth;
 }
 
@@ -99,12 +99,12 @@ HCompress& HCompress::quantization(Quantization quantization) {
   return *this;
 }
 
-HCompress& HCompress::enableSmoothing() {
+HCompress& HCompress::enable_smoothing() {
   m_smooth = true;
   return *this;
 }
 
-HCompress& HCompress::disableSmoothing() {
+HCompress& HCompress::disable_smoothing() {
   m_smooth = false;
   return *this;
 }

@@ -21,7 +21,7 @@ Scaling::operator bool() const {
   return m_value;
 }
 
-bool Scaling::isIdentity() const {
+bool Scaling::is_identity() const {
   if (m_type == Type::Absolute) {
     return false;
   }
@@ -65,7 +65,7 @@ Scaling& Scaling::operator*=(double value) {
   if (value <= 0) {
     throw FitsError("Scaling multiplication requires positive value");
   }
-  if (isIdentity()) {
+  if (is_identity()) {
     m_type = Type::Factor;
     m_value = value;
   } else if (m_type == Type::Absolute || m_type == Type::Factor) {
@@ -80,7 +80,7 @@ Scaling& Scaling::operator/=(double value) {
   if (value <= 0) {
     throw FitsError("Scaling division requires positive value");
   }
-  if (isIdentity()) {
+  if (is_identity()) {
     m_type = Type::Inverse;
     m_value = value;
   } else if (m_type == Type::Absolute || m_type == Type::Factor) {
