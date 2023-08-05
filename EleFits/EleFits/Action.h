@@ -19,7 +19,7 @@ namespace Fits {
  * Early return can be used to skip some HDUs or cases, e.g:
  * 
  * \code
- * void afterAccessing(const Hdu& hdu) override {
+ * void accessed(const Hdu& hdu) override {
  *   if (hdu.matches(HduCategory::Primary || HduCategory::Metadata)) {
  *     return;
  *   }
@@ -43,26 +43,29 @@ public:
    * 
    * At that time, for new files, the Primary HDU exists.
    */
-  virtual void afterOpening(const Hdu&) {}
+  virtual void opened(const Hdu&) {}
 
   /**
    * @brief Action performed just after accessing an HDU for the first time.
    * 
    * @warning Created HDUs are not considered, but copied HDUs are.
    */
-  virtual void afterAccessing(const Hdu&) {}
+  virtual void accessed(const Hdu&) {}
+
+  // FIXME copying() applies to the source HDU and copied() to the new HDU?
+  // E.g. copying() would call accessed() while copied() would call created()
 
   /**
    * @brief Action performed just after creating an HDU.
    * 
    * @warning Copied HDUs are not considered.
    */
-  virtual void afterCreating(const Hdu&) {}
+  virtual void created(const Hdu&) {}
 
   /**
    * @brief Action performed just before closing the file.
    */
-  virtual void beforeClosing(const Hdu&) {}
+  virtual void closing(const Hdu&) {}
 };
 
 /**
@@ -86,7 +89,7 @@ public:
   /**
    * @brief Verify the HDU checksums at first access, throw if incorrect.
    */
-  void afterAccessing(const Hdu& hdu) override {
+  void accessed(const Hdu& hdu) override {
     try {
       hdu.verifyChecksums();
     } catch (ChecksumError& e) {
@@ -99,7 +102,7 @@ public:
   /**
    * @brief If the HDU was edited, update its checksums before closing.
   */
-  void beforeClosing(const Hdu& hdu) override {
+  void closing(const Hdu& hdu) override {
     if (not hdu.matches(HduCategory::Edited)) {
       return;
     }
@@ -127,7 +130,7 @@ public:
   /**
    * @brief Write a HISTORY record to the Primary header.
    */
-  void beforeClosing(const Hdu& hdu) override {
+  void closing(const Hdu& hdu) override {
     if (hdu.index() == 0) {
       std::string msg = toDateString(m_time);
       msg += " This file was edited by EleFits <github.com/CNES/EleFits>";

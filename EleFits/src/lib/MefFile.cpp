@@ -16,7 +16,7 @@ void MefFile::open(const std::string& filename, FileMode permission) {
 void MefFile::openImpl(const std::string& filename, FileMode permission) {
   FitsFile::open(filename, permission);
   for (const auto& hdu : *this) {
-    m_strategy.afterOpening(hdu);
+    m_strategy.opened(hdu);
   }
 }
 
@@ -29,7 +29,7 @@ void MefFile::closeImpl() {
     return;
   }
   for (const auto& hdu : *this) {
-    m_strategy.beforeClosing(hdu);
+    m_strategy.closing(hdu);
   }
   FitsFile::close();
 }

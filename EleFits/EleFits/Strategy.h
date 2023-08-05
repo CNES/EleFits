@@ -62,38 +62,38 @@ public:
   }
 
   /**
-   * @copydoc Action::afterOpening();
+   * @copydoc Action::opened();
    */
-  void afterOpening(const Hdu& hdu) {
+  void opened(const Hdu& hdu) {
     for (auto& a : m_actions) {
-      a->afterOpening(hdu);
+      a->opened(hdu);
     }
   }
 
   /**
-   * @copydoc Action::afterAccessing();
+   * @copydoc Action::accessed();
    */
-  void afterAccessing(const Hdu& hdu) {
+  void accessed(const Hdu& hdu) {
     for (auto& a : m_actions) {
-      a->afterAccessing(hdu);
+      a->accessed(hdu);
     }
   }
 
   /**
-   * @copydoc Action::afterCreating();
+   * @copydoc Action::created();
    */
-  void afterCreating(const Hdu& hdu) {
+  void created(const Hdu& hdu) {
     for (auto& a : m_actions) {
-      a->afterCreating(hdu);
+      a->created(hdu);
     }
   }
 
   /**
-   * @copydoc Action::beforeClosing();
+   * @copydoc Action::closing();
    */
-  void beforeClosing(const Hdu& hdu) {
+  void closing(const Hdu& hdu) {
     for (auto& a : m_actions) {
-      a->beforeClosing(hdu);
+      a->closing(hdu);
     }
   }
 

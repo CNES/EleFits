@@ -13,7 +13,7 @@ using namespace Euclid::Fits;
 struct AfterOpening : Action {
   static const std::string keyword;
   static constexpr int value = 0;
-  void afterOpening(const Hdu& hdu) {
+  void opened(const Hdu& hdu) {
     hdu.header().write(keyword, value);
   }
 };
@@ -23,7 +23,7 @@ const std::string AfterOpening::keyword = "OPENED";
 struct AfterAccessing : Action {
   static const std::string keyword;
   static constexpr int value = 1;
-  void afterAccessing(const Hdu& hdu) {
+  void accessed(const Hdu& hdu) {
     hdu.header().write(keyword, value);
   }
 };
@@ -33,7 +33,7 @@ const std::string AfterAccessing::keyword = "ACCESSED";
 struct AfterCreating : Action {
   static const std::string keyword;
   static constexpr int value = 2;
-  void afterCreating(const Hdu& hdu) {
+  void created(const Hdu& hdu) {
     hdu.header().write(keyword, value);
   }
 };

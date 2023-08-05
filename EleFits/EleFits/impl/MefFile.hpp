@@ -23,7 +23,7 @@ MefFile::MefFile(const std::string& filename, FileMode permission, TActions&&...
   if constexpr (sizeof...(TActions)) {
     strategy(actions...);
     for (const auto& hdu : *this) {
-      m_strategy.afterOpening(hdu);
+      m_strategy.opened(hdu);
     }
   }
 }
@@ -44,7 +44,7 @@ const T& MefFile::access(long index) {
     } else {
       ptr.reset(new Hdu(Hdu::Token {}, m_fptr, index));
     }
-    m_strategy.afterAccessing(*ptr);
+    m_strategy.accessed(*ptr);
   }
   return ptr->as<T>();
 }
@@ -105,7 +105,7 @@ const ImageHdu& MefFile::appendImageHeader(const std::string& name, const Record
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created)); // FIXME factorize
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
-  m_strategy.afterCreating(hdu);
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   return hdu;
 
@@ -121,7 +121,7 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
   Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
-  m_strategy.afterCreating(hdu);
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
 
   // CFITSIO's fits_write_img_null does not support compression
@@ -155,7 +155,7 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
   Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
-  m_strategy.afterCreating(hdu);
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   hdu.raster().write(raster);
   return hdu;
@@ -197,7 +197,7 @@ const T& MefFile::appendCopy(const T& hdu) {
   }
 
   const auto& copied = access<T>(index);
-  m_strategy.afterAccessing(copied); // FIXME is it access or creation?
+  m_strategy.accessed(copied); // FIXME is it access or creation?
   return copied;
 }
 
@@ -208,7 +208,7 @@ MefFile::appendBintableHeader(const std::string& name, const RecordSeq& records,
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
-  m_strategy.afterCreating(hdu);
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   return hdu;
 }
@@ -246,7 +246,7 @@ const BintableHdu& MefFile::appendBintable(const std::string& name, const Record
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
-  m_strategy.afterCreating(hdu);
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   return hdu;
   // FIXME use appendBintableExt(name, records, columns...) or inverse dependency
