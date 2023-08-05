@@ -13,6 +13,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
+ * @ingroup strategy
  * @brief Base class for strategy actions.
  * 
  * To implement custom actions, just override one or several methods of this class.
@@ -39,14 +40,14 @@ public:
   Action() = default;
 
   /**
-   * @brief Action performed just after openning the file.
+   * @brief Method called just after openning the file.
    * 
    * At that time, for new files, the Primary HDU exists.
    */
   virtual void opened(const Hdu&) {}
 
   /**
-   * @brief Action performed just after accessing an HDU for the first time.
+   * @brief Method called just after accessing an HDU for the first time.
    * 
    * @warning Created HDUs are not considered, but copied HDUs are.
    */
@@ -56,19 +57,20 @@ public:
   // E.g. copying() would call accessed() while copied() would call created()
 
   /**
-   * @brief Action performed just after creating an HDU.
+   * @brief Method called just after creating an HDU.
    * 
    * @warning Copied HDUs are not considered.
    */
   virtual void created(const Hdu&) {}
 
   /**
-   * @brief Action performed just before closing the file.
+   * @brief Method called just before closing the file.
    */
   virtual void closing(const Hdu&) {}
 };
 
 /**
+ * @ingroup strategy
  * @brief An action which verifies and updates existing checksums.
  * 
  * Before accessing an HDU for the first time, its checksums are verified, if any.
@@ -113,6 +115,7 @@ public:
 };
 
 /**
+ * @ingroup strategy
  * @brief An action which cites EleFits in the Primary header as a HISTORY record.
  */
 class CiteEleFits : public Action {

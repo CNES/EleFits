@@ -15,6 +15,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
+ * @ingroup strategy
  * @brief MEF file strategy.
  * 
  * A strategy is a list of actions to be performed at various steps of the MEF file lifetime.
@@ -22,7 +23,7 @@ namespace Fits {
  * 
  * A specific component of the strategy is the compression strategy.
  * In this case, compression actions are not performed one after the other:
- * instead, they are tries one after the other, and the iteration stops as soon as a suitable compression action is found.
+ * instead, they are tried one after the other, and the iteration stops as soon as a suitable compression action is found.
  * If none is suitable, then compression is disabled. 
  */
 class Strategy {
@@ -36,7 +37,7 @@ public:
    * Then, if the action is some compression action, then it is appended as a fallback of the compression strategy.
    */
   template <typename TAction>
-  void append(TAction&& action) {
+  void push_back(TAction&& action) {
     using Decay = std::decay_t<TAction>;
     if constexpr (std::is_same_v<Strategy, Decay>) {
       for (auto&& e : action.m_compression) {
@@ -55,14 +56,29 @@ public:
   }
 
   /**
-   * @brief Clear the strategy.
+   * @brief Append actions.
+   * 
+   * If the method is given a strategy, then each of its actions are appended.
    */
-  void clear() {
-    m_compression.clear();
+  template <typename TAction0, typename... TActions>
+  void append(TAction0&& action0, TActions&&... actions) {
+    push_back(std::forward<TAction0>(action0));
+    if constexpr (sizeof...(TActions) > 0) {
+      append(std::forward<TActions>(actions)...);
+    }
   }
 
   /**
-   * @copydoc Action::opened();
+   * @brief Clear the strategy.
+   */
+  Strategy& clear() {
+    m_compression.clear();
+    m_actions.clear();
+    return *this;
+  }
+
+  /**
+   * @copydoc Action::opened
    */
   void opened(const Hdu& hdu) {
     for (auto& a : m_actions) {
@@ -71,7 +87,7 @@ public:
   }
 
   /**
-   * @copydoc Action::accessed();
+   * @copydoc Action::accessed
    */
   void accessed(const Hdu& hdu) {
     for (auto& a : m_actions) {
@@ -80,7 +96,7 @@ public:
   }
 
   /**
-   * @copydoc Action::created();
+   * @copydoc Action::created
    */
   void created(const Hdu& hdu) {
     for (auto& a : m_actions) {
@@ -89,7 +105,7 @@ public:
   }
 
   /**
-   * @copydoc Action::closing();
+   * @copydoc Action::closing
    */
   void closing(const Hdu& hdu) {
     for (auto& a : m_actions) {

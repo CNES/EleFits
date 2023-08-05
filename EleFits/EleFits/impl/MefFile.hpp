@@ -91,12 +91,9 @@ Strategy& MefFile::strategy() {
   return m_strategy;
 }
 
-template <typename TAction0, typename... TActions>
-void MefFile::strategy(TAction0&& algo, TActions&&... fallbacks) {
-  m_strategy.append(std::forward<TAction0>(algo));
-  if constexpr (sizeof...(TActions) > 0) {
-    strategy(std::forward<TActions>(fallbacks)...);
-  }
+template <typename... TActions>
+void MefFile::strategy(TActions&&... actions) {
+  m_strategy.append(std::forward<TActions>(actions)...);
 }
 
 template <typename T>

@@ -69,6 +69,7 @@ class HduSelector;
  * One or some of them may be compression actions,
  * which enable internal compression of image extensions (see \ref compression).
  * The strategy can be defined at construction, or with methods `strategy()`.
+ * By default, the strategy consists of a `CiteEleFits` action, which can be disabled with `strategy().clear()`.
  * 
  * @note
  * Single Image FITS files can be handled by this class, but `SifFile` is better suited:
@@ -77,6 +78,7 @@ class HduSelector;
  * @see \ref handlers
  * @see \ref iterators
  * @see \ref strategy
+ * @see \ref image_compression
  * @see \ref optim
  */
 class MefFile : public FitsFile {
@@ -230,10 +232,10 @@ public:
   /// @group_modifiers
 
   /**
-   * @brief Append actions to the strategy.
+   * @brief Shortcut for `strategy().append()`.
    */
-  template <typename TAction0, typename... TActions>
-  void strategy(TAction0&& action0, TActions&&... actions);
+  template <typename... TActions>
+  void strategy(TActions&&... actions);
 
   /**
    * @brief Append a new image extension with empty data unit (`NAXIS = 0`).
