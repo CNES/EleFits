@@ -44,7 +44,7 @@ public:
     if (lossless == 'y') {
       compressed.strategy(CompressAptly());
     } else if (lossless == 'i') {
-      compressed.strategy(CompressAptly(CompressionType::LosslessInt));
+      compressed.strategy(CompressAptly(CompressionType::LosslessInts));
     } else if (lossless == 'n') {
       compressed.strategy(CompressAptly(CompressionType::Lossy));
     } else {

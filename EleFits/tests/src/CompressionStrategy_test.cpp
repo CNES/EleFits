@@ -38,7 +38,7 @@ auto check_basic_lossless(Position<-1> shape) {
  */
 template <typename T>
 void check_basic_lossless_ints(Position<-1> shape) {
-  auto strategy = CompressAptly(CompressionType::LosslessInt);
+  auto strategy = CompressAptly(CompressionType::LosslessInts);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
   if (std::is_integral_v<T>) {
@@ -51,7 +51,7 @@ void check_basic_lossless_ints(Position<-1> shape) {
 
 template <typename T>
 void check_basic_lossy(Position<-1> shape) {
-  auto strategy = CompressAptly(CompressionType::LosslessInt);
+  auto strategy = CompressAptly(CompressionType::LosslessInts);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
   bool none = dynamic_cast<const NoCompression*>(&algo);

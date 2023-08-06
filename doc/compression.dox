@@ -209,7 +209,7 @@ instead of just above 1 with quantization turned of.
 
 This is the default recommendation when you have no specific knowledge on the data stationnarity.
 It was designed with care based on already published studies, and tuned with internal benchmarks.
-More specifically, following the previous guideline, try `CompressAptly(CompressionType::LosslessInt)`!
+More specifically, following the previous guideline, try `CompressAptly(CompressionType::LosslessInts)`!
 
 
 */

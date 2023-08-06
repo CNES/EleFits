@@ -22,7 +22,7 @@ namespace Fits {
  */
 enum class CompressionType {
   Lossless, ///< Always lossless
-  LosslessInt, ///< Lossless for integers, possibly lossy otherwise
+  LosslessInts, ///< Lossless for integers, possibly lossy otherwise
   Lossy ///< Always possibly lossy
 };
 
