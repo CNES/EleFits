@@ -70,11 +70,24 @@ public:
 };
 
 /**
+ * @relates VerifyChecksums
+ * @brief Checksum update policy when closing the file.
+ */
+enum class UpdateChecksums {
+  None, ///< Do not update checksums
+  Outdated, ///< Update checksums of edited HDUs if they exist
+  EditedHdu, ///< Update or write missing checksums in edited HDUs
+  AnyHdu ///< Update checksums in edited HDUs and write missing checksums in all HDUs
+};
+
+/**
  * @ingroup strategy
- * @brief An action which verifies and updates existing checksums.
+ * @brief An action which verifies and possibly updates existing checksums.
  * 
  * Before accessing an HDU for the first time, its checksums are verified, if any.
- * Before closing the file, checksums of edited HDUs are updated, if any.
+ * Before closing the file, checksums of edited HDUs are updated according to the update policy.
+ * 
+ * @see `UpdateChecksums`
  */
 class VerifyChecksums : public Action {
 
@@ -86,7 +99,7 @@ public:
   /**
    * @brief Constructor.
    */
-  VerifyChecksums() = default;
+  VerifyChecksums(UpdateChecksums mode = UpdateChecksums::Outdated) : m_mode(mode) {}
 
   /**
    * @brief Verify the HDU checksums at first access, throw if incorrect.
@@ -102,16 +115,40 @@ public:
   }
 
   /**
-   * @brief If the HDU was edited, update its checksums before closing.
+   * @brief If the HDU was edited, update its checksums bHduefore closing.
   */
   void closing(const Hdu& hdu) override {
-    if (not hdu.matches(HduCategory::Edited)) {
-      return;
-    }
-    if (hdu.header().has("CHECKSUM") || hdu.header().has("DATASUM")) {
-      hdu.updateChecksums();
+    switch (m_mode) {
+      case UpdateChecksums::None:
+        return;
+      case UpdateChecksums::Outdated:
+        if (edited(hdu) && has_checksums(hdu)) {
+          hdu.updateChecksums();
+        }
+        return;
+      case UpdateChecksums::EditedHdu:
+        if (edited(hdu)) {
+          hdu.updateChecksums();
+        }
+        return;
+      case UpdateChecksums::AnyHdu:
+        if (edited(hdu) || not has_checksums(hdu)) {
+          hdu.updateChecksums();
+        }
+        return;
     }
   }
+
+  bool edited(const Hdu& hdu) const {
+    return hdu.matches(HduCategory::Edited);
+  }
+
+  bool has_checksums(const Hdu& hdu) const {
+    return hdu.header().has("CHECKSUM") || hdu.header().has("DATASUM");
+  }
+
+private:
+  UpdateChecksums m_mode;
 };
 
 /**

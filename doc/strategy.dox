@@ -14,7 +14,7 @@ namespace Fits {
 
 Often, when reading or writing MEF files, the same actions have to be performed for all or some of the HDUs.
 For example, each time an HDU is accessed for the first time, the checksums can be validated.
-And before closing the file, the checksums of the edited HDUs can be updated.
+And before closing the file, the checksums of the edited HDUs can be updated if present.
 
 Instead of doing so manually, e.g.:
 
@@ -26,11 +26,13 @@ p.verifyChecksums();
 ... // Do something with Primary
 
 for (const auto& image : f.filter<ImageRaster>()) {
-    ... // Do something with extension
+  ... // Do something with extension
 }
 
 for (const auto& h : f.filter<Header>(HduCategory::Edited)) {
+  if (h.has("CHECKSUM") || h.has("DATASUM")) {
     h.updateChecksums();
+  }
 }
 \endcode
 
@@ -48,6 +50,7 @@ for (const auto& image : f.filter<ImageRaster>(HduCategory::Ext)) {
 \endcode
 
 This removes boilerplate and noise in the code, and guarantees nothing is forgotten.
+Moreover, HDUs are guaranteed to be visited only once whatever the action count.
 
 
 \section strategy-interface Interfaces
