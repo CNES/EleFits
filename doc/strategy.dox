@@ -69,15 +69,7 @@ For more details, refer to \ref image_compression.
 Actions (or complete strategies) can be registered at construction, like in the introductory example,
 or using `MefFile::strategy()` methods and/or its `Strategy` instance.
 
-
-\section strategy-lib Predefined Actions
-
-The following actions are provided with the libraries:
-
-- `CiteEleFits` \copybrief CiteEleFits
-- `VerifyChecksums` \copybrief VerifyChecksums
-
-See below for more details.
+Predefined actions, provided with the library, are listed below.
 
 */
 

@@ -70,8 +70,8 @@ public:
 };
 
 /**
- * @relates VerifyChecksums
- * @brief Checksum update policy when closing the file.
+ * @ingroup strategy
+ * @brief Checksum update policy of `VerifyChecksums`.
  */
 enum class UpdateChecksums {
   None, ///< Do not update checksums
@@ -84,7 +84,7 @@ enum class UpdateChecksums {
  * @ingroup strategy
  * @brief An action which verifies and possibly updates existing checksums.
  * 
- * Before accessing an HDU for the first time, its checksums are verified, if any.
+ * Just after having accessed an HDU for the first time, its checksums are verified, if any.
  * Before closing the file, checksums of edited HDUs are updated according to the update policy.
  * 
  * @see `UpdateChecksums`
