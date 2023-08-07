@@ -48,6 +48,14 @@
 \ingroup handlers
 \brief Read and write binary table data units.
 
+\defgroup strategy File-level strategies
+\ingroup handlers
+\brief Register actions to be performed automatically according to some criteria.
+
+\defgroup image_compression Image compression
+\ingroup handlers
+\brief Compress and decompress image HDUs.
+
 
 \defgroup guidelines Development guidelines
 \brief What to do, what not to, and why!

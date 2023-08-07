@@ -8,6 +8,7 @@
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageRaster.h"
+#include "EleFitsData/Compression.h"
 #include "EleFitsData/Raster.h"
 
 namespace Euclid {
@@ -59,9 +60,46 @@ public:
   /// @endcond
 
   /**
+   * @brief A structure which holds everything known at image extension initialization.
+   */
+  template <typename T>
+  struct Initializer {
+
+    /**
+     * @brief The extension index.
+     */
+    long index;
+
+    /**
+     * @brief The extension name, or an empty string.
+     */
+    const std::string& name;
+
+    /**
+     * @brief The possibly empty sequence of records.
+     */
+    const RecordSeq& records;
+
+    /**
+     * @brief The shape.
+     */
+    Position<-1> shape;
+
+    /**
+     * @brief The data, if any.
+     */
+    const T* data;
+  };
+
+  /**
    * @brief Destructor.
    */
   virtual ~ImageHdu() = default;
+
+  /**
+   * @brief Copy the contents of another image HDU.
+   */
+  const ImageHdu& operator=(const ImageHdu& rhs) const;
 
   /**
    * @brief Access the data unit to read and write the raster.
@@ -73,6 +111,11 @@ public:
    * @brief Read the image pixel value type.
    */
   const std::type_info& readTypeid() const;
+
+  /**
+   * @brief Read the image cfitsio bitpix value.
+   */
+  long readBitpix() const;
 
   /**
    * @brief Read the number of pixels in the image.
@@ -89,6 +132,16 @@ public:
    * @copydoc Hdu::readCategory
    */
   HduCategory readCategory() const override;
+
+  /**
+   * @brief Check whether the HDU is compressed.
+   */
+  bool isCompressed() const;
+
+  /**
+   * @brief Read the compression parameters.
+   */
+  std::unique_ptr<Compression> readCompression() const;
 
   /**
    * @brief Redefine the image shape and type.

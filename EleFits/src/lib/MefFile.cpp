@@ -9,9 +9,34 @@
 namespace Euclid {
 namespace Fits {
 
-MefFile::MefFile(const std::string& filename, FileMode permission) :
-    FitsFile(filename, permission), m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))) {
-} // 1 for create, count() for open
+void MefFile::open(const std::string& filename, FileMode permission) {
+  open_impl(filename, permission);
+}
+
+void MefFile::open_impl(const std::string& filename, FileMode permission) {
+  FitsFile::open(filename, permission);
+  for (const auto& hdu : *this) {
+    m_strategy.opened(hdu);
+  }
+}
+
+void MefFile::close() {
+  close_impl();
+}
+
+void MefFile::close_impl() {
+  if (not m_fptr) {
+    return;
+  }
+  for (const auto& hdu : *this) {
+    m_strategy.closing(hdu);
+  }
+  FitsFile::close();
+}
+
+MefFile::~MefFile() {
+  close_impl();
+}
 
 long MefFile::hduCount() const {
   return m_hdus.size();
@@ -45,24 +70,6 @@ const Hdu& MefFile::operator[](long index) {
 const ImageHdu& MefFile::primary() {
   return access<ImageHdu>(0);
 }
-
-const Hdu& MefFile::initRecordExt(const std::string& name) {
-  return appendImageHeader<>(name);
-}
-
-const long MefFile::primaryIndex;
-
-#ifndef COMPILE_ASSIGN_IMAGE_EXT
-#define COMPILE_ASSIGN_IMAGE_EXT(type, unused) \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, -1>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 2>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 3>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, -1>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 2>&); \
-  template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 3>&);
-ELEFITS_FOREACH_RASTER_TYPE(COMPILE_ASSIGN_IMAGE_EXT)
-#undef COMPILE_ASSIGN_IMAGE_EXT
-#endif
 
 } // namespace Fits
 } // namespace Euclid

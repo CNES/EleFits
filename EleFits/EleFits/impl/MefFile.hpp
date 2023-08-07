@@ -4,14 +4,35 @@
 
 #if defined(_ELEFITS_MEFFILE_IMPL) || defined(CHECK_QUALITY)
 
+#include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
+#include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleFits/MefFile.h"
 
 namespace Euclid {
 namespace Fits {
 
+template <typename... TActions>
+MefFile::MefFile(const std::string& filename, FileMode permission, TActions&&... actions) :
+    FitsFile(filename, permission), // FIXME create Primary after strategy is set?
+    m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))), // 1 for create, count() for open
+    m_strategy() {
+  if (m_permission != FileMode::Read) {
+    strategy(CiteEleFits()); // FIXME document
+  }
+  if constexpr (sizeof...(TActions)) {
+    strategy(actions...);
+    for (const auto& hdu : *this) {
+      m_strategy.opened(hdu);
+    }
+  }
+}
+
 template <class T>
 const T& MefFile::access(long index) {
+  if (index < 0) { // Backward indexing
+    index += hduCount();
+  }
   Cfitsio::HduAccess::gotoIndex(m_fptr, index + 1); // CFITSIO index is 1-based
   const auto hduType = Cfitsio::HduAccess::currentType(m_fptr);
   auto& ptr = m_hdus[index];
@@ -23,6 +44,7 @@ const T& MefFile::access(long index) {
     } else {
       ptr.reset(new Hdu(Hdu::Token {}, m_fptr, index));
     }
+    m_strategy.accessed(*ptr);
   }
   return ptr->as<T>();
 }
@@ -56,17 +78,31 @@ const T& MefFile::access(const std::string& name, long version) {
   return hduPtr->as<T>();
 }
 
-template <typename THdu>
-HduSelector<THdu> MefFile::filter(const HduFilter& filter) {
-  return {*this, filter * HduCategory::forClass<THdu>()};
+template <typename T>
+HduSelector<T> MefFile::filter(const HduFilter& filter) {
+  return {*this, filter * HduCategory::forClass<T>()};
+}
+
+const Strategy& MefFile::strategy() const {
+  return m_strategy;
+}
+
+Strategy& MefFile::strategy() {
+  return m_strategy;
+}
+
+template <typename... TActions>
+void MefFile::strategy(TActions&&... actions) {
+  m_strategy.append(std::forward<TActions>(actions)...);
 }
 
 template <typename T>
 const ImageHdu& MefFile::appendImageHeader(const std::string& name, const RecordSeq& records) {
   Cfitsio::HduAccess::initImageExtension<T, 0>(m_fptr, name, {});
   const auto index = m_hdus.size();
-  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created)); // FIXME factorize
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   return hdu;
 
@@ -75,24 +111,31 @@ const ImageHdu& MefFile::appendImageHeader(const std::string& name, const Record
 
 template <typename T, long N>
 const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
-  Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   const auto index = m_hdus.size();
+  Position<-1> dynamicShape(shape.begin(), shape.end());
+  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
+  m_strategy.compress(m_fptr, init);
+  Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
 
-  if (std::is_floating_point<T>::value != records.has("BLANK")) { // != is XOR
-    int status = 0;
-    fits_write_img_null(m_fptr, 0, 1, shapeSize(shape), &status);
-    if (status != 0) {
-      throw FitsError("Cannot write nulls."); // FIXME
-    }
-  } else if (shapeSize(shape) != 0) {
+  // CFITSIO's fits_write_img_null does not support compression
+  if (shapeSize(shape) != 0) {
     VecRaster<T, N> raster(shape);
+    if constexpr (std::is_floating_point_v<T>) {
+      std::fill(raster.begin(), raster.end(), std::numeric_limits<T>::quiet_NaN());
+    } else if (records.has("BLANK")) {
+      const auto blank = records.as<T>("BLANK") - offset<T>();
+      std::fill(raster.begin(), raster.end(), blank);
+    }
     hdu.raster().write(raster);
   }
   // FIXME To CfitsioWrapper and as `bool ImageRaster::fillNull() const`
   // Check status is acceptable (e.g. != 0 if no BLANK keyword or real values)
+
+  // FIXME check offsetting
 
   // FIXME Fill Raster and pass to appendImage()?
 
@@ -101,16 +144,58 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
 
 template <typename TRaster>
 const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster) {
-  Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   const auto index = m_hdus.size();
+  using T = std::decay_t<typename TRaster::Value>;
+  Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
+  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
+  m_strategy.compress(m_fptr, init);
+  Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   hdu.raster().write(raster);
   return hdu;
   // FIXME Is it more efficient to (1) create dataless HDU and then resize and fill data,
   // or (2) first write data and then shift it to accommodate records?
   // For now, we cannot resize uint64 images (CFITSIO bug), so option (1) cannot be tested.
+}
+
+template <typename T>
+const T& MefFile::appendCopy(const T& hdu) {
+
+  const auto index = m_hdus.size();
+
+  if (hdu.matches(HduCategory::Bintable)) {
+    Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
+    m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  } else {
+    if (hdu.matches(HduCategory::RawImage) &&
+        (m_strategy.m_compression.empty() || hdu.matches(HduCategory::Metadata))) {
+      Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
+      m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+    } else {
+      // // setting to huge hdu if hdu size > 2^32
+      // if (hdu.readSizeInFile() > (1ULL << 32))
+      //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true);
+
+      const auto& image = hdu.template as<ImageHdu>();
+
+#define ELEFITS_COPY_HDU(type, name) \
+  if (image.readTypeid() == typeid(type)) { \
+    appendImage( \
+        hdu.readName(), \
+        hdu.header().parseAll(KeywordCategory::User), \
+        image.raster().template read<type, -1>()); \
+  }
+      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_COPY_HDU)
+#undef ELEFITS_COPY_HDU
+    }
+  }
+
+  const auto& copied = access<T>(index);
+  m_strategy.accessed(copied); // FIXME is it access or creation?
+  return copied;
 }
 
 template <typename... TInfos>
@@ -120,6 +205,7 @@ MefFile::appendBintableHeader(const std::string& name, const RecordSeq& records,
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   return hdu;
 }
@@ -157,47 +243,21 @@ const BintableHdu& MefFile::appendBintable(const std::string& name, const Record
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
+  m_strategy.created(hdu);
   hdu.header().writeSeq(records);
   return hdu;
   // FIXME use appendBintableExt(name, records, columns...) or inverse dependency
 }
 
-template <typename T, long N>
-const ImageHdu& MefFile::initImageExt(const std::string& name, const Position<N>& shape) {
-  return appendNullImage<T>(name, {}, shape);
+void MefFile::remove(long index) {
+  if (index == 0) {
+    primary() = access<ImageHdu>(1);
+    remove(1);
+  } else {
+    Cfitsio::HduAccess::deleteHdu(m_fptr, index + 1);
+    m_hdus.erase(m_hdus.begin() + index);
+  }
 }
-
-template <typename TRaster>
-const ImageHdu& MefFile::assignImageExt(const std::string& name, const TRaster& raster) {
-  return appendImage(name, {}, raster);
-}
-
-template <typename... TInfos>
-const BintableHdu& MefFile::initBintableExt(const std::string& name, const TInfos&... infos) {
-  return appendBintableHeader(name, {}, infos...);
-}
-
-template <typename... TColumns>
-const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns&... columns) {
-  return appendBintable(name, {}, columns...);
-}
-
-template <typename TColumns, std::size_t count>
-const BintableHdu& MefFile::assignBintableExt(const std::string& name, const TColumns& columns) {
-  return appendBintable(name, {}, columns);
-}
-
-#ifndef DECLARE_ASSIGN_IMAGE_EXT
-#define DECLARE_ASSIGN_IMAGE_EXT(type, unused) \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, -1>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 2>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const PtrRaster<type, 3>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, -1>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 2>&); \
-  extern template const ImageHdu& MefFile::assignImageExt(const std::string&, const VecRaster<type, 3>&);
-ELEFITS_FOREACH_RASTER_TYPE(DECLARE_ASSIGN_IMAGE_EXT)
-#undef DECLARE_ASSIGN_IMAGE_EXT
-#endif
 
 } // namespace Fits
 } // namespace Euclid

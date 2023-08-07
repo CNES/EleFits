@@ -42,7 +42,7 @@ long GameOfLife::next() {
 
 const PtrRaster<GameOfLife::Value, 2>& GameOfLife::update() {
   for (const auto& p : m_previous.domain()) {
-    const auto lifes = countLifes(p);
+    const auto lifes = count_lifes(p);
     if (m_previous[p]) { // Live in previous frame
       if (lifes < 2 || lifes > 3) {
         m_current[p] = 0;
@@ -59,19 +59,19 @@ const PtrRaster<GameOfLife::Value, 2>& GameOfLife::update() {
   return m_current;
 }
 
-long GameOfLife::countLifes(const Position<2>& p) const {
+long GameOfLife::count_lifes(const Position<2>& p) const {
   const Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
   long count = 0;
   for (const auto& n : neighbors) {
     const auto q = p + n;
-    if (isInDomain(q) && m_previous[q]) {
+    if (is_in_domain(q) && m_previous[q]) {
       ++count;
     }
   }
   return count;
 }
 
-bool GameOfLife::isInDomain(const Position<2>& p) const {
+bool GameOfLife::is_in_domain(const Position<2>& p) const {
   if (p[0] < 0 || p[0] >= m_width) {
     return false;
   }

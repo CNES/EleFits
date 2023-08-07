@@ -29,18 +29,16 @@ const THdu* HduIterator<THdu>::operator->() const {
 }
 
 template <typename THdu>
-const THdu& HduIterator<THdu>::operator++() {
+HduIterator<THdu>& HduIterator<THdu>::operator++() {
   next();
-  return m_hdu->as<THdu>();
+  return *this;
 }
 
 template <typename THdu>
-const THdu* HduIterator<THdu>::operator++(int) {
-  next();
-  if (not m_hdu) {
-    return nullptr;
-  }
-  return &m_hdu->as<THdu>();
+HduIterator<THdu> HduIterator<THdu>::operator++(int) const {
+  auto out = *this;
+  ++out;
+  return out;
 }
 
 template <typename THdu>

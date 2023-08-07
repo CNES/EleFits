@@ -25,10 +25,20 @@ namespace ImageIo {
 const std::type_info& readTypeid(fitsfile* fptr);
 
 /**
+ * @brief Read the cfitsio bitpix value of the current image HDU.
+ */
+long readBitpix(fitsfile* fptr);
+
+/**
  * @brief Read the shape of the current image HDU.
  */
 template <long N = 2>
 Fits::Position<N> readShape(fitsfile* fptr);
+
+/**
+ * @brief Know if the current image HDU is compressed
+*/
+inline bool isCompressedImage(fitsfile* fptr);
 
 /**
  * @brief Reshape the current image HDU.

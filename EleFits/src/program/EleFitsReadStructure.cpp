@@ -26,6 +26,38 @@ std::string readBitpixName(const ImageHdu& hdu) {
   return "UNKNOWN TYPE";
 }
 
+std::string readAlgoName(const ImageHdu& hdu) {
+
+  if (not hdu.isCompressed()) {
+    return "None";
+  }
+
+  const auto algo = hdu.readCompression();
+  const std::string losslessness = algo->is_lossless() ? "Lossless " : "Lossy ";
+
+  if (dynamic_cast<Gzip*>(algo.get())) {
+    return losslessness + "GZIP";
+  }
+
+  if (dynamic_cast<ShuffledGzip*>(algo.get())) {
+    return losslessness + "Shuffled GZIP";
+  }
+
+  if (dynamic_cast<Rice*>(algo.get())) {
+    return losslessness + "Rice";
+  }
+
+  if (dynamic_cast<HCompress*>(algo.get())) {
+    return losslessness + "H-compress";
+  }
+
+  if (dynamic_cast<Plio*>(algo.get())) {
+    return losslessness + "PLIO";
+  }
+
+  return "Unknown";
+}
+
 KeywordCategory parseKeywordCategories(const std::string& filter) {
   auto categories = KeywordCategory::None;
   static const std::map<char, KeywordCategory> mapping {
@@ -82,6 +114,7 @@ public:
           logger.info() << "  Image HDU:";
           logger.info() << "    Type: " << readBitpixName(hdu.as<ImageHdu>());
           logger.info() << "    Shape: " << oss.str() << " px";
+          logger.info() << "    Compression: " << readAlgoName(hdu.as<ImageHdu>());
         } else {
           logger.info() << "  Metadata HDU";
         }

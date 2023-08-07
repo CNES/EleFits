@@ -392,6 +392,15 @@ PtrRaster<T, sizeof...(Longs)> makeRaster(T* data, Longs... shape) { // FIXME ca
   return {{shape...}, data};
 }
 
+/**
+ * @relates Raster
+ * @brief Get the `BITPIX` value of a given raster.
+ */
+template <typename TRaster>
+constexpr long bitpix(const TRaster&) { // FIXME move to ImageHdu?
+  return bitpix<std::decay_t<typename TRaster::Value>>();
+}
+
 } // namespace Fits
 } // namespace Euclid
 

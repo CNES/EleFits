@@ -1,10 +1,41 @@
 # Change log
 
+## 5.3
+
+## Bug fixes
+
+* `parseAll()` threw when parsing long string user-defined keywords
+
+### New features
+
+* `MefFile` supports backward indexing (e.g. `const auto& hdu = f[-2]`)
+* HDUs, including the Primary, can be removed with `MefFile::remove()`
+* Strategies enable and automatically perform predefined or user-defined actions, like compression or checksum validation
+  * Added methods `MefFile::strategy()` and classes `Strategy`, `CompressionAction` and `Action`
+  * Action `ValidateChecksums` automatically validates and possibly updates checksums
+  * Action `CiteEleFits` adds a citation in the Primary (enabled by default)
+  * Compression actions specify image HDU compression
+* Image HDU compression
+  * Added compression data classes `Quantization`, `Gzip`, `Rice`...
+  * Added compression actions `Compress` and `CompressAptly`
+  * Implemented compression benchmark
+  * Program `EleFitsReadStructure` prints the compression type (algorithm and losslessness)
+  * New program `EleFitsCompress` compresses FITS files according to the desired strategy
+
+### Cleaning
+
+* Deprecated `MefFile` members were removed
+* Preparing switch (back) to snake case for functions for better integration with the standard library
+
 ## 5.2
 
 ### Breaking changes
 
-* Updated to Elements 6.2.1
+* Updated to Elements 6.2.1, requires C++17
+
+### New features
+
+* Structured bindings are supported
 
 ## 5.1
 

@@ -56,6 +56,11 @@ std::string currentName(fitsfile* fptr);
 long currentVersion(fitsfile* fptr);
 
 /**
+ * @brief Get the byte size of the current HDU.
+ */
+std::size_t currentSize(fitsfile* fptr);
+
+/**
  * @brief Get the type of the current HDU (either Image or Bintable).
  * @return Either HduCategory::Image or HduCategory::Bintable.
  * @details
@@ -151,6 +156,18 @@ void assignBintableExtension(fitsfile* fptr, const std::string& name, const TCol
  */
 template <typename TTuple, std::size_t size = std::tuple_size<TTuple>::value>
 void assignBintableExtension(fitsfile* fptr, const std::string& name, const TTuple& table);
+
+/**
+ * @brief Copies everything as binary in the current HDU of src and appends it to dst.
+ */
+void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr);
+
+/**
+ * @brief Same as binaryCopy, but takes context into account and only copies non-structural data.
+ */
+void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr);
+
+void setHugeHdu(fitsfile* fptr, bool isHuge);
 
 /**
  * @brief Delete the HDU at given index.

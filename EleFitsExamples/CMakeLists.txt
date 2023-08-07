@@ -60,6 +60,9 @@ elements_add_executable(EleFitsTutorial src/program/EleFitsTutorial.cpp
 elements_add_executable(EleFitsBintableExample src/program/EleFitsBintableExample.cpp
                      INCLUDE_DIRS ElementsKernel EleFitsExamples
                      LINK_LIBRARIES ElementsKernel EleFitsExamples)
+elements_add_executable(EleFitsCompressionExample src/program/EleFitsCompressionExample.cpp
+                     INCLUDE_DIRS ElementsKernel EleFitsExamples
+                     LINK_LIBRARIES ElementsKernel EleFitsExamples)
 
 #===============================================================================
 # Declare the Boost tests here

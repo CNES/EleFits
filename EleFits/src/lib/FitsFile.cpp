@@ -26,12 +26,12 @@ void ReadOnlyError::mayThrow(const std::string& prefix, FileMode mode) {
 }
 
 FitsFile::FitsFile(const std::string& filename, FileMode permission) :
-    m_fptr(nullptr), m_filename(filename), m_permission(permission), m_open(false) {
-  open(filename, permission);
+    m_fptr(nullptr), m_filename(filename), m_permission(permission) {
+  open_impl(filename, permission);
 }
 
 FitsFile::~FitsFile() {
-  close();
+  close_impl();
 }
 
 std::string FitsFile::filename() const {
@@ -39,11 +39,11 @@ std::string FitsFile::filename() const {
 }
 
 bool FitsFile::isOpen() const {
-  return m_open;
+  return m_fptr;
 }
 
 void FitsFile::reopen() {
-  if (not m_open) {
+  if (not m_fptr) {
     switch (m_permission) {
       case FileMode::Create:
       case FileMode::Overwrite:
@@ -60,7 +60,11 @@ void FitsFile::reopen() {
 }
 
 void FitsFile::open(const std::string& filename, FileMode permission) {
-  if (m_open) {
+  open_impl(filename, permission);
+}
+
+void FitsFile::open_impl(const std::string& filename, FileMode permission) {
+  if (m_fptr) {
     throw FitsError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
   }
   switch (permission) {
@@ -88,11 +92,14 @@ void FitsFile::open(const std::string& filename, FileMode permission) {
   }
   m_filename = filename;
   m_permission = permission;
-  m_open = true; // If this line is reached, no error was raised
 }
 
 void FitsFile::close() {
-  if (not m_open) {
+  close_impl();
+}
+
+void FitsFile::close_impl() {
+  if (not m_fptr) {
     return;
   }
   switch (m_permission) {
@@ -102,21 +109,18 @@ void FitsFile::close() {
     default:
       Cfitsio::FileAccess::close(m_fptr);
   }
-  m_open = false;
 }
 
 void FitsFile::closeAndDelete() {
-  if (not m_open) {
+  if (not m_fptr) {
     return; // TODO should we delete if not open?
   }
   Cfitsio::FileAccess::closeAndDelete(m_fptr);
-  m_open = false;
 }
 
 fitsfile* FitsFile::handoverToCfitsio() {
   auto fptr = m_fptr;
   m_fptr = nullptr;
-  m_open = false;
   return fptr;
 }
 

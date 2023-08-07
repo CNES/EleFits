@@ -16,15 +16,15 @@ using namespace Euclid::Fits;
 Validation::LoopingBenchmark::Duration loop(Validation::LoopingBenchmark& benchmark, char setup) {
   switch (setup) {
     case 'x':
-      return benchmark.loopOverXyz();
+      return benchmark.loop_over_xyz();
     case 'z':
-      return benchmark.loopOverZyx();
+      return benchmark.loop_over_zyx();
     case 'p':
-      return benchmark.loopOverPositions();
+      return benchmark.loop_over_positions();
     case 'i':
-      return benchmark.loopOverIndices();
+      return benchmark.loop_over_indices();
     case 'v':
-      return benchmark.loopOverValues();
+      return benchmark.loop_over_values();
     default:
       throw std::runtime_error("Invalid setup"); // FIXME TestNotImplemented
   }

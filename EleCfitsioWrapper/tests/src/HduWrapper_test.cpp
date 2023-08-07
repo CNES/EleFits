@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "EleCfitsioWrapper/CfitsioFixture.h"
+#include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleFitsData/TestColumn.h"
 #include "EleFitsData/TestRaster.h"

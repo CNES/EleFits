@@ -1,0 +1,1 @@
+Compress an input file using internal compression wherever possible and, if required, compress externally, too.

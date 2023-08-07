@@ -43,7 +43,7 @@ using BColumns = std::tuple<
 /**
  * @brief The number of columns.
  */
-constexpr std::size_t columnCount = std::tuple_size<BColumns>::value;
+constexpr std::size_t ColumnCount = std::tuple_size<BColumns>::value;
 
 /**
  * @brief The chronometer used for benchmarking.
@@ -58,8 +58,8 @@ struct TestCaseNotImplemented : public std::exception {
   /**
    * @brief Constructor.
    */
-  explicit TestCaseNotImplemented(const std::string& testCaseName) :
-      message("Test case not implemented: " + testCaseName) {}
+  explicit TestCaseNotImplemented(const std::string& test_case_name) :
+      message("Test case not implemented: " + test_case_name) {}
 
   /**
    * @brief Get the error message.
@@ -104,28 +104,28 @@ public:
    * @param count The number of HDUs
    * @param raster The raster to be written in each HDU
    */
-  const BChronometer& writeImages(long count, const BRaster& raster);
+  const BChronometer& write_images(long count, const BRaster& raster);
 
   /**
    * @brief Write the given columns in new binary table extensions.
    * @param count The number of HDUs
    * @param columns The columns to be written in each HDU
    */
-  const BChronometer& writeBintables(long count, const BColumns& columns);
+  const BChronometer& write_bintables(long count, const BColumns& columns);
 
   /**
    * @brief Read the rasters in the given image extensions.
    * @param first The first (0-based) HDU index
    * @param count The number of HDUs
    */
-  const BChronometer& readImages(long first, long count);
+  const BChronometer& read_images(long first, long count);
 
   /**
    * @brief Read the columns in the given binary table extensions.
    * @param first The first (0-based) HDU index
    * @param count The number of HDUs
    */
-  const BChronometer& readBintables(long first, long count);
+  const BChronometer& read_bintables(long first, long count);
 
   /**
    * @brief Write the given raster in a new image extension.
@@ -133,31 +133,31 @@ public:
    * This method is implemented by the child classes when part of the test case.
    * They have to manage the internal chronometer by calling m_chrono.start() and m_chrono.stop() at the right place.
    */
-  virtual BChronometer::Unit writeImage(const BRaster&) {
+  virtual BChronometer::Unit write_image(const BRaster&) {
     throw TestCaseNotImplemented("Write image");
   }
 
   /**
    * @brief Write the given columns in a new binary table extension.
-   * @copydetails writeImage
+   * @copydetails write_image
    */
-  virtual BChronometer::Unit writeBintable(const BColumns&) {
+  virtual BChronometer::Unit write_bintable(const BColumns&) {
     throw TestCaseNotImplemented("Write binary table");
   }
 
   /**
    * @brief Read the image raster in the given image extension.
-   * @copydetails writeImage
+   * @copydetails write_image
    */
-  virtual BRaster readImage(long) {
+  virtual BRaster read_image(long) {
     throw TestCaseNotImplemented("Read image");
   }
 
   /**
    * @brief Read the columns in the given binary table extension.
-   * @copydetails writeImage
+   * @copydetails write_image
    */
-  virtual BColumns readBintable(long) {
+  virtual BColumns read_bintable(long) {
     throw TestCaseNotImplemented("Read binary table");
   }
 
@@ -186,7 +186,7 @@ public:
   /**
    * @brief Register a new benchmark with given key and factory function.
    */
-  void registerBenchmarkMaker(const std::string& key, BenchmarkMaker factory);
+  void register_benchmark_maker(const std::string& key, BenchmarkMaker factory);
 
   /**
    * @brief Register a new benchmark with given key and constructor arguments.
@@ -197,8 +197,8 @@ public:
    * \endcode
    */
   template <typename TBenchmark, typename... Ts>
-  void registerBenchmark(const std::string& key, const Ts&... args) {
-    registerBenchmarkMaker(key, [=](const std::string& filename) { // Force copy
+  void register_benchmark(const std::string& key, const Ts&... args) {
+    register_benchmark_maker(key, [=](const std::string& filename) { // Force copy
       return std::make_unique<TBenchmark>(filename, args...);
     });
   }
@@ -206,7 +206,7 @@ public:
   /**
    * @brief Create a new benchmark from its name and filename.
    */
-  std::unique_ptr<Benchmark> createBenchmark(const std::string& key, const std::string& filename) const;
+  std::unique_ptr<Benchmark> create_benchmark(const std::string& key, const std::string& filename) const;
 
   /**
    * @brief Get the registered keys.

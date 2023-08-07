@@ -28,11 +28,11 @@ namespace Fits {
   - HDU access and creation: \ref file_handlers
   - Header keyword records read/write: \ref header_handlers
   - Primary array or image extension: \ref image_handlers
-  - Image Compression: *not supported*
+  - Image compression: \ref image_compression
   - ASCII table extension: *not supported*
   - Binary table extension: \ref bintable_handlers
 - The iterator function: *not supported*
-- World Coordinates System (deprecated): *not supported*
+- World Coordinates System (deprecated): *not relevant*
 - Hierarchical grouping: *not supported*
 - Extended file name syntax: *not supported*
 - Template Files: *not supported*
@@ -42,7 +42,7 @@ namespace Fits {
   - Arrays of fixed-length strings in binary tables: Column
   - Keyword record units strings: Record
   - HIERARCH convention for extended keyword record names: Record
-  - Tile-compressed image format: *not supported*
+  - Tile-compressed image format: \ref image_compression
 - Optimizing programs: \ref optim
 
 */

@@ -14,6 +14,14 @@ BOOST_AUTO_TEST_SUITE(HduCategory_test)
 
 //-----------------------------------------------------------------------------
 
+BOOST_AUTO_TEST_CASE(type_test) {
+  BOOST_TEST((HduCategory::Any.type() == HduCategory::Any));
+  BOOST_TEST((HduCategory::Primary.type() == HduCategory::Image));
+  BOOST_TEST((HduCategory::Ext.type() == HduCategory::Any));
+  BOOST_TEST((HduCategory::Image.type() == HduCategory::Image));
+  BOOST_TEST((HduCategory::Bintable.type() == HduCategory::Bintable));
+}
+
 BOOST_AUTO_TEST_CASE(operators_test) {
   BOOST_TEST((HduCategory::Primary == HduCategory::Primary));
   BOOST_TEST((HduCategory::Bintable == ~HduCategory::Primary));
@@ -22,6 +30,11 @@ BOOST_AUTO_TEST_CASE(operators_test) {
   BOOST_TEST(((HduCategory::Primary | HduCategory::ImageExt) == HduCategory::Image));
   BOOST_TEST(((HduCategory::MetadataPrimary & HduCategory::Primary) == HduCategory::MetadataPrimary));
   BOOST_TEST(((HduCategory::Primary & HduCategory::MetadataPrimary) == HduCategory::MetadataPrimary));
+  BOOST_TEST(((HduCategory::Primary << HduCategory::Ext) == HduCategory::ImageExt));
+  BOOST_TEST(((HduCategory::Image << HduCategory::Ext) == HduCategory::ImageExt));
+  BOOST_TEST(
+      (((HduCategory::Untouched & HduCategory::Primary) << HduCategory::Touched) ==
+       (HduCategory::Touched & HduCategory::Primary)));
   BOOST_TEST((HduCategory::MetadataPrimary != HduCategory::Primary));
 }
 

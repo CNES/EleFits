@@ -1,0 +1,218 @@
+namespace Euclid {
+namespace Fits {
+
+/**
+
+\addtogroup image_compression
+
+
+\tableofcontents
+
+
+\section compression-intro External vs. Internal Compressions
+
+
+FITS supports two compression approaches:
+
+- External compression by GZIPing of the entire file.
+  In this case, the whole uncompressed file is stored in memory.
+  At read time, it is initially decompressed and everything then occurs in memory (or disk with swapping).
+  At write time, the file is compressed in memory, and then written entirely to the file system at closure.
+- Internal compression with any of the supported algorithms.
+  This compression acts at image extension level: the Primary HDU and the binary table extensions cannot be compressed this way.
+  When a compressed HDU is accessed, only the required region is decompressed/compressed on the fly.
+  Therefore, memory usage is minimized.
+
+Both compression approaches can be combined.
+
+
+\section compression-external External Compression
+
+
+External compression is transparent: if the filename ends with `.gz`, then external compression is enabled.
+From the API point of view, no change is required wrt. uncompressed files.
+
+
+\section compression-internal Internal Compression
+
+
+\subsection compression-internal-principle Principle
+
+
+For a start, here is how the FITS standard definition document (v4.0) introduces the internal compression:
+
+> The general principle is to first divide the N-dimensional image into a rectangular grid of subimages or "tiles."
+> Each tile is then compressed as a block of data, and the resulting compressed byte stream is stored in a row of a variable-length column in a FITS binary table.
+> By dividing the image into tiles it is possible to extract and decompress subsections of the image without having to decompress the whole image.
+> The default tiling pattern treats each row of a two-dimensional image (or higher-dimensional cube) as a tile, such that each tile contains NAXIS1 pixels.
+> This default may not be optimal for some applications or compression algorithms, so any other rectangular tiling pattern may be defined [...].
+> In the case of relatively small images it may suffice to compress the entire image as a single tile, resulting in an output binary table containing a single row.
+> In the case of three-dimensional data cubes, it may be advantageous to treat each plane of the cube as a separate tile
+> if application software typically needs to access the cube on a plane-by-plane basis.
+
+Standard FITS files are made of HDUs which can be either images or tables.
+Binary tables can contain variable-length columns (which are not publically supported by EleFits):
+such columns can hold vector values of varying length.
+
+Internally compressed image HDUs are partitioned into regular non-overlapping boxes called tiles (typically, rows).
+Each of the tiles is compressed with a given algorithm, and the compressed tile values are stored in a cell of a binary table.
+The compressed tiles have different sizes since the compression rate depends on the actual pixel values,
+which is why variable-length columns are used.
+
+In practice, this means that a compressed image HDU is effectively stored as a binary table HDU,
+although with specific keywords stating that this is no classical table.
+Most viewers and libraries (including EleFits) provide an image HDU interface for them,
+i.e. at reading, it is not necessary to know whether an image is compressed or not.
+For writing, compression must be explicitely enabled before creating the HDU,
+but then classical write functions are used as if the HDU was not compressed.
+
+
+\subsection compression-algos Algorithms and Parameters
+
+
+EleFits, like CFITSIO, supports several compression algorithms.
+They are implemented as independent data classes responsible for storing the parameters.
+Let us first introduce briefly the various algorithms and parameters, before discussing the interfaces.
+
+All internal compression algorithms act on data regions named tiles,
+which are compressed and decompressed independently.
+Tiles are represented by their common shape (edge tiles may be cropped).
+Generally, the default tile is a row or an amount of consecutive rows.
+When the images to be compressed have a small width (say, less than a thousand pixels), such a tile might be too small.
+In this case, using larger tiles is recommended.
+For smallest images (a few thousands of pixels at most), the whole data can even be used.
+When image processing is planned to be performed tile-wise (e.g. row-by-row),
+then the compression tile should relate to the processing tile such that compression and processing tile borders match as often as possible.
+
+As opposed to CFITSIO, by default, compression is lossless whatever the pixel type.
+If one tries to use some lossless algorithm with incompatible data type (e.g. H-compress with `double`), an error is thrown. 
+Lossy compression is available, for any pixel type, by enabling quantization.
+Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
+This is a first level of compression, where the least significant digits of a floating-point number are dropped.
+
+When quantization is turned on and an integral image extension is created, it is first converted to floating point data.
+However, in general, benchmarks show that lossless integer compression is almost as good as lossy integer compression.
+
+Once this step has been performed, the quantized, integral values are effectively compressed losslessly by one of the supported algorithms:
+
+- GZIP (class `Gzip`) is the classical file compression algorithm and can be applied without quantization.
+- Suffled GZIP (`ShuffledGzip`) first applies some byte reordering and generally shows a greater compression rate than GZIP.
+- `Rice` is the de facto standard FITS compression algorithm:
+  It is lossy for floating point values and can be lossless for integer values;
+  It generally offers better performances than GZIP.
+- H-compress (`HCompress`) is a somewhat more advanced algorithm, which may require more tuning than others,
+  and explicitely targets 2D images;
+  It is lossless with integer values when both quantization and scaling are disabled.
+- PLIO (`Plio`) is designed for integer values, and more specifically bitmasks;
+  Values higher than 2^24 cannot be compressed with this algorithm;
+  It is not recommended to use quantization with PLIO.
+
+<table class="fieldtable">
+<tr><th>Class<th>Integral data<th>Floating point data
+<tr><td>`Gzip`<td>Lossless iff quantization is disabled.<td>Lossless iff quantization is disabled.
+<tr><td>`ShuffledGzip`<td>Lossless iff quantization is disabled.<td>Lossless iff quantization is disabled.
+<tr><td>`Rice`<td>Lossless iff quantization is disabled.<td>Lossy
+<tr><td>`HCompress`<td>Lossless iff quantization and scaling are disabled.<td>Lossy
+<tr><td>`Plio`<td>Lossless iff quantization is disabled.<td>Lossy
+</table>
+
+@see R. L. White, P. Greenfield, W. Pence, D. Tody, R. Seaman.
+_Tiled Image Convention for Storing Compressed Images in FITS Binary Tables._
+
+\warning
+64-bit integers cannot be compressed due to a CFITSIO limitation.
+
+
+\subsection compression-interface Interface
+
+
+As mentioned in the previous section, compression algorithms are represented by dedicated classes.
+In addition, `NoCompression` can be used to disable internal compression.
+All those classes implement the `Compression` interface.
+Generic compression parameters are the tiling shape (as a `Position<-1>` object)
+and quantization (as a `Quantization` object).
+More details can be found in the classes and methods documentation (see list below).
+
+Once the `Compression` instance is created, it can be passed to a `MefFile` through a so-called compression strategy.
+The strategy is a very powerful object which adapts the compression algorithm to the HDU being created (see \ref strategy).
+It is composed of a list (possily a singleton) of compression actions, which are tried one after the other.
+If an action is successful, trying stops.
+The simplest compression action is made of a single compression algorithm, `Compress`,
+which consists in applying the same compression algorithm to all HDUs unless impossible.
+A list of such actions can build up a compression strategy which selects the preferred algorithm which works.
+For example, registering `Compress<Plio>` and then `Compress<Rice>` will activate PLIO if possible, and Rice otherwise,
+or not comress at all if the HDU is very small.
+
+More elaborated actions can be user-defined by extending the base class `CompressionAction`
+(e.g. to use PLIO only for HDUs whose name ends with "MASK").
+The generic action `CompressAptly` is the recommended default.
+It draws on the various papers pointed by the FITS support office and on internal benchmarks,
+and has variants for lossless and lossy compressions.
+
+As soon as the strategy is enabled (with `MefFile::strategy()`), newly created image HDUs will automatically be compressed.
+Note that it is not possible to convert an uncompressed image HDU into a compressed one in place,
+and compression must be activated before creating HDUs.
+The aforementioned strategy can be enabled as follows:
+
+\code
+MefFile f(filename, FileMode::Create);
+f.strategy(Compress<Plio>(), Compress<Rice>());
+f.appendImage("", {}, raster);
+\endcode
+
+
+\section compression-guidelines Guidelines
+
+
+\subsection compression-guidelines-primary Don't Compress the Primary
+
+
+Given that the Primary HDU is necessarily an image HDU, it cannot be compressed.
+Generally, if the Primary has to be internally compressed (e.g. for SIF files), then an extension is added after an empty Primary.
+Therefore, even lossless compression may be non-idempotent:
+indeed, decompressing such a file would result in a MEF file with an empty Primary and decompressed extension corresponding to the input Primary,
+instead of a single decompressed Primary.
+Therefore, it is recommended to avoid writing data to the Primary HDU,
+or at least to not compress it and copy it verbatim (which is the default behavior of `EleFitsCompress`).
+This way, compressing and decompressing the file returns the original file.
+
+\code
+# Default: copy the Primary
+EleFitsCompress uncompressed.fits compressed.fits
+EleFitsDecompress compressed.fits decompressed.fits
+# decompressed.fits = uncompressed.fits
+
+# Compress the Primary, too
+EleFitsCompress uncompressed.fits compressed.fits --primary
+EleFitsDecompress compressed.fits decompressed.fits
+# decompressed.fits = empty Primary + uncompressed.fits
+\endcode
+
+
+\subsection compression-guidelines-lossyint Use Lossless Compression for Integers
+
+
+As stated above, lossy compression of integral data brings little improvement over lossless compression.
+
+
+\subsection compression-guidelines-lossyfloat Give a Chance to Lossy Compression for Floating Points
+
+
+Although scary, lossy compression of floating point images generally preserves signal very well,
+while producing much higher compression rates than lossless compression, even with very conservative quantization.
+As an order of magnitude, expect a compression ratio of around 10 with quantization = RMS / 16,
+instead of just above 1 with quantization turned of.
+
+
+\subsection compression-guidelines-aptly Try CompressAptly!
+
+
+This is the default recommendation when you have no specific knowledge on the data stationnarity.
+It was designed with care based on already published studies, and tuned with internal benchmarks.
+More specifically, following the previous guideline, try `CompressAptly(CompressionType::LosslessInts)`!
+
+
+*/
+
+}
+}

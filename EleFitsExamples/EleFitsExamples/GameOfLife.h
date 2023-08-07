@@ -51,12 +51,12 @@ public:
   /**
    * @brief Count lifes around a given position.
    */
-  long countLifes(const Position<2>& p) const;
+  long count_lifes(const Position<2>& p) const;
 
   /**
    * @brief Check whether a given position is in the board domain.
    */
-  bool isInDomain(const Position<2>& p) const;
+  bool is_in_domain(const Position<2>& p) const;
 
 private:
   /**

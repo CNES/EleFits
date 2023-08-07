@@ -48,6 +48,8 @@ elements_add_executable(EleFitsRunBenchmark src/program/EleFitsRunBenchmark.cpp
 elements_add_executable(EleFitsRunLoopingBenchmark src/program/EleFitsRunLoopingBenchmark.cpp
                      INCLUDE_DIRS ElementsKernel EleFitsValidation
                      LINK_LIBRARIES ElementsKernel EleFitsValidation)
+elements_add_executable(EleFitsRunCompressionBenchmark src/program/EleFitsRunCompressionBenchmark.cpp
+                     LINK_LIBRARIES EleFitsValidation)
 
 #===============================================================================
 # Declare the Boost tests here
@@ -98,6 +100,7 @@ elements_install_scripts()
 #                             ElementsExamples.PythonProgramExample)
 #===============================================================================
 elements_add_python_program(EleFitsRunBatchBenchmark EleFitsValidation.EleFitsRunBatchBenchmark)
+elements_add_python_program(EleFitsRunBatchCompressionBenchmark EleFitsValidation.EleFitsRunBatchCompressionBenchmark)
 
 #===============================================================================
 # Add the elements_install_conf_files macro

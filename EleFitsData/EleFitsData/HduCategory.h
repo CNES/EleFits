@@ -8,6 +8,7 @@
 #include "EleFitsData/FitsError.h"
 
 #include <functional> // function
+#include <string> // for debug printing
 #include <vector>
 
 namespace Euclid {
@@ -15,17 +16,15 @@ namespace Fits {
 
 /**
  * @ingroup iterators
- * @brief An extensible HDU categorization for filtering and iteration.
- * @details
+ * @brief An HDU categorization for filtering and iteration.
+ * 
  * A category is defined as a sequence of trits (trinary bits),
  * which can take one of two specified values, or be unconstrained.
  * For example, the type of an HDU can be image, binary table or unconstrained.
  * 
- * Predefined trits are provided; user trits can also be added by extending the class.
- * 
  * Predefined categories are provided as static members,
- * e.g. HduCategory::Primary or HduCategory::RawImage.
- * An HduCategory should not be created with a constructor,
+ * e.g. `HduCategory::Primary` or `HduCategory::RawImage`.
+ * An `HduCategory` should not be created with a constructor,
  * but rather by combining those categories with (trinary) bitwise operators.
  * For example, an integer-valued, non-empty image extension
  * can be created using one of the following formulae:
@@ -35,10 +34,10 @@ namespace Fits {
  * HduCategory intDataImageExt = HduCategory::ImageExt & ~HduCategory::FloatPrimary;
  * \endcode
  * 
- * Method isInstance is provided to test whether a category validates a model.
- * Yet, in general, Hdu::matches is an adequate shortcut.
+ * Method `isInstance()` is provided to test whether a category validates a model.
+ * Yet, in general, `Hdu::matches()` is an adequate shortcut.
  * 
- * More complex, multi-category filters can be created as HduFilter objects.
+ * More complex, multi-category filters can be created as `HduFilter` objects.
  */
 class HduCategory {
 
@@ -46,25 +45,23 @@ protected:
   /**
    * @brief Trinary values.
    */
-  enum class Trit
-  {
+  enum class Trit {
+    Unconstrained, ///< Unconstrained
     First, ///< First constrained option
-    Second, ///< Second constrained option
-    Unconstrained ///< Unconstrained
+    Second ///< Second constrained option
   };
 
   /**
    * @brief The positions of the trinary flags.
    */
-  enum class TritPosition
-  {
+  enum class TritPosition {
     PrimaryExt, ///< Primary / extension HDU
     MetadataData, ///< Metadata / data HDU
     ImageBintable, ///< Image / binary table HDU
     IntFloatImage, ///< Integer- / real-valued image
     RawCompressedImage, ///< Raw / compressed image
     UntouchedTouched, ///< Untouched / accessed HDU
-    ExisitedCreated, ///< Pre-existing / created HDU
+    ExistedCreated, ///< Pre-existing / created HDU
     ReadEdited, ///< Read / edited HDU
     TritCount ///< The number of Trits
   };
@@ -90,6 +87,13 @@ protected:
 
 public:
   /**
+   * @brief Get the HDU type: either `Image` or `Bintable` or `Any` if unknown.
+   * 
+   * The returned category can be equality-tested, i.e. `category.type() == HduCategory::Image` is safe.
+   */
+  HduCategory type() const;
+
+  /**
    * @brief Toggle flags.
    */
   HduCategory operator~() const;
@@ -100,7 +104,7 @@ public:
   HduCategory& operator&=(const HduCategory& rhs);
 
   /**
-   * @copydoc operator&=
+   * @copybrief operator&=
    */
   HduCategory operator&(const HduCategory& rhs) const;
 
@@ -110,9 +114,19 @@ public:
   HduCategory& operator|=(const HduCategory& rhs);
 
   /**
-   * @copydoc operator|=
+   * @copybrief operator|=
    */
   HduCategory operator|(const HduCategory& rhs) const;
+
+  /**
+   * @brief Overwrite category (copy constrained flags).
+   */
+  HduCategory& operator<<=(const HduCategory& rhs);
+
+  /**
+   * @copybrief operator<<=
+   */
+  HduCategory operator<<(const HduCategory& rhs) const;
 
   /**
    * @brief Equality operator.
@@ -145,7 +159,7 @@ public:
 protected:
   /**
    * @brief The trinary flag mask.
-   * @details
+   * 
    * The trit positions are given by the TritPosition enumerators
    */
   std::vector<Trit> m_mask;
@@ -153,7 +167,7 @@ protected:
 private:
   /**
    * @brief Toggle if flag is constrained, do nothing otherwise.
-   * @details
+   * 
    * This is a trinary not:
    * - ~First = Second,
    * - ~Second = First,
@@ -163,7 +177,7 @@ private:
 
   /**
    * @brief Restrict a flag.
-   * @details
+   * 
    * This is a symetric trinary and:
    * - Constrained & Unconstrained = Constrained,
    * - Unconstrained & Unconstrained = Unconstrained,
@@ -175,7 +189,7 @@ private:
 
   /**
    * @brief Extend a flag.
-   * @details
+   * 
    * This is a symetric trinary or:
    * - Constrained | Unconstrained = Unconstrained,
    * - Unconstraied | Unconstrained = Unconstrained,
@@ -184,6 +198,14 @@ private:
    * - First | Second = Unconstrained.
    */
   static Trit extendFlag(Trit lhs, Trit rhs);
+
+  /**
+   * @brief Overwrite a flag if it is constrained.
+   * 
+   * - LHS @ Constrained = Constrained
+   * - LHS @ Unconstrained = LHS
+   */
+  static Trit overwriteFlag(Trit lhs, Trit rhs);
 
   /**
    * @brief Apply an unary operator to the flag mask.
@@ -235,9 +257,9 @@ public:
 /**
  * @ingroup iterators
  * @brief HDU filter built from HDU categories.
- * @details
+ * 
  * The class defines two lists of categories: accepted and rejected categories.
- * They are used in method accepts to check whether an HDU is of at least one accepted categories,
+ * They are used in method `accepts()` to check whether an HDU is of at least one accepted categories,
  * and of no rejected categories.
  */
 class HduFilter {
@@ -259,19 +281,19 @@ public:
   HduFilter& operator+=(const HduCategory& accept);
 
   /**
-   * @copydoc operator+=
+   * @copybrief operator+=
    */
   HduFilter operator+(const HduCategory& accept) const;
 
   /**
    * @brief Add a constraint to all accepted categories.
-   * @details
+   * 
    * For each accepted category, applies operator &.
    */
   HduFilter& operator*=(const HduCategory& constraint);
 
   /**
-   * @copydoc operator*=
+   * @copybrief operator*=
    */
   HduFilter operator*(const HduCategory& constraint) const;
 
@@ -297,13 +319,13 @@ public:
 
   /**
    * @brief Add a constraint to all rejected categories.
-   * @details
+   * 
    * For each rejected category, applies operator &.
    */
   HduFilter& operator/=(const HduCategory& constraint);
 
   /**
-   * @copydoc operator/=
+   * @copybrief operator/=
    */
   HduFilter operator/(const HduCategory& constraint) const;
 

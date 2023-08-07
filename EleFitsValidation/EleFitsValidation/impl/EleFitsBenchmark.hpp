@@ -11,7 +11,7 @@ namespace Fits {
 namespace Validation {
 
 template <long i>
-Indexed<typename std::tuple_element<i, BColumns>::type::Value> EleFitsColwiseBenchmark::colIndexed() const {
+Indexed<typename std::tuple_element<i, BColumns>::type::Value> EleFitsColwiseBenchmark::col_indexed() const {
   return Indexed<typename std::tuple_element<i, BColumns>::type::Value>(i);
 }
 

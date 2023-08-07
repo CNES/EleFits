@@ -21,10 +21,11 @@ void EleFitsColwiseBenchmark::close() {
   m_f.close();
 }
 
-BChronometer::Unit EleFitsColwiseBenchmark::writeBintable(const BColumns& columns) {
+BChronometer::Unit EleFitsColwiseBenchmark::write_bintable(const BColumns& columns) {
   m_chrono.start();
-  const auto& ext = m_f.initBintableExt(
+  const auto& ext = m_f.appendBintableHeader(
       "",
+      {},
       std::get<0>(columns).info(),
       std::get<1>(columns).info(),
       std::get<2>(columns).info(),
@@ -48,7 +49,7 @@ BChronometer::Unit EleFitsColwiseBenchmark::writeBintable(const BColumns& column
   return m_chrono.stop();
 }
 
-BColumns EleFitsColwiseBenchmark::readBintable(long index) {
+BColumns EleFitsColwiseBenchmark::read_bintable(long index) {
   m_chrono.start();
   const auto& ext = m_f.access<BintableHdu>(index);
   const auto columns = std::make_tuple(
@@ -70,38 +71,38 @@ EleFitsBenchmark::EleFitsBenchmark(const std::string& filename) : EleFitsColwise
   m_logger.info() << "EleFits benchmark (buffered, filename: " << filename << ")";
 }
 
-BChronometer::Unit EleFitsBenchmark::writeImage(const BRaster& raster) {
+BChronometer::Unit EleFitsBenchmark::write_image(const BRaster& raster) {
   m_chrono.start();
-  m_f.assignImageExt("", raster);
+  m_f.appendImage("", {}, raster);
   return m_chrono.stop();
 }
 
-BChronometer::Unit EleFitsBenchmark::writeBintable(const BColumns& columns) {
+BChronometer::Unit EleFitsBenchmark::write_bintable(const BColumns& columns) {
   m_chrono.start();
-  m_f.assignBintableExt("", columns);
+  m_f.appendBintable("", {}, columns);
   return m_chrono.stop();
 }
 
-BRaster EleFitsBenchmark::readImage(long index) {
+BRaster EleFitsBenchmark::read_image(long index) {
   m_chrono.start();
   const auto raster = m_f.access<ImageHdu>(index).readRaster<BRaster::Value, BRaster::Dim>();
   m_chrono.stop();
   return raster;
 }
 
-BColumns EleFitsBenchmark::readBintable(long index) {
+BColumns EleFitsBenchmark::read_bintable(long index) {
   m_chrono.start();
   const auto columns = m_f.access<BintableColumns>(index).readSeq(
-      colIndexed<0>(),
-      colIndexed<1>(),
-      colIndexed<2>(),
-      colIndexed<3>(),
-      colIndexed<4>(),
-      colIndexed<5>(),
-      colIndexed<6>(),
-      colIndexed<7>(),
-      colIndexed<8>(),
-      colIndexed<9>());
+      col_indexed<0>(),
+      col_indexed<1>(),
+      col_indexed<2>(),
+      col_indexed<3>(),
+      col_indexed<4>(),
+      col_indexed<5>(),
+      col_indexed<6>(),
+      col_indexed<7>(),
+      col_indexed<8>(),
+      col_indexed<9>());
   m_chrono.stop();
   return columns;
 }

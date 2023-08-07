@@ -29,7 +29,7 @@ VecColumn<T> randomColumn(const std::string& name, long rows) {
  * @details
  * Random columns of type double ('D') and float ('E') are generated and written.
  */
-void writeBintable(const std::string& filename, long rows) {
+void write_bintable(const std::string& filename, long rows) {
   MefFile f(filename, FileMode::Overwrite);
   const auto col1 = randomColumn<double>("SHE_LENSMC_UPDATED_RA", rows);
   const auto col2 = randomColumn<double>("SHE_LENSMC_UPDATED_DEC", rows);
@@ -38,7 +38,7 @@ void writeBintable(const std::string& filename, long rows) {
   const auto col5 = randomColumn<float>("PHZ_MEDIAN", rows);
   const auto col6 = randomColumn<float>("PHZ_LENSMC_CORRECTION", rows);
   const auto col7 = randomColumn<float>("SHE_LENSMC_WEIGHT", rows);
-  f.assignBintableExt("", col1, col2, col3, col4, col5, col6, col7); // Unnamed extension
+  f.appendBintable("", {}, col1, col2, col3, col4, col5, col6, col7); // Unnamed extension
 }
 
 /**
@@ -77,10 +77,10 @@ void writeSomeRecords(const Header& header) {
  * @details
  * A random 3D raster is generated and written.
  */
-void writeImage(const std::string& filename, const Position<3>& shape) {
+void write_image(const std::string& filename, const Position<3>& shape) {
   MefFile f(filename, FileMode::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
-  const auto& ext = f.assignImageExt("KAPPA_PATCH", raster); // Named extension
+  const auto& ext = f.appendImage("KAPPA_PATCH", {}, raster); // Named extension
   writeSomeRecords(ext.header());
 }
 
@@ -107,11 +107,11 @@ public:
     const Position<3> shape {args["width"].as<long>(), args["height"].as<long>(), 3};
 
     logger.info("Writing binary table...");
-    writeBintable(bintable, rows);
+    write_bintable(bintable, rows);
     logger.info("Done.");
 
     logger.info("Writing image...");
-    writeImage(image, shape);
+    write_image(image, shape);
     logger.info("Done.");
 
     logger.info("Reading binary table...");

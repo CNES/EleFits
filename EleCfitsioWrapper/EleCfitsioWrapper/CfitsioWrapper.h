@@ -12,6 +12,7 @@
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
+#include "EleCfitsioWrapper/CompressionWrapper.h"
 
 /**
  * @brief Euclid SGS namespace.

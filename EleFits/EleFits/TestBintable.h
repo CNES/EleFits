@@ -25,7 +25,7 @@ struct TestBintable { // FIXME add multidimensional column
    */
   TestBintable(long rows = 10) :
       scalarColumn(rows), vectorColumn(3, rows), firstColumn(scalarColumn), lastColumn(vectorColumn), file(),
-      hdu(file.initBintableExt("BINTABLE", firstColumn.info(), lastColumn.info())), columns(hdu.columns()) {
+      hdu(file.appendBintableHeader("BINTABLE", {}, firstColumn.info(), lastColumn.info())), columns(hdu.columns()) {
     assert(scalarColumn.info().name != vectorColumn.info().name);
   }
 

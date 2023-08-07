@@ -87,8 +87,9 @@ const BintableHdu& writeExt(MefFile& f, const std::string& name, const AstroObjI
 
   /* Create and assign extension */
 
-  return f.assignBintableExt(
+  return f.appendBintable(
       name,
+      {},
       makeColumn(std::move(objIdInfo), std::move(objIdData)),
       makeColumn(std::move(objRadecInfo), std::move(objRadecData)),
       makeColumn(std::move(expTimeInfo), std::move(expTimeData)),

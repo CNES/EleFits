@@ -44,6 +44,8 @@ elements_add_library(EleFits src/lib/*.cpp
 #                        LINK_LIBRARIES Boost ElementsExamples
 #                        INCLUDE_DIRS Boost ElementsExamples)
 #===============================================================================
+elements_add_executable(EleFitsCompress src/program/EleFitsCompress.cpp
+                     LINK_LIBRARIES ElementsKernel EleFits)
 elements_add_executable(EleFitsPrintSupportedTypes src/program/EleFitsPrintSupportedTypes.cpp
                      LINK_LIBRARIES ElementsKernel EleFits)
 elements_add_executable(EleFitsReadStructure src/program/EleFitsReadStructure.cpp
@@ -66,9 +68,13 @@ elements_add_unit_test(BintableHdu tests/src/BintableHdu_test.cpp
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
 elements_add_unit_test(ColumnKey tests/src/ColumnKey_test.cpp 
-                     EXECUTABLE EleFits_ColumnKey_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
+                    EXECUTABLE EleFits_ColumnKey_test
+                    LINK_LIBRARIES EleFits
+                    TYPE Boost)
+elements_add_unit_test(CompressionStrategy tests/src/CompressionStrategy_test.cpp 
+                    EXECUTABLE EleFits_CompressionStrategy_test
+                    LINK_LIBRARIES EleFits
+                    TYPE Boost)
 elements_add_unit_test(FileMemRegions tests/src/FileMemRegions_test.cpp 
                      EXECUTABLE EleFits_FileMemRegions_test
                      LINK_LIBRARIES EleFits
@@ -109,6 +115,10 @@ elements_add_unit_test(SifFile tests/src/SifFile_test.cpp
                      EXECUTABLE EleFits_SifFile_test
                      LINK_LIBRARIES EleFits
                      TYPE Boost)
+elements_add_unit_test(Strategy tests/src/Strategy_test.cpp 
+                    EXECUTABLE EleFits_Strategy_test
+                    LINK_LIBRARIES EleFits
+                    TYPE Boost)
 elements_add_unit_test(TestBintable tests/src/TestBintable_test.cpp 
                      EXECUTABLE EleFits_TestBintable_test
                      LINK_LIBRARIES EleFits

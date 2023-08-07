@@ -114,7 +114,9 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   /* Heterogeneous read */
   h.parseSeq(as<int>("I"), as<float>("F"));
   h.parseSeqOr(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
-  h.parseStruct<S>(as<int>("I"), as<float>("F"));
+  const auto [boundI, boundF] = h.parseStruct<S>(as<int>("I"), as<float>("F")); // Structured binding
+  BOOST_TEST(boundI == i);
+  BOOST_TEST(boundF == f);
 
   /* Homogeneous read */
   h.parseSeq<VariantValue>({"I", "F"});

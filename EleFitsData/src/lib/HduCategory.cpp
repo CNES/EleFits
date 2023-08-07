@@ -9,11 +9,20 @@
 namespace Euclid {
 namespace Fits {
 
-HduCategory::HduCategory() :
-    m_mask(static_cast<std::size_t>(HduCategory::TritPosition::TritCount), HduCategory::Trit::Unconstrained) {}
+HduCategory::HduCategory() : m_mask(static_cast<std::size_t>(TritPosition::TritCount), Trit::Unconstrained) {}
 
 HduCategory::HduCategory(HduCategory::TritPosition position, HduCategory::Trit value) : HduCategory() {
   m_mask[static_cast<int>(position)] = value;
+}
+
+HduCategory HduCategory::type() const {
+  auto trit = m_mask[static_cast<std::size_t>(TritPosition::ImageBintable)];
+  if (trit == Trit::First) {
+    return HduCategory::Image;
+  } else if (trit == Trit::Second) {
+    return HduCategory::Bintable;
+  }
+  return HduCategory();
 }
 
 HduCategory HduCategory::operator~() const {
@@ -38,6 +47,16 @@ HduCategory& HduCategory::operator|=(const HduCategory& rhs) {
 HduCategory HduCategory::operator|(const HduCategory& rhs) const {
   HduCategory res(*this);
   res |= rhs;
+  return res;
+}
+
+HduCategory& HduCategory::operator<<=(const HduCategory& rhs) {
+  return transform(rhs, overwriteFlag);
+}
+
+HduCategory HduCategory::operator<<(const HduCategory& rhs) const {
+  HduCategory res(*this);
+  res <<= rhs;
   return res;
 }
 
@@ -69,6 +88,7 @@ HduCategory::Trit HduCategory::toggleFlag(HduCategory::Trit rhs) {
 }
 
 HduCategory::Trit HduCategory::restrictFlag(HduCategory::Trit lhs, HduCategory::Trit rhs) {
+
   if (lhs == rhs) {
     return lhs;
   }
@@ -78,11 +98,16 @@ HduCategory::Trit HduCategory::restrictFlag(HduCategory::Trit lhs, HduCategory::
   if (rhs == Trit::Unconstrained) {
     return lhs;
   }
+
   throw HduCategory::IncompatibleTrits();
 }
 
 HduCategory::Trit HduCategory::extendFlag(HduCategory::Trit lhs, HduCategory::Trit rhs) {
   return lhs == rhs ? lhs : Trit::Unconstrained;
+}
+
+HduCategory::Trit HduCategory::overwriteFlag(Trit lhs, Trit rhs) {
+  return rhs == Trit::Unconstrained ? lhs : rhs;
 }
 
 HduCategory& HduCategory::transform(std::function<Trit(Trit)> op) {
@@ -98,20 +123,20 @@ HduCategory& HduCategory::transform(const HduCategory& rhs, std::function<Trit(T
 const HduCategory HduCategory::Any {};
 const HduCategory HduCategory::Image {HduCategory::TritPosition::ImageBintable, HduCategory::Trit::First};
 const HduCategory HduCategory::Primary {
-    HduCategory::Image & HduCategory {HduCategory::TritPosition::PrimaryExt, HduCategory::Trit::First}};
+    HduCategory::Image& HduCategory {HduCategory::TritPosition::PrimaryExt, HduCategory::Trit::First}};
 const HduCategory HduCategory::Metadata {HduCategory::TritPosition::MetadataData, HduCategory::Trit::First};
 const HduCategory HduCategory::IntImage {
-    HduCategory::Image & HduCategory {HduCategory::TritPosition::IntFloatImage, HduCategory::Trit::First}};
+    HduCategory::Image& HduCategory {HduCategory::TritPosition::IntFloatImage, HduCategory::Trit::First}};
 const HduCategory HduCategory::RawImage {
-    HduCategory::Image & HduCategory {HduCategory::TritPosition::RawCompressedImage, HduCategory::Trit::First}};
+    HduCategory::Image& HduCategory {HduCategory::TritPosition::RawCompressedImage, HduCategory::Trit::First}};
 
 const HduCategory HduCategory::Ext {HduCategory::TritPosition::PrimaryExt, HduCategory::Trit::Second};
 const HduCategory HduCategory::Data {~HduCategory::Metadata};
 const HduCategory HduCategory::Bintable {HduCategory::Ext & ~HduCategory::Image};
 const HduCategory HduCategory::FloatImage {
-    HduCategory::Image & HduCategory {HduCategory::TritPosition::IntFloatImage, HduCategory::Trit::Second}};
+    HduCategory::Image& HduCategory {HduCategory::TritPosition::IntFloatImage, HduCategory::Trit::Second}};
 const HduCategory HduCategory::CompressedImageExt {
-    HduCategory::Image & HduCategory {HduCategory::TritPosition::RawCompressedImage, HduCategory::Trit::Second}};
+    HduCategory::Image& HduCategory {HduCategory::TritPosition::RawCompressedImage, HduCategory::Trit::Second}};
 
 const HduCategory HduCategory::MetadataPrimary {HduCategory::Metadata & HduCategory::Primary};
 const HduCategory HduCategory::DataPrimary {HduCategory::Data & HduCategory::Primary};
@@ -125,9 +150,9 @@ const HduCategory HduCategory::FloatImageExt {HduCategory::FloatImage & HduCateg
 
 const HduCategory HduCategory::Untouched {HduCategory::TritPosition::UntouchedTouched, HduCategory::Trit::First};
 const HduCategory HduCategory::Touched {~HduCategory::Untouched};
-const HduCategory HduCategory::Existed {HduCategory::TritPosition::ExisitedCreated, HduCategory::Trit::First};
+const HduCategory HduCategory::Existed {HduCategory::TritPosition::ExistedCreated, HduCategory::Trit::First};
 const HduCategory HduCategory::OnlyRead {
-    HduCategory::Touched & HduCategory {HduCategory::TritPosition::ReadEdited, HduCategory::Trit::First}};
+    HduCategory::Touched& HduCategory {HduCategory::TritPosition::ReadEdited, HduCategory::Trit::First}};
 const HduCategory HduCategory::Edited {HduCategory::TritPosition::ReadEdited, HduCategory::Trit::Second};
 const HduCategory HduCategory::Created {~HduCategory::Existed & HduCategory::Edited};
 

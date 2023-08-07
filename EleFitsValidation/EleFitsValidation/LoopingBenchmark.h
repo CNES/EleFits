@@ -41,27 +41,27 @@ public:
   /**
    * @brief Loop over positions built by looping over x, then y, and then z.
    */
-  Duration loopOverXyz();
+  Duration loop_over_xyz();
 
   /**
    * @brief Loop over positions built by looping over z, then y, and then x.
    */
-  Duration loopOverZyx();
+  Duration loop_over_zyx();
 
   /**
    * @brief Loop over positions via a position iterator.
    */
-  Duration loopOverPositions();
+  Duration loop_over_positions();
 
   /**
    * @brief Loop over indices.
    */
-  Duration loopOverIndices();
+  Duration loop_over_indices();
 
   /**
    * @brief Loop over values via a pixel iterator.
    */
-  Duration loopOverValues();
+  Duration loop_over_values();
 
 private:
   const long m_width;

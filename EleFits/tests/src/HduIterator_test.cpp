@@ -16,8 +16,8 @@ BOOST_AUTO_TEST_SUITE(HduIterator_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
-  this->initRecordExt("1");
-  this->initRecordExt("2");
+  this->appendImageHeader("1");
+  this->appendImageHeader("2");
   int count = 0;
   for (const auto& hdu : *this) {
     BOOST_TEST(hdu.matches(HduCategory::Image));
@@ -29,9 +29,9 @@ BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
 BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile) {
   ColumnInfo<float> info {"COL", "", 1};
   std::vector<std::string> names {"", "BINTABLE1", "BINTABLE2", "IMAGE"};
-  this->initBintableExt(names[1], info);
-  this->initBintableExt(names[2], info);
-  this->initImageExt<float, 2>(names[3], {1, 1});
+  this->appendBintableHeader(names[1], {}, info);
+  this->appendBintableHeader(names[2], {}, info);
+  this->appendNullImage<float, 2>(names[3], {}, {1, 1});
 
   int count = 0;
   std::vector<std::string> readNames;

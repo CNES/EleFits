@@ -18,6 +18,8 @@
 namespace Euclid {
 namespace Fits {
 
+class MefFile; // necessary for friend class declaration in Hdu
+
 /**
  * @ingroup header_handlers
  * @brief Base class for `ImageHdu` and `BintableHdu`.
@@ -28,6 +30,10 @@ namespace Fits {
  * (refer to the documentation of the `Header` class).
  */
 class Hdu {
+
+  // A non-parent MefFile can be wanting to access the fitsfile of the parent MefFile of the hdu
+  // FIXME: approach might be changed in the future
+  friend class Euclid::Fits::MefFile;
 
 public:
   /// @cond
@@ -102,7 +108,7 @@ public:
    * @details
    * This is more specific than the type of the HDU.
    * The category is a bitmask which encodes more properties,
-   * e.g. Primary is more specific than Image, and MetadataPrimary is even more specific.
+   * e.g. `Primary` is more specific than `Image`, and `MetadataPrimary` is even more specific.
    * The result of this function should not be tested with operator ==, but rather with HduFilter::accepts().
    * Often, the method matches can be used directly.
    * 
@@ -143,6 +149,14 @@ public:
    * @brief Read the extension version.
    */
   long readVersion() const;
+
+  /**
+   * @brief Read the number of bytes used by the Hdu.
+   * @details
+   * Total number of bits in the extension data array exclusive of fill that is needed after the data to complete the last record.
+   * According to doc: https://archive.stsci.edu/fits/fits_standard/node39.html#s:conf
+  */
+  std::size_t readSizeInFile() const;
 
   /**
    * @brief Write or update the extension name.

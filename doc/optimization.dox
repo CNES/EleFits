@@ -79,7 +79,7 @@ Ultimate optimization when creating an HDU is to complete the header unit first 
 
 \code
 // Initialize the header unit (write some standard records)
-const auto &ext = f.initImageHdu<float, 3>(name);
+const auto &ext = f.appendImageHeader<float, 3>(name);
 
 // Write user records
 ext.header().writeSeq(record1, record2, record3);
@@ -171,6 +171,14 @@ which makes the trick more relevant to CFITSIO users than to EleFits users.
 To go further, CFITSIO "iterator" mechanism is the way to go for performance;
 it is a clean solution which keeps the data in the logical format.
 It has no counterpart in EleFits. For now...
+
+
+\section optim-compression Enable compression if transfer is a concern
+
+
+If a FITS file has to be transferred quite often
+-- e.g. through a shared filesystem, which is common for computing centers --
+then internal compression might be a very valuable option (see \ref image_compression).
 
 */
 

@@ -45,6 +45,9 @@ KeywordCategory::filterCategories(const std::vector<std::string>& keywords, Keyw
 }
 
 bool KeywordCategory::belongsCategories(const std::string& keyword, KeywordCategory categories) {
+  if (keyword == "CONTINUE") { // Spuriously returned by CFITSIO
+    return false;
+  }
   const auto standards = byCategory();
   for (const auto& s : standards) { // TODO Could be std::any_of but would it be readable?
     if (categories & KeywordCategory(s.first)) {

@@ -4,6 +4,8 @@
 
 #include "EleFits/ImageHdu.h"
 
+#include "EleCfitsioWrapper/CompressionWrapper.h"
+
 #include <functional> // multiplies
 #include <numeric> // accumulate
 
@@ -32,12 +34,33 @@ ImageHdu::ImageHdu() :
           editThisHdu();
         }) {}
 
+const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const {
+  updateName(rhs.readName());
+  header().writeSeq(rhs.header().parseAll(KeywordCategory::User)); // FIXME others?
+#define ELEFITS_COPY_HDU(T, _) \
+  if (rhs.readTypeid() == typeid(T)) { \
+    const auto r = rhs.raster().template read<T, -1>(); \
+    updateShape<T, -1>(r.shape()); \
+    if (r.size()) { \
+      raster().write(r); \
+    } \
+    return *this; \
+  }
+  ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_COPY_HDU)
+#undef ELEFITS_COPY_HDU
+  return *this;
+}
+
 const ImageRaster& ImageHdu::raster() const {
   return m_raster;
 }
 
 const std::type_info& ImageHdu::readTypeid() const {
   return m_raster.readTypeid();
+}
+
+long ImageHdu::readBitpix() const {
+  return m_raster.readBitpix();
 }
 
 long ImageHdu::readSize() const {
@@ -57,8 +80,22 @@ HduCategory ImageHdu::readCategory() const {
   } else {
     cat &= HduCategory::IntImage;
   }
-  cat &= HduCategory::RawImage; // TODO check compression when implemented
+  if (Cfitsio::ImageIo::isCompressedImage(m_fptr)) {
+    cat &= HduCategory::CompressedImageExt;
+  } else {
+    cat &= HduCategory::RawImage;
+  }
   return cat;
+}
+
+bool ImageHdu::isCompressed() const {
+  touchThisHdu();
+  return Cfitsio::ImageIo::isCompressedImage(m_fptr);
+}
+
+std::unique_ptr<Compression> ImageHdu::readCompression() const {
+  touchThisHdu();
+  return Cfitsio::read_compression(m_fptr);
 }
 
 template <>

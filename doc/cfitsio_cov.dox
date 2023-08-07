@@ -1,107 +1,62 @@
 /**
 
-\page cfitsio_cov CFITSIO routines covered by EleFits
+\page cfitsio_cov CFITSIO features vs. EleFits features
 
-Legend:
+\section elefits-missing CFITSIO features not supported by EleFits
 
-- Items in **bold** are available in the end-user API (Euclid::Fits namespace);
-- Items in *italic* are being implemented;
-- Other items are not available, they might be implemented on user requests.
+File:
 
-\section cfitsio-basic Basic CFITSIO Interface Routines 
+- Input files as URL paths
+- Hierarchical grouping
 
-- **CFITSIO Error Status Routines**
-- FITS File Access Routines
-  - **Open file** (and with more modes, e.g. temporary)
-  - Open table/image (useful?)
-  - **Create file**
-  - **Close file**
-  - **Delete file**
-  - **File name**
-  - **File I/O mode**
-  - URL type (useful?)
-- HDU Access Routines
-  - **Move to the HDU with given index**
-  - **Move to the next HDU**
-  - **Move to the first HDU with given name**
-  - **HDU count** (flawed in CFITSIO, fixed in EleFits)
-  - **HDU index**
-  - **HDU type**
-  - Copy HDUs
-  - **Copy header** (and with keyword filtering)
-  - *Delete HDU*
-- Keyword Reading Routines
-  - **Record count** (through keyword list)
-  - **Read/parse keyword**
-  - **Read CONTINUE'd string record**
-  - **Read unit**
-  - **Read header**
-- Keyword Writing Routines
-  - **Write/update keyword**
-  - **Write CONTINUE'd string record**
-  - **Write COMMENT/HISTORY record**
-  - Write/update DATE record
-  - **Update comment** (done by reading, modifying and writing back)
-  - **Write unit**
-  - Rename record (useful?)
-  - **Delete record**
-- Primary Array or Image Extension I/O Routines
-  - **Read image type**
-  - **Read image size**
-  - **Create image extension**
-  - **Copy image data to image or binary table extension**
-  - **Write image region**
-  - **Write image**
-  - **Read image region**
-  - **Read image**
-  - **Copy image region**
-- Image Compression
-  - Compress image
-  - **Decompress image**
-- Binary Table Routines (ASCII tables not supported)
-  - **Create table extension**
-  - **Read row/column count**
-  - **Find the first column which matches a name template**
-  - Read column type
-  - **Read column dimension (vector columns)**
-  - **Insert rows**
-  - Delete rows
-  - **Insert columns**
-  - **Delete columns**
-  - Copy rows
-  - Copy columns
-  - **Write scalar column elements**
-  - **Write vector column elements**
-  - **Read scalar column elements**
-  - **Read vector column elements**
-  - Find/select rows
-  - Evaluate an expression on rows
-  - Calculate histogram parameters
-  - Bin table values and write histogram
+Header:
 
-\section cfitsio-iterator The CFITSIO Iterator Function
+- Date records
+- Record renaming
 
-Not supported.
+Table:
 
-\section cfitsio-wcs World Coordinate System Routines
+- ASCII tables
+- Column type reading
+- Rows deletion
+- Rows copy
+- Rows selection
+- Row-wise expressions evaluation
+- Histograms
+- Row iterator
 
-Not supported, but deprecated in CFITSIO.
+\section cfitsio-missing EleFits features not supported by CFITSIO
 
-\section cfitsio-grouping Hierarchical Grouping Routines
+Interface:
 
-Not supported.
-
-\section cfitsio-special Specialized CFITSIO Interface Routines
-
-Partly supported: to be documented.
-
-\section cfitsio-missing EleFits features not implemented in CFITSIO
-
+- No pointers!
 - Const-correctness
 - Consistent type management (not mixing C types and FITS types)
-- Read/write non-contiguous in-memory image regions
-- Read/write several columns at once (with optimal usage of CFITSIO buffer: boosts I/Os)
-- Count the total number of HDUs (CFITSIO counting excludes empty or incomplete HDUs)
-- Filter and iterate over selected HDUs
+- Exceptions
+- Structured bindings, e.g.: `auto [ra, dec] = h.parseSeq<float>("RA", "DEC");`
+- Data classes: `Record`, `Raster`, `Column`...
+- Structured handlers: `MefFile`, `ImageHdu`, `Header`...
+
+File:
+
+- HDU counting (CFITSIO counting excludes empty or incomplete HDUs)
+- Primary deletion (if followed by an image extension)
+- HDU selection and iteration
+- Strategies: pre-registed actions to be performed automatically
+
+Header:
+
+- Record parsing with fallback
+- Multiple records selection and parsing
+
+Image:
+
+- Reading/writing of non-contiguous in-memory image regions
+- Parsing of compression parameters
+- Compression strategies
+
+Table:
+
+- Reading/writing of multiple columns at once (with optimal usage of CFITSIO buffer: boosts I/Os)
 
 */
