@@ -70,12 +70,12 @@ public:
   /**
    * @brief Increment operator.
    */
-  const THdu& operator++();
+  HduIterator& operator++();
 
   /**
-   * @brief Increment operator.
+   * @brief New instance increment operator.
    */
-  const THdu* operator++(int);
+  HduIterator operator++(int) const;
 
   /**
    * @brief Equality operator.
