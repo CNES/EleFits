@@ -46,7 +46,7 @@ std::string joinString(const std::vector<T>& values, const std::string& sep = ",
   });
 }
 
-int getBitpix(Fits::ImageHdu hdu) {
+int getBitpix(const Fits::ImageHdu& hdu) {
   ELEFITS_FOREACH_RASTER_TYPE(IF_TYPEID_MATCHES_RETURN_BITPIX)
   return 0;
 }

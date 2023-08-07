@@ -13,10 +13,6 @@ namespace Fits {
 template <typename T>
 bool CompressAptly::apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
 
-  // if (shapeSize(init.shape) > (std::size_t(1) << 32)) {
-  // FIXME enable huge_hdu
-  // }
-
   if (auto action = plio(init)) {
     return action->apply(fptr, init);
   }
@@ -24,9 +20,11 @@ bool CompressAptly::apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) 
   if (auto action = hcompress(init)) {
     return action->apply(fptr, init);
   }
+
   if (auto action = rice(init)) {
     return action->apply(fptr, init);
   }
+
   return gzip(init)->apply(fptr, init);
 }
 

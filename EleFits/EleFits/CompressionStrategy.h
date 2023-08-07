@@ -297,13 +297,6 @@ public:
   explicit CompressAptly(CompressionType type = CompressionType::Lossless) : m_type(type) {}
 
   /**
-   * @brief Create a possibly lossy strategy.
-   */
-  static CompressAptly lossy() {
-    return CompressAptly(CompressionType::Lossy);
-  }
-
-  /**
    * @brief Compress if possible.
    */
   template <typename T>
