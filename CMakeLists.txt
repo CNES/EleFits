@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.5)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
 
 #===============================================================================
 # Load macros and functions for Elements-based projects
@@ -16,5 +16,5 @@ set(USE_SPHINX OFF
 #                         elements_project(MyProject 1.0 USE Element 3.9)
 #===============================================================================
 
-elements_project(EleFits 5.2 USE Elements 6.3
+elements_project(EleFits 5.3 USE Elements 6.2.1
         DESCRIPTION "A modern C++ API on top of CFITSIO")
