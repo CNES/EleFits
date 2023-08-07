@@ -33,7 +33,7 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   // Reopen as read-only
   MefFile f(this->filename(), FileMode::Read);
   const auto output = f.primary().readRaster<float, 2>();
-  remove(this->filename().c_str());
+  std::remove(this->filename().c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
@@ -63,7 +63,17 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   std::vector<std::string> inputNames {"", "IMG1", "IMG2"};
   const auto outputNames = f.readHduNames();
   BOOST_TEST(outputNames == inputNames);
-  remove(this->filename().c_str());
+  std::remove(this->filename().c_str());
+}
+
+BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
+  Test::SmallRaster raster;
+  this->appendImage("IMAGE", {{"KEY", 1}}, raster);
+  this->remove(0);
+  BOOST_TEST(this->hduCount() == 1);
+  BOOST_TEST(this->primary().readName() == "IMAGE");
+  BOOST_TEST(this->primary().header().parse<int>("KEY").value == 1);
+  BOOST_TEST(this->primary().raster().read<float>() == raster);
 }
 
 BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile) {

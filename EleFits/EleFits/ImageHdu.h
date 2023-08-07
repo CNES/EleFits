@@ -97,6 +97,11 @@ public:
   virtual ~ImageHdu() = default;
 
   /**
+   * @brief Copy the contents of another image HDU.
+   */
+  const ImageHdu& operator=(const ImageHdu& rhs) const;
+
+  /**
    * @brief Access the data unit to read and write the raster.
    * @see ImageRaster
    */

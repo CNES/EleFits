@@ -316,6 +316,11 @@ public:
   template <typename TColumns, std::size_t Size = std::tuple_size<TColumns>::value> // FIXME rm Size => enable_if
   const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns);
 
+  /**
+   * @brief Remove the HDU with given index.
+   */
+  inline void remove(long index);
+
   /// @}
 
 protected:

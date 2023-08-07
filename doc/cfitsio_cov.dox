@@ -7,7 +7,6 @@
 File:
 
 - Input files as URL paths
-- HDU deletion
 - Hierarchical grouping
 
 Header:
@@ -41,6 +40,7 @@ Interface:
 File:
 
 - HDU counting (CFITSIO counting excludes empty or incomplete HDUs)
+- Primary deletion (if followed by an image extension)
 - HDU selection and iteration
 - Strategies: pre-registed actions to be performed automatically
 

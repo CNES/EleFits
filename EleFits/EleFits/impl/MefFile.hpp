@@ -181,15 +181,15 @@ const T& MefFile::appendCopy(const T& hdu) {
 
       const auto& image = hdu.template as<ImageHdu>();
 
-#define ELEFITS_SET_STRATEGY_ALGO(type, name) \
+#define ELEFITS_COPY_HDU(type, name) \
   if (image.readTypeid() == typeid(type)) { \
     appendImage( \
         hdu.readName(), \
         hdu.header().parseAll(KeywordCategory::User), \
         image.raster().template read<type, -1>()); \
   }
-      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_SET_STRATEGY_ALGO)
-#undef ELEFITS_SET_STRATEGY_ALGO
+      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_COPY_HDU)
+#undef ELEFITS_COPY_HDU
     }
   }
 
@@ -247,6 +247,16 @@ const BintableHdu& MefFile::appendBintable(const std::string& name, const Record
   hdu.header().writeSeq(records);
   return hdu;
   // FIXME use appendBintableExt(name, records, columns...) or inverse dependency
+}
+
+void MefFile::remove(long index) {
+  if (index == 0) {
+    primary() = access<ImageHdu>(1);
+    remove(1);
+  } else {
+    Cfitsio::HduAccess::deleteHdu(m_fptr, index + 1);
+    m_hdus.erase(m_hdus.begin() + index);
+  }
 }
 
 } // namespace Fits
