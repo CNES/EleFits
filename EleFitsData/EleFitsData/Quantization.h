@@ -15,7 +15,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief %Quantization parameters.
  * 
  * As opposed to CFITSIO, EleFits creates lossless algorithms by default,

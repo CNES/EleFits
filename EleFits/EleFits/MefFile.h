@@ -78,7 +78,7 @@ class HduSelector;
  * @see \ref handlers
  * @see \ref iterators
  * @see \ref strategy
- * @see \ref image_compression
+ * @see \ref compression
  * @see \ref optim
  */
 class MefFile : public FitsFile {

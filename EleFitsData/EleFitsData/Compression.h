@@ -27,7 +27,7 @@ enum class CompressionType {
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief Helper class for tile-related parameters.
  */
 struct Tile {
@@ -61,7 +61,7 @@ struct Tile {
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief Interface for compression algorithms.
  * 
  * Tiling shape is represented as a `Position<-1>`.
@@ -111,7 +111,7 @@ protected:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief Intermediate class for internal dispatching.
  */
 template <typename TDerived>
@@ -144,7 +144,7 @@ protected:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief No compression.
  */
 class NoCompression : public AlgoMixin<NoCompression> {
@@ -175,7 +175,7 @@ public:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief The GZIP algorithm.
  * 
  * Along with `ShuffledGzip`, this is the only algorithm which supports lossless compression of floating point data.
@@ -194,7 +194,7 @@ public:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief The GZIP algorithm applied to "shuffled" pixel values.
  * 
  * Suffling means that value bytes are reordered such that most significant bytes of each value appear first.
@@ -214,7 +214,7 @@ public:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief The Rice algorithm.
  */
 class Rice : public AlgoMixin<Rice> {
@@ -231,7 +231,7 @@ public:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief The H-compress algorithm.
  * 
  * This algorithm relies on some scaling parameter.
@@ -314,7 +314,7 @@ private:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief The PLIO algorithm.
  * 
  * This algorithm was designed specifically for bitmasks,

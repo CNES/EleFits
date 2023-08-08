@@ -69,11 +69,14 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
 BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
   Test::SmallRaster raster;
   this->appendImage("IMAGE", {{"KEY", 1}}, raster);
+  this->appendImageHeader("EXT", {});
   this->remove(0);
-  BOOST_TEST(this->hduCount() == 1);
+  BOOST_TEST(this->hduCount() == 2);
   BOOST_TEST(this->primary().readName() == "IMAGE");
   BOOST_TEST(this->primary().header().parse<int>("KEY").value == 1);
   BOOST_TEST(this->primary().raster().read<float>() == raster);
+  const auto& ext = this->find("EXT");
+  BOOST_TEST(ext.index() == 1);
 }
 
 BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile) {

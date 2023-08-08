@@ -52,7 +52,7 @@
 \ingroup handlers
 \brief Register actions to be performed automatically according to some criteria.
 
-\defgroup image_compression Image compression
+\defgroup compression Image compression
 \ingroup handlers
 \brief Compress and decompress image HDUs.
 

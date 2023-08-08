@@ -13,7 +13,7 @@ namespace Euclid {
 namespace Fits {
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief The interface for implementing compression actions.
  * 
  * To create a custom action, better inherit `CompressionActionMixin`, which simplifies implementation.
@@ -43,7 +43,7 @@ public:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief A mixin to simplify `CompressionAction` implementation.
  * 
  * This class is a visitor-like mixin to mimic virtual method template.
@@ -67,7 +67,7 @@ public:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief A compression action made of a single algorithm.
  * @tparam TAlgo The compression algorithm
  */
@@ -137,7 +137,7 @@ private:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief A restriction of `Compress` to integral values.
  * @see Compress
  */
@@ -184,7 +184,7 @@ private:
 };
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief A restriction of `Compress` to floating point values.
  * @see Compress
  */
@@ -276,7 +276,7 @@ bool can_compress(const Plio&, const ImageHdu::Initializer<T>& init) {
 /// @endcond
 
 /**
- * @ingroup image_compression
+ * @ingroup compression
  * @brief A basic adaptive compression strategy.
  * 
  * This strategy selects the most appropriate compression algorithm at extension creation

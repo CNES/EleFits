@@ -3,7 +3,7 @@ namespace Fits {
 
 /**
 
-\addtogroup image_compression
+\addtogroup compression
 
 
 \tableofcontents

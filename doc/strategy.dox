@@ -64,7 +64,7 @@ The list of actions registered in the `MefFile` constitutes the so-called strate
 
 A specific part of the strategy relates to internal compression:
 it is possible to specify which compression algorithm to use when creating a new image HDU according to predefined criteria.
-For more details, refer to \ref image_compression.
+For more details, refer to \ref compression.
 
 Actions (or complete strategies) can be registered at construction, like in the introductory example,
 or using `MefFile::strategy()` methods and/or its `Strategy` instance.
