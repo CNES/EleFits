@@ -75,8 +75,7 @@ struct ChecksumError : public FitsError {
   /**
    * @brief Status of a checksum stored in a header unit.
    */
-  enum Status
-  {
+  enum Status {
     Incorrect = -1, ///< Incorrect checksum value
     Missing = 0, ///< Missing checksum record
     Correct = 1 ///< Correct checksum value
@@ -106,7 +105,7 @@ struct ChecksumError : public FitsError {
   }
 
   /**
-   * @brief Check chether at least one checksum is incorrect.
+   * @brief Check whether at least one checksum is incorrect.
    */
   bool incorrect() const {
     return (hdu == Incorrect) || (data == Incorrect);

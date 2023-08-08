@@ -59,7 +59,7 @@ namespace Fits {
  * -- and more details follow.
  * 
  * <table class="fieldtable">
- * <tr><th>Category<th>`T`<th>`N`<th>`repeatCount()`<th>`elementCount()`<th>`shape`
+ * <tr><th>Category <th>`T`<th>`N`<th>`repeatCount()`<th>`elementCount()`<th>`shape`
  * <tr><td>%String<td>`std::string`<td>1<td>> max number of characters<td>1<td>`{repeatCount()}`
  * <tr><td>Scalar<td>Not `std::string`<td>1<td>1<td>1<td>`{1}`
  * <tr><td>Vector<td>Not `std::string`<td>1<td>> 1<td> = repeat count<td>`{repeatCount()}`

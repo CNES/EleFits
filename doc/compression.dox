@@ -86,34 +86,34 @@ then the compression tile should relate to the processing tile such that compres
 
 As opposed to CFITSIO, by default, compression is lossless whatever the pixel type.
 If one tries to use some lossless algorithm with incompatible data type (e.g. H-compress with `double`), an error is thrown. 
-Lossy compression is available, for any pixel type, by enabling quantization.
+Lossy compression is available for floating point data, by enabling quantization.
 Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
-This is a first level of compression, where the least significant digits of a floating-point number are dropped.
+This is a first level of compression, where the least significant digits of a floating point number are dropped.
 
-When quantization is turned on and an integral image extension is created, it is first converted to floating point data.
-However, in general, benchmarks show that lossless integer compression is almost as good as lossy integer compression.
+Additionally, H-compress is able to compress with loss integer data.
+This is done by enabling so-called scaling.
 
 Once this step has been performed, the quantized, integral values are effectively compressed losslessly by one of the supported algorithms:
 
 - GZIP (class `Gzip`) is the classical file compression algorithm and can be applied without quantization.
 - Suffled GZIP (`ShuffledGzip`) first applies some byte reordering and generally shows a greater compression rate than GZIP.
 - `Rice` is the de facto standard FITS compression algorithm:
-  It is lossy for floating point values and can be lossless for integer values;
+  It is lossless for integer values and lossy for floating point values;
   It generally offers better performances than GZIP.
 - H-compress (`HCompress`) is a somewhat more advanced algorithm, which may require more tuning than others,
   and explicitely targets 2D images;
-  It is lossless with integer values when both quantization and scaling are disabled.
+  It is lossless with integer when scaling is disabled, and lossy for floating point values.
 - PLIO (`Plio`) is designed for integer values, and more specifically bitmasks;
   Values higher than 2^24 cannot be compressed with this algorithm;
-  It is not recommended to use quantization with PLIO.
+  It is lossless.
 
 <table class="fieldtable">
 <tr><th>Class<th>Integral data<th>Floating point data
-<tr><td>`Gzip`<td>Lossless iff quantization is disabled.<td>Lossless iff quantization is disabled.
-<tr><td>`ShuffledGzip`<td>Lossless iff quantization is disabled.<td>Lossless iff quantization is disabled.
-<tr><td>`Rice`<td>Lossless iff quantization is disabled.<td>Lossy
-<tr><td>`HCompress`<td>Lossless iff quantization and scaling are disabled.<td>Lossy
-<tr><td>`Plio`<td>Lossless iff quantization is disabled.<td>Lossy
+<tr><td>`Gzip`<td>Always lossless<td>Lossless iff quantization is disabled
+<tr><td>`ShuffledGzip`<td>Always lossless<td>Lossless iff quantization is disabled
+<tr><td>`Rice`<td>Always lossless<td>Always lossy
+<tr><td>`HCompress`<td>Lossless iff scaling is disabled<td>Always lossy
+<tr><td>`Plio`<td>Always lossless<td>Unsupported
 </table>
 
 @see R. L. White, P. Greenfield, W. Pence, D. Tody, R. Seaman.

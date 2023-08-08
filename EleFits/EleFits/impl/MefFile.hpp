@@ -177,7 +177,7 @@ const T& MefFile::appendCopy(const T& hdu) {
     } else {
       // // setting to huge hdu if hdu size > 2^32
       // if (hdu.readSizeInFile() > (1ULL << 32))
-      //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true);
+      //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true); // FIXME to appendImage
 
       const auto& image = hdu.template as<ImageHdu>();
 
