@@ -90,10 +90,11 @@ Lossy compression is available for floating point data, by enabling quantization
 Quantization is a conversion from floating point to integer values, performed before the actual compression algorithm is run.
 This is a first level of compression, where the least significant digits of a floating point number are dropped.
 
-Additionally, H-compress is able to compress with loss integer data.
-This is done by enabling so-called scaling.
+Additionally, H-compress is able to compress integer data with loss.
+This is achieved by enabling so-called scaling.
 
-Once this step has been performed, the quantized, integral values are effectively compressed losslessly by one of the supported algorithms:
+Here is a brief description of the supported algorithms.
+More details can be found in the associated classes documentation.
 
 - GZIP (class `Gzip`) is the classical file compression algorithm and can be applied without quantization.
 - Suffled GZIP (`ShuffledGzip`) first applies some byte reordering and generally shows a greater compression rate than GZIP.
