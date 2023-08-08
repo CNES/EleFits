@@ -258,7 +258,7 @@ void MefFile::remove(long index) {
     auto it = m_hdus.begin() + index; // FIXME won't work with list (or boost::stable_vector)
     m_hdus.erase(it);
     for (; it != m_hdus.end(); ++it) {
-      --(it->m_cfitsioIndex);
+      --((*it)->m_cfitsioIndex);
     }
   }
 }
