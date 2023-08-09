@@ -87,11 +87,6 @@ public:
   /// @group_construction
 
   /**
-   * @copydoc FitsFile::~FitsFile()
-   */
-  virtual ~MefFile();
-
-  /**
    * @copybrief FitsFile::FitsFile()
    * @param filename The file name
    * @param mode The opening mode
@@ -99,6 +94,11 @@ public:
    */
   template <typename... TActions>
   explicit MefFile(const std::string& filename, FileMode mode, TActions&&... actions);
+
+  /**
+   * @copydoc FitsFile::~FitsFile()
+   */
+  virtual ~MefFile();
 
   /**
    * @copydoc FitsFile::close()
@@ -131,6 +131,16 @@ public:
    * When there is no version specified, 1 is returned.
    */
   std::vector<std::pair<std::string, long>> readHduNamesVersions();
+
+  /**
+   * @brief Get the strategy.
+   */
+  inline const Strategy& strategy() const;
+
+  /**
+   * @copybrief strategy()
+   */
+  inline Strategy& strategy();
 
   /// @group_elements
 
@@ -219,16 +229,6 @@ public:
   template <typename T = Hdu>
   HduSelector<T> filter(const HduFilter& categories = HduCategory::Any);
 
-  /**
-   * @brief Get the strategy.
-   */
-  inline const Strategy& strategy() const;
-
-  /**
-   * @copybrief strategy()
-   */
-  inline Strategy& strategy();
-
   /// @group_modifiers
 
   /**
@@ -236,6 +236,19 @@ public:
    */
   template <typename... TActions>
   void strategy(TActions&&... actions);
+
+  /**
+  * @brief Append a copy of a given HDU.
+  * 
+  * If the copied HDU is a Primary, it is appended as an image extension.
+  * 
+  * Strategy (e.g. compression or checksums verification) is applied.
+  * 
+  * @warning
+  * The source and destination `MefFile`s must be different.
+  */
+  template <typename T = Hdu>
+  const T& append(const T& hdu);
 
   /**
    * @brief Append a new image extension with empty data unit (`NAXIS = 0`).
@@ -270,19 +283,6 @@ public:
    */
   template <typename TRaster>
   const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster);
-
-  /**
-  * @brief Append a copy of a given HDU.
-  * 
-  * If the copied HDU is an image HDU larger than a block of data (2880 bytes),
-  * then the current compression algorithm of the `MefFile` is applied.
-  * Additionally, if the copied HDU is a Primary, it is appended as an image extension.
-  * 
-  * @warning
-  * The source and destination `MefFile`s must be different.
-  */
-  template <typename T = Hdu>
-  const T& appendCopy(const T& hdu);
 
   /**
    * @brief Append a binary table extension with empty data unit (0 rows, and possibly 0 columns).

@@ -306,7 +306,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
 
   /* Copy bintable */
-  const auto& bintableCopy = fileCopy.appendCopy(bintable);
+  const auto& bintableCopy = fileCopy.append(bintable);
   BOOST_TEST(bintableCopy.readName() == bintable.readName());
   BOOST_TEST(bintableCopy.readRowCount() == bintable.readRowCount());
   BOOST_TEST(bintableCopy.readColumnCount() == bintable.readColumnCount());
@@ -316,7 +316,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(bintableCopy.header().parse<int>("BAR").value == bintable.header().parse<int>("BAR").value);
 
   /* Copy empty uncompressed to uncompressed */
-  const auto& emptyCopy = fileCopy.appendCopy(emptyImage);
+  const auto& emptyCopy = fileCopy.append(emptyImage);
   BOOST_TEST(emptyCopy.readName() == emptyImage.readName());
   BOOST_TEST(emptyCopy.readSize() == emptyImage.readSize());
   BOOST_TEST(emptyCopy.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
@@ -324,7 +324,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(emptyCopy.matches(HduCategory::RawImage));
 
   /* Copy uncompressed to uncompressed */
-  const auto& imageCopy = fileCopy.appendCopy(image);
+  const auto& imageCopy = fileCopy.append(image);
   BOOST_TEST(imageCopy.readName() == image.readName());
   BOOST_TEST(imageCopy.readSize() == image.readSize());
   BOOST_TEST(imageCopy.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
@@ -337,7 +337,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   /* Copy empty to compressed */
   fileCopy.strategy().clear();
   fileCopy.strategy(algo);
-  const auto& imageCopy4 = fileCopy.appendCopy(emptyImage);
+  const auto& imageCopy4 = fileCopy.append(emptyImage);
   BOOST_TEST(imageCopy4.readName() == emptyImage.readName());
   BOOST_TEST(imageCopy4.readSize() == emptyImage.readSize());
   BOOST_TEST(imageCopy4.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
@@ -347,7 +347,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   /* Copy uncompressed to compressed */
   fileCopy.strategy().clear();
   fileCopy.strategy(algo);
-  const auto& imageCopy2 = fileCopy.appendCopy(image);
+  const auto& imageCopy2 = fileCopy.append(image);
   BOOST_TEST(imageCopy2.readName() == image.readName());
   BOOST_TEST(imageCopy2.readSize() == image.readSize());
   BOOST_TEST(imageCopy2.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
@@ -359,7 +359,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
 
   /* Copy compressed to uncompressed */
   fileCopy.strategy().clear();
-  const auto& imageCopy3 = fileCopy.appendCopy(compImage);
+  const auto& imageCopy3 = fileCopy.append(compImage);
   BOOST_TEST(imageCopy3.readName() == compImage.readName());
   BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
   BOOST_TEST(imageCopy3.header().parse<int>("FOO").value == compImage.header().parse<int>("FOO").value);
@@ -391,10 +391,10 @@ void checkAppendCopy(bool zin, bool zout) {
     out.strategy(ShuffledGzip());
   }
 
-  const auto& imageCopy = out.appendCopy(image);
+  const auto& imageCopy = out.append(image);
   BOOST_TEST(imageCopy.isCompressed() == zout);
   BOOST_TEST(imageCopy.matches(HduCategory::CompressedImageExt) == zout);
-  const auto& blankCopy = out.appendCopy(blank);
+  const auto& blankCopy = out.append(blank);
   BOOST_TEST(blankCopy.isCompressed() == zout);
   BOOST_TEST(blankCopy.matches(HduCategory::CompressedImageExt) == zout);
 

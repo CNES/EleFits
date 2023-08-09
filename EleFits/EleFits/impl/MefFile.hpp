@@ -28,6 +28,14 @@ MefFile::MefFile(const std::string& filename, FileMode permission, TActions&&...
   }
 }
 
+const Strategy& MefFile::strategy() const {
+  return m_strategy;
+}
+
+Strategy& MefFile::strategy() {
+  return m_strategy;
+}
+
 template <class T>
 const T& MefFile::access(long index) {
   if (index < 0) { // Backward indexing
@@ -83,17 +91,46 @@ HduSelector<T> MefFile::filter(const HduFilter& filter) {
   return {*this, filter * HduCategory::forClass<T>()};
 }
 
-const Strategy& MefFile::strategy() const {
-  return m_strategy;
-}
-
-Strategy& MefFile::strategy() {
-  return m_strategy;
-}
-
 template <typename... TActions>
 void MefFile::strategy(TActions&&... actions) {
   m_strategy.append(std::forward<TActions>(actions)...);
+}
+
+template <typename T>
+const T& MefFile::append(const T& hdu) {
+
+  const auto index = m_hdus.size();
+
+  if (hdu.matches(HduCategory::Bintable)) {
+    Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
+    m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+  } else {
+    if (hdu.matches(HduCategory::RawImage) &&
+        (m_strategy.m_compression.empty() || hdu.matches(HduCategory::Metadata))) {
+      Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
+      m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
+    } else {
+      // // setting to huge hdu if hdu size > 2^32
+      // if (hdu.readSizeInFile() > (1ULL << 32))
+      //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true); // FIXME to appendImage
+
+      const auto& image = hdu.template as<ImageHdu>();
+
+#define ELEFITS_COPY_HDU(type, name) \
+  if (image.readTypeid() == typeid(type)) { \
+    appendImage( \
+        hdu.readName(), \
+        hdu.header().parseAll(KeywordCategory::User), \
+        image.raster().template read<type, -1>()); \
+  }
+      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_COPY_HDU)
+#undef ELEFITS_COPY_HDU
+    }
+  }
+
+  const auto& copied = access<T>(index);
+  m_strategy.accessed(copied); // FIXME is it access or creation?
+  return copied;
 }
 
 template <typename T>
@@ -159,43 +196,6 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
   // FIXME Is it more efficient to (1) create dataless HDU and then resize and fill data,
   // or (2) first write data and then shift it to accommodate records?
   // For now, we cannot resize uint64 images (CFITSIO bug), so option (1) cannot be tested.
-}
-
-template <typename T>
-const T& MefFile::appendCopy(const T& hdu) {
-
-  const auto index = m_hdus.size();
-
-  if (hdu.matches(HduCategory::Bintable)) {
-    Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
-    m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
-  } else {
-    if (hdu.matches(HduCategory::RawImage) &&
-        (m_strategy.m_compression.empty() || hdu.matches(HduCategory::Metadata))) {
-      Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
-      m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
-    } else {
-      // // setting to huge hdu if hdu size > 2^32
-      // if (hdu.readSizeInFile() > (1ULL << 32))
-      //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true); // FIXME to appendImage
-
-      const auto& image = hdu.template as<ImageHdu>();
-
-#define ELEFITS_COPY_HDU(type, name) \
-  if (image.readTypeid() == typeid(type)) { \
-    appendImage( \
-        hdu.readName(), \
-        hdu.header().parseAll(KeywordCategory::User), \
-        image.raster().template read<type, -1>()); \
-  }
-      ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_COPY_HDU)
-#undef ELEFITS_COPY_HDU
-    }
-  }
-
-  const auto& copied = access<T>(index);
-  m_strategy.accessed(copied); // FIXME is it access or creation?
-  return copied;
 }
 
 template <typename... TInfos>

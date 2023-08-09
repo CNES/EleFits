@@ -64,7 +64,7 @@ public:
     for (long i = 1 - compress_primary; i < hdu_count; ++i) {
       const auto& hdu = raw[i];
       logger.info() << "  HDU #" << i << ": " << hdu.readName();
-      compressed.appendCopy(hdu);
+      compressed.append(hdu);
     }
 
     raw.close();

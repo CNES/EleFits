@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(ctor_actions_test) {
   const auto& image = mef.appendImageHeader().header();
   const auto& accessed = mef[1].header();
   Test::TemporaryMefFile src;
-  const auto& copied = mef.appendCopy(src.primary()).header();
+  const auto& copied = mef.append(src.primary()).header();
 
   BOOST_TEST(primary.has(AfterOpening::keyword));
   BOOST_TEST(primary.has(AfterAccessing::keyword));
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(ctor_strategy_test) {
   const auto& image = mef.appendImageHeader().header();
   const auto& accessed = mef[1].header();
   Test::TemporaryMefFile src;
-  const auto& copied = mef.appendCopy(src.primary()).header();
+  const auto& copied = mef.append(src.primary()).header();
 
   BOOST_TEST(primary.has(AfterOpening::keyword));
   BOOST_TEST(primary.has(AfterAccessing::keyword));

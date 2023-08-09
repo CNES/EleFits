@@ -203,7 +203,7 @@ public:
     // Copy without primary:
     // chrono.start();
     // for (const auto& hdu : f.filter<Fits::Hdu>(Fits::HduCategory::Ext)) {
-    //   g.appendCopy(hdu);
+    //   g.append(hdu);
     // }
     // chrono.stop();
 
@@ -220,7 +220,7 @@ public:
 
       if (hdu.type() == Fits::HduCategory::Bintable) {
         chrono.start();
-        const auto& zHdu = g.appendCopy(hdu);
+        const auto& zHdu = g.append(hdu);
         chrono.stop();
         bitpix = 0;
         hduSize = hdu.readSizeInFile();
@@ -230,7 +230,7 @@ public:
         logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": Uncompressed binary table";
       } else { // the hdu is an image
         chrono.start();
-        const auto& zHdu = g.appendCopy(hdu);
+        const auto& zHdu = g.append(hdu);
         chrono.stop();
         bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
         hduSize = hdu.readSizeInFile();
