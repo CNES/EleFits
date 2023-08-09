@@ -93,7 +93,7 @@ void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
   Fits::ShuffledGzip sgzip(Fits::Tile::rowwise(), q);
   Fits::Gzip gzip(Fits::Tile::rowwise(), q);
 
-  if (testCase == "APTLY") {
+  if (testCase == "AUTO") {
     g.strategy(lossy ? Fits::CompressAuto(Fits::CompressionType::Lossy) : Fits::CompressAuto());
   } else if (testCase == "FULL") {
     g.strategy(std::move(plio), std::move(hc), std::move(rice), std::move(sgzip));
@@ -126,7 +126,7 @@ public:
     options.named(
         "case",
         value<std::string>()->default_value("GZIP"),
-        "Compression strategy (NONE/FULL/APTLY/GZIP/SHUFFLEDGZIP/RICE/HCOMPRESS/PLIO)");
+        "Compression strategy (NONE/FULL/AUTO/GZIP/SHUFFLEDGZIP/RICE/HCOMPRESS/PLIO)");
     options.flag("lossy", "Allow lossy compression");
     options.flag("extGZIP", "Apply external gzip to output file");
     options.named(
