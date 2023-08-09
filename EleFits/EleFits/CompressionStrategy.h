@@ -288,13 +288,13 @@ bool can_compress(const Plio&, const ImageHdu::Initializer<T>& init) {
  * If none of them is suitable (e.g. because lossless compression was requested even for floats),
  * then the `ShuffledGzip` is returned.
  */
-class CompressAptly : public CompressionActionMixin<CompressAptly> {
+class CompressAuto : public CompressionActionMixin<CompressAuto> {
 
 public:
   /**
    * @brief Constructor.
    */
-  explicit CompressAptly(CompressionType type = CompressionType::Lossless) : m_type(type) {}
+  explicit CompressAuto(CompressionType type = CompressionType::Lossless) : m_type(type) {}
 
   /**
    * @brief Compress if possible.

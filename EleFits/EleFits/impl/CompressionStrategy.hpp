@@ -11,7 +11,7 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T>
-bool CompressAptly::apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
+bool CompressAuto::apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) {
 
   if (auto action = plio(init)) {
     return action->apply(fptr, init);
@@ -29,12 +29,12 @@ bool CompressAptly::apply(fitsfile* fptr, const ImageHdu::Initializer<T>& init) 
 }
 
 template <typename T>
-std::unique_ptr<Compress<ShuffledGzip>> CompressAptly::gzip(const ImageHdu::Initializer<T>& init) {
+std::unique_ptr<Compress<ShuffledGzip>> CompressAuto::gzip(const ImageHdu::Initializer<T>& init) {
   return std::make_unique<Compress<ShuffledGzip>>(tiling(init), quantization<T>());
 }
 
 template <typename T>
-std::unique_ptr<Compress<Rice>> CompressAptly::rice(const ImageHdu::Initializer<T>& init) {
+std::unique_ptr<Compress<Rice>> CompressAuto::rice(const ImageHdu::Initializer<T>& init) {
   if (std::is_floating_point_v<T> && m_type == CompressionType::Lossless) {
     return nullptr;
   }
@@ -42,7 +42,7 @@ std::unique_ptr<Compress<Rice>> CompressAptly::rice(const ImageHdu::Initializer<
 }
 
 template <typename T>
-std::unique_ptr<Compress<HCompress>> CompressAptly::hcompress(const ImageHdu::Initializer<T>& init) {
+std::unique_ptr<Compress<HCompress>> CompressAuto::hcompress(const ImageHdu::Initializer<T>& init) {
 
   if (std::is_floating_point_v<T> && m_type == CompressionType::Lossless) {
     return nullptr;
@@ -61,7 +61,7 @@ std::unique_ptr<Compress<HCompress>> CompressAptly::hcompress(const ImageHdu::In
 }
 
 template <typename T>
-std::unique_ptr<Compress<Plio>> CompressAptly::plio(const ImageHdu::Initializer<T>& init) {
+std::unique_ptr<Compress<Plio>> CompressAuto::plio(const ImageHdu::Initializer<T>& init) {
 
   constexpr auto bp = bitpix<T>();
 
@@ -76,7 +76,7 @@ std::unique_ptr<Compress<Plio>> CompressAptly::plio(const ImageHdu::Initializer<
 }
 
 template <typename T>
-Quantization CompressAptly::quantization() const {
+Quantization CompressAuto::quantization() const {
   if constexpr (std::is_integral_v<T>) {
     if (m_type != CompressionType::Lossy) {
       return Quantization(0);
@@ -93,7 +93,7 @@ Quantization CompressAptly::quantization() const {
 }
 
 template <typename T>
-Position<-1> CompressAptly::tiling(const ImageHdu::Initializer<T>& init) const {
+Position<-1> CompressAuto::tiling(const ImageHdu::Initializer<T>& init) const {
 
   static constexpr long min_size = 1024 * 1024;
   if (shapeSize(init.shape) <= min_size) {
@@ -110,7 +110,7 @@ Position<-1> CompressAptly::tiling(const ImageHdu::Initializer<T>& init) const {
 }
 
 template <typename T>
-Position<-1> CompressAptly::hcompress_tiling(const ImageHdu::Initializer<T>& init) const {
+Position<-1> CompressAuto::hcompress_tiling(const ImageHdu::Initializer<T>& init) const {
 
   const auto& shape = init.shape;
 
@@ -133,7 +133,7 @@ Position<-1> CompressAptly::hcompress_tiling(const ImageHdu::Initializer<T>& ini
 }
 
 template <typename T>
-Scaling CompressAptly::hcompress_scaling() const {
+Scaling CompressAuto::hcompress_scaling() const {
   if constexpr (std::is_integral_v<T>) {
     if (m_type != CompressionType::Lossy) {
       return 0;

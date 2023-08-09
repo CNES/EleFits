@@ -51,11 +51,11 @@ public:
 
     /* Enable compression */
     if (lossless == 'y') {
-      compressed.strategy(CompressAptly());
+      compressed.strategy(CompressAuto());
     } else if (lossless == 'i') {
-      compressed.strategy(CompressAptly(CompressionType::LosslessInts));
+      compressed.strategy(CompressAuto(CompressionType::LosslessInts));
     } else if (lossless == 'n') {
-      compressed.strategy(CompressAptly(CompressionType::Lossy));
+      compressed.strategy(CompressAuto(CompressionType::Lossy));
     } else {
       throw FitsError("Unknown compression type");
     }
