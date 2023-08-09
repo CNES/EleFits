@@ -33,7 +33,7 @@ long read_bitpix(fitsfile* fptr);
  * @brief Read the shape of the current image HDU.
  */
 template <long N = 2>
-Fits::Position<N> readShape(fitsfile* fptr);
+Fits::Position<N> read_shape(fitsfile* fptr);
 
 /**
  * @brief Know if the current image HDU is compressed
@@ -44,31 +44,31 @@ inline bool is_compressed(fitsfile* fptr);
  * @brief Reshape the current image HDU.
  */
 template <typename T, long N = 2>
-void updateShape(fitsfile* fptr, const Fits::Position<N>& shape);
+void update_shape(fitsfile* fptr, const Fits::Position<N>& shape);
 
 /**
  * @brief Read the whole raster of the current image HDU.
  */
 template <typename T, long N = 2>
-Fits::VecRaster<T, N> readRaster(fitsfile* fptr);
+Fits::VecRaster<T, N> read_raster(fitsfile* fptr);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing raster.
  */
 template <typename TRaster>
-void readRasterTo(fitsfile* fptr, TRaster& destination);
+void read_raster_to(fitsfile* fptr, TRaster& destination);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing subraster.
  */
 template <typename T, long N = 2, typename TContainer>
-void readRasterTo(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination);
+void read_raster_to(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination);
 
 /**
  * @brief Read a region of the current image HDU.
  */
 template <typename T, long M, long N>
-Fits::VecRaster<T, M> readRegion(fitsfile* fptr, const Fits::Region<N>& region);
+Fits::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.
@@ -79,7 +79,7 @@ Fits::VecRaster<T, M> readRegion(fitsfile* fptr, const Fits::Region<N>& region);
  * directly in a destination raster.
  */
 template <typename TRaster, long N>
-void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& destination);
+void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& destination);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing subraster.
@@ -90,13 +90,13 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& destin
  * directly in a destination subraster.
  */
 template <typename T, long M, long N, typename TContainer>
-void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination);
+void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination);
 
 /**
  * @brief Write a whole raster in the current image HDU.
  */
 template <typename TRaster>
-void writeRaster(fitsfile* fptr, const TRaster& raster);
+void write_raster(fitsfile* fptr, const TRaster& raster);
 
 /**
  * @brief Write a whole raster into a region of the current image HDU.
@@ -104,7 +104,7 @@ void writeRaster(fitsfile* fptr, const TRaster& raster);
  * @param destination The destination position (size is deduced from raster size)
  */
 template <typename TRaster, long N>
-void writeRegion(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>& destination);
+void write_region(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>& destination);
 
 /**
  * @brief Write a subraster into a region of the current image HDU.
@@ -112,7 +112,7 @@ void writeRegion(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>&
  * @param destination The destination position (size is deduced from subraster size)
  */
 template <typename T, long M, long N, typename TContainer> // FIXME where's M?
-void writeRegion(
+void write_region(
     fitsfile* fptr,
     const Fits::Subraster<T, N, TContainer>& subraster,
     const Fits::Position<N>& destination);

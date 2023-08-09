@@ -19,14 +19,14 @@ void SifFile::writeAll(const RecordSeq& records, const TRaster& raster) {
 
 template <typename T, long N>
 VecRaster<T, N> SifFile::readRaster() const {
-  return Cfitsio::ImageIo::readRaster<T, N>(m_fptr);
+  return Cfitsio::ImageIo::read_raster<T, N>(m_fptr);
 }
 
 template <typename TRaster>
 void SifFile::writeRaster(const TRaster& raster) const {
   Cfitsio::HduAccess::goto_primary(m_fptr); // FXME needed?
   Cfitsio::ImageIo::updateTypeShape<typename TRaster::Value, TRaster::Dim>(m_fptr, raster.shape());
-  Cfitsio::ImageIo::writeRaster(m_fptr, raster);
+  Cfitsio::ImageIo::write_raster(m_fptr, raster);
 }
 
 } // namespace Fits

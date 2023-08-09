@@ -35,7 +35,7 @@ long read_bitpix(fitsfile* fptr) {
 }
 
 template <>
-Fits::Position<-1> readShape<-1>(fitsfile* fptr) {
+Fits::Position<-1> read_shape<-1>(fitsfile* fptr) {
   int status = 0;
   int naxis = 0;
   fits_get_img_dim(fptr, &naxis, &status);

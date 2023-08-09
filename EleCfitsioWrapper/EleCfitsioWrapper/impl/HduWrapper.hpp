@@ -27,7 +27,7 @@ void init_image(fitsfile* fptr, const std::string& name, const Fits::Position<N>
 template <typename TRaster>
 void assign_image(fitsfile* fptr, const std::string& name, const TRaster& raster) {
   init_image<typename TRaster::Value, TRaster::Dim>(fptr, name, raster.shape());
-  ImageIo::writeRaster(fptr, raster);
+  ImageIo::write_raster(fptr, raster);
 }
 
 template <typename... TInfos>

@@ -13,13 +13,13 @@ namespace Fits {
 template <long N>
 Position<N> ImageRaster::readShape() const {
   m_edit();
-  return Cfitsio::ImageIo::readShape<N>(m_fptr);
+  return Cfitsio::ImageIo::read_shape<N>(m_fptr);
 }
 
 template <long N>
 void ImageRaster::updateShape(const Position<N>& shape) const {
   m_edit();
-  Cfitsio::ImageIo::updateShape<N>(m_fptr, shape);
+  Cfitsio::ImageIo::update_shape<N>(m_fptr, shape);
 }
 
 template <typename T, long N>
@@ -38,13 +38,13 @@ VecRaster<T, N> ImageRaster::read() const {
 template <typename TRaster>
 void ImageRaster::readTo(TRaster& raster) const {
   m_touch();
-  Cfitsio::ImageIo::readRasterTo(m_fptr, raster);
+  Cfitsio::ImageIo::read_raster_to(m_fptr, raster);
 }
 
 template <typename T, long N, typename TContainer>
 void ImageRaster::readTo(Subraster<T, N, TContainer>& subraster) const {
   m_touch();
-  Cfitsio::ImageIo::readRasterTo(m_fptr, subraster);
+  Cfitsio::ImageIo::read_raster_to(m_fptr, subraster);
 }
 
 template <typename T, long M, long N>
@@ -72,7 +72,7 @@ void ImageRaster::readRegionTo(Subraster<T, N, TContainer>& subraster) const {
 template <typename TRaster, long N>
 void ImageRaster::readRegionToSlice(const Position<N>& frontPosition, TRaster& raster) const {
   m_touch();
-  Cfitsio::ImageIo::readRegionTo(
+  Cfitsio::ImageIo::read_region_to(
       m_fptr,
       Region<N>::fromShape(frontPosition, raster.shape()), // FIXME use frontPosition in ImageIo
       raster);
@@ -82,17 +82,17 @@ template <typename T, long M, long N, typename TContainer>
 void ImageRaster::readRegionToSubraster(const Position<N>& frontPosition, Subraster<T, M, TContainer>& subraster)
     const {
   m_touch();
-  Cfitsio::ImageIo::readRegionTo(
+  Cfitsio::ImageIo::read_region_to(
       m_fptr,
       Region<N>::fromShape(frontPosition, subraster.shape()), // FIXME use frontPosition in ImageIo
       subraster);
-  // FIXME move algo here, rely solely on readRegionTo(fitsfile, Position, Raster)
+  // FIXME move algo here, rely solely on read_region_to(fitsfile, Position, Raster)
 }
 
 template <typename TRaster>
 void ImageRaster::write(const TRaster& raster) const {
   m_edit();
-  Cfitsio::ImageIo::writeRaster(m_fptr, raster);
+  Cfitsio::ImageIo::write_raster(m_fptr, raster);
 }
 
 template <typename TRaster, long N>
@@ -112,7 +112,7 @@ void ImageRaster::writeRegion(const Subraster<T, N, TContainer>& subraster) cons
 
 template <typename TRaster, long N>
 void ImageRaster::writeSlice(const Position<N>& frontPosition, const TRaster& raster) const {
-  Cfitsio::ImageIo::writeRegion(m_fptr, raster, frontPosition);
+  Cfitsio::ImageIo::write_region(m_fptr, raster, frontPosition);
 }
 
 template <typename T, long M, long N, typename TContainer>

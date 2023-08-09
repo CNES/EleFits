@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, Fits::Test::Mini
   BOOST_TEST(HduAccess::current_index(this->fptr) == 1);
   HduAccess::goto_name(this->fptr, "IMGEXT");
   BOOST_TEST(HduAccess::current_index(this->fptr) == 2);
-  const auto output = ImageIo::readRaster<float, 2>(fptr);
+  const auto output = ImageIo::read_raster<float, 2>(fptr);
   BOOST_TEST(output.vector() == input.vector());
 }
 
