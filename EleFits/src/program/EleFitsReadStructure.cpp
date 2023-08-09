@@ -78,6 +78,7 @@ public:
     auto options = ProgramOptions::fromAuxFile("ReadStructure.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.named("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter");
+    options.named("columns,C", value<long>()->default_value(0)->implicit_value(-1), "Maximum number of column names");
     return options.asPair();
   }
 
@@ -88,6 +89,7 @@ public:
     /* Read options */
     const auto filename = args["input"].as<std::string>();
     const auto keyword_filter = args["keywords"].as<std::string>();
+    const auto max_column_count = args["columns"].as<long>();
     KeywordCategory categories = parse_keyword_categories(keyword_filter);
 
     /* Read file */
@@ -100,8 +102,9 @@ public:
       logger.info();
 
       /* Read name (if present) */
-      const auto& hdu = f.access<>(i);
+      const auto& hdu = f[i];
       logger.info() << "HDU #" << i << ": " << hdu.readName();
+      logger.info() << "  Size: " << hdu.size_in_file() << " bytes";
 
       /* Read type */
       const auto hduType = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
@@ -123,10 +126,16 @@ public:
         const auto row_count = hdu.as<BintableHdu>().readRowCount();
         logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << column_count << " columns x " << row_count << " rows";
-        const auto column_names = hdu.as<BintableHdu>().columns().readAllNames();
-        logger.info() << "    Columns:";
-        for (const auto& n : column_names) {
-          logger.info() << "      " << n;
+        if (max_column_count != 0) {
+          auto column_names = hdu.as<BintableHdu>().columns().readAllNames();
+          if (max_column_count > 0 && max_column_count < column_count) {
+            column_names.resize(max_column_count);
+            column_names.push_back("...");
+          }
+          logger.info() << "    Columns:";
+          for (const auto& n : column_names) {
+            logger.info() << "      " << n;
+          }
         }
       }
 
