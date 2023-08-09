@@ -23,10 +23,10 @@ template <typename T>
 void checkRecordWithFallbackIsReadBack(const Header& h, const std::string& keyword) {
   BOOST_TEST(not h.has(keyword));
   BOOST_CHECK_THROW(h.parse<T>(keyword), std::exception);
-  const Record<T> fallback {keyword, Test::generateRandomValue<T>(), "", "FALLBACK"};
+  const Record<T> fallback {keyword, Test::generate_random_value<T>(), "", "FALLBACK"};
   auto output = h.parseOr<T>(fallback);
   BOOST_TEST((output == fallback));
-  const Record<T> input {keyword, Test::generateRandomValue<T>(), "", "INPUT"};
+  const Record<T> input {keyword, Test::generate_random_value<T>(), "", "INPUT"};
   h.write(input);
   BOOST_TEST((input != fallback)); // At least the comments differ
   output = h.parseOr<T>(fallback);

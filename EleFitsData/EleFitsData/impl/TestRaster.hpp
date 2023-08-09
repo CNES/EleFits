@@ -18,7 +18,7 @@ bool SmallRaster::approx(const TRaster& other, double tol) const {
 
 template <typename T, long N>
 RandomRaster<T, N>::RandomRaster(Position<N> rasterShape, T min, T max) :
-    VecRaster<T, N>(rasterShape, generateRandomVector<T>(shapeSize(rasterShape), min, max)) {}
+    VecRaster<T, N>(rasterShape, generate_random_vector<T>(shapeSize(rasterShape), min, max)) {}
 
 template <typename T, long N>
 template <typename TRaster>

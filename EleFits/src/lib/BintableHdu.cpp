@@ -35,12 +35,12 @@ const BintableColumns& BintableHdu::columns() const {
 
 long BintableHdu::readColumnCount() const {
   touch();
-  return Cfitsio::BintableIo::columnCount(m_fptr);
+  return Cfitsio::BintableIo::column_count(m_fptr);
 }
 
 long BintableHdu::readRowCount() const {
   touch();
-  return Cfitsio::BintableIo::rowCount(m_fptr);
+  return Cfitsio::BintableIo::row_count(m_fptr);
 }
 
 HduCategory BintableHdu::readCategory() const {

@@ -38,7 +38,7 @@ Record<T> generateRandomRecord(const std::string& typeName) {
 
 template <typename T>
 Record<T> generateRandomRecord(const std::string& k, const std::string& u, const std::string& c) {
-  return Record<T>(k, generateRandomValue<T>(), u, c);
+  return Record<T>(k, generate_random_value<T>(), u, c);
 }
 
 template <>

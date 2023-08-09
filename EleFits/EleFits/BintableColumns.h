@@ -59,19 +59,19 @@ namespace Fits {
  * \code
  * // Specs
  * const Segment rows {11, 50};
- * const long columnCount = 3;
- * const long rowCount = rows.size();
+ * const long column_count = 3;
+ * const long row_count = rows.size();
  * 
  * // Data container for all columns
- * std::vector<float> data(rowCount * columnCount);
+ * std::vector<float> data(row_count * column_count);
  * 
  * // Contiguous views
- * PtrColumn<float> one({"ONE", "", 1}, rowCount, &data[0]);
- * PtrColumn<float> two({"TWO", "", 1}, rowCount, &data[rowCount]);
- * PtrColumn<float> three({"THREE", "", 1}, rowCount, &data[rowCount * 2]);
+ * PtrColumn<float> one({"ONE", "", 1}, row_count, &data[0]);
+ * PtrColumn<float> two({"TWO", "", 1}, row_count, &data[row_count]);
+ * PtrColumn<float> three({"THREE", "", 1}, row_count, &data[row_count * 2]);
  * 
  * // In-place reading
- * columnCount.readSegmentSeqTo(rows, one, two, three);
+ * columns.readSegmentSeqTo(rows, one, two, three);
  * \endcode
  */
 class BintableColumns {
@@ -172,10 +172,10 @@ public:
    * auto fromIndex = columns.read<float>(1);
    * 
    * // Concatenate two columns into an existing Column
-   * long rowCount = readRowCount();
-   * std::vector<float> values(rowCount * 2);
-   * PtrColumn<float> ra({"RA", "deg", 1}, rowCount, &values[0]);
-   * PtrColumn<float> dec({"DEC", "deg", 1}, rowCount, &values[rowCount]);
+   * long row_count = readRowCount();
+   * std::vector<float> values(row_count * 2);
+   * PtrColumn<float> ra({"RA", "deg", 1}, row_count, &values[0]);
+   * PtrColumn<float> dec({"DEC", "deg", 1}, row_count, &values[row_count]);
    * columns.readTo("RA", ra);
    * columns.readTo("DEC", dec);
    * \endcode

@@ -21,7 +21,7 @@ using namespace Fits;
  */
 template <typename T>
 VecColumn<T> random_column(const std::string& name, long rows) {
-  return VecColumn<T>({name, "", 1}, Test::generateRandomVector<T>(rows, T(0), T(1)));
+  return VecColumn<T>({name, "", 1}, Test::generate_random_vector<T>(rows, T(0), T(1)));
 }
 
 /**

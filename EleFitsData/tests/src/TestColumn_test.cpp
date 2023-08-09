@@ -15,14 +15,14 @@ BOOST_FIXTURE_TEST_SUITE(TestColumn_test, Test::RandomTable)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkRandomVectorColumnSize(long repeatCount, long rowCount) {
-  Test::RandomVectorColumn<T> column(repeatCount, rowCount);
-  BOOST_TEST(column.info().repeatCount() == repeatCount);
-  BOOST_TEST(column.rowCount() == rowCount);
+void checkRandomVectorColumnSize(long repeat_count, long row_count) {
+  Test::RandomVectorColumn<T> column(repeat_count, row_count);
+  BOOST_TEST(column.info().repeatCount() == repeat_count);
+  BOOST_TEST(column.rowCount() == row_count);
   if (std::is_same<T, std::string>::value) {
-    BOOST_TEST(column.size() == rowCount);
+    BOOST_TEST(column.size() == row_count);
   } else {
-    BOOST_TEST(column.size() == repeatCount * rowCount);
+    BOOST_TEST(column.size() == repeat_count * row_count);
   }
 }
 
@@ -33,19 +33,19 @@ void checkRandomVectorColumnSize(long repeatCount, long rowCount) {
 
 #define COLUMN_HAS_MORE_THAN_2_ROWS_TEST(T, name) \
   BOOST_AUTO_TEST_CASE(name##_column_has_more_than_2_rows_test) { \
-    BOOST_TEST(getColumn<T>().rowCount() > 2); \
+    BOOST_TEST(get_column<T>().rowCount() > 2); \
   }
 
 ELEFITS_FOREACH_COLUMN_TYPE(COLUMN_HAS_MORE_THAN_2_ROWS_TEST)
 
-#define PUSH_BACK_NAME(T, _) names.push_back(getColumn<T>().info().name);
+#define PUSH_BACK_NAME(T, _) names.push_back(get_column<T>().info().name);
 
 BOOST_AUTO_TEST_CASE(names_are_all_different_test) {
-  BOOST_TEST(std::tuple_size<decltype(columns)>::value == columnCount);
+  BOOST_TEST(std::tuple_size<decltype(columns)>::value == column_count);
   std::vector<std::string> names;
   ELEFITS_FOREACH_COLUMN_TYPE(PUSH_BACK_NAME)
-  BOOST_TEST(names.size() == columnCount);
-  for (long lhs = 0; lhs < columnCount; ++lhs) {
+  BOOST_TEST(names.size() == column_count);
+  for (long lhs = 0; lhs < column_count; ++lhs) {
     const auto& vlhs = names[lhs];
     for (long rhs = 0; rhs < lhs; ++rhs) {
       const auto& vrhs = names[rhs];

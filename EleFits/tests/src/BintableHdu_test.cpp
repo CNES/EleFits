@@ -29,9 +29,9 @@ void checkScalar() {
 
 template <typename T>
 void checkVector() {
-  constexpr long rowCount = 10;
+  constexpr long row_count = 10;
   constexpr long repeatCount = 2;
-  Test::RandomScalarColumn<T> input(rowCount * repeatCount);
+  Test::RandomScalarColumn<T> input(row_count * repeatCount);
   input.reshape(repeatCount);
   Test::TemporaryMefFile file;
   file.appendBintableHeader("BINEXT", {}, input.info());
@@ -82,8 +82,8 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
-  const auto intColumn = Test::RandomTable::generateColumn<int>("INT");
-  const auto floatColumn = Test::RandomTable::generateColumn<float>("FLOAT");
+  const auto intColumn = Test::RandomTable::generate_column<int>("INT");
+  const auto floatColumn = Test::RandomTable::generate_column<float>("FLOAT");
   const auto& ext = appendBintable("", {}, intColumn, floatColumn);
   const auto& du = ext.columns();
   const auto byName = du.readSeq(as<int>(intColumn.info().name), as<float>(floatColumn.info().name));

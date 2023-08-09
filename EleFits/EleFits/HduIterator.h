@@ -116,7 +116,7 @@ private:
   /**
    * @brief Dummy HDU for past-the-last element access.
    */
-  const THdu m_dummyHdu;
+  const THdu m_dummy_hdu;
 };
 
 /**

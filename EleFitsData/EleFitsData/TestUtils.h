@@ -21,37 +21,37 @@ namespace Test {
  * @brief Value very close to the min of the type.
  */
 template <typename T>
-T almostMin();
+T almost_min();
 
 /**
  * @brief Value very close to the max of the type.
  */
 template <typename T>
-T almostMax();
+T almost_max();
 
 /**
  * @brief Half the min of the type.
  */
 template <typename T>
-T halfMin();
+T half_min();
 
 /**
  * @brief Half the max of the type.
  */
 template <typename T>
-T halfMax();
+T half_max();
 
 /**
  * @brief Generate a random value of given type.
  */
 template <typename T>
-T generateRandomValue(T min = halfMin<T>(), T max = halfMax<T>());
+T generate_random_value(T min = half_min<T>(), T max = half_max<T>());
 
 /**
  * @brief Generate a random vector of given type and size.
  */
 template <typename T>
-std::vector<T> generateRandomVector(long size, T min = halfMin<T>(), T max = halfMax<T>());
+std::vector<T> generate_random_vector(long size, T min = half_min<T>(), T max = half_max<T>());
 
 /**
  * @brief Check whether a test value is approximately equal to a reference value.

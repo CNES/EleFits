@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE(access_hdu_by_type, Fits::Test::MinimalFile) {
   HduAccess::assign_image(this->fptr, name, SmallRaster());
   constexpr long imageIndex = primaryIndex + 1;
   BOOST_TEST(HduAccess::current_index(this->fptr) == imageIndex);
-  HduAccess::assign_bintable(this->fptr, name, SmallTable().nameCol);
+  HduAccess::assign_bintable(this->fptr, name, SmallTable().name_col);
   constexpr long bintableIndex = imageIndex + 1;
   BOOST_TEST(HduAccess::current_index(this->fptr) == bintableIndex);
   HduAccess::goto_name(this->fptr, name);

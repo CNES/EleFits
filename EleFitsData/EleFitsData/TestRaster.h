@@ -57,7 +57,7 @@ public:
   /**
    * @brief Generate a Raster with given shape.
    */
-  explicit RandomRaster(Position<N> rasterShape, T min = almostMin<T>(), T max = almostMax<T>());
+  explicit RandomRaster(Position<N> rasterShape, T min = almost_min<T>(), T max = almost_max<T>());
 
   /**
    * @brief Destructor.

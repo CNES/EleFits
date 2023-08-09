@@ -39,13 +39,13 @@ void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... inf
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
-  BintableIo::writeColumnDims(fptr, 1, infos...);
+  BintableIo::write_column_dims(fptr, 1, infos...);
 }
 
 template <typename... TColumns>
 void assign_bintable(fitsfile* fptr, const std::string& name, const TColumns&... columns) {
   init_bintable(fptr, name, columns.info()...);
-  BintableIo::writeColumns(fptr, columns...);
+  BintableIo::write_columns(fptr, columns...);
 }
 
 /// @cond INTERNAL
@@ -68,7 +68,7 @@ void assign_bintable(fitsfile* fptr, const std::string& name, const TTuple& colu
 
 template <typename TColumn>
 void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& column) { // TODO used?
-  constexpr long columnCount = 1;
+  constexpr long column_count = 1;
   std::string colName = column.info().name;
   char* cName = &colName[0];
   std::string colFormat = TypeCode<typename TColumn::Value>::tform(column.info().repeatCount());
@@ -76,9 +76,9 @@ void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& col
   std::string colUnit = column.info().unit;
   char* cUnit = &colUnit[0];
   int status = 0;
-  fits_create_tbl(fptr, BINARY_TBL, 0, columnCount, &cName, &cFormat, &cUnit, name.c_str(), &status);
+  fits_create_tbl(fptr, BINARY_TBL, 0, column_count, &cName, &cFormat, &cUnit, name.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
-  BintableIo::writeColumn(fptr, column);
+  BintableIo::write_column(fptr, column);
 }
 
 } // namespace HduAccess

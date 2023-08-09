@@ -24,7 +24,7 @@ namespace Fits {
 
 template <typename T, long N>
 ColumnInfo<T, N> BintableColumns::readInfo(ColumnKey key) const {
-  return Cfitsio::BintableIo::readColumnInfo<T, N>(m_fptr, key.index(*this) + 1); // 1-based
+  return Cfitsio::BintableIo::read_column_info<T, N>(m_fptr, key.index(*this) + 1); // 1-based
 }
 
 // read
@@ -51,12 +51,12 @@ void BintableColumns::readTo(ColumnKey key, TColumn& column) const {
 template <typename T, long N>
 VecColumn<T, N> BintableColumns::readSegment(const Segment& rows, ColumnKey key) const {
   const auto index = key.index(*this);
-  auto resolvedRows = rows;
+  auto resolved_rows = rows;
   if (rows.back == -1) {
-    resolvedRows.back = readRowCount() - 1;
+    resolved_rows.back = readRowCount() - 1;
   }
-  VecColumn<T, N> column(readInfo<T, N>(std::move(key)), resolvedRows.size());
-  readSegmentTo(resolvedRows, index, column);
+  VecColumn<T, N> column(readInfo<T, N>(std::move(key)), resolved_rows.size());
+  readSegmentTo(resolved_rows, index, column);
   return column;
 }
 
@@ -72,7 +72,7 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, TColumn
   m_touch();
   rows.resolve(readRowCount() - 1, column.rowCount() - 1);
   auto slice = column.slice(rows.memory()); // TODO do we need a temporary variable?
-  Cfitsio::BintableIo::readColumnData(
+  Cfitsio::BintableIo::read_column_data(
       m_fptr,
       Segment {rows.file().front + 1, rows.file().back + 1}, // TODO operator+
       key.index(*this) + 1, // 1-based
@@ -84,18 +84,18 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, TColumn
 
 template <typename TKey, typename... Ts>
 std::tuple<VecColumn<Ts>...> BintableColumns::readSeq(const TypedKey<Ts, TKey>&... keys) const {
-  const auto rowCount = readRowCount();
-  std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(keys.key), rowCount)...};
+  const auto row_count = readRowCount();
+  std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(readInfo<Ts>(keys.key), row_count)...};
   readSeqTo({ColumnKey(keys.key)...}, res);
   return res;
 }
 
 template <typename T, long N>
 std::vector<VecColumn<T, N>> BintableColumns::readSeq(std::vector<ColumnKey> keys) const {
-  const auto rowCount = readRowCount();
+  const auto row_count = readRowCount();
   std::vector<VecColumn<T, N>> res(keys.size());
   std::transform(keys.begin(), keys.end(), res.begin(), [&](ColumnKey& k) {
-    return VecColumn<T, N>(readInfo<T>(k.index(*this)), rowCount);
+    return VecColumn<T, N>(readInfo<T>(k.index(*this)), row_count);
   });
   readSeqTo(std::move(keys), res);
   return res;
@@ -170,16 +170,16 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, TColumns&... column
 
 template <typename TSeq>
 void BintableColumns::readSegmentSeqTo(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const {
-  const auto bufferSize = readBufferRowCount();
-  const long rowCount = columnsRowCount(std::forward<TSeq>(columns));
-  rows.resolve(readRowCount() - 1, rowCount - 1);
-  const long lastMemRow = rows.memory().back;
-  for (Segment file = Segment::fromSize(rows.file().front, bufferSize), // FIXME use a FileMemSegments
-       mem = Segment::fromSize(rows.memory().front, bufferSize);
-       mem.front <= lastMemRow;
-       file += bufferSize, mem += bufferSize) {
-    if (mem.back > lastMemRow) {
-      mem.back = lastMemRow;
+  const auto buffer_size = readBufferRowCount();
+  const long row_count = columnsRowCount(std::forward<TSeq>(columns));
+  rows.resolve(readRowCount() - 1, row_count - 1);
+  const long last_mem_row = rows.memory().back;
+  for (Segment file = Segment::fromSize(rows.file().front, buffer_size), // FIXME use a FileMemSegments
+       mem = Segment::fromSize(rows.memory().front, buffer_size);
+       mem.front <= last_mem_row;
+       file += buffer_size, mem += buffer_size) {
+    if (mem.back > last_mem_row) {
+      mem.back = last_mem_row;
     }
     auto it = keys.begin();
     seqForeach(std::forward<TSeq>(columns), [&](auto& c) {
@@ -209,11 +209,11 @@ void BintableColumns::init(const TInfo& info, long index) const {
   auto name = Fits::String::toCharPtr(info.name);
   auto tform = Fits::String::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount()));
   int status = 0;
-  int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
-  fits_insert_col(m_fptr, cfitsioIndex, name.get(), tform.get(), &status);
+  int cfitsio_index = index == -1 ? Cfitsio::BintableIo::column_count(m_fptr) + 1 : index + 1;
+  fits_insert_col(m_fptr, cfitsio_index, name.get(), tform.get(), &status);
   Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
   if (info.unit != "") {
-    const Record<std::string> record {"TUNIT" + std::to_string(cfitsioIndex), info.unit, "", "physical unit of field"};
+    const Record<std::string> record {"TUNIT" + std::to_string(cfitsio_index), info.unit, "", "physical unit of field"};
     Cfitsio::HeaderIo::updateRecord(m_fptr, record);
   }
   // TODO to Cfitsio
@@ -226,7 +226,7 @@ void BintableColumns::writeSegment(FileMemSegments rows, const TColumn& column) 
   m_edit();
   rows.resolve(readRowCount() - 1, column.rowCount() - 1);
   const auto index = readIndex(column.info().name); // FIXME avoid?
-  Cfitsio::BintableIo::writeColumnData(
+  Cfitsio::BintableIo::write_column_data(
       m_fptr,
       rows.file() + 1,
       index + 1,
@@ -259,10 +259,10 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
   });
   String::CStrArray tforms(tformVec);
   int status = 0;
-  int cfitsioIndex = index == -1 ? Cfitsio::BintableIo::columnCount(m_fptr) + 1 : index + 1;
-  fits_insert_cols(m_fptr, cfitsioIndex, names.size(), names.data(), tforms.data(), &status);
+  int cfitsio_index = index == -1 ? Cfitsio::BintableIo::column_count(m_fptr) + 1 : index + 1;
+  fits_insert_cols(m_fptr, cfitsio_index, names.size(), names.data(), tforms.data(), &status);
   // TODO to Cfitsio
-  long i = cfitsioIndex;
+  long i = cfitsio_index;
   seqForeach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
       const Record<std::string> record {"TUNIT" + std::to_string(i), info.unit, "", "physical unit of field"};
@@ -282,16 +282,16 @@ void BintableColumns::initSeq(long index, const TInfos&... infos) const {
 
 template <typename TSeq>
 void BintableColumns::writeSegmentSeq(FileMemSegments rows, TSeq&& columns) const {
-  const auto rowCount = columnsRowCount(std::forward<TSeq>(columns));
-  rows.resolve(readRowCount() - 1, rowCount - 1);
-  const long lastMemRow = rows.memory().back;
-  const auto bufferSize = readBufferRowCount();
-  for (auto mem = Segment::fromSize(rows.memory().front, bufferSize), // FIXME use a FileMemSegments
-       file = Segment::fromSize(rows.file().front, bufferSize);
-       mem.front <= lastMemRow;
-       mem += bufferSize, file += bufferSize) {
-    if (mem.back > lastMemRow) {
-      mem.back = lastMemRow;
+  const auto row_count = columnsRowCount(std::forward<TSeq>(columns));
+  rows.resolve(readRowCount() - 1, row_count - 1);
+  const long last_mem_row = rows.memory().back;
+  const auto buffer_size = readBufferRowCount();
+  for (auto mem = Segment::fromSize(rows.memory().front, buffer_size), // FIXME use a FileMemSegments
+       file = Segment::fromSize(rows.file().front, buffer_size);
+       mem.front <= last_mem_row;
+       mem += buffer_size, file += buffer_size) {
+    if (mem.back > last_mem_row) {
+      mem.back = last_mem_row;
     }
     seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
       writeSegment({file.front, mem}, c); // FIXME don't recalculate index
@@ -308,10 +308,10 @@ template <typename TSeq>
 long columnsRowCount(TSeq&& columns) {
   long rows = -1;
   seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-    const auto cRows = c.rowCount();
+    const auto c_rows = c.rowCount();
     if (rows == -1) {
-      rows = cRows;
-    } else if (cRows != rows) {
+      rows = c_rows;
+    } else if (c_rows != rows) {
       throw FitsError("Columns do not have the same number of rows."); // FIXME clean
     }
   });

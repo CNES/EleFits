@@ -50,7 +50,7 @@ void checkClose(std::complex<double> value, std::complex<double> expected) {
 template <typename T>
 void checkRecordIsReadBack(const std::string& label) {
   Fits::Test::MinimalFile file;
-  T value = Fits::Test::generateRandomValue<T>();
+  T value = Fits::Test::generate_random_value<T>();
   std::string keyword = label.substr(0, 8);
   std::string unit = label.substr(0, 1);
   std::string comment = label.substr(0, 10);
@@ -167,12 +167,12 @@ void checkRecordTypeid(T value, const std::vector<std::size_t>& validTypeCodes) 
 
 template <typename T>
 void checkRecordTypeidMin(const std::vector<std::size_t>& validTypeCodes) {
-  checkRecordTypeid(Fits::Test::almostMin<T>(), validTypeCodes);
+  checkRecordTypeid(Fits::Test::almost_min<T>(), validTypeCodes);
 }
 
 template <typename T>
 void checkRecordTypeidMax(const std::vector<std::size_t>& validTypeCodes) {
-  checkRecordTypeid(Fits::Test::almostMax<T>(), validTypeCodes);
+  checkRecordTypeid(Fits::Test::almost_max<T>(), validTypeCodes);
 }
 
 BOOST_AUTO_TEST_CASE(record_type_test) {
@@ -183,10 +183,10 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypeidMin<long>({typeid(int).hash_code(), typeid(long).hash_code()});
   checkRecordTypeidMin<long long>({typeid(long).hash_code(), typeid(long long).hash_code()});
   checkRecordTypeidMin<float>({typeid(float).hash_code()});
-  checkRecordTypeid<double>(Fits::Test::halfMin<double>(), {typeid(double).hash_code()});
+  checkRecordTypeid<double>(Fits::Test::half_min<double>(), {typeid(double).hash_code()});
   checkRecordTypeidMin<std::complex<float>>({typeid(std::complex<float>).hash_code()});
   checkRecordTypeid<std::complex<double>>(
-      Fits::Test::halfMin<std::complex<double>>(),
+      Fits::Test::half_min<std::complex<double>>(),
       {typeid(std::complex<double>).hash_code()});
   checkRecordTypeid<std::string>("VALUE", {typeid(std::string).hash_code()});
   checkRecordTypeidMax<bool>({typeid(bool).hash_code()});
@@ -196,10 +196,10 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
   checkRecordTypeidMax<unsigned long>({typeid(unsigned int).hash_code(), typeid(unsigned long).hash_code()});
   checkRecordTypeidMax<unsigned long long>({typeid(unsigned long).hash_code(), typeid(unsigned long long).hash_code()});
   checkRecordTypeidMax<float>({typeid(float).hash_code()});
-  checkRecordTypeid<double>(Fits::Test::halfMax<double>(), {typeid(double).hash_code()});
+  checkRecordTypeid<double>(Fits::Test::half_max<double>(), {typeid(double).hash_code()});
   checkRecordTypeidMax<std::complex<float>>({typeid(std::complex<float>).hash_code()});
   checkRecordTypeid<std::complex<double>>(
-      Fits::Test::halfMax<std::complex<double>>(),
+      Fits::Test::half_max<std::complex<double>>(),
       {typeid(std::complex<double>).hash_code()});
 }
 

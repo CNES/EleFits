@@ -23,22 +23,22 @@ const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext
 
   /* A string column */
   auto stringInfo = Fits::makeColumnInfo<std::string>("STRING", "", 6);
-  auto stringData = Fits::Test::generateRandomVector<std::string>(rows);
+  auto stringData = Fits::Test::generate_random_vector<std::string>(rows);
   auto stringCol = makeColumn(stringInfo, std::move(stringData));
 
   /* A scalar column of complex values */
   auto scalarInfo = Fits::makeColumnInfo<std::complex<float>>("SCALAR");
-  auto scalarData = Fits::Test::generateRandomVector<std::complex<float>>(rows);
+  auto scalarData = Fits::Test::generate_random_vector<std::complex<float>>(rows);
   auto scalarCol = makeColumn(scalarInfo, std::move(scalarData));
 
   /* A vector column of int16 values */
   auto vectorInfo = Fits::makeColumnInfo<std::int16_t>("VECTOR", "", 3);
-  auto vectorData = Fits::Test::generateRandomVector<std::int16_t>(rows * vectorInfo.repeatCount());
+  auto vectorData = Fits::Test::generate_random_vector<std::int16_t>(rows * vectorInfo.repeatCount());
   auto vectorCol = makeColumn(vectorInfo, std::move(vectorData));
 
   /* A multidimensional column of uint16 values */
   auto multidimInfo = Fits::makeColumnInfo<std::uint16_t>("MULTIDIM", "", 6, 4);
-  auto multidimData = Fits::Test::generateRandomVector<std::uint16_t>(rows * multidimInfo.repeatCount());
+  auto multidimData = Fits::Test::generate_random_vector<std::uint16_t>(rows * multidimInfo.repeatCount());
   auto multidimCol = makeColumn(multidimInfo, std::move(multidimData));
 
   /* Create the table */
@@ -53,7 +53,7 @@ const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext
  * It is also possible to append or insert several columns at once, analogously to what's done in `write_bintable()`.
  */
 template <typename TInfo, typename T>
-void appendColumn(const Fits::BintableColumns& du, const TInfo& info, const T* data) {
+void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* data) {
   const auto rows = du.readRowCount();
   du.init(info);
   du.write(makeColumn(info, rows, data));
@@ -138,8 +138,8 @@ public:
 
     logger.info("Appending a column...");
     Fits::ColumnInfo<double> info("BACK", "unit");
-    const auto vec = Fits::Test::generateRandomVector<double>(rows, -1, 1);
-    appendColumn(bintable.columns(), info, vec.data());
+    const auto vec = Fits::Test::generate_random_vector<double>(rows, -1, 1);
+    append_column(bintable.columns(), info, vec.data());
 
     logger.info("Reading columns...");
     auto result = readColumns(bintable.columns());

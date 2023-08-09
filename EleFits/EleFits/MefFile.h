@@ -302,7 +302,7 @@ public:
    */
   template <typename... TInfos>
   const BintableHdu&
-  appendNullBintable(const std::string& name, const RecordSeq& records, long rowCount, const TInfos&... infos);
+  appendNullBintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos);
 
   /**
    * @brief Append and write a new binary table extension.

@@ -50,19 +50,19 @@ BOOST_AUTO_TEST_SUITE(BintableColumns_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable) {
-  const auto rowCount = nums.size();
-  BOOST_TEST(names.size() == rowCount);
-  const auto columns = std::make_tuple(numCol, radecCol, nameCol, distMagCol);
-  BOOST_TEST(columnsRowCount(columns) == static_cast<long>(rowCount));
+  const auto row_count = nums.size();
+  BOOST_TEST(names.size() == row_count);
+  const auto columns = std::make_tuple(num_col, radec_col, name_col, dist_mag_col);
+  BOOST_TEST(columnsRowCount(columns) == static_cast<long>(row_count));
 }
 
 BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
   const Test::SmallTable table;
   const auto initSize = static_cast<long>(table.names.size());
-  const auto& ext = appendBintable("TABLE", {}, table.nameCol, table.radecCol);
+  const auto& ext = appendBintable("TABLE", {}, table.name_col, table.radec_col);
   const auto& columns = ext.columns();
   BOOST_TEST(columns.readRowCount() == initSize);
-  columns.writeSegmentSeq(-1, table.nameCol, table.radecCol);
+  columns.writeSegmentSeq(-1, table.name_col, table.radec_col);
   BOOST_TEST(columns.readRowCount() == initSize * 2);
 }
 
@@ -70,9 +70,9 @@ template <typename T>
 void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, const VecColumn<T>& last) {
 
   /* Write */
-  const auto rowCount = first.rowCount();
+  const auto row_count = first.rowCount();
   du.writeSeq(last, first);
-  BOOST_TEST(du.readRowCount() == rowCount);
+  BOOST_TEST(du.readRowCount() == row_count);
 
   /* Read */
   const auto [res0, res1] = du.readSeq(as<T>(last.info().name), as<T>(first.info().name)); // Structured binding
@@ -83,10 +83,10 @@ void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, c
 
   /* Append */
   du.writeSegmentSeq(-1, last, first);
-  BOOST_TEST(du.readRowCount() == rowCount * 2);
+  BOOST_TEST(du.readRowCount() == row_count * 2);
 
   /* Read */
-  const auto res2 = du.readSegmentSeq({rowCount, -1}, as<T>(last.info().name), as<T>(first.info().name));
+  const auto res2 = du.readSegmentSeq({row_count, -1}, as<T>(last.info().name), as<T>(first.info().name));
   const auto& res20 = std::get<0>(res2);
   const auto& res21 = std::get<1>(res2);
   BOOST_TEST((res20.info() == last.info()));
@@ -121,14 +121,14 @@ template <typename T>
 void checkArrayWriteRead(const BintableColumns& du) {
 
   /* Generate */
-  const long rowCount = 10000;
+  const long row_count = 10000;
   const long repeatCount = 3;
   std::array<ColumnInfo<T>, 2> infos {
       ColumnInfo<T> {"VECTOR", "m", repeatCount},
       ColumnInfo<T> {"SCALAR", "s", 1}}; // Inverted for robustness test
   std::array<VecColumn<T>, 2> seq {
-      VecColumn<T> {infos[1], Test::generateRandomVector<T>(rowCount)},
-      VecColumn<T> {infos[0], Test::generateRandomVector<T>(repeatCount * rowCount)}};
+      VecColumn<T> {infos[1], Test::generate_random_vector<T>(row_count)},
+      VecColumn<T> {infos[0], Test::generate_random_vector<T>(repeatCount * row_count)}};
 
   /* Write */
   du.initSeq(0, infos);
@@ -180,9 +180,9 @@ void checkArrayWriteRead<std::uint64_t>(const BintableColumns& /* du */) {
   BOOST_TEST(status == 0);
 
   /* Write data */
-  constexpr long rowCount = 10000;
-  auto data = Test::generateRandomVector<T>(rowCount);
-  fits_write_col(fptr, Euclid::Cfitsio::TypeCode<T>::forBintable(), 1, 1, 1, rowCount, data.data(), &status);
+  constexpr long row_count = 10000;
+  auto data = Test::generate_random_vector<T>(row_count);
+  fits_write_col(fptr, Euclid::Cfitsio::TypeCode<T>::forBintable(), 1, 1, 1, row_count, data.data(), &status);
   BOOST_TEST(status == BAD_BTABLE_FORMAT); // FIXME CFITSIO bug (works with all other types)
 
   /* Tear down */
@@ -193,12 +193,12 @@ template <typename T>
 void checkVectorWriteRead(const BintableColumns& du) {
 
   /* Generate */
-  const long rowCount = 10000;
+  const long row_count = 10000;
   const long repeatCount = 3;
   std::vector<ColumnInfo<T>> infos {{"VECTOR", "m", repeatCount}, {"SCALAR", "s", 1}}; // Inverted for robustness test
   std::vector<VecColumn<T>> seq {
-      {infos[1], Test::generateRandomVector<T>(rowCount)},
-      {infos[0], Test::generateRandomVector<T>(repeatCount * rowCount)}};
+      {infos[1], Test::generate_random_vector<T>(row_count)},
+      {infos[0], Test::generate_random_vector<T>(repeatCount * row_count)}};
 
   /* Write */
   du.initSeq(0, infos);

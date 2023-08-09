@@ -16,72 +16,72 @@ namespace Fits {
 namespace Test {
 
 template <typename T>
-T almostMin() {
+T almost_min() {
   return std::numeric_limits<T>::lowest() + std::numeric_limits<T>::epsilon();
 }
 
 template <>
-std::complex<float> almostMin<std::complex<float>>();
+std::complex<float> almost_min<std::complex<float>>();
 
 template <>
-std::complex<double> almostMin<std::complex<double>>();
+std::complex<double> almost_min<std::complex<double>>();
 
 template <>
-std::string almostMin<std::string>();
+std::string almost_min<std::string>();
 
 template <typename T>
-T almostMax() {
+T almost_max() {
   return std::numeric_limits<T>::max() - std::numeric_limits<T>::epsilon();
 }
 
 template <>
-std::complex<float> almostMax<std::complex<float>>();
+std::complex<float> almost_max<std::complex<float>>();
 
 template <>
-std::complex<double> almostMax<std::complex<double>>();
+std::complex<double> almost_max<std::complex<double>>();
 
 template <>
-std::string almostMax<std::string>();
+std::string almost_max<std::string>();
 
 template <typename T>
-T halfMin() {
+T half_min() {
   return std::numeric_limits<T>::lowest() / 2;
 }
 
 template <>
-std::complex<float> halfMin<std::complex<float>>();
+std::complex<float> half_min<std::complex<float>>();
 
 template <>
-std::complex<double> halfMin<std::complex<double>>();
+std::complex<double> half_min<std::complex<double>>();
 
 template <>
-std::string halfMin<std::string>();
+std::string half_min<std::string>();
 
 template <typename T>
-T halfMax() {
+T half_max() {
   return std::numeric_limits<T>::max() / 2;
 }
 
 template <>
-bool halfMax<bool>();
+bool half_max<bool>();
 
 template <>
-std::complex<float> halfMax<std::complex<float>>();
+std::complex<float> half_max<std::complex<float>>();
 
 template <>
-std::complex<double> halfMax<std::complex<double>>();
+std::complex<double> half_max<std::complex<double>>();
 
 template <>
-std::string halfMax<std::string>();
+std::string half_max<std::string>();
 
 template <typename T>
-T generateRandomValue(T min, T max) {
-  const auto vec = generateRandomVector<T>(1, min, max);
+T generate_random_value(T min, T max) {
+  const auto vec = generate_random_vector<T>(1, min, max);
   return vec[0];
 }
 
 template <typename T>
-std::vector<T> generateRandomVector(long size, T min, T max) {
+std::vector<T> generate_random_vector(long size, T min, T max) {
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   std::uniform_real_distribution<long double> distribution(
@@ -96,14 +96,14 @@ std::vector<T> generateRandomVector(long size, T min, T max) {
 
 template <>
 std::vector<std::complex<float>>
-generateRandomVector<std::complex<float>>(long size, std::complex<float> min, std::complex<float> max);
+generate_random_vector<std::complex<float>>(long size, std::complex<float> min, std::complex<float> max);
 
 template <>
 std::vector<std::complex<double>>
-generateRandomVector<std::complex<double>>(long size, std::complex<double> min, std::complex<double> max);
+generate_random_vector<std::complex<double>>(long size, std::complex<double> min, std::complex<double> max);
 
 template <>
-std::vector<std::string> generateRandomVector<std::string>(long size, std::string min, std::string max);
+std::vector<std::string> generate_random_vector<std::string>(long size, std::string min, std::string max);
 
 template <typename T>
 bool approx(T test, T ref, ELEMENTS_UNUSED double tol) {

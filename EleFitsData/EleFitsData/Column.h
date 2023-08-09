@@ -103,20 +103,20 @@ public:
   /**
    * @brief Create an empty column with given metadata.
    * @param info The column metadata
-   * @param rowCount The row count
+   * @param row_count The row count
    */
-  explicit Column(Info info, long rowCount = 0);
+  explicit Column(Info info, long row_count = 0);
 
   /**
    * @brief Create a column with given metadata and data.
    * @param info The column metadata
-   * @param rowCount The row count
+   * @param row_count The row count
    * @param data The raw data
    * @warning
    * `PtrColumn` constructor used to get the **element** count as input instead of the **row count**,
    * which makes a difference for vector columns.
    */
-  Column(Info info, long rowCount, T* data);
+  Column(Info info, long row_count, T* data);
 
   /**
    * @brief Create a column with given metadata and data.
@@ -259,8 +259,8 @@ makeColumn(TInfo info, TContainer&& data) {
  * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-PtrColumn<T, std::decay_t<TInfo>::Dim> makeColumn(TInfo&& info, long rowCount, T* data) {
-  return {std::forward<TInfo>(info), rowCount, data};
+PtrColumn<T, std::decay_t<TInfo>::Dim> makeColumn(TInfo&& info, long row_count, T* data) {
+  return {std::forward<TInfo>(info), row_count, data};
 }
 
 } // namespace Fits

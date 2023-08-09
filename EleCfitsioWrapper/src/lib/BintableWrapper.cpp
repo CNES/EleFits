@@ -14,7 +14,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace BintableIo {
 
-long columnCount(fitsfile* fptr) {
+long column_count(fitsfile* fptr) {
   int status = 0;
   int ncols = 0;
   fits_get_num_cols(fptr, &ncols, &status);
@@ -22,7 +22,7 @@ long columnCount(fitsfile* fptr) {
   return ncols;
 }
 
-long rowCount(fitsfile* fptr) {
+long row_count(fitsfile* fptr) {
   int status = 0;
   long nrows = 0;
   fits_get_num_rows(fptr, &nrows, &status);
@@ -30,14 +30,14 @@ long rowCount(fitsfile* fptr) {
   return nrows;
 }
 
-bool hasColumn(fitsfile* fptr, const std::string& name) {
+bool has_column(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
   return (status == 0) || (status == COL_NOT_UNIQUE);
 }
 
-std::string columnName(fitsfile* fptr, long index) {
+std::string column_name(fitsfile* fptr, long index) {
   int status = 0;
   char ttype[FLEN_VALUE];
   fits_get_bcolparms(
@@ -57,7 +57,7 @@ std::string columnName(fitsfile* fptr, long index) {
   return ttype;
 }
 
-void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
+void update_column_name(fitsfile* fptr, long index, const std::string& newName) {
   const std::string keyword = "TTYPE" + std::to_string(index);
   Cfitsio::HeaderIo::updateRecord<std::string>(fptr, {keyword, newName});
   int status = 0;
@@ -66,7 +66,7 @@ void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
   CfitsioError::mayThrow(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
 }
 
-long columnIndex(fitsfile* fptr, const std::string& name) {
+long column_index(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
@@ -75,7 +75,7 @@ long columnIndex(fitsfile* fptr, const std::string& name) {
 }
 
 template <>
-void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
+void read_column_dim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
   if (not HeaderIo::hasKeyword(fptr, std::string("TDIM") + std::to_string(index))) {
     return;
   }
@@ -89,7 +89,7 @@ void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
 }
 
 template <>
-void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data) {
+void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data) {
   int status = 0;
   std::vector<char*> vec(rows.size());
   std::generate(vec.begin(), vec.end(), [&]() {
@@ -115,7 +115,7 @@ void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long 
 }
 
 template <>
-void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long, const std::string* data) {
+void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long, const std::string* data) {
   int status = 0;
   Fits::String::CStrArray array(data, data + rows.size());
   fits_write_col(

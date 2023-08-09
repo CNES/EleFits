@@ -17,14 +17,14 @@ template <typename T, long N, typename TContainer>
 Column<T, N, TContainer>::Column() : Column(Column<T, N, TContainer>::Info {}) {}
 
 template <typename T, long N, typename TContainer>
-Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long rowCount) :
-    Column<T, N, TContainer>::Base(info.elementCount() * rowCount), m_info(std::move(info)) {
+Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_count) :
+    Column<T, N, TContainer>::Base(info.elementCount() * row_count), m_info(std::move(info)) {
   // FIXME assert size() % m_info.elementCount() == 0;
 }
 
 template <typename T, long N, typename TContainer>
-Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long rowCount, T* data) :
-    Column<T, N, TContainer>::Base(data, data + info.elementCount() * rowCount), m_info(std::move(info)) {
+Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_count, T* data) :
+    Column<T, N, TContainer>::Base(data, data + info.elementCount() * row_count), m_info(std::move(info)) {
   // FIXME idem
 }
 

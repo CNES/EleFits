@@ -54,7 +54,7 @@ public:
       Test::SmallTable table; // Predefined table for testing purpose
       logger.info() << "Creating binary table extension: SMALLTBL";
       //! [Create binary table ext]
-      f.appendBintable("SMALLTBL", {}, table.numCol, table.radecCol, table.nameCol, table.distMagCol);
+      f.appendBintable("SMALLTBL", {}, table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
       //! [Create binary table ext]
 
       logger.info();

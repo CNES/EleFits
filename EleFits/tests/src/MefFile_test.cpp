@@ -258,10 +258,10 @@ void checkAppendNullBintable(MefFile& f) {
   RecordSeq records {{"TNULL2", T(1)}, {"FOO", "BAR"}};
   const auto& ext = f.appendNullBintable("BINTABLE", records, 10, zero, blank);
   const auto offset = ext.header().template parseOr<T>("TZERO2", T());
-  const auto rowCount = ext.readRowCount();
-  BOOST_TEST(rowCount == 10);
+  const auto row_count = ext.readRowCount();
+  BOOST_TEST(row_count == 10);
   const auto output = ext.columns().readSeq(as<T>("ZERO"), as<T>("BLANK"));
-  for (long i = 0; i < rowCount; ++i) {
+  for (long i = 0; i < row_count; ++i) {
     BOOST_TEST(isNull(std::get<0>(output)[i] - offset));
     const auto value1 = std::get<1>(output)[1];
     if (std::is_floating_point<T>::value) {

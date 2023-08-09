@@ -153,16 +153,16 @@ public:
 
       const auto table = Test::RandomTable(1, row_count);
       const Validation::BColumns columns = std::make_tuple(
-          std::move(table.getColumn<unsigned char>()),
-          std::move(table.getColumn<std::int32_t>()),
-          std::move(table.getColumn<std::int64_t>()),
-          std::move(table.getColumn<float>()),
-          std::move(table.getColumn<double>()),
-          std::move(table.getColumn<std::complex<float>>()),
-          std::move(table.getColumn<std::complex<double>>()),
-          std::move(table.getColumn<char>()),
-          std::move(table.getColumn<std::uint32_t>()),
-          std::move(table.getColumn<std::uint64_t>()));
+          std::move(table.get_column<unsigned char>()),
+          std::move(table.get_column<std::int32_t>()),
+          std::move(table.get_column<std::int64_t>()),
+          std::move(table.get_column<float>()),
+          std::move(table.get_column<double>()),
+          std::move(table.get_column<std::complex<float>>()),
+          std::move(table.get_column<std::complex<double>>()),
+          std::move(table.get_column<char>()),
+          std::move(table.get_column<std::uint32_t>()),
+          std::move(table.get_column<std::uint64_t>()));
 
       logger.info("Writing binary table HDUs...");
 

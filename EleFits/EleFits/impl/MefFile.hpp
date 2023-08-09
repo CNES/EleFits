@@ -212,12 +212,12 @@ MefFile::appendBintableHeader(const std::string& name, const RecordSeq& records,
 
 template <typename... TInfos>
 const BintableHdu&
-MefFile::appendNullBintable(const std::string& name, const RecordSeq& records, long rowCount, const TInfos&... infos) {
+MefFile::appendNullBintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos) {
   const auto& hdu = appendBintableHeader(name, records, infos...);
 
   int status = 0;
-  fits_insert_rows(m_fptr, 0, rowCount, &status);
-  fits_write_nullrows(m_fptr, 1, rowCount, &status);
+  fits_insert_rows(m_fptr, 0, row_count, &status);
+  fits_write_nullrows(m_fptr, 1, row_count, &status);
   if (status != 0) {
     throw FitsError("Cannot write null rows. Error: " + std::to_string(status));
   }

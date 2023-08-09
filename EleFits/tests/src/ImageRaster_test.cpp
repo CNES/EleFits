@@ -159,7 +159,7 @@ ELEFITS_FOREACH_RASTER_TYPE(SUBRASTER_2D_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
   const Position<2> shape {7, 2};
-  const auto cData = Test::generateRandomVector<std::int16_t>(shapeSize(shape));
+  const auto cData = Test::generate_random_vector<std::int16_t>(shapeSize(shape));
   const PtrRaster<const std::int16_t> cRaster(shape, cData.data());
   writeRaster(cRaster);
   const auto res = readRaster<std::int16_t>();

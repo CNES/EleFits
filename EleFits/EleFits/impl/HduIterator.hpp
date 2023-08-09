@@ -11,7 +11,7 @@ namespace Fits {
 
 template <typename THdu>
 HduIterator<THdu>::HduIterator(MefFile& f, long index, HduFilter filter) :
-    m_f(f), m_index(index - 1), m_hdu(nullptr), m_filter(filter), m_dummyHdu() {
+    m_f(f), m_index(index - 1), m_hdu(nullptr), m_filter(filter), m_dummy_hdu() {
   next();
 }
 
@@ -57,7 +57,7 @@ void HduIterator<THdu>::next() {
     m_index++;
     if (m_index >= m_f.hduCount()) {
       m_index = m_f.hduCount();
-      m_hdu = &m_dummyHdu;
+      m_hdu = &m_dummy_hdu;
       return;
     }
     m_hdu = &m_f[m_index];

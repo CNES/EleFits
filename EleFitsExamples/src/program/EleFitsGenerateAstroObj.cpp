@@ -70,20 +70,20 @@ const BintableHdu& write_ext(MefFile& f, const std::string& name, const AstroObj
 
   /* Random data */
 
-  auto objectid_data = Test::generateRandomVector<std::int64_t>(row_count);
-  auto radec_data = Test::generateRandomVector<std::complex<float>>(row_count);
-  auto exptime_data = Test::generateRandomVector<float>(row_count);
+  auto objectid_data = Test::generate_random_vector<std::int64_t>(row_count);
+  auto radec_data = Test::generate_random_vector<std::complex<float>>(row_count);
+  auto exptime_data = Test::generate_random_vector<float>(row_count);
 
-  auto com_signal_data = Test::generateRandomVector<float>(comb_size * row_count);
-  auto comb_var_data = Test::generateRandomVector<float>(comb_size * row_count);
+  auto com_signal_data = Test::generate_random_vector<float>(comb_size * row_count);
+  auto comb_var_data = Test::generate_random_vector<float>(comb_size * row_count);
 
-  auto ptgid_data = Test::generateRandomVector<std::int64_t>(dith_count * row_count);
+  auto ptgid_data = Test::generate_random_vector<std::int64_t>(dith_count * row_count);
 
-  auto dith1d_signal_data = Test::generateRandomVector<float>(dith1d_size * dith_count * row_count);
-  auto dith1d_var_data = Test::generateRandomVector<float>(dith1d_size * dith_count * row_count);
+  auto dith1d_signal_data = Test::generate_random_vector<float>(dith1d_size * dith_count * row_count);
+  auto dith1d_var_data = Test::generate_random_vector<float>(dith1d_size * dith_count * row_count);
 
-  auto dith2d_signal_data = Test::generateRandomVector<float>(dith2d_width * dith2d_height * dith_count * row_count);
-  auto dith2d_var_data = Test::generateRandomVector<float>(dith2d_width * dith2d_height * dith_count * row_count);
+  auto dith2d_signal_data = Test::generate_random_vector<float>(dith2d_width * dith2d_height * dith_count * row_count);
+  auto dith2d_var_data = Test::generate_random_vector<float>(dith2d_width * dith2d_height * dith_count * row_count);
 
   /* Create and assign extension */
 
@@ -105,7 +105,7 @@ const BintableHdu& write_ext(MefFile& f, const std::string& name, const AstroObj
 /**
  * Insert quality columns to a binary table HDU.
  */
-void insertColumns(const BintableColumns& du, const AstroObjInfo& info) {
+void insert_columns(const BintableColumns& du, const AstroObjInfo& info) {
 
   /* Infos */
 
@@ -122,10 +122,10 @@ void insertColumns(const BintableColumns& du, const AstroObjInfo& info) {
   /* Random data */
 
   const auto row_count = du.readRowCount();
-  auto comb_qual_data = Test::generateRandomVector<std::int32_t>(comb_size * row_count);
-  auto dith1d_qual_data = Test::generateRandomVector<std::int32_t>(dith1d_size * dith_count * row_count);
+  auto comb_qual_data = Test::generate_random_vector<std::int32_t>(comb_size * row_count);
+  auto dith1d_qual_data = Test::generate_random_vector<std::int32_t>(dith1d_size * dith_count * row_count);
   auto dith2d_qual_data =
-      Test::generateRandomVector<std::int32_t>(dith2d_width * dith2d_height * dith_count * row_count);
+      Test::generate_random_vector<std::int32_t>(dith2d_width * dith2d_height * dith_count * row_count);
 
   /* Insert before variance columns */
 
@@ -186,7 +186,7 @@ public:
       logger.info() << "Writing HDU " << i + 1;
       const auto& ext = write_ext(f, std::to_string(i + 1), info, nobj);
       if (qual) {
-        insertColumns(ext.columns(), info);
+        insert_columns(ext.columns(), info);
       }
     }
 

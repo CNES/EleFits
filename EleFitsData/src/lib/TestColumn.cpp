@@ -8,20 +8,22 @@ namespace Euclid {
 namespace Fits {
 namespace Test {
 
-#define GENERATE_COLUMN(type, name) getColumn<type>() = generateColumn<type>(#name, repeatCount, rowCount);
+#define GENERATE_COLUMN(type, name) get_column<type>() = generate_column<type>(#name, repeat_count, row_count);
 
-RandomTable::RandomTable(long repeatCount, long rowCount) : columns {} {
+RandomTable::RandomTable(long repeat_count, long row_count) : columns {} {
   ELEFITS_FOREACH_COLUMN_TYPE(GENERATE_COLUMN)
 }
 
-constexpr long RandomTable::columnCount;
+#undef GENERATE_COLUMN
+
+constexpr long RandomTable::column_count;
 
 SmallTable::SmallTable() :
     extname("MESSIER"), nums {45, 7, 31}, radecs {{56.8500F, 24.1167F}, {268.4667F, -34.7928F}, {10.6833F, 41.2692F}},
-    names {"Pleiades", "Ptolemy Cluster", "Andromeda Galaxy"}, distsMags {0.44, 1.6, 0.8, 3.3, 2900.0, 3.4},
-    numCol({"ID", "", 1}, nums.size(), nums.data()), radecCol({"RADEC", "deg", 1}, radecs.size(), radecs.data()),
-    nameCol({"NAME", "", 68}, names.size(), names.data()), // TODO 68?
-    distMagCol({"DIST_MAG", "kal", 2}, distsMags.size(), distsMags.data()) {}
+    names {"Pleiades", "Ptolemy Cluster", "Andromeda Galaxy"}, dists_mags {0.44, 1.6, 0.8, 3.3, 2900.0, 3.4},
+    num_col({"ID", "", 1}, nums.size(), nums.data()), radec_col({"RADEC", "deg", 1}, radecs.size(), radecs.data()),
+    name_col({"NAME", "", 68}, names.size(), names.data()), // TODO 68?
+    dist_mag_col({"DIST_MAG", "kal", 2}, dists_mags.size(), dists_mags.data()) {}
 
 } // namespace Test
 } // namespace Fits

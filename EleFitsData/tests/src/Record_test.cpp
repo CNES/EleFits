@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(mini_init_test) {
 
 template <typename T>
 void checkRecordCopy(const std::string& keyword) {
-  Record<T> original {keyword, Test::generateRandomValue<T>()};
+  Record<T> original {keyword, Test::generate_random_value<T>()};
   Record<T> copy(original);
   Record<T> assigned;
   assigned = original;
@@ -96,7 +96,7 @@ void checkApprox(std::string value, std::string expected) {
 
 template <typename T>
 void checkRecordSlicing() {
-  T v = Test::generateRandomValue<T>();
+  T v = Test::generate_random_value<T>();
   Record<T> r("KEY", v);
   checkEqual<T>(r, v);
 }
@@ -125,14 +125,14 @@ BOOST_AUTO_TEST_CASE(long_string_values_are_detected_test) {
 
 template <typename TFrom, typename TTo>
 void checkRecordCasting() {
-  TFrom input = Test::generateRandomValue<TFrom>();
+  TFrom input = Test::generate_random_value<TFrom>();
   TTo output = Record<TTo>::cast(input);
   checkApprox(output, input);
 }
 
 template <typename TFrom, typename TTo>
 void checkRecordCastingFromAny() {
-  TFrom value = Test::generateRandomValue<TFrom>();
+  TFrom value = Test::generate_random_value<TFrom>();
   VariantValue input(value);
   TTo output = Record<TTo>::cast(input);
   checkApprox(output, value);
