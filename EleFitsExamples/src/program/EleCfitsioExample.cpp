@@ -17,15 +17,15 @@ using boost::program_options::value;
 using namespace Euclid;
 
 struct SmallTable {
-  static constexpr long cols = 4;
-  static constexpr long rows = 3;
-  Fits::String::CStrArray colName {"ID", "RADEC", "NAME", "DIST_MAG"};
-  Fits::String::CStrArray colFormat {"1J", "1C", "68A", "2D"};
-  Fits::String::CStrArray colUnit {"", "deg", "", "kal"};
-  int ids[rows] = {45, 7, 31};
-  std::complex<float> radecs[rows] = {{56.8500F, 24.1167F}, {268.4667F, -34.7928F}, {10.6833F, 41.2692F}};
+  static constexpr long column_count = 4;
+  static constexpr long row_count = 3;
+  Fits::String::CStrArray column_names {"ID", "RADEC", "NAME", "DIST_MAG"};
+  Fits::String::CStrArray column_formats {"1J", "1C", "68A", "2D"};
+  Fits::String::CStrArray column_units {"", "deg", "", "kal"};
+  int ids[row_count] = {45, 7, 31};
+  std::complex<float> radecs[row_count] = {{56.8500F, 24.1167F}, {268.4667F, -34.7928F}, {10.6833F, 41.2692F}};
   Fits::String::CStrArray names {"Pleiades", "Ptolemy Cluster", "Ptolemy Cluster"};
-  std::vector<double> dist_mags[rows] = {{0.44, 1.6}, {0.8, 3.3}, {2900., 3.4}};
+  std::vector<double> dists_mags[row_count] = {{0.44, 1.6}, {0.8, 3.3}, {2900., 3.4}};
 };
 
 struct SmallImage {
@@ -64,14 +64,14 @@ public:
     //! [Create FITS]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
-    int recordValue = 1;
-    fits_write_key(fptr, TINT, "VALUE", &recordValue, nullptr, &status);
+    int record_value = 1;
+    fits_write_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot write VALUE");
     //! [Write record]
     logger.info() << "Updating record: VALUE = 2";
     //! [Update record]
-    recordValue = 2;
-    fits_update_key(fptr, TINT, "VALUE", &recordValue, nullptr, &status);
+    record_value = 2;
+    fits_update_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot update VALUE");
     //! [Update record]
 
@@ -84,18 +84,18 @@ public:
         fptr,
         BINARY_TBL,
         0,
-        table.cols,
-        table.colName.data(),
-        table.colFormat.data(),
-        table.colUnit.data(),
+        table.column_count,
+        table.column_names.data(),
+        table.column_formats.data(),
+        table.column_units.data(),
         "SMALLTBL",
         &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension");
-    fits_write_col(fptr, TINT, 1, 1, 1, table.rows, table.ids, &status);
-    fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.rows, table.radecs, &status);
-    fits_write_col(fptr, TSTRING, 3, 1, 1, table.rows, table.names.data(), &status);
-    fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.rows * 2, table.dist_mags, &status);
-    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot write columns");
+    fits_write_col(fptr, TINT, 1, 1, 1, table.row_count, table.ids, &status);
+    fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.row_count, table.radecs, &status);
+    fits_write_col(fptr, TSTRING, 3, 1, 1, table.row_count, table.names.data(), &status);
+    fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.row_count * 2, table.dists_mags, &status);
+    Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot write column_count");
     //! [Create binary table ext]
 
     logger.info();
@@ -110,13 +110,13 @@ public:
     fits_write_img(fptr, TFLOAT, 1, 6, image.data, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot write raster");
     //! [Create image ext]
-    char* recordString = const_cast<char*>("string");
-    int recordInteger = 8;
+    char* string_record = const_cast<char*>("string");
+    int integer_record = 8;
     logger.info() << "Writing record: STRING = string";
-    fits_write_key(fptr, TSTRING, "STRING", recordString, nullptr, &status);
+    fits_write_key(fptr, TSTRING, "STRING", string_record, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot write STRING");
     logger.info() << "Writing record: INTEGER = 8";
-    fits_write_key(fptr, TINT, "INTEGER", &recordInteger, nullptr, &status);
+    fits_write_key(fptr, TINT, "INTEGER", &integer_record, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot write INTEGER");
 
     logger.info();
@@ -135,10 +135,10 @@ public:
     //! [Open FITS]
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot reopen file");
     //! [Read record]
-    fits_read_key(fptr, TINT, "VALUE", &recordValue, nullptr, &status);
+    fits_read_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read VALUE");
     //! [Read record]
-    logger.info() << "Reading record: VALUE = " << recordValue;
+    logger.info() << "Reading record: VALUE = " << record_value;
 
     logger.info();
 
@@ -156,22 +156,22 @@ public:
     int colnum;
     fits_get_colnum(fptr, CASESEN, const_cast<char*>("ID"), &colnum, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot find column ID");
-    int ids[table.rows];
-    fits_read_col(fptr, TINT, colnum, 1, 1, table.rows, nullptr, ids, nullptr, &status);
+    int ids[table.row_count];
+    fits_read_col(fptr, TINT, colnum, 1, 1, table.row_count, nullptr, ids, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read column ID");
-    const auto firstCell = ids[0];
+    const auto first_entry = ids[0];
     //! [Read column]
-    logger.info() << "First id: " << firstCell;
+    logger.info() << "First id: " << first_entry;
     fits_get_colnum(fptr, CASESEN, const_cast<char*>("NAME"), &colnum, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot find column NAME");
-    char* names[table.rows];
-    for (int i = 0; i < table.rows; ++i) {
+    char* names[table.row_count];
+    for (int i = 0; i < table.row_count; ++i) {
       names[i] = (char*)malloc(68);
     }
-    fits_read_col(fptr, TSTRING, colnum, 1, 1, table.rows, nullptr, names, nullptr, &status);
+    fits_read_col(fptr, TSTRING, colnum, 1, 1, table.row_count, nullptr, names, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read column NAME");
-    logger.info() << "Last name: " << names[table.rows - 1];
-    for (int i = 0; i < table.rows; ++i) {
+    logger.info() << "Last name: " << names[table.row_count - 1];
+    for (int i = 0; i < table.row_count; ++i) {
       free(names[i]);
     }
 
@@ -183,30 +183,30 @@ public:
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot move to image extension");
     //! [Find HDU by index]
     //! [Get HDU name]
-    char* extnameRead = (char*)malloc(69);
-    fits_read_key(fptr, TSTRING, "EXTNAME", extnameRead, nullptr, &status);
+    char* extname_read = (char*)malloc(69);
+    fits_read_key(fptr, TSTRING, "EXTNAME", extname_read, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read extension name");
     //! [Get HDU name]
-    logger.info() << "Name of HDU #3: " << extnameRead;
-    free(extnameRead);
-    char* stringRead = (char*)malloc(69);
-    fits_read_key(fptr, TSTRING, "STRING", stringRead, nullptr, &status);
+    logger.info() << "Name of HDU #3: " << extname_read;
+    free(extname_read);
+    char* string_read = (char*)malloc(69);
+    fits_read_key(fptr, TSTRING, "STRING", string_read, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read STRING record");
-    logger.info() << "Reading record: STRING = " << stringRead;
-    free(stringRead);
-    int integerRead;
-    fits_read_key(fptr, TINT, "INTEGER", &integerRead, nullptr, &status);
+    logger.info() << "Reading record: STRING = " << string_read;
+    free(string_read);
+    int integer_read;
+    fits_read_key(fptr, TINT, "INTEGER", &integer_read, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read INTEGER record");
-    logger.info() << "Reading record: INTEGER = " << integerRead;
+    logger.info() << "Reading record: INTEGER = " << integer_read;
     //! [Read raster]
     float data[image.size];
     fits_read_img(fptr, TFLOAT, 1, image.size, nullptr, data, nullptr, &status);
     Euclid::Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot read image raster");
-    const auto firstPixel = data[0];
-    const auto lastPixel = data[image.size - 1];
+    const auto first_pixel = data[0];
+    const auto last_pixel = data[image.size - 1];
     //! [Read raster]
-    logger.info() << "First pixel: " << firstPixel;
-    logger.info() << "Last pixel: " << lastPixel;
+    logger.info() << "First pixel: " << first_pixel;
+    logger.info() << "Last pixel: " << last_pixel;
 
     logger.info();
 

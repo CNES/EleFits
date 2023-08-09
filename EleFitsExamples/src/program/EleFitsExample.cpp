@@ -65,10 +65,10 @@ public:
       const auto& ext = f.appendImage("SMALLIMG", {}, raster);
       //! [Create image ext]
       logger.info() << "Writing record: STRING = string";
-      Record<std::string> strRecord("STRING", "string");
+      Record<std::string> string_record("STRING", "string");
       logger.info() << "Writing record: INTEGER = 8";
-      Record<int> intRecord("INTEGER", 8);
-      ext.header().writeSeq(strRecord, intRecord);
+      Record<int> integer_record("INTEGER", 8);
+      ext.header().writeSeq(string_record, integer_record);
 
       logger.info();
 
@@ -85,33 +85,33 @@ public:
       MefFile f(filename, FileMode::Read);
       //! [Open FITS]
       //! [Read record]
-      const auto recordValue = f.primary().header().parse<int>("VALUE");
+      const auto record_value = f.primary().header().parse<int>("VALUE");
       //! [Read record]
-      logger.info() << "Reading record: VALUE = " << recordValue;
+      logger.info() << "Reading record: VALUE = " << record_value;
 
       logger.info();
 
       logger.info() << "Reading binary table.";
       //! [Find HDU by name]
-      const auto& bintableExt = f.find<BintableHdu>("SMALLTBL");
+      const auto& bintable = f.find<BintableHdu>("SMALLTBL");
       //! [Find HDU by name]
       //! [Get HDU index]
-      const auto index = bintableExt.index();
+      const auto index = bintable.index();
       //! [Get HDU index]
       logger.info() << "HDU index: " << index;
       //! [Read column]
-      const auto ids = bintableExt.columns().read<int>("ID").vector();
-      const auto firstCell = ids[0];
+      const auto ids = bintable.columns().read<int>("ID").vector();
+      const auto first_entry = ids[0];
       //! [Read column]
-      logger.info() << "First id: " << firstCell;
-      const auto names = bintableExt.columns().read<std::string>("NAME").vector();
+      logger.info() << "First id: " << first_entry;
+      const auto names = bintable.columns().read<std::string>("NAME").vector();
       logger.info() << "Last name: " << names[names.size() - 1];
 
       logger.info();
 
       logger.info() << "Reading image.";
       //! [Find HDU by index]
-      const auto& ext2 = f.access<>(2);
+      const auto& ext2 = f[2];
       //! [Find HDU by index]
       //! [Get HDU name]
       const auto extname = ext2.readName();
@@ -120,14 +120,14 @@ public:
       const auto records = ext2.header().parseSeq(as<std::string>("STRING"), as<int>("INTEGER"));
       logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
       logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-      const auto& imageExt = f.find<ImageHdu>("SMALLIMG");
+      const auto& image = f.find<ImageHdu>("SMALLIMG");
       //! [Read raster]
-      const auto image = imageExt.readRaster<float>();
-      const auto firstPixel = image[{0, 0}];
-      const auto lastPixel = image.at({-1, -1}); // at() allows backward indexing
+      const auto raster = image.readRaster<float>();
+      const auto first_pixel = raster[{0, 0}];
+      const auto last_pixel = raster.at({-1, -1}); // at() allows backward indexing
       //! [Read raster]
-      logger.info() << "First pixel: " << firstPixel;
-      logger.info() << "Last pixel: " << lastPixel;
+      logger.info() << "First pixel: " << first_pixel;
+      logger.info() << "Last pixel: " << last_pixel;
 
       logger.info();
 

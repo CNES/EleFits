@@ -41,45 +41,45 @@ static Elements::Logging logger = Elements::Logging::getLogger("EleFitsTutorial"
 
 //! [Tuto records]
 struct TutoRecords {
-  Fits::Record<std::string> stringRecord;
-  Fits::Record<int> intRecord;
-  Fits::Record<float> floatRecord;
-  Fits::Record<std::complex<double>> complexRecord;
+  Fits::Record<std::string> string_record;
+  Fits::Record<int> int_record;
+  Fits::Record<float> float_record;
+  Fits::Record<std::complex<double>> complex_record;
 };
 //! [Tuto records]
 
 //! [Tuto rasters]
 struct TutoRasters {
-  Fits::VecRaster<std::int16_t, 2> int16Raster2D;
-  Fits::VecRaster<std::int32_t, 3> int32Raster3D;
-  Fits::VecRaster<std::int64_t, 4> int64Raster4D;
+  Fits::VecRaster<std::int16_t, 2> int16_raster2d;
+  Fits::VecRaster<std::int32_t, 3> int32_raster3d;
+  Fits::VecRaster<std::int64_t, 4> int64_raster4d;
 };
 //! [Tuto rasters]
 
 //! [Tuto columns]
 struct TutoColumns {
-  Fits::VecColumn<std::string> stringColumn;
-  Fits::VecColumn<std::int32_t> int32Column;
-  Fits::VecColumn<float> float32Column;
+  Fits::VecColumn<std::string> string_column;
+  Fits::VecColumn<std::int32_t> int32_column;
+  Fits::VecColumn<float> float_column;
 };
 //! [Tuto columns]
 
-TutoRecords createRecords();
-TutoRasters createRasters();
-TutoColumns createColumns();
+TutoRecords create_records();
+TutoRasters create_rasters();
+TutoColumns create_columns();
 
-void writeMefFile(const std::string& filename);
-void readMefFile(const std::string& filename);
-void writeRecords(const Fits::Header& h);
-void readRecords(const Fits::Header& h);
-void readRaster(const Fits::ImageRaster& du);
-void readColumns(const Fits::BintableColumns& du);
+void write_file(const std::string& filename);
+void read_file(const std::string& filename);
+void write_records(const Fits::Header& h);
+void read_records(const Fits::Header& h);
+void read_raster(const Fits::ImageRaster& du);
+void read_columns(const Fits::BintableColumns& du);
 
 ///////////////////
 // DATA CLASSES //
 /////////////////
 
-TutoRecords createRecords() {
+TutoRecords create_records() {
 
   logger.info("  Creating records...");
 
@@ -87,27 +87,27 @@ TutoRecords createRecords() {
 
   /* Create a record with unit and comment */
 
-  Fits::Record<std::string> stringRecord("STRING", "VALUE", "unit", "comment");
+  Fits::Record<std::string> string_record("STRING", "VALUE", "unit", "comment");
 
   /* Create a record with keyword and value only */
 
-  Fits::Record<int> intRecord("INT", 0);
+  Fits::Record<int> int_record("INT", 0);
 
   /* Create a record from an initialization list */
 
-  Fits::Record<float> floatRecord {"FLOAT", 3.14F, "", "A piece of Pi"};
+  Fits::Record<float> float_record {"FLOAT", 3.14F, "", "A piece of Pi"};
   // This is often used as a shortcut to create records as function parameters.
 
   /* Generate a random record */
 
-  auto complexRecord = Fits::Test::generateRandomRecord<std::complex<double>>("COMPLEX");
+  auto complex_record = Fits::Test::generateRandomRecord<std::complex<double>>("COMPLEX");
 
   //! [Create records]
 
-  return {stringRecord, intRecord, floatRecord, complexRecord};
+  return {string_record, int_record, float_record, complex_record};
 }
 
-TutoRasters createRasters() {
+TutoRasters create_rasters() {
 
   logger.info("  Creating rasters...");
 
@@ -115,31 +115,31 @@ TutoRasters createRasters() {
 
   /* Initialize and later fill a raster */
 
-  Fits::VecRaster<std::int16_t, 2> int16Raster2D({4, 3});
-  for (const auto& position : int16Raster2D.domain()) {
-    int16Raster2D[position] = position[0] + position[1];
+  Fits::VecRaster<std::int16_t, 2> int16_raster2d({4, 3});
+  for (const auto& position : int16_raster2d.domain()) {
+    int16_raster2d[position] = position[0] + position[1];
   }
   // This demonstrates the iteration over positions;
   // It is possible to use two nested loops instead.
 
   /* Create a raster from a vector */
 
-  std::vector<std::int32_t> int32Vec(16 * 9 * 3, 0);
+  std::vector<std::int32_t> int32_vec(16 * 9 * 3, 0);
   // ... do what you have to do with the vector, and then move it to the raster ...
-  Fits::VecRaster<std::int32_t, 3> int32Raster3D({16, 9, 3}, std::move(int32Vec));
+  Fits::VecRaster<std::int32_t, 3> int32_raster3d({16, 9, 3}, std::move(int32_vec));
   // Instead of moving a vector, it's also possible to work with
   // a raw pointer with the PtrRaster class.
 
   /* Generate a random raster */
 
-  auto int64Raster4D = Fits::Test::RandomRaster<std::int64_t, 4>({17, 9, 3, 24});
+  auto int64_raster4d = Fits::Test::RandomRaster<std::int64_t, 4>({17, 9, 3, 24});
 
   //! [Create rasters]
 
-  return {int16Raster2D, int32Raster3D, int64Raster4D};
+  return {int16_raster2d, int32_raster3d, int64_raster4d};
 }
 
-TutoColumns createColumns() {
+TutoColumns create_columns() {
 
   logger.info("  Creating columns...");
 
@@ -147,34 +147,34 @@ TutoColumns createColumns() {
 
   /* Initialize and later fill a column */
 
-  Fits::VecColumn<std::string> stringColumn({"STRING", "unit", 3}, 100);
+  Fits::VecColumn<std::string> string_column({"STRING", "unit", 3}, 100);
   // String columns must be wide-enough to hold each character.
-  for (long i = 0; i < stringColumn.rowCount(); ++i) {
-    stringColumn(i) = std::to_string(i);
+  for (long i = 0; i < string_column.rowCount(); ++i) {
+    string_column(i) = std::to_string(i);
   }
   // operator() takes two parameters: the row index, and repeat index (=0 by default)
 
   /* Create a column from a vector */
 
-  std::vector<std::int32_t> int32Vec(100);
+  std::vector<std::int32_t> int32_vec(100);
   // ... do what you have to do with the vector, and then move it to the column ...
-  Fits::VecColumn<std::int32_t> int32Column({"INT32", "", 1}, std::move(int32Vec));
+  Fits::VecColumn<std::int32_t> int32_column({"INT32", "", 1}, std::move(int32_vec));
   // Analogously to rasters, columns can be managed with the lightweight PtrColumn classe.
 
   /* Generate a random column */
 
-  auto float32Column = Fits::Test::RandomVectorColumn<float>(8, 100);
+  auto float_column = Fits::Test::RandomVectorColumn<float>(8, 100);
 
   //! [Create columns]
 
-  return {stringColumn, int32Column, float32Column};
+  return {string_column, int32_column, float_column};
 }
 
 //////////////
 // WRITING //
 ////////////
 
-void writeMefFile(const std::string& filename) {
+void write_file(const std::string& filename) {
 
   logger.info("Creating a MEF file...");
 
@@ -184,7 +184,7 @@ void writeMefFile(const std::string& filename) {
 
   //! [Create a MEF file]
 
-  const auto rasters = createRasters();
+  const auto rasters = create_rasters();
 
   logger.info("  Writing image HDUs...");
 
@@ -192,21 +192,21 @@ void writeMefFile(const std::string& filename) {
 
   /* Fill the header and data units */
 
-  const auto& image1 = f.appendImage("IMAGE1", {}, rasters.int32Raster3D);
+  const auto& image1 = f.appendImage("IMAGE1", {}, rasters.int32_raster3d);
 
   /* Fill the header only (for now) */
 
-  const auto& image2 = f.appendNullImage<std::int16_t>("IMAGE2", {}, rasters.int16Raster2D.shape());
+  const auto& image2 = f.appendNullImage<std::int16_t>("IMAGE2", {}, rasters.int16_raster2d.shape());
 
   //! [Create image extensions]
 
   //! [Write an image]
 
-  image2.raster().write(rasters.int16Raster2D);
+  image2.raster().write(rasters.int16_raster2d);
 
   //! [Write an image]
 
-  const auto columns = createColumns();
+  const auto columns = create_columns();
 
   logger.info("  Writing binary table HDUs...");
 
@@ -214,16 +214,17 @@ void writeMefFile(const std::string& filename) {
 
   /* Fill the header and data units */
 
-  const auto& table1 = f.appendBintable("TABLE1", {}, columns.stringColumn, columns.int32Column, columns.float32Column);
+  const auto& table1 =
+      f.appendBintable("TABLE1", {}, columns.string_column, columns.int32_column, columns.float_column);
 
   /* Fill the header unit only (for now) */
 
   const auto& table2 = f.appendBintableHeader(
       "TABLE2",
       {},
-      columns.stringColumn.info(),
-      columns.int32Column.info(),
-      columns.float32Column.info());
+      columns.string_column.info(),
+      columns.int32_column.info(),
+      columns.float_column.info());
 
   //! [Create binary table extensions]
 
@@ -231,17 +232,17 @@ void writeMefFile(const std::string& filename) {
 
   /* Write a single column */
 
-  table2.columns().write(columns.stringColumn);
+  table2.columns().write(columns.string_column);
 
   /* Write several columns */
 
-  table2.columns().writeSeq(columns.int32Column, columns.float32Column);
+  table2.columns().writeSeq(columns.int32_column, columns.float_column);
 
   //! [Write columns]
 
   /* Write records */
 
-  writeRecords(f.primary().header());
+  write_records(f.primary().header());
 
   /* Mute "unused variable" warnings */
 
@@ -251,9 +252,9 @@ void writeMefFile(const std::string& filename) {
   // File is closed at destruction of f.
 }
 
-void writeRecords(const Fits::Header& h) {
+void write_records(const Fits::Header& h) {
 
-  const auto records = createRecords();
+  const auto records = create_records();
 
   logger.info("  Writing records...");
 
@@ -261,11 +262,11 @@ void writeRecords(const Fits::Header& h) {
 
   /* Write a single record */
 
-  h.write(records.stringRecord);
+  h.write(records.string_record);
 
   /* Write several records */
 
-  h.writeSeq(records.intRecord, records.floatRecord, records.complexRecord);
+  h.writeSeq(records.int_record, records.float_record, records.complex_record);
 
   /* Update using initialization lists */
 
@@ -281,7 +282,7 @@ void writeRecords(const Fits::Header& h) {
 // READING //
 ////////////
 
-void readMefFile(const std::string& filename) {
+void read_file(const std::string& filename) {
 
   logger.info("Reading the MEF file...");
 
@@ -298,32 +299,32 @@ void readMefFile(const std::string& filename) {
   /* Access the Primary HDU */
 
   const auto& primary = f.primary();
-  const auto primaryIndex = primary.index();
+  const auto primary_index = primary.index();
   // Indices are 0-based.
 
   /* Access an HDU by its index */
 
   const auto& image2 = f.access<Fits::ImageHdu>(2);
-  const auto imageName = image2.readName();
+  const auto image_name = image2.readName();
 
   /* Access an HDU by its name */
 
   const auto& table1 = f.find<Fits::BintableHdu>("TABLE1");
-  const auto tableIndex = table1.index();
+  const auto table_index = table1.index();
   // If several HDUs have the same name, the first one is returned.
 
   //! [Access HDUs]
 
-  logger.info() << "    Primary index: " << primaryIndex;
-  logger.info() << "    Name of the second extension: " << imageName;
-  logger.info() << "    Index of the 'TABLE1' extension: " << tableIndex;
+  logger.info() << "    Primary index: " << primary_index;
+  logger.info() << "    Name of the second extension: " << image_name;
+  logger.info() << "    Index of the 'TABLE1' extension: " << table_index;
 
-  readRecords(primary.header());
-  readRaster(image2.raster());
-  readColumns(table1.columns());
+  read_records(primary.header());
+  read_raster(image2.raster());
+  read_columns(table1.columns());
 }
 
-void readRecords(const Fits::Header& h) {
+void read_records(const Fits::Header& h) {
 
   logger.info("  Reading records...");
 
@@ -331,24 +332,24 @@ void readRecords(const Fits::Header& h) {
 
   /* Read a single record */
 
-  const auto intRecord = h.parse<int>("INT");
+  const auto int_record = h.parse<int>("INT");
 
   // Records can be sliced as their value for immediate use:
   const int intValue = h.parse<int>("INT");
 
   /* Read several records */
 
-  const auto someRecords = h.parseSeq(
+  const auto some_records = h.parseSeq(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
       Fits::as<std::complex<double>>("COMPLEX"));
-  const auto& thirdRecord = std::get<2>(someRecords);
+  const auto& third_record = std::get<2>(some_records);
 
   /* Read as VariantValue */
 
-  const auto variantRecords = h.parseSeq<>({"INT", "COMPLEX"});
-  const auto complexRecord = variantRecords.as<std::complex<double>>("COMPLEX");
+  const auto variant_records = h.parseSeq<>({"INT", "COMPLEX"});
+  const auto complex_record = variant_records.as<std::complex<double>>("COMPLEX");
 
   /* Read as a user-defined structure */
 
@@ -357,19 +358,19 @@ void readRecords(const Fits::Header& h) {
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
       Fits::as<std::complex<double>>("COMPLEX"));
-  const auto& stringRecord = tutoRecords.stringRecord;
+  const auto& string_record = tutoRecords.string_record;
 
   //! [Read records]
 
-  logger.info() << "    " << intRecord.keyword << " = " << intRecord.value << " " << intRecord.unit;
+  logger.info() << "    " << int_record.keyword << " = " << int_record.value << " " << int_record.unit;
   logger.info() << "    INT value: " << intValue;
-  logger.info() << "    " << thirdRecord.keyword << " = " << thirdRecord.value << " " << thirdRecord.unit;
-  logger.info() << "    " << complexRecord.keyword << " = " << complexRecord.value.real() << " + "
-                << complexRecord.value.imag() << "j " << complexRecord.unit;
-  logger.info() << "    " << stringRecord.keyword << " = " << stringRecord.value << " " << stringRecord.unit;
+  logger.info() << "    " << third_record.keyword << " = " << third_record.value << " " << third_record.unit;
+  logger.info() << "    " << complex_record.keyword << " = " << complex_record.value.real() << " + "
+                << complex_record.value.imag() << "j " << complex_record.unit;
+  logger.info() << "    " << string_record.keyword << " = " << string_record.value << " " << string_record.unit;
 }
 
-void readRaster(const Fits::ImageRaster& du) {
+void read_raster(const Fits::ImageRaster& du) {
 
   logger.info("  Reading a raster...");
 
@@ -377,17 +378,17 @@ void readRaster(const Fits::ImageRaster& du) {
 
   const auto image = du.read<std::int16_t, 2>();
 
-  const auto& firstPixel = image[{0, 0}];
-  const auto& lastPixel = image.at({-1, -1});
+  const auto& first_pixel = image[{0, 0}];
+  const auto& last_pixel = image.at({-1, -1});
   // `operator[]` performs no bound checking, while `at` does and enables backward indexing.
 
   //! [Read a raster]
 
-  logger.info() << "    First pixel: " << firstPixel;
-  logger.info() << "    Last pixel: " << lastPixel;
+  logger.info() << "    First pixel: " << first_pixel;
+  logger.info() << "    Last pixel: " << last_pixel;
 }
 
-void readColumns(const Fits::BintableColumns& du) {
+void read_columns(const Fits::BintableColumns& du) {
 
   logger.info("  Reading columns...");
 
@@ -395,31 +396,31 @@ void readColumns(const Fits::BintableColumns& du) {
 
   /* Read a single column */
 
-  const auto vectorColumn = du.read<double>("VECTOR");
+  const auto vector_column = du.read<double>("VECTOR");
 
   /* Read several columns by their name */
 
-  const auto byName = du.readSeq(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
-  const auto& stringColumn = std::get<0>(byName);
+  const auto by_name = du.readSeq(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
+  const auto& string_column = std::get<0>(by_name);
 
   /* Read several columns by their index */
 
-  const auto byIndex = du.readSeq(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
-  const auto& intColumn = std::get<1>(byIndex);
+  const auto by_index = du.readSeq(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
+  const auto& int_column = std::get<1>(by_index);
 
   /* Use values */
 
-  const auto& firstString = stringColumn(0);
-  const auto& firstInt = intColumn(0);
-  const auto& lastFloat = vectorColumn.at(-1, -1);
+  const auto& first_string = string_column(0);
+  const auto& first_int = int_column(0);
+  const auto& last_float = vector_column.at(-1, -1);
   // There is no operator[]() for columns, because vector columns require 2 indices (row and repeat).
   // operator()() performs no bound checking, while at() does and enables backward indexing.
 
   //! [Read columns]
 
-  logger.info() << "    First string: " << firstString;
-  logger.info() << "    First int: " << firstInt;
-  logger.info() << "    Last float: " << lastFloat;
+  logger.info() << "    First string: " << first_string;
+  logger.info() << "    First int: " << first_int;
+  logger.info() << "    Last float: " << last_float;
 }
 
 //////////////
@@ -443,11 +444,11 @@ public:
     logger.info() << "Hello, EleFits " << Fits::version() << "!";
     logger.info() << "---";
 
-    writeMefFile(filename);
+    write_file(filename);
 
     logger.info() << "---";
 
-    readMefFile(filename);
+    read_file(filename);
 
     logger.info() << "---";
     logger.info() << "The end!";
