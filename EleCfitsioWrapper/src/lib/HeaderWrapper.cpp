@@ -80,7 +80,7 @@ Fits::Record<bool> parse_record<bool>(fitsfile* fptr, const std::string& keyword
   /* Read value and comment */
   int nonconst_int_value; // TLOGICAL is for int in CFITSIO
   char comment[FLEN_COMMENT];
-  fits_read_key(fptr, TypeCode<bool>::forRecord(), keyword.c_str(), &nonconst_int_value, comment, &status);
+  fits_read_key(fptr, TypeCode<bool>::for_record(), keyword.c_str(), &nonconst_int_value, comment, &status);
   /* Read unit */
   char unit[FLEN_COMMENT];
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
@@ -157,7 +157,7 @@ void write_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int nonconst_int_value = record.value; // TLOGICAL is for int in CFITSIO
   fits_write_key(
       fptr,
-      TypeCode<bool>::forRecord(),
+      TypeCode<bool>::for_record(),
       record.keyword.c_str(),
       &nonconst_int_value,
       record.rawComment().c_str(),
@@ -203,7 +203,7 @@ void update_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int status = 0;
   std::string comment = record.rawComment();
   int nonconst_int_value = record.value; // TLOGICAL is for int in CFITSIO
-  fits_update_key(fptr, TypeCode<bool>::forRecord(), record.keyword.c_str(), &nonconst_int_value, &comment[0], &status);
+  fits_update_key(fptr, TypeCode<bool>::for_record(), record.keyword.c_str(), &nonconst_int_value, &comment[0], &status);
   CfitsioError::may_throw(status, fptr, "Cannot update Boolean record: " + record.keyword);
 }
 
@@ -220,7 +220,7 @@ void update_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>&
     std::string comment = record.rawComment();
     fits_update_key(
         fptr,
-        TypeCode<std::string>::forRecord(),
+        TypeCode<std::string>::for_record(),
         record.keyword.c_str(),
         &std::string(record.value)[0],
         &comment[0],

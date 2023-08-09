@@ -65,7 +65,7 @@ void read_raster_to(fitsfile* fptr, TRaster& destination) {
   const auto size = destination.size();
   fits_read_img(
       fptr,
-      TypeCode<std::decay_t<typename TRaster::Value>>::forImage(),
+      TypeCode<std::decay_t<typename TRaster::Value>>::for_image(),
       1, // Number 1 is a 1-based index (so we read the whole raster here)
       size,
       nullptr,
@@ -101,7 +101,7 @@ void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& rast
   }
   fits_read_subset(
       fptr,
-      TypeCode<std::decay_t<typename TRaster::Value>>::forImage(),
+      TypeCode<std::decay_t<typename TRaster::Value>>::for_image(),
       front.data(),
       back.data(),
       step.data(),
@@ -135,7 +135,7 @@ void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subrast
   for (long i = 0; i < src_count; ++i) {
     fits_read_subset(
         fptr,
-        TypeCode<T>::forImage(),
+        TypeCode<T>::for_image(),
         src_front.data(),
         src_back.data(),
         step.data(),
@@ -159,7 +159,7 @@ void write_raster(fitsfile* fptr, const TRaster& raster) {
   const auto end = begin + raster.size();
   using Value = std::decay_t<typename TRaster::Value>;
   std::vector<Value> nonconst_data(begin, end); // For const-correctness issue
-  fits_write_img(fptr, TypeCode<Value>::forImage(), 1, raster.size(), nonconst_data.data(), &status);
+  fits_write_img(fptr, TypeCode<Value>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot write image.");
 }
 
@@ -173,7 +173,7 @@ void write_region(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>
   const auto end = begin + raster.size();
   using Value = std::decay_t<typename TRaster::Value>;
   std::vector<Value> nonconst_data(begin, end); // For const-correctness issue
-  fits_write_subset(fptr, TypeCode<Value>::forImage(), front.data(), back.data(), nonconst_data.data(), &status);
+  fits_write_subset(fptr, TypeCode<Value>::for_image(), front.data(), back.data(), nonconst_data.data(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot write image region.");
 }
 
@@ -202,8 +202,8 @@ void write_region(
     dst_back[0] += dst_size - 1;
     src_front = dst_front + delta;
     line.assign(&subraster[src_front], &subraster[src_front] + dst_size);
-    fits_write_pix(fptr, TypeCode<T>::forImage(), dst_front.data(), dst_size, line.data(), &status);
-    // fits_write_subset(fptr, TypeCode<T>::forImage(), dst_front.data(), dst_back.data(), line.data(), &status);
+    fits_write_pix(fptr, TypeCode<T>::for_image(), dst_front.data(), dst_size, line.data(), &status);
+    // fits_write_subset(fptr, TypeCode<T>::for_image(), dst_front.data(), dst_back.data(), line.data(), &status);
     CfitsioError::may_throw(status, fptr, "Cannot write image region.");
   }
 }

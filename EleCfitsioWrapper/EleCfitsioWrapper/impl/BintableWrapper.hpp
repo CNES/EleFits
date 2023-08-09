@@ -316,7 +316,7 @@ void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lon
   const auto size = rows.size() * repeat_count;
   fits_read_col(
       fptr,
-      TypeCode<T>::forBintable(), // datatype
+      TypeCode<T>::for_bintable(), // datatype
       static_cast<int>(index),
       rows.front, // 1-based first row index
       1, // 1-based first element index
@@ -335,7 +335,7 @@ void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lo
   std::vector<T> nonconst_data(data, data + size); // We need a non-const data for CFITSIO
   fits_write_col(
       fptr,
-      TypeCode<T>::forBintable(), // datatype
+      TypeCode<T>::for_bintable(), // datatype
       static_cast<int>(index), // colnum
       rows.front, // firstrow (1-based)
       1, // firstelem (1-based)

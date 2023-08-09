@@ -31,7 +31,7 @@ void CfitsioBenchmark::write_column(const BColumns& columns, long first_row, lon
   std::vector<Value> nonconst_vec(b, e);
   fits_write_col(
       m_fptr,
-      Cfitsio::TypeCode<Value>::forBintable(),
+      Cfitsio::TypeCode<Value>::for_bintable(),
       i + 1,
       first_row + 1,
       1,
@@ -60,7 +60,7 @@ void CfitsioBenchmark::read_column(BColumns& columns, long first_row, long row_c
   using Value = typename std::decay_t<decltype(col)>::Value;
   fits_read_col(
       m_fptr,
-      Cfitsio::TypeCode<Value>::forBintable(),
+      Cfitsio::TypeCode<Value>::for_bintable(),
       i + 1,
       first_row + 1,
       1,

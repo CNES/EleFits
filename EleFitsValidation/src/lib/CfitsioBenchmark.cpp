@@ -45,7 +45,7 @@ BChronometer::Unit CfitsioBenchmark::write_image(const BRaster& raster) {
   std::vector<BRaster::Value> nonconst_data(raster.data(), raster.data() + raster.size());
   fits_write_img(
       m_fptr,
-      Cfitsio::TypeCode<BRaster::Value>::forImage(),
+      Cfitsio::TypeCode<BRaster::Value>::for_image(),
       1,
       raster.size(),
       nonconst_data.data(),
@@ -63,7 +63,7 @@ BRaster CfitsioBenchmark::read_image(long index) {
   BRaster raster(shape);
   fits_read_img(
       m_fptr,
-      Cfitsio::TypeCode<BRaster::Value>::forImage(),
+      Cfitsio::TypeCode<BRaster::Value>::for_image(),
       1,
       raster.size(),
       nullptr,

@@ -182,7 +182,7 @@ void checkArrayWriteRead<std::uint64_t>(const BintableColumns& /* du */) {
   /* Write data */
   constexpr long row_count = 10000;
   auto data = Test::generate_random_vector<T>(row_count);
-  fits_write_col(fptr, Euclid::Cfitsio::TypeCode<T>::forBintable(), 1, 1, 1, row_count, data.data(), &status);
+  fits_write_col(fptr, Euclid::Cfitsio::TypeCode<T>::for_bintable(), 1, 1, 1, row_count, data.data(), &status);
   BOOST_TEST(status == BAD_BTABLE_FORMAT); // FIXME CFITSIO bug (works with all other types)
 
   /* Tear down */

@@ -129,7 +129,7 @@ void ImageRaster::writeSubraster(const Position<N>& frontPosition, const Subrast
     const auto b = &subraster[source];
     const auto e = b + nelem;
     std::vector<std::decay_t<T>> nonconstData(b, e);
-    fits_write_pix(m_fptr, Cfitsio::TypeCode<T>::forImage(), target.data(), nelem, nonconstData.data(), &status);
+    fits_write_pix(m_fptr, Cfitsio::TypeCode<T>::for_image(), target.data(), nelem, nonconstData.data(), &status);
     // TODO to ImageWrapper
   }
 }

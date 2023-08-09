@@ -118,7 +118,7 @@ Fits::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
   /* Read value and comment */
   T value;
   char comment[FLEN_COMMENT];
-  fits_read_key(fptr, TypeCode<T>::forRecord(), keyword.c_str(), &value, comment, &status);
+  fits_read_key(fptr, TypeCode<T>::for_record(), keyword.c_str(), &value, comment, &status);
   /* Read unit */
   char unit[FLEN_COMMENT];
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
@@ -163,7 +163,7 @@ void write_record(fitsfile* fptr, const Fits::Record<T>& record) {
   T nonconst_value = record.value;
   fits_write_key(
       fptr,
-      TypeCode<T>::forRecord(),
+      TypeCode<T>::for_record(),
       record.keyword.c_str(),
       &nonconst_value,
       record.rawComment().c_str(),
@@ -194,7 +194,7 @@ void update_record(fitsfile* fptr, const Fits::Record<T>& record) {
   int status = 0;
   std::string comment = record.rawComment();
   T value = record.value;
-  fits_update_key(fptr, TypeCode<T>::forRecord(), record.keyword.c_str(), &value, &comment[0], &status);
+  fits_update_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
   CfitsioError::may_throw(status, fptr, "Cannot update record: " + record.keyword);
 }
 

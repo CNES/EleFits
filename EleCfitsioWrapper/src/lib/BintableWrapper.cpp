@@ -97,7 +97,7 @@ void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lon
   });
   fits_read_col(
       fptr,
-      TypeCode<std::string>::forBintable(),
+      TypeCode<std::string>::for_bintable(),
       static_cast<int>(index), // column indices are int
       rows.front,
       1,
@@ -120,7 +120,7 @@ void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lo
   Fits::String::CStrArray array(data, data + rows.size());
   fits_write_col(
       fptr,
-      TypeCode<std::string>::forBintable(),
+      TypeCode<std::string>::for_bintable(),
       static_cast<int>(index), // column indices are int
       rows.front,
       1,
