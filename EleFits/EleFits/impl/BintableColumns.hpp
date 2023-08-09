@@ -144,7 +144,7 @@ std::vector<VecColumn<T, N>> BintableColumns::readSegmentSeq(Segment rows, std::
     rows.back = readRowCount() - 1;
   }
   std::vector<VecColumn<T, N>> columns;
-  columns.reserve(keys.size);
+  columns.reserve(keys.size());
   for (const auto& k : keys) {
     columns.emplace_back(readInfo<T>(k), rows.size()); // TODO std::transform?
   }
