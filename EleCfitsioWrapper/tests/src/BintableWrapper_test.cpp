@@ -148,7 +148,7 @@ template <long N>
 void check_tdim_is_read_back(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info) {
   HduAccess::init_bintable(fptr, "TABLE", info);
   const bool should_have_tdim = (info.shape.size() > 1) || (info.shape[0] != info.repeatCount());
-  BOOST_TEST(HeaderIo::hasKeyword(fptr, "TDIM1") == should_have_tdim);
+  BOOST_TEST(HeaderIo::has_keyword(fptr, "TDIM1") == should_have_tdim);
   const auto result = BintableIo::read_column_info<char, N>(fptr, 1);
   BOOST_TEST((result == info));
 }

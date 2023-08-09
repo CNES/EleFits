@@ -59,7 +59,7 @@ std::string column_name(fitsfile* fptr, long index) {
 
 void update_column_name(fitsfile* fptr, long index, const std::string& newName) {
   const std::string keyword = "TTYPE" + std::to_string(index);
-  Cfitsio::HeaderIo::updateRecord<std::string>(fptr, {keyword, newName});
+  Cfitsio::HeaderIo::update_record<std::string>(fptr, {keyword, newName});
   int status = 0;
   fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
   // FIXME fits_set_hdustruc is deprecated => ask CFITSIO support
@@ -76,7 +76,7 @@ long column_index(fitsfile* fptr, const std::string& name) {
 
 template <>
 void read_column_dim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
-  if (not HeaderIo::hasKeyword(fptr, std::string("TDIM") + std::to_string(index))) {
+  if (not HeaderIo::has_keyword(fptr, std::string("TDIM") + std::to_string(index))) {
     return;
   }
   int status = 0;

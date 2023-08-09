@@ -214,7 +214,7 @@ void BintableColumns::init(const TInfo& info, long index) const {
   Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
   if (info.unit != "") {
     const Record<std::string> record {"TUNIT" + std::to_string(cfitsio_index), info.unit, "", "physical unit of field"};
-    Cfitsio::HeaderIo::updateRecord(m_fptr, record);
+    Cfitsio::HeaderIo::update_record(m_fptr, record);
   }
   // TODO to Cfitsio
 }
@@ -266,7 +266,7 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
   seqForeach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
       const Record<std::string> record {"TUNIT" + std::to_string(i), info.unit, "", "physical unit of field"};
-      Cfitsio::HeaderIo::updateRecord(m_fptr, record);
+      Cfitsio::HeaderIo::update_record(m_fptr, record);
     }
     ++i;
   });

@@ -142,7 +142,7 @@ void read_column_dim(fitsfile* fptr, long index, Fits::Position<-1>& shape);
 
 template <long N>
 void read_column_dim(fitsfile* fptr, long index, Fits::Position<N>& shape) {
-  if (not HeaderIo::hasKeyword(fptr, std::string("TDIM") + std::to_string(index))) {
+  if (not HeaderIo::has_keyword(fptr, std::string("TDIM") + std::to_string(index))) {
     return;
   }
   int status = 0;

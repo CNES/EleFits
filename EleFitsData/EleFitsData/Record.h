@@ -57,7 +57,7 @@ using VariantValue = boost::any;
  * @details
  * Here's a record of type `double` with keyword `"LIGHT"`, value `3.0e8`, unit `"m/s"` and comment `"speed of light"`:
  * \code
- * Record<double> lightSpeed {"LIGHT", 3.0e8, "m/s", "speed of light"};
+ * Record<double> light_speed {"LIGHT", 3.0e8, "m/s", "speed of light"};
  * \endcode
  *
  * In the FITS file, this record will appear in the header of an HDU as (padding blank spaces removed):
@@ -72,14 +72,14 @@ using VariantValue = boost::any;
  * Such a `Record` can be cast to `double` (records of value type `T` can be cast to `T`),
  * or more precisely, it can be sliced as its value.
  * \code
- * double milleniumFalconSpeed = 1.5 * lightSpeed;
- * // Same as: 1.5 * lightSpeed.value
+ * double millenium_falcon_speed = 1.5 * light_speed;
+ * // Same as: 1.5 * light_speed.value
  * \endcode
  *
  * This is also usefull when aiming at reading record values only, and skip the keyword, unit and comment:
  * \code
- * Record<int> theRecord = header.read<int>("KEYWORD");
- * int theValue = header.read<int>("KEYWORD");
+ * Record<int> the_record = h.parse<int>("KEYWORD");
+ * int the_value = h.parse<int>("KEYWORD");
  * \endcode
  *
  * The "HIERARCH" convention for extended keywords is supported.
@@ -162,9 +162,9 @@ struct Record {
    * SifFile f("filename.fits");
    * const auto& h = f.header();
    * // Immediately cast to int:
-   * int value = h.parseRecord<int>("KEYWORD");
+   * int value = h.parse<int>("KEYWORD");
    * // Same as:
-   * int value = h.parseRecord<int>("KEYWORD").value;
+   * int value = h.parse<int>("KEYWORD").value;
    * \endcode
    */
   operator T() const;

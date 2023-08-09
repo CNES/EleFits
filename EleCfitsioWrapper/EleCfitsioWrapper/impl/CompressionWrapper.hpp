@@ -77,10 +77,10 @@ T parseValueOr(fitsfile* fptr, const std::string& key, T fallback) {
   auto val = [](int i) {
     return std::string("ZVAL") + std::to_string(i);
   };
-  for (int i = 1; HeaderIo::hasKeyword(fptr, name(i)); ++i) {
-    const std::string value = HeaderIo::parseRecord<std::string>(fptr, name(i)).value;
+  for (int i = 1; HeaderIo::has_keyword(fptr, name(i)); ++i) {
+    const std::string value = HeaderIo::parse_record<std::string>(fptr, name(i)).value;
     if (value == key) {
-      return HeaderIo::parseRecord<T>(fptr, val(i));
+      return HeaderIo::parse_record<T>(fptr, val(i));
     }
   }
   return fallback;
@@ -90,10 +90,10 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
 
   /* Is compressed? */
 
-  if (not HeaderIo::hasKeyword(fptr, "ZCMPTYPE")) {
+  if (not HeaderIo::has_keyword(fptr, "ZCMPTYPE")) {
     return std::make_unique<Fits::NoCompression>();
   }
-  const std::string name = HeaderIo::parseRecord<std::string>(fptr, "ZCMPTYPE");
+  const std::string name = HeaderIo::parse_record<std::string>(fptr, "ZCMPTYPE");
   if (name == "NONE" || name == "NOCOMPRESS") {
     return std::make_unique<Fits::NoCompression>();
   }
@@ -101,12 +101,12 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
 
   /* Tiling */
 
-  const auto dimension = std::min<long>(HeaderIo::parseRecord<long>(fptr, "ZNAXIS"), MAX_COMPRESS_DIM);
+  const auto dimension = std::min<long>(HeaderIo::parse_record<long>(fptr, "ZNAXIS"), MAX_COMPRESS_DIM);
   Fits::Position<-1> shape(dimension);
   for (long i = 0; i < dimension; ++i) {
     shape[i] = 1;
     try {
-      shape[i] = HeaderIo::parseRecord<long>(fptr, std::string("ZTILE") + std::to_string(i + 1));
+      shape[i] = HeaderIo::parse_record<long>(fptr, std::string("ZTILE") + std::to_string(i + 1));
     } catch (CfitsioError&) {
     }
   }
@@ -117,9 +117,9 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
   /* Quantization */
 
   bool quantized = false;
-  const long column_count = HeaderIo::parseRecord<long>(fptr, "TFIELDS");
+  const long column_count = HeaderIo::parse_record<long>(fptr, "TFIELDS");
   for (long i = 1; i <= column_count; ++i) {
-    const std::string column_name = HeaderIo::parseRecord<std::string>(fptr, std::string("TTYPE") + std::to_string(i));
+    const std::string column_name = HeaderIo::parse_record<std::string>(fptr, std::string("TTYPE") + std::to_string(i));
     if (column_name == "ZSCALE") {
       quantized = true;
     }
@@ -132,8 +132,8 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
 
   /* Dithering */
 
-  if (HeaderIo::hasKeyword(fptr, "ZQUANTIZ")) {
-    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "ZQUANTIZ");
+  if (HeaderIo::has_keyword(fptr, "ZQUANTIZ")) {
+    const std::string method = HeaderIo::parse_record<std::string>(fptr, "ZQUANTIZ");
     if (method == "NONE") {
       // NONE is not standard but happens to indicate null quantization (level = 0)
       quantization = Fits::Quantization(0);
