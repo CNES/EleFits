@@ -75,20 +75,20 @@ void FitsFile::open_impl(const std::string& filename, FileMode permission) {
       if (fileExists(filename)) {
         m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadWrite);
       } else {
-        m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
+        m_fptr = Cfitsio::FileAccess::create_open(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
       }
       break;
     case FileMode::Edit:
       m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadWrite);
       break;
     case FileMode::Create:
-      m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
+      m_fptr = Cfitsio::FileAccess::create_open(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
       break;
     case FileMode::Overwrite:
-      m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::OverWrite);
+      m_fptr = Cfitsio::FileAccess::create_open(filename, Cfitsio::FileAccess::CreatePolicy::OverWrite);
       break;
     case FileMode::Temporary:
-      m_fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
+      m_fptr = Cfitsio::FileAccess::create_open(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
   }
   m_filename = filename;
   m_permission = permission;
@@ -115,7 +115,7 @@ void FitsFile::closeAndDelete() {
   if (not m_fptr) {
     return; // TODO should we delete if not open?
   }
-  Cfitsio::FileAccess::closeAndDelete(m_fptr);
+  Cfitsio::FileAccess::close_delete(m_fptr);
 }
 
 fitsfile* FitsFile::handoverToCfitsio() {

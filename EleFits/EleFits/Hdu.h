@@ -202,14 +202,14 @@ protected:
    * @details
    * The status of the HDU is modified to Touched if it was initially Untouched.
    */
-  void touchThisHdu() const;
+  void touch() const;
 
   /**
    * @brief Set the current HDU to this one for writing.
    * @details
    * Edited is added to the status of the HDU.
    */
-  void editThisHdu() const;
+  void edit() const;
 
   /**
    * @brief The parent file handler.
@@ -225,7 +225,7 @@ protected:
    * EleFits HDUs are 0-based in the public API and 1-based in the CfitsioWrapper namespace
    * because CFITSIO indices are 1-based.
    */
-  long m_cfitsioIndex;
+  long m_cfitsio_index;
 
   /**
    * @brief The HDU type.
@@ -248,7 +248,7 @@ protected:
   /**
    * @brief Dummy file handler dedicated to dummy constructor.
    */
-  fitsfile* m_dummyFptr = nullptr;
+  fitsfile* m_dummy_fptr = nullptr; // FIXME use fitsfile** instead of fitsfile*&
 };
 
 } // namespace Fits

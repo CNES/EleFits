@@ -37,7 +37,7 @@ public:
 
     logger.info() << "Creating FITS file: " << filename;
     //! [Create FITS]
-    auto fptr = FileAccess::createAndOpen(filename, FileAccess::CreatePolicy::OverWrite);
+    auto fptr = FileAccess::create_open(filename, FileAccess::CreatePolicy::OverWrite);
     //! [Create FITS]
     logger.info() << "Writing new record: VALUE = 1";
     //! [Write record]
@@ -53,7 +53,7 @@ public:
     logger.info() << "Creating binary table extension: SMALLTBL";
     Fits::Test::SmallTable table; // Predefined table for testing purpose
     //! [Create binary table ext]
-    HduAccess::assignBintableExtension(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
+    HduAccess::assign_bintable(fptr, "SMALLTBL", table.numCol, table.radecCol, table.nameCol, table.distMagCol);
     //! [Create binary table ext]
 
     logger.info();
@@ -61,7 +61,7 @@ public:
     logger.info() << "Creating image extension: SMALLIMG";
     Fits::Test::SmallRaster raster; // Predefined image raster for testing purpose
     //! [Create image ext]
-    HduAccess::assignImageExtension(fptr, "SMALLIMG", raster);
+    HduAccess::assign_image(fptr, "SMALLIMG", raster);
     //! [Create image ext]
     logger.info() << "Writing record: STRING = string";
     Fits::Record<std::string> strRecord("STRING", "string");
@@ -91,10 +91,10 @@ public:
 
     logger.info() << "Reading binary table.";
     //! [Find HDU by name]
-    HduAccess::gotoName(fptr, "SMALLTBL");
+    HduAccess::goto_name(fptr, "SMALLTBL");
     //! [Find HDU by name]
     //! [Get HDU index]
-    const auto index = HduAccess::currentIndex(fptr);
+    const auto index = HduAccess::current_index(fptr);
     //! [Get HDU index]
     logger.info() << "HDU index: " << index;
     //! [Read column]
@@ -109,16 +109,16 @@ public:
 
     logger.info() << "Reading image.";
     //! [Find HDU by index]
-    HduAccess::gotoIndex(fptr, 3);
+    HduAccess::goto_index(fptr, 3);
     //! [Find HDU by index]
     //! [Get HDU name]
-    const auto extname = HduAccess::currentName(fptr);
+    const auto extname = HduAccess::current_name(fptr);
     //! [Get HDU name]
     logger.info() << "Name of HDU #3: " << extname;
     const auto records = HeaderIo::parseRecords<std::string, int>(fptr, {"STRING", "INTEGER"});
     logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
     logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-    HduAccess::gotoName(fptr, "SMALLIMG");
+    HduAccess::goto_name(fptr, "SMALLIMG");
     //! [Read raster]
     const auto image = ImageIo::readRaster<float>(fptr);
     const auto firstPixel = image[{0, 0}];

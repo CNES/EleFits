@@ -69,7 +69,7 @@ TReturn Header::parseStruct(const TypedKey<Ts, std::string>&... keywords) const 
 
 template <typename TReturn, typename... Ts>
 TReturn Header::parseStructOr(const Record<Ts>&... fallbacks) const {
-  return {parseOr<Ts>(fallbacks)...}; // TODO avoid calling touchThisHdu for each keyword
+  return {parseOr<Ts>(fallbacks)...}; // TODO avoid calling touch for each keyword
 }
 
 template <typename TReturn, typename TSeq>

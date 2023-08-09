@@ -19,8 +19,7 @@ namespace FileAccess {
 /**
  * @brief File creation policy.
  */
-enum class CreatePolicy
-{
+enum class CreatePolicy {
   CreateOnly, ///< Create only (abort if file exists).
   OverWrite ///< Allow overwriting if file already exists.
 };
@@ -28,8 +27,7 @@ enum class CreatePolicy
 /**
  * @brief File opening policy.
  */
-enum class OpenPolicy
-{
+enum class OpenPolicy {
   ReadOnly, ///< Read persmission only.
   ReadWrite ///< Read and write permissions.
 };
@@ -37,7 +35,7 @@ enum class OpenPolicy
 /**
  * @brief Create or overwrite a FITS file and open it.
  */
-fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy);
+fitsfile* create_open(const std::string& filename, CreatePolicy policy);
 
 /**
  * @brief Open an existing FITS file with optional write permission.
@@ -53,7 +51,7 @@ void close(fitsfile*& fptr);
  * @brief Close and delete a FITS file.
  * @warning Throw an exception if writing is not permitted.
  */
-void closeAndDelete(fitsfile*& fptr);
+void close_delete(fitsfile*& fptr);
 
 /**
  * @brief Get the file name.
@@ -63,7 +61,7 @@ std::string name(fitsfile* fptr);
 /**
  * @brief Check whether a FITS file is open with write permission.
  */
-bool isWritable(fitsfile* fptr);
+bool is_writable(fitsfile* fptr);
 
 } // namespace FileAccess
 } // namespace Cfitsio

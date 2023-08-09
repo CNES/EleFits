@@ -26,7 +26,7 @@ void checkScalarColumnIsReadBack() {
   RandomScalarColumn<T> input;
   MinimalFile file;
   try {
-    HduAccess::assignBintableExtension(file.fptr, "BINEXT", input);
+    HduAccess::assign_bintable(file.fptr, "BINEXT", input);
     const auto index = BintableIo::columnIndex(file.fptr, input.info().name);
     BOOST_TEST(index == 1);
     const auto info = BintableIo::readColumnInfo<T>(file.fptr, index);
@@ -62,7 +62,7 @@ void checkVectorColumnIsReadBack() {
   RandomVectorColumn<T> input(repeatCount, rowCount);
   MinimalFile file;
   try {
-    HduAccess::assignBintableExtension(file.fptr, "BINEXT", input);
+    HduAccess::assign_bintable(file.fptr, "BINEXT", input);
     BOOST_TEST(BintableIo::rowCount(file.fptr) == rowCount);
     const auto output = BintableIo::readColumn<T>(file.fptr, input.info().name);
     BOOST_TEST(output.info().repeatCount() == repeatCount);
@@ -100,7 +100,7 @@ ELEFITS_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
 BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   SmallTable input;
-  HduAccess::assignBintableExtension(
+  HduAccess::assign_bintable(
       this->fptr,
       "IMGEXT",
       input.numCol,
@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   f.rename("F");
   RandomScalarColumn<double> d(rowCount);
   d.rename("D");
-  HduAccess::assignBintableExtension(this->fptr, "BINEXT", i, f, d);
+  HduAccess::assign_bintable(this->fptr, "BINEXT", i, f, d);
   const auto table = BintableIo::readColumns<int, float, double>(this->fptr, {"I", "F", "D"});
   int status = 0;
   long chunkRows = 0;
@@ -140,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
 BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   SmallTable table;
-  HduAccess::assignBintableExtension(this->fptr, "TABLE", table.nameCol);
+  HduAccess::assign_bintable(this->fptr, "TABLE", table.nameCol);
   const auto names = BintableIo::readColumn<SmallTable::Name>(fptr, table.nameCol.info().name);
   BOOST_TEST(names.vector() == table.names);
   BintableIo::appendColumns(fptr, table.distMagCol, table.radecCol);
@@ -152,7 +152,7 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
 
 template <long N>
 void checkTdimIsReadBack(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info) {
-  HduAccess::initBintableExtension(fptr, "TABLE", info);
+  HduAccess::init_bintable(fptr, "TABLE", info);
   const bool shouldHaveTdim = (info.shape.size() > 1) || (info.shape[0] != info.repeatCount());
   BOOST_TEST(HeaderIo::hasKeyword(fptr, "TDIM1") == shouldHaveTdim);
   const auto result = BintableIo::readColumnInfo<char, N>(fptr, 1);

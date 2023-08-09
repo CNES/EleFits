@@ -11,6 +11,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
+namespace ImageCompression {
 
 bool is_compressing(fitsfile* fptr) {
   int status = 0;
@@ -43,18 +44,6 @@ std::unique_ptr<Fits::Compression> get_compression(fitsfile* fptr) {
   float scale = 0;
   fits_get_quantize_level(fptr, &scale, &status);
   Fits::Quantization quantization(scale <= 0 ? Fits::Scaling(-scale) : Fits::Tile::rms / scale);
-  if (quantization && HeaderIo::hasKeyword(fptr, "FZQMETHD")) {
-    const std::string method = HeaderIo::parseRecord<std::string>(fptr, "FZQMETHD");
-    if (method == "NO_DITHER") {
-      quantization.dithering(Fits::Quantization::Dithering::None);
-    } else if (method == "SUBTRACTIVE_DITHER_1") {
-      quantization.dithering(Fits::Quantization::Dithering::EveryPixel);
-    } else if (method == "SUBTRACTIVE_DITHER_2") {
-      quantization.dithering(Fits::Quantization::Dithering::NonZeroPixel);
-    } else {
-      Fits::FitsError(std::string("Unknown compression dithering method: ") + method);
-    }
-  }
   CfitsioError::mayThrow(status, fptr, "Cannot read compression quantization");
 
   if (algo == RICE_1) {
@@ -97,7 +86,7 @@ T parseValueOr(fitsfile* fptr, const std::string& key, T fallback) {
   return fallback;
 }
 
-std::unique_ptr<Fits::Compression> read_compression(fitsfile* fptr) {
+std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
 
   /* Is compressed? */
 
@@ -181,6 +170,12 @@ std::unique_ptr<Fits::Compression> read_compression(fitsfile* fptr) {
   }
 
   throw Fits::FitsError("Unknown compression type");
+}
+
+void enable_huge_compression(fitsfile* fptr, bool isHuge) {
+  int status = 0;
+  fits_set_huge_hdu(fptr, isHuge, &status);
+  Cfitsio::CfitsioError::mayThrow(status, fptr, "Cannot set huge HDU");
 }
 
 inline void set_tiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
@@ -294,6 +289,7 @@ void compress(fitsfile* fptr, const Fits::Plio& algo) {
   set_quantize(fptr, algo.quantization());
 }
 
+} // namespace ImageCompression
 } // namespace Cfitsio
 } // namespace Euclid
 

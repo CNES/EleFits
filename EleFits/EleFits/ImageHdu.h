@@ -108,22 +108,22 @@ public:
   const ImageRaster& raster() const;
 
   /**
-   * @brief Read the image pixel value type.
+   * @copybrief ImageRaster::readTypeid
    */
   const std::type_info& readTypeid() const;
 
   /**
-   * @brief Read the image cfitsio bitpix value.
+   * @copybrief ImageRaster::read_bitpix
    */
-  long readBitpix() const;
+  long read_bitpix() const;
 
   /**
-   * @brief Read the number of pixels in the image.
+   * @copybrief ImageRaster::readSize
    */
   long readSize() const;
 
   /**
-   * @brief Read the image shape.
+   * @copybrief ImageRaster::readShape
    */
   template <long N = 2>
   Position<N> readShape() const;
@@ -136,12 +136,12 @@ public:
   /**
    * @brief Check whether the HDU is compressed.
    */
-  bool isCompressed() const;
+  bool is_compressed() const;
 
   /**
    * @brief Read the compression parameters.
    */
-  std::unique_ptr<Compression> readCompression() const;
+  std::unique_ptr<Compression> read_compression() const;
 
   /**
    * @brief Redefine the image shape and type.

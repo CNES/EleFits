@@ -12,21 +12,21 @@ namespace Euclid {
 namespace Fits {
 
 Hdu::Hdu(Token, fitsfile*& fptr, long index, HduCategory type, HduCategory status) :
-    m_fptr(fptr), m_cfitsioIndex(index + 1), m_type(type),
+    m_fptr(fptr), m_cfitsio_index(index + 1), m_type(type),
     m_header(
         m_fptr,
         [&]() {
-          touchThisHdu();
+          touch();
         },
         [&]() {
-          editThisHdu();
+          edit();
         }),
     m_status(status) {}
 
-Hdu::Hdu() : Hdu(Token(), m_dummyFptr, 0, HduCategory::Image, HduCategory::Untouched) {}
+Hdu::Hdu() : Hdu(Token(), m_dummy_fptr, 0, HduCategory::Image, HduCategory::Untouched) {}
 
 long Hdu::index() const {
-  return m_cfitsioIndex - 1;
+  return m_cfitsio_index - 1;
 }
 
 HduCategory Hdu::type() const {
@@ -34,9 +34,9 @@ HduCategory Hdu::type() const {
 }
 
 HduCategory Hdu::readCategory() const {
-  touchThisHdu();
+  touch();
   HduCategory cat = m_type & m_status;
-  if (m_cfitsioIndex == 1) {
+  if (m_cfitsio_index == 1) {
     cat &= HduCategory::Primary;
   } else {
     cat &= HduCategory::Ext;
@@ -53,32 +53,32 @@ bool Hdu::matches(HduFilter filter) const {
 }
 
 std::string Hdu::readName() const {
-  touchThisHdu();
-  return Cfitsio::HduAccess::currentName(m_fptr);
+  touch();
+  return Cfitsio::HduAccess::current_name(m_fptr);
 }
 
 long Hdu::readVersion() const {
-  touchThisHdu();
-  return Cfitsio::HduAccess::currentVersion(m_fptr);
+  touch();
+  return Cfitsio::HduAccess::current_version(m_fptr);
 }
 
 std::size_t Hdu::size_in_file() const {
-  touchThisHdu();
-  return Cfitsio::HduAccess::currentSize(m_fptr);
+  touch();
+  return Cfitsio::HduAccess::current_size(m_fptr);
 }
 
 void Hdu::updateName(const std::string& name) const {
-  editThisHdu();
-  Cfitsio::HduAccess::updateName(m_fptr, name);
+  edit();
+  Cfitsio::HduAccess::update_name(m_fptr, name);
 }
 
 void Hdu::updateVersion(long version) const {
-  editThisHdu();
-  Cfitsio::HduAccess::updateVersion(m_fptr, version);
+  edit();
+  Cfitsio::HduAccess::update_version(m_fptr, version);
 }
 
 void Hdu::verifyChecksums() const {
-  touchThisHdu();
+  touch();
   int status = 0;
   int datastatus;
   int hdustatus;
@@ -88,22 +88,22 @@ void Hdu::verifyChecksums() const {
 }
 
 void Hdu::updateChecksums() const {
-  editThisHdu();
+  edit();
   int status = 0;
   fits_write_chksum(m_fptr, &status);
   Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot write checksums.");
   // TODO wrap in EleCfitsioWrapper
 }
 
-void Hdu::touchThisHdu() const {
-  Cfitsio::HduAccess::gotoIndex(m_fptr, m_cfitsioIndex);
+void Hdu::touch() const {
+  Cfitsio::HduAccess::goto_index(m_fptr, m_cfitsio_index);
   if (m_status == HduCategory::Untouched) {
     m_status = HduCategory::Touched;
   }
 }
 
-void Hdu::editThisHdu() const {
-  touchThisHdu();
+void Hdu::edit() const {
+  touch();
   m_status &= HduCategory::Edited;
 }
 

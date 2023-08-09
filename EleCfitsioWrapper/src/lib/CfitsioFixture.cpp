@@ -11,7 +11,7 @@ namespace Fits {
 namespace Test {
 
 MinimalFile::MinimalFile() : tmp(), filename(tmp.path().string()), fptr(nullptr) {
-  fptr = Cfitsio::FileAccess::createAndOpen(filename, Cfitsio::FileAccess::CreatePolicy::OverWrite);
+  fptr = Cfitsio::FileAccess::create_open(filename, Cfitsio::FileAccess::CreatePolicy::OverWrite);
 }
 
 MinimalFile::~MinimalFile() {

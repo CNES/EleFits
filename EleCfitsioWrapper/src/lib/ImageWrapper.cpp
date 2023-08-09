@@ -17,7 +17,7 @@ namespace ImageIo {
     return typeid(type); \
   }
 
-const std::type_info& readTypeid(fitsfile* fptr) {
+const std::type_info& read_typeid(fitsfile* fptr) {
   int status = 0;
   int bitpix = 0;
   fits_get_img_equivtype(fptr, &bitpix, &status);
@@ -26,7 +26,7 @@ const std::type_info& readTypeid(fitsfile* fptr) {
   throw Fits::FitsError("Unknown BITPIX: " + std::to_string(bitpix));
 }
 
-long readBitpix(fitsfile* fptr) {
+long read_bitpix(fitsfile* fptr) {
   int status = 0;
   int bitpix = 0;
   fits_get_img_type(fptr, &bitpix, &status);

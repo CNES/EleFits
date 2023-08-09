@@ -20,21 +20,21 @@ BOOST_AUTO_TEST_SUITE(HduWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE(minimal_file_has_accessible_primary_test, Fits::Test::MinimalFile) {
-  HduAccess::gotoPrimary(this->fptr);
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == 1);
-  BOOST_TEST(HduAccess::currentIsPrimary(this->fptr));
+  HduAccess::goto_primary(this->fptr);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == 1);
+  BOOST_TEST(HduAccess::current_is_primary(this->fptr));
 }
 
 BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   SmallRaster input;
-  HduAccess::assignImageExtension(this->fptr, "IMGEXT", input);
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == 2);
-  BOOST_TEST((HduAccess::currentType(this->fptr) == Fits::HduCategory::Image));
-  HduAccess::gotoNext(this->fptr, -1);
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == 1);
-  HduAccess::gotoName(this->fptr, "IMGEXT");
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == 2);
+  HduAccess::assign_image(this->fptr, "IMGEXT", input);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == 2);
+  BOOST_TEST((HduAccess::current_type(this->fptr) == Fits::HduCategory::Image));
+  HduAccess::goto_next(this->fptr, -1);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == 1);
+  HduAccess::goto_name(this->fptr, "IMGEXT");
+  BOOST_TEST(HduAccess::current_index(this->fptr) == 2);
   const auto output = ImageIo::readRaster<float, 2>(fptr);
   BOOST_TEST(output.vector() == input.vector());
 }
@@ -43,18 +43,18 @@ BOOST_FIXTURE_TEST_CASE(access_hdu_by_type, Fits::Test::MinimalFile) {
   using namespace Fits::Test;
   const std::string name = "NAME";
   constexpr long primaryIndex = 1;
-  HduAccess::assignImageExtension(this->fptr, name, SmallRaster());
+  HduAccess::assign_image(this->fptr, name, SmallRaster());
   constexpr long imageIndex = primaryIndex + 1;
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == imageIndex);
-  HduAccess::assignBintableExtension(this->fptr, name, SmallTable().nameCol);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == imageIndex);
+  HduAccess::assign_bintable(this->fptr, name, SmallTable().nameCol);
   constexpr long bintableIndex = imageIndex + 1;
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == bintableIndex);
-  HduAccess::gotoName(this->fptr, name);
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == imageIndex);
-  HduAccess::gotoName(this->fptr, name, 0, Fits::HduCategory::Image);
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == imageIndex);
-  HduAccess::gotoName(this->fptr, name, 0, Fits::HduCategory::Bintable);
-  BOOST_TEST(HduAccess::currentIndex(this->fptr) == bintableIndex);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == bintableIndex);
+  HduAccess::goto_name(this->fptr, name);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == imageIndex);
+  HduAccess::goto_name(this->fptr, name, 0, Fits::HduCategory::Image);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == imageIndex);
+  HduAccess::goto_name(this->fptr, name, 0, Fits::HduCategory::Bintable);
+  BOOST_TEST(HduAccess::current_index(this->fptr) == bintableIndex);
 
   // TODO test extver
 }

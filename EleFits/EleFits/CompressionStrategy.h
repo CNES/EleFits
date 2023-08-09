@@ -24,16 +24,16 @@ namespace Fits {
  * bool apply(fitsfile*, const ImageHdu::Initializer<T>&);
  * \endcode
  * 
- * Internally, it must call `Cfitsio::compress(fitsfile*, const Compression&)`
+ * Internally, it must call `Cfitsio::ImageCompression::compress(fitsfile*, const Compression&)`
  * (maybe through `Compress::apply(fitsfile*, const Compression&)` and return `true` whenever possible.
  * If the action is not compatible with the initializer, then it must simply return `false`.
  */
 class CompressionAction {
 public:
-  ELEFITS_VIRTUAL_DTOR(CompressionAction)
+  CompressionAction() = default;
   ELEFITS_COPYABLE(CompressionAction)
   ELEFITS_MOVABLE(CompressionAction)
-  CompressionAction() = default;
+  ELEFITS_VIRTUAL_DTOR(CompressionAction)
 
 #define ELEFITS_DECLARE_VISIT(T, name) \
   /** @brief Create a compression algorithm according to some initializer. */ \
@@ -52,10 +52,10 @@ public:
 template <typename TDerived>
 class CompressionActionMixin : public CompressionAction {
 public:
-  ELEFITS_VIRTUAL_DTOR(CompressionActionMixin)
+  CompressionActionMixin() = default;
   ELEFITS_COPYABLE(CompressionActionMixin)
   ELEFITS_MOVABLE(CompressionActionMixin)
-  CompressionActionMixin() = default;
+  ELEFITS_VIRTUAL_DTOR(CompressionActionMixin)
 
 #define ELEFITS_IMPLEMENT_VISIT(T, name) \
   /** @brief Compress if the strategy is compatible with the initializer. */ \
@@ -74,15 +74,15 @@ public:
 template <typename TAlgo>
 class Compress : public CompressionActionMixin<Compress<TAlgo>> {
 public:
-  ELEFITS_VIRTUAL_DTOR(Compress)
-  ELEFITS_COPYABLE(Compress)
-  ELEFITS_MOVABLE(Compress)
-
   /**
    * @brief Constructor.
    */
   template <typename... Ts>
   explicit Compress(Ts&&... args) : m_algo(std::forward<Ts>(args)...) {}
+
+  ELEFITS_VIRTUAL_DTOR(Compress)
+  ELEFITS_COPYABLE(Compress)
+  ELEFITS_MOVABLE(Compress)
 
   /**
    * @brief Try compressing.
@@ -95,7 +95,7 @@ public:
 
     // Compress if possible
     if (auto algo = compression(init)) {
-      Cfitsio::compress(fptr, *algo);
+      Cfitsio::ImageCompression::compress(fptr, *algo);
       return true;
     }
 
@@ -144,15 +144,15 @@ private:
 template <typename TAlgo>
 class CompressInts : public CompressionActionMixin<CompressInts<TAlgo>> {
 public:
-  ELEFITS_VIRTUAL_DTOR(CompressInts)
-  ELEFITS_COPYABLE(CompressInts)
-  ELEFITS_MOVABLE(CompressInts)
-
   /**
    * @brief Constructor.
    */
   template <typename... Ts>
   explicit CompressInts(Ts&&... args) : m_compress(std::forward<Ts>(args)...) {}
+
+  ELEFITS_COPYABLE(CompressInts)
+  ELEFITS_MOVABLE(CompressInts)
+  ELEFITS_VIRTUAL_DTOR(CompressInts)
 
   /**
    * @copydoc Compress::apply()
@@ -191,15 +191,15 @@ private:
 template <typename TAlgo>
 class CompressFloats : public CompressionActionMixin<CompressFloats<TAlgo>> {
 public:
-  ELEFITS_VIRTUAL_DTOR(CompressFloats)
-  ELEFITS_COPYABLE(CompressFloats)
-  ELEFITS_MOVABLE(CompressFloats)
-
   /**
    * @brief Constructor.
    */
   template <typename... Ts>
   explicit CompressFloats(Ts&&... args) : m_compress(std::forward<Ts>(args)...) {}
+
+  ELEFITS_COPYABLE(CompressFloats)
+  ELEFITS_MOVABLE(CompressFloats)
+  ELEFITS_VIRTUAL_DTOR(CompressFloats)
 
   /**
    * @copydoc Compress::apply()

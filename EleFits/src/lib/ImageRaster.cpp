@@ -12,12 +12,12 @@ ImageRaster::ImageRaster(fitsfile*& fptr, std::function<void(void)> touchFunc, s
 
 const std::type_info& ImageRaster::readTypeid() const {
   m_touch();
-  return Cfitsio::ImageIo::readTypeid(m_fptr);
+  return Cfitsio::ImageIo::read_typeid(m_fptr);
 }
 
-long ImageRaster::readBitpix() const {
+long ImageRaster::read_bitpix() const {
   m_touch();
-  return Cfitsio::ImageIo::readBitpix(m_fptr);
+  return Cfitsio::ImageIo::read_bitpix(m_fptr);
 }
 
 long ImageRaster::readSize() const {
