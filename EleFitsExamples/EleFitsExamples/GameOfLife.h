@@ -28,8 +28,8 @@ public:
   GameOfLife(long width, long height, long turns);
 
   /**
-   * @brief Generate lifes at random positions.
-   * @param count The number of lifes to generate (should be much smaller than the number of cells)
+   * @brief Generate lives at random positions.
+   * @param count The number of lives to generate (should be much smaller than the number of cells)
    */
   const PtrRaster<Value, 2>& generate(long count);
 
@@ -49,9 +49,9 @@ public:
   const PtrRaster<Value, 2>& update();
 
   /**
-   * @brief Count lifes around a given position.
+   * @brief Count lives around a given position.
    */
-  long count_lifes(const Position<2>& p) const;
+  long count_lives(const Position<2>& p) const;
 
   /**
    * @brief Check whether a given position is in the board domain.

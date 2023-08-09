@@ -23,14 +23,14 @@ public:
     options.named("width", value<long>()->default_value(36), "Board width");
     options.named("height", value<long>()->default_value(24), "Board height");
     options.named("turns", value<long>()->default_value(100), "Number of turns");
-    options.named("init", value<long>()->default_value(200), "Initial number of lifes");
+    options.named("init", value<long>()->default_value(200), "Initial number of lives");
     return options.asPair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerateLife");
 
-    logger.info("Generating lifes...");
+    logger.info("Generating lives...");
     GameOfLife gol(args["width"].as<long>(), args["height"].as<long>(), args["turns"].as<long>());
     gol.generate(args["init"].as<long>());
 

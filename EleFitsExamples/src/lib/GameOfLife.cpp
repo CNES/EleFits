@@ -42,16 +42,16 @@ long GameOfLife::next() {
 
 const PtrRaster<GameOfLife::Value, 2>& GameOfLife::update() {
   for (const auto& p : m_previous.domain()) {
-    const auto lifes = count_lifes(p);
+    const auto lives = count_lives(p);
     if (m_previous[p]) { // Live in previous frame
-      if (lifes < 2 || lifes > 3) {
+      if (lives < 2 || lives > 3) {
         m_current[p] = 0;
       } else {
         const Value inc = m_previous[p] + 1;
         m_current[p] = std::min(inc, std::numeric_limits<GameOfLife::Value>::max());
       }
     } else { // Dead in previous frame
-      if (lifes == 3) {
+      if (lives == 3) {
         m_current[p] = 1;
       }
     }
@@ -59,7 +59,7 @@ const PtrRaster<GameOfLife::Value, 2>& GameOfLife::update() {
   return m_current;
 }
 
-long GameOfLife::count_lifes(const Position<2>& p) const {
+long GameOfLife::count_lives(const Position<2>& p) const {
   const Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
   long count = 0;
   for (const auto& n : neighbors) {

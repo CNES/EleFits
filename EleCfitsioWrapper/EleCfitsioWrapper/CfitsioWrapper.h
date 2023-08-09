@@ -6,13 +6,13 @@
 #define _ELECFITSIOWRAPPER_CFITSIOWRAPPER_H
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
+#include "EleCfitsioWrapper/CompressionWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/FileWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
-#include "EleCfitsioWrapper/CompressionWrapper.h"
 
 /**
  * @brief Euclid SGS namespace.
@@ -20,8 +20,8 @@
 namespace Euclid {
 
 /**
- * @brief Functions to use CFITSIO with a modern C++ API.
- * @see Euclid::FITS for an Object-Oriented API.
+ * @brief Internal functions to use CFITSIO with a modern C++ API.
+ * @see Euclid::Fits for an Object-Oriented API.
  */
 namespace Cfitsio {}
 } // namespace Euclid

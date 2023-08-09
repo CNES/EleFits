@@ -20,7 +20,7 @@ using namespace Fits;
  * @brief Generate a random scalar column without unit.
  */
 template <typename T>
-VecColumn<T> randomColumn(const std::string& name, long rows) {
+VecColumn<T> random_column(const std::string& name, long rows) {
   return VecColumn<T>({name, "", 1}, Test::generateRandomVector<T>(rows, T(0), T(1)));
 }
 
@@ -31,13 +31,13 @@ VecColumn<T> randomColumn(const std::string& name, long rows) {
  */
 void write_bintable(const std::string& filename, long rows) {
   MefFile f(filename, FileMode::Overwrite);
-  const auto col1 = randomColumn<double>("SHE_LENSMC_UPDATED_RA", rows);
-  const auto col2 = randomColumn<double>("SHE_LENSMC_UPDATED_DEC", rows);
-  const auto col3 = randomColumn<float>("SHE_LENSMC_G1", rows);
-  const auto col4 = randomColumn<float>("SHE_LENSMC_G2", rows);
-  const auto col5 = randomColumn<float>("PHZ_MEDIAN", rows);
-  const auto col6 = randomColumn<float>("PHZ_LENSMC_CORRECTION", rows);
-  const auto col7 = randomColumn<float>("SHE_LENSMC_WEIGHT", rows);
+  const auto col1 = random_column<double>("SHE_LENSMC_UPDATED_RA", rows);
+  const auto col2 = random_column<double>("SHE_LENSMC_UPDATED_DEC", rows);
+  const auto col3 = random_column<float>("SHE_LENSMC_G1", rows);
+  const auto col4 = random_column<float>("SHE_LENSMC_G2", rows);
+  const auto col5 = random_column<float>("PHZ_MEDIAN", rows);
+  const auto col6 = random_column<float>("PHZ_LENSMC_CORRECTION", rows);
+  const auto col7 = random_column<float>("SHE_LENSMC_WEIGHT", rows);
   f.appendBintable("", {}, col1, col2, col3, col4, col5, col6, col7); // Unnamed extension
 }
 
@@ -48,7 +48,7 @@ void write_bintable(const std::string& filename, long rows) {
  * We rely on VariantValue, but it would be possible to skip this abstraction and go with raw types
  * using a tuple instead of a vector.
  */
-void writeSomeRecords(const Header& header) {
+void write_some_records(const Header& header) {
   std::vector<Record<VariantValue>> records = {
       {"WCSAXES", 2, "", "Number of axes in World Coordinate System"},
       {"CRPIX1", "", "", "Pixel coordinate of reference point"},
@@ -81,7 +81,7 @@ void write_image(const std::string& filename, const Position<3>& shape) {
   MefFile f(filename, FileMode::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
   const auto& ext = f.appendImage("KAPPA_PATCH", {}, raster); // Named extension
-  writeSomeRecords(ext.header());
+  write_some_records(ext.header());
 }
 
 class EleFitsGenerate2DMassFiles : public Elements::Program {
@@ -116,8 +116,8 @@ public:
 
     logger.info("Reading binary table...");
     MefFile b(bintable, FileMode::Read);
-    const auto someColumn = b.access<BintableHdu>(1).readColumn<float>("SHE_LENSMC_G1");
-    logger.info() << "First value of SHE_LENSMC_G1 = " << someColumn.vector()[0];
+    const auto some_column = b.access<BintableHdu>(1).readColumn<float>("SHE_LENSMC_G1");
+    logger.info() << "First value of SHE_LENSMC_G1 = " << some_column.vector()[0];
 
     logger.info("Reading image...");
     MefFile i(image, FileMode::Read);
@@ -128,10 +128,10 @@ public:
 
     logger.info("Reading header...");
     const auto records = ext.header().parseAll();
-    const auto intRecord = records.as<int>("CRVAL1");
-    logger.info() << intRecord.comment << " = " << intRecord.value << " " << intRecord.unit;
-    const auto strRecord = records.as<std::string>("CUNIT1");
-    logger.info() << strRecord.comment << " = " << strRecord.value << " " << strRecord.unit;
+    const auto int_record = records.as<int>("CRVAL1");
+    logger.info() << int_record.comment << " = " << int_record.value << " " << int_record.unit;
+    const auto str_record = records.as<std::string>("CUNIT1");
+    logger.info() << str_record.comment << " = " << str_record.value << " " << str_record.unit;
 
     logger.info("The end!");
     return Elements::ExitCode::OK;
