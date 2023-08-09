@@ -53,7 +53,7 @@ int getBitpix(const Fits::ImageHdu& hdu) {
 
 std::string readAlgoName(const Fits::ImageHdu& hdu) {
 
-  if (not hdu.isCompressed()) {
+  if (not hdu.is_compressed()) {
     return "NONE";
   }
 

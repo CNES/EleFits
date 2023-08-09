@@ -20,15 +20,15 @@ using namespace Euclid::Fits;
     return #name; \
   }
 
-std::string readBitpixName(const ImageHdu& hdu) {
+std::string read_type_name(const ImageHdu& hdu) {
   const auto& id = hdu.readTypeid();
   ELEFITS_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
   return "UNKNOWN TYPE";
 }
 
-std::string readAlgoName(const ImageHdu& hdu) {
+std::string read_compression_name(const ImageHdu& hdu) {
 
-  if (not hdu.isCompressed()) {
+  if (not hdu.is_compressed()) {
     return "None";
   }
 
@@ -58,7 +58,7 @@ std::string readAlgoName(const ImageHdu& hdu) {
   return "Unknown";
 }
 
-KeywordCategory parseKeywordCategories(const std::string& filter) {
+KeywordCategory parse_keyword_categories(const std::string& filter) {
   auto categories = KeywordCategory::None;
   static const std::map<char, KeywordCategory> mapping {
       {'m', KeywordCategory::Mandatory},
@@ -87,16 +87,16 @@ public:
 
     /* Read options */
     const auto filename = args["input"].as<std::string>();
-    const auto keywordFilter = args["keywords"].as<std::string>();
-    KeywordCategory categories = parseKeywordCategories(keywordFilter);
+    const auto keyword_filter = args["keywords"].as<std::string>();
+    KeywordCategory categories = parse_keyword_categories(keyword_filter);
 
     /* Read file */
     MefFile f(filename, FileMode::Read);
-    const auto hduCount = f.hduCount();
-    logger.info() << "HDU count: " << hduCount;
+    const auto hdu_count = f.hduCount();
+    logger.info() << "HDU count: " << hdu_count;
 
     /* Loop over HDUs */
-    for (long i = 0; i < hduCount; ++i) {
+    for (long i = 0; i < hdu_count; ++i) {
       logger.info();
 
       /* Read name (if present) */
@@ -112,20 +112,20 @@ public:
           std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
           oss << shape.container().back();
           logger.info() << "  Image HDU:";
-          logger.info() << "    Type: " << readBitpixName(hdu.as<ImageHdu>());
+          logger.info() << "    Type: " << read_type_name(hdu.as<ImageHdu>());
           logger.info() << "    Shape: " << oss.str() << " px";
-          logger.info() << "    Compression: " << readAlgoName(hdu.as<ImageHdu>());
+          logger.info() << "    Compression: " << read_compression_name(hdu.as<ImageHdu>());
         } else {
           logger.info() << "  Metadata HDU";
         }
       } else {
-        const auto columnCount = hdu.as<BintableHdu>().readColumnCount();
-        const auto rowCount = hdu.as<BintableHdu>().readRowCount();
+        const auto column_count = hdu.as<BintableHdu>().readColumnCount();
+        const auto row_count = hdu.as<BintableHdu>().readRowCount();
         logger.info() << "  Binary table HDU:";
-        logger.info() << "    Shape: " << columnCount << " columns x " << rowCount << " rows";
-        const auto columnNames = hdu.as<BintableHdu>().columns().readAllNames();
+        logger.info() << "    Shape: " << column_count << " columns x " << row_count << " rows";
+        const auto column_names = hdu.as<BintableHdu>().columns().readAllNames();
         logger.info() << "    Columns:";
-        for (const auto& n : columnNames) {
+        for (const auto& n : column_names) {
           logger.info() << "      " << n;
         }
       }

@@ -12,10 +12,10 @@ BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory s
     m_columns(
         m_fptr,
         [&]() {
-          touchThisHdu();
+          touch();
         },
         [&]() {
-          editThisHdu();
+          edit();
         }) {}
 
 BintableHdu::BintableHdu() :
@@ -23,10 +23,10 @@ BintableHdu::BintableHdu() :
     m_columns(
         m_fptr,
         [&]() {
-          touchThisHdu();
+          touch();
         },
         [&]() {
-          editThisHdu();
+          edit();
         }) {}
 
 const BintableColumns& BintableHdu::columns() const {
@@ -34,12 +34,12 @@ const BintableColumns& BintableHdu::columns() const {
 }
 
 long BintableHdu::readColumnCount() const {
-  touchThisHdu();
+  touch();
   return Cfitsio::BintableIo::columnCount(m_fptr);
 }
 
 long BintableHdu::readRowCount() const {
-  touchThisHdu();
+  touch();
   return Cfitsio::BintableIo::rowCount(m_fptr);
 }
 

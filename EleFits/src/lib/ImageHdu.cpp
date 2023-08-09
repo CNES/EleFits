@@ -17,10 +17,10 @@ ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index, HduCategory status)
     m_raster(
         m_fptr,
         [&]() {
-          touchThisHdu();
+          touch();
         },
         [&]() {
-          editThisHdu();
+          edit();
         }) {}
 
 ImageHdu::ImageHdu() :
@@ -28,10 +28,10 @@ ImageHdu::ImageHdu() :
     m_raster(
         m_fptr,
         [&]() {
-          touchThisHdu();
+          touch();
         },
         [&]() {
-          editThisHdu();
+          edit();
         }) {}
 
 const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const {
@@ -59,8 +59,8 @@ const std::type_info& ImageHdu::readTypeid() const {
   return m_raster.readTypeid();
 }
 
-long ImageHdu::readBitpix() const {
-  return m_raster.readBitpix();
+long ImageHdu::read_bitpix() const {
+  return m_raster.read_bitpix();
 }
 
 long ImageHdu::readSize() const {
@@ -80,7 +80,7 @@ HduCategory ImageHdu::readCategory() const {
   } else {
     cat &= HduCategory::IntImage;
   }
-  if (Cfitsio::ImageIo::isCompressedImage(m_fptr)) {
+  if (Cfitsio::ImageIo::is_compressed(m_fptr)) {
     cat &= HduCategory::CompressedImageExt;
   } else {
     cat &= HduCategory::RawImage;
@@ -88,13 +88,13 @@ HduCategory ImageHdu::readCategory() const {
   return cat;
 }
 
-bool ImageHdu::isCompressed() const {
-  touchThisHdu();
-  return Cfitsio::ImageIo::isCompressedImage(m_fptr);
+bool ImageHdu::is_compressed() const {
+  touch();
+  return Cfitsio::ImageIo::is_compressed(m_fptr);
 }
 
 std::unique_ptr<Compression> ImageHdu::read_compression() const {
-  touchThisHdu();
+  touch();
   return Cfitsio::ImageCompression::read_parameters(m_fptr);
 }
 

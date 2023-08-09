@@ -42,12 +42,12 @@ const T& MefFile::access(long index) {
     index += hduCount();
   }
   Cfitsio::HduAccess::goto_index(m_fptr, index + 1); // CFITSIO index is 1-based
-  const auto hduType = Cfitsio::HduAccess::current_type(m_fptr);
+  const auto hdu_type = Cfitsio::HduAccess::current_type(m_fptr);
   auto& ptr = m_hdus[index];
   if (ptr == nullptr) {
-    if (hduType == HduCategory::Image) {
+    if (hdu_type == HduCategory::Image) {
       ptr.reset(new ImageHdu(Hdu::Token {}, m_fptr, index));
-    } else if (hduType == HduCategory::Bintable) {
+    } else if (hdu_type == HduCategory::Bintable) {
       ptr.reset(new BintableHdu(Hdu::Token {}, m_fptr, index));
     } else {
       ptr.reset(new Hdu(Hdu::Token {}, m_fptr, index));
@@ -69,10 +69,10 @@ const T& MefFile::access(const std::string& name, long version) {
   const Hdu* hduPtr = nullptr;
   for (long i = 0; i < hduCount(); ++i) {
     const auto& hdu = access<Hdu>(i);
-    const bool cMatch = (category == HduCategory::Any || hdu.type() == category);
-    const bool cnMatch = cMatch && (name == "" || hdu.readName() == name);
-    const bool cnvMatch = cnMatch && (version == 0 || hdu.readVersion() == version);
-    if (cnvMatch) {
+    const bool c_match = (category == HduCategory::Any || hdu.type() == category);
+    const bool cn_match = c_match && (name == "" || hdu.readName() == name);
+    const bool cnv_match = cn_match && (version == 0 || hdu.readVersion() == version);
+    if (cnv_match) {
       if (hduPtr) {
         throw FitsError("Several HDU matches."); // TODO specific exception?
       } else {
@@ -149,8 +149,8 @@ const ImageHdu& MefFile::appendImageHeader(const std::string& name, const Record
 template <typename T, long N>
 const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
   const auto index = m_hdus.size();
-  Position<-1> dynamicShape(shape.begin(), shape.end());
-  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
+  Position<-1> dynamic_shape(shape.begin(), shape.end());
+  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamic_shape, nullptr};
   m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::init_image<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -183,8 +183,8 @@ template <typename TRaster>
 const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster) {
   const auto index = m_hdus.size();
   using T = std::decay_t<typename TRaster::Value>;
-  Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
-  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
+  Position<-1> dynamic_shape(raster.shape().begin(), raster.shape().end());
+  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamic_shape, raster.data()};
   m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::init_image<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -236,10 +236,8 @@ MefFile::appendBintable(const std::string& name, const RecordSeq& records, const
 
 template <typename TColumns, std::size_t Size>
 const BintableHdu& MefFile::appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns) {
-  Cfitsio::HduAccess::assign_bintable<TColumns, Size>(
-      m_fptr,
-      name,
-      columns); // FIXME doesn't check for column size
+  Cfitsio::HduAccess::assign_bintable<TColumns, Size>(m_fptr, name,
+                                                      columns); // FIXME doesn't check for column size
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
@@ -258,7 +256,7 @@ void MefFile::remove(long index) {
     auto it = m_hdus.begin() + index; // FIXME won't work with list (or boost::stable_vector)
     m_hdus.erase(it);
     for (; it != m_hdus.end(); ++it) {
-      --((*it)->m_cfitsioIndex);
+      --((*it)->m_cfitsio_index);
     }
   }
 }

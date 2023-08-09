@@ -27,11 +27,11 @@ Fits::Position<N> readShape(fitsfile* fptr) {
   return shape;
 }
 
-bool isCompressedImage(fitsfile* fptr) {
+bool is_compressed(fitsfile* fptr) {
   int status = 0;
-  bool isCompressed = fits_is_compressed_image(fptr, &status);
+  bool is_compressed = fits_is_compressed_image(fptr, &status);
   CfitsioError::mayThrow(status, fptr, "Cannot determine if image is compressed.");
-  return isCompressed;
+  return is_compressed;
 }
 
 template <long N>

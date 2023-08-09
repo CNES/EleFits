@@ -381,10 +381,10 @@ void checkAppendCopy(bool zin, bool zout) {
   }
 
   const auto& image = in.appendImage("", {}, raster);
-  BOOST_TEST(image.isCompressed() == zin);
+  BOOST_TEST(image.is_compressed() == zin);
   BOOST_TEST(image.matches(HduCategory::CompressedImageExt) == zin);
   const auto& blank = in.appendNullImage<float>("", {}, raster.shape());
-  BOOST_TEST(blank.isCompressed() == zin);
+  BOOST_TEST(blank.is_compressed() == zin);
   BOOST_TEST(blank.matches(HduCategory::CompressedImageExt) == zin);
 
   if (zout) {
@@ -392,10 +392,10 @@ void checkAppendCopy(bool zin, bool zout) {
   }
 
   const auto& imageCopy = out.append(image);
-  BOOST_TEST(imageCopy.isCompressed() == zout);
+  BOOST_TEST(imageCopy.is_compressed() == zout);
   BOOST_TEST(imageCopy.matches(HduCategory::CompressedImageExt) == zout);
   const auto& blankCopy = out.append(blank);
-  BOOST_TEST(blankCopy.isCompressed() == zout);
+  BOOST_TEST(blankCopy.is_compressed() == zout);
   BOOST_TEST(blankCopy.matches(HduCategory::CompressedImageExt) == zout);
 
   BOOST_TEST(imageCopy.raster().read<float>() == raster);
@@ -418,20 +418,20 @@ BOOST_AUTO_TEST_CASE(copy_compressed_to_raw_test) {
   checkAppendCopy(true, false);
 }
 
-// This tests the isCompressedImage function from the ImageWrapper
+// This tests the is_compressed function from the ImageWrapper
 BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
 
   Test::RandomRaster<double, 1> raster({2881});
 
   this->strategy(Gzip());
-  BOOST_TEST(not this->primary().isCompressed());
+  BOOST_TEST(not this->primary().is_compressed());
 
   const auto& image1 = this->appendImage("", {}, raster);
-  BOOST_TEST(image1.isCompressed());
+  BOOST_TEST(image1.is_compressed());
 
   this->strategy().clear();
   const auto& image2 = this->appendImage("", {}, raster);
-  BOOST_TEST(not image2.isCompressed());
+  BOOST_TEST(not image2.is_compressed());
 }
 
 //-----------------------------------------------------------------------------

@@ -49,9 +49,9 @@ public:
   const std::type_info& readTypeid() const;
 
   /**
-   * @brief Read the cfitsio bitpix value.
+   * @brief Read the `BITPIX` or `ZBITPIX` value.
    */
-  long readBitpix() const;
+  long read_bitpix() const;
 
   /**
    * @brief Read the number of pixels in the image.
