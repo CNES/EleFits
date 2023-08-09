@@ -66,19 +66,9 @@ std::unique_ptr<Compress<Plio>> CompressAptly::plio(const ImageHdu::Initializer<
   constexpr auto bp = bitpix<T>();
 
   // Float or too large int
-  if constexpr (bp < 0 || bp > 32) {
+  // Also when bp=16, it is generally not a mask, so should not use PLIO even if supported
+  if constexpr (bp != 8) {
     return nullptr;
-  }
-
-  // Maybe
-  if constexpr (bp > 16) {
-    if (not init.data) {
-      return nullptr;
-    }
-    const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
-    if (max >= (T(1) << 24)) {
-      return nullptr;
-    }
   }
 
   // OK
