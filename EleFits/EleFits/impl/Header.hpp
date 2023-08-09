@@ -92,7 +92,7 @@ template <>
 struct RecordWriterImpl<RecordMode::CreateUnique> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
-    KeywordExistsError::mayThrow(record.keyword, header);
+    KeywordExistsError::may_throw(record.keyword, header);
     Cfitsio::HeaderIo::write_record(fptr, record);
   }
 };
@@ -110,7 +110,7 @@ template <>
 struct RecordWriterImpl<RecordMode::UpdateExisting> {
   template <typename T>
   static void write(fitsfile* fptr, const Header& header, const Record<T>& record) {
-    KeywordNotFoundError::mayThrow(record.keyword, header);
+    KeywordNotFoundError::may_throw(record.keyword, header);
     Cfitsio::HeaderIo::update_record(fptr, record);
   }
 };

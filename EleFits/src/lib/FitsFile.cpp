@@ -19,7 +19,7 @@ std::string version() {
 
 ReadOnlyError::ReadOnlyError(const std::string& prefix) : FitsError(prefix + ": Trying to write a read-only file.") {}
 
-void ReadOnlyError::mayThrow(const std::string& prefix, FileMode mode) {
+void ReadOnlyError::may_throw(const std::string& prefix, FileMode mode) {
   if (mode == FileMode::Read) {
     throw ReadOnlyError(prefix);
   }

@@ -178,7 +178,7 @@ long CfitsioBenchmark::compute_chunk_row_count(long row_count) {
 }
 
 void CfitsioBenchmark::may_throw(const std::string& context) const {
-  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, context);
+  Cfitsio::CfitsioError::may_throw(m_status, m_fptr, context);
 }
 
 } // namespace Validation

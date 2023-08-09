@@ -63,7 +63,7 @@ public:
   /**
    * @brief Throw if a value lies out of given bounds, included.
    */
-  static void mayThrow(const std::string& prefix, long value, std::pair<long, long> bounds);
+  static void may_throw(const std::string& prefix, long value, std::pair<long, long> bounds);
 };
 
 /**
@@ -114,7 +114,7 @@ struct ChecksumError : public FitsError {
   /**
    * @brief Throw if at least one checksum is not correct (missing or incorrect).
    */
-  static void mayThrow(Status hduStatus, Status dataStatus) {
+  static void may_throw(Status hduStatus, Status dataStatus) {
     if (hduStatus != Correct || dataStatus != Correct) {
       throw ChecksumError(hduStatus, dataStatus);
     }

@@ -14,7 +14,7 @@ inline Scaling Tile::rms; // Definition
 
 Compression::Compression(Position<-1> tiling, Quantization quantization) :
     m_tiling(std::move(tiling)), m_quantization(std::move(quantization)) {
-  OutOfBoundsError::mayThrow("Tiling dimension error", m_tiling.size(), {0, 6});
+  OutOfBoundsError::may_throw("Tiling dimension error", m_tiling.size(), {0, 6});
 }
 
 const Position<-1>& Compression::tiling() const {

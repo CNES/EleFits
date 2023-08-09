@@ -18,7 +18,7 @@ long column_count(fitsfile* fptr) {
   int status = 0;
   int ncols = 0;
   fits_get_num_cols(fptr, &ncols, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read the number of columns");
+  CfitsioError::may_throw(status, fptr, "Cannot read the number of columns");
   return ncols;
 }
 
@@ -26,7 +26,7 @@ long row_count(fitsfile* fptr) {
   int status = 0;
   long nrows = 0;
   fits_get_num_rows(fptr, &nrows, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read the number of rows");
+  CfitsioError::may_throw(status, fptr, "Cannot read the number of rows");
   return nrows;
 }
 
@@ -53,7 +53,7 @@ std::string column_name(fitsfile* fptr, long index) {
       nullptr, // tdisp
       &status);
   // TODO Should we just read TTYPEn instead ?
-  CfitsioError::mayThrow(status, fptr, "Cannot find name of column: " + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot find name of column: " + std::to_string(index - 1));
   return ttype;
 }
 
@@ -63,14 +63,14 @@ void update_column_name(fitsfile* fptr, long index, const std::string& newName) 
   int status = 0;
   fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
   // FIXME fits_set_hdustruc is deprecated => ask CFITSIO support
-  CfitsioError::mayThrow(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
 }
 
 long column_index(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot find index of column: " + name);
+  CfitsioError::may_throw(status, fptr, "Cannot find index of column: " + name);
   return index;
 }
 
@@ -83,7 +83,7 @@ void read_column_dim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
   Fits::Indices<-1> naxes(999); // Max allowed number of axes
   int naxis = 0;
   fits_read_tdim(fptr, static_cast<int>(index), 999, &naxis, shape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
   naxes.resize(naxis);
   shape = Fits::Position<-1>(naxes.begin(), naxes.end()); // TODO assign
 }
@@ -106,7 +106,7 @@ void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lon
       vec.data(),
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
   auto columnIt = data;
   for (auto vecIt = vec.begin(); vecIt != vec.end(); ++vecIt, ++columnIt) {
     *columnIt = std::string(*vecIt);
@@ -127,7 +127,7 @@ void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lo
       rows.size(),
       array.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
 }
 
 } // namespace BintableIo

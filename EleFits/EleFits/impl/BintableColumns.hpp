@@ -211,7 +211,7 @@ void BintableColumns::init(const TInfo& info, long index) const {
   int status = 0;
   int cfitsio_index = index == -1 ? Cfitsio::BintableIo::column_count(m_fptr) + 1 : index + 1;
   fits_insert_col(m_fptr, cfitsio_index, name.get(), tform.get(), &status);
-  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
+  Cfitsio::CfitsioError::may_throw(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
   if (info.unit != "") {
     const Record<std::string> record {"TUNIT" + std::to_string(cfitsio_index), info.unit, "", "physical unit of field"};
     Cfitsio::HeaderIo::update_record(m_fptr, record);

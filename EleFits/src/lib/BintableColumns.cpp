@@ -30,7 +30,7 @@ long BintableColumns::readBufferRowCount() const {
   long size = 0;
   int status = 0;
   fits_get_rowsize(m_fptr, &size, &status);
-  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot compute buffer row count.");
+  Cfitsio::CfitsioError::may_throw(status, m_fptr, "Cannot compute buffer row count.");
   return size;
 }
 
@@ -76,7 +76,7 @@ void BintableColumns::remove(ColumnKey key) const {
   m_edit();
   int status = 0;
   fits_delete_col(m_fptr, key.index(*this) + 1, &status);
-  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot remove column #" + std::to_string(key.index(*this)));
+  Cfitsio::CfitsioError::may_throw(status, m_fptr, "Cannot remove column #" + std::to_string(key.index(*this)));
   // TODO to Cfitsio
 }
 

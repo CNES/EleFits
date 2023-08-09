@@ -518,12 +518,12 @@ struct KeywordExistsError : public FitsError {
   /**
    * @brief Throw if an HDU already contains a given keyword.
    */
-  static void mayThrow(const std::string& keyword, const Header& header);
+  static void may_throw(const std::string& keyword, const Header& header);
 
   /**
    * @brief Throw if an HDU already contains any of given keywords.
    */
-  static void mayThrow(const std::vector<std::string>& keywords, const Header& header);
+  static void may_throw(const std::vector<std::string>& keywords, const Header& header);
 
   /**
    * @brief The keyword which already exists.
@@ -545,12 +545,12 @@ struct KeywordNotFoundError : public FitsError {
   /**
    * @brief Throw if an HDU misses a given keyword.
    */
-  static void mayThrow(const std::string& keyword, const Header& header);
+  static void may_throw(const std::string& keyword, const Header& header);
 
   /**
    * @brief Throw if an HDU misses any of given keywords.
    */
-  static void mayThrow(const std::vector<std::string>& keywords, const Header& header);
+  static void may_throw(const std::vector<std::string>& keywords, const Header& header);
 
   /**
    * @brief The missing keyword.

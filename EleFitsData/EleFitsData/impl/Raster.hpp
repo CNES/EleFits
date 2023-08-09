@@ -122,7 +122,7 @@ inline const T& Raster<T, N, TContainer>::at(const Position<N>& pos) const {
   for (long i = 0; i < dimension(); ++i) {
     auto& b = boundedPos[i];
     const auto& s = m_shape[i];
-    OutOfBoundsError::mayThrow("pos[" + std::to_string(i) + "]", b, {-s, s - 1});
+    OutOfBoundsError::may_throw("pos[" + std::to_string(i) + "]", b, {-s, s - 1});
     if (b < 0) {
       b += s;
     }

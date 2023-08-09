@@ -16,11 +16,11 @@ namespace HduAccess {
 
 template <typename T, long N>
 void init_image(fitsfile* fptr, const std::string& name, const Fits::Position<N>& shape) {
-  mayThrowReadonlyError(fptr);
+  may_throw_readonly(fptr);
   int status = 0;
   auto nonconstShape = shape; // const-correctness issue
   fits_create_img(fptr, TypeCode<T>::bitpix(), shape.size(), &nonconstShape[0], &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot create image extension: " + name);
+  CfitsioError::may_throw(status, fptr, "Cannot create image extension: " + name);
   update_name(fptr, name);
 }
 
@@ -38,7 +38,7 @@ void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... inf
   Fits::String::CStrArray colUnit {infos.unit...};
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, ncols, colName.data(), colFormat.data(), colUnit.data(), name.c_str(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
+  CfitsioError::may_throw(status, fptr, "Cannot create binary table extension: " + name);
   BintableIo::write_column_dims(fptr, 1, infos...);
 }
 
@@ -77,7 +77,7 @@ void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& col
   char* cUnit = &colUnit[0];
   int status = 0;
   fits_create_tbl(fptr, BINARY_TBL, 0, column_count, &cName, &cFormat, &cUnit, name.c_str(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot create binary table extension: " + name);
+  CfitsioError::may_throw(status, fptr, "Cannot create binary table extension: " + name);
   BintableIo::write_column(fptr, column);
 }
 

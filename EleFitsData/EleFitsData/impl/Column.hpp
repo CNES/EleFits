@@ -82,9 +82,9 @@ T& Column<T, N, TContainer>::operator()(long row, long repeat) {
 
 template <typename T, long N, typename TContainer>
 const T& Column<T, N, TContainer>::at(long row, long repeat) const {
-  OutOfBoundsError::mayThrow("Cannot access row index", row, {-rowCount(), rowCount() - 1});
+  OutOfBoundsError::may_throw("Cannot access row index", row, {-rowCount(), rowCount() - 1});
   const auto bound = m_info.elementCount();
-  OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, {-bound, bound - 1});
+  OutOfBoundsError::may_throw("Cannot access repeat index", repeat, {-bound, bound - 1});
   const long boundedRow = row < 0 ? rowCount() + row : row;
   const long boundedRepeat = repeat < 0 ? bound + repeat : repeat;
   return operator()(boundedRow, boundedRepeat);

@@ -48,12 +48,12 @@ public:
   /**
    * @brief Throw a CfitsioError if `cfitsio_status > 0`.
    */
-  static void mayThrow(int cfitsio_status);
+  static void may_throw(int cfitsio_status);
 
   /**
    * @brief Throw a CfitsioError if `cfitsio_status > 0`.
    */
-  static void mayThrow(int cfitsio_status, fitsfile* fptr, const std::string& context);
+  static void may_throw(int cfitsio_status, fitsfile* fptr, const std::string& context);
 
 public:
   /**
@@ -65,12 +65,12 @@ public:
 /**
  * @brief Check whether the file is valid and throw an error if not.
  */
-void mayThrowInvalidFileError(fitsfile* fptr);
+void may_throw_invalid_file(fitsfile* fptr);
 
 /**
  * @brief Check whether the file is writable and throw an error if not.
  */
-void mayThrowReadonlyError(fitsfile* fptr);
+void may_throw_readonly(fitsfile* fptr);
 
 } // namespace Cfitsio
 } // namespace Euclid

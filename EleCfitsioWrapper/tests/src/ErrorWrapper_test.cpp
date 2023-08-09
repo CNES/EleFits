@@ -15,15 +15,15 @@ BOOST_AUTO_TEST_SUITE(ErrorWrapper_test)
 //-----------------------------------------------------------------------------
 
 BOOST_AUTO_TEST_CASE(noerror_test) {
-  BOOST_CHECK_NO_THROW(CfitsioError::mayThrow(0));
+  BOOST_CHECK_NO_THROW(CfitsioError::may_throw(0));
 }
 
 BOOST_AUTO_TEST_CASE(error_test) {
-  BOOST_CHECK_THROW(CfitsioError::mayThrow(1), CfitsioError);
+  BOOST_CHECK_THROW(CfitsioError::may_throw(1), CfitsioError);
 }
 
 BOOST_AUTO_TEST_CASE(nullptr_test) {
-  BOOST_CHECK_THROW(mayThrowInvalidFileError(nullptr), CfitsioError);
+  BOOST_CHECK_THROW(may_throw_invalid_file(nullptr), CfitsioError);
 }
 
 //-----------------------------------------------------------------------------

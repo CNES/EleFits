@@ -23,14 +23,14 @@ Fits::Position<N> readShape(fitsfile* fptr) {
   Fits::Position<N> shape;
   int status = 0;
   fits_get_img_size(fptr, N, &shape[0], &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read raster shape.");
+  CfitsioError::may_throw(status, fptr, "Cannot read raster shape.");
   return shape;
 }
 
 bool is_compressed(fitsfile* fptr) {
   int status = 0;
   bool is_compressed = fits_is_compressed_image(fptr, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot determine if image is compressed.");
+  CfitsioError::may_throw(status, fptr, "Cannot determine if image is compressed.");
   return is_compressed;
 }
 
@@ -41,7 +41,7 @@ void updateShape(fitsfile* fptr, const Fits::Position<N>& shape) {
   fits_get_img_type(fptr, &imgtype, &status);
   auto nonconstShape = shape;
   fits_resize_img(fptr, imgtype, shape.size(), nonconstShape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot reshape raster.");
+  CfitsioError::may_throw(status, fptr, "Cannot reshape raster.");
 }
 
 template <typename T, long N>
@@ -49,7 +49,7 @@ void updateTypeShape(fitsfile* fptr, const Fits::Position<N>& shape) {
   int status = 0;
   auto nonconstShape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconstShape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot reshape raster.");
+  CfitsioError::may_throw(status, fptr, "Cannot reshape raster.");
 }
 
 template <typename T, long N>
@@ -72,7 +72,7 @@ void readRasterTo(fitsfile* fptr, TRaster& destination) {
       destination.data(),
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read raster.");
+  CfitsioError::may_throw(status, fptr, "Cannot read raster.");
 }
 
 template <typename T, long N, typename TContainer>
@@ -109,7 +109,7 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster
       raster.data(),
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
+  CfitsioError::may_throw(status, fptr, "Cannot read image region.");
 }
 
 template <typename T, long M, long N, typename TContainer>
@@ -143,7 +143,7 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster
         &destination.parent()[dstFront],
         nullptr,
         &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
+    CfitsioError::may_throw(status, fptr, "Cannot read image region.");
     srcScreener.next();
     srcFront = srcScreener.current();
     srcBack = srcScreener.followers()[0];
@@ -153,14 +153,14 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster
 
 template <typename TRaster>
 void writeRaster(fitsfile* fptr, const TRaster& raster) {
-  mayThrowReadonlyError(fptr);
+  may_throw_readonly(fptr);
   int status = 0;
   const auto begin = raster.data();
   const auto end = begin + raster.size();
   using Value = std::decay_t<typename TRaster::Value>;
   std::vector<Value> nonconstData(begin, end); // For const-correctness issue
   fits_write_img(fptr, TypeCode<Value>::forImage(), 1, raster.size(), nonconstData.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write image.");
+  CfitsioError::may_throw(status, fptr, "Cannot write image.");
 }
 
 template <typename TRaster, long N>
@@ -174,7 +174,7 @@ void writeRegion(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>&
   using Value = std::decay_t<typename TRaster::Value>;
   std::vector<Value> nonconstData(begin, end); // For const-correctness issue
   fits_write_subset(fptr, TypeCode<Value>::forImage(), front.data(), back.data(), nonconstData.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write image region.");
+  CfitsioError::may_throw(status, fptr, "Cannot write image region.");
 }
 
 template <typename T, long M, long N, typename TContainer>
@@ -204,7 +204,7 @@ void writeRegion(
     line.assign(&subraster[srcFront], &subraster[srcFront] + dstSize);
     fits_write_pix(fptr, TypeCode<T>::forImage(), dstFront.data(), dstSize, line.data(), &status);
     // fits_write_subset(fptr, TypeCode<T>::forImage(), dstFront.data(), dstBack.data(), line.data(), &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot write image region.");
+    CfitsioError::may_throw(status, fptr, "Cannot write image region.");
   }
 }
 

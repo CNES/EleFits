@@ -70,7 +70,7 @@ public:
   /**
    * @brief Throw if mode is read-only.
    */
-  static void mayThrow(const std::string& prefix, FileMode mode);
+  static void may_throw(const std::string& prefix, FileMode mode);
 };
 
 /**

@@ -131,7 +131,7 @@ Fits::ColumnInfo<T, N> read_column_info(fitsfile* fptr, long index) {
       nullptr, // nulval
       nullptr, // tdisp
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column info: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot read column info: #" + std::to_string(index - 1));
   Fits::ColumnInfo<T, N> info(name, unit, repeat_count);
   read_column_dim(fptr, index, info.shape);
   return info;
@@ -148,7 +148,7 @@ void read_column_dim(fitsfile* fptr, long index, Fits::Position<N>& shape) {
   int status = 0;
   int naxis = 0;
   fits_read_tdim(fptr, static_cast<int>(index), N, &naxis, shape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
 }
 
 template <typename T, long N>
@@ -182,7 +182,7 @@ void write_column_dim(fitsfile* fptr, long index, const Fits::Position<N>& shape
   int status = 0;
   auto nonconst_shape = shape.container();
   fits_write_tdim(fptr, static_cast<int>(index), shape.size(), nonconst_shape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column dimension: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot write column dimension: #" + std::to_string(index - 1));
 }
 
 template <typename... TInfos>
@@ -325,7 +325,7 @@ void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lon
       data,
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
 }
 
 template <typename T>
@@ -342,7 +342,7 @@ void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lo
       size, // nelements
       nonconst_data.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
 }
 
 } // namespace BintableIo

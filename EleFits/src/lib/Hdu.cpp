@@ -83,7 +83,7 @@ void Hdu::verifyChecksums() const {
   int datastatus;
   int hdustatus;
   fits_verify_chksum(m_fptr, &datastatus, &hdustatus, &status);
-  ChecksumError::mayThrow(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
+  ChecksumError::may_throw(ChecksumError::Status(hdustatus), ChecksumError::Status(datastatus));
   // TODO wrap in EleCfitsioWrapper
 }
 
@@ -91,7 +91,7 @@ void Hdu::updateChecksums() const {
   edit();
   int status = 0;
   fits_write_chksum(m_fptr, &status);
-  Cfitsio::CfitsioError::mayThrow(status, m_fptr, "Cannot write checksums.");
+  Cfitsio::CfitsioError::may_throw(status, m_fptr, "Cannot write checksums.");
   // TODO wrap in EleCfitsioWrapper
 }
 
