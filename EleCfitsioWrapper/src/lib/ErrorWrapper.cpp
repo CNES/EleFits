@@ -24,12 +24,12 @@ CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string&
       append("Unknown file name.");
     }
     try {
-      append("Current HDU index (0-based): " + std::to_string(HduAccess::currentIndex(fptr) - 1));
+      append("Current HDU index (0-based): " + std::to_string(HduAccess::current_index(fptr) - 1));
     } catch (...) {
       append("Unknown current HDU index.");
     }
     try {
-      append("Current HDU name: " + HduAccess::currentName(fptr));
+      append("Current HDU name: " + HduAccess::current_name(fptr));
     } catch (...) {
       append("Unknown current HDU name.");
     }
@@ -66,7 +66,7 @@ void CfitsioError::mayThrow(int cfitsioStatus, fitsfile* fptr, const std::string
 }
 
 void mayThrowReadonlyError(fitsfile* fptr) {
-  if (not FileAccess::isWritable(fptr)) {
+  if (not FileAccess::is_writable(fptr)) {
     throw CfitsioError(READONLY_FILE);
   }
 }

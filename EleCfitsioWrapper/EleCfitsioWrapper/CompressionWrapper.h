@@ -12,6 +12,7 @@
 
 namespace Euclid {
 namespace Cfitsio {
+namespace ImageCompression {
 
 /**
  * @brief Know if the cfitsio image compression is turned on.
@@ -26,12 +27,17 @@ inline std::unique_ptr<Fits::Compression> get_compression(fitsfile* fptr);
 /**
  * @brief Read the compression parameters of the current HDU.
  */
-inline std::unique_ptr<Fits::Compression> read_compression(fitsfile* fptr);
+inline std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr);
 
 /**
  * @brief Read the current compression tiling.
  */
-inline Fits::Position<-1> read_compression_tiling(fitsfile* fptr);
+inline Fits::Position<-1> read_tiling(fitsfile* fptr);
+
+/**
+ * @brief Declare the to-be-added compressed HDU as huge.
+ */
+inline void enable_huge_compression(fitsfile* fptr, bool huge);
 
 /**
  * @brief Set the compression algorithm to `NoCompression`.
@@ -63,6 +69,7 @@ inline void compress(fitsfile* fptr, const Fits::HCompress& algo);
  */
 inline void compress(fitsfile* fptr, const Fits::Plio& algo);
 
+} // namespace ImageCompression
 } // namespace Cfitsio
 } // namespace Euclid
 

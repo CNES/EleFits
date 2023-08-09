@@ -32,7 +32,7 @@ std::string readAlgoName(const ImageHdu& hdu) {
     return "None";
   }
 
-  const auto algo = hdu.readCompression();
+  const auto algo = hdu.read_compression();
   const std::string losslessness = algo->is_lossless() ? "Lossless " : "Lossy ";
 
   if (dynamic_cast<Gzip*>(algo.get())) {

@@ -39,26 +39,26 @@ long count(fitsfile* fptr);
 /**
  * @brief Get the index of the current HDU.
  */
-long currentIndex(fitsfile* fptr);
+long current_index(fitsfile* fptr);
 
 /**
  * @brief Get the name of the current HDU.
  * @details
  * Look for `EXTNAME` and then `HDUNAME`; return `""` if not found.
  */
-std::string currentName(fitsfile* fptr);
+std::string current_name(fitsfile* fptr);
 
 /**
  * @brief Get the version of the current HDU.
  * @details
  * Look for `EXTVER` and then `HDUVER`; return 1 if not found.
  */
-long currentVersion(fitsfile* fptr);
+long current_version(fitsfile* fptr);
 
 /**
  * @brief Get the byte size of the current HDU.
  */
-std::size_t currentSize(fitsfile* fptr);
+std::size_t current_size(fitsfile* fptr);
 
 /**
  * @brief Get the type of the current HDU (either Image or Bintable).
@@ -66,28 +66,28 @@ std::size_t currentSize(fitsfile* fptr);
  * @details
  * The output of this function can be tested for equality, e.g.:
  * \code
- * if (currentType(fptr) == HduCategory::Image) {
+ * if (current_type(fptr) == HduCategory::Image) {
  *   ... // An image HDU
  * }
  * \endcode
  */
-Fits::HduCategory currentType(fitsfile* fptr);
+Fits::HduCategory current_type(fitsfile* fptr); // FIXME return HduType
 
 /**
  * @brief Check whether current HDU is the Primary HDU.
  */
-bool currentIsPrimary(fitsfile* fptr);
+bool current_is_primary(fitsfile* fptr);
 
 /**
  * @brief Go to an HDU specified by its index.
  */
-bool gotoIndex(fitsfile* fptr, long index);
+bool goto_index(fitsfile* fptr, long index);
 
 /**
  * @brief Go to an HDU specified by its name.
  * @param category The desired HDU category: either Any, Image or Bintable
  */
-bool gotoName(
+bool goto_name(
     fitsfile* fptr,
     const std::string& name,
     long version = 0,
@@ -96,56 +96,51 @@ bool gotoName(
 /**
  * @brief Go to an HDU specified by incrementing the index by a given amount.
  */
-bool gotoNext(fitsfile* fptr, long step = 1);
+bool goto_next(fitsfile* fptr, long step = 1);
 
 /**
  * @brief Go to the Primary HDU.
  */
-bool gotoPrimary(fitsfile* fptr);
+bool goto_primary(fitsfile* fptr);
 
 /**
  * @brief Initialize the Primary HDU if not done.
  */
-bool initPrimary(fitsfile* fptr);
+bool init_primary(fitsfile* fptr);
 
 /**
  * @brief Write or update HDU name.
  */
-bool updateName(fitsfile* fptr, const std::string& name);
+bool update_name(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Write or update HDU version.
  */
-bool updateVersion(fitsfile* fptr, long version);
-
-/**
- * @brief Create a new image HDU with empty data unit.
- */
-void createMetadataExtension(fitsfile* fptr, const std::string& name);
+bool update_version(fitsfile* fptr, long version);
 
 /**
  * @brief Create a new image HDU with given name, pixel type and shape.
  */
 template <typename T, long N = 2>
-void initImageExtension(fitsfile* fptr, const std::string& name, const Fits::Position<N>& shape);
+void init_image(fitsfile* fptr, const std::string& name, const Fits::Position<N>& shape);
 
 /**
  * @brief Write a Raster in a new image HDU.
  */
 template <typename TRaster>
-void assignImageExtension(fitsfile* fptr, const std::string& name, const TRaster& raster);
+void assign_image(fitsfile* fptr, const std::string& name, const TRaster& raster);
 
 /**
  * @brief Create a new binary table HDU with given name and column infos.
  */
 template <typename... TInfos>
-void initBintableExtension(fitsfile* fptr, const std::string& name, const TInfos&... infos);
+void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... infos);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.
  */
 template <typename... TColumns>
-void assignBintableExtension(fitsfile* fptr, const std::string& name, const TColumns&... columns);
+void assign_bintable(fitsfile* fptr, const std::string& name, const TColumns&... columns);
 
 /**
  * @brief Create a new binary table HDU with given name and columns.
@@ -155,24 +150,17 @@ void assignBintableExtension(fitsfile* fptr, const std::string& name, const TCol
  * Should we provide more DoFs, like an offset or a full list of indices?
  */
 template <typename TTuple, std::size_t size = std::tuple_size<TTuple>::value>
-void assignBintableExtension(fitsfile* fptr, const std::string& name, const TTuple& table);
+void assign_bintable(fitsfile* fptr, const std::string& name, const TTuple& table);
 
 /**
  * @brief Copies everything as binary in the current HDU of src and appends it to dst.
  */
-void binaryCopy(fitsfile* srcFptr, fitsfile* dstFptr);
-
-/**
- * @brief Same as binaryCopy, but takes context into account and only copies non-structural data.
- */
-void contextualCopy(fitsfile* srcFptr, fitsfile* dstFptr);
-
-void setHugeHdu(fitsfile* fptr, bool isHuge);
+void copy_verbatim(fitsfile* src, fitsfile* dst);
 
 /**
  * @brief Delete the HDU at given index.
  */
-void deleteHdu(fitsfile* fptr, long index);
+void remove(fitsfile* fptr, long index);
 
 } // namespace HduAccess
 } // namespace Cfitsio

@@ -141,7 +141,7 @@ public:
   /**
    * @brief Read the compression parameters.
    */
-  std::unique_ptr<Compression> readCompression() const;
+  std::unique_ptr<Compression> read_compression() const;
 
   /**
    * @brief Redefine the image shape and type.

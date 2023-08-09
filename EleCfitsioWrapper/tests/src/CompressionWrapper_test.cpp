@@ -8,6 +8,9 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
 
+using namespace Euclid;
+using namespace Cfitsio;
+
 BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 
 //-----------------------------------------------------------------------------
@@ -19,11 +22,11 @@ void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype) {
 
   int status = 0;
 
-  Euclid::Fits::Position<-1> shape(dimension);
+  Fits::Position<-1> shape(dimension);
   std::fill(shape.begin(), shape.end(), 300);
 
   TAlgo algo(shape);
-  Cfitsio::compress(fptr, algo);
+  ImageCompression::compress(fptr, algo);
 
   // verify the correct compression algo is set:
   int actual_comptype;
@@ -47,7 +50,7 @@ void test_algo_mixin_compress<Fits::NoCompression>(long, fitsfile* fptr, int com
   int status = 0;
 
   Fits::NoCompression algo;
-  Cfitsio::compress(fptr, algo);
+  ImageCompression::compress(fptr, algo);
 
   // verify the correct compression algo is set:
   int actual_comptype;
@@ -57,7 +60,7 @@ void test_algo_mixin_compress<Fits::NoCompression>(long, fitsfile* fptr, int com
 
 BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 
-  Euclid::Fits::Test::MinimalFile file;
+  Fits::Test::MinimalFile file;
 
   test_algo_mixin_compress<Fits::NoCompression>(0, file.fptr, int(NULL));
 
@@ -100,12 +103,12 @@ BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
 BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
 
   int status = 0;
-  Euclid::Fits::Test::MinimalFile file;
+  Fits::Test::MinimalFile file;
 
-  const Euclid::Fits::Position<-1>& shape {300, 200};
+  const Fits::Position<-1>& shape {300, 200};
 
   Fits::HCompress algo(shape);
-  Cfitsio::compress(file.fptr, algo);
+  ImageCompression::compress(file.fptr, algo);
 
   // verify scale parameter:
   float actual_scale;
@@ -123,24 +126,24 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
 BOOST_AUTO_TEST_CASE(iscompressing_test) {
 
   Fits::NoCompression none;
-  const Euclid::Fits::Position<-1>& shape {300, 200};
+  const Fits::Position<-1>& shape {300, 200};
   Fits::HCompress algo(shape);
 
-  Euclid::Fits::Test::MinimalFile file;
+  Fits::Test::MinimalFile file;
 
-  Cfitsio::compress(file.fptr, none);
-  BOOST_TEST(not Cfitsio::is_compressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(Cfitsio::get_compression(file.fptr).get()));
+  ImageCompression::compress(file.fptr, none);
+  BOOST_TEST(not ImageCompression::is_compressing(file.fptr));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression*>(ImageCompression::get_compression(file.fptr).get()));
 
-  Cfitsio::compress(file.fptr, algo);
-  BOOST_TEST(Cfitsio::is_compressing(file.fptr));
-  const auto read_algo = Cfitsio::get_compression(file.fptr);
+  ImageCompression::compress(file.fptr, algo);
+  BOOST_TEST(ImageCompression::is_compressing(file.fptr));
+  const auto read_algo = ImageCompression::get_compression(file.fptr);
   const auto read_hc = dynamic_cast<Fits::HCompress&>(*read_algo);
   BOOST_TEST(read_hc.tiling() == algo.tiling()); // FIXME compare algos as a whole
 
-  Cfitsio::compress(file.fptr, none);
-  BOOST_TEST(not Cfitsio::is_compressing(file.fptr));
-  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression&>(*Cfitsio::get_compression(file.fptr)));
+  ImageCompression::compress(file.fptr, none);
+  BOOST_TEST(not ImageCompression::is_compressing(file.fptr));
+  BOOST_CHECK_NO_THROW(dynamic_cast<Fits::NoCompression&>(*ImageCompression::get_compression(file.fptr)));
 }
 
 //-----------------------------------------------------------------------------
@@ -157,7 +160,7 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) { // FIXME set compression ty
   BOOST_TEST(MAX_COMPRESS_DIM == 6);
 
   int status = 0;
-  Euclid::Fits::Test::MinimalFile file;
+  Fits::Test::MinimalFile file;
 
   int default_algo;
   fits_get_compression_type(file.fptr, &default_algo, &status);
@@ -179,7 +182,7 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) { // FIXME set compression ty
 }
 
 BOOST_AUTO_TEST_CASE(default_tiling_following_hcompress_test) {
-  Euclid::Fits::Test::MinimalFile file;
+  Fits::Test::MinimalFile file;
   int status = 0;
   int tile1, tile2;
   long shape[2] = {100, 100};

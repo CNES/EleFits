@@ -11,7 +11,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace FileAccess {
 
-fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
+fitsfile* create_open(const std::string& filename, CreatePolicy policy) {
   std::string cfitsioName = filename;
   if (policy == CreatePolicy::OverWrite) {
     cfitsioName.insert(0, 1, '!'); // CFITSIO convention
@@ -20,7 +20,7 @@ fitsfile* createAndOpen(const std::string& filename, CreatePolicy policy) {
   int status = 0;
   fits_create_file(&fptr, cfitsioName.c_str(), &status);
   CfitsioError::mayThrow(status, fptr, "Cannot create file: " + filename);
-  HduAccess::initPrimary(fptr);
+  HduAccess::init_primary(fptr);
   return fptr;
 }
 
@@ -46,7 +46,7 @@ void close(fitsfile*& fptr) {
   fptr = nullptr;
 }
 
-void closeAndDelete(fitsfile*& fptr) {
+void close_delete(fitsfile*& fptr) {
   if (not fptr) {
     return;
   }
@@ -65,7 +65,7 @@ std::string name(fitsfile* fptr) {
   return filename;
 }
 
-bool isWritable(fitsfile* fptr) {
+bool is_writable(fitsfile* fptr) {
   int status = 0;
   int filemode;
   fits_file_mode(fptr, &filemode, &status);

@@ -41,8 +41,8 @@ const T& MefFile::access(long index) {
   if (index < 0) { // Backward indexing
     index += hduCount();
   }
-  Cfitsio::HduAccess::gotoIndex(m_fptr, index + 1); // CFITSIO index is 1-based
-  const auto hduType = Cfitsio::HduAccess::currentType(m_fptr);
+  Cfitsio::HduAccess::goto_index(m_fptr, index + 1); // CFITSIO index is 1-based
+  const auto hduType = Cfitsio::HduAccess::current_type(m_fptr);
   auto& ptr = m_hdus[index];
   if (ptr == nullptr) {
     if (hduType == HduCategory::Image) {
@@ -59,8 +59,8 @@ const T& MefFile::access(long index) {
 
 template <class T>
 const T& MefFile::find(const std::string& name, long version) {
-  Cfitsio::HduAccess::gotoName(m_fptr, name, version, HduCategory::forClass<T>());
-  return access<T>(Cfitsio::HduAccess::currentIndex(m_fptr) - 1); // -1 because CFITSIO index is 1-based
+  Cfitsio::HduAccess::goto_name(m_fptr, name, version, HduCategory::forClass<T>());
+  return access<T>(Cfitsio::HduAccess::current_index(m_fptr) - 1); // -1 because CFITSIO index is 1-based
 }
 
 template <class T>
@@ -102,17 +102,17 @@ const T& MefFile::append(const T& hdu) {
   const auto index = m_hdus.size();
 
   if (hdu.matches(HduCategory::Bintable)) {
-    Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
+    Cfitsio::HduAccess::copy_verbatim(hdu.m_fptr, m_fptr);
     m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   } else {
     if (hdu.matches(HduCategory::RawImage) &&
         (m_strategy.m_compression.empty() || hdu.matches(HduCategory::Metadata))) {
-      Cfitsio::HduAccess::binaryCopy(hdu.m_fptr, m_fptr);
+      Cfitsio::HduAccess::copy_verbatim(hdu.m_fptr, m_fptr);
       m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
     } else {
       // // setting to huge hdu if hdu size > 2^32
       // if (hdu.size_in_file() > (1ULL << 32))
-      //   Cfitsio::HduAccess::setHugeHdu(m_fptr, true); // FIXME to appendImage
+      //   Cfitsio::HduAccess::enable_huge_compression(m_fptr, true); // FIXME to appendImage
 
       const auto& image = hdu.template as<ImageHdu>();
 
@@ -135,7 +135,7 @@ const T& MefFile::append(const T& hdu) {
 
 template <typename T>
 const ImageHdu& MefFile::appendImageHeader(const std::string& name, const RecordSeq& records) {
-  Cfitsio::HduAccess::initImageExtension<T, 0>(m_fptr, name, {});
+  Cfitsio::HduAccess::init_image<T, 0>(m_fptr, name, {});
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created)); // FIXME factorize
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
@@ -152,7 +152,7 @@ const ImageHdu& MefFile::appendNullImage(const std::string& name, const RecordSe
   Position<-1> dynamicShape(shape.begin(), shape.end());
   ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, nullptr};
   m_strategy.compress(m_fptr, init);
-  Cfitsio::HduAccess::initImageExtension<T>(m_fptr, name, shape);
+  Cfitsio::HduAccess::init_image<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   m_strategy.created(hdu);
@@ -186,7 +186,7 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
   Position<-1> dynamicShape(raster.shape().begin(), raster.shape().end());
   ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamicShape, raster.data()};
   m_strategy.compress(m_fptr, init);
-  Cfitsio::HduAccess::initImageExtension<typename TRaster::value_type>(m_fptr, name, raster.shape());
+  Cfitsio::HduAccess::init_image<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   m_strategy.created(hdu);
@@ -201,7 +201,7 @@ const ImageHdu& MefFile::appendImage(const std::string& name, const RecordSeq& r
 template <typename... TInfos>
 const BintableHdu&
 MefFile::appendBintableHeader(const std::string& name, const RecordSeq& records, const TInfos&... infos) {
-  Cfitsio::HduAccess::initBintableExtension(m_fptr, name, infos...);
+  Cfitsio::HduAccess::init_bintable(m_fptr, name, infos...);
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
@@ -236,7 +236,7 @@ MefFile::appendBintable(const std::string& name, const RecordSeq& records, const
 
 template <typename TColumns, std::size_t Size>
 const BintableHdu& MefFile::appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns) {
-  Cfitsio::HduAccess::assignBintableExtension<TColumns, Size>(
+  Cfitsio::HduAccess::assign_bintable<TColumns, Size>(
       m_fptr,
       name,
       columns); // FIXME doesn't check for column size
@@ -254,7 +254,7 @@ void MefFile::remove(long index) {
     primary() = access<ImageHdu>(1);
     remove(1);
   } else {
-    Cfitsio::HduAccess::deleteHdu(m_fptr, index + 1);
+    Cfitsio::HduAccess::remove(m_fptr, index + 1);
     auto it = m_hdus.begin() + index; // FIXME won't work with list (or boost::stable_vector)
     m_hdus.erase(it);
     for (; it != m_hdus.end(); ++it) {

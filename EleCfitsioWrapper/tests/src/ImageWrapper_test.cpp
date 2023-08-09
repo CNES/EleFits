@@ -23,7 +23,7 @@ void checkRandom3DRasterIsReadBack() {
   using namespace Fits::Test;
   RandomRaster<T, 3> input({2, 3, 4});
   MinimalFile file;
-  HduAccess::assignImageExtension(file.fptr, "IMGEXT", input);
+  HduAccess::assign_image(file.fptr, "IMGEXT", input);
   const auto fixedOutput = ImageIo::readRaster<T, 3>(file.fptr);
   BOOST_TEST(fixedOutput.vector() == input.vector());
   const auto variableOuptut = ImageIo::readRaster<T, -1>(file.fptr);
@@ -47,7 +47,7 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile) {
       }
     }
   }
-  HduAccess::assignImageExtension(fptr, "EXT", input);
+  HduAccess::assign_image(fptr, "EXT", input);
   const auto region = Fits::Region<3>::fromShape({1, 0, 1}, {2, 3, 3});
   const auto view = ImageIo::readRegion<long, 3>(fptr, region);
   BOOST_TEST(view.shape() == region.shape());

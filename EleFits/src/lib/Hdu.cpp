@@ -54,27 +54,27 @@ bool Hdu::matches(HduFilter filter) const {
 
 std::string Hdu::readName() const {
   touchThisHdu();
-  return Cfitsio::HduAccess::currentName(m_fptr);
+  return Cfitsio::HduAccess::current_name(m_fptr);
 }
 
 long Hdu::readVersion() const {
   touchThisHdu();
-  return Cfitsio::HduAccess::currentVersion(m_fptr);
+  return Cfitsio::HduAccess::current_version(m_fptr);
 }
 
 std::size_t Hdu::size_in_file() const {
   touchThisHdu();
-  return Cfitsio::HduAccess::currentSize(m_fptr);
+  return Cfitsio::HduAccess::current_size(m_fptr);
 }
 
 void Hdu::updateName(const std::string& name) const {
   editThisHdu();
-  Cfitsio::HduAccess::updateName(m_fptr, name);
+  Cfitsio::HduAccess::update_name(m_fptr, name);
 }
 
 void Hdu::updateVersion(long version) const {
   editThisHdu();
-  Cfitsio::HduAccess::updateVersion(m_fptr, version);
+  Cfitsio::HduAccess::update_version(m_fptr, version);
 }
 
 void Hdu::verifyChecksums() const {
@@ -96,7 +96,7 @@ void Hdu::updateChecksums() const {
 }
 
 void Hdu::touchThisHdu() const {
-  Cfitsio::HduAccess::gotoIndex(m_fptr, m_cfitsioIndex);
+  Cfitsio::HduAccess::goto_index(m_fptr, m_cfitsioIndex);
   if (m_status == HduCategory::Untouched) {
     m_status = HduCategory::Touched;
   }
