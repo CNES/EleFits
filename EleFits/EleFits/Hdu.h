@@ -156,7 +156,7 @@ public:
    * Total number of bits in the extension data array exclusive of fill that is needed after the data to complete the last record.
    * According to doc: https://archive.stsci.edu/fits/fits_standard/node39.html#s:conf
   */
-  std::size_t readSizeInFile() const;
+  std::size_t size_in_file() const;
 
   /**
    * @brief Write or update the extension name.

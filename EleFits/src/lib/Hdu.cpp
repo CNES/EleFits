@@ -62,7 +62,7 @@ long Hdu::readVersion() const {
   return Cfitsio::HduAccess::currentVersion(m_fptr);
 }
 
-std::size_t Hdu::readSizeInFile() const {
+std::size_t Hdu::size_in_file() const {
   touchThisHdu();
   return Cfitsio::HduAccess::currentSize(m_fptr);
 }

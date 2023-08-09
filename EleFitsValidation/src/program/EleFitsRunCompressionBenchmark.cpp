@@ -223,8 +223,8 @@ public:
         const auto& zHdu = g.append(hdu);
         chrono.stop();
         bitpix = 0;
-        hduSize = hdu.readSizeInFile();
-        zHduSize = zHdu.readSizeInFile();
+        hduSize = hdu.size_in_file();
+        zHduSize = zHdu.size_in_file();
         ratio = static_cast<double>(hduSize) / zHduSize;
         algo = "NONE";
         logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": Uncompressed binary table";
@@ -233,8 +233,8 @@ public:
         const auto& zHdu = g.append(hdu);
         chrono.stop();
         bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
-        hduSize = hdu.readSizeInFile();
-        zHduSize = zHdu.readSizeInFile();
+        hduSize = hdu.size_in_file();
+        zHduSize = zHdu.size_in_file();
         ratio = static_cast<double>(hduSize) / zHduSize;
         double throughput = static_cast<double>(hduSize) / chrono.last().count() / 1000; // converted from B/ms to MB/s
         // warning: if elapsed less than 1ms, divides by zero -> throughput infinite
