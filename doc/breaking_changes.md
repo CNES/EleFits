@@ -9,6 +9,18 @@ details the underlying rationale,
 the status in the previous version (e.g. what's there already and what's deprecated),
 and how to adapt the client code.
 
+## Expected breaking changes in 6.0
+
+### Introduction
+
+With the increasing amount of supported features, EleFits is no more the right place to hold advanced data designs and processing services.
+Therefore, implementation of `Raster` and associated classes relies on Linx, a dedicated ND image processing library.
+Many interfaces were inherited from EleFits but this still comes with a lot of breaking chages, e.g. namespaces.
+Speaking of which, namespace `Euclid` is removed because it adds little value.
+
+For integration purpose, Linx follows the standard library naming conventions for functions, which allows working with standard algorithms.
+So does EleFits.
+
 ## Breaking changes in 5.0
 
 ### Introduction

@@ -70,7 +70,7 @@ template <typename T>
 void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, const VecColumn<T>& last) {
 
   /* Write */
-  const auto row_count = first.rowCount();
+  const auto row_count = first.row_count();
   du.writeSeq(last, first);
   BOOST_TEST(du.readRowCount() == row_count);
 
@@ -122,13 +122,13 @@ void checkArrayWriteRead(const BintableColumns& du) {
 
   /* Generate */
   const long row_count = 10000;
-  const long repeatCount = 3;
+  const long repeat_count = 3;
   std::array<ColumnInfo<T>, 2> infos {
-      ColumnInfo<T> {"VECTOR", "m", repeatCount},
+      ColumnInfo<T> {"VECTOR", "m", repeat_count},
       ColumnInfo<T> {"SCALAR", "s", 1}}; // Inverted for robustness test
   std::array<VecColumn<T>, 2> seq {
       VecColumn<T> {infos[1], Test::generate_random_vector<T>(row_count)},
-      VecColumn<T> {infos[0], Test::generate_random_vector<T>(repeatCount * row_count)}};
+      VecColumn<T> {infos[0], Test::generate_random_vector<T>(repeat_count * row_count)}};
 
   /* Write */
   du.initSeq(0, infos);
@@ -194,11 +194,11 @@ void checkVectorWriteRead(const BintableColumns& du) {
 
   /* Generate */
   const long row_count = 10000;
-  const long repeatCount = 3;
-  std::vector<ColumnInfo<T>> infos {{"VECTOR", "m", repeatCount}, {"SCALAR", "s", 1}}; // Inverted for robustness test
+  const long repeat_count = 3;
+  std::vector<ColumnInfo<T>> infos {{"VECTOR", "m", repeat_count}, {"SCALAR", "s", 1}}; // Inverted for robustness test
   std::vector<VecColumn<T>> seq {
       {infos[1], Test::generate_random_vector<T>(row_count)},
-      {infos[0], Test::generate_random_vector<T>(repeatCount * row_count)}};
+      {infos[0], Test::generate_random_vector<T>(repeat_count * row_count)}};
 
   /* Write */
   du.initSeq(0, infos);

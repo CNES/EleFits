@@ -7,8 +7,8 @@
 namespace Euclid {
 namespace Fits {
 
-ImageRaster::ImageRaster(fitsfile*& fptr, std::function<void(void)> touchFunc, std::function<void(void)> editFunc) :
-    m_fptr(fptr), m_touch(touchFunc), m_edit(editFunc) {}
+ImageRaster::ImageRaster(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit) :
+    m_fptr(fptr), m_touch(touch), m_edit(edit) {}
 
 const std::type_info& ImageRaster::readTypeid() const {
   m_touch();

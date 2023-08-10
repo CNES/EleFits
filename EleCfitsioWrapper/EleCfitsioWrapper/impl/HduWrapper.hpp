@@ -34,7 +34,7 @@ template <typename... TInfos>
 void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... infos) {
   constexpr long ncols = sizeof...(TInfos);
   Fits::String::CStrArray col_name {infos.name...};
-  Fits::String::CStrArray col_format {TypeCode<typename TInfos::Value>::tform(infos.repeatCount())...};
+  Fits::String::CStrArray col_format {TypeCode<typename TInfos::Value>::tform(infos.repeat_count())...};
   Fits::String::CStrArray col_unit {infos.unit...};
   int status = 0;
   fits_create_tbl(
@@ -76,7 +76,7 @@ void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& col
   constexpr long column_count = 1;
   std::string col_name = column.info().name;
   char* c_name = &col_name[0];
-  std::string col_format = TypeCode<typename TColumn::Value>::tform(column.info().repeatCount());
+  std::string col_format = TypeCode<typename TColumn::Value>::tform(column.info().repeat_count());
   char* c_format = &col_format[0];
   std::string col_unit = column.info().unit;
   char* c_unit = &col_unit[0];

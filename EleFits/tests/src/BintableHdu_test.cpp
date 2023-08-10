@@ -30,9 +30,9 @@ void checkScalar() {
 template <typename T>
 void checkVector() {
   constexpr long row_count = 10;
-  constexpr long repeatCount = 2;
-  Test::RandomScalarColumn<T> input(row_count * repeatCount);
-  input.reshape(repeatCount);
+  constexpr long repeat_count = 2;
+  Test::RandomScalarColumn<T> input(row_count * repeat_count);
+  input.reshape(repeat_count);
   Test::TemporaryMefFile file;
   file.appendBintableHeader("BINEXT", {}, input.info());
   file.find<BintableHdu>("BINEXT").writeColumn(input);
@@ -75,7 +75,7 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   const auto& ext = appendBintable("", {}, column1, column2);
   const auto& du = ext.columns();
   BOOST_TEST(du.readColumnCount() == 2);
-  BOOST_TEST(du.readRowCount() == column1.rowCount());
+  BOOST_TEST(du.readRowCount() == column1.row_count());
   BOOST_TEST(du.has(name1));
   BOOST_TEST(du.has(name2));
   BOOST_TEST(not du.has("NOTHERE"));

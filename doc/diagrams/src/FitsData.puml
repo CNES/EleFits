@@ -64,13 +64,13 @@ class Raster<T, N> {
 }
 class Column<T> {
 - m_info
-+ Column(info, rowCount)
-+ Column(info, rowCount, data)
++ Column(info, row_count)
++ Column(info, row_count, data)
 + info()
 + rename(name)
-+ reshape(repeatCount)
-+ elementCount()
-+ rowCount()
++ reshape(repeat_count)
++ element_count()
++ row_count()
 + operator()(rowIndex, repeatIndex)
 + at(row, repeat)
 + slice(front, back)
@@ -78,7 +78,7 @@ class Column<T> {
 class ColumnInfo<T> {
 + name
 + unit
-+ repeatCount
++ repeat_count
 }
 class Segment {
 + front

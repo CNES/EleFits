@@ -59,17 +59,17 @@ namespace Fits {
  * -- and more details follow.
  * 
  * <table class="fieldtable">
- * <tr><th>Category <th>`T`<th>`N`<th>`repeatCount()`<th>`elementCount()`<th>`shape`
- * <tr><td>%String<td>`std::string`<td>1<td>> max number of characters<td>1<td>`{repeatCount()}`
+ * <tr><th>Category <th>`T`<th>`N`<th>`repeat_count()`<th>`element_count()`<th>`shape`
+ * <tr><td>%String<td>`std::string`<td>1<td>> max number of characters<td>1<td>`{repeat_count()}`
  * <tr><td>Scalar<td>Not `std::string`<td>1<td>1<td>1<td>`{1}`
- * <tr><td>Vector<td>Not `std::string`<td>1<td>> 1<td> = repeat count<td>`{repeatCount()}`
+ * <tr><td>Vector<td>Not `std::string`<td>1<td>> 1<td> = repeat count<td>`{repeat_count()}`
  * <tr><td>Multidimensional<td>Not `std::string`<td>-1 or > 1<td>= shape size<td>= shape size<td>Unconstrained
  * </table>
  * 
  * For string columns, the element count differs from the repeat count,
  * in that the element count is the number of `std::string` objects stored in the column data container,
  * while the repeat count is the number of characters allocated to each string in the FITS file.
- * This results in `elementCount()` = 1 and `repeatCount()` > 1
+ * This results in `element_count()` = 1 and `repeat_count()` > 1
  * (multidimensional string columns are not supported).
  * 
  * @par_example
@@ -182,12 +182,26 @@ struct ColumnInfo {
   /**
    * @brief Get the repeat count.
    */
-  long repeatCount() const;
+  long repeat_count() const;
+
+  /**
+   * @deprecated
+   */
+  long repeatCount() const {
+    return repeat_count();
+  }
 
   /**
    * @brief Get the number of elements per field.
    */
-  long elementCount() const;
+  long element_count() const;
+
+  /**
+   * @deprecated
+   */
+  long elementCount() const {
+    return element_count();
+  }
 };
 
 /**
@@ -216,14 +230,14 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
  * 
  * @par_example
  * \code
- * auto stringInfo = makeColumnInfo<std::string>("String", "", 6);
- * auto scalarInfo = makeColumnInfo<int>("Scalar");
- * auto vectorInfo = makeColumnInfo<int>("Vector", "", 3);
- * auto multidimInfo = makeColumnInfo<int>("Multidim", "", 3, 2);
+ * auto stringInfo = make_column_info<std::string>("String", "", 6);
+ * auto scalarInfo = make_column_info<int>("Scalar");
+ * auto vectorInfo = make_column_info<int>("Vector", "", 3);
+ * auto multidimInfo = make_column_info<int>("Multidim", "", 3, 2);
  * \endcode
  */
 template <typename T, typename... Longs>
-ColumnInfo<T, sizeof...(Longs)> makeColumnInfo(const std::string& name, const std::string& unit, Longs... shape) {
+ColumnInfo<T, sizeof...(Longs)> make_column_info(const std::string& name, const std::string& unit, Longs... shape) {
   return {name, unit, Position<sizeof...(Longs)> {shape...}};
 }
 
@@ -232,8 +246,16 @@ ColumnInfo<T, sizeof...(Longs)> makeColumnInfo(const std::string& name, const st
  * @brief Scalar column specialization.
  */
 template <typename T>
-ColumnInfo<T> makeColumnInfo(const std::string& name, const std::string& unit = "") {
+ColumnInfo<T> make_column_info(const std::string& name, const std::string& unit = "") {
   return {name, unit};
+}
+
+/**
+ * @deprecated
+ */
+template <typename T, typename... TArgs>
+[[deprecated]] auto makeColumnInfo(TArgs&&... args) {
+  return make_column_info<T>(std::forward<TArgs>(args)...);
 }
 
 } // namespace Fits

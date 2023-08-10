@@ -18,11 +18,11 @@ template <typename T>
 void checkElementCount() {
   constexpr long repeat = 17; // Not 1 ;)
   ColumnInfo<T> info {"COL", "unit", repeat};
-  BOOST_TEST(info.repeatCount() == repeat);
+  BOOST_TEST(info.repeat_count() == repeat);
   if (std::is_same<T, std::string>::value) {
-    BOOST_TEST(info.elementCount() == 1);
+    BOOST_TEST(info.element_count() == 1);
   } else {
-    BOOST_TEST(info.elementCount() == repeat);
+    BOOST_TEST(info.element_count() == repeat);
   }
 }
 
@@ -34,7 +34,7 @@ void checkElementCount() {
 template <long N>
 void checkRepeatCountFromShape(const Position<N>& shape) {
   ColumnInfo<float, N> info("NAME", "unit", shape);
-  BOOST_TEST(info.repeatCount() == shapeSize(shape));
+  BOOST_TEST(info.repeat_count() == shapeSize(shape));
 }
 
 BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test) {
@@ -44,14 +44,14 @@ BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test) {
 }
 
 BOOST_AUTO_TEST_CASE(make_column_info_test) {
-  auto stringInfo = makeColumnInfo<std::string>("String", "", 6);
-  BOOST_TEST((stringInfo.shape == Position<1> {6}));
-  auto scalarInfo = makeColumnInfo<int>("Scalar");
-  BOOST_TEST((scalarInfo.shape == Position<1> {1}));
-  auto vectorInfo = makeColumnInfo<int>("Vector", "", 3);
-  BOOST_TEST((vectorInfo.shape == Position<1> {3}));
-  auto multidimInfo = makeColumnInfo<int>("Multidim", "", 3, 2);
-  BOOST_TEST((multidimInfo.shape == Position<2> {3, 2}));
+  auto string_info = make_column_info<std::string>("String", "", 6);
+  BOOST_TEST((string_info.shape == Position<1> {6}));
+  auto scalar_info = make_column_info<int>("Scalar");
+  BOOST_TEST((scalar_info.shape == Position<1> {1}));
+  auto vector_info = make_column_info<int>("Vector", "", 3);
+  BOOST_TEST((vector_info.shape == Position<1> {3}));
+  auto multidim_info = make_column_info<int>("Multidim", "", 3, 2);
+  BOOST_TEST((multidim_info.shape == Position<2> {3, 2}));
 }
 
 ELEFITS_FOREACH_COLUMN_TYPE(ELEMENT_COUNT_TEST)

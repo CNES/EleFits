@@ -63,7 +63,7 @@ using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
  * @satisfies{VectorArithmetic}
  * 
  * @see `ColumnInfo` for details on the field properties.
- * @see `makeColumn()` for creation shortcuts.
+ * @see `make_column()` for creation shortcuts.
  */
 template <typename T, long N, typename THolder>
 class Column : public DataContainer<T, THolder, Column<T, N, THolder>> {
@@ -142,11 +142,11 @@ public:
    * @brief Change the column repeat count (fold/unfold).
    * @details
    * The repeat count must be a divisor of the column size, except for string columns.
-   * The resulting field shape will be flat, with the first component = `repeatCount`
+   * The resulting field shape will be flat, with the first component = `repeat_count`
    * and the other components = 1.
    * @see reshape(Position<N>)
    */
-  void reshape(long repeatCount = 1);
+  void reshape(long repeat_count = 1);
 
   /**
    * @brief Change the field shape.
@@ -163,12 +163,26 @@ public:
    * although they are vector columns.
    * @deprecated Use standard `size()` instead.
    */
-  long elementCount() const;
+  long element_count() const;
+
+  /**
+   * @deprecated
+   */
+  long elementCount() const {
+    return element_count();
+  }
 
   /**
    * @brief Number of rows in the column.
    */
-  long rowCount() const;
+  long row_count() const;
+
+  /**
+   * @deprecated
+   */
+  long rowCount() const {
+    return row_count();
+  }
 
   /// @group_elements
 
@@ -256,7 +270,7 @@ private:
  * @details
  * Example usage:
  * \code
- * auto column = makeColumn(std::move(info), std::move(vector)); // Copy-less
+ * auto column = make_column(std::move(info), std::move(vector)); // Copy-less
  * \endcode
  */
 template <typename TInfo, typename TContainer>
@@ -264,7 +278,7 @@ Column<
     typename TContainer::value_type,
     std::decay_t<TInfo>::Dim,
     DataContainerHolder<typename TContainer::value_type, TContainer>>
-makeColumn(TInfo info, TContainer&& data) {
+make_column(TInfo info, TContainer&& data) {
   return {std::forward<TInfo>(info), std::forward<TContainer>(data)};
 }
 
@@ -273,8 +287,16 @@ makeColumn(TInfo info, TContainer&& data) {
  * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-PtrColumn<T, std::decay_t<TInfo>::Dim> makeColumn(TInfo&& info, long row_count, T* data) {
+PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, long row_count, T* data) {
   return {std::forward<TInfo>(info), row_count, data};
+}
+
+/**
+ * @deprecated
+ */
+template <typename... TArgs>
+[[deprecated]] auto makeColumn(TArgs&&... args) {
+  return make_column(std::forward<TArgs>(args)...);
 }
 
 } // namespace Fits

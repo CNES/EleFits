@@ -149,7 +149,7 @@ TutoColumns create_columns() {
 
   Fits::VecColumn<std::string> string_column({"STRING", "unit", 3}, 100);
   // String columns must be wide-enough to hold each character.
-  for (long i = 0; i < string_column.rowCount(); ++i) {
+  for (long i = 0; i < string_column.row_count(); ++i) {
     string_column(i) = std::to_string(i);
   }
   // operator() takes two parameters: the row index, and repeat index (=0 by default)

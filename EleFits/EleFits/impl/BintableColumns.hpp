@@ -70,13 +70,13 @@ void BintableColumns::readSegmentTo(FileMemSegments rows, TColumn& column) const
 template <typename TColumn>
 void BintableColumns::readSegmentTo(FileMemSegments rows, ColumnKey key, TColumn& column) const {
   m_touch();
-  rows.resolve(readRowCount() - 1, column.rowCount() - 1);
+  rows.resolve(readRowCount() - 1, column.row_count() - 1);
   auto slice = column.slice(rows.memory()); // TODO do we need a temporary variable?
   Cfitsio::BintableIo::read_column_data(
       m_fptr,
       Segment {rows.file().front + 1, rows.file().back + 1}, // TODO operator+
       key.index(*this) + 1, // 1-based
-      column.info().repeatCount(),
+      column.info().repeat_count(),
       &column(rows.memory().front, 0));
 }
 
@@ -207,7 +207,7 @@ template <typename TInfo>
 void BintableColumns::init(const TInfo& info, long index) const {
   m_edit();
   auto name = Fits::String::toCharPtr(info.name);
-  auto tform = Fits::String::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeatCount()));
+  auto tform = Fits::String::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeat_count()));
   int status = 0;
   int cfitsio_index = index == -1 ? Cfitsio::BintableIo::column_count(m_fptr) + 1 : index + 1;
   fits_insert_col(m_fptr, cfitsio_index, name.get(), tform.get(), &status);
@@ -224,13 +224,13 @@ void BintableColumns::init(const TInfo& info, long index) const {
 template <typename TColumn>
 void BintableColumns::writeSegment(FileMemSegments rows, const TColumn& column) const {
   m_edit();
-  rows.resolve(readRowCount() - 1, column.rowCount() - 1);
+  rows.resolve(readRowCount() - 1, column.row_count() - 1);
   const auto index = readIndex(column.info().name); // FIXME avoid?
   Cfitsio::BintableIo::write_column_data(
       m_fptr,
       rows.file() + 1,
       index + 1,
-      column.info().repeatCount(),
+      column.info().repeat_count(),
       &column(rows.memory().front, 0));
 }
 
@@ -255,7 +255,7 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
   String::CStrArray names(nameVec);
   const auto tformVec = seqTransform<std::vector<std::string>>(infos, [&](const auto& info) {
     using Value = typename std::decay_t<decltype(info)>::Value;
-    return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeatCount());
+    return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeat_count());
   });
   String::CStrArray tforms(tformVec);
   int status = 0;
@@ -308,7 +308,7 @@ template <typename TSeq>
 long columnsRowCount(TSeq&& columns) {
   long rows = -1;
   seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
-    const auto c_rows = c.rowCount();
+    const auto c_rows = c.row_count();
     if (rows == -1) {
       rows = c_rows;
     } else if (c_rows != rows) {

@@ -76,7 +76,7 @@ BRaster CfitsioBenchmark::read_image(long index) {
 }
 
 BChronometer::Unit CfitsioBenchmark::write_bintable(const BColumns& columns) {
-  long row_count = std::get<0>(columns).rowCount();
+  long row_count = std::get<0>(columns).row_count();
   std::vector<std::string> names(row_count);
   std::vector<std::string> formats(row_count);
   std::vector<std::string> units(row_count);

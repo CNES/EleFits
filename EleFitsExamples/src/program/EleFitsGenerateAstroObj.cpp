@@ -90,16 +90,16 @@ const BintableHdu& write_ext(MefFile& f, const std::string& name, const AstroObj
   return f.appendBintable(
       name,
       {},
-      makeColumn(std::move(objectid_info), std::move(objectid_data)),
-      makeColumn(std::move(radec_info), std::move(radec_data)),
-      makeColumn(std::move(exptime_info), std::move(exptime_data)),
-      makeColumn(std::move(comb_signal_info), std::move(com_signal_data)),
-      makeColumn(std::move(comb_var_info), std::move(comb_var_data)),
-      makeColumn(std::move(ptgid_info), std::move(ptgid_data)),
-      makeColumn(std::move(dith1d_signal_info), std::move(dith1d_signal_data)),
-      makeColumn(std::move(dith1d_var_info), std::move(dith1d_var_data)),
-      makeColumn(std::move(dith2d_signal_info), std::move(dith2d_signal_data)),
-      makeColumn(std::move(dith2d_var_info), std::move(dith2d_var_data)));
+      make_column(std::move(objectid_info), std::move(objectid_data)),
+      make_column(std::move(radec_info), std::move(radec_data)),
+      make_column(std::move(exptime_info), std::move(exptime_data)),
+      make_column(std::move(comb_signal_info), std::move(com_signal_data)),
+      make_column(std::move(comb_var_info), std::move(comb_var_data)),
+      make_column(std::move(ptgid_info), std::move(ptgid_data)),
+      make_column(std::move(dith1d_signal_info), std::move(dith1d_signal_data)),
+      make_column(std::move(dith1d_var_info), std::move(dith1d_var_data)),
+      make_column(std::move(dith2d_signal_info), std::move(dith2d_signal_data)),
+      make_column(std::move(dith2d_var_info), std::move(dith2d_var_data)));
 }
 
 /**
@@ -133,9 +133,9 @@ void insert_columns(const BintableColumns& du, const AstroObjInfo& info) {
   du.init(dith1d_qual_info, du.readIndex("DITH1D_VAR"));
   du.init(dith2d_qual_info, du.readIndex("DITH2D_VAR"));
   du.writeSeq(
-      makeColumn(std::move(comb_qual_info), std::move(comb_qual_data)),
-      makeColumn(std::move(dith1d_qual_info), std::move(dith1d_qual_data)),
-      makeColumn(std::move(dith2d_qual_info), std::move(dith2d_qual_data)));
+      make_column(std::move(comb_qual_info), std::move(comb_qual_data)),
+      make_column(std::move(dith1d_qual_info), std::move(dith1d_qual_data)),
+      make_column(std::move(dith2d_qual_info), std::move(dith2d_qual_data)));
 }
 
 /*

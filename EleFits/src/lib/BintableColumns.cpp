@@ -11,10 +11,10 @@ namespace Fits {
 
 BintableColumns::BintableColumns(
     fitsfile*& fptr,
-    std::function<void(void)> touchFunc,
-    std::function<void(void)> editFunc) :
+    std::function<void(void)> touch,
+    std::function<void(void)> edit) :
     m_fptr(fptr),
-    m_touch(touchFunc), m_edit(editFunc) {}
+    m_touch(touch), m_edit(edit) {}
 
 long BintableColumns::readColumnCount() const {
   m_touch();

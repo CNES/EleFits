@@ -65,8 +65,8 @@ void check_vector_column_is_read_back() {
     HduAccess::assign_bintable(file.fptr, "BINEXT", input);
     BOOST_TEST(BintableIo::row_count(file.fptr) == row_count);
     const auto output = BintableIo::read_column<T>(file.fptr, input.info().name);
-    BOOST_TEST(output.info().repeatCount() == repeat_count);
-    BOOST_TEST(output.rowCount() == row_count);
+    BOOST_TEST(output.info().repeat_count() == repeat_count);
+    BOOST_TEST(output.row_count() == row_count);
     BOOST_TEST(output.vector() == input.vector());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
@@ -148,7 +148,7 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
 template <long N>
 void check_tdim_is_read_back(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info) {
   HduAccess::init_bintable(fptr, "TABLE", info);
-  const bool should_have_tdim = (info.shape.size() > 1) || (info.shape[0] != info.repeatCount());
+  const bool should_have_tdim = (info.shape.size() > 1) || (info.shape[0] != info.repeat_count());
   BOOST_TEST(HeaderIo::has_keyword(fptr, "TDIM1") == should_have_tdim);
   const auto result = BintableIo::read_column_info<char, N>(fptr, 1);
   BOOST_TEST((result == info));

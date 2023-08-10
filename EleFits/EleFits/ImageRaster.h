@@ -35,7 +35,7 @@ private:
   /**
    * @brief Constructor.
    */
-  ImageRaster(fitsfile*& fptr, std::function<void(void)> touchFunc, std::function<void(void)> editFunc);
+  ImageRaster(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit);
 
 public:
   /**

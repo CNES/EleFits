@@ -28,7 +28,7 @@ void read_column_info_impl(
     long row_count) { // FIXME move outside of Internal
   column = Fits::VecColumn<T>(
       read_column_info<T>(fptr, index),
-      std::vector<std::decay_t<T>>(column.info().elementCount() * row_count));
+      std::vector<std::decay_t<T>>(column.info().element_count() * row_count));
 }
 
 /**
@@ -62,7 +62,7 @@ struct ColumnLooperImpl {
       long first_row,
       long row_count) {
     auto data = &std::get<i>(columns)(first_row - 1);
-    const auto repeat_count = std::get<i>(columns).info().repeatCount();
+    const auto repeat_count = std::get<i>(columns).info().repeat_count();
     read_column_data(fptr, Fits::Segment::fromSize(first_row, row_count), indices[i], repeat_count, data);
     ColumnLooperImpl<i - 1, TColumns...>::read_chunks(fptr, indices, columns, first_row, row_count);
   }
@@ -71,7 +71,7 @@ struct ColumnLooperImpl {
    * @brief Get the max number of rows of the columns.
    */
   static void max_row_count(const std::tuple<const TColumns&...>& columns, long& count = 0) {
-    count = std::max(std::get<i>(columns).rowCount(), count);
+    count = std::max(std::get<i>(columns).row_count(), count);
     ColumnLooperImpl<i - 1, TColumns...>::max_row_count(columns, count);
   }
 
@@ -85,7 +85,7 @@ struct ColumnLooperImpl {
       long first_row,
       long row_count) {
     const auto data = &std::get<i>(columns)(first_row - 1);
-    const auto repeat_count = std::get<i>(columns).info().repeatCount();
+    const auto repeat_count = std::get<i>(columns).info().repeat_count();
     write_column_data(fptr, Fits::Segment::fromSize(first_row, row_count), indices[i], repeat_count, data);
     ColumnLooperImpl<i - 1, TColumns...>::write_chunks(fptr, indices, columns, first_row, row_count);
   }
@@ -155,13 +155,13 @@ template <typename T, long N>
 Fits::VecColumn<T, N> read_column(fitsfile* fptr, long index) {
   const long rows = row_count(fptr);
   Fits::VecColumn<T, N> column(read_column_info<T>(fptr, index), rows);
-  read_column_data(fptr, {1, rows}, index, column.info().repeatCount(), column.data());
+  read_column_data(fptr, {1, rows}, index, column.info().repeat_count(), column.data());
   return column;
 }
 
 template <typename TColumn>
 void read_column_segment(fitsfile* fptr, const Fits::Segment& rows, long index, TColumn& column) {
-  read_column_data(fptr, rows, index, column.info().repeatCount(), column.data());
+  read_column_data(fptr, rows, index, column.info().repeat_count(), column.data());
 }
 
 template <typename T, long N>
@@ -198,9 +198,9 @@ void write_column_segment(fitsfile* fptr, long first_row, const TColumn& column)
   const auto index = column_index(fptr, column.info().name);
   write_column_data(
       fptr,
-      Fits::Segment::fromSize(first_row, column.rowCount()),
+      Fits::Segment::fromSize(first_row, column.row_count()),
       index,
-      column.info().repeatCount(),
+      column.info().repeat_count(),
       column.data());
 }
 
@@ -275,7 +275,7 @@ template <typename TColumn>
 void insert_columnn(fitsfile* fptr, long index, const TColumn& column) {
   const auto& info = column.info();
   auto name = Fits::String::toCharPtr(info.name);
-  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(info.repeatCount()));
+  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(info.repeat_count()));
   // FIXME write unit
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);
@@ -286,7 +286,7 @@ void insert_columnn(fitsfile* fptr, long index, const TColumn& column) {
 template <typename... TColumns>
 void insert_columns(fitsfile* fptr, long index, const TColumns&... columns) {
   auto names = Fits::String::CStrArray({columns.info().name...});
-  auto tforms = Fits::String::CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeatCount())...});
+  auto tforms = Fits::String::CStrArray({TypeCode<typename TColumns::Value>::tform(columns.info().repeat_count())...});
   // FIXME write unit
   int status = 0;
   fits_insert_cols(fptr, static_cast<int>(index), sizeof...(TColumns), names.data(), tforms.data(), &status);

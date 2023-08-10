@@ -13,16 +13,16 @@ template <typename T, long N>
 constexpr long ColumnInfo<T, N>::Dim;
 
 template <typename T, long N>
-long ColumnInfo<T, N>::repeatCount() const {
+long ColumnInfo<T, N>::repeat_count() const {
   return shapeSize(shape);
 }
 
 template <typename T, long N>
-long ColumnInfo<T, N>::elementCount() const {
+long ColumnInfo<T, N>::element_count() const {
   if (std::is_same<T, std::string>::value) {
     return 1;
   }
-  return repeatCount();
+  return repeat_count();
 }
 
 template <typename T, long N>

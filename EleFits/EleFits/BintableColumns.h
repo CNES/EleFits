@@ -82,7 +82,7 @@ private:
   /**
    * @brief Constructor.
    */
-  BintableColumns(fitsfile*& fptr, std::function<void(void)> touchFunc, std::function<void(void)> editFunc);
+  BintableColumns(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit);
 
 public:
   /**
