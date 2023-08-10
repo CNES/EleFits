@@ -25,10 +25,10 @@ void check_random3d_is_read_back() {
   MinimalFile file;
   HduAccess::assign_image(file.fptr, "IMGEXT", input);
   const auto fixed_output = ImageIo::read_raster<T, 3>(file.fptr);
-  BOOST_TEST(fixed_output.vector() == input.vector());
+  BOOST_TEST(fixed_output.container() == input.container());
   const auto variable_output = ImageIo::read_raster<T, -1>(file.fptr);
   BOOST_TEST(variable_output.dimension() == 3);
-  BOOST_TEST(variable_output.vector() == input.vector());
+  BOOST_TEST(variable_output.container() == input.container());
 }
 
 #define RANDOM_3D_RASTER_IS_READ_BACK_TEST(type, name) \

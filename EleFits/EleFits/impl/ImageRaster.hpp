@@ -41,12 +41,6 @@ void ImageRaster::readTo(TRaster& raster) const {
   Cfitsio::ImageIo::read_raster_to(m_fptr, raster);
 }
 
-template <typename T, long N, typename TContainer>
-void ImageRaster::readTo(Subraster<T, N, TContainer>& subraster) const {
-  m_touch();
-  Cfitsio::ImageIo::read_raster_to(m_fptr, subraster);
-}
-
 template <typename T, long M, long N>
 VecRaster<T, M> ImageRaster::readRegion(const Region<N>& region) const {
   VecRaster<T, M> raster(region.shape().template slice<M>());

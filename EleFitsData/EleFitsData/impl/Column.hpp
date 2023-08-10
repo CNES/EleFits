@@ -60,13 +60,8 @@ void Column<T, N, TContainer>::reshape(Position<N> shape) {
 }
 
 template <typename T, long N, typename TContainer>
-long Column<T, N, TContainer>::element_count() const {
-  return this->size();
-}
-
-template <typename T, long N, typename TContainer>
 long Column<T, N, TContainer>::row_count() const {
-  return element_count() / m_info.element_count();
+  return this->size() / m_info.element_count();
 }
 
 template <typename T, long N, typename TContainer>

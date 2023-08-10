@@ -24,7 +24,7 @@ void checkScalar() {
   Test::TemporaryMefFile file;
   file.append_bintable("BINEXT", {}, input);
   const auto output = file.find<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
-  BOOST_TEST(output.vector() == input.vector());
+  BOOST_TEST(output.container() == input.container());
 }
 
 template <typename T>
@@ -87,11 +87,11 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto& ext = append_bintable("", {}, intColumn, floatColumn);
   const auto& du = ext.columns();
   const auto byName = du.readSeq(as<int>(intColumn.info().name), as<float>(floatColumn.info().name));
-  BOOST_TEST(std::get<0>(byName).vector() == intColumn.vector());
-  BOOST_TEST(std::get<1>(byName).vector() == floatColumn.vector());
+  BOOST_TEST(std::get<0>(byName).container() == intColumn.container());
+  BOOST_TEST(std::get<1>(byName).container() == floatColumn.container());
   const auto byIndex = du.readSeq(as<int>(0), as<float>(1));
-  BOOST_TEST(std::get<0>(byIndex).vector() == intColumn.vector());
-  BOOST_TEST(std::get<1>(byIndex).vector() == floatColumn.vector());
+  BOOST_TEST(std::get<0>(byIndex).container() == intColumn.container());
+  BOOST_TEST(std::get<1>(byIndex).container() == floatColumn.container());
 }
 
 BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {

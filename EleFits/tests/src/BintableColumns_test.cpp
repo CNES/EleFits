@@ -78,8 +78,8 @@ void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, c
   const auto [res0, res1] = du.readSeq(as<T>(last.info().name), as<T>(first.info().name)); // Structured binding
   BOOST_TEST((res0.info() == last.info()));
   BOOST_TEST((res1.info() == first.info()));
-  BOOST_TEST(res0.vector() == last.vector());
-  BOOST_TEST(res1.vector() == first.vector());
+  BOOST_TEST(res0.container() == last.container());
+  BOOST_TEST(res1.container() == first.container());
 
   /* Append */
   du.writeSegmentSeq(-1, last, first);
@@ -91,8 +91,8 @@ void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, c
   const auto& res21 = std::get<1>(res2);
   BOOST_TEST((res20.info() == last.info()));
   BOOST_TEST((res21.info() == first.info()));
-  BOOST_TEST(res20.vector() == last.vector());
-  BOOST_TEST(res21.vector() == first.vector());
+  BOOST_TEST(res20.container() == last.container());
+  BOOST_TEST(res21.container() == first.container());
 }
 
 template <>
@@ -140,8 +140,8 @@ void checkArrayWriteRead(const BintableColumns& du) {
   const auto& res1 = res[1];
   BOOST_TEST((res0.info() == seq[1].info()));
   BOOST_TEST((res1.info() == seq[0].info()));
-  BOOST_TEST(res0.vector() == seq[1].vector());
-  BOOST_TEST(res1.vector() == seq[0].vector());
+  BOOST_TEST(res0.container() == seq[1].container());
+  BOOST_TEST(res1.container() == seq[0].container());
 
   /* Remove */
   du.removeSeq({1, 0}); // Inverted for robustness test
@@ -210,8 +210,8 @@ void checkVectorWriteRead(const BintableColumns& du) {
   const auto& res1 = res[1];
   BOOST_TEST((res0.info() == seq[1].info()));
   BOOST_TEST((res1.info() == seq[0].info()));
-  BOOST_TEST(res0.vector() == seq[1].vector());
-  BOOST_TEST(res1.vector() == seq[0].vector());
+  BOOST_TEST(res0.container() == seq[1].container());
+  BOOST_TEST(res1.container() == seq[0].container());
 
   /* Remove */
   du.removeSeq({infos[0].name, infos[1].name}); // Inverted for robustness test

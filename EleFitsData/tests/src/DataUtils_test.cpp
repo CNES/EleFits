@@ -92,10 +92,6 @@ BOOST_AUTO_TEST_CASE(typed_test) {
   const char* c_str = name.c_str();
   const int integer = 707471;
   const long index = integer;
-  BOOST_TEST(Named<float>(name).key == name);
-  BOOST_TEST(Named<float>(c_str).key == name);
-  BOOST_TEST(Indexed<float>(integer).key == index);
-  BOOST_TEST(Indexed<float>(index).key == index);
   BOOST_TEST(as<float>(name).key == name);
   BOOST_TEST(as<float>(c_str).key == name);
   BOOST_TEST(as<float>(integer).key == index);

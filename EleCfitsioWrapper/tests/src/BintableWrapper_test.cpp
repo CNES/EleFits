@@ -32,10 +32,10 @@ void check_scalar_column_is_read_back() {
     const auto info = BintableIo::read_column_info<T>(file.fptr, index);
     BOOST_TEST((info == input.info()));
     const auto output = BintableIo::read_column<T>(file.fptr, input.info().name);
-    BOOST_TEST(output.vector() == input.vector());
+    BOOST_TEST(output.container() == input.container());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
-    for (const auto& v : input.vector()) {
+    for (const auto& v : input.container()) {
       std::cerr << v << ' ';
     }
     std::cerr << std::endl;
@@ -67,10 +67,10 @@ void check_vector_column_is_read_back() {
     const auto output = BintableIo::read_column<T>(file.fptr, input.info().name);
     BOOST_TEST(output.info().repeat_count() == repeat_count);
     BOOST_TEST(output.row_count() == row_count);
-    BOOST_TEST(output.vector() == input.vector());
+    BOOST_TEST(output.container() == input.container());
   } catch (const CfitsioError& e) {
     std::cerr << "Input:" << std::endl;
-    for (const auto& v : input.vector()) {
+    for (const auto& v : input.container()) {
       std::cerr << v << ' ';
     }
     std::cerr << std::endl;
@@ -102,14 +102,14 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
   SmallTable input;
   HduAccess::assign_bintable(this->fptr, "IMGEXT", input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
   const auto output_nums = BintableIo::read_column<SmallTable::Num>(this->fptr, input.num_col.info().name);
-  BOOST_TEST(output_nums.vector() == input.nums);
+  BOOST_TEST(output_nums.container() == input.nums);
   const auto output_radecs = BintableIo::read_column<SmallTable::Radec>(this->fptr, input.radec_col.info().name);
-  BOOST_TEST(output_radecs.vector() == input.radecs);
+  BOOST_TEST(output_radecs.container() == input.radecs);
   const auto output_names = BintableIo::read_column<SmallTable::Name>(this->fptr, input.name_col.info().name);
-  BOOST_TEST(output_names.vector() == input.names);
+  BOOST_TEST(output_names.container() == input.names);
   const auto output_dists_mags =
       BintableIo::read_column<SmallTable::DistMag>(this->fptr, input.dist_mag_col.info().name);
-  BOOST_TEST(output_dists_mags.vector() == input.dists_mags);
+  BOOST_TEST(output_dists_mags.container() == input.dists_mags);
 }
 
 BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
@@ -127,9 +127,9 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   long chunk_row_count = 0;
   fits_get_rowsize(fptr, &chunk_row_count, &status);
   BOOST_TEST(chunk_row_count < row_count);
-  BOOST_TEST(std::get<0>(table).vector() == i.vector());
-  BOOST_TEST(std::get<1>(table).vector() == f.vector());
-  BOOST_TEST(std::get<2>(table).vector() == d.vector());
+  BOOST_TEST(std::get<0>(table).container() == i.container());
+  BOOST_TEST(std::get<1>(table).container() == f.container());
+  BOOST_TEST(std::get<2>(table).container() == d.container());
 }
 
 BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
@@ -137,12 +137,12 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
   SmallTable table;
   HduAccess::assign_bintable(this->fptr, "TABLE", table.name_col);
   const auto names = BintableIo::read_column<SmallTable::Name>(fptr, table.name_col.info().name);
-  BOOST_TEST(names.vector() == table.names);
+  BOOST_TEST(names.container() == table.names);
   BintableIo::append_columns(fptr, table.dist_mag_col, table.radec_col);
   const auto dists_mags = BintableIo::read_column<SmallTable::DistMag>(fptr, table.dist_mag_col.info().name);
-  BOOST_TEST(dists_mags.vector() == table.dists_mags);
+  BOOST_TEST(dists_mags.container() == table.dists_mags);
   const auto radecs = BintableIo::read_column<SmallTable::Radec>(fptr, table.radec_col.info().name);
-  BOOST_TEST(radecs.vector() == table.radecs);
+  BOOST_TEST(radecs.container() == table.radecs);
 }
 
 template <long N>

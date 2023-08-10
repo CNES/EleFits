@@ -37,7 +37,7 @@ void check_raster_is_read_back() {
   du.reinit<T>(input.shape());
   du.write(input);
   const auto output = du.read<T, 3>();
-  BOOST_TEST(output.vector() == input.vector());
+  BOOST_TEST(output.container() == input.container());
 }
 
 template <>
@@ -163,7 +163,7 @@ BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifF
   const PtrRaster<const std::int16_t> c_raster(shape, c_data.data());
   this->write({}, c_raster);
   const auto res = this->raster().read<std::int16_t>();
-  const auto& vec = res.vector();
+  const auto& vec = res.container();
   BOOST_TEST(vec == c_data);
 }
 

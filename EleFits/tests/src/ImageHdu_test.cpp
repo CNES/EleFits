@@ -24,7 +24,7 @@ void check_2d() {
   MefFile file(filename, FileMode::Temporary);
   file.append_image("IMGEXT", {}, input);
   const auto output = file.find<ImageHdu>("IMGEXT").readRaster<T, 2>();
-  BOOST_TEST(output.vector() == input.vector());
+  BOOST_TEST(output.container() == input.container());
 }
 
 /**

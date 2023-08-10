@@ -29,7 +29,7 @@ BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile) {
   const auto record = this->header().parse<int>(keyword);
   BOOST_TEST((record == value));
   const auto output = this->raster().read<float>();
-  BOOST_TEST(input.vector() == output.vector());
+  BOOST_TEST(input.container() == output.container());
   BOOST_TEST(input.approx(output));
   remove(this->filename().c_str());
 }
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(write_all_test) {
   auto r = records.as<int>(i.keyword);
   BOOST_TEST((records.as<int>(i.keyword) == i));
   BOOST_TEST((records.as<std::string>(s.keyword) == s));
-  BOOST_TEST(output.vector() == input.vector());
+  BOOST_TEST(output.container() == input.container());
 }
 
 BOOST_FIXTURE_TEST_CASE(checksum_test, Test::TemporarySifFile) {

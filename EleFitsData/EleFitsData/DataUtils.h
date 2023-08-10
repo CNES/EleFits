@@ -158,20 +158,6 @@ struct TypedKey {
 };
 
 /**
- * @brief Deprecated alias for named keys.
- * @deprecated Use `as()` instead.
- */
-template <typename TReturn>
-using Named = TypedKey<TReturn, std::string>;
-
-/**
- * @brief Deprecated alias for indexed keys.
- * @deprecated Use `as()` instead.
- */
-template <typename TReturn>
-using Indexed = TypedKey<TReturn, long>;
-
-/**
  * @relates TypedKey
  * @brief Create a `TypedKey` where the key type is deduced from the parameter.
  * @details

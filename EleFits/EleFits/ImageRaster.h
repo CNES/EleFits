@@ -105,14 +105,6 @@ public:
   template <typename TRaster>
   void readTo(TRaster& raster) const;
 
-  /**
-   * @brief Read the whole data unit into an existing `Subraster`.
-   * @deprecated
-   * @copydetails read()
-   */
-  template <typename T, long N = 2, typename TContainer>
-  void readTo(Subraster<T, N, TContainer>& subraster) const; //FIXME rm?
-
   /// @}
   /**
    * @name Read a region of the data unit.

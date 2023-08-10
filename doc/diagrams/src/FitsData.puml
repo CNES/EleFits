@@ -69,7 +69,7 @@ class Column<T> {
 + info()
 + rename(name)
 + reshape(repeat_count)
-+ element_count()
++ size()
 + row_count()
 + operator()(rowIndex, repeatIndex)
 + at(row, repeat)

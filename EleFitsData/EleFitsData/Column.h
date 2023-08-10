@@ -157,22 +157,6 @@ public:
   void reshape(Position<N> shape);
 
   /**
-   * @brief Number of elements in the column, i.e. repeat count times number of rows.
-   * @warning
-   * For string columns, the element count is just the number of rows,
-   * although they are vector columns.
-   * @deprecated Use standard `size()` instead.
-   */
-  long element_count() const;
-
-  /**
-   * @deprecated
-   */
-  long elementCount() const {
-    return element_count();
-  }
-
-  /**
    * @brief Number of rows in the column.
    */
   long row_count() const;
