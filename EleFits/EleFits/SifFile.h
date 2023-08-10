@@ -47,46 +47,39 @@ public:
    * @brief Write both the records and the raster (resize the data unit if empty).
    */
   template <typename TRaster>
-  void writeAll(const RecordSeq& records, const TRaster& raster);
+  void write(const RecordSeq& records, const TRaster& raster);
 
   /**
-   * @brief Read the raster.
-   * @details
-   * This is a shortcut for:
-   * - Accessing the data unit;
-   * - Reading the raster.
-   * 
-   * Anything more complex (e.g. region-wise reading) can be done via `raster()`.
-   * 
-   * @deprecated Use `raster().read()` instead.
-   */
-  template <typename T, long N = 2>
-  VecRaster<T, N> readRaster() const;
-
-  /**
-   * @brief Write the raster (resize the data unit if empty).
-   * @details
-   * This is a shortcut for:
-   * - Accessing the data unit;
-   * - Resizing it;
-   * - Writing the raster.
-   * 
-   * Anything more complex (e.g. region-wise writing) can be done via `raster()`.
-   * 
-   * @deprecated Use `raster().write()` instead.
+   * @deprecated
    */
   template <typename TRaster>
-  void writeRaster(const TRaster& raster) const;
+  [[deprecated("Use write()")]] void writeAll(const RecordSeq& records, const TRaster& raster) {
+    return write(records, raster);
+  }
 
   /**
-   * @copydoc Hdu::verifyChecksums()
+   * @copydoc Hdu::verify_checksums()
    */
-  void verifyChecksums() const;
+  void verify_checksums() const;
 
   /**
-   * @copydoc Hdu::updateChecksums()
+   * @deprecated
    */
-  void updateChecksums() const;
+  void verifyChecksums() const {
+    return verify_checksums();
+  }
+
+  /**
+   * @copydoc Hdu::update_checksums()
+   */
+  void update_checksums() const;
+
+  /**
+   * @deprecated
+   */
+  void updateChecksums() const {
+    return update_checksums();
+  }
 
 private:
   /**

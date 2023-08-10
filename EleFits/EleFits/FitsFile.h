@@ -104,7 +104,14 @@ public:
   /**
    * @brief Check whether the file is open.
    */
-  bool isOpen() const;
+  bool is_open() const;
+
+  /**
+   * @deprecated
+   */
+  bool isOpen() const {
+    return is_open();
+  }
 
   /**
    * @brief Reopen the file.
@@ -125,7 +132,14 @@ public:
   /**
    * @brief Close and delete the file.
    */
-  void closeAndDelete(); // FIXME virtual?
+  void close_remove(); // FIXME virtual?
+
+  /**
+   * @deprecated
+   */
+  [[deprecated("Use close_remove()")]] void closeAndDelete() {
+    return close_remove();
+  }
 
   /**
    * @brief Get CFITSIO's `fitsfile*`.
@@ -139,7 +153,14 @@ public:
    * The behaviour of all other handler methods (not only `MefFile`'s ones)
    * after calling this function is undefined.
    */
-  fitsfile* handoverToCfitsio();
+  fitsfile* handover_to_cfitsio();
+
+  /**
+   * @deprecated
+   */
+  fitsfile* handoverToCfitsio() {
+    return handover_to_cfitsio();
+  }
 
 protected:
   /**

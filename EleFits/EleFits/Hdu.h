@@ -177,24 +177,38 @@ public:
    * To get details on the error, ask the `ChecksumError` object itself:
    * \code
    * try {
-   *   hdu.verifyChecksums();
+   *   hdu.verify_checksums();
    * } catch (ChecksumError& e) {
    *   if (e.data == ChecksumError::Status::Missing) {
    *     // ...
    *   }
    * }
    * \endcode
-   * @see updateChecksums()
+   * @see update_checksums()
    */
-  void verifyChecksums() const;
+  void verify_checksums() const;
+
+  /**
+   * @deprecated
+   */
+  void verifyChecksums() const {
+    return verify_checksums();
+  }
 
   /**
    * @brief Compute and write (or update) the HDU and data checksums.
    * @details
    * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`).
-   * @see verifyChecksums()
+   * @see verify_checksums()
    */
-  void updateChecksums() const;
+  void update_checksums() const;
+
+  /**
+   * @deprecated
+   */
+  void updateChecksums() const {
+    return update_checksums();
+  }
 
 protected:
   /**

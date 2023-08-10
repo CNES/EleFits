@@ -77,7 +77,7 @@ void Hdu::updateVersion(long version) const {
   Cfitsio::HduAccess::update_version(m_fptr, version);
 }
 
-void Hdu::verifyChecksums() const {
+void Hdu::verify_checksums() const {
   touch();
   int status = 0;
   int datastatus;
@@ -87,7 +87,7 @@ void Hdu::verifyChecksums() const {
   // TODO wrap in EleCfitsioWrapper
 }
 
-void Hdu::updateChecksums() const {
+void Hdu::update_checksums() const {
   edit();
   int status = 0;
   fits_write_chksum(m_fptr, &status);

@@ -39,7 +39,7 @@ public:
 
     logger.info("Saving board...");
     SifFile f(args["output"].as<std::string>(), FileMode::Overwrite);
-    f.writeRaster(board);
+    f.write({}, board);
 
     logger.info("Done.");
     return Elements::ExitCode::OK;

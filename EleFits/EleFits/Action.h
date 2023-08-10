@@ -106,7 +106,7 @@ public:
    */
   void accessed(const Hdu& hdu) override {
     try {
-      hdu.verifyChecksums();
+      hdu.verify_checksums();
     } catch (ChecksumError& e) {
       if (e.incorrect()) {
         throw e;
@@ -123,17 +123,17 @@ public:
         return;
       case UpdateChecksums::Outdated:
         if (edited(hdu) && has_checksums(hdu)) {
-          hdu.updateChecksums();
+          hdu.update_checksums();
         }
         return;
       case UpdateChecksums::EditedHdu:
         if (edited(hdu)) {
-          hdu.updateChecksums();
+          hdu.update_checksums();
         }
         return;
       case UpdateChecksums::AnyHdu:
         if (edited(hdu) || not has_checksums(hdu)) {
-          hdu.updateChecksums();
+          hdu.update_checksums();
         }
         return;
     }

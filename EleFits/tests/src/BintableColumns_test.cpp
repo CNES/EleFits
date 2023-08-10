@@ -164,7 +164,7 @@ void checkArrayWriteRead<std::uint64_t>(const BintableColumns& /* du */) {
   /* Setup */
   using T = std::uint64_t;
   Test::TemporaryMefFile f;
-  fitsfile* fptr = f.handoverToCfitsio(); // FIXME in FitsFile, explicitely keep filename() available
+  fitsfile* fptr = f.handover_to_cfitsio(); // FIXME in FitsFile, explicitely keep filename() available
   int status = 0;
 
   /* Create ext */

@@ -21,12 +21,12 @@ const ImageRaster& SifFile::raster() const {
   return m_raster;
 }
 
-void SifFile::verifyChecksums() const {
-  m_hdu.verifyChecksums();
+void SifFile::verify_checksums() const {
+  m_hdu.verify_checksums();
 }
 
-void SifFile::updateChecksums() const {
-  m_hdu.updateChecksums();
+void SifFile::update_checksums() const {
+  m_hdu.update_checksums();
 }
 
 } // namespace Fits
