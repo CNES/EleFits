@@ -13,7 +13,7 @@ namespace Fits {
 - The value type as a template parameter;
 - The name;
 - The unit;
-- The entry shape (column entries can be multidimensional).
+- The field shape (column entries can be multidimensional).
 
 
 \section bintable_data_classes-columns Column, PtrColumn, VecColumn

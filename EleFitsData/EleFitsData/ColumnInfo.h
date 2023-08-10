@@ -39,12 +39,12 @@ namespace Fits {
 
 /**
  * @ingroup bintable_data_classes
- * @brief Column informations, i.e. name, unit, entry shape and value type.
+ * @brief Column informations, i.e. name, unit, field shape and value type.
  * @tparam T The value type
- * @tparam N The dimension (number of axes per entry)
+ * @tparam N The dimension (number of axes per field)
  * @details
  * Binary tables can be seen as a sequence of columns made of consecutive entries.
- * Entry values are not necessarily simple types:
+ * Field values are not necessarily simple types:
  * they can be either string, scalar, vector or multidimensional.
  * Yet, all the entries of one column have the same properties.
  * The column informations consist in:
@@ -52,9 +52,9 @@ namespace Fits {
  * - The dimension (number of axes) as template parameter `N`;
  * - The column `name`;
  * - The column `unit`;
- * - The entry `shape` (see below).
+ * - The field `shape` (see below).
  * 
- * The number of values per entry, named repeat count, is the shape size.
+ * The number of values per field, named repeat count, is the shape size.
  * Here is a table which summarizes the properties of each column type
  * -- and more details follow.
  * 
@@ -142,12 +142,12 @@ struct ColumnInfo {
   static constexpr long Dim = N;
 
   /**
-   * @brief Create a column info with given entry repeat count.
+   * @brief Create a column info with given field repeat count.
    * @param n The column name
    * @param u The column unit
    * @param r The repeat count
    * @details
-   * The entry shape is deduced from the repeat count
+   * The field shape is deduced from the repeat count
    * (first axis' lenght is the repeat count, others are set to 1).
    */
   ColumnInfo(std::string n = "", std::string u = "", long r = 1) : name(n), unit(u), shape(Position<N>::one()) {
@@ -155,10 +155,10 @@ struct ColumnInfo {
   }
 
   /**
-   * @brief Create a column info with given entry shape.
+   * @brief Create a column info with given field shape.
    * @param n The column name
    * @param u The column unit
-   * @param s The entry shape
+   * @param s The field shape
    * @details
    * The repeat count is deduced from the shape.
    */
@@ -175,7 +175,7 @@ struct ColumnInfo {
   std::string unit;
 
   /**
-   * @brief The shape of one entry.
+   * @brief The shape of one field.
    */
   Position<N> shape;
 
@@ -185,7 +185,7 @@ struct ColumnInfo {
   long repeatCount() const;
 
   /**
-   * @brief Get the number of elements per entry.
+   * @brief Get the number of elements per field.
    */
   long elementCount() const;
 };

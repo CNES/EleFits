@@ -2,9 +2,16 @@
 
 ## 5.3
 
-## Bug fixes
+### Bug fixes
 
 * `parseAll()` threw when parsing long string user-defined keywords
+
+### Breaking changes
+
+* `Column::entry()` deprecated and renamed as `field()` (name was wrong wrt. the FITS standard)
+* Snake-cased functions names for better integration with the standard library and `Linx`
+  * Pascal-cased names are kept but deprecated
+  * Data classes due to be replaced with `Linx` in version 6 are unchanged
 
 ### New features
 
@@ -24,8 +31,7 @@
 
 ### Cleaning
 
-* Deprecated `MefFile` members were removed
-* Preparing switch (back) to snake case for functions for better integration with the standard library
+* Previously deprecated `MefFile` members were removed
 
 ## 5.2
 

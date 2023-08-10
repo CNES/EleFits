@@ -25,7 +25,7 @@ VecRaster<T, N> SifFile::readRaster() const {
 template <typename TRaster>
 void SifFile::writeRaster(const TRaster& raster) const {
   Cfitsio::HduAccess::goto_primary(m_fptr); // FXME needed?
-  Cfitsio::ImageIo::updateTypeShape<typename TRaster::Value, TRaster::Dim>(m_fptr, raster.shape());
+  Cfitsio::ImageIo::update_type_shape<typename TRaster::Value, TRaster::Dim>(m_fptr, raster.shape());
   Cfitsio::ImageIo::write_raster(m_fptr, raster);
 }
 

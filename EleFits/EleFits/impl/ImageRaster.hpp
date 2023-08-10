@@ -25,7 +25,7 @@ void ImageRaster::updateShape(const Position<N>& shape) const {
 template <typename T, long N>
 void ImageRaster::reinit(const Position<N>& shape) const {
   m_edit();
-  Cfitsio::ImageIo::updateTypeShape<T, N>(m_fptr, shape);
+  Cfitsio::ImageIo::update_type_shape<T, N>(m_fptr, shape);
 }
 
 template <typename T, long N>

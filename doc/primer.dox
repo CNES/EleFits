@@ -177,7 +177,7 @@ There are two types of table HDUs: ASCII tables and binary tables.
 ASCII tables are hardly used anymore, and are not supported at all by EleFits.
 Binary tables are sequences of rows, themselves made of *entries*.
 Obviously, they can be seen as columns made of entries, but the FITS file is written row-wise.
-Binary table entries can be *scalar* (one element per entry) or *vector* (several elements per entry).
+Binary table entries can be *scalar* (one element per field) or *vector* (several elements per field).
 In the latter case, entries can even be *multidimensional*, and seen as rasters like in image data units.
 
 A more recent addition to the standard is binary tables with vector columns of varying size,
@@ -279,11 +279,11 @@ In an image data unit:
 - *%Raster:* An _n_-D array or values stored contiguously, in row-major order.
 
 In a binary table data unit:
-- *Entry:* A cell of a table HDU, i.e. the intersection of a row and column; It may contain several elements!
-- *Element:* A single value of an entry, of simple type (e.g. one character of a string entry).
-- *Scalar entry:* An entry which contains one element.
-- *Vector entry:* An entry which contains several elements.
-- *Multidimensional entry:* A vector entry which can be viewed as a raster.
+- *Field:* A cell of a table HDU, i.e. the intersection of a row and column; It may contain several elements!
+- *Element:* (Termed entry in the standard) A single value of an field, of simple type (e.g. one character of a string field, one pixel of a multidimensional field).
+- *Scalar field:* An field which contains one element.
+- *Vector field:* An field which contains several elements.
+- *Multidimensional field:* A vector field which can be viewed as a raster.
 
 */
 

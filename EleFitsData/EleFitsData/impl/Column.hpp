@@ -96,12 +96,12 @@ T& Column<T, N, TContainer>::at(long row, long repeat) {
 }
 
 template <typename T, long N, typename TContainer>
-const PtrRaster<const T, N> Column<T, N, TContainer>::entry(long row) const {
+const PtrRaster<const T, N> Column<T, N, TContainer>::field(long row) const {
   return PtrRaster<const T, N>({m_info.shape}, &at(row));
 }
 
 template <typename T, long N, typename TContainer>
-PtrRaster<T, N> Column<T, N, TContainer>::entry(long row) {
+PtrRaster<T, N> Column<T, N, TContainer>::field(long row) {
   return PtrRaster<T, N>({m_info.shape}, &at(row));
 }
 

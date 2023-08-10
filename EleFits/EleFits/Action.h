@@ -115,8 +115,8 @@ public:
   }
 
   /**
-   * @brief If the HDU was edited, update its checksums bHduefore closing.
-  */
+   * @brief If the HDU was edited, update its checksums before closing.
+   */
   void closing(const Hdu& hdu) override {
     switch (m_mode) {
       case UpdateChecksums::None:

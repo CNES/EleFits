@@ -92,7 +92,7 @@ void viewAsRaster(const Fits::BintableColumns& du) {
 
   /* Zero pixels at odd positions */
   for (long i = 0; i < col.rowCount(); ++i) {
-    auto raster = col.entry(i);
+    auto raster = col.field(i);
     for (const auto& p : raster.domain()) {
       if ((p[0] + p[1]) % 2 == 1) {
         raster[p] = 0;

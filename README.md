@@ -169,7 +169,7 @@ Entries of mutidimensional columns can be accessed as rasters directly:
 // - BintableColumns columns: The binary table data unit handler
 
 auto column = columns.read<double, 2>("THUMBNAILS");
-auto raster = column.entry(42);
+auto raster = column[42];
 auto pixel = raster[{3, 14}];
 ```
 

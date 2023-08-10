@@ -51,7 +51,7 @@ Methods are gathered in groups with predefined names and ordering (if applicable
 * Properties, e.g. `size()` and `reshape()` (`@group_properties`)
 * Element access, e.g. `operator[]()` and `data()` (`@group_elements`)
 * Iterators, e.g. `begin()` and `end()` (`@group_iterators`)
-* Views, e.g. `slice()` and `entry()` (`@group_views`)
+* Views, e.g. `slice()` (`@group_views`)
 * Data modifiers, e.g. `apply()` and `operator+=()` (`@group_modifiers`)
 * Operations, e.g. `find()` and `operator+()` (`@group_operations`)
 
