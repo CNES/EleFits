@@ -192,11 +192,11 @@ void write_file(const std::string& filename) {
 
   /* Fill the header and data units */
 
-  const auto& image1 = f.appendImage("IMAGE1", {}, rasters.int32_raster3d);
+  const auto& image1 = f.append_image("IMAGE1", {}, rasters.int32_raster3d);
 
   /* Fill the header only (for now) */
 
-  const auto& image2 = f.appendNullImage<std::int16_t>("IMAGE2", {}, rasters.int16_raster2d.shape());
+  const auto& image2 = f.append_null_image<std::int16_t>("IMAGE2", {}, rasters.int16_raster2d.shape());
 
   //! [Create image extensions]
 
@@ -215,11 +215,11 @@ void write_file(const std::string& filename) {
   /* Fill the header and data units */
 
   const auto& table1 =
-      f.appendBintable("TABLE1", {}, columns.string_column, columns.int32_column, columns.float_column);
+      f.append_bintable("TABLE1", {}, columns.string_column, columns.int32_column, columns.float_column);
 
   /* Fill the header unit only (for now) */
 
-  const auto& table2 = f.appendBintableHeader(
+  const auto& table2 = f.append_bintable_header(
       "TABLE2",
       {},
       columns.string_column.info(),

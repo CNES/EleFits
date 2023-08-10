@@ -23,7 +23,7 @@ void EleFitsColwiseBenchmark::close() {
 
 BChronometer::Unit EleFitsColwiseBenchmark::write_bintable(const BColumns& columns) {
   m_chrono.start();
-  const auto& ext = m_f.appendBintableHeader(
+  const auto& ext = m_f.append_bintable_header(
       "",
       {},
       std::get<0>(columns).info(),
@@ -73,13 +73,13 @@ EleFitsBenchmark::EleFitsBenchmark(const std::string& filename) : EleFitsColwise
 
 BChronometer::Unit EleFitsBenchmark::write_image(const BRaster& raster) {
   m_chrono.start();
-  m_f.appendImage("", {}, raster);
+  m_f.append_image("", {}, raster);
   return m_chrono.stop();
 }
 
 BChronometer::Unit EleFitsBenchmark::write_bintable(const BColumns& columns) {
   m_chrono.start();
-  m_f.appendBintable("", {}, columns);
+  m_f.append_bintable("", {}, columns);
   return m_chrono.stop();
 }
 

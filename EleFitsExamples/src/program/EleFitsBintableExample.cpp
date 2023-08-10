@@ -42,7 +42,7 @@ const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext
   auto multidimCol = make_column(multidimInfo, std::move(multidimData));
 
   /* Create the table */
-  return f.appendBintable(extName, {}, stringCol, scalarCol, vectorCol, multidimCol);
+  return f.append_bintable(extName, {}, stringCol, scalarCol, vectorCol, multidimCol);
 }
 
 /*
@@ -133,7 +133,7 @@ public:
     Fits::MefFile f(filename, Fits::FileMode::Write);
 
     logger.info("Creating a binary table HDU...");
-    const auto extName = "TABLE" + std::to_string(f.hduCount());
+    const auto extName = "TABLE" + std::to_string(f.hdu_count());
     const auto& bintable = write_bintable(f, extName, rows);
 
     logger.info("Appending a column...");

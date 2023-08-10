@@ -58,8 +58,8 @@ BOOST_AUTO_TEST_CASE(ctor_actions_test) {
 
   MefFile mef("/tmp/action.fits", FileMode::Temporary, AfterOpening(), AfterAccessing(), AfterCreating());
   const auto& primary = mef.primary().header();
-  const auto& table = mef.appendBintableHeader().header();
-  const auto& image = mef.appendImageHeader().header();
+  const auto& table = mef.append_bintable_header().header();
+  const auto& image = mef.append_image_header().header();
   const auto& accessed = mef[1].header();
   Test::TemporaryMefFile src;
   const auto& copied = mef.append(src.primary()).header();
@@ -87,8 +87,8 @@ BOOST_AUTO_TEST_CASE(ctor_strategy_test) {
 
   MefFile mef("/tmp/strategy.fits", FileMode::Temporary, make_strategy());
   const auto& primary = mef.primary().header();
-  const auto& table = mef.appendBintableHeader().header();
-  const auto& image = mef.appendImageHeader().header();
+  const auto& table = mef.append_bintable_header().header();
+  const auto& image = mef.append_image_header().header();
   const auto& accessed = mef[1].header();
   Test::TemporaryMefFile src;
   const auto& copied = mef.append(src.primary()).header();

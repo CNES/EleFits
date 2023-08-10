@@ -94,7 +94,7 @@ public:
 
     /* Read file */
     MefFile f(filename, FileMode::Read);
-    const auto hdu_count = f.hduCount();
+    const auto hdu_count = f.hdu_count();
     logger.info() << "HDU count: " << hdu_count;
 
     /* Loop over HDUs */

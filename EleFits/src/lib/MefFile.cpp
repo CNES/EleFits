@@ -38,12 +38,12 @@ MefFile::~MefFile() {
   close_impl();
 }
 
-long MefFile::hduCount() const {
+long MefFile::hdu_count() const {
   return m_hdus.size();
 }
 
-std::vector<std::string> MefFile::readHduNames() {
-  const long count = hduCount();
+std::vector<std::string> MefFile::read_hdu_names() {
+  const long count = hdu_count();
   std::vector<std::string> names(count);
   for (long i = 0; i < count; ++i) {
     names[i] = access<>(i).readName();
@@ -51,8 +51,8 @@ std::vector<std::string> MefFile::readHduNames() {
   return names;
 }
 
-std::vector<std::pair<std::string, long>> MefFile::readHduNamesVersions() {
-  const long count = hduCount();
+std::vector<std::pair<std::string, long>> MefFile::read_hdu_names_versions() {
+  const long count = hdu_count();
   std::vector<std::pair<std::string, long>> namesVersions(count);
   for (long i = 0; i < count; ++i) {
     const auto& hdu = access<>(i);

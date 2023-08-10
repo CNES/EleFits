@@ -39,7 +39,7 @@ public:
 
     /* Open files */
     MefFile raw(input, FileMode::Read);
-    const auto hdu_count = raw.hduCount();
+    const auto hdu_count = raw.hdu_count();
     logger.info() << "HDU count: " << hdu_count;
 
     MefFile compressed(output, FileMode::Create);

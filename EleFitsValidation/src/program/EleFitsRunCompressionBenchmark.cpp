@@ -209,7 +209,7 @@ public:
 
     // Copy with primary (allows the primary to be compressed as well):
     logger.info("Compressing file...");
-    const auto hduCount = f.hduCount();
+    const auto hduCount = f.hdu_count();
     for (const auto& hdu : f) {
 
       long bitpix;

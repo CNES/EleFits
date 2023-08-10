@@ -37,41 +37,41 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
-  BOOST_TEST(this->hduCount() == 1); // 0 with CFITSIO
+  BOOST_TEST(this->hdu_count() == 1); // 0 with CFITSIO
   Test::SmallRaster raster;
   const auto& primary = this->primary();
   primary.updateShape<float, 2>(raster.shape());
-  BOOST_TEST(this->hduCount() == 1);
-  const auto& ext = this->appendNullImage<float, 2>("IMG", {}, raster.shape());
-  BOOST_TEST(this->hduCount() == 2); // 1 with CFITSIO
+  BOOST_TEST(this->hdu_count() == 1);
+  const auto& ext = this->append_null_image<float, 2>("IMG", {}, raster.shape());
+  BOOST_TEST(this->hdu_count() == 2); // 1 with CFITSIO
   ext.writeRaster(raster);
-  BOOST_TEST(this->hduCount() == 2);
+  BOOST_TEST(this->hdu_count() == 2);
 }
 
 BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   Test::SmallRaster raster; // TODO RandomRaster
-  const auto& ext1 = this->appendImage("IMG1", {}, raster);
+  const auto& ext1 = this->append_image("IMG1", {}, raster);
   BOOST_TEST(ext1.index() == 1);
-  BOOST_TEST(this->hduCount() == 2);
+  BOOST_TEST(this->hdu_count() == 2);
   this->close();
   // Reopen as edit
   MefFile f(this->filename(), FileMode::Edit);
-  BOOST_TEST(f.hduCount() == 2);
-  const auto& ext2 = f.appendImage("IMG2", {}, raster);
+  BOOST_TEST(f.hdu_count() == 2);
+  const auto& ext2 = f.append_image("IMG2", {}, raster);
   BOOST_TEST(ext2.index() == 2);
-  BOOST_TEST(f.hduCount() == 3);
+  BOOST_TEST(f.hdu_count() == 3);
   std::vector<std::string> inputNames {"", "IMG1", "IMG2"};
-  const auto outputNames = f.readHduNames();
+  const auto outputNames = f.read_hdu_names();
   BOOST_TEST(outputNames == inputNames);
   std::remove(this->filename().c_str());
 }
 
 BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
   Test::SmallRaster raster;
-  this->appendImage("IMAGE", {{"KEY", 1}}, raster);
-  this->appendImageHeader("EXT", {});
+  this->append_image("IMAGE", {{"KEY", 1}}, raster);
+  this->append_image_header("EXT", {});
   this->remove(0);
-  BOOST_TEST(this->hduCount() == 2);
+  BOOST_TEST(this->hdu_count() == 2);
   BOOST_TEST(this->primary().readName() == "IMAGE");
   BOOST_TEST(this->primary().header().parse<int>("KEY").value == 1);
   BOOST_TEST(this->primary().raster().read<float>() == raster);
@@ -82,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
 BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile) {
   const auto& firstlyAccessedPrimary = this->primary();
   BOOST_CHECK_NO_THROW(firstlyAccessedPrimary.readName());
-  this->appendNullImage<float, 2>("IMG", {}, {});
+  this->append_null_image<float, 2>("IMG", {}, {});
   const auto& secondlyAccessedPrimary = this->primary();
   BOOST_TEST(firstlyAccessedPrimary.readName() == secondlyAccessedPrimary.readName());
 }
@@ -90,17 +90,17 @@ BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::Temp
 BOOST_FIXTURE_TEST_CASE(access_single_named_hdu_test, Test::TemporaryMefFile) {
   const std::string extname = "EXT";
   BOOST_CHECK_THROW(this->access<>(extname), FitsError);
-  this->appendImageHeader(extname);
+  this->append_image_header(extname);
   BOOST_CHECK_NO_THROW(this->access<>(extname));
-  this->appendImageHeader(extname);
+  this->append_image_header(extname);
   BOOST_CHECK_THROW(this->access<>(extname), FitsError);
 }
 
 BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile) {
   const Position<2> shape {2, 56};
   const ColumnInfo<char, 2> info {"COL", "unit", shape};
-  this->appendNullImage<char>("IMAGE", {}, shape);
-  this->appendBintableHeader("TABLE", {}, info);
+  this->append_null_image<char>("IMAGE", {}, shape);
+  this->append_bintable_header("TABLE", {}, info);
   BOOST_TEST(this->access<Header>(1).has("NAXIS"));
   BOOST_TEST(this->access<Header>("IMAGE").has("NAXIS"));
   BOOST_TEST(this->access<ImageRaster>(1).readShape() == shape);
@@ -112,14 +112,14 @@ BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile) {
 BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   /* Image */
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
-  const auto& image = this->appendImageHeader("IMAGE", records);
+  const auto& image = this->append_image_header("IMAGE", records);
   BOOST_TEST(image.readName() == "IMAGE");
   BOOST_TEST(image.readSize() == 0);
   BOOST_TEST(image.header().parse<int>("FOO").value == 3);
   BOOST_TEST(image.header().parse<int>("BAR").value == 41);
 
   /* No-column bintable */
-  const auto& bintable0 = this->appendBintableHeader("BINTABLE0", records);
+  const auto& bintable0 = this->append_bintable_header("BINTABLE0", records);
   BOOST_TEST(bintable0.readName() == "BINTABLE0");
   BOOST_TEST(bintable0.readRowCount() == 0);
   BOOST_TEST(bintable0.readColumnCount() == 0);
@@ -128,7 +128,7 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
 
   /* Single-column bintable */
   const ColumnInfo<char> charInfo("CHAR");
-  const auto& bintable1 = this->appendBintableHeader("BINTABLE1", records, charInfo);
+  const auto& bintable1 = this->append_bintable_header("BINTABLE1", records, charInfo);
   BOOST_TEST(bintable1.readName() == "BINTABLE1");
   BOOST_TEST(bintable1.readRowCount() == 0);
   BOOST_TEST(bintable1.readColumnCount() == 1);
@@ -139,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
 
   /* Multi-column bintable */
   const ColumnInfo<float> floatInfo("FLOAT");
-  const auto& bintable2 = this->appendBintableHeader("BINTABLE2", records, charInfo, floatInfo);
+  const auto& bintable2 = this->append_bintable_header("BINTABLE2", records, charInfo, floatInfo);
   BOOST_TEST(bintable2.readName() == "BINTABLE2");
   BOOST_TEST(bintable2.readRowCount() == 0);
   BOOST_TEST(bintable2.readColumnCount() == 2);
@@ -169,7 +169,7 @@ template <typename T>
 void checkAppendZeroImage(MefFile& f) {
   Position<1> shape {10};
   RecordSeq withoutBlank {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
-  const auto& ext = f.appendNullImage<T>("ZERO", withoutBlank, shape);
+  const auto& ext = f.append_null_image<T>("ZERO", withoutBlank, shape);
   BOOST_TEST(ext.readName() == "ZERO");
   BOOST_TEST(ext.readSize() == shapeSize(shape));
   BOOST_TEST(ext.template readShape<1>() == shape);
@@ -192,7 +192,7 @@ void checkAppendNullImage(MefFile& f) {
 
   Position<1> shape {10};
   RecordSeq withBlank {{"BLANK", T(1)}, {"BAR", 41, "s", "useless"}};
-  const auto& ext = f.appendNullImage<T>("NULL", withBlank, shape);
+  const auto& ext = f.append_null_image<T>("NULL", withBlank, shape);
   BOOST_TEST(ext.readName() == "NULL");
   BOOST_TEST(ext.readSize() == shapeSize(shape));
   BOOST_TEST(ext.template readShape<1>() == shape);
@@ -223,7 +223,7 @@ void checkAppendImage(MefFile& f) {
   Position<1> shape {10};
   Test::RandomRaster<T, 1> raster(shape);
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
-  const auto& ext = f.appendImage("ZERO", records, raster);
+  const auto& ext = f.append_image("ZERO", records, raster);
   BOOST_TEST(ext.readName() == "ZERO");
   BOOST_TEST(ext.readSize() == shapeSize(shape));
   BOOST_TEST(ext.readSize() == shapeSize(shape));
@@ -256,7 +256,7 @@ void checkAppendNullBintable(MefFile& f) {
   ColumnInfo<T> zero("ZERO");
   ColumnInfo<T> blank("BLANK");
   RecordSeq records {{"TNULL2", T(1)}, {"FOO", "BAR"}};
-  const auto& ext = f.appendNullBintable("BINTABLE", records, 10, zero, blank);
+  const auto& ext = f.append_null_bintable("BINTABLE", records, 10, zero, blank);
   const auto offset = ext.header().template parseOr<T>("TZERO2", T());
   const auto row_count = ext.readRowCount();
   BOOST_TEST(row_count == 10);
@@ -287,22 +287,22 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   /* Multi-column bintable in source MefFile */
   const ColumnInfo<char> charInfo("CHAR");
   const ColumnInfo<float> floatInfo("FLOAT");
-  const auto& bintable = this->appendBintableHeader("BINTABLE", records, charInfo, floatInfo);
+  const auto& bintable = this->append_bintable_header("BINTABLE", records, charInfo, floatInfo);
 
   /* Empty Image in source MefFile */
-  const auto& emptyImage = this->appendImageHeader("EMPTY", records);
+  const auto& emptyImage = this->append_image_header("EMPTY", records);
   BOOST_TEST(emptyImage.matches(HduCategory::RawImage));
 
   /* Random Image in source MefFile */
   Position<1> shape {2881}; // More than a block
   Test::RandomRaster<double, 1> raster(shape);
-  const auto& image = this->appendImage("IMAGE", records, raster);
+  const auto& image = this->append_image("IMAGE", records, raster);
   const auto input = image.raster().template read<double, 1>();
   BOOST_TEST(image.matches(HduCategory::RawImage));
 
   /* Same Image in source but Compressed */
   this->strategy(algo);
-  const auto& compImage = this->appendImage("ZIMAGE", records, raster);
+  const auto& compImage = this->append_image("ZIMAGE", records, raster);
   BOOST_TEST(compImage.matches(HduCategory::CompressedImageExt));
 
   /* Copy bintable */
@@ -380,10 +380,10 @@ void checkAppendCopy(bool zin, bool zout) {
     in.strategy(Gzip());
   }
 
-  const auto& image = in.appendImage("", {}, raster);
+  const auto& image = in.append_image("", {}, raster);
   BOOST_TEST(image.is_compressed() == zin);
   BOOST_TEST(image.matches(HduCategory::CompressedImageExt) == zin);
-  const auto& blank = in.appendNullImage<float>("", {}, raster.shape());
+  const auto& blank = in.append_null_image<float>("", {}, raster.shape());
   BOOST_TEST(blank.is_compressed() == zin);
   BOOST_TEST(blank.matches(HduCategory::CompressedImageExt) == zin);
 
@@ -426,11 +426,11 @@ BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
   this->strategy(Gzip());
   BOOST_TEST(not this->primary().is_compressed());
 
-  const auto& image1 = this->appendImage("", {}, raster);
+  const auto& image1 = this->append_image("", {}, raster);
   BOOST_TEST(image1.is_compressed());
 
   this->strategy().clear();
-  const auto& image2 = this->appendImage("", {}, raster);
+  const auto& image2 = this->append_image("", {}, raster);
   BOOST_TEST(not image2.is_compressed());
 }
 

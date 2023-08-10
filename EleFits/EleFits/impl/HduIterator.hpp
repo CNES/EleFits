@@ -55,8 +55,8 @@ template <typename THdu>
 void HduIterator<THdu>::next() {
   do {
     m_index++;
-    if (m_index >= m_f.hduCount()) {
-      m_index = m_f.hduCount();
+    if (m_index >= m_f.hdu_count()) {
+      m_index = m_f.hdu_count();
       m_hdu = &m_dummy_hdu;
       return;
     }
@@ -71,7 +71,7 @@ HduIterator<THdu> begin(HduSelector<THdu>& selector) {
 
 template <typename THdu>
 HduIterator<THdu> end(HduSelector<THdu>& selector) {
-  return {selector.mef, selector.mef.hduCount(), selector.filter};
+  return {selector.mef, selector.mef.hdu_count(), selector.filter};
 }
 
 } // namespace Fits
