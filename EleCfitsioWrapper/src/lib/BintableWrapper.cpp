@@ -57,9 +57,9 @@ std::string column_name(fitsfile* fptr, long index) {
   return ttype;
 }
 
-void update_column_name(fitsfile* fptr, long index, const std::string& newName) {
+void update_column_name(fitsfile* fptr, long index, const std::string& new_name) {
   const std::string keyword = "TTYPE" + std::to_string(index);
-  Cfitsio::HeaderIo::update_record<std::string>(fptr, {keyword, newName});
+  Cfitsio::HeaderIo::update_record<std::string>(fptr, {keyword, new_name});
   int status = 0;
   fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
   // FIXME fits_set_hdustruc is deprecated => ask CFITSIO support
@@ -89,11 +89,11 @@ void read_column_dim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
 }
 
 template <>
-void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data) {
+void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeat_count, std::string* data) {
   int status = 0;
   std::vector<char*> vec(rows.size());
   std::generate(vec.begin(), vec.end(), [&]() {
-    return (char*)malloc(repeatCount);
+    return (char*)malloc(repeat_count);
   });
   fits_read_col(
       fptr,
@@ -107,10 +107,10 @@ void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lon
       nullptr,
       &status);
   CfitsioError::may_throw(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
-  auto columnIt = data;
-  for (auto vecIt = vec.begin(); vecIt != vec.end(); ++vecIt, ++columnIt) {
-    *columnIt = std::string(*vecIt);
-    free(*vecIt);
+  auto column_it = data;
+  for (auto vec_it = vec.begin(); vec_it != vec.end(); ++vec_it, ++column_it) {
+    *column_it = std::string(*vec_it);
+    free(*vec_it);
   }
 }
 

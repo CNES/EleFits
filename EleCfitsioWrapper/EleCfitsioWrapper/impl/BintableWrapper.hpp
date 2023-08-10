@@ -59,12 +59,12 @@ struct ColumnLooperImpl {
       fitsfile* fptr,
       const std::vector<long>& indices,
       std::tuple<TColumns...>& columns,
-      long firstRow,
+      long first_row,
       long row_count) {
-    auto data = &std::get<i>(columns)(firstRow - 1);
+    auto data = &std::get<i>(columns)(first_row - 1);
     const auto repeat_count = std::get<i>(columns).info().repeatCount();
-    read_column_data(fptr, Fits::Segment::fromSize(firstRow, row_count), indices[i], repeat_count, data);
-    ColumnLooperImpl<i - 1, TColumns...>::read_chunks(fptr, indices, columns, firstRow, row_count);
+    read_column_data(fptr, Fits::Segment::fromSize(first_row, row_count), indices[i], repeat_count, data);
+    ColumnLooperImpl<i - 1, TColumns...>::read_chunks(fptr, indices, columns, first_row, row_count);
   }
 
   /**
@@ -82,12 +82,12 @@ struct ColumnLooperImpl {
       fitsfile* fptr,
       const std::vector<long>& indices,
       std::tuple<const TColumns&...> columns,
-      long firstRow,
+      long first_row,
       long row_count) {
-    const auto data = &std::get<i>(columns)(firstRow - 1);
+    const auto data = &std::get<i>(columns)(first_row - 1);
     const auto repeat_count = std::get<i>(columns).info().repeatCount();
-    write_column_data(fptr, Fits::Segment::fromSize(firstRow, row_count), indices[i], repeat_count, data);
-    ColumnLooperImpl<i - 1, TColumns...>::write_chunks(fptr, indices, columns, firstRow, row_count);
+    write_column_data(fptr, Fits::Segment::fromSize(first_row, row_count), indices[i], repeat_count, data);
+    ColumnLooperImpl<i - 1, TColumns...>::write_chunks(fptr, indices, columns, first_row, row_count);
   }
 };
 
@@ -194,11 +194,11 @@ void write_column_dims(fitsfile* fptr, long index, const TInfos&... infos) { // 
 }
 
 template <typename TColumn>
-void write_column_segment(fitsfile* fptr, long firstRow, const TColumn& column) {
+void write_column_segment(fitsfile* fptr, long first_row, const TColumn& column) {
   const auto index = column_index(fptr, column.info().name);
   write_column_data(
       fptr,
-      Fits::Segment::fromSize(firstRow, column.rowCount()),
+      Fits::Segment::fromSize(first_row, column.rowCount()),
       index,
       column.info().repeatCount(),
       column.data());

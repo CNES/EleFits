@@ -50,29 +50,29 @@ long current_version(fitsfile* fptr) {
 
 std::size_t current_size(fitsfile* fptr) {
   int status = 0;
-  LONGLONG currentHeadStart;
-  LONGLONG nextHeadStart;
+  LONGLONG current_head_start;
+  LONGLONG next_head_start;
 
-  const auto currentIdx = current_index(fptr);
+  const auto index = current_index(fptr);
 
-  if (currentIdx < count(fptr)) { // its not the the last hdu
-    fits_get_hduaddrll(fptr, &currentHeadStart, nullptr, nullptr, &status);
+  if (index < count(fptr)) { // its not the the last hdu
+    fits_get_hduaddrll(fptr, &current_head_start, nullptr, nullptr, &status);
     CfitsioError::may_throw(status, fptr, "Cannot get Hdu address");
     fits_movrel_hdu(fptr, static_cast<int>(1), nullptr, &status); // HDU indices are int
     CfitsioError::may_throw(status, fptr, "Cannot move to next HDU (step +1)");
-    fits_get_hduaddrll(fptr, &nextHeadStart, nullptr, nullptr, &status);
+    fits_get_hduaddrll(fptr, &next_head_start, nullptr, nullptr, &status);
     CfitsioError::may_throw(status, fptr, "Cannot get Hdu address");
 
   } else { // its the last hdu
-    // dataend arg (nextHeadStart) should be the end of file:
-    fits_get_hduaddrll(fptr, &currentHeadStart, nullptr, &nextHeadStart, &status);
+    // dataend arg (next_head_start) should be the end of file:
+    fits_get_hduaddrll(fptr, &current_head_start, nullptr, &next_head_start, &status);
     CfitsioError::may_throw(status, fptr, "Cannot get Hdu address");
   }
 
   // return to current hdu
-  goto_index(fptr, currentIdx);
+  goto_index(fptr, index);
 
-  return static_cast<std::size_t>(nextHeadStart - currentHeadStart);
+  return static_cast<std::size_t>(next_head_start - current_head_start);
 }
 
 Fits::HduCategory current_type(fitsfile* fptr) {
@@ -160,10 +160,10 @@ bool update_version(fitsfile* fptr, long version) {
   return true;
 }
 
-void copy_verbatim(fitsfile* srcFptr, fitsfile* dstFptr) {
+void copy_verbatim(fitsfile* from, fitsfile* to) {
   int status = 0;
-  fits_copy_hdu(srcFptr, dstFptr, 0, &status);
-  Cfitsio::CfitsioError::may_throw(status, dstFptr, "Cannot copy HDU");
+  fits_copy_hdu(from, to, 0, &status);
+  Cfitsio::CfitsioError::may_throw(status, to, "Cannot copy HDU");
 }
 
 void remove(fitsfile* fptr, long index) {

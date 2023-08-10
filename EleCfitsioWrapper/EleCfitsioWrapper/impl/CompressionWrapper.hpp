@@ -70,7 +70,7 @@ std::unique_ptr<Fits::Compression> get_compression(fitsfile* fptr) {
 }
 
 template <typename T>
-T parseValueOr(fitsfile* fptr, const std::string& key, T fallback) {
+T parse_value_or(fitsfile* fptr, const std::string& key, T fallback) {
   auto name = [](int i) {
     return std::string("ZNAME") + std::to_string(i);
   };
@@ -124,7 +124,7 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
       quantized = true;
     }
   }
-  const auto level = parseValueOr<double>(fptr, "NOISEBIT", quantized ? 4 : 0);
+  const auto level = parse_value_or<double>(fptr, "NOISEBIT", quantized ? 4 : 0);
   // FIXME not set by CFITSIO (but set by astropy)
   Fits::Quantization quantization(level <= 0 ? Fits::Scaling(-level) : Fits::Tile::rms / level);
 
@@ -160,7 +160,7 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
     return std::make_unique<Fits::Rice>(std::move(shape), std::move(quantization));
   }
   if (name == "HCOMPRESS_1") {
-    const auto scale = parseValueOr<double>(fptr, "SCALE", 0);
+    const auto scale = parse_value_or<double>(fptr, "SCALE", 0);
     auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {shape[0], shape[1]}, std::move(quantization));
     out->scaling(scale <= 0 ? Fits::Scaling(-scale) : Fits::Tile::rms * scale);
     return out;
@@ -172,16 +172,16 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr) {
   throw Fits::FitsError("Unknown compression type");
 }
 
-void enable_huge_compression(fitsfile* fptr, bool isHuge) {
+void enable_huge_compression(fitsfile* fptr, bool huge) {
   int status = 0;
-  fits_set_huge_hdu(fptr, isHuge, &status);
+  fits_set_huge_hdu(fptr, huge, &status);
   Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot set huge HDU");
 }
 
 inline void set_tiling(fitsfile* fptr, const Fits::Position<-1>& shape) {
   int status = 0;
-  Euclid::Fits::Position<-1> nonconstShape = shape;
-  fits_set_tile_dim(fptr, nonconstShape.size(), nonconstShape.data(), &status);
+  Euclid::Fits::Position<-1> nonconst_shape = shape;
+  fits_set_tile_dim(fptr, nonconst_shape.size(), nonconst_shape.data(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot set compression tiling");
 }
 

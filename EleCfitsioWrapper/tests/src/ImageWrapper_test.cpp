@@ -19,21 +19,21 @@ BOOST_AUTO_TEST_SUITE(ImageWrapper_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkRandom3DRasterIsReadBack() {
+void check_random3d_is_read_back() {
   using namespace Fits::Test;
   RandomRaster<T, 3> input({2, 3, 4});
   MinimalFile file;
   HduAccess::assign_image(file.fptr, "IMGEXT", input);
-  const auto fixedOutput = ImageIo::read_raster<T, 3>(file.fptr);
-  BOOST_TEST(fixedOutput.vector() == input.vector());
-  const auto variableOuptut = ImageIo::read_raster<T, -1>(file.fptr);
-  BOOST_TEST(variableOuptut.dimension() == 3);
-  BOOST_TEST(variableOuptut.vector() == input.vector());
+  const auto fixed_output = ImageIo::read_raster<T, 3>(file.fptr);
+  BOOST_TEST(fixed_output.vector() == input.vector());
+  const auto variable_output = ImageIo::read_raster<T, -1>(file.fptr);
+  BOOST_TEST(variable_output.dimension() == 3);
+  BOOST_TEST(variable_output.vector() == input.vector());
 }
 
 #define RANDOM_3D_RASTER_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_random_3d_raster_is_read_back_test) { \
-    checkRandom3DRasterIsReadBack<type>(); \
+    check_random3d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)

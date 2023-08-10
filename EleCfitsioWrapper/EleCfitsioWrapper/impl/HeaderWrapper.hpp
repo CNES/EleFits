@@ -104,7 +104,7 @@ void write_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& r
  * @brief Use index_sequence to loop on records.
  */
 template <typename... Ts, std::size_t... Is>
-void updateRecordsImpl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>) {
+void update_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>) {
   using mock_unpack = int[];
   (void)mock_unpack {(update_record<Ts>(fptr, std::get<Is>(records)), 0)...};
 }
@@ -206,7 +206,7 @@ void update_records(fitsfile* fptr, const Fits::Record<Ts>&... records) {
 
 template <typename... Ts>
 void update_records(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records) {
-  Internal::updateRecordsImpl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
+  Internal::update_records_impl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>

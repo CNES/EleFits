@@ -119,12 +119,12 @@ Fits::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::s
   comment[0] = '\0';
   fits_read_key_longstr(fptr, keyword.c_str(), &value, comment, &status);
   fits_read_key_unit(fptr, keyword.c_str(), unit, &status);
-  std::string strValue(value);
+  std::string str_value(value);
   if (status == VALUE_UNDEFINED) {
-    strValue = "";
+    str_value = "";
     status = 0;
   }
-  Fits::Record<std::string> record(keyword, strValue, std::string(unit), std::string(comment));
+  Fits::Record<std::string> record(keyword, str_value, std::string(unit), std::string(comment));
   free(value);
   CfitsioError::may_throw(status, fptr, "Cannot parse string record: " + keyword);
   if (record.comment == record.unit) {
@@ -203,7 +203,13 @@ void update_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int status = 0;
   std::string comment = record.rawComment();
   int nonconst_int_value = record.value; // TLOGICAL is for int in CFITSIO
-  fits_update_key(fptr, TypeCode<bool>::for_record(), record.keyword.c_str(), &nonconst_int_value, &comment[0], &status);
+  fits_update_key(
+      fptr,
+      TypeCode<bool>::for_record(),
+      record.keyword.c_str(),
+      &nonconst_int_value,
+      &comment[0],
+      &status);
   CfitsioError::may_throw(status, fptr, "Cannot update Boolean record: " + record.keyword);
 }
 

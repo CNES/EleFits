@@ -12,13 +12,13 @@ namespace Cfitsio {
 namespace FileAccess {
 
 fitsfile* create_open(const std::string& filename, CreatePolicy policy) {
-  std::string cfitsioName = filename;
+  std::string cfitsio_name = filename;
   if (policy == CreatePolicy::OverWrite) {
-    cfitsioName.insert(0, 1, '!'); // CFITSIO convention
+    cfitsio_name.insert(0, 1, '!'); // CFITSIO convention
   }
   fitsfile* fptr;
   int status = 0;
-  fits_create_file(&fptr, cfitsioName.c_str(), &status);
+  fits_create_file(&fptr, cfitsio_name.c_str(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot create file: " + filename);
   HduAccess::init_primary(fptr);
   return fptr;
