@@ -93,14 +93,14 @@ public:
    * @brief Get the type of the HDU.
    * @return Either HduCategory::Image or HduCategory::Bintable
    * @details
-   * As opposed to readCategory(), the return value of this method can be tested for equality, e.g.:
+   * As opposed to category(), the return value of this method can be tested for equality, e.g.:
    * \code
    * if (ext.type() == HduCategory::Image) {
    *   processImage(ext);
    * }
    * \endcode
    */
-  HduCategory type() const;
+  HduCategory type() const; // FIXME return HduType
 
   /**
    * @ingroup iterators
@@ -117,14 +117,21 @@ public:
    * @see HduCategory
    * @see matches
    */
-  virtual HduCategory readCategory() const;
+  virtual HduCategory category() const; // FIXME refactor HduCategory
+
+  /**
+   * @deprecated
+   */
+  HduCategory readCategory() const {
+    return category();
+  }
 
   /**
    * @ingroup iterators
    * @brief Check whether the HDU matches a given filter.
    * @param filter The list of categories to be tested
    * @warning
-   * Like readCategory, this is a read operation.
+   * Like category, this is a read operation.
    */
   bool matches(HduFilter filter) const;
 
@@ -143,12 +150,26 @@ public:
   /**
    * @brief Read the extension name.
    */
-  std::string readName() const;
+  std::string read_name() const;
+
+  /**
+   * @deprecated
+   */
+  std::string readName() const {
+    return read_name();
+  }
 
   /**
    * @brief Read the extension version.
    */
-  long readVersion() const;
+  long read_version() const;
+
+  /**
+   * @deprecated
+   */
+  long readVersion() const {
+    return read_version();
+  }
 
   /**
    * @brief Read the number of bytes used by the Hdu.
@@ -161,12 +182,26 @@ public:
   /**
    * @brief Write or update the extension name.
    */
-  void updateName(const std::string& name) const;
+  void update_name(const std::string& name) const;
+
+  /**
+   * @deprecated
+   */
+  void updateName(const std::string& name) const {
+    return update_name(name);
+  }
 
   /**
    * @brief Write or update the extension version.
    */
-  void updateVersion(long version) const;
+  void update_version(long version) const;
+
+  /**
+   * @deprecated
+   */
+  void updateVersion(long version) const {
+    return update_version(version);
+  }
 
   /**
    * @brief Compute the HDU and data checksums and compare them to the values in the header.

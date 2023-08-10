@@ -35,7 +35,7 @@ ImageHdu::ImageHdu() :
         }) {}
 
 const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const {
-  updateName(rhs.readName());
+  update_name(rhs.read_name());
   header().writeSeq(rhs.header().parseAll(KeywordCategory::User)); // FIXME others?
 #define ELEFITS_COPY_HDU(T, _) \
   if (rhs.readTypeid() == typeid(T)) { \
@@ -67,8 +67,8 @@ long ImageHdu::readSize() const {
   return m_raster.readSize();
 }
 
-HduCategory ImageHdu::readCategory() const {
-  auto cat = Hdu::readCategory();
+HduCategory ImageHdu::category() const {
+  auto cat = Hdu::category();
   if (readSize() == 0) {
     cat &= HduCategory::Metadata;
   } else {

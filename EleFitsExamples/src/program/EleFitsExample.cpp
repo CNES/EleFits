@@ -114,7 +114,7 @@ public:
       const auto& ext2 = f[2];
       //! [Find HDU by index]
       //! [Get HDU name]
-      const auto extname = ext2.readName();
+      const auto extname = ext2.read_name();
       //! [Get HDU name]
       logger.info() << "Name of HDU #3: " << extname;
       const auto records = ext2.header().parseSeq(as<std::string>("STRING"), as<int>("INTEGER"));

@@ -100,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   const auto& du = ext.columns();
   auto names = du.readAllNames();
   for (std::size_t i = 0; i < header.size(); ++i) {
-    BOOST_TEST(du.readName(i) == header[i].name);
+    BOOST_TEST(du.read_name(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);
   }
   header[0].name = "A2";
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   du.rename("C", header[2].name);
   names = du.readAllNames();
   for (std::size_t i = 0; i < header.size(); ++i) {
-    BOOST_TEST(du.readName(i) == header[i].name);
+    BOOST_TEST(du.read_name(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);
   }
 }

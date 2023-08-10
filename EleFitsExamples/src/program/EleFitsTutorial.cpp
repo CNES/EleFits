@@ -305,7 +305,7 @@ void read_file(const std::string& filename) {
   /* Access an HDU by its index */
 
   const auto& image2 = f.access<Fits::ImageHdu>(2);
-  const auto image_name = image2.readName();
+  const auto image_name = image2.read_name();
 
   /* Access an HDU by its name */
 

@@ -57,9 +57,9 @@ public:
   long readRowCount() const;
 
   /**
-   * @copydoc Hdu::readCategory
+   * @copydoc Hdu::category
    */
-  HduCategory readCategory() const override;
+  HduCategory category() const override;
 
   /**
    * @brief Read a column with given name or index.

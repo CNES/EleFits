@@ -112,11 +112,11 @@ BOOST_FIXTURE_TEST_CASE(keyword_with_symbol_is_read_back_test, Test::TemporarySi
 BOOST_FIXTURE_TEST_CASE(hdu_is_renamed_test, Test::TemporaryMefFile) {
   const auto& h = this->append_image_header("A");
   BOOST_TEST(h.index() == 1);
-  BOOST_TEST(h.readName() == "A");
-  h.updateName("B");
-  BOOST_TEST(h.readName() == "B");
+  BOOST_TEST(h.read_name() == "A");
+  h.update_name("B");
+  BOOST_TEST(h.read_name() == "B");
   h.header().remove("EXTNAME");
-  BOOST_TEST(h.readName() == "");
+  BOOST_TEST(h.read_name() == "");
 }
 
 BOOST_FIXTURE_TEST_CASE(c_str_record_is_read_back_as_string_record_test, Test::TemporarySifFile) {

@@ -13,7 +13,7 @@ namespace Fits {
 
 // Implementation rules for overloads
 //
-// - Flow should go from names to indices: never call readName() internally, and call readIndex() once;
+// - Flow should go from names to indices: never call read_name() internally, and call readIndex() once;
 // - Variadic methods should call TSeq methods through std::forward_as_tuple because TSec is more generic;
 // - TSeq&& should be forwarded as std::forward<TSeq>();
 // - Duplication should be minimal: when there are two ways with unavoidable duplication, choose the minimalist option.

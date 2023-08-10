@@ -29,11 +29,11 @@ namespace Euclid {
  * instead of being simply forwarded:
  * for example, `Header::parse()` returns a `Record` with user-defined type
  * by parsing the characters in the FITS file,
- * while `Hdu::readName()` returns the raw value of the `EXTNAME` keyword.
+ * while `Hdu::read_name()` returns the raw value of the `EXTNAME` keyword.
  * * `write`, `init` and `assign` means that some data are written to the FITS file;
  * * `init` methods write metadata (e.g. image size) while `assign` methods also write data (e.g. image pixels);
  * * Getters -- which do not imply reading from the Files but only working with class members -- are nouns:
- * for example, `Hdu::readName()` is a reading operation, while `Hdu::index()` is a simple getter.
+ * for example, `Hdu::read_name()` is a reading operation, while `Hdu::index()` is a simple getter.
  */
 namespace Fits {
 

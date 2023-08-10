@@ -127,7 +127,14 @@ public:
   /**
    * @brief Get the name of the column with given index.
    */
-  std::string readName(long index) const;
+  std::string read_name(long index) const;
+
+  /**
+   * @deprecated
+   */
+  std::string readName(long index) const {
+    return read_name(index);
+  }
 
   /**
    * @brief Get the names of all the columns.

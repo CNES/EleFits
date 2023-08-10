@@ -30,7 +30,7 @@ long ColumnKey::index(const BintableColumns& columns) {
 
 const std::string& ColumnKey::name(const BintableColumns& columns) {
   if (not m_name) {
-    m_name = columns.readName(*m_index);
+    m_name = columns.read_name(*m_index);
   }
   return *m_name;
 }

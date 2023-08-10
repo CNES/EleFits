@@ -53,7 +53,7 @@ std::vector<long> BintableColumns::readIndices(const std::vector<std::string>& n
   return indices;
 }
 
-std::string BintableColumns::readName(long index) const {
+std::string BintableColumns::read_name(long index) const {
   m_touch();
   return Cfitsio::BintableIo::column_name(m_fptr, index + 1);
 }
@@ -62,7 +62,7 @@ std::vector<std::string> BintableColumns::readAllNames() const {
   const auto size = readColumnCount();
   std::vector<std::string> names(size);
   for (long i = 0; i < size; ++i) {
-    names[i] = readName(i);
+    names[i] = read_name(i);
   }
   return names;
 }

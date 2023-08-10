@@ -43,8 +43,8 @@ long BintableHdu::readRowCount() const {
   return Cfitsio::BintableIo::row_count(m_fptr);
 }
 
-HduCategory BintableHdu::readCategory() const {
-  auto cat = Hdu::readCategory();
+HduCategory BintableHdu::category() const {
+  auto cat = Hdu::category();
   if (readColumnCount() == 0 || readRowCount() == 0) {
     cat &= HduCategory::Metadata;
   } else {

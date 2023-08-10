@@ -103,7 +103,7 @@ public:
 
       /* Read name (if present) */
       const auto& hdu = f[i];
-      logger.info() << "HDU #" << i << ": " << hdu.readName();
+      logger.info() << "HDU #" << i << ": " << hdu.read_name();
       logger.info() << "  Size: " << hdu.size_in_file() << " bytes";
 
       /* Read type */

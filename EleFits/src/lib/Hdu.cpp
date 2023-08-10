@@ -33,7 +33,7 @@ HduCategory Hdu::type() const {
   return m_type;
 }
 
-HduCategory Hdu::readCategory() const {
+HduCategory Hdu::category() const {
   touch();
   HduCategory cat = m_type & m_status;
   if (m_cfitsio_index == 1) {
@@ -49,15 +49,15 @@ const Header& Hdu::header() const {
 }
 
 bool Hdu::matches(HduFilter filter) const {
-  return filter.accepts(readCategory());
+  return filter.accepts(category());
 }
 
-std::string Hdu::readName() const {
+std::string Hdu::read_name() const {
   touch();
   return Cfitsio::HduAccess::current_name(m_fptr);
 }
 
-long Hdu::readVersion() const {
+long Hdu::read_version() const {
   touch();
   return Cfitsio::HduAccess::current_version(m_fptr);
 }
@@ -67,12 +67,12 @@ std::size_t Hdu::size_in_file() const {
   return Cfitsio::HduAccess::current_size(m_fptr);
 }
 
-void Hdu::updateName(const std::string& name) const {
+void Hdu::update_name(const std::string& name) const {
   edit();
   Cfitsio::HduAccess::update_name(m_fptr, name);
 }
 
-void Hdu::updateVersion(long version) const {
+void Hdu::update_version(long version) const {
   edit();
   Cfitsio::HduAccess::update_version(m_fptr, version);
 }

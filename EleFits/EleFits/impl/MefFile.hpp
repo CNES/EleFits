@@ -70,8 +70,8 @@ const T& MefFile::access(const std::string& name, long version) {
   for (long i = 0; i < hdu_count(); ++i) {
     const auto& hdu = access<Hdu>(i);
     const bool c_match = (category == HduCategory::Any || hdu.type() == category);
-    const bool cn_match = c_match && (name == "" || hdu.readName() == name);
-    const bool cnv_match = cn_match && (version == 0 || hdu.readVersion() == version);
+    const bool cn_match = c_match && (name == "" || hdu.read_name() == name);
+    const bool cnv_match = cn_match && (version == 0 || hdu.read_version() == version);
     if (cnv_match) {
       if (hduPtr) {
         throw FitsError("Several HDU matches."); // TODO specific exception?
@@ -119,7 +119,7 @@ const T& MefFile::append(const T& hdu) {
 #define ELEFITS_COPY_HDU(type, name) \
   if (image.readTypeid() == typeid(type)) { \
     append_image( \
-        hdu.readName(), \
+        hdu.read_name(), \
         hdu.header().parseAll(KeywordCategory::User), \
         image.raster().template read<type, -1>()); \
   }

@@ -129,9 +129,9 @@ public:
   Position<N> readShape() const;
 
   /**
-   * @copydoc Hdu::readCategory
+   * @copydoc Hdu::category
    */
-  HduCategory readCategory() const override;
+  HduCategory category() const override;
 
   /**
    * @brief Check whether the HDU is compressed.

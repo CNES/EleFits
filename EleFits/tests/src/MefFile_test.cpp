@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
   this->append_image_header("EXT", {});
   this->remove(0);
   BOOST_TEST(this->hdu_count() == 2);
-  BOOST_TEST(this->primary().readName() == "IMAGE");
+  BOOST_TEST(this->primary().read_name() == "IMAGE");
   BOOST_TEST(this->primary().header().parse<int>("KEY").value == 1);
   BOOST_TEST(this->primary().raster().read<float>() == raster);
   const auto& ext = this->find("EXT");
@@ -81,10 +81,10 @@ BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
 
 BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile) {
   const auto& firstlyAccessedPrimary = this->primary();
-  BOOST_CHECK_NO_THROW(firstlyAccessedPrimary.readName());
+  BOOST_CHECK_NO_THROW(firstlyAccessedPrimary.read_name());
   this->append_null_image<float, 2>("IMG", {}, {});
   const auto& secondlyAccessedPrimary = this->primary();
-  BOOST_TEST(firstlyAccessedPrimary.readName() == secondlyAccessedPrimary.readName());
+  BOOST_TEST(firstlyAccessedPrimary.read_name() == secondlyAccessedPrimary.read_name());
 }
 
 BOOST_FIXTURE_TEST_CASE(access_single_named_hdu_test, Test::TemporaryMefFile) {
@@ -113,14 +113,14 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   /* Image */
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& image = this->append_image_header("IMAGE", records);
-  BOOST_TEST(image.readName() == "IMAGE");
+  BOOST_TEST(image.read_name() == "IMAGE");
   BOOST_TEST(image.readSize() == 0);
   BOOST_TEST(image.header().parse<int>("FOO").value == 3);
   BOOST_TEST(image.header().parse<int>("BAR").value == 41);
 
   /* No-column bintable */
   const auto& bintable0 = this->append_bintable_header("BINTABLE0", records);
-  BOOST_TEST(bintable0.readName() == "BINTABLE0");
+  BOOST_TEST(bintable0.read_name() == "BINTABLE0");
   BOOST_TEST(bintable0.readRowCount() == 0);
   BOOST_TEST(bintable0.readColumnCount() == 0);
   BOOST_TEST(bintable0.header().parse<int>("FOO").value == 3);
@@ -129,7 +129,7 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   /* Single-column bintable */
   const ColumnInfo<char> charInfo("CHAR");
   const auto& bintable1 = this->append_bintable_header("BINTABLE1", records, charInfo);
-  BOOST_TEST(bintable1.readName() == "BINTABLE1");
+  BOOST_TEST(bintable1.read_name() == "BINTABLE1");
   BOOST_TEST(bintable1.readRowCount() == 0);
   BOOST_TEST(bintable1.readColumnCount() == 1);
   BOOST_TEST(bintable1.columns().readName(0) == "CHAR");
@@ -140,7 +140,7 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   /* Multi-column bintable */
   const ColumnInfo<float> floatInfo("FLOAT");
   const auto& bintable2 = this->append_bintable_header("BINTABLE2", records, charInfo, floatInfo);
-  BOOST_TEST(bintable2.readName() == "BINTABLE2");
+  BOOST_TEST(bintable2.read_name() == "BINTABLE2");
   BOOST_TEST(bintable2.readRowCount() == 0);
   BOOST_TEST(bintable2.readColumnCount() == 2);
   BOOST_TEST(bintable2.columns().readName(0) == "CHAR");
@@ -307,7 +307,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
 
   /* Copy bintable */
   const auto& bintableCopy = fileCopy.append(bintable);
-  BOOST_TEST(bintableCopy.readName() == bintable.readName());
+  BOOST_TEST(bintableCopy.read_name() == bintable.read_name());
   BOOST_TEST(bintableCopy.readRowCount() == bintable.readRowCount());
   BOOST_TEST(bintableCopy.readColumnCount() == bintable.readColumnCount());
   BOOST_TEST(bintableCopy.columns().readName(0) == bintable.columns().readName(0));
@@ -317,7 +317,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
 
   /* Copy empty uncompressed to uncompressed */
   const auto& emptyCopy = fileCopy.append(emptyImage);
-  BOOST_TEST(emptyCopy.readName() == emptyImage.readName());
+  BOOST_TEST(emptyCopy.read_name() == emptyImage.read_name());
   BOOST_TEST(emptyCopy.readSize() == emptyImage.readSize());
   BOOST_TEST(emptyCopy.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
   BOOST_TEST(emptyCopy.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
@@ -325,7 +325,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
 
   /* Copy uncompressed to uncompressed */
   const auto& imageCopy = fileCopy.append(image);
-  BOOST_TEST(imageCopy.readName() == image.readName());
+  BOOST_TEST(imageCopy.read_name() == image.read_name());
   BOOST_TEST(imageCopy.readSize() == image.readSize());
   BOOST_TEST(imageCopy.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy.header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
@@ -338,7 +338,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   fileCopy.strategy().clear();
   fileCopy.strategy(algo);
   const auto& imageCopy4 = fileCopy.append(emptyImage);
-  BOOST_TEST(imageCopy4.readName() == emptyImage.readName());
+  BOOST_TEST(imageCopy4.read_name() == emptyImage.read_name());
   BOOST_TEST(imageCopy4.readSize() == emptyImage.readSize());
   BOOST_TEST(imageCopy4.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy4.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
@@ -348,7 +348,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   fileCopy.strategy().clear();
   fileCopy.strategy(algo);
   const auto& imageCopy2 = fileCopy.append(image);
-  BOOST_TEST(imageCopy2.readName() == image.readName());
+  BOOST_TEST(imageCopy2.read_name() == image.read_name());
   BOOST_TEST(imageCopy2.readSize() == image.readSize());
   BOOST_TEST(imageCopy2.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy2.header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
@@ -360,7 +360,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   /* Copy compressed to uncompressed */
   fileCopy.strategy().clear();
   const auto& imageCopy3 = fileCopy.append(compImage);
-  BOOST_TEST(imageCopy3.readName() == compImage.readName());
+  BOOST_TEST(imageCopy3.read_name() == compImage.read_name());
   BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
   BOOST_TEST(imageCopy3.header().parse<int>("FOO").value == compImage.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy3.header().parse<int>("BAR").value == compImage.header().parse<int>("BAR").value);
