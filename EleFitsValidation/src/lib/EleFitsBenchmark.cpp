@@ -85,7 +85,7 @@ BChronometer::Unit EleFitsBenchmark::write_bintable(const BColumns& columns) {
 
 BRaster EleFitsBenchmark::read_image(long index) {
   m_chrono.start();
-  const auto raster = m_f.access<ImageHdu>(index).readRaster<BRaster::Value, BRaster::Dim>();
+  const auto raster = m_f.access<ImageHdu>(index).read_raster<BRaster::Value, BRaster::Dim>();
   m_chrono.stop();
   return raster;
 }

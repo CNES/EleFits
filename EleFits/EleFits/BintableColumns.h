@@ -169,7 +169,7 @@ public:
    * There are several ways to read a column, which can be specified either by its name or 0-based index.
    * The simplest way is to read the whole column as a new `VecColumn` with methods `read()`.
    * In this case, the value type is given as the template parameter.
-   * In order to store the column data in an existing `Column` (e.g. `PtrColumn`), similar methods `readTo()` should be used.
+   * In order to store the column data in an existing `Column` (e.g. `PtrColumn`), similar methods `read_to()` should be used.
    * In this case, the value type is deduced and should not be specified.
    * 
    * Example usages:
@@ -183,12 +183,12 @@ public:
    * std::vector<float> values(row_count * 2);
    * PtrColumn<float> ra({"RA", "deg", 1}, row_count, &values[0]);
    * PtrColumn<float> dec({"DEC", "deg", 1}, row_count, &values[row_count]);
-   * columns.readTo("RA", ra);
-   * columns.readTo("DEC", dec);
+   * columns.read_to("RA", ra);
+   * columns.read_to("DEC", dec);
    * \endcode
    * 
    * @warning
-   * Methods `readTo()` do not allocate memory: the user must ensure that enough space has been allocated previously.
+   * Methods `read_to()` do not allocate memory: the user must ensure that enough space has been allocated previously.
    */
   template <typename T, long N = 1>
   VecColumn<T, N> read(ColumnKey key) const;
@@ -200,7 +200,7 @@ public:
    * @copydetails read()
    */
   template <typename TColumn>
-  void readTo(TColumn& column) const;
+  void read_to(TColumn& column) const;
 
   /**
    * @brief Read the column with given name or index into an existing `Column`.
@@ -210,7 +210,7 @@ public:
    * @copydetails read()
    */
   template <typename TColumn>
-  void readTo(ColumnKey key, TColumn& column) const;
+  void read_to(ColumnKey key, TColumn& column) const;
 
   /// @}
   /**

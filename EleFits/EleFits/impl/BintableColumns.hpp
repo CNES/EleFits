@@ -34,15 +34,15 @@ VecColumn<T, N> BintableColumns::read(ColumnKey key) const {
   return readSegment<T, N>({0, -1}, key);
 }
 
-// readTo
+// read_to
 
 template <typename TColumn>
-void BintableColumns::readTo(TColumn& column) const {
-  readTo(column.info().name, column);
+void BintableColumns::read_to(TColumn& column) const {
+  read_to(column.info().name, column);
 }
 
 template <typename TColumn>
-void BintableColumns::readTo(ColumnKey key, TColumn& column) const {
+void BintableColumns::read_to(ColumnKey key, TColumn& column) const {
   readSegmentTo({0, -1}, key, column);
 }
 

@@ -34,7 +34,7 @@ void check_raster_is_read_back() {
   Test::RandomRaster<T, 3> input({16, 9, 3});
   Test::TemporarySifFile f;
   const auto& du = f.raster();
-  du.reinit<T>(input.shape());
+  du.update_type_shape<T>(input.shape());
   du.write(input);
   const auto output = du.read<T, 3>();
   BOOST_TEST(output.container() == input.container());
@@ -60,8 +60,8 @@ void check_slice3d_is_read_back() {
   const Region<3> slice3d {{0, 0, 2}, {4, 5, 4}};
   Test::TemporarySifFile f;
   const auto& du = f.raster();
-  du.reinit<T>(slice3d.shape());
-  du.writeRegion(makeMemRegion(slice3d), input);
+  du.update_type_shape<T>(slice3d.shape());
+  du.write_region(makeMemRegion(slice3d), input);
   const auto output = du.read<T, 3>();
   for (long z = 0; z < slice3d.shape()[2]; ++z) {
     for (long y = 0; y < slice3d.shape()[1]; ++y) {
@@ -97,8 +97,8 @@ void check_slice2d_is_read_back() {
   const Position<2> shape = slice2d.shape().slice<2>();
   Test::TemporarySifFile f;
   const auto& du = f.raster();
-  du.reinit<T>(shape);
-  du.writeRegion(makeMemRegion(slice2d), input);
+  du.update_type_shape<T>(shape);
+  du.write_region(makeMemRegion(slice2d), input);
   const auto output = du.read<T, 2>();
   for (long y = 0; y < shape[1]; ++y) {
     for (long x = 0; x < shape[0]; ++x) {
@@ -132,8 +132,8 @@ void check_subraster2d_is_read_back() {
   const Position<2> shape = region2d.shape().slice<2>();
   Test::TemporarySifFile f;
   const auto& du = f.raster();
-  du.reinit<T>(shape);
-  du.writeRegion(makeMemRegion(region2d), input);
+  du.update_type_shape<T>(shape);
+  du.write_region(makeMemRegion(region2d), input);
   const auto output = du.read<T, 2>();
   for (long y = 0; y < shape[1]; ++y) {
     for (long x = 0; x < shape[0]; ++x) {

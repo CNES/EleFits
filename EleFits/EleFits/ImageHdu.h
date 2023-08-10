@@ -108,25 +108,34 @@ public:
   const ImageRaster& raster() const;
 
   /**
-   * @copybrief ImageRaster::readTypeid
+   * @copybrief ImageRaster::read_typeid
    */
-  const std::type_info& readTypeid() const;
+  const std::type_info& read_typeid() const;
 
   /**
-   * @copybrief ImageRaster::read_bitpix
+   * @deprecated
    */
-  long read_bitpix() const;
+  const std::type_info& readTypeid() const {
+    return read_typeid();
+  }
 
   /**
-   * @copybrief ImageRaster::readSize
+   * @copybrief ImageRaster::read_size
    */
-  long readSize() const;
+  long read_size() const;
 
   /**
-   * @copybrief ImageRaster::readShape
+   * @deprecated
+   */
+  long readSize() const {
+    return read_size();
+  }
+
+  /**
+   * @copybrief ImageRaster::read_shape
    */
   template <long N = 2>
-  Position<N> readShape() const;
+  Position<N> read_shape() const;
 
   /**
    * @copydoc Hdu::category
@@ -147,19 +156,43 @@ public:
    * @brief Redefine the image shape and type.
    */
   template <typename T, long N = 2>
-  void updateShape(const Position<N>& shape) const;
+  void update_type_shape(const Position<N>& shape) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 2>
+  void updateShape(const Position<N>& shape) const {
+    return update_type_shape<T, N>(shape);
+  }
 
   /**
    * @brief Read the Raster.
    */
   template <typename T, long N = 2>
-  VecRaster<T, N> readRaster() const;
+  VecRaster<T, N> read_raster() const;
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 2>
+  VecRaster<T, N> readRaster() const {
+    return read_raster<T, N>();
+  }
 
   /**
    * @brief Write the Raster.
    */
   template <typename TRaster>
-  void writeRaster(const TRaster& data) const;
+  void write_raster(const TRaster& data) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename TRaster>
+  void writeRaster(const TRaster& data) const {
+    return write_raster(data);
+  }
 
 private:
   /**

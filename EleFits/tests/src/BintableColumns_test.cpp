@@ -11,8 +11,8 @@
 using namespace Euclid::Fits;
 
 // readSegmentTo(rows, key, column)
-//   readTo(key, column)
-//     readTo(column) => TEST
+//   read_to(key, column)
+//     read_to(column) => TEST
 //   readSegment(rows, key)
 //     read(key) => TEST
 //   readSegmentTo(rows, column) => TEST

@@ -117,7 +117,7 @@ const T& MefFile::append(const T& hdu) {
       const auto& image = hdu.template as<ImageHdu>();
 
 #define ELEFITS_COPY_HDU(type, name) \
-  if (image.readTypeid() == typeid(type)) { \
+  if (image.read_typeid() == typeid(type)) { \
     append_image( \
         hdu.read_name(), \
         hdu.header().parseAll(KeywordCategory::User), \

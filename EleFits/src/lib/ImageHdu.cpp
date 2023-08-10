@@ -38,9 +38,9 @@ const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const {
   update_name(rhs.read_name());
   header().writeSeq(rhs.header().parseAll(KeywordCategory::User)); // FIXME others?
 #define ELEFITS_COPY_HDU(T, _) \
-  if (rhs.readTypeid() == typeid(T)) { \
+  if (rhs.read_typeid() == typeid(T)) { \
     const auto r = rhs.raster().template read<T, -1>(); \
-    updateShape<T, -1>(r.shape()); \
+    update_type_shape<T, -1>(r.shape()); \
     if (r.size()) { \
       raster().write(r); \
     } \
@@ -55,26 +55,22 @@ const ImageRaster& ImageHdu::raster() const {
   return m_raster;
 }
 
-const std::type_info& ImageHdu::readTypeid() const {
-  return m_raster.readTypeid();
+const std::type_info& ImageHdu::read_typeid() const {
+  return m_raster.read_typeid();
 }
 
-long ImageHdu::read_bitpix() const {
-  return m_raster.read_bitpix();
-}
-
-long ImageHdu::readSize() const {
-  return m_raster.readSize();
+long ImageHdu::read_size() const {
+  return m_raster.read_size();
 }
 
 HduCategory ImageHdu::category() const {
   auto cat = Hdu::category();
-  if (readSize() == 0) {
+  if (read_size() == 0) {
     cat &= HduCategory::Metadata;
   } else {
     cat &= HduCategory::Data;
   }
-  const auto& id = readTypeid();
+  const auto& id = read_typeid();
   if (id == typeid(float) || id == typeid(double)) {
     cat &= HduCategory::FloatImage;
   } else {
@@ -105,21 +101,21 @@ const ImageRaster& Hdu::as() const {
 
 #ifndef COMPILE_READ_RASTER
 #define COMPILE_READ_RASTER(type, unused) \
-  template VecRaster<type, -1> ImageHdu::readRaster() const; \
-  template VecRaster<type, 2> ImageHdu::readRaster() const; \
-  template VecRaster<type, 3> ImageHdu::readRaster() const;
+  template VecRaster<type, -1> ImageHdu::read_raster() const; \
+  template VecRaster<type, 2> ImageHdu::read_raster() const; \
+  template VecRaster<type, 3> ImageHdu::read_raster() const;
 ELEFITS_FOREACH_RASTER_TYPE(COMPILE_READ_RASTER)
 #undef COMPILE_READ_RASTER
 #endif
 
 #ifndef COMPILE_WRITE_RASTER
 #define COMPILE_WRITE_RASTER(type, unused) \
-  template void ImageHdu::writeRaster(const PtrRaster<type, -1>&) const; \
-  template void ImageHdu::writeRaster(const PtrRaster<type, 2>&) const; \
-  template void ImageHdu::writeRaster(const PtrRaster<type, 3>&) const; \
-  template void ImageHdu::writeRaster(const VecRaster<type, -1>&) const; \
-  template void ImageHdu::writeRaster(const VecRaster<type, 2>&) const; \
-  template void ImageHdu::writeRaster(const VecRaster<type, 3>&) const;
+  template void ImageHdu::write_raster(const PtrRaster<type, -1>&) const; \
+  template void ImageHdu::write_raster(const PtrRaster<type, 2>&) const; \
+  template void ImageHdu::write_raster(const PtrRaster<type, 3>&) const; \
+  template void ImageHdu::write_raster(const VecRaster<type, -1>&) const; \
+  template void ImageHdu::write_raster(const VecRaster<type, 2>&) const; \
+  template void ImageHdu::write_raster(const VecRaster<type, 3>&) const;
 ELEFITS_FOREACH_RASTER_TYPE(COMPILE_WRITE_RASTER)
 #undef COMPILE_WRITE_RASTER
 #endif

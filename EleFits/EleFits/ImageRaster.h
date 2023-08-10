@@ -46,7 +46,14 @@ public:
   /**
    * @brief Read the image pixel value type.
    */
-  const std::type_info& readTypeid() const;
+  const std::type_info& read_typeid() const;
+
+  /**
+   * @deprecated
+   */
+  const std::type_info& readTypeid() const {
+    return read_typeid();
+  }
 
   /**
    * @brief Read the `BITPIX` or `ZBITPIX` value.
@@ -56,25 +63,53 @@ public:
   /**
    * @brief Read the number of pixels in the image.
    */
-  long readSize() const;
+  long read_size() const;
+
+  /**
+   * @deprecated
+   */
+  long readSize() const {
+    return read_size();
+  }
 
   /**
    * @brief Read the image shape.
    */
   template <long N = 2>
-  Position<N> readShape() const;
+  Position<N> read_shape() const;
+
+  template <long N = 2>
+  Position<N> readShape() const {
+    return read_shape<2>();
+  }
 
   /**
    * @brief Update the image shape.
    */
   template <long N = 2>
-  void updateShape(const Position<N>& shape) const;
+  void update_shape(const Position<N>& shape) const;
+
+  /**
+   * @deprecated
+   */
+  template <long N = 2>
+  void updateShape(const Position<N>& shape) const {
+    return update_shape(shape);
+  }
 
   /**
    * @brief Update the image type and shape.
    */
   template <typename T, long N = 2>
-  void reinit(const Position<N>& shape) const;
+  void update_type_shape(const Position<N>& shape) const;
+
+  /**
+   * @deprecated
+  */
+  template <typename T, long N = 2>
+  [[deprecated("Use update_type_shape()")]] void reinit(const Position<N>& shape) const {
+    return update_type_shape<T>(shape);
+  }
 
   /// @}
   /**
@@ -103,7 +138,7 @@ public:
    * @copydetails read()
    */
   template <typename TRaster>
-  void readTo(TRaster& raster) const;
+  void read_to(TRaster& raster) const;
 
   /// @}
   /**
@@ -130,25 +165,41 @@ public:
    * into an existing raster at position (25, 40), do:
    * \code
    * const FileMemRegions<2> regions({25, 40}, {{50, 80}, {100, 120}});
-   * image.readRegionTo(regions, raster);
+   * image.read_region_to(regions, raster);
    * \endcode
    * where `image` is the `ImageRaster` and `raster` is the `Raster`.
    * 
    * In simpler cases, where the in-file or in-memory front position is 0,
    * factories can be used, e.g. to read into position 0 of the raster:
    * \code
-   * image.readRegionTo<2>({{50, 80}, {100, 120}}, raster);
+   * image.read_region_to<2>({{50, 80}, {100, 120}}, raster);
    * \endcode
    */
   template <typename T, long M, long N>
-  VecRaster<T, M> readRegion(const Region<N>& region) const;
+  VecRaster<T, M> read_region(const Region<N>& region) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long M, long N>
+  VecRaster<T, M> readRegion(const Region<N>& region) const {
+    read_region<T, M>(region);
+  }
 
   /**
    * @brief Read a region of the data unit into a region of an existing `Raster`.
-   * @copydetails readRegion()
+   * @copydetails read_region()
    */
   template <typename TRaster>
-  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const;
+  void read_region_to(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename TRaster>
+  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const {
+    return read_region_to(regions, raster);
+  }
 
   /// @}
   /**
@@ -178,39 +229,47 @@ public:
    * Shortcuts offered by `FileMemRegions` and `Region` can be used to implement special cases:
    * \code
    * // Write the whole raster at position (10, 20, 30)
-   * du.writeRegion<3>({10, 20, 30}, raster);
+   * du.write_region<3>({10, 20, 30}, raster);
    * 
    * // Write the whole HDU with a region of the raster starting at (10, 20, 30)
-   * du.writeRegion<3>({Region<3>::whole(), {10, 20, 30}}, raster);
+   * du.write_region<3>({Region<3>::whole(), {10, 20, 30}}, raster);
    * \endcode
    * 
    * Note that the raster dimension can be lower than the HDU dimension.
    * For example, it is possible to write a 2D raster in a 3D HDU.
    * \code
    * // Write the 3rd plane of raster into the 5th plane of the HDU
-   * du.writeRegion<3>({{0, 0, 4}}, raster.section(2));
+   * du.write_region<3>({{0, 0, 4}}, raster.section(2));
    * \endcode
    */
   template <typename TRaster, long N>
-  void writeRegion(FileMemRegions<N> regions, const TRaster& raster) const; // TODO return bool = isContiguous()?
+  void write_region(FileMemRegions<N> regions, const TRaster& raster) const; // TODO return bool = is_contiguous()?
+
+  /**
+   * @deprecated
+   */
+  template <typename TRaster, long N>
+  void writeRegion(FileMemRegions<N> regions, const TRaster& raster) const {
+    return write_region(regions, raster);
+  }
 
   /// @}
 
 private:
   /**
    * @brief Read a region of the data unit into an existing `Raster`.
-   * @copydetails readRegion()
+   * @copydetails read_region()
    */
   template <typename TRaster, long N>
-  void readRegionToSlice(const Position<N>& frontPosition, TRaster& raster) const;
+  void read_region_to_slice(const Position<N>& front_position, TRaster& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
-   * @copydetails readRegion()
+   * @copydetails read_region()
    */
   template <typename T, long M, long N, typename TContainer>
-  void
-  readRegionToSubraster(const Position<N>& frontPosition, Subraster<T, M, TContainer>& subraster) const; // FIXME rm?
+  void read_region_to_subraster(const Position<N>& front_position, Subraster<T, M, TContainer>& subraster)
+      const; // FIXME rm?
 
   /**
    * @brief Read a region of the data unit into an existing `Subraster`.
@@ -218,32 +277,32 @@ private:
    * The region is that of the subraster.
    * This function is equivalent to:
    * \code
-   * readRegionTo({region, region}, raster);
+   * read_region_to({region, region}, raster);
    * \endcode
    * where `region` would be the subraster region, and `raster` the subraster parent.
    */
   template <typename T, long N, typename TContainer>
-  void readRegionTo(Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
+  void read_region_to(Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.
    */
   template <typename TRaster, long N>
-  void writeSlice(const Position<N>& frontPosition, const TRaster& raster) const;
+  void write_slice(const Position<N>& front_position, const TRaster& raster) const;
 
   /**
    * @brief Write a `Subraster` at a corresponding position of the data unit.
-   * @copydetails writeRegion()
+   * @copydetails write_region()
    */
   template <typename T, long N, typename TContainer>
-  void writeRegion(const Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
+  void write_region(const Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Subraster` at a given position of the data unit.
    */
   template <typename T, long M, long N, typename TContainer>
   void
-  writeSubraster(const Position<N>& frontPosition, const Subraster<T, M, TContainer>& subraster) const; // FIXME rm?
+  write_subraster(const Position<N>& front_position, const Subraster<T, M, TContainer>& subraster) const; // FIXME rm?
 
 private:
   /**

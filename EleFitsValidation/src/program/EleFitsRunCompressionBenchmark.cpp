@@ -20,7 +20,7 @@ using boost::program_options::value;
 using namespace Euclid;
 
 #define IF_TYPEID_MATCHES_RETURN_BITPIX(type, name) \
-  if (typeid(type) == hdu.readTypeid()) \
+  if (typeid(type) == hdu.read_typeid()) \
     return Cfitsio::TypeCode<type>::bitpix();
 // FIXME: return #name; as string instead ?
 

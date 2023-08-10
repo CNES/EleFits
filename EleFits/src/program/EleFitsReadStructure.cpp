@@ -21,7 +21,7 @@ using namespace Euclid::Fits;
   }
 
 std::string read_type_name(const ImageHdu& hdu) {
-  const auto& id = hdu.readTypeid();
+  const auto& id = hdu.read_typeid();
   ELEFITS_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
   return "UNKNOWN TYPE";
 }
@@ -109,7 +109,7 @@ public:
       /* Read type */
       const auto hduType = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
       if (hduType == HduCategory::Image) {
-        const auto shape = hdu.as<ImageHdu>().readShape<-1>();
+        const auto shape = hdu.as<ImageHdu>().read_shape<-1>();
         if (shape.size() > 0) {
           std::ostringstream oss;
           std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));

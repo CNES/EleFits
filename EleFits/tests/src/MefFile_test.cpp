@@ -27,12 +27,12 @@ BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::TemporaryMefFile
 BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   Test::SmallRaster input; // TODO RandomRaster
   const auto& primary = this->primary();
-  primary.updateShape<float, 2>(input.shape());
-  primary.writeRaster(input);
+  primary.update_type_shape<float, 2>(input.shape());
+  primary.write_raster(input);
   this->close();
   // Reopen as read-only
   MefFile f(this->filename(), FileMode::Read);
-  const auto output = f.primary().readRaster<float, 2>();
+  const auto output = f.primary().read_raster<float, 2>();
   std::remove(this->filename().c_str());
 }
 
@@ -40,11 +40,11 @@ BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
   BOOST_TEST(this->hdu_count() == 1); // 0 with CFITSIO
   Test::SmallRaster raster;
   const auto& primary = this->primary();
-  primary.updateShape<float, 2>(raster.shape());
+  primary.update_type_shape<float, 2>(raster.shape());
   BOOST_TEST(this->hdu_count() == 1);
   const auto& ext = this->append_null_image<float, 2>("IMG", {}, raster.shape());
   BOOST_TEST(this->hdu_count() == 2); // 1 with CFITSIO
-  ext.writeRaster(raster);
+  ext.write_raster(raster);
   BOOST_TEST(this->hdu_count() == 2);
 }
 
@@ -103,8 +103,8 @@ BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile) {
   this->append_bintable_header("TABLE", {}, info);
   BOOST_TEST(this->access<Header>(1).has("NAXIS"));
   BOOST_TEST(this->access<Header>("IMAGE").has("NAXIS"));
-  BOOST_TEST(this->access<ImageRaster>(1).readShape() == shape);
-  BOOST_TEST(this->access<ImageRaster>("IMAGE").readShape() == shape);
+  BOOST_TEST(this->access<ImageRaster>(1).read_shape() == shape);
+  BOOST_TEST(this->access<ImageRaster>("IMAGE").read_shape() == shape);
   BOOST_TEST(this->access<BintableColumns>(2).readName(0) == info.name);
   BOOST_TEST(this->access<BintableColumns>("TABLE").readName(0) == info.name);
 }
@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& image = this->append_image_header("IMAGE", records);
   BOOST_TEST(image.read_name() == "IMAGE");
-  BOOST_TEST(image.readSize() == 0);
+  BOOST_TEST(image.read_size() == 0);
   BOOST_TEST(image.header().parse<int>("FOO").value == 3);
   BOOST_TEST(image.header().parse<int>("BAR").value == 41);
 
@@ -171,8 +171,8 @@ void checkAppendZeroImage(MefFile& f) {
   RecordSeq withoutBlank {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_null_image<T>("ZERO", withoutBlank, shape);
   BOOST_TEST(ext.readName() == "ZERO");
-  BOOST_TEST(ext.readSize() == shapeSize(shape));
-  BOOST_TEST(ext.template readShape<1>() == shape);
+  BOOST_TEST(ext.read_size() == shapeSize(shape));
+  BOOST_TEST(ext.template read_shape<1>() == shape);
   BOOST_TEST(not ext.header().has("BLANK"));
   BOOST_TEST(ext.header().template parse<int>("FOO").value == 3);
   BOOST_TEST(ext.header().template parse<int>("BAR").value == 41);
@@ -194,8 +194,8 @@ void checkAppendNullImage(MefFile& f) {
   RecordSeq withBlank {{"BLANK", T(1)}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_null_image<T>("NULL", withBlank, shape);
   BOOST_TEST(ext.readName() == "NULL");
-  BOOST_TEST(ext.readSize() == shapeSize(shape));
-  BOOST_TEST(ext.template readShape<1>() == shape);
+  BOOST_TEST(ext.read_size() == shapeSize(shape));
+  BOOST_TEST(ext.template read_shape<1>() == shape);
   BOOST_TEST(ext.header().template parse<int>("NAXIS").value == 1);
   BOOST_TEST(ext.header().template parse<int>("NAXIS1").value == 10);
   BOOST_TEST(ext.header().template parse<int>("BLANK").value == 1);
@@ -225,8 +225,8 @@ void checkAppendImage(MefFile& f) {
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_image("ZERO", records, raster);
   BOOST_TEST(ext.readName() == "ZERO");
-  BOOST_TEST(ext.readSize() == shapeSize(shape));
-  BOOST_TEST(ext.readSize() == shapeSize(shape));
+  BOOST_TEST(ext.read_size() == shapeSize(shape));
+  BOOST_TEST(ext.read_size() == shapeSize(shape));
   BOOST_TEST(ext.header().template parse<int>("FOO").value == 3);
   BOOST_TEST(ext.header().template parse<int>("BAR").value == 41);
   const auto output = ext.raster().template read<T, 1>();
@@ -318,7 +318,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   /* Copy empty uncompressed to uncompressed */
   const auto& emptyCopy = fileCopy.append(emptyImage);
   BOOST_TEST(emptyCopy.read_name() == emptyImage.read_name());
-  BOOST_TEST(emptyCopy.readSize() == emptyImage.readSize());
+  BOOST_TEST(emptyCopy.read_size() == emptyImage.read_size());
   BOOST_TEST(emptyCopy.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
   BOOST_TEST(emptyCopy.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
   BOOST_TEST(emptyCopy.matches(HduCategory::RawImage));
@@ -326,7 +326,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   /* Copy uncompressed to uncompressed */
   const auto& imageCopy = fileCopy.append(image);
   BOOST_TEST(imageCopy.read_name() == image.read_name());
-  BOOST_TEST(imageCopy.readSize() == image.readSize());
+  BOOST_TEST(imageCopy.read_size() == image.read_size());
   BOOST_TEST(imageCopy.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy.header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
   const auto output = imageCopy.raster().template read<double, 1>();
@@ -339,7 +339,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   fileCopy.strategy(algo);
   const auto& imageCopy4 = fileCopy.append(emptyImage);
   BOOST_TEST(imageCopy4.read_name() == emptyImage.read_name());
-  BOOST_TEST(imageCopy4.readSize() == emptyImage.readSize());
+  BOOST_TEST(imageCopy4.read_size() == emptyImage.read_size());
   BOOST_TEST(imageCopy4.header().parse<int>("FOO").value == emptyImage.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy4.header().parse<int>("BAR").value == emptyImage.header().parse<int>("BAR").value);
   BOOST_TEST(imageCopy4.matches(HduCategory::RawImage)); // empty images are actually NOT compressed
@@ -349,7 +349,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   fileCopy.strategy(algo);
   const auto& imageCopy2 = fileCopy.append(image);
   BOOST_TEST(imageCopy2.read_name() == image.read_name());
-  BOOST_TEST(imageCopy2.readSize() == image.readSize());
+  BOOST_TEST(imageCopy2.read_size() == image.read_size());
   BOOST_TEST(imageCopy2.header().parse<int>("FOO").value == image.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy2.header().parse<int>("BAR").value == image.header().parse<int>("BAR").value);
   const auto output2 = imageCopy2.raster().template read<double, 1>();
@@ -361,7 +361,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   fileCopy.strategy().clear();
   const auto& imageCopy3 = fileCopy.append(compImage);
   BOOST_TEST(imageCopy3.read_name() == compImage.read_name());
-  BOOST_TEST(imageCopy3.readSize() == compImage.readSize());
+  BOOST_TEST(imageCopy3.read_size() == compImage.read_size());
   BOOST_TEST(imageCopy3.header().parse<int>("FOO").value == compImage.header().parse<int>("FOO").value);
   BOOST_TEST(imageCopy3.header().parse<int>("BAR").value == compImage.header().parse<int>("BAR").value);
   const auto output3 = imageCopy3.raster().template read<double, 1>();
