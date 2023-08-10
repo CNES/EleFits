@@ -13,7 +13,7 @@ namespace Test {
 
 template <typename TRaster>
 bool SmallRaster::approx(const TRaster& other, double tol) const {
-  return rasterApprox(*this, other, tol);
+  return raster_approx(*this, other, tol);
 }
 
 template <typename T, long N>
@@ -23,11 +23,11 @@ RandomRaster<T, N>::RandomRaster(Position<N> rasterShape, T min, T max) :
 template <typename T, long N>
 template <typename TRaster>
 bool RandomRaster<T, N>::approx(const TRaster& other, double tol) const {
-  return rasterApprox(*this, other, tol);
+  return raster_approx(*this, other, tol);
 }
 
 template <typename TRaster, typename URaster>
-bool rasterApprox(const TRaster& test, const URaster& ref, double tol) {
+bool raster_approx(const TRaster& test, const URaster& ref, double tol) {
   if (test.shape() != ref.shape()) {
     return false;
   }

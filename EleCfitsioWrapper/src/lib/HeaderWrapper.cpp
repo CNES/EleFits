@@ -160,7 +160,7 @@ void write_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
       TypeCode<bool>::for_record(),
       record.keyword.c_str(),
       &nonconst_int_value,
-      record.rawComment().c_str(),
+      record.raw_comment().c_str(),
       &status);
   CfitsioError::may_throw(status, fptr, "Cannot write Boolean record: " + record.keyword);
 }
@@ -168,10 +168,10 @@ void write_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
 template <>
 void write_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record) {
   int status = 0;
-  if (record.hasLongStringValue()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
+  if (record.has_long_string_value()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
   }
-  fits_write_key_longstr(fptr, record.keyword.c_str(), record.value.c_str(), record.rawComment().c_str(), &status);
+  fits_write_key_longstr(fptr, record.keyword.c_str(), record.value.c_str(), record.raw_comment().c_str(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot write string record: " + record.keyword);
 }
 
@@ -201,7 +201,7 @@ void write_record<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::V
 template <>
 void update_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
   int status = 0;
-  std::string comment = record.rawComment();
+  std::string comment = record.raw_comment();
   int nonconst_int_value = record.value; // TLOGICAL is for int in CFITSIO
   fits_update_key(
       fptr,
@@ -215,7 +215,7 @@ void update_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
 
 template <>
 void update_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record) {
-  if (record.hasLongStringValue()) { // Cannot use fits_update_key for long string records
+  if (record.has_long_string_value()) { // Cannot use fits_update_key for long string records
     if (has_keyword(fptr, record)) {
       remove_record(fptr, record.keyword);
     }
@@ -223,7 +223,7 @@ void update_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>&
     // Keyword ordering is changed after deletion, but there is no better (simple) option
   } else {
     int status = 0;
-    std::string comment = record.rawComment();
+    std::string comment = record.raw_comment();
     fits_update_key(
         fptr,
         TypeCode<std::string>::for_record(),

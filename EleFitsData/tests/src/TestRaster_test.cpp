@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_SUITE(TestRaster_test)
 
 template <typename TRaster>
 void checkRasterEqualsItself(const TRaster& raster) {
-  BOOST_TEST(Test::rasterApprox(raster, raster));
+  BOOST_TEST(Test::raster_approx(raster, raster));
 }
 
 template <typename T>
@@ -45,7 +45,7 @@ void checkRastersWithDifferentShapesDiffer(const TRaster& raster) {
   shape[0] = raster.shape()[1];
   shape[1] = raster.shape()[0];
   PtrRaster<const typename TRaster::Value, TRaster::Dim> other(shape, raster.data()); // Same data, different shape
-  BOOST_TEST(not Test::rasterApprox(other, raster));
+  BOOST_TEST(not Test::raster_approx(other, raster));
 }
 
 template <typename T>
@@ -69,8 +69,8 @@ ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 template <typename T, long N>
 void checkRastersWithDifferentValuesDiffer(const VecRaster<T, N>& raster) {
   VecRaster<T, N> other(raster.shape());
-  BOOST_TEST(not Test::rasterApprox(other, raster));
-  BOOST_TEST(not Test::rasterApprox(raster, other));
+  BOOST_TEST(not Test::raster_approx(other, raster));
+  BOOST_TEST(not Test::raster_approx(raster, other));
 }
 
 template <typename T>

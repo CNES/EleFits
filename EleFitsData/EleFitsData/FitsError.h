@@ -84,7 +84,8 @@ struct ChecksumError : public FitsError {
   /**
    * @brief Constructor.
    */
-  ChecksumError(Status hduStatus, Status dataStatus) : FitsError("Checksum error: "), hdu(hduStatus), data(dataStatus) {
+  ChecksumError(Status hdu_status, Status data_status) :
+      FitsError("Checksum error: "), hdu(hdu_status), data(data_status) {
     if (hdu == Missing) {
       append("Missing HDU checksum record. ");
     } else if (hdu == Incorrect) {
@@ -114,9 +115,9 @@ struct ChecksumError : public FitsError {
   /**
    * @brief Throw if at least one checksum is not correct (missing or incorrect).
    */
-  static void may_throw(Status hduStatus, Status dataStatus) {
-    if (hduStatus != Correct || dataStatus != Correct) {
-      throw ChecksumError(hduStatus, dataStatus);
+  static void may_throw(Status hdu_status, Status data_status) {
+    if (hdu_status != Correct || data_status != Correct) {
+      throw ChecksumError(hdu_status, data_status);
     }
   }
 

@@ -84,13 +84,13 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
   const auto output = h.parse<std::string>("LONG");
   BOOST_TEST(h.has("LONGSTRN"));
   BOOST_TEST(output.value == longStr);
-  BOOST_TEST(output.hasLongStringValue());
+  BOOST_TEST(output.has_long_string_value());
 }
 
 void checkHierarchKeywordIsReadBack(const Header& h, const std::string& keyword) {
   BOOST_TEST(h.readAll().find("HIERARCH") == std::string::npos); // Not found
   const Record<int> record(keyword, 10);
-  BOOST_TEST(record.hasLongKeyword() == (keyword.length() > 8));
+  BOOST_TEST(record.has_long_keyword() == (keyword.length() > 8));
   h.write(record);
   BOOST_TEST(h.readAll().find("HIERARCH") != std::string::npos); // Found
   const auto output = h.parse<int>(keyword);

@@ -31,7 +31,7 @@ public:
   virtual ~SmallRaster() = default;
 
   /**
-   * @brief Shortcut for rasterApprox
+   * @brief Shortcut for raster_approx
    */
   template <typename TRaster>
   bool approx(const TRaster& other, double tol = 0.01) const;
@@ -65,7 +65,7 @@ public:
   virtual ~RandomRaster() = default;
 
   /**
-   * @brief Shortcut for rasterApprox
+   * @brief Shortcut for raster_approx
    */
   template <typename TRaster>
   bool approx(const TRaster& other, double tol = 0.01) const;
@@ -77,7 +77,7 @@ public:
  * Test each pixel as: |ref - test| / test < tol
  */
 template <typename TRaster, typename URaster>
-bool rasterApprox(const TRaster& test, const URaster& ref, double tol = 0.01);
+bool raster_approx(const TRaster& test, const URaster& ref, double tol = 0.01);
 
 } // namespace Test
 } // namespace Fits

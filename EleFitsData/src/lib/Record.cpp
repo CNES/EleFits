@@ -10,26 +10,26 @@ namespace Fits {
 /*
  * 70 bytes minus opening and closing quotes
  */
-constexpr std::size_t maxShortValueLength = 68;
+constexpr std::size_t max_short_value_length = 68;
 
 template <>
-bool Record<std::string>::hasLongStringValue() const {
-  return value.length() > maxShortValueLength;
+bool Record<std::string>::has_long_string_value() const {
+  return value.length() > max_short_value_length;
 }
 
 template <>
-bool Record<const char*>::hasLongStringValue() const {
-  return std::strlen(value) > maxShortValueLength;
+bool Record<const char*>::has_long_string_value() const {
+  return std::strlen(value) > max_short_value_length;
 }
 
 template <>
-bool Record<VariantValue>::hasLongStringValue() const {
+bool Record<VariantValue>::has_long_string_value() const {
   const auto& id = value.type();
   if (id == typeid(std::string)) {
-    return boost::any_cast<std::string>(value).length() > maxShortValueLength;
+    return boost::any_cast<std::string>(value).length() > max_short_value_length;
   }
   if (id == typeid(const char*)) {
-    return std::strlen(boost::any_cast<const char*>(value)) > maxShortValueLength;
+    return std::strlen(boost::any_cast<const char*>(value)) > max_short_value_length;
   }
   return false;
 }

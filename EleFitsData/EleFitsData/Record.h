@@ -67,7 +67,7 @@ using VariantValue = boost::any;
  *
  * In the FITS definition, it is unclear if the "comment" encompasses only: `speed of light`, or also the unit, as: `[m/s] speed of light`.
  * In EleFits, the former is named comment, while the latter is the raw comment.
- * The raw comment can be get as `Record::rawComment()`.
+ * The raw comment can be get as `Record::raw_comment()`.
  * 
  * Such a `Record` can be cast to `double` (records of value type `T` can be cast to `T`),
  * or more precisely, it can be sliced as its value.
@@ -175,7 +175,14 @@ struct Record {
    * When there is a unit, the raw comment is: "[unit] comment".
    * When unit is empty, the raw comment is "comment".
    */
-  std::string rawComment() const;
+  std::string raw_comment() const;
+
+  /**
+   * @deprecated
+   */
+  std::string rawComment() const {
+    return raw_comment();
+  }
 
   /**
    * @brief Check whether the keyword of a record is long string (more than 8 characters).
@@ -183,7 +190,14 @@ struct Record {
    * A long-keyword record follows the hierarchical keyword convention.
    * @see Record documentation for more details on the hierarchical keyword convention.
    */
-  bool hasLongKeyword() const;
+  bool has_long_keyword() const;
+
+  /**
+   * @deprecated
+   */
+  bool hasLongKeyword() const {
+    return has_long_keyword();
+  }
 
   /**
    * @brief Check whether the value of a record is a long string (more than 68 characters).
@@ -198,7 +212,14 @@ struct Record {
    * * `VariantValue` if the underlying value is one of the previous types.
    * @see Record documentation for more details on the long string value convention.
    */
-  bool hasLongStringValue() const;
+  bool has_long_string_value() const;
+
+  /**
+   * @deprecated
+   */
+  bool hasLongStringValue() const {
+    return has_long_string_value();
+  }
 
   /**
    * @brief The keyword.
@@ -260,7 +281,7 @@ bool operator!=(const Record<T>& lhs, const Record<T>& rhs) {
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Record<T>& r) {
   os << r.keyword << " = " << r.value;
-  const auto rc = r.rawComment();
+  const auto rc = r.raw_comment();
   if (not rc.empty()) {
     os << " / " << rc;
   }

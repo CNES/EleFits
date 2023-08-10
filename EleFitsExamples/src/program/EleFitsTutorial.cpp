@@ -100,7 +100,7 @@ TutoRecords create_records() {
 
   /* Generate a random record */
 
-  auto complex_record = Fits::Test::generateRandomRecord<std::complex<double>>("COMPLEX");
+  auto complex_record = Fits::Test::generate_random_record<std::complex<double>>("COMPLEX");
 
   //! [Create records]
 

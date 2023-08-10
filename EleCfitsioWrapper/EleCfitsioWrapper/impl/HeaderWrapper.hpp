@@ -166,7 +166,7 @@ void write_record(fitsfile* fptr, const Fits::Record<T>& record) {
       TypeCode<T>::for_record(),
       record.keyword.c_str(),
       &nonconst_value,
-      record.rawComment().c_str(),
+      record.raw_comment().c_str(),
       &status);
   CfitsioError::may_throw(status, fptr, "Cannot write record: " + record.keyword);
 }
@@ -192,7 +192,7 @@ void write_records(fitsfile* fptr, const std::vector<Fits::Record<T>>& records) 
 template <typename T>
 void update_record(fitsfile* fptr, const Fits::Record<T>& record) {
   int status = 0;
-  std::string comment = record.rawComment();
+  std::string comment = record.raw_comment();
   T value = record.value;
   fits_update_key(fptr, TypeCode<T>::for_record(), record.keyword.c_str(), &value, &comment[0], &status);
   CfitsioError::may_throw(status, fptr, "Cannot update record: " + record.keyword);
