@@ -44,40 +44,40 @@ struct Body {
   }
 };
 
-std::string toString(std::string name, int age, float height, float mass) {
+std::string to_string(std::string name, int age, float height, float mass) {
   return name + " (" + std::to_string(age) + ") :" + std::to_string(height) + "m, " + std::to_string(mass) + "kg";
 }
 
 template <typename TSeq>
-void dispatchSeq(TSeq&& seq, bool isTuple);
+void dispatch_seq(TSeq&& seq, bool is_tuple);
 
 template <typename T>
-void dispatchSeq(const std::vector<T>& seq, bool isTuple);
+void dispatch_seq(const std::vector<T>& seq, bool is_tuple);
 
 template <typename T>
-void dispatchSeq(std::vector<T>&& seq, bool isTuple);
+void dispatch_seq(std::vector<T>&& seq, bool is_tuple);
 
 template <typename TSeq>
-void dispatchSeq(TSeq&& seq, bool isTuple) {
-  seqForeach(std::forward<TSeq>(seq), [&](const auto& e) {
+void dispatch_seq(TSeq&& seq, bool is_tuple) {
+  seq_foreach(std::forward<TSeq>(seq), [&](const auto& e) {
     (void)e;
-    BOOST_TEST(isTuple);
+    BOOST_TEST(is_tuple);
   });
 }
 
 template <typename T>
-void dispatchSeq(const std::vector<T>& seq, bool isTuple) {
+void dispatch_seq(const std::vector<T>& seq, bool is_tuple) {
   for (const auto& e : seq) {
     (void)e;
-    BOOST_TEST(not isTuple);
+    BOOST_TEST(not is_tuple);
   }
 }
 
 template <typename T>
-void dispatchSeq(std::vector<T>&& seq, bool isTuple) {
+void dispatch_seq(std::vector<T>&& seq, bool is_tuple) {
   for (const auto& e : seq) {
     (void)e;
-    BOOST_TEST(not isTuple);
+    BOOST_TEST(not is_tuple);
   }
 }
 
@@ -89,22 +89,22 @@ BOOST_AUTO_TEST_SUITE(DataUtils_test)
 
 BOOST_AUTO_TEST_CASE(typed_test) {
   const std::string name = "TOTOTATATITI";
-  const char* cStr = name.c_str();
+  const char* c_str = name.c_str();
   const int integer = 707471;
   const long index = integer;
   BOOST_TEST(Named<float>(name).key == name);
-  BOOST_TEST(Named<float>(cStr).key == name);
+  BOOST_TEST(Named<float>(c_str).key == name);
   BOOST_TEST(Indexed<float>(integer).key == index);
   BOOST_TEST(Indexed<float>(index).key == index);
   BOOST_TEST(as<float>(name).key == name);
-  BOOST_TEST(as<float>(cStr).key == name);
+  BOOST_TEST(as<float>(c_str).key == name);
   BOOST_TEST(as<float>(integer).key == index);
   BOOST_TEST(as<float>(index).key == index);
 }
 
 BOOST_AUTO_TEST_CASE(tuple_as_test) {
   const std::tuple<std::string, int, float, float> tuple {"TODO", 20, 1.8, 75};
-  const auto body = tupleAs<Body>(tuple);
+  const auto body = tuple_as<Body>(tuple);
   BOOST_TEST(body.name == "TODO");
   BOOST_TEST(body.age == 20);
   BOOST_TEST(body.height > 1.75);
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(tuple_as_test) {
 
 BOOST_AUTO_TEST_CASE(tuple_apply_test) {
   std::tuple<std::string, int, float, float> guy {"GUY", 18, 1.7, 55};
-  const auto repr = tupleApply(guy, toString);
+  const auto repr = tuple_apply(guy, to_string);
   BOOST_TEST(not repr.empty());
 }
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(tuple_transform_test) {
   auto twice = [](const auto& e) {
     return e + e;
   };
-  const auto jojo = seqTransform<Body>(jo, twice);
+  const auto jojo = seq_transform<Body>(jo, twice);
   BOOST_TEST(jojo.name == "JOJO");
   BOOST_TEST(jojo.age > std::get<1>(jo));
   BOOST_TEST(jojo.height > std::get<2>(jo));
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(tuple_foreach_test) {
   auto twice = [](auto& e) {
     e += e;
   };
-  seqForeach(me, twice);
+  seq_foreach(me, twice);
   BOOST_TEST(std::get<0>(me) == "MEME");
   BOOST_TEST(std::get<1>(me) > 32);
   BOOST_TEST(std::get<2>(me) > 1.75);
@@ -146,9 +146,9 @@ BOOST_AUTO_TEST_CASE(tuple_foreach_test) {
 BOOST_AUTO_TEST_CASE(seq_dispatch_test) {
   const std::tuple<int, float> t {1, 3.14};
   const std::vector<int> v {1, 2};
-  dispatchSeq(t, true);
-  dispatchSeq(v, false);
-  dispatchSeq(std::vector<float> {1, 3.14}, false);
+  dispatch_seq(t, true);
+  dispatch_seq(v, false);
+  dispatch_seq(std::vector<float> {1, 3.14}, false);
 }
 
 BOOST_AUTO_TEST_CASE(bitpix_bzero_test) {

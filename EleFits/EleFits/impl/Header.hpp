@@ -53,7 +53,7 @@ TSeq Header::parseSeqOr(TSeq&& fallbacks) const {
   auto func = [&](const auto& f) {
     return parseOr(f);
   };
-  return seqTransform<TSeq>(fallbacks, func);
+  return seq_transform<TSeq>(fallbacks, func);
 }
 
 template <typename... Ts>
@@ -74,7 +74,7 @@ TReturn Header::parseStructOr(const Record<Ts>&... fallbacks) const {
 
 template <typename TReturn, typename TSeq>
 TReturn Header::parseStructOr(TSeq&& fallbacks) const {
-  return seqTransform<TReturn>(fallbacks, [&](auto f) {
+  return seq_transform<TReturn>(fallbacks, [&](auto f) {
     return parseOr(f);
   }); // FIXME test
 }
@@ -176,7 +176,7 @@ void Header::writeSeq(TSeq&& records) const {
   auto func = [&](const auto& r) {
     Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
   };
-  seqForeach(std::forward<TSeq>(records), func);
+  seq_foreach(std::forward<TSeq>(records), func);
 }
 
 template <RecordMode Mode, typename... Ts>
@@ -192,7 +192,7 @@ void Header::writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records
       Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
     }
   };
-  seqForeach(std::forward<TSeq>(records), func);
+  seq_foreach(std::forward<TSeq>(records), func);
 }
 
 #ifndef DECLARE_PARSE

@@ -105,7 +105,7 @@ std::vector<VecColumn<T, N>> BintableColumns::readSeq(std::vector<ColumnKey> key
 
 template <typename TSeq>
 void BintableColumns::readSeqTo(TSeq&& columns) const {
-  auto keys = seqTransform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
+  auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
   readSeqTo(std::move(keys), std::forward<TSeq>(columns));
@@ -156,7 +156,7 @@ std::vector<VecColumn<T, N>> BintableColumns::readSegmentSeq(Segment rows, std::
 
 template <typename TSeq>
 void BintableColumns::readSegmentSeqTo(FileMemSegments rows, TSeq&& columns) const {
-  auto keys = seqTransform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
+  auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
   readSegmentSeqTo(std::move(rows), keys, std::forward<TSeq>(columns));
@@ -182,7 +182,7 @@ void BintableColumns::readSegmentSeqTo(FileMemSegments rows, std::vector<ColumnK
       mem.back = last_mem_row;
     }
     auto it = keys.begin();
-    seqForeach(std::forward<TSeq>(columns), [&](auto& c) {
+    seq_foreach(std::forward<TSeq>(columns), [&](auto& c) {
       readSegmentTo({file.front, mem}, it->index(*this), c);
       ++it;
     });
@@ -249,11 +249,11 @@ void BintableColumns::writeSeq(const TColumns&... columns) const {
 template <typename TSeq>
 void BintableColumns::initSeq(long index, TSeq&& infos) const {
   m_edit();
-  const auto nameVec = seqTransform<std::vector<std::string>>(infos, [&](const auto& info) {
+  const auto nameVec = seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
     return info.name;
   });
   String::CStrArray names(nameVec);
-  const auto tformVec = seqTransform<std::vector<std::string>>(infos, [&](const auto& info) {
+  const auto tformVec = seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
     using Value = typename std::decay_t<decltype(info)>::Value;
     return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeat_count());
   });
@@ -263,7 +263,7 @@ void BintableColumns::initSeq(long index, TSeq&& infos) const {
   fits_insert_cols(m_fptr, cfitsio_index, names.size(), names.data(), tforms.data(), &status);
   // TODO to Cfitsio
   long i = cfitsio_index;
-  seqForeach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
+  seq_foreach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
       const Record<std::string> record {"TUNIT" + std::to_string(i), info.unit, "", "physical unit of field"};
       Cfitsio::HeaderIo::update_record(m_fptr, record);
@@ -293,7 +293,7 @@ void BintableColumns::writeSegmentSeq(FileMemSegments rows, TSeq&& columns) cons
     if (mem.back > last_mem_row) {
       mem.back = last_mem_row;
     }
-    seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
+    seq_foreach(std::forward<TSeq>(columns), [&](const auto& c) {
       writeSegment({file.front, mem}, c); // FIXME don't recalculate index
     });
   }
@@ -307,7 +307,7 @@ void BintableColumns::writeSegmentSeq(FileMemSegments rows, const TColumns&... c
 template <typename TSeq>
 long columnsRowCount(TSeq&& columns) {
   long rows = -1;
-  seqForeach(std::forward<TSeq>(columns), [&](const auto& c) {
+  seq_foreach(std::forward<TSeq>(columns), [&](const auto& c) {
     const auto c_rows = c.row_count();
     if (rows == -1) {
       rows = c_rows;
