@@ -83,11 +83,11 @@ double readColumns(const Fits::BintableColumns& du) {
 }
 
 /*
- * Manipulate the entries of a multidimensional column as nD-arrays.
+ * Manipulate the fields of a multidimensional column as nD-arrays.
  */
 void viewAsRaster(const Fits::BintableColumns& du) {
 
-  /* Read a column of 2D entries */
+  /* Read a column of 2D fields */
   auto col = du.read<std::uint16_t, 2>("MULTIDIM");
 
   /* Zero pixels at odd positions */

@@ -23,10 +23,10 @@ While the two libraries are generally equivalent, optimizations implemented inte
 
 The EleFits API was specifically designed to be very fluent and compact.
 The following (a bit extreme) example shows how natural it is
-to read a column named "RA" in the 4th extension of a Multi-Extension FITS (MEF) file:
+to read the columns named "RA" and "DEC" in the 4th extension of a Multi-Extension FITS (MEF) file:
 
 ```cpp
-auto ra = MefFile("file.fits").access<BintableColumns>(4).read<double>("RA");
+auto [ra, dec] = MefFile("file.fits").access<BintableColumns>(4).read_seq(as<double>("RA"), as<double>("DEC"));
 ```
 
 ## Comparison to alternatives
@@ -47,7 +47,7 @@ Here is a comparison of EleFits with the main alternatives:
 
 SifFile fits(filename, FileMode::CREATE);
 fits.header().write(keyword, value, "", comment);
-fits.raster().write(makeRaster(data, width, height));
+fits.raster().write(make_raster(data, width, height));
 
 // CCfits
 
@@ -100,8 +100,8 @@ Among strategies, compression strategies enables internal compression of image H
 
 MefFile f(filename, FileMode::Edit);
 f.strategy(CompressAptly(), ValidateChecksums());
-f.appendImage("", {}, image); // Automatically compresses with shuffled GZIP
-f.appendImage("", {}, mask); // Automatically compresses with PLIO
+f.append_image("", {}, image); // Automatically compresses with shuffled GZIP
+f.append_image("", {}, mask); // Automatically compresses with PLIO
 const auto& p = f.primary(); // Automatically validates Primary's checksums, if any
 f.close(); // Automatically updates checksums of edited HDUs
 ```
@@ -112,10 +112,10 @@ Files are iterable, and selectors enable looping over filtered HDUs
 ```cpp
 // Given:
 // - MefFile f: The MEF file handler
-// - processNewImage: A user-defined function
+// - process_new_image: A user-defined function
 
 for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) {
-  processNewImage(hdu);
+  process_new_image(hdu);
 }
 ```
 
@@ -126,7 +126,7 @@ and a comprehensive type conversion system is provided:
 // Given:
 // - Header header: The header unit handler
 
-auto records = header.parseAll(KeywordCategory::Reserved);
+auto records = header.parse_all(KeywordCategory::Reserved);
 auto instrument = records.as<std::string>("INSTRUME");
 auto exptime = records.as<double>("EXPTIME");
 ```
@@ -139,9 +139,9 @@ by mapping -- possibly non-contiguous -- in-file and in-memory regions, e.g.:
 // - ImageRaster raster: The image data unit handler
 // - Raster data: The image container
 
-Region<2> inFile {{32, 16}, {64, 32}};
-Position<2> inMemory {8, 8};
-raster.readRegionTo({inFile, inMemory}, data);
+Region<2> in_file {{32, 16}, {64, 32}};
+Position<2> in_memory {8, 8};
+raster.readRegionTo({in_file, in_memory}, data);
 ```
 
 For binary tables, multiple columns can be read or written at once
@@ -151,25 +151,25 @@ to take advantage of an internal buffer:
 // Given:
 // - BintableColumns columns: The binary table data unit handler
 
-auto [columnA, columnB, columnC] = columns.readSeq(as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
+auto [col_a, col_b, col_c] = columns.read_seq(as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
 ```
 
 ```cpp
 // Given:
 // - BintableColumns columns: The binary table data unit handler
-// - Column columnA, columnB, columnC: Column containers of various value types
+// - Column col_a, col_b, col_c: Column containers of various value types
 
-columns.writeSeq(columnA, columnB, columnC);
+columns.writeSeq(col_a, col_b, col_c);
 ```
 
-Entries of mutidimensional columns can be accessed as rasters directly:
+Fields of mutidimensional columns can be accessed as rasters directly:
 
 ```cpp
 // Given:
 // - BintableColumns columns: The binary table data unit handler
 
 auto column = columns.read<double, 2>("THUMBNAILS");
-auto raster = column[42];
+auto raster = column.field(42);
 auto pixel = raster[{3, 14}];
 ```
 

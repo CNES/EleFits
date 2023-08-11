@@ -141,7 +141,7 @@ public:
 
       /* Read keywords */
       if (categories) {
-        const auto records = hdu.header().readKeywordsValues(categories);
+        const auto records = hdu.header().read_keywords_values(categories);
         if (records.size() == 0) {
           logger.info() << "  No keywords";
         } else {

@@ -120,7 +120,7 @@ const T& MefFile::append(const T& hdu) {
   if (image.read_typeid() == typeid(type)) { \
     append_image( \
         hdu.read_name(), \
-        hdu.header().parseAll(KeywordCategory::User), \
+        hdu.header().parse_all(KeywordCategory::User), \
         image.raster().template read<type, -1>()); \
   }
       ELEFITS_FOREACH_RASTER_TYPE(ELEFITS_COPY_HDU)

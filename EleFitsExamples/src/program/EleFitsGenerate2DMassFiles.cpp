@@ -127,7 +127,7 @@ public:
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");
-    const auto records = ext.header().parseAll();
+    const auto records = ext.header().parse_all();
     const auto int_record = records.as<int>("CRVAL1");
     logger.info() << int_record.comment << " = " << int_record.value << " " << int_record.unit;
     const auto str_record = records.as<std::string>("CUNIT1");

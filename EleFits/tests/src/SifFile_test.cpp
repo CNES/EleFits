@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(write_all_test) {
   const Record<std::string> s {"STR", "TWO", "s", "text"};
   SifFile f(Elements::TempPath().path().string(), FileMode::Temporary);
   f.write({i, s}, input);
-  const auto records = f.header().parseAll();
+  const auto records = f.header().parse_all();
   const auto output = f.raster().read<float>();
   auto r = records.as<int>(i.keyword);
   BOOST_TEST((records.as<int>(i.keyword) == i));

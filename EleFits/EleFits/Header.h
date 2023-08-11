@@ -23,8 +23,7 @@ namespace Fits {
  * @ingroup header_handlers
  * @brief Record writing modes.
  */
-enum class RecordMode
-{
+enum class RecordMode {
   CreateOrUpdate, ///< Modify a record if keyword already exists, create a record otherwise
   CreateUnique, ///< Create a record, throw KeywordExistsError if keyword already exists
   CreateNew, ///< Create a new record, even if keyword already exists
@@ -36,7 +35,6 @@ enum class RecordMode
  * 
  * @brief Reader-writer for the header unit.
  * 
- * @details
  * This class provides services to read and write records in the header units.
  * Several groups of methods are available:
  * - `read`-prefixed methods read the raw ASCII characters from the header unit as `std::string`s;
@@ -97,7 +95,6 @@ public:
    * 
    * @param categories The set of selected categories
    * 
-   * @details
    * Read or parse keywords or records
    * depending on their categories: mandatory, reserved, user, or comment.
    * 
@@ -108,40 +105,68 @@ public:
    * 
    * Example usages:
    * \code
-   * auto keywords = h.readKeywords(~KeywordCategory::Comment);
+   * auto keywords = h.read_keywords(~KeywordCategory::Comment);
    * auto keyVals = h.readKeywordValues();
-   * auto header = h.readAll();
-   * auto records = h.parseAll(KeywordCategory::Reserved);
+   * auto header = h.read_all();
+   * auto records = h.parse_all(KeywordCategory::Reserved);
    * \endcode
    * where `h` is a `Header`.
    * 
    * @see KeywordCategory
    */
-  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const;
+  std::vector<std::string> read_keywords(KeywordCategory categories = KeywordCategory::All) const;
+
+  /**
+   * @deprecated
+   */
+  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const {
+    return read_keywords(categories);
+  }
 
   /**
    * @brief List keywords and their values.
    * 
-   * @copydetails readKeywords()
+   * @copydetails read_keywords()
    * 
    * @warning
    * If several records have the same keywords, the returned value is a line break-separated list.
    */
-  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const;
+  std::map<std::string, std::string> read_keywords_values(KeywordCategory categories = KeywordCategory::All) const;
+
+  /**
+   * @deprecated
+   */
+  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const {
+    return read_keywords_values(categories);
+  }
 
   /**
    * @brief Read the whole header as a single string.
    * @param categories Either `KeywordCategory::All` (default), or `~KeywordCategory::Comment` to skip COMMENT and HISTORY records
    */
-  std::string readAll(KeywordCategory categories = KeywordCategory::All) const;
+  std::string read_all(KeywordCategory categories = KeywordCategory::All) const;
+
+  /**
+   * @deprecated
+   */
+  std::string readAll(KeywordCategory categories = KeywordCategory::All) const {
+    return read_all(categories);
+  }
 
   /**
    * @brief Parse records of given categories.
-   * @copydetails readKeywords()
+   * @copydetails read_keywords()
    * @warning
    * Comment records are not parsed, as of today.
    */
-  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const;
+  RecordSeq parse_all(KeywordCategory categories = KeywordCategory::All) const;
+
+  /**
+   * @deprecated
+   */
+  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const {
+    return parse_all(categories);
+  }
 
   /// @}
   /**
@@ -161,7 +186,6 @@ public:
    * @param keyword The record keyword
    * @param fallback The fallback record, keyword of which is looked for
    * 
-   * @details
    * There are two ways to parse a record: with or without a fallback,
    * that is, a record which is returned if the specified keyword is not found in the header.
    * Without a fallback, the expected return value type is provided as the template parameter.
@@ -177,7 +201,7 @@ public:
    * int value = h.parse<int>("INT");
    * 
    * // Parse a record if available, or get a fallback value
-   * auto record = h.parseOr<int>("INT", -1);
+   * auto record = h.parse_or<int>("INT", -1);
    * 
    * // The above line is a shortcut for
    * Record<int> record("INT", -1);
@@ -192,20 +216,29 @@ public:
 
   /**
    * @brief Parse a record if it exists, return a fallback record otherwise.
+   * 
    * @copydetails parse()
    */
   template <typename T>
-  Record<T> parseOr(const Record<T>& fallback) const;
+  Record<T> parse_or(const Record<T>& fallback) const;
 
   /**
-   * @copydoc parseOr()
+   * @copydoc parse_or()
    */
   template <typename T>
-  Record<T> parseOr(
+  Record<T> parse_or(
       const std::string& keyword,
-      T fallbackValue,
-      const std::string& fallbackUnit = "",
-      const std::string& fallbackComment = "") const;
+      T fallback_value,
+      const std::string& fallback_unit = "",
+      const std::string& fallback_comment = "") const;
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  auto parseOr(TArgs&&... args) const {
+    return parse_or(std::forward<TArgs>(args)...);
+  }
 
   /// @}
   /**
@@ -222,7 +255,6 @@ public:
    * @param keywords The keywords
    * @param fallbacks The fallback records, keywords of which are looked for
    * 
-   * @details
    * Like for single record reading, there are two ways to parse a sequence of records:
    * with or without fallbacks.
    * For each record to be parsed, if the specified keyword is not found in the header,
@@ -233,53 +265,69 @@ public:
    * Example usages without fallbacks:
    * \code
    * // Homogeneous records
-   * auto vector = h.parseSeq<int>({"A", "B", "C"});
+   * auto vector = h.parse_seq<int>({"A", "B", "C"});
    * 
    * // Heterogeneous records
-   * auto tuple = h.parseSeq(as<int>("INT"), as<float>("FLOAT"));
+   * auto tuple = h.parse_seq(as<int>("INT"), as<float>("FLOAT"));
    * \endcode
    * 
    * Example usages with fallbacks:
    * \code
    * // std::vector to std::vector
    * std::vector<Records<VariantValue>> fallbacks {{"ONE", 1}, {"TWO", 2.0}};
-   * auto vector = h.parseSeqOr(fallbacks);
+   * auto vector = h.parse_seq_or(fallbacks);
    * 
    * // RecordVec to RecordVec
    * RecordSeq fallbacks {{{"ONE", 1}, {"TWO", 2.0}}};
-   * auto recVec = h.parseSeqOr(fallbacks);
+   * auto rec_vec = h.parse_seq_or(fallbacks);
    * 
    * // std::tuple to std::tuple
    * auto fallbacks = std::make_tuple(Record<int>("ONE", 1), Record<double>("TWO", 2.0));
-   * auto tuple = h.parseSeqOr(fallbacks);
+   * auto tuple = h.parse_seq_or(fallbacks);
    * 
    * // Variadic to std::tuple
-   * auto tuple = h.parseSeqOr(Record<int>("INT", 0), Record<float>("FLOAT", 3.14));
+   * auto tuple = h.parse_seq_or(Record<int>("INT", 0), Record<float>("FLOAT", 3.14));
    * \endcode
    */
   template <typename T = VariantValue>
-  RecordVec<T> parseSeq(const std::vector<std::string>& keywords) const;
+  RecordVec<T> parse_seq(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse a sequence of heterogeneous records.
-   * @copydetails parseSeq()
+   * @copydetails parse_seq()
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parseSeq(const TypedKey<Ts, std::string>&... keywords) const;
+  std::tuple<Record<Ts>...> parse_seq(const TypedKey<Ts, std::string>&... keywords) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  auto parseSeq(TArgs&&... args) const {
+    return parse_seq(std::forward<TArgs>(args)...);
+  }
 
   /**
    * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
-   * @copydetails parseSeq()
+   * @copydetails parse_seq()
    */
   template <typename TSeq>
-  TSeq parseSeqOr(TSeq&& fallbacks) const;
+  TSeq parse_seq_or(TSeq&& fallbacks) const;
 
   /**
    * @brief Parse a heterogeneous sequence of records if they exist, return fallbacks for those which don't.
-   * @copydetails parseSeq()
+   * @copydetails parse_seq()
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parseSeqOr(const Record<Ts>&... fallbacks) const;
+  std::tuple<Record<Ts>...> parse_seq_or(const Record<Ts>&... fallbacks) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  auto parseSeqOr(TArgs&&... args) const {
+    return parse_seq_or(std::forward<TArgs>(args)...);
+  }
 
   /// @}
   /**
@@ -294,10 +342,9 @@ public:
    * @tparam Ts... The desired record value types (automatically deduced)
    * @tparam TSeq The record sequence type (automatically deduced)
    * 
-   * @details
    * Several methods are provided to return records or record values as a user-defined structure,
    * instead of a `std::vector` or `std::tuple`.
-   * These methods differe from `parseSeq`-prefixed methods in that the returned sequence
+   * These methods differe from `parse_seq`-prefixed methods in that the returned sequence
    * is interpretted as a user-defined structure,
    * provided that it can be constructed from a brace-enclosed list of `Record`s
    * or from a brace-enclosed list of record values.
@@ -336,7 +383,7 @@ public:
    * // Body can be constructed from a brace-enclosed list:
    * // Body body {name, age, height, mass};
    *
-   * auto body = hdu.parseStruct<Body>(
+   * auto body = hdu.parse_struct<Body>(
    *     as<std::string>("NAME"),
    *     as<int>("AGE"),
    *     as<float>("HEIGHT"),
@@ -347,21 +394,37 @@ public:
    * \endcode
    */
   template <typename TOut, typename... Ts>
-  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const;
+  TOut parse_struct(const TypedKey<Ts, std::string>&... keywords) const;
 
   /**
-   * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
-   * @copydoc parseStruct()
+   * @deprecated
    */
   template <typename TOut, typename... Ts>
-  TOut parseStructOr(const Record<Ts>&... fallbacks) const;
+  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const {
+    return parse_struct(keywords...);
+  }
 
   /**
    * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
-   * @copydoc parseStruct()
+   * @copydoc parse_struct()
+   */
+  template <typename TOut, typename... Ts>
+  TOut parse_struct_or(const Record<Ts>&... fallbacks) const;
+
+  /**
+   * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
+   * @copydoc parse_struct()
    */
   template <typename TOut, typename TSeq>
-  TOut parseStructOr(TSeq&& fallbacks) const;
+  TOut parse_struct_or(TSeq&& fallbacks) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename TOut, typename... TArgs>
+  TOut parseStructOr(TArgs&&... args) const {
+    return parse_struct_or<TOut>(std::forward<TArgs>(args)...);
+  }
 
   /// @}
   /**
@@ -376,7 +439,6 @@ public:
    * @tparam T The record value type (automatically deduced)
    * @param record The record to be written
    * 
-   * @details
    * Methods to write records may have different behaviors,
    * according to the template parameter `Mode`.
    * It specifies what to do if a keyword already exists (update or throw)
@@ -424,7 +486,6 @@ public:
    * @param records The sequence of records
    * @param keywords The selection to be written
    * 
-   * @details
    * Several methods allow write a sequence of records or subset of sequence of records.
    * Analogously to `write()`, template parameter `Mode` controls the writing behavior,
    * depending on wether the keyword to be written already exists or not.
@@ -437,8 +498,8 @@ public:
    * Example usage:
    * \code
    * h0.write_seq(records);
-   * h1.writeSeqIn<RecordMode::CreateNew>({"A", "B"}, records);
-   * h2.writeSeqIn<RecordMode::CreateNew>({"B", "C"}, records);
+   * h1.write_seq_in<RecordMode::CreateNew>({"A", "B"}, records);
+   * h2.write_seq_in<RecordMode::CreateNew>({"B", "C"}, records);
    * \endcode
    * where `h0`, `h1`, `h2` are headers of different HDUs and `records` is a sequence of records,
    * like a `RecordSeq`.
@@ -456,18 +517,34 @@ public:
   void write_seq(TSeq&& records) const;
 
   /**
+   * @deprecated
+   */
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
+  void writeSeq(TArgs&&... args) const {
+    return write_seq<Mode>(std::forward<TArgs>(args)...);
+  }
+
+  /**
    * @brief Write a subset of a heterogeneous sequence of records.
    * @copydetails write_seq()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeSeqIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
+  void write_seq_in(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
 
   /**
    * @brief Write a subset of a homogeneous or heterogeneous sequence of records.
    * @copydetails write_seq()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
-  void writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records) const;
+  void write_seq_in(const std::vector<std::string>& keywords, TSeq&& records) const;
+
+  /**
+   * @deprecated
+   */
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
+  void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const {
+    return write_seq_in<Mode>(std::forward<TArgs>(args)...);
+  }
 
   /// @}
   /**
@@ -478,12 +555,26 @@ public:
   /**
    * @brief Write a `COMMENT` record.
    */
-  void writeComment(const std::string& comment) const;
+  void write_comment(const std::string& comment) const;
+
+  /**
+   * @deprecated
+   */
+  void writeComment(const std::string& comment) const {
+    return write_comment(comment);
+  }
 
   /**
    * @brief Write a `HISTORY` record.
    */
-  void writeHistory(const std::string& history) const;
+  void write_history(const std::string& history) const;
+
+  /**
+   * @deprecated
+   */
+  void writeHistory(const std::string& history) const {
+    return write_history(history);
+  }
 
   /// @}
 

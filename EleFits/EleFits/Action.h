@@ -174,7 +174,7 @@ public:
     if (hdu.index() == 0) {
       std::string msg = date_to_string(m_time);
       msg += " This file was edited by EleFits <github.com/CNES/EleFits>";
-      hdu.header().writeHistory(msg);
+      hdu.header().write_history(msg);
     }
   }
 

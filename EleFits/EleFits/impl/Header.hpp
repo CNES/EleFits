@@ -17,7 +17,7 @@ Record<T> Header::parse(const std::string& keyword) const {
 }
 
 template <typename T>
-Record<T> Header::parseOr(const Record<T>& fallback) const {
+Record<T> Header::parse_or(const Record<T>& fallback) const {
   if (has(fallback.keyword)) {
     return parse<T>(fallback.keyword);
   }
@@ -25,16 +25,16 @@ Record<T> Header::parseOr(const Record<T>& fallback) const {
 }
 
 template <typename T>
-Record<T> Header::parseOr(
+Record<T> Header::parse_or(
     const std::string& keyword,
     T fallbackValue,
     const std::string& fallbackUnit,
     const std::string& fallbackComment) const {
-  return parseOr<T>({keyword, fallbackValue, fallbackUnit, fallbackComment});
+  return parse_or<T>({keyword, fallbackValue, fallbackUnit, fallbackComment});
 }
 
 template <typename T>
-RecordVec<T> Header::parseSeq(const std::vector<std::string>& keywords) const {
+RecordVec<T> Header::parse_seq(const std::vector<std::string>& keywords) const {
   m_touch();
   RecordVec<T> res(keywords.size());
   std::transform(keywords.begin(), keywords.end(), res.vector.begin(), [&](const std::string& k) {
@@ -44,38 +44,38 @@ RecordVec<T> Header::parseSeq(const std::vector<std::string>& keywords) const {
 }
 
 template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parseSeq(const TypedKey<Ts, std::string>&... keywords) const {
-  return parseStruct<std::tuple<Record<Ts>...>, Ts...>(keywords...);
+std::tuple<Record<Ts>...> Header::parse_seq(const TypedKey<Ts, std::string>&... keywords) const {
+  return parse_struct<std::tuple<Record<Ts>...>, Ts...>(keywords...);
 }
 
 template <typename TSeq>
-TSeq Header::parseSeqOr(TSeq&& fallbacks) const {
+TSeq Header::parse_seq_or(TSeq&& fallbacks) const {
   auto func = [&](const auto& f) {
-    return parseOr(f);
+    return parse_or(f);
   };
   return seq_transform<TSeq>(fallbacks, func);
 }
 
 template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parseSeqOr(const Record<Ts>&... fallbacks) const {
-  return parseStructOr<std::tuple<Record<Ts>...>, Ts...>(fallbacks...);
+std::tuple<Record<Ts>...> Header::parse_seq_or(const Record<Ts>&... fallbacks) const {
+  return parse_struct_or<std::tuple<Record<Ts>...>, Ts...>(fallbacks...);
 }
 
 template <typename TReturn, typename... Ts>
-TReturn Header::parseStruct(const TypedKey<Ts, std::string>&... keywords) const {
+TReturn Header::parse_struct(const TypedKey<Ts, std::string>&... keywords) const {
   m_touch();
   return {Cfitsio::HeaderIo::parse_record<Ts>(m_fptr, keywords.key)...};
 }
 
 template <typename TReturn, typename... Ts>
-TReturn Header::parseStructOr(const Record<Ts>&... fallbacks) const {
-  return {parseOr<Ts>(fallbacks)...}; // TODO avoid calling touch for each keyword
+TReturn Header::parse_struct_or(const Record<Ts>&... fallbacks) const {
+  return {parse_or<Ts>(fallbacks)...}; // TODO avoid calling touch for each keyword
 }
 
 template <typename TReturn, typename TSeq>
-TReturn Header::parseStructOr(TSeq&& fallbacks) const {
+TReturn Header::parse_struct_or(TSeq&& fallbacks) const {
   return seq_transform<TReturn>(fallbacks, [&](auto f) {
-    return parseOr(f);
+    return parse_or(f);
   }); // FIXME test
 }
 
@@ -180,12 +180,12 @@ void Header::write_seq(TSeq&& records) const {
 }
 
 template <RecordMode Mode, typename... Ts>
-void Header::writeSeqIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
-  writeSeqIn<Mode>(keywords, std::forward_as_tuple(records...));
+void Header::write_seq_in(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
+  write_seq_in<Mode>(keywords, std::forward_as_tuple(records...));
 }
 
 template <RecordMode Mode, typename TSeq>
-void Header::writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records) const {
+void Header::write_seq_in(const std::vector<std::string>& keywords, TSeq&& records) const {
   m_edit();
   auto func = [&](const auto& r) {
     if (std::find(keywords.begin(), keywords.end(), r.keyword) != keywords.end()) {

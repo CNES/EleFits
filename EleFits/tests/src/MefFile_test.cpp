@@ -200,7 +200,7 @@ void checkAppendNullImage(MefFile& f) {
   BOOST_TEST(ext.header().template parse<int>("NAXIS1").value == 10);
   BOOST_TEST(ext.header().template parse<int>("BLANK").value == 1);
   BOOST_TEST(ext.header().template parse<int>("BAR").value == 41);
-  const auto offset = ext.header().template parseOr<T>("BZERO", T());
+  const auto offset = ext.header().template parse_or<T>("BZERO", T());
   const auto blank = ext.raster().template read<T, 1>();
   BOOST_TEST(blank.shape() == shape);
   for (auto v : blank) {
@@ -257,7 +257,7 @@ void checkAppendNullBintable(MefFile& f) {
   ColumnInfo<T> blank("BLANK");
   RecordSeq records {{"TNULL2", T(1)}, {"FOO", "BAR"}};
   const auto& ext = f.append_null_bintable("BINTABLE", records, 10, zero, blank);
-  const auto offset = ext.header().template parseOr<T>("TZERO2", T());
+  const auto offset = ext.header().template parse_or<T>("TZERO2", T());
   const auto row_count = ext.read_row_count();
   BOOST_TEST(row_count == 10);
   const auto output = ext.columns().read_seq(as<T>("ZERO"), as<T>("BLANK"));

@@ -43,10 +43,10 @@ namespace Fits {
  * @tparam T The value type
  * @tparam N The dimension (number of axes per field)
  * @details
- * Binary tables can be seen as a sequence of columns made of consecutive entries.
+ * Binary tables can be seen as a sequence of columns made of consecutive fields.
  * Field values are not necessarily simple types:
  * they can be either string, scalar, vector or multidimensional.
- * Yet, all the entries of one column have the same properties.
+ * Yet, all the fields of one column have the same properties.
  * The column informations consist in:
  * - The value type as template parameter `T`;
  * - The dimension (number of axes) as template parameter `N`;

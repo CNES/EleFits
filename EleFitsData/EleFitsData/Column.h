@@ -50,7 +50,7 @@ using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
  * @details
  * A column is a contiguous container for the field data of a binary table column.
  * As explained in the `ColumnInfo` documentation (make sure to have read it before going further),
- * entries can be made of several values.
+ * fields can be made of several values.
  * Template parameter `N` is bound to the field category:
  * - `N` = 1 for scalar, string and vector columns;
  * - `N` > 1 for multidimensional columns with fixed dimension;

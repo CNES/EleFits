@@ -126,10 +126,10 @@ constexpr ChangeSignedness<T> offset() {
  * Instead maker `as()` should be used for clarity, e.g.:
  * \code
  * // Ugly
- * header.parseSeq(TypedKey<float, std::string>("A"), TypedKey<int, std::string>("B"));
+ * header.parse_seq(TypedKey<float, std::string>("A"), TypedKey<int, std::string>("B"));
  * 
  * // Clean
- * header.parseSeq(as<float>("A"), as<int>("B"));
+ * header.parse_seq(as<float>("A"), as<int>("B"));
  * \endcode
  */
 template <typename TReturn, typename TKey>

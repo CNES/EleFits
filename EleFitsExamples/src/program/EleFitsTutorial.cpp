@@ -339,7 +339,7 @@ void read_records(const Fits::Header& h) {
 
   /* Read several records */
 
-  const auto some_records = h.parseSeq(
+  const auto some_records = h.parse_seq(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
@@ -348,12 +348,12 @@ void read_records(const Fits::Header& h) {
 
   /* Read as VariantValue */
 
-  const auto variant_records = h.parseSeq<>({"INT", "COMPLEX"});
+  const auto variant_records = h.parse_seq<>({"INT", "COMPLEX"});
   const auto complex_record = variant_records.as<std::complex<double>>("COMPLEX");
 
   /* Read as a user-defined structure */
 
-  const auto tutoRecords = h.parseStruct<TutoRecords>(
+  const auto tutoRecords = h.parse_struct<TutoRecords>(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),

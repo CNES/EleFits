@@ -24,12 +24,12 @@ void checkRecordWithFallbackIsReadBack(const Header& h, const std::string& keywo
   BOOST_TEST(not h.has(keyword));
   BOOST_CHECK_THROW(h.parse<T>(keyword), std::exception);
   const Record<T> fallback {keyword, Test::generate_random_value<T>(), "", "FALLBACK"};
-  auto output = h.parseOr<T>(fallback);
+  auto output = h.parse_or<T>(fallback);
   BOOST_TEST((output == fallback));
   const Record<T> input {keyword, Test::generate_random_value<T>(), "", "INPUT"};
   h.write(input);
   BOOST_TEST((input != fallback)); // At least the comments differ
-  output = h.parseOr<T>(fallback);
+  output = h.parse_or<T>(fallback);
   BOOST_TEST(output.keyword == input.keyword);
   BOOST_TEST(Test::approx(output.value, input.value));
   BOOST_TEST(output.unit == input.unit);
@@ -66,7 +66,7 @@ BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::Temporar
   header.write(written);
   written.value++;
   fallback.value++;
-  const auto output = header.parseSeqOr(written, fallback);
+  const auto output = header.parse_seq_or(written, fallback);
   BOOST_TEST(std::get<0>(output).value == written.value - 1);
   BOOST_TEST(std::get<1>(output).value == fallback.value);
 }
@@ -88,11 +88,11 @@ BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifF
 }
 
 void checkHierarchKeywordIsReadBack(const Header& h, const std::string& keyword) {
-  BOOST_TEST(h.readAll().find("HIERARCH") == std::string::npos); // Not found
+  BOOST_TEST(h.read_all().find("HIERARCH") == std::string::npos); // Not found
   const Record<int> record(keyword, 10);
   BOOST_TEST(record.has_long_keyword() == (keyword.length() > 8));
   h.write(record);
-  BOOST_TEST(h.readAll().find("HIERARCH") != std::string::npos); // Found
+  BOOST_TEST(h.read_all().find("HIERARCH") != std::string::npos); // Found
   const auto output = h.parse<int>(keyword);
   BOOST_TEST(output.value == 10);
 }
@@ -151,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::Temporary
   records.push_back({"FLOAT", 3.14F});
   records.push_back({"INT", 666});
   h.write_seq(records);
-  auto parsed = h.parseAll();
+  auto parsed = h.parse_all();
   BOOST_TEST(parsed.as<std::string>("STRING").value == "WIDE");
   BOOST_TEST(parsed.as<int>("INT").value == 666);
   BOOST_CHECK_THROW(parsed.as<std::string>("INT"), std::exception);
@@ -163,9 +163,9 @@ BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test:
   records.vector[0].assign(Record<std::string>("STRING", "WIDE"));
   records.vector[1].assign(Record<float>("FLOAT", 3.14F));
   records.vector[2].assign(Record<int>("INT", 666));
-  h.writeSeqIn({"FLOAT", "INT"}, records);
+  h.write_seq_in({"FLOAT", "INT"}, records);
   BOOST_CHECK_THROW(h.parse<VariantValue>("STRING"), std::exception);
-  auto parsed = h.parseSeq({"INT"});
+  auto parsed = h.parse_seq({"INT"});
   BOOST_TEST(parsed.as<int>("INT").value == 666);
   BOOST_CHECK_THROW(parsed.as<float>("FLOAT"), std::exception);
 }
@@ -194,15 +194,15 @@ BOOST_FIXTURE_TEST_CASE(comment_and_history_are_written, Test::TemporarySifFile)
   const auto& header = this->header();
   const std::string comment = "BLUE";
   const std::string history = "BEAVER";
-  header.writeComment(comment);
-  header.writeHistory(history);
-  const auto contents = header.readAll();
+  header.write_comment(comment);
+  header.write_history(history);
+  const auto contents = header.read_all();
   BOOST_TEST((contents.find(comment) != std::string::npos));
   BOOST_TEST((contents.find(history) != std::string::npos));
 }
 
 BOOST_FIXTURE_TEST_CASE(full_header_is_read_as_string_test, Test::TemporarySifFile) {
-  const auto header = this->header().readAll(); // TODO test with categories
+  const auto header = this->header().read_all(); // TODO test with categories
   BOOST_TEST(header.size() > 0);
   BOOST_TEST(header.size() % 80 == 0);
   // TODO check contents
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFil
       Record<float>("FLOAT", input.f),
       Record<std::string>("STRING", input.s));
   const auto output =
-      header.parseStruct<MyHeader>(as<bool>("BOOL"), as<int>("INT"), as<float>("FLOAT"), as<std::string>("STRING"));
+      header.parse_struct<MyHeader>(as<bool>("BOOL"), as<int>("INT"), as<float>("FLOAT"), as<std::string>("STRING"));
   BOOST_TEST(output.b == input.b);
   BOOST_TEST(output.i == input.i);
   BOOST_TEST(output.f == input.f);
