@@ -37,7 +37,7 @@ std::string join(const std::vector<T>& values, const std::string& sep = ",") {
 }
 
 template <typename T>
-std::string joinString(const std::vector<T>& values, const std::string& sep = ",") {
+std::string join_string(const std::vector<T>& values, const std::string& sep = ",") {
   const auto begin = values.begin() + 1; // values[0] is used as initial value of accumulator
   const auto end = values.end();
   const auto init = values[0];
@@ -46,12 +46,12 @@ std::string joinString(const std::vector<T>& values, const std::string& sep = ",
   });
 }
 
-int getBitpix(const Fits::ImageHdu& hdu) {
+int read_bitpix(const Fits::ImageHdu& hdu) {
   ELEFITS_FOREACH_RASTER_TYPE(IF_TYPEID_MATCHES_RETURN_BITPIX)
   return 0;
 }
 
-std::string readAlgoName(const Fits::ImageHdu& hdu) {
+std::string read_algo_name(const Fits::ImageHdu& hdu) {
 
   if (not hdu.is_compressed()) {
     return "NONE";
@@ -83,7 +83,7 @@ std::string readAlgoName(const Fits::ImageHdu& hdu) {
   return "Unknown";
 }
 
-void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
+void set_strategy(Fits::MefFile& g, const std::string& test_case, bool lossy) {
 
   Fits::Quantization q(lossy ? Fits::Tile::rms / 16 : 0);
   Fits::Scaling s(lossy ? Fits::Tile::rms * 2.5 : 0);
@@ -93,22 +93,22 @@ void setStrategy(Fits::MefFile& g, const std::string& testCase, bool lossy) {
   Fits::ShuffledGzip sgzip(Fits::Tile::rowwise(), q);
   Fits::Gzip gzip(Fits::Tile::rowwise(), q);
 
-  if (testCase == "AUTO") {
+  if (test_case == "AUTO") {
     g.strategy(lossy ? Fits::CompressAuto(Fits::CompressionType::Lossy) : Fits::CompressAuto());
-  } else if (testCase == "FULL") {
+  } else if (test_case == "FULL") {
     g.strategy(std::move(plio), std::move(hc), std::move(rice), std::move(sgzip));
-  } else if (testCase == "GZIP") {
+  } else if (test_case == "GZIP") {
     g.strategy(std::move(gzip));
-  } else if (testCase == "SHUFFLEDGZIP") {
+  } else if (test_case == "SHUFFLEDGZIP") {
     g.strategy(std::move(sgzip));
-  } else if (testCase == "RICE") {
+  } else if (test_case == "RICE") {
     g.strategy(std::move(rice), std::move(sgzip));
-  } else if (testCase == "HCOMPRESS") {
+  } else if (test_case == "HCOMPRESS") {
     g.strategy(std::move(hc), std::move(sgzip));
-  } else if (testCase == "PLIO") {
+  } else if (test_case == "PLIO") {
     g.strategy(std::move(plio), std::move(sgzip));
-  } else if (testCase != "NONE") {
-    throw Fits::FitsError(std::string("Unknown test case: ") + testCase);
+  } else if (test_case != "NONE") {
+    throw Fits::FitsError(std::string("Unknown test case: ") + test_case);
   }
 }
 
@@ -137,20 +137,20 @@ public:
         "resHdu",
         value<std::string>()->default_value("/tmp/compressionBenchmarkHdu.csv"),
         "HDU-level metrics output file");
-    return options.asPair();
+    return options.as_pair();
   }
 
   ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
 
-    const bool extGzip = args["extGZIP"].as<bool>();
-    const auto filenameSrc = args["input"].as<std::string>();
-    auto filenameDst = args["output"].as<std::string>();
-    if (extGzip)
-      filenameDst += ".gz";
-    const auto testCase = args["case"].as<std::string>();
+    const bool ext_gzip = args["extGZIP"].as<bool>();
+    const auto input = args["input"].as<std::string>();
+    auto output = args["output"].as<std::string>();
+    if (ext_gzip)
+      output += ".gz";
+    const auto test_case = args["case"].as<std::string>();
     const bool lossy = args["lossy"].as<bool>();
     const auto results = args["res"].as<std::string>();
-    const auto resultsHdu = args["resHdu"].as<std::string>();
+    const auto results_hdu = args["resHdu"].as<std::string>();
 
     Fits::Validation::CsvAppender writer(
         results,
@@ -170,8 +170,8 @@ public:
          "HDU ratios",
          "Elapsed (ms)"});
 
-    Fits::Validation::CsvAppender writerHdu(
-        resultsHdu,
+    Fits::Validation::CsvAppender writer_hdu(
+        results_hdu,
         {"Filename",
          "Case",
          "Lossy",
@@ -184,21 +184,21 @@ public:
          "Throughput (MB/s)"});
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
-    Fits::Validation::Chronometer<std::chrono::milliseconds> chronoAll;
-    int hduCounter = 0;
+    Fits::Validation::Chronometer<std::chrono::milliseconds> walltime;
+    long hdu_counter = 0;
     std::vector<std::string> algos;
     std::vector<long> bitpixs;
-    std::vector<std::size_t> hduSizes;
-    std::vector<std::size_t> zHduSizes;
-    std::vector<double> hduRatios;
+    std::vector<std::size_t> hdu_sizes;
+    std::vector<std::size_t> z_hdu_sizes;
+    std::vector<double> hdu_ratios;
 
     logger.info("Creating FITS file...");
 
     // Create mef file to write the extensions in
-    chronoAll.start();
-    Fits::MefFile f(filenameSrc, Fits::FileMode::Read);
-    Fits::MefFile g(filenameDst, Fits::FileMode::Overwrite);
-    setStrategy(g, testCase, lossy);
+    walltime.start();
+    Fits::MefFile f(input, Fits::FileMode::Read);
+    Fits::MefFile g(output, Fits::FileMode::Overwrite);
+    set_strategy(g, test_case, lossy);
 
     // Copy without primary:
     // chrono.start();
@@ -209,82 +209,82 @@ public:
 
     // Copy with primary (allows the primary to be compressed as well):
     logger.info("Compressing file...");
-    const auto hduCount = f.hdu_count();
+    const auto hdu_count = f.hdu_count();
     for (const auto& hdu : f) {
 
       long bitpix;
       std::string algo;
-      long hduSize;
-      long zHduSize;
+      long hdu_size;
+      long z_hdu_size;
       double ratio;
 
       if (hdu.type() == Fits::HduCategory::Bintable) {
         chrono.start();
-        const auto& zHdu = g.append(hdu);
+        const auto& z_hdu = g.append(hdu);
         chrono.stop();
         bitpix = 0;
-        hduSize = hdu.size_in_file();
-        zHduSize = zHdu.size_in_file();
-        ratio = static_cast<double>(hduSize) / zHduSize;
+        hdu_size = hdu.size_in_file();
+        z_hdu_size = z_hdu.size_in_file();
+        ratio = static_cast<double>(hdu_size) / z_hdu_size;
         algo = "NONE";
-        logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": Uncompressed binary table";
+        logger.info() << "HDU " << hdu.index() + 1 << "/" << hdu_count << ": Uncompressed binary table";
       } else { // the hdu is an image
         chrono.start();
-        const auto& zHdu = g.append(hdu);
+        const auto& z_hdu = g.append(hdu);
         chrono.stop();
-        bitpix = getBitpix(hdu.as<Fits::ImageHdu>());
-        hduSize = hdu.size_in_file();
-        zHduSize = zHdu.size_in_file();
-        ratio = static_cast<double>(hduSize) / zHduSize;
-        double throughput = static_cast<double>(hduSize) / chrono.last().count() / 1000; // converted from B/ms to MB/s
+        bitpix = read_bitpix(hdu.as<Fits::ImageHdu>());
+        hdu_size = hdu.size_in_file();
+        z_hdu_size = z_hdu.size_in_file();
+        ratio = static_cast<double>(hdu_size) / z_hdu_size;
+        double throughput = static_cast<double>(hdu_size) / chrono.last().count() / 1000; // converted from B/ms to MB/s
         // warning: if elapsed less than 1ms, divides by zero -> throughput infinite
-        algo = readAlgoName(zHdu.as<Fits::ImageHdu>());
-        writerHdu.writeRow(
-            filenameSrc,
-            testCase,
+        algo = read_algo_name(z_hdu.as<Fits::ImageHdu>());
+        writer_hdu.write_row(
+            input,
+            test_case,
             lossy,
             bitpix,
             algo,
-            hduSize,
-            zHduSize,
+            hdu_size,
+            z_hdu_size,
             ratio,
             chrono.last().count(),
             throughput);
-        logger.info() << "HDU " << hdu.index() + 1 << "/" << hduCount << ": " << algo;
+        logger.info() << "HDU " << hdu.index() + 1 << "/" << hdu_count << ": " << algo;
       }
 
       bitpixs.push_back(bitpix);
-      hduSizes.push_back(hduSize);
-      zHduSizes.push_back(zHduSize);
-      hduRatios.push_back(ratio);
+      hdu_sizes.push_back(hdu_size);
+      z_hdu_sizes.push_back(z_hdu_size);
+      hdu_ratios.push_back(ratio);
       algos.push_back(algo);
 
-      hduCounter++;
+      hdu_counter++;
     }
 
     f.close();
     g.close();
-    chronoAll.stop();
+    walltime.stop();
 
-    long srcSize = boost::filesystem::file_size(filenameSrc);
-    long dstSize = boost::filesystem::file_size(filenameDst);
-    double compRatio = static_cast<double>(srcSize) / dstSize;
+    long input_size = boost::filesystem::file_size(input);
+    long output_size = boost::filesystem::file_size(output);
+    double comp_ratio = static_cast<double>(input_size) / output_size;
 
-    writer.writeRow(
-        filenameSrc,
-        testCase,
+    writer.write_row(
+        input,
+        test_case,
         lossy,
-        extGzip,
-        srcSize,
-        dstSize,
-        compRatio,
-        chronoAll.last().count(),
-        hduCounter,
+        ext_gzip,
+        input_size,
+        output_size,
+        comp_ratio,
+        walltime.last().count(),
+        hdu_counter,
         join(bitpixs),
-        joinString(algos),
-        join(hduSizes),
-        join(zHduSizes),
-        join(hduRatios),
+        join_string(algos),
+        join(hdu_sizes),
+        join(z_hdu_sizes),
+        join(hdu_ratios),
         join(chrono.increments()));
 
     logger.info("Done.");

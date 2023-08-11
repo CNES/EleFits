@@ -221,7 +221,7 @@ public:
    * @par_example
    * \code
    * for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) {
-   *   processNewImage(hdu);
+   *   process_new_image(hdu);
    * }
    * \endcode
    * @see `iterators`

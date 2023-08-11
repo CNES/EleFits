@@ -10,14 +10,14 @@
 
 using namespace Euclid::Fits;
 
-// readSegmentTo(rows, key, column)
+// read_segment_to(rows, key, column)
 //   read_to(key, column)
 //     read_to(column) => TEST
-//   readSegment(rows, key)
+//   read_segment(rows, key)
 //     read(key) => TEST
-//   readSegmentTo(rows, column) => TEST
+//   read_segment_to(rows, column) => TEST
 //
-// readSegmentSeqTo (rows, keys, columns) -> loop on readSegmentTo (rows, key, column)
+// read_segment_seq_to (rows, keys, columns) -> loop on read_segment_to (rows, key, column)
 //   read_seq_to (keys, columns)
 //     read_seq (indices...)
 //       read_seq (names...) => SEQ_WRITE_READ_TEST
@@ -26,17 +26,17 @@ using namespace Euclid::Fits;
 //     read_seq_to (keys, columns...) => TEST
 //   read_segment_seq (rows, indices...)
 //     read_segment_seq (rows, names...) => SEQ_WRITE_READ_TEST
-//   readSegmentSeqTo (rows, keys, columns)
-//     readSegmentSeqTo (rows, columns) => TEST
-//       readSegmentSeqTo (rows, columns...) => TEST
+//   read_segment_seq_to (rows, keys, columns)
+//     read_segment_seq_to (rows, columns) => TEST
+//       read_segment_seq_to (rows, columns...) => TEST
 //
 // write_segment(rows, column)
 //   write_segment(column)
 //
-// write_segment_seq (firstRow, columns) -> loop on write_segment (row, column)
+// write_segment_seq (first_row, columns) -> loop on write_segment (row, column)
 //   write_seq (columns) => SEQ_WRITE_READ_TEST
 //     write_seq (columns...) => SEQ_WRITE_READ_TEST
-//   write_segment_seq (firstRow, columns...) => SEQ_WRITE_READ_TEST
+//   write_segment_seq (first_row, columns...) => SEQ_WRITE_READ_TEST
 //
 // insert_null_seq (index, infos) => SEQ_WRITE_READ_TEST
 //   insert_null_seq (index, infos...) => SEQ_WRITE_READ_TEST
@@ -58,16 +58,16 @@ BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable) {
 
 BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
   const Test::SmallTable table;
-  const auto initSize = static_cast<long>(table.names.size());
+  const auto init_size = static_cast<long>(table.names.size());
   const auto& ext = append_bintable("TABLE", {}, table.name_col, table.radec_col);
   const auto& columns = ext.columns();
-  BOOST_TEST(columns.read_row_count() == initSize);
+  BOOST_TEST(columns.read_row_count() == init_size);
   columns.write_segment_seq(-1, table.name_col, table.radec_col);
-  BOOST_TEST(columns.read_row_count() == initSize * 2);
+  BOOST_TEST(columns.read_row_count() == init_size * 2);
 }
 
 template <typename T>
-void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, const VecColumn<T>& last) {
+void check_tuple_write_read(const BintableColumns& du, const VecColumn<T>& first, const VecColumn<T>& last) {
 
   /* Write */
   const auto row_count = first.row_count();
@@ -96,7 +96,7 @@ void checkTupleWriteRead(const BintableColumns& du, const VecColumn<T>& first, c
 }
 
 template <>
-void checkTupleWriteRead<std::string>(
+void check_tuple_write_read<std::string>(
     const BintableColumns& du,
     const VecColumn<std::string>& first,
     const VecColumn<std::string>& last) {
@@ -107,7 +107,7 @@ void checkTupleWriteRead<std::string>(
 }
 
 template <>
-void checkTupleWriteRead<std::uint64_t>(
+void check_tuple_write_read<std::uint64_t>(
     const BintableColumns& du,
     const VecColumn<std::uint64_t>& first,
     const VecColumn<std::uint64_t>& last) {
@@ -118,7 +118,7 @@ void checkTupleWriteRead<std::uint64_t>(
 }
 
 template <typename T>
-void checkArrayWriteRead(const BintableColumns& du) {
+void check_array_write_read(const BintableColumns& du) {
 
   /* Generate */
   const long row_count = 10000;
@@ -150,7 +150,7 @@ void checkArrayWriteRead(const BintableColumns& du) {
 }
 
 template <>
-void checkArrayWriteRead<std::string>(const BintableColumns& du) {
+void check_array_write_read<std::string>(const BintableColumns& du) {
   // FIXME (cannot use RandomVectorColumn)
   (void)du;
 }
@@ -159,7 +159,7 @@ void checkArrayWriteRead<std::string>(const BintableColumns& du) {
  * @brief Show CFITSIO bug when inserting a uint64 column.
  */
 template <>
-void checkArrayWriteRead<std::uint64_t>(const BintableColumns& /* du */) {
+void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */) {
 
   /* Setup */
   using T = std::uint64_t;
@@ -168,12 +168,12 @@ void checkArrayWriteRead<std::uint64_t>(const BintableColumns& /* du */) {
   int status = 0;
 
   /* Create ext */
-  std::string ttypeStr = "SCALAR";
-  auto ttypePtr = String::toCharPtr(ttypeStr);
-  auto* ttype = ttypePtr.get();
-  std::string tformStr = Euclid::Cfitsio::TypeCode<T>::tform(1); // 1W
-  auto tformPtr = String::toCharPtr(tformStr);
-  auto* tform = tformPtr.get();
+  std::string ttype_str = "SCALAR";
+  auto ttype_ptr = String::to_char_ptr(ttype_str);
+  auto* ttype = ttype_ptr.get();
+  std::string tform_str = Euclid::Cfitsio::TypeCode<T>::tform(1); // 1W
+  auto tform_ptr = String::to_char_ptr(tform_str);
+  auto* tform = tform_ptr.get();
   // fits_create_tbl(fptr, BINARY_TBL, 0, 1, &ttype, &tform, nullptr, "CFITSIO", &status); // Works this way...
   fits_create_tbl(fptr, BINARY_TBL, 0, 0, nullptr, nullptr, nullptr, "CFITSIO", &status); // But not this way!
   fits_insert_col(fptr, 1, ttype, tform, &status);
@@ -190,7 +190,7 @@ void checkArrayWriteRead<std::uint64_t>(const BintableColumns& /* du */) {
 }
 
 template <typename T>
-void checkVectorWriteRead(const BintableColumns& du) {
+void check_vector_write_read(const BintableColumns& du) {
 
   /* Generate */
   const long row_count = 10000;
@@ -220,28 +220,28 @@ void checkVectorWriteRead(const BintableColumns& du) {
 }
 
 template <>
-void checkVectorWriteRead<std::string>(const BintableColumns& du) {
+void check_vector_write_read<std::string>(const BintableColumns& du) {
   // FIXME (cannot use RandomVectorColumn)
   (void)du;
 }
 
 template <>
-void checkVectorWriteRead<std::uint64_t>(const BintableColumns& du) {
+void check_vector_write_read<std::uint64_t>(const BintableColumns& du) {
   // FIXME CFITSIO bug, see above
   (void)du;
 }
 
 #define SEQ_WRITE_READ_TEST(type, name) \
   BOOST_FIXTURE_TEST_CASE(name##_tuple_write_read_test, Test::TestBintable<type>) { \
-    checkTupleWriteRead<type>(columns, firstColumn, lastColumn); \
+    check_tuple_write_read<type>(columns, first_column, last_column); \
   } \
   BOOST_FIXTURE_TEST_CASE(name##_array_write_read_test, Test::TemporaryMefFile) { \
     const auto& ext = this->append_bintable_header("ARRAY"); \
-    checkArrayWriteRead<type>(ext.columns()); \
+    check_array_write_read<type>(ext.columns()); \
   } \
   BOOST_FIXTURE_TEST_CASE(name##_vector_write_read_test, Test::TemporaryMefFile) { \
     const auto& ext = this->append_bintable_header("VECTOR"); \
-    checkVectorWriteRead<type>(ext.columns()); \
+    check_vector_write_read<type>(ext.columns()); \
   }
 
 ELEFITS_FOREACH_COLUMN_TYPE(SEQ_WRITE_READ_TEST)

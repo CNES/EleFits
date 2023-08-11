@@ -59,7 +59,7 @@ public:
   /**
    * @brief Test whether the chronometer is running.
    */
-  bool isRunning() const;
+  bool is_running() const;
 
   /**
    * @brief The last increment.

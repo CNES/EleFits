@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_SUITE(BintableHdu_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkScalar() {
+void check_scalar() {
   Test::RandomScalarColumn<T> input;
   Test::TemporaryMefFile file;
   file.append_bintable("BINEXT", {}, input);
@@ -28,7 +28,7 @@ void checkScalar() {
 }
 
 template <typename T>
-void checkVector() {
+void check_vector() {
   constexpr long row_count = 10;
   constexpr long repeat_count = 2;
   Test::RandomScalarColumn<T> input(row_count * repeat_count);
@@ -44,8 +44,8 @@ void checkVector() {
  * Support for other types is tested in EleCfitsioWrapper.
  */
 BOOST_AUTO_TEST_CASE(float_test) {
-  checkScalar<float>();
-  checkVector<float>();
+  check_scalar<float>();
+  check_vector<float>();
 }
 
 BOOST_AUTO_TEST_CASE(empty_column_test) {
@@ -82,16 +82,16 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
 }
 
 BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
-  const auto intColumn = Test::RandomTable::generate_column<int>("INT");
-  const auto floatColumn = Test::RandomTable::generate_column<float>("FLOAT");
-  const auto& ext = append_bintable("", {}, intColumn, floatColumn);
+  const auto int_column = Test::RandomTable::generate_column<int>("INT");
+  const auto float_column = Test::RandomTable::generate_column<float>("FLOAT");
+  const auto& ext = append_bintable("", {}, int_column, float_column);
   const auto& du = ext.columns();
-  const auto byName = du.read_seq(as<int>(intColumn.info().name), as<float>(floatColumn.info().name));
-  BOOST_TEST(std::get<0>(byName).container() == intColumn.container());
-  BOOST_TEST(std::get<1>(byName).container() == floatColumn.container());
-  const auto byIndex = du.read_seq(as<int>(0), as<float>(1));
-  BOOST_TEST(std::get<0>(byIndex).container() == intColumn.container());
-  BOOST_TEST(std::get<1>(byIndex).container() == floatColumn.container());
+  const auto by_name = du.read_seq(as<int>(int_column.info().name), as<float>(float_column.info().name));
+  BOOST_TEST(std::get<0>(by_name).container() == int_column.container());
+  BOOST_TEST(std::get<1>(by_name).container() == float_column.container());
+  const auto by_index = du.read_seq(as<int>(0), as<float>(1));
+  BOOST_TEST(std::get<0>(by_index).container() == int_column.container());
+  BOOST_TEST(std::get<1>(by_index).container() == float_column.container());
 }
 
 BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {

@@ -46,7 +46,7 @@ public:
    * @brief Write a row.
    */
   template <typename... Ts>
-  CsvAppender& writeRow(const Ts&... values);
+  CsvAppender& write_row(const Ts&... values);
 
 private:
   /** @brief The output stream. */

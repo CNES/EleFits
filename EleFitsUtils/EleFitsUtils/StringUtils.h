@@ -37,13 +37,13 @@ std::string trim(const std::string& input, const std::string& characters = "");
  * @brief Read a text file.
  * @param filename The path to the file
  */
-std::string readFile(const std::string& filename);
+std::string read_file(const std::string& filename);
 
 /**
  * @brief Read a text file from the auxiliary directory.
  * @param filename The path to the file, relative to the auxiliary directory
  */
-std::string readAuxFile(const std::string& filename);
+std::string read_aux_file(const std::string& filename);
 
 /**
  * @brief Copy a `std::string` into a `std::unique_ptr<char[]>`.
@@ -55,14 +55,14 @@ std::string readAuxFile(const std::string& filename);
  * @par_example
  * To call some function `f(char *)` with a string `s`, do:
  * \code
- * f(toCharPtr(s).get());
+ * f(to_char_ptr(s).get());
  * \endcode
  */
-std::unique_ptr<char[]> toCharPtr(const std::string& str);
+std::unique_ptr<char[]> to_char_ptr(const std::string& str);
 
 /**
  * @brief A helper structure to safely convert a `std::vector<std::string>` to `char**`.
- * @see `toCharPtr` for a single string
+ * @see `to_char_ptr` for a single string
  * @par_example
  * To call some function `f(char**)` with a vector of strings `v`, do:
  * \code
@@ -113,14 +113,14 @@ struct CStrArray {
    * @warning
    * Modification makes CStrArray object invalid.
    */
-  std::vector<std::unique_ptr<char[]>> smartPtrVector;
+  std::vector<std::unique_ptr<char[]>> smart_ptr_vector;
 
   /**
    * @brief A vector of `char*`.
    * @warning
    * Modification makes `CStrArray` object invalid.
    */
-  std::vector<char*> cStrVector;
+  std::vector<char*> c_str_vector;
 };
 
 } // namespace String

@@ -178,26 +178,12 @@ struct Record {
   std::string raw_comment() const;
 
   /**
-   * @deprecated
-   */
-  std::string rawComment() const {
-    return raw_comment();
-  }
-
-  /**
    * @brief Check whether the keyword of a record is long string (more than 8 characters).
    * @details
    * A long-keyword record follows the hierarchical keyword convention.
    * @see Record documentation for more details on the hierarchical keyword convention.
    */
   bool has_long_keyword() const;
-
-  /**
-   * @deprecated
-   */
-  bool hasLongKeyword() const {
-    return has_long_keyword();
-  }
 
   /**
    * @brief Check whether the value of a record is a long string (more than 68 characters).
@@ -213,6 +199,20 @@ struct Record {
    * @see Record documentation for more details on the long string value convention.
    */
   bool has_long_string_value() const;
+
+  /**
+   * @deprecated
+   */
+  std::string rawComment() const {
+    return raw_comment();
+  }
+
+  /**
+   * @deprecated
+   */
+  bool hasLongKeyword() const {
+    return has_long_keyword();
+  }
 
   /**
    * @deprecated

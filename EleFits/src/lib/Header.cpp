@@ -10,8 +10,8 @@
 namespace Euclid {
 namespace Fits {
 
-Header::Header(fitsfile*& fptr, std::function<void(void)> touchFunction, std::function<void(void)> editFunction) :
-    m_fptr(fptr), m_touch(touchFunction), m_edit(editFunction) {}
+Header::Header(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit) :
+    m_fptr(fptr), m_touch(touch), m_edit(edit) {}
 
 bool Header::has(const std::string& keyword) const {
   m_touch();
@@ -36,8 +36,8 @@ std::map<std::string, std::string> Header::read_keywords_values(KeywordCategory 
 
 std::string Header::read_all(KeywordCategory categories) const {
   m_touch();
-  const bool incNonValues = categories == KeywordCategory::All;
-  return Cfitsio::HeaderIo::read_header(m_fptr, incNonValues);
+  const bool inv_non_valued = categories == KeywordCategory::All;
+  return Cfitsio::HeaderIo::read_header(m_fptr, inv_non_valued);
 }
 
 RecordSeq Header::parse_all(KeywordCategory categories) const {
@@ -91,36 +91,36 @@ void Header::write_history(const std::string& history) const {
   return Cfitsio::HeaderIo::write_history(m_fptr, history);
 }
 
-KeywordExistsError::KeywordExistsError(const std::string& existingKeyword) :
-    FitsError(std::string("Keyword already exists: ") + existingKeyword), keyword(existingKeyword) {}
+KeywordExistsError::KeywordExistsError(const std::string& existing_keyword) :
+    FitsError(std::string("Keyword already exists: ") + existing_keyword), keyword(existing_keyword) {}
 
-void KeywordExistsError::may_throw(const std::string& existingKeyword, const Header& header) {
-  if (header.has(existingKeyword)) {
-    throw KeywordExistsError(existingKeyword);
+void KeywordExistsError::may_throw(const std::string& existing_keyword, const Header& header) {
+  if (header.has(existing_keyword)) {
+    throw KeywordExistsError(existing_keyword);
   }
 }
 
-void KeywordExistsError::may_throw(const std::vector<std::string>& existingKeywords, const Header& header) {
+void KeywordExistsError::may_throw(const std::vector<std::string>& existing_keywords, const Header& header) {
   const auto found = header.read_keywords();
-  for (const auto& k : existingKeywords) {
+  for (const auto& k : existing_keywords) {
     if (std::find(found.begin(), found.end(), k) != found.end()) {
       throw KeywordExistsError(k);
     }
   }
 }
 
-KeywordNotFoundError::KeywordNotFoundError(const std::string& missingKeyword) :
-    FitsError(std::string("Keyword not found: ") + missingKeyword), keyword(missingKeyword) {}
+KeywordNotFoundError::KeywordNotFoundError(const std::string& missing_keyword) :
+    FitsError(std::string("Keyword not found: ") + missing_keyword), keyword(missing_keyword) {}
 
-void KeywordNotFoundError::may_throw(const std::string& missingKeyword, const Header& header) {
-  if (not header.has(missingKeyword)) {
-    throw KeywordNotFoundError(missingKeyword);
+void KeywordNotFoundError::may_throw(const std::string& missing_keyword, const Header& header) {
+  if (not header.has(missing_keyword)) {
+    throw KeywordNotFoundError(missing_keyword);
   }
 }
 
-void KeywordNotFoundError::may_throw(const std::vector<std::string>& missingKeywords, const Header& header) {
+void KeywordNotFoundError::may_throw(const std::vector<std::string>& missing_keywords, const Header& header) {
   const auto found = header.read_keywords();
-  for (const auto& k : missingKeywords) {
+  for (const auto& k : missing_keywords) {
     if (std::find(found.begin(), found.end(), k) == found.end()) {
       throw KeywordNotFoundError(k);
     }

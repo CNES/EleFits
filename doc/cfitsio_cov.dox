@@ -33,7 +33,7 @@ Interface:
 - Const-correctness
 - Consistent type management (not mixing C types and FITS types)
 - Exceptions
-- Structured bindings, e.g.: `auto [ra, dec] = h.parseSeq<float>("RA", "DEC");`
+- Structured bindings, e.g.: `auto [ra, dec] = h.parse_seq<float>("RA", "DEC");`
 - Data classes: `Record`, `Raster`, `Column`...
 - Structured handlers: `MefFile`, `ImageHdu`, `Header`...
 

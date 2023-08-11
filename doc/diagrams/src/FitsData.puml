@@ -28,15 +28,15 @@ class VectorArithmeticMixin<T, TDerived> {
 class DataContainer<T, TContainer, TDerived> {
 + DataContainer(args...)
 + container()
-+ moveTo(destination)
++ move_to(destination)
 }
 class Position<N> {
 + Position(indices)
 + {static} zero()
 + {static} max()
 + dimension()
-+ isZero()
-+ isMax()
++ is_zero()
++ is_max()
 + slice()
 + extend(padding)
 }
@@ -71,7 +71,7 @@ class Column<T> {
 + reshape(repeat_count)
 + size()
 + row_count()
-+ operator()(rowIndex, repeatIndex)
++ operator()(row_index, repeat_index)
 + at(row, repeat)
 + slice(front, back)
 }

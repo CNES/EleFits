@@ -47,7 +47,7 @@ EleFits aims at carrying the boilerplate internally, so that the user doesn't ne
 Template functions and methods are provided to simply let the user set the desired type, e.g.:
 
 \code
-auto raster = ext.readRaster<float>();
+auto raster = ext.raster().read<float>();
 \endcode
 
 When possible, conversions are performed internally when the template type does not correspond to the file type.

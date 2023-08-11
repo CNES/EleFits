@@ -85,21 +85,21 @@ namespace Fits {
  * 
  * For performance, the values are stored sequentially in a 1D array as follows:
  * \code
- * ColumnInfo<std::string> stringInfo("String", "", 6);
- * std::string stringData[] = {"ZERO", "ONE", "TWO", "THREE"};
+ * ColumnInfo<std::string> string_info("String", "", 6);
+ * std::string string_data[] = {"ZERO", "ONE", "TWO", "THREE"};
  * 
- * ColumnInfo<int> scalarInfo("Scalar");
- * int scalarData[] = {0, 1, 2, 3};
+ * ColumnInfo<int> scalar_info("Scalar");
+ * int scalar_data[] = {0, 1, 2, 3};
  * 
- * ColumnInfo<int> vectorInfo("Vector", "", 3);
- * int vectorData[] = {
+ * ColumnInfo<int> vector_info("Vector", "", 3);
+ * int vector_data[] = {
  *     00, 01, 02,
  *     10, 11, 12,
  *     20, 21, 22,
  *     30, 31, 32};
  * 
- * ColumnInfo<int, 2> multidimInfo("Multidim", "", {3, 2});
- * int multidimData[] = {
+ * ColumnInfo<int, 2> multidim_info("Multidim", "", {3, 2});
+ * int multidim_data[] = {
  *     000, 001, 002, 010, 011, 012,
  *     100, 101, 102, 110, 111, 112,
  *     200, 201, 202, 210, 211, 212,
@@ -185,16 +185,16 @@ struct ColumnInfo {
   long repeat_count() const;
 
   /**
+   * @brief Get the number of elements per field.
+   */
+  long element_count() const;
+
+  /**
    * @deprecated
    */
   long repeatCount() const {
     return repeat_count();
   }
-
-  /**
-   * @brief Get the number of elements per field.
-   */
-  long element_count() const;
 
   /**
    * @deprecated
@@ -230,10 +230,10 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
  * 
  * @par_example
  * \code
- * auto stringInfo = make_column_info<std::string>("String", "", 6);
- * auto scalarInfo = make_column_info<int>("Scalar");
- * auto vectorInfo = make_column_info<int>("Vector", "", 3);
- * auto multidimInfo = make_column_info<int>("Multidim", "", 3, 2);
+ * auto string_info = make_column_info<std::string>("String", "", 6);
+ * auto scalar_info = make_column_info<int>("Scalar");
+ * auto vector_info = make_column_info<int>("Vector", "", 3);
+ * auto multidim_info = make_column_info<int>("Multidim", "", 3, 2);
  * \endcode
  */
 template <typename T, typename... Longs>

@@ -156,7 +156,7 @@ public:
     options.named("ndith", value<long>()->default_value(4), "Dither count per AstroObj");
     options.named("height", value<long>()->default_value(15), "Dither 2D height");
     options.flag("qual", "Flag to write quality columns");
-    return options.asPair();
+    return options.as_pair();
   }
 
   /*

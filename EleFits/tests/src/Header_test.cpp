@@ -19,46 +19,46 @@ BOOST_AUTO_TEST_CASE(long_string_record_is_read_back_test) {
 
   /* From the FITS standard */
   const std::string keyword = "STRKEY";
-  const std::string longValue = "This keyword value is continued over multiple keyword records.";
-  const std::string longComment = "The comment field for this keyword is also continued over multiple records";
+  const std::string long_value = "This keyword value is continued over multiple keyword records.";
+  const std::string long_comment = "The comment field for this keyword is also continued over multiple records";
   const auto& h = this->header();
 
   /* Long value, no comment */
-  const Record<std::string> longValueRecord(keyword, longValue);
-  h.write(longValueRecord);
+  const Record<std::string> long_value_record(keyword, long_value);
+  h.write(long_value_record);
   auto output = h.parse<std::string>(keyword);
-  BOOST_TEST(output == longValueRecord);
+  BOOST_TEST(output == long_value_record);
 
   /* Long comment, no value */
-  const Record<std::string> longCommentRecord(keyword, "", "", longComment);
-  h.write<RecordMode::UpdateExisting>(longCommentRecord);
+  const Record<std::string> long_comment_record(keyword, "", "", long_comment);
+  h.write<RecordMode::UpdateExisting>(long_comment_record);
   output = h.parse<std::string>(keyword);
-  BOOST_TEST(output.comment != longComment); // CFITSIO bug/limitation: comment is truncated
+  BOOST_TEST(output.comment != long_comment); // CFITSIO bug/limitation: comment is truncated
   BOOST_TEST(output.value == "");
 
   /* Long value and comment */
-  const Record<std::string> longValueAndCommentRecord(keyword, longValue, "", longComment);
-  h.write<RecordMode::UpdateExisting>(longValueAndCommentRecord);
+  const Record<std::string> long_value_and_comment_record(keyword, long_value, "", long_comment);
+  h.write<RecordMode::UpdateExisting>(long_value_and_comment_record);
   output = h.parse<std::string>(keyword);
-  BOOST_TEST(output.comment != longComment); // CFITSIO bug/limitation: comment is truncated
-  BOOST_TEST(output.value == longValue);
+  BOOST_TEST(output.comment != long_comment); // CFITSIO bug/limitation: comment is truncated
+  BOOST_TEST(output.value == long_value);
 }
 
 BOOST_AUTO_TEST_CASE(long_comment_hierarch_record_is_read_back_test) {
 
   /* From the FITS standard */
-  const std::string longKeyword = "123456789";
+  const std::string long_keyword = "123456789";
   const int value = 10;
-  const std::string longComment =
+  const std::string long_comment =
       "Manuel is trying to crash EleFits with a very very very long comment in a hierarch keyword!";
   const auto& h = this->header();
 
   /* Long value, no comment */
-  const Record<int> longCommentHierarchRecord(longKeyword, value, "", longComment);
-  h.write(longCommentHierarchRecord);
+  const Record<int> long_comment_hierarch_record(long_keyword, value, "", long_comment);
+  h.write(long_comment_hierarch_record);
   BOOST_TEST(h.has("HIERARCH *")); // TODO * is not officially supported
-  auto output = h.parse<int>(longKeyword);
-  BOOST_TEST(output.comment != longComment); // Nominal: comment is truncated for non-string keywords
+  auto output = h.parse<int>(long_keyword);
+  BOOST_TEST(output.comment != long_comment); // Nominal: comment is truncated for non-string keywords
   BOOST_TEST(output.value == value);
 }
 
@@ -114,9 +114,9 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   /* Heterogeneous read */
   h.parse_seq(as<int>("I"), as<float>("F"));
   h.parse_seq_or(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
-  const auto [boundI, boundF] = h.parse_struct<S>(as<int>("I"), as<float>("F")); // Structured binding
-  BOOST_TEST(boundI == i);
-  BOOST_TEST(boundF == f);
+  const auto [bound_i, bound_f] = h.parse_struct<S>(as<int>("I"), as<float>("F")); // Structured binding
+  BOOST_TEST(bound_i == i);
+  BOOST_TEST(bound_f == f);
 
   /* Homogeneous read */
   h.parse_seq<VariantValue>({"I", "F"});

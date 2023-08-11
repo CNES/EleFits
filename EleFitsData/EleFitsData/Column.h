@@ -161,13 +161,6 @@ public:
    */
   long row_count() const;
 
-  /**
-   * @deprecated
-   */
-  long rowCount() const {
-    return row_count();
-  }
-
   /// @group_elements
 
   using Base::operator[];
@@ -223,6 +216,13 @@ public:
   PtrColumn<T, N> slice(const Segment& rows);
 
   /// @}
+
+  /**
+   * @deprecated
+   */
+  long rowCount() const {
+    return row_count();
+  }
 
   /**
    * @deprecated Name was wrong wrt. the FITS standard

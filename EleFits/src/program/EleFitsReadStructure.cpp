@@ -75,11 +75,11 @@ class EleFitsReadStructure : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = ProgramOptions::fromAuxFile("ReadStructure.txt");
+    auto options = ProgramOptions::from_aux_file("ReadStructure.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.named("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter");
     options.named("columns,C", value<long>()->default_value(0)->implicit_value(-1), "Maximum number of column names");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
@@ -107,8 +107,8 @@ public:
       logger.info() << "  Size: " << hdu.size_in_file() << " bytes";
 
       /* Read type */
-      const auto hduType = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
-      if (hduType == HduCategory::Image) {
+      const auto hdu_type = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
+      if (hdu_type == HduCategory::Image) {
         const auto shape = hdu.as<ImageHdu>().read_shape<-1>();
         if (shape.size() > 0) {
           std::ostringstream oss;

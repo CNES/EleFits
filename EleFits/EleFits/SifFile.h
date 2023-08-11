@@ -50,7 +50,17 @@ public:
   void write(const RecordSeq& records, const TRaster& raster);
 
   /**
-   * @deprecated
+   * @copydoc Hdu::verify_checksums()
+   */
+  void verify_checksums() const;
+
+  /**
+   * @copydoc Hdu::update_checksums()
+   */
+  void update_checksums() const;
+
+  /**
+   * @deprecated Use write()
    */
   template <typename TRaster>
   [[deprecated("Use write()")]] void writeAll(const RecordSeq& records, const TRaster& raster) {
@@ -58,21 +68,11 @@ public:
   }
 
   /**
-   * @copydoc Hdu::verify_checksums()
-   */
-  void verify_checksums() const;
-
-  /**
    * @deprecated
    */
   void verifyChecksums() const {
     return verify_checksums();
   }
-
-  /**
-   * @copydoc Hdu::update_checksums()
-   */
-  void update_checksums() const;
 
   /**
    * @deprecated

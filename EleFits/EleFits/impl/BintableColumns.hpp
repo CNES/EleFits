@@ -208,8 +208,8 @@ void BintableColumns::write(const TColumn& column) const {
 template <typename TInfo>
 void BintableColumns::init(const TInfo& info, long index) const {
   m_edit();
-  auto name = Fits::String::toCharPtr(info.name);
-  auto tform = Fits::String::toCharPtr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeat_count()));
+  auto name = Fits::String::to_char_ptr(info.name);
+  auto tform = Fits::String::to_char_ptr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeat_count()));
   int status = 0;
   int cfitsio_index = index == -1 ? Cfitsio::BintableIo::column_count(m_fptr) + 1 : index + 1;
   fits_insert_col(m_fptr, cfitsio_index, name.get(), tform.get(), &status);

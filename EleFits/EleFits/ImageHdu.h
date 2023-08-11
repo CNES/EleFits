@@ -113,23 +113,9 @@ public:
   const std::type_info& read_typeid() const;
 
   /**
-   * @deprecated
-   */
-  const std::type_info& readTypeid() const {
-    return read_typeid();
-  }
-
-  /**
    * @copybrief ImageRaster::read_size
    */
   long read_size() const;
-
-  /**
-   * @deprecated
-   */
-  long readSize() const {
-    return read_size();
-  }
 
   /**
    * @copybrief ImageRaster::read_shape
@@ -159,6 +145,32 @@ public:
   void update_type_shape(const Position<N>& shape) const;
 
   /**
+   * @brief Read the Raster.
+   */
+  template <typename T, long N = 2>
+  VecRaster<T, N> read_raster() const;
+
+  /**
+   * @brief Write the Raster.
+   */
+  template <typename TRaster>
+  void write_raster(const TRaster& data) const;
+
+  /**
+   * @deprecated
+   */
+  const std::type_info& readTypeid() const {
+    return read_typeid();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readSize() const {
+    return read_size();
+  }
+
+  /**
    * @deprecated
    */
   template <typename T, long N = 2>
@@ -167,24 +179,12 @@ public:
   }
 
   /**
-   * @brief Read the Raster.
-   */
-  template <typename T, long N = 2>
-  VecRaster<T, N> read_raster() const;
-
-  /**
    * @deprecated
    */
   template <typename T, long N = 2>
   VecRaster<T, N> readRaster() const {
     return read_raster<T, N>();
   }
-
-  /**
-   * @brief Write the Raster.
-   */
-  template <typename TRaster>
-  void write_raster(const TRaster& data) const;
 
   /**
    * @deprecated

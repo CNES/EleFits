@@ -52,23 +52,9 @@ public:
   long read_column_count() const;
 
   /**
-   * @deprecated
-   */
-  long readColumnCount() const {
-    return read_column_count();
-  }
-
-  /**
    * @brief Read the number of rows.
    */
   long read_row_count() const;
-
-  /**
-   * @deprecated
-   */
-  long readRowCount() const {
-    return read_row_count();
-  }
 
   /**
    * @copydoc Hdu::category
@@ -82,18 +68,32 @@ public:
   VecColumn<T, N> read_column(ColumnKey key) const;
 
   /**
+   * @brief Write a column.
+   */
+  template <typename TColumn>
+  void write_column(const TColumn& column) const;
+
+  /**
+   * @deprecated
+   */
+  long readColumnCount() const {
+    return read_column_count();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readRowCount() const {
+    return read_row_count();
+  }
+
+  /**
    * @deprecated
    */
   template <typename T, long N = 1>
   VecColumn<T, N> readColumn(ColumnKey key) const {
     return read_column<T, N>(key);
   }
-
-  /**
-   * @brief Write a column.
-   */
-  template <typename TColumn>
-  void write_column(const TColumn& column) const;
 
   /**
    * @deprecated

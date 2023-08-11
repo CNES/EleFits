@@ -19,12 +19,12 @@ class EleFitsCompress : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = ProgramOptions::fromAuxFile("Compress.txt");
+    auto options = ProgramOptions::from_aux_file("Compress.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.positional("output", value<std::string>(), "Output file (if ends with .gz, compress externally)");
     options.named("lossless", value<char>()->default_value('y'), "Losslessness: yes (y), no (n), integers only (i)");
     options.flag("primary", "Compress the Primary (as the first extension)");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {

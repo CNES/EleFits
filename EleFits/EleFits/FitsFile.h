@@ -135,7 +135,7 @@ public:
   void close_remove(); // FIXME virtual?
 
   /**
-   * @deprecated
+   * @deprecated Use close_remove()
    */
   [[deprecated("Use close_remove()")]] void closeAndDelete() {
     return close_remove();
@@ -211,8 +211,7 @@ private:
 };
 
 /**
- * @relates FitsFile
- * @brief Check whether a file exists.
+ * @deprecated Use std::filesystem
  */
 bool fileExists(const std::string& filename);
 

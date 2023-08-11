@@ -64,13 +64,13 @@ ELEFITS_FOREACH_RECORD_TYPE(RECORD_COPY_TEST)
 
 BOOST_AUTO_TEST_CASE(raw_comment_test) {
 
-  Record<int> noUnit {"V", 1, "", "Speed"};
+  Record<int> no_unit {"V", 1, "", "Speed"};
   Record<int> unit {"V", 1, "m", "Speed"};
-  Record<int> unitInComment {"V", 1, "", "[m] Speed"};
+  Record<int> unit_in_comment {"V", 1, "", "[m] Speed"};
 
-  BOOST_TEST(noUnit.raw_comment() == "Speed");
+  BOOST_TEST(no_unit.raw_comment() == "Speed");
   BOOST_TEST(unit.raw_comment() == "[m] Speed");
-  BOOST_TEST(unitInComment.raw_comment() == "[m] Speed");
+  BOOST_TEST(unit_in_comment.raw_comment() == "[m] Speed");
 }
 
 template <typename T>

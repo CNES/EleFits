@@ -76,11 +76,11 @@ std::string half_max<std::string>() {
 template <>
 std::vector<std::complex<float>>
 generate_random_vector<std::complex<float>>(long size, std::complex<float> min, std::complex<float> max) {
-  const auto reVec = generate_random_vector<float>(size, min.real(), max.real());
-  const auto imVec = generate_random_vector<float>(size, min.imag(), max.imag());
+  const auto re_vec = generate_random_vector<float>(size, min.real(), max.real());
+  const auto im_vec = generate_random_vector<float>(size, min.imag(), max.imag());
   std::vector<std::complex<float>> vec(size);
   for (long i = 0; i < size; ++i) {
-    vec[i] = {reVec[i], imVec[i]};
+    vec[i] = {re_vec[i], im_vec[i]};
   }
   return vec;
 }
@@ -88,20 +88,20 @@ generate_random_vector<std::complex<float>>(long size, std::complex<float> min, 
 template <>
 std::vector<std::complex<double>>
 generate_random_vector<std::complex<double>>(long size, std::complex<double> min, std::complex<double> max) {
-  const auto reVec = generate_random_vector<double>(size, min.real(), max.real());
-  const auto imVec = generate_random_vector<double>(size, min.imag(), max.imag());
+  const auto re_vec = generate_random_vector<double>(size, min.real(), max.real());
+  const auto im_vec = generate_random_vector<double>(size, min.imag(), max.imag());
   std::vector<std::complex<double>> vec(size);
   for (long i = 0; i < size; ++i) {
-    vec[i] = {reVec[i], imVec[i]};
+    vec[i] = {re_vec[i], im_vec[i]};
   }
   return vec;
 }
 
 template <>
 std::vector<std::string> generate_random_vector<std::string>(long size, std::string min, std::string max) {
-  std::vector<int> intVec = generate_random_vector<int>(size, std::atoi(min.c_str()), std::atoi(max.c_str()));
+  std::vector<int> int_vec = generate_random_vector<int>(size, std::atoi(min.c_str()), std::atoi(max.c_str()));
   std::vector<std::string> vec(size);
-  std::transform(intVec.begin(), intVec.end(), vec.begin(), [](int i) {
+  std::transform(int_vec.begin(), int_vec.end(), vec.begin(), [](int i) {
     return std::to_string(i);
   });
   return vec;

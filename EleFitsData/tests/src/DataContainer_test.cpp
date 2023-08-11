@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_SUITE(DataContainer_test)
 //-----------------------------------------------------------------------------
 
 template <long M, long N>
-void checkStreamInsertion(const Position<N>& position, const std::string& expected) {
+void check_stream_insertion(const Position<N>& position, const std::string& expected) {
   const auto slice = position.template slice<M>();
   std::stringstream os;
   os << slice;
@@ -26,16 +26,16 @@ void checkStreamInsertion(const Position<N>& position, const std::string& expect
 
 BOOST_AUTO_TEST_CASE(stream_insertion_test) {
   Position<10> a {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-  checkStreamInsertion<0>(a, "[]");
-  checkStreamInsertion<1>(a, "[0]");
-  checkStreamInsertion<2>(a, "[0, 1]");
-  checkStreamInsertion<3>(a, "[0, 1, 2]");
-  checkStreamInsertion<4>(a, "[0, 1, 2, 3]");
-  checkStreamInsertion<5>(a, "[0, 1, 2, 3, 4]");
-  checkStreamInsertion<6>(a, "[0, 1, 2, 3, 4, 5]");
-  checkStreamInsertion<7>(a, "[0, 1, 2, 3, 4, 5, 6]");
-  checkStreamInsertion<8>(a, "[0, 1, 2 ... 5, 6, 7]");
-  checkStreamInsertion<9>(a, "[0, 1, 2 ... 6, 7, 8]");
+  check_stream_insertion<0>(a, "[]");
+  check_stream_insertion<1>(a, "[0]");
+  check_stream_insertion<2>(a, "[0, 1]");
+  check_stream_insertion<3>(a, "[0, 1, 2]");
+  check_stream_insertion<4>(a, "[0, 1, 2, 3]");
+  check_stream_insertion<5>(a, "[0, 1, 2, 3, 4]");
+  check_stream_insertion<6>(a, "[0, 1, 2, 3, 4, 5]");
+  check_stream_insertion<7>(a, "[0, 1, 2, 3, 4, 5, 6]");
+  check_stream_insertion<8>(a, "[0, 1, 2 ... 5, 6, 7]");
+  check_stream_insertion<9>(a, "[0, 1, 2 ... 6, 7, 8]");
 }
 
 //-----------------------------------------------------------------------------

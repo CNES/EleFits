@@ -96,7 +96,7 @@ public:
    * As opposed to category(), the return value of this method can be tested for equality, e.g.:
    * \code
    * if (ext.type() == HduCategory::Image) {
-   *   processImage(ext);
+   *   process_image(ext);
    * }
    * \endcode
    */
@@ -118,13 +118,6 @@ public:
    * @see matches
    */
   virtual HduCategory category() const; // FIXME refactor HduCategory
-
-  /**
-   * @deprecated
-   */
-  HduCategory readCategory() const {
-    return category();
-  }
 
   /**
    * @ingroup iterators
@@ -153,23 +146,9 @@ public:
   std::string read_name() const;
 
   /**
-   * @deprecated
-   */
-  std::string readName() const {
-    return read_name();
-  }
-
-  /**
    * @brief Read the extension version.
    */
   long read_version() const;
-
-  /**
-   * @deprecated
-   */
-  long readVersion() const {
-    return read_version();
-  }
 
   /**
    * @brief Read the number of bytes used by the Hdu.
@@ -185,23 +164,9 @@ public:
   void update_name(const std::string& name) const;
 
   /**
-   * @deprecated
-   */
-  void updateName(const std::string& name) const {
-    return update_name(name);
-  }
-
-  /**
    * @brief Write or update the extension version.
    */
   void update_version(long version) const;
-
-  /**
-   * @deprecated
-   */
-  void updateVersion(long version) const {
-    return update_version(version);
-  }
 
   /**
    * @brief Compute the HDU and data checksums and compare them to the values in the header.
@@ -224,19 +189,54 @@ public:
   void verify_checksums() const;
 
   /**
-   * @deprecated
-   */
-  void verifyChecksums() const {
-    return verify_checksums();
-  }
-
-  /**
    * @brief Compute and write (or update) the HDU and data checksums.
    * @details
    * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`).
    * @see verify_checksums()
    */
   void update_checksums() const;
+
+  /**
+   * @deprecated
+   */
+  HduCategory readCategory() const {
+    return category();
+  }
+
+  /**
+   * @deprecated
+   */
+  std::string readName() const {
+    return read_name();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readVersion() const {
+    return read_version();
+  }
+
+  /**
+   * @deprecated
+   */
+  void updateName(const std::string& name) const {
+    return update_name(name);
+  }
+
+  /**
+   * @deprecated
+   */
+  void updateVersion(long version) const {
+    return update_version(version);
+  }
+
+  /**
+   * @deprecated
+   */
+  void verifyChecksums() const {
+    return verify_checksums();
+  }
 
   /**
    * @deprecated

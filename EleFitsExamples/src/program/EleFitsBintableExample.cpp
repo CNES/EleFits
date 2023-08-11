@@ -19,30 +19,30 @@ using namespace Euclid;
  * When several columns are written at once, the operation is optimized through an internal buffer,
  * which makes it much faster than writing columns one by one.
  */
-const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& extName, long rows) {
+const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext_name, long rows) {
 
   /* A string column */
-  auto stringInfo = Fits::make_column_info<std::string>("STRING", "", 6);
-  auto stringData = Fits::Test::generate_random_vector<std::string>(rows);
-  auto stringCol = make_column(stringInfo, std::move(stringData));
+  auto string_info = Fits::make_column_info<std::string>("STRING", "", 6);
+  auto string_data = Fits::Test::generate_random_vector<std::string>(rows);
+  auto string_col = make_column(string_info, std::move(string_data));
 
   /* A scalar column of complex values */
-  auto scalarInfo = Fits::make_column_info<std::complex<float>>("SCALAR");
-  auto scalarData = Fits::Test::generate_random_vector<std::complex<float>>(rows);
-  auto scalarCol = make_column(scalarInfo, std::move(scalarData));
+  auto scalar_info = Fits::make_column_info<std::complex<float>>("SCALAR");
+  auto scalar_data = Fits::Test::generate_random_vector<std::complex<float>>(rows);
+  auto scalar_col = make_column(scalar_info, std::move(scalar_data));
 
   /* A vector column of int16 values */
-  auto vectorInfo = Fits::make_column_info<std::int16_t>("VECTOR", "", 3);
-  auto vectorData = Fits::Test::generate_random_vector<std::int16_t>(rows * vectorInfo.repeat_count());
-  auto vectorCol = make_column(vectorInfo, std::move(vectorData));
+  auto vector_info = Fits::make_column_info<std::int16_t>("VECTOR", "", 3);
+  auto vector_data = Fits::Test::generate_random_vector<std::int16_t>(rows * vector_info.repeat_count());
+  auto vector_col = make_column(vector_info, std::move(vector_data));
 
   /* A multidimensional column of uint16 values */
-  auto multidimInfo = Fits::make_column_info<std::uint16_t>("MULTIDIM", "", 6, 4);
-  auto multidimData = Fits::Test::generate_random_vector<std::uint16_t>(rows * multidimInfo.repeat_count());
-  auto multidimCol = make_column(multidimInfo, std::move(multidimData));
+  auto multidim_info = Fits::make_column_info<std::uint16_t>("MULTIDIM", "", 6, 4);
+  auto multidim_data = Fits::Test::generate_random_vector<std::uint16_t>(rows * multidim_info.repeat_count());
+  auto multidim_col = make_column(multidim_info, std::move(multidim_data));
 
   /* Create the table */
-  return f.append_bintable(extName, {}, stringCol, scalarCol, vectorCol, multidimCol);
+  return f.append_bintable(ext_name, {}, string_col, scalar_col, vector_col, multidim_col);
 }
 
 /*
@@ -65,7 +65,7 @@ void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* 
  * Like when writing, reading several columns at once is much faster than reading them one by one.
  * For more fun, let's compute something from all the elements of several columns.
  */
-double readColumns(const Fits::BintableColumns& du) {
+double read_columns(const Fits::BintableColumns& du) {
 
   /* Read with different types (implicit conversion) */
   const auto cols = du.read_seq(Fits::as<double>("VECTOR"), Fits::as<float>("MULTIDIM"));
@@ -85,7 +85,7 @@ double readColumns(const Fits::BintableColumns& du) {
 /*
  * Manipulate the fields of a multidimensional column as nD-arrays.
  */
-void viewAsRaster(const Fits::BintableColumns& du) {
+void view_as_raster(const Fits::BintableColumns& du) {
 
   /* Read a column of 2D fields */
   auto col = du.read<std::uint16_t, 2>("MULTIDIM");
@@ -117,7 +117,7 @@ public:
     Fits::ProgramOptions options("Generate, write and read a binary table.");
     options.positional("output", value<std::string>()->default_value("/tmp/bintable.fits"), "Output file");
     options.named("rows", value<long>()->default_value(42), "Number of rows");
-    return options.asPair();
+    return options.as_pair();
   }
 
   /*
@@ -133,8 +133,8 @@ public:
     Fits::MefFile f(filename, Fits::FileMode::Write);
 
     logger.info("Creating a binary table HDU...");
-    const auto extName = "TABLE" + std::to_string(f.hdu_count());
-    const auto& bintable = write_bintable(f, extName, rows);
+    const auto ext_name = "TABLE" + std::to_string(f.hdu_count());
+    const auto& bintable = write_bintable(f, ext_name, rows);
 
     logger.info("Appending a column...");
     Fits::ColumnInfo<double> info("BACK", "unit");
@@ -142,11 +142,11 @@ public:
     append_column(bintable.columns(), info, vec.data());
 
     logger.info("Reading columns...");
-    auto result = readColumns(bintable.columns());
+    auto result = read_columns(bintable.columns());
     logger.info() << "  Result = " << result;
 
     logger.info("Modifying a multidimensional column...");
-    viewAsRaster(bintable.columns());
+    view_as_raster(bintable.columns());
 
     logger.info("Done.");
     return ExitCode::OK;

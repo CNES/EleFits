@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_SUITE(Hdu_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkRecordWithFallbackIsReadBack(const Header& h, const std::string& keyword) {
+void check_record_with_fallback_is_read_back(const Header& h, const std::string& keyword) {
   BOOST_TEST(not h.has(keyword));
   BOOST_CHECK_THROW(h.parse<T>(keyword), std::exception);
   const Record<T> fallback {keyword, Test::generate_random_value<T>(), "", "FALLBACK"};
@@ -37,14 +37,14 @@ void checkRecordWithFallbackIsReadBack(const Header& h, const std::string& keywo
 }
 
 template <>
-void checkRecordWithFallbackIsReadBack<unsigned long>(const Header& h, const std::string& keyword) {
+void check_record_with_fallback_is_read_back<unsigned long>(const Header& h, const std::string& keyword) {
   // Wait for CFITSIO bug to be fixed
   (void)h;
   (void)keyword;
 }
 
 template <>
-void checkRecordWithFallbackIsReadBack<unsigned long long>(const Header& h, const std::string& keyword) {
+void check_record_with_fallback_is_read_back<unsigned long long>(const Header& h, const std::string& keyword) {
   // Wait for CFITSIO bug to be fixed
   (void)h;
   (void)keyword;
@@ -52,7 +52,7 @@ void checkRecordWithFallbackIsReadBack<unsigned long long>(const Header& h, cons
 
 #define RECORD_WITH_FALLBACK_IS_READ_BACK_TEST(type, name) \
   BOOST_FIXTURE_TEST_CASE(name##_record_with_fallback_is_read_back_test, Test::TemporarySifFile) { \
-    checkRecordWithFallbackIsReadBack<type>(this->header(), std::string(#name).substr(0, 8)); \
+    check_record_with_fallback_is_read_back<type>(this->header(), std::string(#name).substr(0, 8)); \
   }
 
 ELEFITS_FOREACH_RECORD_TYPE(RECORD_WITH_FALLBACK_IS_READ_BACK_TEST)
@@ -73,21 +73,21 @@ BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::Temporar
 
 BOOST_FIXTURE_TEST_CASE(long_string_value_is_read_back_test, Test::TemporarySifFile) {
   const auto& h = this->header();
-  const std::string shortStr = "S";
-  const std::string longStr =
+  const std::string short_str = "S";
+  const std::string long_str =
       "This is probably one of the longest strings "
       "that I have ever written in a serious code.";
-  BOOST_TEST(longStr.length() > FLEN_VALUE);
-  h.write("SHORT", shortStr);
+  BOOST_TEST(long_str.length() > FLEN_VALUE);
+  h.write("SHORT", short_str);
   BOOST_TEST(not h.has("LONGSTRN"));
-  h.write("LONG", longStr);
+  h.write("LONG", long_str);
   const auto output = h.parse<std::string>("LONG");
   BOOST_TEST(h.has("LONGSTRN"));
-  BOOST_TEST(output.value == longStr);
+  BOOST_TEST(output.value == long_str);
   BOOST_TEST(output.has_long_string_value());
 }
 
-void checkHierarchKeywordIsReadBack(const Header& h, const std::string& keyword) {
+void check_hierarch_keyword_is_read_back(const Header& h, const std::string& keyword) {
   BOOST_TEST(h.read_all().find("HIERARCH") == std::string::npos); // Not found
   const Record<int> record(keyword, 10);
   BOOST_TEST(record.has_long_keyword() == (keyword.length() > 8));
@@ -98,15 +98,15 @@ void checkHierarchKeywordIsReadBack(const Header& h, const std::string& keyword)
 }
 
 BOOST_FIXTURE_TEST_CASE(long_keyword_is_read_back_test, Test::TemporarySifFile) {
-  checkHierarchKeywordIsReadBack(this->header(), "123456789");
+  check_hierarch_keyword_is_read_back(this->header(), "123456789");
 }
 
 BOOST_FIXTURE_TEST_CASE(keyword_with_space_is_read_back_test, Test::TemporarySifFile) {
-  checkHierarchKeywordIsReadBack(this->header(), "A B");
+  check_hierarch_keyword_is_read_back(this->header(), "A B");
 }
 
 BOOST_FIXTURE_TEST_CASE(keyword_with_symbol_is_read_back_test, Test::TemporarySifFile) {
-  checkHierarchKeywordIsReadBack(this->header(), "1$");
+  check_hierarch_keyword_is_read_back(this->header(), "1$");
 }
 
 BOOST_FIXTURE_TEST_CASE(hdu_is_renamed_test, Test::TemporaryMefFile) {
@@ -173,21 +173,21 @@ BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test:
 BOOST_FIXTURE_TEST_CASE(brackets_in_comment_are_read_back_test, Test::TemporaryMefFile) {
   const auto& primary = this->primary().header();
   primary.write("PLAN_ID", 1, "", "[0:1] SOC Planning ID");
-  const auto intRecord = primary.parse<int>("PLAN_ID");
-  BOOST_TEST(intRecord.unit == "0:1");
-  BOOST_TEST(intRecord.comment == "SOC Planning ID");
+  const auto int_record = primary.parse<int>("PLAN_ID");
+  BOOST_TEST(int_record.unit == "0:1");
+  BOOST_TEST(int_record.comment == "SOC Planning ID");
   primary.write("STRING", std::string("1"), "", "[0:1] SOC Planning ID");
-  const auto stringRecord = primary.parse<std::string>("STRING");
-  BOOST_TEST(stringRecord.unit == "0:1");
-  BOOST_TEST(stringRecord.comment == "SOC Planning ID");
+  const auto string_record = primary.parse<std::string>("STRING");
+  BOOST_TEST(string_record.unit == "0:1");
+  BOOST_TEST(string_record.comment == "SOC Planning ID");
   primary.write("CSTR", "1", "", "[0:1] SOC Planning ID");
-  const auto cstrRecord = primary.parse<std::string>("CSTR");
-  BOOST_TEST(cstrRecord.unit == "0:1");
-  BOOST_TEST(cstrRecord.comment == "SOC Planning ID");
+  const auto cstr_record = primary.parse<std::string>("CSTR");
+  BOOST_TEST(cstr_record.unit == "0:1");
+  BOOST_TEST(cstr_record.comment == "SOC Planning ID");
   primary.write("WEIRD", 2, "m", "[0:1] SOC Planning ID");
-  const auto weirdRecord = primary.parse<std::string>("WEIRD");
-  BOOST_TEST(weirdRecord.unit == "m");
-  BOOST_TEST(weirdRecord.comment == "[0:1] SOC Planning ID");
+  const auto weird_record = primary.parse<std::string>("WEIRD");
+  BOOST_TEST(weird_record.unit == "m");
+  BOOST_TEST(weird_record.comment == "[0:1] SOC Planning ID");
 }
 
 BOOST_FIXTURE_TEST_CASE(comment_and_history_are_written, Test::TemporarySifFile) {

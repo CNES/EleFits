@@ -24,7 +24,7 @@ public:
     options.named("height", value<long>()->default_value(24), "Board height");
     options.named("turns", value<long>()->default_value(100), "Number of turns");
     options.named("init", value<long>()->default_value(200), "Initial number of lives");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {

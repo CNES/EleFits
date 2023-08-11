@@ -66,24 +66,24 @@ const T& MefFile::find(const std::string& name, long version) {
 template <class T>
 const T& MefFile::access(const std::string& name, long version) {
   const auto category = HduCategory::forClass<T>();
-  const Hdu* hduPtr = nullptr;
+  const Hdu* hdu_ptr = nullptr;
   for (long i = 0; i < hdu_count(); ++i) {
     const auto& hdu = access<Hdu>(i);
     const bool c_match = (category == HduCategory::Any || hdu.type() == category);
     const bool cn_match = c_match && (name == "" || hdu.read_name() == name);
     const bool cnv_match = cn_match && (version == 0 || hdu.read_version() == version);
     if (cnv_match) {
-      if (hduPtr) {
+      if (hdu_ptr) {
         throw FitsError("Several HDU matches."); // TODO specific exception?
       } else {
-        hduPtr = &hdu; // FIXME Cppcheck reports "Using object that is out of scope."
+        hdu_ptr = &hdu; // FIXME Cppcheck reports "Using object that is out of scope."
       }
     }
   }
-  if (not hduPtr) {
+  if (not hdu_ptr) {
     throw FitsError("No HDU match."); // TODO specific exception?
   }
-  return hduPtr->as<T>();
+  return hdu_ptr->as<T>();
 }
 
 template <typename T>
@@ -170,7 +170,7 @@ MefFile::append_null_image(const std::string& name, const RecordSeq& records, co
     }
     hdu.raster().write(raster);
   }
-  // FIXME To CfitsioWrapper and as `bool ImageRaster::fillNull() const`
+  // FIXME To CfitsioWrapper and as `bool ImageRaster::fill_null() const`
   // Check status is acceptable (e.g. != 0 if no BLANK keyword or real values)
 
   // FIXME check offsetting
@@ -212,8 +212,11 @@ MefFile::append_bintable_header(const std::string& name, const RecordSeq& record
 }
 
 template <typename... TInfos>
-const BintableHdu&
-MefFile::append_null_bintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos) {
+const BintableHdu& MefFile::append_null_bintable(
+    const std::string& name,
+    const RecordSeq& records,
+    long row_count,
+    const TInfos&... infos) {
   const auto& hdu = append_bintable_header(name, records, infos...);
 
   int status = 0;
@@ -222,7 +225,7 @@ MefFile::append_null_bintable(const std::string& name, const RecordSeq& records,
   if (status != 0) {
     throw FitsError("Cannot write null rows. Error: " + std::to_string(status));
   }
-  // FIXME To CfitsioWrapper and as `BintableRows::fillNull(Segment) const;`
+  // FIXME To CfitsioWrapper and as `BintableRows::fill_null(Segment) const;`
 
   return hdu;
 }
@@ -236,7 +239,8 @@ MefFile::append_bintable(const std::string& name, const RecordSeq& records, cons
 }
 
 template <typename TColumns, std::size_t Size>
-const BintableHdu& MefFile::append_bintable(const std::string& name, const RecordSeq& records, const TColumns& columns) {
+const BintableHdu&
+MefFile::append_bintable(const std::string& name, const RecordSeq& records, const TColumns& columns) {
   Cfitsio::HduAccess::assign_bintable<TColumns, Size>(m_fptr, name,
                                                       columns); // FIXME doesn't check for column size
   const auto index = m_hdus.size();
@@ -245,7 +249,7 @@ const BintableHdu& MefFile::append_bintable(const std::string& name, const Recor
   m_strategy.created(hdu);
   hdu.header().write_seq(records);
   return hdu;
-  // FIXME use appendBintableExt(name, records, columns...) or inverse dependency
+  // FIXME use append_bintable(name, records, columns...) or inverse dependency
 }
 
 void MefFile::remove(long index) {

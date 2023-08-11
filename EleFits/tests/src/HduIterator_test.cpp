@@ -34,32 +34,32 @@ BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile) {
   this->append_null_image<float, 2>(names[3], {}, {1, 1});
 
   int count = 0;
-  std::vector<std::string> readNames;
+  std::vector<std::string> read_names;
 
   for (const auto& hdu : this->filter<ImageHdu>(HduCategory::Primary)) {
     const std::string name = hdu.read_name();
     BOOST_TEST(name == names[0]);
-    readNames.push_back(name);
+    read_names.push_back(name);
     BOOST_TEST(hdu.matches(HduCategory::Image));
     count++;
   }
   BOOST_TEST(count == 1);
 
   for (const auto& hdu : this->filter<BintableHdu>(HduCategory::Any)) {
-    readNames.push_back(hdu.read_name());
+    read_names.push_back(hdu.read_name());
     BOOST_TEST(hdu.matches(HduCategory::Bintable & HduCategory::Ext));
     count++;
   }
   BOOST_TEST(count == 3);
 
   for (const auto& hdu : this->filter<ImageHdu>(HduCategory::Ext)) {
-    readNames.push_back(hdu.read_name());
+    read_names.push_back(hdu.read_name());
     BOOST_TEST(hdu.matches(HduCategory::Image - HduCategory::Primary));
     count++;
   }
   BOOST_TEST(count == 4);
 
-  BOOST_TEST(readNames == names);
+  BOOST_TEST(read_names == names);
 }
 
 //-----------------------------------------------------------------------------

@@ -94,7 +94,7 @@ public:
     options.named("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
     options.named("width", value<long>()->default_value(10), "Image width");
     options.named("height", value<long>()->default_value(10), "Image height");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {

@@ -27,10 +27,10 @@ Record<T> Header::parse_or(const Record<T>& fallback) const {
 template <typename T>
 Record<T> Header::parse_or(
     const std::string& keyword,
-    T fallbackValue,
-    const std::string& fallbackUnit,
-    const std::string& fallbackComment) const {
-  return parse_or<T>({keyword, fallbackValue, fallbackUnit, fallbackComment});
+    T fallback_value,
+    const std::string& fallback_unit,
+    const std::string& fallback_comment) const {
+  return parse_or<T>({keyword, fallback_value, fallback_unit, fallback_comment});
 }
 
 template <typename T>

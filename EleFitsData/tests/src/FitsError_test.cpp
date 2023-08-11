@@ -19,10 +19,10 @@ BOOST_AUTO_TEST_CASE(message_test) {
   const std::string message = "MESSAGE!";
   FitsError error(message);
   const std::string output = error.what();
-  const auto prefixPos = output.find(prefix);
-  BOOST_TEST(prefixPos != std::string::npos);
-  const auto messagePos = output.find(message, prefixPos + prefix.length());
-  BOOST_TEST(messagePos != std::string::npos);
+  const auto prefix_pos = output.find(prefix);
+  BOOST_TEST(prefix_pos != std::string::npos);
+  const auto message_pos = output.find(message, prefix_pos + prefix.length());
+  BOOST_TEST(message_pos != std::string::npos);
 }
 
 //-----------------------------------------------------------------------------

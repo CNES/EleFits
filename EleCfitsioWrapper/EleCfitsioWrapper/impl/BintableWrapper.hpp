@@ -6,7 +6,7 @@
 
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleCfitsioWrapper/ErrorWrapper.h"
-#include "EleCfitsioWrapper/HeaderWrapper.h" // hasKeyword
+#include "EleCfitsioWrapper/HeaderWrapper.h" // has_heyword
 #include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/FitsError.h"
 #include "EleFitsUtils/StringUtils.h"
@@ -274,8 +274,8 @@ void write_columns(fitsfile* fptr, const TColumns&... columns) {
 template <typename TColumn>
 void insert_columnn(fitsfile* fptr, long index, const TColumn& column) {
   const auto& info = column.info();
-  auto name = Fits::String::toCharPtr(info.name);
-  auto tform = Fits::String::toCharPtr(TypeCode<typename TColumn::Value>::tform(info.repeat_count()));
+  auto name = Fits::String::to_char_ptr(info.name);
+  auto tform = Fits::String::to_char_ptr(TypeCode<typename TColumn::Value>::tform(info.repeat_count()));
   // FIXME write unit
   int status = 0;
   fits_insert_col(fptr, static_cast<int>(index), name.get(), tform.get(), &status);

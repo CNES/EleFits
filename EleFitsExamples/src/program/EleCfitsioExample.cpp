@@ -42,7 +42,7 @@ public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
     Euclid::Fits::ProgramOptions options;
     options.positional("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {

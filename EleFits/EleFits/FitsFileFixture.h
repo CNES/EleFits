@@ -16,7 +16,7 @@ namespace Test {
 /**
  * @brief Valid name for temporary files.
  */
-std::string temporaryFilename() {
+std::string temporary_filename() {
   return Elements::TempPath("%%%%%%.fits").path().string();
 }
 
@@ -26,7 +26,7 @@ std::string temporaryFilename() {
 class TemporarySifFile : public SifFile {
 public:
   /** @brief Constructor */
-  TemporarySifFile() : SifFile(temporaryFilename(), FileMode::Temporary) {}
+  TemporarySifFile() : SifFile(temporary_filename(), FileMode::Temporary) {}
 };
 
 /**
@@ -35,7 +35,7 @@ public:
 class NewSifFile : public SifFile {
 public:
   /** @brief Constructor */
-  NewSifFile() : SifFile(temporaryFilename(), FileMode::Create) {}
+  NewSifFile() : SifFile(temporary_filename(), FileMode::Create) {}
 };
 
 /**
@@ -44,7 +44,7 @@ public:
 class TemporaryMefFile : public MefFile {
 public:
   /** @brief Constructor */
-  TemporaryMefFile() : MefFile(temporaryFilename(), FileMode::Temporary) {}
+  TemporaryMefFile() : MefFile(temporary_filename(), FileMode::Temporary) {}
 };
 
 /**
@@ -53,7 +53,7 @@ public:
 class NewMefFile : public MefFile {
 public:
   /** @brief Constructor */
-  NewMefFile() : MefFile(temporaryFilename(), FileMode::Create) {}
+  NewMefFile() : MefFile(temporary_filename(), FileMode::Create) {}
 };
 
 } // namespace Test

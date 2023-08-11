@@ -106,7 +106,7 @@ public:
    * Example usages:
    * \code
    * auto keywords = h.read_keywords(~KeywordCategory::Comment);
-   * auto keyVals = h.readKeywordValues();
+   * auto keywords_vals = h.read_keywords_values();
    * auto header = h.read_all();
    * auto records = h.parse_all(KeywordCategory::Reserved);
    * \endcode
@@ -115,13 +115,6 @@ public:
    * @see KeywordCategory
    */
   std::vector<std::string> read_keywords(KeywordCategory categories = KeywordCategory::All) const;
-
-  /**
-   * @deprecated
-   */
-  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const {
-    return read_keywords(categories);
-  }
 
   /**
    * @brief List keywords and their values.
@@ -134,24 +127,10 @@ public:
   std::map<std::string, std::string> read_keywords_values(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
-   * @deprecated
-   */
-  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const {
-    return read_keywords_values(categories);
-  }
-
-  /**
    * @brief Read the whole header as a single string.
    * @param categories Either `KeywordCategory::All` (default), or `~KeywordCategory::Comment` to skip COMMENT and HISTORY records
    */
   std::string read_all(KeywordCategory categories = KeywordCategory::All) const;
-
-  /**
-   * @deprecated
-   */
-  std::string readAll(KeywordCategory categories = KeywordCategory::All) const {
-    return read_all(categories);
-  }
 
   /**
    * @brief Parse records of given categories.
@@ -160,13 +139,6 @@ public:
    * Comment records are not parsed, as of today.
    */
   RecordSeq parse_all(KeywordCategory categories = KeywordCategory::All) const;
-
-  /**
-   * @deprecated
-   */
-  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const {
-    return parse_all(categories);
-  }
 
   /// @}
   /**
@@ -232,14 +204,6 @@ public:
       const std::string& fallback_unit = "",
       const std::string& fallback_comment = "") const;
 
-  /**
-   * @deprecated
-   */
-  template <typename... TArgs>
-  auto parseOr(TArgs&&... args) const {
-    return parse_or(std::forward<TArgs>(args)...);
-  }
-
   /// @}
   /**
    * @name Read a sequence of records as a vector or a tuple
@@ -300,14 +264,6 @@ public:
   std::tuple<Record<Ts>...> parse_seq(const TypedKey<Ts, std::string>&... keywords) const;
 
   /**
-   * @deprecated
-   */
-  template <typename... TArgs>
-  auto parseSeq(TArgs&&... args) const {
-    return parse_seq(std::forward<TArgs>(args)...);
-  }
-
-  /**
    * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
    * @copydetails parse_seq()
    */
@@ -320,14 +276,6 @@ public:
    */
   template <typename... Ts>
   std::tuple<Record<Ts>...> parse_seq_or(const Record<Ts>&... fallbacks) const;
-
-  /**
-   * @deprecated
-   */
-  template <typename... TArgs>
-  auto parseSeqOr(TArgs&&... args) const {
-    return parse_seq_or(std::forward<TArgs>(args)...);
-  }
 
   /// @}
   /**
@@ -397,14 +345,6 @@ public:
   TOut parse_struct(const TypedKey<Ts, std::string>&... keywords) const;
 
   /**
-   * @deprecated
-   */
-  template <typename TOut, typename... Ts>
-  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const {
-    return parse_struct(keywords...);
-  }
-
-  /**
    * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
    * @copydoc parse_struct()
    */
@@ -417,14 +357,6 @@ public:
    */
   template <typename TOut, typename TSeq>
   TOut parse_struct_or(TSeq&& fallbacks) const;
-
-  /**
-   * @deprecated
-   */
-  template <typename TOut, typename... TArgs>
-  TOut parseStructOr(TArgs&&... args) const {
-    return parse_struct_or<TOut>(std::forward<TArgs>(args)...);
-  }
 
   /// @}
   /**
@@ -517,14 +449,6 @@ public:
   void write_seq(TSeq&& records) const;
 
   /**
-   * @deprecated
-   */
-  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
-  void writeSeq(TArgs&&... args) const {
-    return write_seq<Mode>(std::forward<TArgs>(args)...);
-  }
-
-  /**
    * @brief Write a subset of a heterogeneous sequence of records.
    * @copydetails write_seq()
    */
@@ -538,14 +462,6 @@ public:
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
   void write_seq_in(const std::vector<std::string>& keywords, TSeq&& records) const;
 
-  /**
-   * @deprecated
-   */
-  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
-  void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const {
-    return write_seq_in<Mode>(std::forward<TArgs>(args)...);
-  }
-
   /// @}
   /**
    * @name Write comment records.
@@ -558,6 +474,97 @@ public:
   void write_comment(const std::string& comment) const;
 
   /**
+   * @brief Write a `HISTORY` record.
+   */
+  void write_history(const std::string& history) const;
+
+  /// @}
+
+  /**
+   * @deprecated
+   */
+  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const {
+    return read_keywords(categories);
+  }
+
+  /**
+   * @deprecated
+   */
+  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const {
+    return read_keywords_values(categories);
+  }
+
+  /**
+   * @deprecated
+   */
+  std::string readAll(KeywordCategory categories = KeywordCategory::All) const {
+    return read_all(categories);
+  }
+
+  /**
+   * @deprecated
+   */
+  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const {
+    return parse_all(categories);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  auto parseOr(TArgs&&... args) const {
+    return parse_or(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  auto parseSeq(TArgs&&... args) const {
+    return parse_seq(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  auto parseSeqOr(TArgs&&... args) const {
+    return parse_seq_or(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename TOut, typename... Ts>
+  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const {
+    return parse_struct(keywords...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename TOut, typename... TArgs>
+  TOut parseStructOr(TArgs&&... args) const {
+    return parse_struct_or<TOut>(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
+  void writeSeq(TArgs&&... args) const {
+    return write_seq<Mode>(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
+  void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const {
+    return write_seq_in<Mode>(std::forward<TArgs>(args)...);
+  }
+
+  /**
    * @deprecated
    */
   void writeComment(const std::string& comment) const {
@@ -565,18 +572,11 @@ public:
   }
 
   /**
-   * @brief Write a `HISTORY` record.
-   */
-  void write_history(const std::string& history) const;
-
-  /**
    * @deprecated
    */
   void writeHistory(const std::string& history) const {
     return write_history(history);
   }
-
-  /// @}
 
 private:
   /**

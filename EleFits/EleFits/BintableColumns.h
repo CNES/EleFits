@@ -96,23 +96,9 @@ public:
   long read_column_count() const;
 
   /**
-   * @deprecated
-   */
-  long readColumnCount() const {
-    return read_column_count();
-  }
-
-  /**
    * @brief Get the current number of rows.
    */
   long read_row_count() const;
-
-  /**
-   * @deprecated
-   */
-  long readRowCount() const {
-    return read_row_count();
-  }
 
   /**
    * @brief Get the number of rows in the internal buffer.
@@ -121,13 +107,6 @@ public:
    * To optimize its usage, columns should be read and written by chunks of the buffer size at most.
    */
   long read_buffer_row_count() const;
-
-  /**
-   * @deprecated
-   */
-  long readBufferRowCount() const {
-    return read_buffer_row_count();
-  }
 
   /**
    * @brief Check whether the HDU contains a given column.
@@ -141,23 +120,9 @@ public:
   long read_index(const std::string& name) const;
 
   /**
-   * @deprecated
-   */
-  long readIndex(const std::string& name) const {
-    return read_index(name);
-  }
-
-  /**
    * @brief Get the indices of the columns with given names.
    */
   std::vector<long> read_indices(const std::vector<std::string>& names) const;
-
-  /**
-   * @deprecated
-   */
-  std::vector<long> readIndices(const std::vector<std::string>& names) const {
-    return read_indices(names);
-  }
 
   /**
    * @brief Get the name of the column with given index.
@@ -165,23 +130,9 @@ public:
   std::string read_name(long index) const;
 
   /**
-   * @deprecated
-   */
-  std::string readName(long index) const {
-    return read_name(index);
-  }
-
-  /**
    * @brief Get the names of all the columns.
    */
   std::vector<std::string> read_all_names() const;
-
-  /**
-   * @deprecated
-   */
-  std::vector<std::string> readAllNames() const {
-    return read_all_names();
-  }
 
   /**
    * @brief Rename the column with given name or index.
@@ -203,14 +154,6 @@ public:
    */
   template <typename T, long N = 1>
   ColumnInfo<T, N> read_info(ColumnKey key) const;
-
-  /**
-   * @deprecated
-   */
-  template <typename T, long N = 1>
-  ColumnInfo<T, N> readInfo(ColumnKey key) const {
-    return read_info<T, N>(key);
-  }
 
   /**
    * @brief Read the column with given name or index.
@@ -262,11 +205,6 @@ public:
   template <typename TColumn>
   void read_to(ColumnKey key, TColumn& column) const;
 
-  template <typename... TArgs>
-  void readTo(TArgs&&... args) {
-    return read_to(std::forward<TArgs>(args)...); // FIXME test
-  }
-
   /// @}
   /**
    * @name Read a single column segment.
@@ -301,14 +239,6 @@ public:
   VecColumn<T, N> read_segment(const Segment& rows, ColumnKey key) const;
 
   /**
-   * @deprecated
-   */
-  template <typename T, long N = 1>
-  VecColumn<T, N> readSegment(const Segment& rows, ColumnKey key) const {
-    return read_segment<T, N>(rows, key);
-  }
-
-  /**
    * @brief Read the segment of a column into an existing `Column`.
    * @copydetails read_segment()
    */
@@ -321,11 +251,6 @@ public:
    */
   template <typename TColumn>
   void read_segment_to(FileMemSegments rows, ColumnKey key, TColumn& column) const;
-
-  template <typename... TArgs>
-  void readSegmentTo(TArgs&&... args) const {
-    return read_segment_to(std::forward<TArgs>(args)...);
-  }
 
   /// @}
   /**
@@ -360,22 +285,6 @@ public:
   std::vector<VecColumn<T, N>> read_seq(std::vector<ColumnKey> keys) const; // TODO return a ColumnVec?
 
   /**
-   * @deprecated
-   */
-  template <typename TKey, typename... Ts> // FIXME add long... Ns
-  std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const {
-    return read_seq(keys...);
-  }
-
-  /**
-   * @deprecated
-   */
-  template <typename T, long N = 1>
-  std::vector<VecColumn<T, N>> readSeq(std::vector<ColumnKey> keys) const {
-    return read_seq<T, N>(keys);
-  }
-
-  /**
    * @brief Read a sequence of columns into existing `Column`s.
    * @copydetails read_seq()
    */
@@ -403,14 +312,6 @@ public:
   template <typename... TColumns>
   void read_seq_to(std::vector<ColumnKey> keys, TColumns&... columns) const;
 
-  /**
-   * @deprecated
-   */
-  template <typename... TArgs>
-  void readSeqTo(TArgs&... args) const {
-    return read_seq_to(std::forward<TArgs>(args)...);
-  }
-
   /// @}
   /**
    * @name Read a sequence of column segments.
@@ -433,19 +334,6 @@ public:
    */
   template <typename T, long N = 1>
   std::vector<VecColumn<T, N>> read_segment_seq(Segment rows, std::vector<ColumnKey> keys) const;
-
-  /**
-   * @deprecated
-   */
-  template <typename TKey, typename... Ts>
-  std::tuple<VecColumn<Ts, 1>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const {
-    return read_segment_seq(rows, keys...);
-  }
-
-  template <typename T, long N = 1>
-  std::vector<VecColumn<T, N>> readSegmentSeq(Segment rows, const std::vector<ColumnKey> keys) const {
-    return read_segment_seq<T, N>(rows, keys);
-  }
 
   /**
    * @brief Read segments of columns into existing `Column`s.
@@ -475,14 +363,6 @@ public:
   template <typename... TColumns>
   void read_segment_seq_to(FileMemSegments rows, std::vector<ColumnKey> keys, TColumns&... columns) const;
 
-  /**
-   * @deprecated
-   */
-  template <typename... TArgs>
-  void readSegmentSeqTo(TArgs&&... args) const {
-    return read_segment_seq_to(std::forward<TArgs>(args)...);
-  }
-
   /// @}
   /**
    * @name Write a single column.
@@ -494,12 +374,6 @@ public:
    */
   template <typename TColumn>
   void write(const TColumn& column) const;
-
-  /**
-   * @deprecated Replaced with append_null() and insert_null()
-  */
-  template <typename TInfo>
-  void init(const TInfo& info, long index = -1) const;
 
   /**
    * @brief Append a null-initialized column.
@@ -555,14 +429,6 @@ public:
   template <typename TColumn>
   void write_segment(FileMemSegments rows, const TColumn& column) const;
 
-  /**
-   * @deprecated
-   */
-  template <typename TColumn>
-  void writeSegment(FileMemSegments rows, const TColumn& column) const {
-    return write_segment(rows, column);
-  }
-
   /// @}
   /**
    * @name Write a sequence of columns.
@@ -583,14 +449,6 @@ public:
    */
   template <typename... TColumns>
   void write_seq(const TColumns&... columns) const;
-
-  /**
-   * @deprecated
-   */
-  template <typename... TArgs>
-  void writeSeq(const TArgs&... args) const {
-    return write_seq(std::forward<TArgs>(args)...);
-  }
 
   /**
    * @brief Append a sequence of null-initialized columns.
@@ -616,24 +474,9 @@ public:
   void insert_null_seq(long index, const TInfos&... infos) const;
 
   /**
-   * @deprecated Use insert_null_seq()
-   */
-  template <typename... TArgs>
-  void initSeq(TArgs&&... args) const {
-    return insert_null_seq(std::forward<TArgs>(args)...);
-  }
-
-  /**
    * @brief Remove a sequence of columns specified by their names or indices.
    */
   void remove_seq(std::vector<ColumnKey> keys) const;
-
-  /**
-   * @deprecated
-   */
-  void removeSeq(std::vector<ColumnKey> keys) const {
-    return remove_seq(keys);
-  }
 
   /// @}
   /**
@@ -646,7 +489,7 @@ public:
    * @param rows The mapping between the in-file and in-memory rows
    * @param columns The columns to be written
    * Segments can be written in already initialized columns with `write_segment_seq()`
-   * or in new columns with `appendSegmentSeq()`.
+   * or in new columns with `append_segment_seq()`.
    */
   template <typename TSeq>
   void write_segment_seq(FileMemSegments rows, TSeq&& columns) const;
@@ -657,12 +500,175 @@ public:
   template <typename... TColumns>
   void write_segment_seq(FileMemSegments rows, const TColumns&... columns) const;
 
+  /// @}
+
+  /**
+   * @deprecated
+   */
+  long readColumnCount() const {
+    return read_column_count();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readRowCount() const {
+    return read_row_count();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readBufferRowCount() const {
+    return read_buffer_row_count();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readIndex(const std::string& name) const {
+    return read_index(name);
+  }
+
+  /**
+   * @deprecated
+   */
+  std::vector<long> readIndices(const std::vector<std::string>& names) const {
+    return read_indices(names);
+  }
+
+  /**
+   * @deprecated
+   */
+  std::string readName(long index) const {
+    return read_name(index);
+  }
+
+  /**
+   * @deprecated
+   */
+  std::vector<std::string> readAllNames() const {
+    return read_all_names();
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 1>
+  ColumnInfo<T, N> readInfo(ColumnKey key) const {
+    return read_info<T, N>(key);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  void readTo(TArgs&&... args) {
+    return read_to(std::forward<TArgs>(args)...); // FIXME test
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 1>
+  VecColumn<T, N> readSegment(const Segment& rows, ColumnKey key) const {
+    return read_segment<T, N>(rows, key);
+  }
+
+  template <typename... TArgs>
+  void readSegmentTo(TArgs&&... args) const {
+    return read_segment_to(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename TKey, typename... Ts> // FIXME add long... Ns
+  std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const {
+    return read_seq(keys...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 1>
+  std::vector<VecColumn<T, N>> readSeq(std::vector<ColumnKey> keys) const {
+    return read_seq<T, N>(keys);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  void readSeqTo(TArgs&... args) const {
+    return read_seq_to(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename TKey, typename... Ts>
+  std::tuple<VecColumn<Ts, 1>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const {
+    return read_segment_seq(rows, keys...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 1>
+  std::vector<VecColumn<T, N>> readSegmentSeq(Segment rows, const std::vector<ColumnKey> keys) const {
+    return read_segment_seq<T, N>(rows, keys);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  void readSegmentSeqTo(TArgs&&... args) const {
+    return read_segment_seq_to(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated Replaced with append_null() and insert_null()
+  */
+  template <typename TInfo>
+  void init(const TInfo& info, long index = -1) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename TColumn>
+  void writeSegment(FileMemSegments rows, const TColumn& column) const {
+    return write_segment(rows, column);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  void writeSeq(const TArgs&... args) const {
+    return write_seq(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated Use insert_null_seq()
+   */
+  template <typename... TArgs>
+  void initSeq(TArgs&&... args) const {
+    return insert_null_seq(std::forward<TArgs>(args)...);
+  }
+
+  /**
+   * @deprecated
+   */
+  void removeSeq(std::vector<ColumnKey> keys) const {
+    return remove_seq(keys);
+  }
+
   template <typename... TArgs>
   void writeSegmentSeq(TArgs&&... args) const {
     return write_segment_seq(std::forward<TArgs>(args)...);
   }
-
-  /// @}
 
 private:
   /**

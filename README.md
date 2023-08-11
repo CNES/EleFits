@@ -141,7 +141,7 @@ by mapping -- possibly non-contiguous -- in-file and in-memory regions, e.g.:
 
 Region<2> in_file {{32, 16}, {64, 32}};
 Position<2> in_memory {8, 8};
-raster.readRegionTo({in_file, in_memory}, data);
+raster.read_region_to({in_file, in_memory}, data);
 ```
 
 For binary tables, multiple columns can be read or written at once
@@ -159,7 +159,7 @@ auto [col_a, col_b, col_c] = columns.read_seq(as<char>("A"), as<double>("B"), as
 // - BintableColumns columns: The binary table data unit handler
 // - Column col_a, col_b, col_c: Column containers of various value types
 
-columns.writeSeq(col_a, col_b, col_c);
+columns.write_seq(col_a, col_b, col_c);
 ```
 
 Fields of mutidimensional columns can be accessed as rasters directly:

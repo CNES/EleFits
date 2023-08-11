@@ -158,7 +158,7 @@ The aforementioned strategy can be enabled as follows:
 \code
 MefFile f(filename, FileMode::Create);
 f.strategy(Compress<Plio>(), Compress<Rice>());
-f.appendImage("", {}, raster);
+f.append_image("", {}, raster);
 \endcode
 
 

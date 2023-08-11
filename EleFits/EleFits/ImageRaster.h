@@ -49,13 +49,6 @@ public:
   const std::type_info& read_typeid() const;
 
   /**
-   * @deprecated
-   */
-  const std::type_info& readTypeid() const {
-    return read_typeid();
-  }
-
-  /**
    * @brief Read the `BITPIX` or `ZBITPIX` value.
    */
   long read_bitpix() const;
@@ -66,22 +59,10 @@ public:
   long read_size() const;
 
   /**
-   * @deprecated
-   */
-  long readSize() const {
-    return read_size();
-  }
-
-  /**
    * @brief Read the image shape.
    */
   template <long N = 2>
   Position<N> read_shape() const;
-
-  template <long N = 2>
-  Position<N> readShape() const {
-    return read_shape<2>();
-  }
 
   /**
    * @brief Update the image shape.
@@ -90,26 +71,10 @@ public:
   void update_shape(const Position<N>& shape) const;
 
   /**
-   * @deprecated
-   */
-  template <long N = 2>
-  void updateShape(const Position<N>& shape) const {
-    return update_shape(shape);
-  }
-
-  /**
    * @brief Update the image type and shape.
    */
   template <typename T, long N = 2>
   void update_type_shape(const Position<N>& shape) const;
-
-  /**
-   * @deprecated
-  */
-  template <typename T, long N = 2>
-  [[deprecated("Use update_type_shape()")]] void reinit(const Position<N>& shape) const {
-    return update_type_shape<T>(shape);
-  }
 
   /// @}
   /**
@@ -179,27 +144,11 @@ public:
   VecRaster<T, M> read_region(const Region<N>& region) const;
 
   /**
-   * @deprecated
-   */
-  template <typename T, long M, long N>
-  VecRaster<T, M> readRegion(const Region<N>& region) const {
-    read_region<T, M>(region);
-  }
-
-  /**
    * @brief Read a region of the data unit into a region of an existing `Raster`.
    * @copydetails read_region()
    */
   template <typename TRaster>
   void read_region_to(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const;
-
-  /**
-   * @deprecated
-   */
-  template <typename TRaster>
-  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const {
-    return read_region_to(regions, raster);
-  }
 
   /// @}
   /**
@@ -245,6 +194,59 @@ public:
   template <typename TRaster, long N>
   void write_region(FileMemRegions<N> regions, const TRaster& raster) const; // TODO return bool = is_contiguous()?
 
+  /// @}
+
+  /**
+   * @deprecated
+   */
+  const std::type_info& readTypeid() const {
+    return read_typeid();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readSize() const {
+    return read_size();
+  }
+
+  template <long N = 2>
+  Position<N> readShape() const {
+    return read_shape<2>();
+  }
+
+  /**
+   * @deprecated
+   */
+  template <long N = 2>
+  void updateShape(const Position<N>& shape) const {
+    return update_shape(shape);
+  }
+
+  /**
+   * @deprecated
+  */
+  template <typename T, long N = 2>
+  [[deprecated("Use update_type_shape()")]] void reinit(const Position<N>& shape) const {
+    return update_type_shape<T>(shape);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long M, long N>
+  VecRaster<T, M> readRegion(const Region<N>& region) const {
+    read_region<T, M>(region);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename TRaster>
+  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const {
+    return read_region_to(regions, raster);
+  }
+
   /**
    * @deprecated
    */
@@ -252,8 +254,6 @@ public:
   void writeRegion(FileMemRegions<N> regions, const TRaster& raster) const {
     return write_region(regions, raster);
   }
-
-  /// @}
 
 private:
   /**

@@ -15,7 +15,7 @@ BOOST_FIXTURE_TEST_SUITE(TestColumn_test, Test::RandomTable)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void checkRandomVectorColumnSize(long repeat_count, long row_count) {
+void check_random_vector_column_size(long repeat_count, long row_count) {
   Test::RandomVectorColumn<T> column(repeat_count, row_count);
   BOOST_TEST(column.info().repeat_count() == repeat_count);
   BOOST_TEST(column.row_count() == row_count);
@@ -28,7 +28,7 @@ void checkRandomVectorColumnSize(long repeat_count, long row_count) {
 
 #define RANDOM_VECTOR_COLUMN_SIZE_TEST(T, name) \
   BOOST_AUTO_TEST_CASE(name##_random_vector_column_size_test) { \
-    checkRandomVectorColumnSize<T>(4, 5); \
+    check_random_vector_column_size<T>(4, 5); \
   }
 
 #define COLUMN_HAS_MORE_THAN_2_ROWS_TEST(T, name) \

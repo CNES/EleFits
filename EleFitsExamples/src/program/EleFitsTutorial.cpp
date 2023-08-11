@@ -335,7 +335,7 @@ void read_records(const Fits::Header& h) {
   const auto int_record = h.parse<int>("INT");
 
   // Records can be sliced as their value for immediate use:
-  const int intValue = h.parse<int>("INT");
+  const int int_value = h.parse<int>("INT");
 
   /* Read several records */
 
@@ -353,17 +353,17 @@ void read_records(const Fits::Header& h) {
 
   /* Read as a user-defined structure */
 
-  const auto tutoRecords = h.parse_struct<TutoRecords>(
+  const auto tuto_records = h.parse_struct<TutoRecords>(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
       Fits::as<std::complex<double>>("COMPLEX"));
-  const auto& string_record = tutoRecords.string_record;
+  const auto& string_record = tuto_records.string_record;
 
   //! [Read records]
 
   logger.info() << "    " << int_record.keyword << " = " << int_record.value << " " << int_record.unit;
-  logger.info() << "    INT value: " << intValue;
+  logger.info() << "    INT value: " << int_value;
   logger.info() << "    " << third_record.keyword << " = " << third_record.value << " " << third_record.unit;
   logger.info() << "    " << complex_record.keyword << " = " << complex_record.value.real() << " + "
                 << complex_record.value.imag() << "j " << complex_record.unit;
@@ -431,9 +431,9 @@ class EleFitsTutorial : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = Fits::ProgramOptions::fromAuxFile("Tutorial.txt");
+    auto options = Fits::ProgramOptions::from_aux_file("Tutorial.txt");
     options.positional("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {

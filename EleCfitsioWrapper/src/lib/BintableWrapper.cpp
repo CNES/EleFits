@@ -33,7 +33,7 @@ long row_count(fitsfile* fptr) {
 bool has_column(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
-  fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
+  fits_get_colnum(fptr, CASESEN, Fits::String::to_char_ptr(name).get(), &index, &status);
   return (status == 0) || (status == COL_NOT_UNIQUE);
 }
 
@@ -69,7 +69,7 @@ void update_column_name(fitsfile* fptr, long index, const std::string& new_name)
 long column_index(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
-  fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
+  fits_get_colnum(fptr, CASESEN, Fits::String::to_char_ptr(name).get(), &index, &status);
   CfitsioError::may_throw(status, fptr, "Cannot find index of column: " + name);
   return index;
 }
