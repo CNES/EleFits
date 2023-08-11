@@ -166,12 +166,12 @@ void Header::write<RecordMode::UpdateExisting, const char*>(
     const std::string& comment) const; // TODO dispatch Mode
 
 template <RecordMode Mode, typename... Ts>
-void Header::writeSeq(const Record<Ts>&... records) const {
-  writeSeq<Mode>(std::forward_as_tuple(records...));
+void Header::write_seq(const Record<Ts>&... records) const {
+  write_seq<Mode>(std::forward_as_tuple(records...));
 }
 
 template <RecordMode Mode, typename TSeq>
-void Header::writeSeq(TSeq&& records) const {
+void Header::write_seq(TSeq&& records) const {
   m_edit();
   auto func = [&](const auto& r) {
     Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);

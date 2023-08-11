@@ -54,7 +54,7 @@ const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext
  */
 template <typename TInfo, typename T>
 void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* data) {
-  const auto rows = du.readRowCount();
+  const auto rows = du.read_row_count();
   du.init(info);
   du.write(make_column(info, rows, data));
 }
@@ -68,7 +68,7 @@ void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* 
 double readColumns(const Fits::BintableColumns& du) {
 
   /* Read with different types (implicit conversion) */
-  const auto cols = du.readSeq(Fits::as<double>("VECTOR"), Fits::as<float>("MULTIDIM"));
+  const auto cols = du.read_seq(Fits::as<double>("VECTOR"), Fits::as<float>("MULTIDIM"));
 
   /* Compute something */
   double result = 0;

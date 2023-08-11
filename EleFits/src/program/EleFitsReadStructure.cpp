@@ -122,12 +122,12 @@ public:
           logger.info() << "  Metadata HDU";
         }
       } else {
-        const auto column_count = hdu.as<BintableHdu>().readColumnCount();
-        const auto row_count = hdu.as<BintableHdu>().readRowCount();
+        const auto column_count = hdu.as<BintableHdu>().read_column_count();
+        const auto row_count = hdu.as<BintableHdu>().read_row_count();
         logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << column_count << " columns x " << row_count << " rows";
         if (max_column_count != 0) {
-          auto column_names = hdu.as<BintableHdu>().columns().readAllNames();
+          auto column_names = hdu.as<BintableHdu>().columns().read_all_names();
           if (max_column_count > 0 && max_column_count < column_count) {
             column_names.resize(max_column_count);
             column_names.push_back("...");

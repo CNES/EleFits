@@ -163,7 +163,7 @@ struct TypedKey {
  * @details
  * \par Example
  * \code
- * columns.readSeq(as<float>(1), as<std::string>(4));
+ * columns.read_seq(as<float>(1), as<std::string>(4));
  * \endcode
  */
 template <typename TReturn>

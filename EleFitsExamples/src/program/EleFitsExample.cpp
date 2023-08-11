@@ -68,7 +68,7 @@ public:
       Record<std::string> string_record("STRING", "string");
       logger.info() << "Writing record: INTEGER = 8";
       Record<int> integer_record("INTEGER", 8);
-      ext.header().writeSeq(string_record, integer_record);
+      ext.header().write_seq(string_record, integer_record);
 
       logger.info();
 

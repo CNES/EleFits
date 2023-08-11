@@ -44,7 +44,7 @@ enum class RecordMode
  * - `write`-prefixed methods write provided values following a strategy defined as a `RecordMode` enumerator.
  * 
  * When reading or writing several records, it is recommended to use the `Seq`-suffixed methods
- * (e.g. one call to `writeSeq()` instead of several calls to `write()`), which are optimized.
+ * (e.g. one call to `write_seq()` instead of several calls to `write()`), which are optimized.
  * 
  * To write sequences of records, the following types are accepted,
  * as well as their constant and reference counterparts:
@@ -436,7 +436,7 @@ public:
    * 
    * Example usage:
    * \code
-   * h0.writeSeq(records);
+   * h0.write_seq(records);
    * h1.writeSeqIn<RecordMode::CreateNew>({"A", "B"}, records);
    * h2.writeSeqIn<RecordMode::CreateNew>({"B", "C"}, records);
    * \endcode
@@ -446,25 +446,25 @@ public:
    * @see RecordMode
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void writeSeq(const Record<Ts>&... records) const;
+  void write_seq(const Record<Ts>&... records) const;
 
   /**
    * @brief Write a homogeneous or heterogeneous sequence of records.
-   * @copydetails writeSeq()
+   * @copydetails write_seq()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
-  void writeSeq(TSeq&& records) const;
+  void write_seq(TSeq&& records) const;
 
   /**
    * @brief Write a subset of a heterogeneous sequence of records.
-   * @copydetails writeSeq()
+   * @copydetails write_seq()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
   void writeSeqIn(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
 
   /**
    * @brief Write a subset of a homogeneous or heterogeneous sequence of records.
-   * @copydetails writeSeq()
+   * @copydetails write_seq()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
   void writeSeqIn(const std::vector<std::string>& keywords, TSeq&& records) const;

@@ -23,7 +23,7 @@ void checkScalar() {
   Test::RandomScalarColumn<T> input;
   Test::TemporaryMefFile file;
   file.append_bintable("BINEXT", {}, input);
-  const auto output = file.find<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
+  const auto output = file.find<BintableHdu>("BINEXT").read_column<T>(input.info().name);
   BOOST_TEST(output.container() == input.container());
 }
 
@@ -35,8 +35,8 @@ void checkVector() {
   input.reshape(repeat_count);
   Test::TemporaryMefFile file;
   file.append_bintable_header("BINEXT", {}, input.info());
-  file.find<BintableHdu>("BINEXT").writeColumn(input);
-  const auto output = file.find<BintableHdu>("BINEXT").readColumn<T>(input.info().name);
+  file.find<BintableHdu>("BINEXT").write_column(input);
+  const auto output = file.find<BintableHdu>("BINEXT").read_column<T>(input.info().name);
 }
 
 /**
@@ -74,8 +74,8 @@ BOOST_FIXTURE_TEST_CASE(counting_test, Test::TemporaryMefFile) {
   column2.rename(name2);
   const auto& ext = append_bintable("", {}, column1, column2);
   const auto& du = ext.columns();
-  BOOST_TEST(du.readColumnCount() == 2);
-  BOOST_TEST(du.readRowCount() == column1.row_count());
+  BOOST_TEST(du.read_column_count() == 2);
+  BOOST_TEST(du.read_row_count() == column1.row_count());
   BOOST_TEST(du.has(name1));
   BOOST_TEST(du.has(name2));
   BOOST_TEST(not du.has("NOTHERE"));
@@ -86,10 +86,10 @@ BOOST_FIXTURE_TEST_CASE(multi_column_test, Test::TemporaryMefFile) {
   const auto floatColumn = Test::RandomTable::generate_column<float>("FLOAT");
   const auto& ext = append_bintable("", {}, intColumn, floatColumn);
   const auto& du = ext.columns();
-  const auto byName = du.readSeq(as<int>(intColumn.info().name), as<float>(floatColumn.info().name));
+  const auto byName = du.read_seq(as<int>(intColumn.info().name), as<float>(floatColumn.info().name));
   BOOST_TEST(std::get<0>(byName).container() == intColumn.container());
   BOOST_TEST(std::get<1>(byName).container() == floatColumn.container());
-  const auto byIndex = du.readSeq(as<int>(0), as<float>(1));
+  const auto byIndex = du.read_seq(as<int>(0), as<float>(1));
   BOOST_TEST(std::get<0>(byIndex).container() == intColumn.container());
   BOOST_TEST(std::get<1>(byIndex).container() == floatColumn.container());
 }
@@ -98,7 +98,7 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   std::vector<ColumnInfo<int>> header {{"A"}, {"B"}, {"C"}};
   const auto& ext = append_bintable_header("TABLE", {}, header[0], header[1], header[2]);
   const auto& du = ext.columns();
-  auto names = du.readAllNames();
+  auto names = du.read_all_names();
   for (std::size_t i = 0; i < header.size(); ++i) {
     BOOST_TEST(du.read_name(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE(column_renaming_test, Test::TemporaryMefFile) {
   header[2].name = "C2";
   du.rename(0, header[0].name);
   du.rename("C", header[2].name);
-  names = du.readAllNames();
+  names = du.read_all_names();
   for (std::size_t i = 0; i < header.size(); ++i) {
     BOOST_TEST(du.read_name(i) == header[i].name);
     BOOST_TEST(names[i] == header[i].name);

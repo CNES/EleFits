@@ -121,8 +121,8 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   /* No-column bintable */
   const auto& bintable0 = this->append_bintable_header("BINTABLE0", records);
   BOOST_TEST(bintable0.read_name() == "BINTABLE0");
-  BOOST_TEST(bintable0.readRowCount() == 0);
-  BOOST_TEST(bintable0.readColumnCount() == 0);
+  BOOST_TEST(bintable0.read_row_count() == 0);
+  BOOST_TEST(bintable0.read_column_count() == 0);
   BOOST_TEST(bintable0.header().parse<int>("FOO").value == 3);
   BOOST_TEST(bintable0.header().parse<int>("BAR").value == 41);
 
@@ -130,8 +130,8 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   const ColumnInfo<char> charInfo("CHAR");
   const auto& bintable1 = this->append_bintable_header("BINTABLE1", records, charInfo);
   BOOST_TEST(bintable1.read_name() == "BINTABLE1");
-  BOOST_TEST(bintable1.readRowCount() == 0);
-  BOOST_TEST(bintable1.readColumnCount() == 1);
+  BOOST_TEST(bintable1.read_row_count() == 0);
+  BOOST_TEST(bintable1.read_column_count() == 1);
   BOOST_TEST(bintable1.columns().readName(0) == "CHAR");
   BOOST_TEST(bintable1.header().parse<int>("FOO").value == 3);
   BOOST_TEST(bintable1.header().parse<int>("BAR").value == 41);
@@ -141,8 +141,8 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
   const ColumnInfo<float> floatInfo("FLOAT");
   const auto& bintable2 = this->append_bintable_header("BINTABLE2", records, charInfo, floatInfo);
   BOOST_TEST(bintable2.read_name() == "BINTABLE2");
-  BOOST_TEST(bintable2.readRowCount() == 0);
-  BOOST_TEST(bintable2.readColumnCount() == 2);
+  BOOST_TEST(bintable2.read_row_count() == 0);
+  BOOST_TEST(bintable2.read_column_count() == 2);
   BOOST_TEST(bintable2.columns().readName(0) == "CHAR");
   BOOST_TEST(bintable2.columns().readName(1) == "FLOAT");
   BOOST_TEST(bintable2.header().parse<int>("FOO").value == 3);
@@ -258,9 +258,9 @@ void checkAppendNullBintable(MefFile& f) {
   RecordSeq records {{"TNULL2", T(1)}, {"FOO", "BAR"}};
   const auto& ext = f.append_null_bintable("BINTABLE", records, 10, zero, blank);
   const auto offset = ext.header().template parseOr<T>("TZERO2", T());
-  const auto row_count = ext.readRowCount();
+  const auto row_count = ext.read_row_count();
   BOOST_TEST(row_count == 10);
-  const auto output = ext.columns().readSeq(as<T>("ZERO"), as<T>("BLANK"));
+  const auto output = ext.columns().read_seq(as<T>("ZERO"), as<T>("BLANK"));
   for (long i = 0; i < row_count; ++i) {
     BOOST_TEST(isNull(std::get<0>(output)[i] - offset));
     const auto value1 = std::get<1>(output)[1];
@@ -308,8 +308,8 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   /* Copy bintable */
   const auto& bintableCopy = fileCopy.append(bintable);
   BOOST_TEST(bintableCopy.read_name() == bintable.read_name());
-  BOOST_TEST(bintableCopy.readRowCount() == bintable.readRowCount());
-  BOOST_TEST(bintableCopy.readColumnCount() == bintable.readColumnCount());
+  BOOST_TEST(bintableCopy.read_row_count() == bintable.read_row_count());
+  BOOST_TEST(bintableCopy.read_column_count() == bintable.read_column_count());
   BOOST_TEST(bintableCopy.columns().readName(0) == bintable.columns().readName(0));
   BOOST_TEST(bintableCopy.columns().readName(1) == bintable.columns().readName(1));
   BOOST_TEST(bintableCopy.header().parse<int>("FOO").value == bintable.header().parse<int>("FOO").value);

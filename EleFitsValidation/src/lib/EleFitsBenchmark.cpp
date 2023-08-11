@@ -36,16 +36,16 @@ BChronometer::Unit EleFitsColwiseBenchmark::write_bintable(const BColumns& colum
       std::get<7>(columns).info(),
       std::get<8>(columns).info(),
       std::get<9>(columns).info());
-  ext.writeColumn(std::get<0>(columns));
-  ext.writeColumn(std::get<1>(columns));
-  ext.writeColumn(std::get<2>(columns));
-  ext.writeColumn(std::get<3>(columns));
-  ext.writeColumn(std::get<4>(columns));
-  ext.writeColumn(std::get<5>(columns));
-  ext.writeColumn(std::get<6>(columns));
-  ext.writeColumn(std::get<7>(columns));
-  ext.writeColumn(std::get<8>(columns));
-  ext.writeColumn(std::get<9>(columns));
+  ext.write_column(std::get<0>(columns));
+  ext.write_column(std::get<1>(columns));
+  ext.write_column(std::get<2>(columns));
+  ext.write_column(std::get<3>(columns));
+  ext.write_column(std::get<4>(columns));
+  ext.write_column(std::get<5>(columns));
+  ext.write_column(std::get<6>(columns));
+  ext.write_column(std::get<7>(columns));
+  ext.write_column(std::get<8>(columns));
+  ext.write_column(std::get<9>(columns));
   return m_chrono.stop();
 }
 
@@ -53,16 +53,16 @@ BColumns EleFitsColwiseBenchmark::read_bintable(long index) {
   m_chrono.start();
   const auto& ext = m_f.access<BintableHdu>(index);
   const auto columns = std::make_tuple(
-      ext.readColumn<std::tuple_element<0, BColumns>::type::Value>(0),
-      ext.readColumn<std::tuple_element<1, BColumns>::type::Value>(1),
-      ext.readColumn<std::tuple_element<2, BColumns>::type::Value>(2),
-      ext.readColumn<std::tuple_element<3, BColumns>::type::Value>(3),
-      ext.readColumn<std::tuple_element<4, BColumns>::type::Value>(4),
-      ext.readColumn<std::tuple_element<5, BColumns>::type::Value>(5),
-      ext.readColumn<std::tuple_element<6, BColumns>::type::Value>(6),
-      ext.readColumn<std::tuple_element<7, BColumns>::type::Value>(7),
-      ext.readColumn<std::tuple_element<8, BColumns>::type::Value>(8),
-      ext.readColumn<std::tuple_element<9, BColumns>::type::Value>(9));
+      ext.read_column<std::tuple_element<0, BColumns>::type::Value>(0),
+      ext.read_column<std::tuple_element<1, BColumns>::type::Value>(1),
+      ext.read_column<std::tuple_element<2, BColumns>::type::Value>(2),
+      ext.read_column<std::tuple_element<3, BColumns>::type::Value>(3),
+      ext.read_column<std::tuple_element<4, BColumns>::type::Value>(4),
+      ext.read_column<std::tuple_element<5, BColumns>::type::Value>(5),
+      ext.read_column<std::tuple_element<6, BColumns>::type::Value>(6),
+      ext.read_column<std::tuple_element<7, BColumns>::type::Value>(7),
+      ext.read_column<std::tuple_element<8, BColumns>::type::Value>(8),
+      ext.read_column<std::tuple_element<9, BColumns>::type::Value>(9));
   m_chrono.stop();
   return columns;
 }
@@ -92,7 +92,7 @@ BRaster EleFitsBenchmark::read_image(long index) {
 
 BColumns EleFitsBenchmark::read_bintable(long index) {
   m_chrono.start();
-  const auto columns = m_f.access<BintableColumns>(index).readSeq(
+  const auto columns = m_f.access<BintableColumns>(index).read_seq(
       col_indexed<0>(),
       col_indexed<1>(),
       col_indexed<2>(),

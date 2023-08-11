@@ -36,7 +36,7 @@ ImageHdu::ImageHdu() :
 
 const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const {
   update_name(rhs.read_name());
-  header().writeSeq(rhs.header().parseAll(KeywordCategory::User)); // FIXME others?
+  header().write_seq(rhs.header().parseAll(KeywordCategory::User)); // FIXME others?
 #define ELEFITS_COPY_HDU(T, _) \
   if (rhs.read_typeid() == typeid(T)) { \
     const auto r = rhs.raster().template read<T, -1>(); \

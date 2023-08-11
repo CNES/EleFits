@@ -50,7 +50,7 @@ namespace Fits {
  * - Contain `Seq` for reading or writing several columns;
  * - Contain `To` for filling an existing column.
  * 
- * For example, `readSegmentSeqTo()` is a method to read a sequence of segments into existing `Column` objects.
+ * For example, `read_segment_seq_to()` is a method to read a sequence of segments into existing `Column` objects.
  * 
  * For working with segments, row indices are specified as `Segment`s or `FileMemSegments`.
  * 
@@ -71,7 +71,7 @@ namespace Fits {
  * PtrColumn<float> three({"THREE", "", 1}, row_count, &data[row_count * 2]);
  * 
  * // In-place reading
- * columns.readSegmentSeqTo(rows, one, two, three);
+ * columns.read_segment_seq_to(rows, one, two, three);
  * \endcode
  */
 class BintableColumns {
@@ -93,12 +93,26 @@ public:
   /**
    * @brief Get the current number of columns.
    */
-  long readColumnCount() const;
+  long read_column_count() const;
+
+  /**
+   * @deprecated
+   */
+  long readColumnCount() const {
+    return read_column_count();
+  }
 
   /**
    * @brief Get the current number of rows.
    */
-  long readRowCount() const;
+  long read_row_count() const;
+
+  /**
+   * @deprecated
+   */
+  long readRowCount() const {
+    return read_row_count();
+  }
 
   /**
    * @brief Get the number of rows in the internal buffer.
@@ -106,7 +120,14 @@ public:
    * CFITSIO internally implements a buffer to read and write data units efficiently.
    * To optimize its usage, columns should be read and written by chunks of the buffer size at most.
    */
-  long readBufferRowCount() const;
+  long read_buffer_row_count() const;
+
+  /**
+   * @deprecated
+   */
+  long readBufferRowCount() const {
+    return read_buffer_row_count();
+  }
 
   /**
    * @brief Check whether the HDU contains a given column.
@@ -117,12 +138,26 @@ public:
   /**
    * @brief Get the index of the column with given name.
    */
-  long readIndex(const std::string& name) const;
+  long read_index(const std::string& name) const;
+
+  /**
+   * @deprecated
+   */
+  long readIndex(const std::string& name) const {
+    return read_index(name);
+  }
 
   /**
    * @brief Get the indices of the columns with given names.
    */
-  std::vector<long> readIndices(const std::vector<std::string>& names) const;
+  std::vector<long> read_indices(const std::vector<std::string>& names) const;
+
+  /**
+   * @deprecated
+   */
+  std::vector<long> readIndices(const std::vector<std::string>& names) const {
+    return read_indices(names);
+  }
 
   /**
    * @brief Get the name of the column with given index.
@@ -139,15 +174,22 @@ public:
   /**
    * @brief Get the names of all the columns.
    */
-  std::vector<std::string> readAllNames() const;
+  std::vector<std::string> read_all_names() const;
+
+  /**
+   * @deprecated
+   */
+  std::vector<std::string> readAllNames() const {
+    return read_all_names();
+  }
 
   /**
    * @brief Rename the column with given name or index.
    * @param key The name or 0-based index of the column to be read
-   * @param newName The name to be given
+   * @param name The name to be given
    * @warning This is a write operation.
    */
-  void rename(ColumnKey key, const std::string& newName) const;
+  void rename(ColumnKey key, const std::string& name) const; // FIXME update name?
 
   /// @}
   /**
@@ -160,7 +202,15 @@ public:
    * @param key The name or 0-based index of the column to be read
    */
   template <typename T, long N = 1>
-  ColumnInfo<T, N> readInfo(ColumnKey key) const;
+  ColumnInfo<T, N> read_info(ColumnKey key) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 1>
+  ColumnInfo<T, N> readInfo(ColumnKey key) const {
+    return read_info<T, N>(key);
+  }
 
   /**
    * @brief Read the column with given name or index.
@@ -175,11 +225,11 @@ public:
    * Example usages:
    * \code
    * // Create a new Column
-   * auto fromName = columns.read<float>("RA");
-   * auto fromIndex = columns.read<float>(1);
+   * auto from_name = columns.read<float>("RA");
+   * auto from_index = columns.read<float>(1);
    * 
    * // Concatenate two columns into an existing Column
-   * long row_count = readRowCount();
+   * long row_count = read_row_count();
    * std::vector<float> values(row_count * 2);
    * PtrColumn<float> ra({"RA", "deg", 1}, row_count, &values[0]);
    * PtrColumn<float> dec({"DEC", "deg", 1}, row_count, &values[row_count]);
@@ -212,6 +262,11 @@ public:
   template <typename TColumn>
   void read_to(ColumnKey key, TColumn& column) const;
 
+  template <typename... TArgs>
+  void readTo(TArgs&&... args) {
+    return read_to(std::forward<TArgs>(args)...); // FIXME test
+  }
+
   /// @}
   /**
    * @name Read a single column segment.
@@ -230,34 +285,47 @@ public:
    * Example usages:
    * \code
    * // Create a new Column
-   * auto segment = columns.readSegment<float>({10, 50}, "NAME");
+   * auto segment = columns.read_segment<float>({10, 50}, "NAME");
    * 
    * // Read into an existing Column
    * // This is a more complex example which demonstrates the use of offsets
-   * Segment sourceBounds = {10, 50};
-   * long destinationRow = 20;
+   * Segment source_bounds = {10, 50};
+   * long destination_row = 20;
    * std::vector<float> values(100);
-   * PtrColumn<float> segment({"NAME", "m/s", 1}, 20, &values[destinationRow]);
-   * columns.readSegmentTo(sourceBounds, "NAME", segment);
+   * PtrColumn<float> segment({"NAME", "m/s", 1}, 20, &values[destination_row]);
+   * columns.read_segment_to(source_bounds, "NAME", segment);
    * \endcode
    * @see read()
    */
   template <typename T, long N = 1>
-  VecColumn<T, N> readSegment(const Segment& rows, ColumnKey key) const;
+  VecColumn<T, N> read_segment(const Segment& rows, ColumnKey key) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 1>
+  VecColumn<T, N> readSegment(const Segment& rows, ColumnKey key) const {
+    return read_segment<T, N>(rows, key);
+  }
 
   /**
    * @brief Read the segment of a column into an existing `Column`.
-   * @copydetails readSegment()
+   * @copydetails read_segment()
    */
   template <typename TColumn>
-  void readSegmentTo(FileMemSegments rows, TColumn& column) const;
+  void read_segment_to(FileMemSegments rows, TColumn& column) const;
 
   /**
    * @brief Read the segment of a column specified by its name or index into an existing `Column`.
-   * @copydetails readSegment()
+   * @copydetails read_segment()
    */
   template <typename TColumn>
-  void readSegmentTo(FileMemSegments rows, ColumnKey key, TColumn& column) const;
+  void read_segment_to(FileMemSegments rows, ColumnKey key, TColumn& column) const;
+
+  template <typename... TArgs>
+  void readSegmentTo(TArgs&&... args) const {
+    return read_segment_to(std::forward<TArgs>(args)...);
+  }
 
   /// @}
   /**
@@ -271,53 +339,77 @@ public:
    * Example usages:
    * \code
    * // Heterogeneous sequence (returns a tuple)
-   * auto columns = ext.readSeq(as<int>("A"), as<float, 2>("B"), as<std::string>("C"));
-   * auto columns = ext.readSeq(as<int>(0), as<float, 2>(3), as<std::string>(4));
+   * auto columns = ext.read_seq(as<int>("A"), as<float, 2>("B"), as<std::string>("C"));
+   * auto columns = ext.read_seq(as<int>(0), as<float, 2>(3), as<std::string>(4));
    * 
    * // Homogeneous sequence (returns a vector)
-   * auto columns = ext.readSeq<int, 2>({"A", "B", "C"});
-   * auto columns = ext.readSeq<int, 2>({0, 3, 4});
+   * auto columns = ext.read_seq<int, 2>({"A", "B", "C"});
+   * auto columns = ext.read_seq<int, 2>({0, 3, 4});
    * \endcode
    * @warning
    * Multidimensional columns are read as vector columns as of today.
    */
   template <typename TKey, typename... Ts> // FIXME add long... Ns
-  std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const; // FIXME Ns in TypedKey and as()
+  std::tuple<VecColumn<Ts, 1>...> read_seq(const TypedKey<Ts, TKey>&... keys) const; // FIXME Ns in TypedKey and as()
 
   /**
    * @brief Read a vector of columns with given names or indices.
-   * @copydetails readSeq()
+   * @copydetails read_seq()
    */
   template <typename T, long N = 1>
-  std::vector<VecColumn<T, N>> readSeq(std::vector<ColumnKey> keys) const; // TODO return a ColumnVec?
+  std::vector<VecColumn<T, N>> read_seq(std::vector<ColumnKey> keys) const; // TODO return a ColumnVec?
+
+  /**
+   * @deprecated
+   */
+  template <typename TKey, typename... Ts> // FIXME add long... Ns
+  std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const {
+    return read_seq(keys...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 1>
+  std::vector<VecColumn<T, N>> readSeq(std::vector<ColumnKey> keys) const {
+    return read_seq<T, N>(keys);
+  }
 
   /**
    * @brief Read a sequence of columns into existing `Column`s.
-   * @copydetails readSeq()
+   * @copydetails read_seq()
    */
   template <typename TSeq>
-  void readSeqTo(TSeq&& columns) const;
+  void read_seq_to(TSeq&& columns) const;
 
   /**
    * @brief Read a sequence of columns into existing `Column`s.
-   * @copydetails readSeq()
+   * @copydetails read_seq()
    */
   template <typename... TColumns>
-  void readSeqTo(TColumns&... columns) const;
+  void read_seq_to(TColumns&... columns) const;
 
   /**
    * @brief Read a sequence of columns with given names or indices into existing `Column`s.
-   * @copydetails readSeq()
+   * @copydetails read_seq()
    */
   template <typename TSeq>
-  void readSeqTo(std::vector<ColumnKey> keys, TSeq&& columns) const;
+  void read_seq_to(std::vector<ColumnKey> keys, TSeq&& columns) const;
 
   /**
    * @brief Read a sequence of columns with given names or indices into existing `Column`s.
-   * @copydetails readSeq()
+   * @copydetails read_seq()
    */
   template <typename... TColumns>
-  void readSeqTo(std::vector<ColumnKey> keys, TColumns&... columns) const;
+  void read_seq_to(std::vector<ColumnKey> keys, TColumns&... columns) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  void readSeqTo(TArgs&... args) const {
+    return read_seq_to(std::forward<TArgs>(args)...);
+  }
 
   /// @}
   /**
@@ -334,41 +426,62 @@ public:
    * Multidimensional columns are read as vector columns as of today.
    */
   template <typename TKey, typename... Ts> // FIXME Ns
-  std::tuple<VecColumn<Ts, 1>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const;
+  std::tuple<VecColumn<Ts, 1>...> read_segment_seq(Segment rows, const TypedKey<Ts, TKey>&... keys) const;
 
   /**
-   * @copydoc readSegmentSeq
+   * @copydoc read_segment_seq
    */
   template <typename T, long N = 1>
-  std::vector<VecColumn<T, N>> readSegmentSeq(Segment rows, std::vector<ColumnKey> keys) const;
+  std::vector<VecColumn<T, N>> read_segment_seq(Segment rows, std::vector<ColumnKey> keys) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename TKey, typename... Ts>
+  std::tuple<VecColumn<Ts, 1>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const {
+    return read_segment_seq(rows, keys...);
+  }
+
+  template <typename T, long N = 1>
+  std::vector<VecColumn<T, N>> readSegmentSeq(Segment rows, const std::vector<ColumnKey> keys) const {
+    return read_segment_seq<T, N>(rows, keys);
+  }
 
   /**
    * @brief Read segments of columns into existing `Column`s.
-   * @copydetails readSegmentSeq()
+   * @copydetails read_segment_seq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(FileMemSegments rows, TSeq&& columns) const;
+  void read_segment_seq_to(FileMemSegments rows, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns into existing `Column`s.
-   * @copydetails readSegmentSeq()
+   * @copydetails read_segment_seq()
    */
   template <typename... TColumns>
-  void readSegmentSeqTo(FileMemSegments rows, TColumns&... columns) const;
+  void read_segment_seq_to(FileMemSegments rows, TColumns&... columns) const;
 
   /**
    * @brief Read segments of columns specified by their names or indices into existing `Column`s.
-   * @copydetails readSegmentSeq()
+   * @copydetails read_segment_seq()
    */
   template <typename TSeq>
-  void readSegmentSeqTo(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const;
+  void read_segment_seq_to(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const;
 
   /**
    * @brief Read segments of columns specified by their names or indices into existing `Column`s.
-   * @copydetails readSegmentSeq()
+   * @copydetails read_segment_seq()
    */
   template <typename... TColumns>
-  void readSegmentSeqTo(FileMemSegments rows, std::vector<ColumnKey> keys, TColumns&... columns) const;
+  void read_segment_seq_to(FileMemSegments rows, std::vector<ColumnKey> keys, TColumns&... columns) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename... TArgs>
+  void readSegmentSeqTo(TArgs&&... args) const {
+    return read_segment_seq_to(std::forward<TArgs>(args)...);
+  }
 
   /// @}
   /**
@@ -383,12 +496,45 @@ public:
   void write(const TColumn& column) const;
 
   /**
-   * @brief Append or insert a column, which was not previously initialized.
-   * @param info The column info
-   * @param index The 0-based column index, which may be &ge; 0 or -1 to append the column at the end
-   */
+   * @deprecated Replaced with append_null() and insert_null()
+  */
   template <typename TInfo>
   void init(const TInfo& info, long index = -1) const;
+
+  /**
+   * @brief Append a null-initialized column.
+  */
+  template <typename TInfo>
+  void append_null(const TInfo& info) const {
+    return insert_null(-1, info);
+  }
+
+  /**
+   * @brief Append and fill a column.
+   */
+  template <typename TColumn>
+  void append(const TColumn& column) const {
+    return insert(-1, column);
+  }
+
+  /**
+   * @brief Insert a null-initialized column.
+   * @param index The 0-based column index, which may be &ge; 0 or -1 to append the column at the end
+   * @param info The column info
+   */
+  template <typename TInfo>
+  void insert_null(long index, const TInfo& info) const {
+    return init(index, info);
+  }
+
+  /**
+   * @brief Insert and fill a column.
+   */
+  template <typename TColumn>
+  void insert(long index, const TColumn& column) const {
+    insert_null(index, column.info());
+    write(column);
+  }
 
   /**
    * @brief Remove a column specified by its name or index.
@@ -403,14 +549,19 @@ public:
 
   /**
    * @brief Write a column segment.
-   * @param firstRow The 0-based index in the binary table of the first row to be written
-   * @param column The segment to be written
-   * @details
-   * Analogously to `write()` and `insert()`, use `writeSegment()` if the column has been initialized already,
-   * and `insertSegment()` otherwise.
+   * @param rows The row index range to be written
+   * @param column The column to be written
    */
   template <typename TColumn>
-  void writeSegment(FileMemSegments rows, const TColumn& column) const;
+  void write_segment(FileMemSegments rows, const TColumn& column) const;
+
+  /**
+   * @deprecated
+   */
+  template <typename TColumn>
+  void writeSegment(FileMemSegments rows, const TColumn& column) const {
+    return write_segment(rows, column);
+  }
 
   /// @}
   /**
@@ -420,35 +571,69 @@ public:
 
   /**
    * @brief Write several columns.
+   * 
+   * The column names are used to deduce their indices.
+   * If the name is not found, an error is thrown.
    */
   template <typename TSeq>
-  void writeSeq(TSeq&& columns) const;
+  void write_seq(TSeq&& columns) const;
 
   /**
-   * @brief Write several columns.
-   * @copydetails writeSeq()
+   * @copydoc write_seq()
    */
   template <typename... TColumns>
-  void writeSeq(const TColumns&... columns) const;
+  void write_seq(const TColumns&... columns) const;
 
   /**
-   * @brief Append or insert a sequence of columns, which were not previously initialized.
-   * @param index The 0-based index of the first column to be added, which may be &ge; 0 or -1 to append the columns at the end
-   * @param info The column infos
+   * @deprecated
    */
-  template <typename TSeq>
-  void initSeq(long index, TSeq&& infos) const;
+  template <typename... TArgs>
+  void writeSeq(const TArgs&... args) const {
+    return write_seq(std::forward<TArgs>(args)...);
+  }
 
   /**
-   * @copydoc initSeq
+   * @brief Append a sequence of null-initialized columns.
+   * @param infos The column infos
    */
   template <typename... TInfos>
-  void initSeq(long index, const TInfos&... infos) const;
+  void append_null_seq(TInfos&&... infos) const {
+    return insert_null_seq(-1, std::forward<TInfos>(infos)...);
+  }
+
+  /**
+   * @brief Insert a sequence of null-initialized columns.
+   * @param index The 0-based index of the first column to be added, which may be &ge; 0 or -1 to append the columns at the end
+   * @param infos The column infos
+   */
+  template <typename TSeq>
+  void insert_null_seq(long index, TSeq&& infos) const;
+
+  /**
+   * @copydoc insert_null_seq
+   */
+  template <typename... TInfos>
+  void insert_null_seq(long index, const TInfos&... infos) const;
+
+  /**
+   * @deprecated Use insert_null_seq()
+   */
+  template <typename... TArgs>
+  void initSeq(TArgs&&... args) const {
+    return insert_null_seq(std::forward<TArgs>(args)...);
+  }
 
   /**
    * @brief Remove a sequence of columns specified by their names or indices.
    */
-  void removeSeq(std::vector<ColumnKey> keys) const;
+  void remove_seq(std::vector<ColumnKey> keys) const;
+
+  /**
+   * @deprecated
+   */
+  void removeSeq(std::vector<ColumnKey> keys) const {
+    return remove_seq(keys);
+  }
 
   /// @}
   /**
@@ -460,17 +645,22 @@ public:
    * @brief Write a sequence of segments.
    * @param rows The mapping between the in-file and in-memory rows
    * @param columns The columns to be written
-   * Segments can be written in already initialized columns with `writeSegmentSeq()`
+   * Segments can be written in already initialized columns with `write_segment_seq()`
    * or in new columns with `appendSegmentSeq()`.
    */
   template <typename TSeq>
-  void writeSegmentSeq(FileMemSegments rows, TSeq&& columns) const;
+  void write_segment_seq(FileMemSegments rows, TSeq&& columns) const;
 
   /**
-   * @copydoc writeSegmentSeq
+   * @copydoc write_segment_seq
    */
   template <typename... TColumns>
-  void writeSegmentSeq(FileMemSegments rows, const TColumns&... columns) const;
+  void write_segment_seq(FileMemSegments rows, const TColumns&... columns) const;
+
+  template <typename... TArgs>
+  void writeSegmentSeq(TArgs&&... args) const {
+    return write_segment_seq(std::forward<TArgs>(args)...);
+  }
 
   /// @}
 
@@ -493,12 +683,20 @@ private:
 
 /**
  * @relates Column
- * @brief The common number of rows of a sequence of columns.
- * @details
- * Throw if columns do not have the same size.
+ * @brief Get the common number of rows of a sequence of columns.
+ * 
+ * Throws if columns do not have the same size.
  */
 template <typename TSeq>
-long columnsRowCount(TSeq&& columns);
+long columns_row_count(TSeq&& columns);
+
+/**
+ * @deprecated
+ */
+template <typename TSeq>
+long columnsRowCount(TSeq&& columns) {
+  return columns_row_count(std::forward<TSeq>(columns));
+}
 
 } // namespace Fits
 } // namespace Euclid

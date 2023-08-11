@@ -90,17 +90,17 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.write<RecordMode::CreateNew>("I", 0);
 
   /* Heterogeneous write */
-  h.writeSeq(i, f);
-  h.writeSeq(t);
+  h.write_seq(i, f);
+  h.write_seq(t);
   h.writeSeqIn({"I"}, i, f);
   h.writeSeqIn({"F"}, t);
-  h.writeSeq<RecordMode::CreateNew>(i, f);
-  h.writeSeq<RecordMode::CreateNew>(t);
+  h.write_seq<RecordMode::CreateNew>(i, f);
+  h.write_seq<RecordMode::CreateNew>(t);
 
   /* Homogeneous write */
-  h.writeSeq(v.vector);
+  h.write_seq(v.vector);
   h.writeSeqIn({"I"}, v.vector);
-  h.writeSeq<RecordMode::CreateNew>(v.vector);
+  h.write_seq<RecordMode::CreateNew>(v.vector);
 
   /* Global read */
   h.readAll(~KeywordCategory::Comment);

@@ -134,12 +134,12 @@ BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::Tempor
   const Record<short> short_record {"SHORT", 1};
   const Record<long> long_record {"LONG", 1000};
   auto records = std::make_tuple(short_record, long_record);
-  h.writeSeq(records);
+  h.write_seq(records);
   BOOST_TEST(h.parse<short>("SHORT") == 1);
   BOOST_TEST(h.parse<long>("LONG") == 1000);
   std::get<0>(records).value = 2;
   std::get<1>(records).value = 2000;
-  h.writeSeq<RecordMode::UpdateExisting>(records);
+  h.write_seq<RecordMode::UpdateExisting>(records);
   BOOST_TEST(h.parse<short>("SHORT") == 2);
   BOOST_TEST(h.parse<long>("LONG") == 2000);
 }
@@ -150,7 +150,7 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::Temporary
   records.push_back({"STRING", std::string("WIDE")});
   records.push_back({"FLOAT", 3.14F});
   records.push_back({"INT", 666});
-  h.writeSeq(records);
+  h.write_seq(records);
   auto parsed = h.parseAll();
   BOOST_TEST(parsed.as<std::string>("STRING").value == "WIDE");
   BOOST_TEST(parsed.as<int>("INT").value == 666);
@@ -217,7 +217,7 @@ BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFil
   };
   const auto& header = this->header();
   const MyHeader input {false, 1, 3.14F, "VAL"};
-  header.writeSeq(
+  header.write_seq(
       Record<bool>("BOOL", input.b),
       Record<int>("INT", input.i),
       Record<float>("FLOAT", input.f),

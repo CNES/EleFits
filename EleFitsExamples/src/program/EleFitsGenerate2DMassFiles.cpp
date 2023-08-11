@@ -69,7 +69,7 @@ void write_some_records(const Header& header) {
       {"LATPOLE", "", "deg", "Native latitude of celestial pole"},
       {"RADESYS", "", "", "Equatorial coordinate system"},
       {"EQUINOX", "", "", "Equinox of celestial coordinate system (e.g. 2000)"}};
-  header.writeSeq(records);
+  header.write_seq(records);
 }
 
 /**
@@ -116,7 +116,7 @@ public:
 
     logger.info("Reading binary table...");
     MefFile b(bintable, FileMode::Read);
-    const auto some_column = b.access<BintableHdu>(1).readColumn<float>("SHE_LENSMC_G1");
+    const auto some_column = b.access<BintableHdu>(1).read_column<float>("SHE_LENSMC_G1");
     logger.info() << "First value of SHE_LENSMC_G1 = " << some_column.container()[0];
 
     logger.info("Reading image...");
