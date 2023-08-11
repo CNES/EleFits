@@ -8,6 +8,7 @@
 #include "EleFitsData/Position.h"
 
 #include <complex>
+#include <cstdint>
 #include <string>
 
 namespace Euclid {
