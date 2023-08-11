@@ -89,7 +89,7 @@ Fits::Record<bool> parse_record<bool>(fitsfile* fptr, const std::string& keyword
   Fits::Record<bool> record(keyword, nonconst_int_value, std::string(unit), std::string(comment));
   /* Separate comment and unit */
   if (record.comment == record.unit) {
-    record.comment == "";
+    record.comment = "";
   } else if (record.unit != "") {
     std::string match = "[" + record.unit + "] ";
     auto pos = record.comment.find(match);
@@ -128,7 +128,7 @@ Fits::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::s
   free(value);
   CfitsioError::may_throw(status, fptr, "Cannot parse string record: " + keyword);
   if (record.comment == record.unit) {
-    record.comment == "";
+    record.comment = "";
   } else if (record.unit != "") {
     std::string match = "[" + record.unit + "] ";
     auto pos = record.comment.find(match);

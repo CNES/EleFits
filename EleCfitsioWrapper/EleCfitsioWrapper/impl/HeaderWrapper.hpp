@@ -127,7 +127,7 @@ Fits::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
   Fits::Record<T> record(keyword, value, std::string(unit), std::string(comment));
   /* Separate comment and unit */
   if (record.comment == record.unit) {
-    record.comment == "";
+    record.comment = "";
   } else if (record.unit != "") {
     std::string match = "[" + record.unit + "] ";
     auto pos = record.comment.find(match);
