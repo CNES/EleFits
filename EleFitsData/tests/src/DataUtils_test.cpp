@@ -157,11 +157,11 @@ BOOST_AUTO_TEST_CASE(bitpix_bzero_test) {
   BOOST_TEST(bitpix<std::int16_t>() == 16);
   BOOST_TEST(offset<std::int16_t>() == 0);
   BOOST_TEST(bitpix<std::uint16_t>() == 16);
-  BOOST_TEST(offset<std::uint16_t>() == -32768);
+  BOOST_TEST(offset<std::uint16_t>() == std::numeric_limits<std::int16_t>::min());
   BOOST_TEST(bitpix<std::int32_t>() == 32);
   BOOST_TEST(offset<std::int32_t>() == 0);
   BOOST_TEST(bitpix<std::uint32_t>() == 32);
-  BOOST_TEST(offset<std::uint32_t>() == -2147483648);
+  BOOST_TEST(offset<std::uint32_t>() == std::numeric_limits<std::int32_t>::min());
   BOOST_TEST(bitpix<std::int64_t>() == 64);
   BOOST_TEST(offset<std::int64_t>() == 0);
   BOOST_TEST(bitpix<std::uint64_t>() == 64);
