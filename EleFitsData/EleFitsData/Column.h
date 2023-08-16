@@ -279,7 +279,7 @@ PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, long row_count,
  * @deprecated
  */
 template <typename... TArgs>
-[[deprecated]] auto makeColumn(TArgs&&... args) {
+[[deprecated("Use make_column")]] auto makeColumn(TArgs&&... args) {
   return make_column(std::forward<TArgs>(args)...);
 }
 

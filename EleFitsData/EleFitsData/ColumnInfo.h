@@ -8,6 +8,7 @@
 #include "EleFitsData/Position.h"
 
 #include <complex>
+#include <cstdint>
 #include <string>
 
 namespace Euclid {
@@ -254,7 +255,7 @@ ColumnInfo<T> make_column_info(const std::string& name, const std::string& unit 
  * @deprecated
  */
 template <typename T, typename... TArgs>
-[[deprecated]] auto makeColumnInfo(TArgs&&... args) {
+[[deprecated("Use make_column_info")]] auto makeColumnInfo(TArgs&&... args) {
   return make_column_info<T>(std::forward<TArgs>(args)...);
 }
 

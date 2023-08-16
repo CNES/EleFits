@@ -6,6 +6,8 @@
 
 #include "EleCfitsioWrapper/TypeWrapper.h"
 
+#include <cstdint>
+
 namespace Euclid {
 namespace Cfitsio {
 
