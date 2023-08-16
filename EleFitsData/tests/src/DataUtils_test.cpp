@@ -5,8 +5,8 @@
 #include "EleFitsData/DataUtils.h"
 
 #include <boost/test/unit_test.hpp>
-#include <climits>
 #include <cstdint>
+#include <limits>
 
 using namespace Euclid::Fits;
 
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(bitpix_bzero_test) {
   BOOST_TEST(bitpix<std::int64_t>() == 64);
   BOOST_TEST(offset<std::int64_t>() == 0);
   BOOST_TEST(bitpix<std::uint64_t>() == 64);
-  BOOST_TEST((offset<std::uint64_t>() == LONG_LONG_MIN));
+  BOOST_TEST((offset<std::uint64_t>() == std::numeric_limits<std::int64_t>::min()));
   BOOST_TEST(bitpix<float>() == -32);
   BOOST_TEST(offset<float>() == 0);
   BOOST_TEST(bitpix<double>() == -64);
