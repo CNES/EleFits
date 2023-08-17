@@ -255,15 +255,15 @@ ALIASES                = FIXME=\todo \
                          TODO=\todo \
                          PROJECT_VERSION=@CMAKE_PROJECT_VERSION@ \
                          "requirements{1}=^^\interface \1^^" \
-                         "satisfies{1}=\implements \1^^\par Satisfies `\1` requirements^^\copydetails \1^^" \
-                         "tspecialization{1}=\par Template specialization \1^^\copybrief \1 \ref \1 \"More...\"" \
+                         "satisfies{1}=\implements \1^^\par Satisfies `\1` Requirements^^\copydetails \1^^" \
+                         "tspecialization{1}=\par Template Specialization \1^^\copybrief \1 \ref \1 \"More...\"" \
                          "par_example=\par Example^^" \
                          "group_construction=^^\}^^\name Construction^^\{" \
                          "group_properties=^^\}^^\name Properties^^\{^^" \
-                         "group_elements=^^\}^^\name Element access^^\{^^" \
+                         "group_elements=^^\}^^\name Element Access^^\{^^" \
                          "group_iterators=^^\}^^\name Iterators^^\{^^" \
                          "group_views=^^\}^^\name Views^^\{^^" \
-                         "group_modifiers=^^\}^^\name Data modifiers^^\{^^" \
+                         "group_modifiers=^^\}^^\name Data Modifiers^^\{^^" \
                          "group_operations=^^\}^^\name Operations^^\{^^" \
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
@@ -998,7 +998,8 @@ EXAMPLE_PATH           = @PROJECT_SOURCE_DIR@/EleFitsExamples
 # *.h) to filter out the source-files in the directories. If left blank all
 # files are included.
 
-EXAMPLE_PATTERNS       = *.cpp
+EXAMPLE_PATTERNS       = *.h \
+                         *.cpp
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
 # searched for input files to be used with the \include or \dontinclude commands
@@ -2444,7 +2445,7 @@ DOT_WRAP_THRESHOLD     = 17
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-TEMPLATE_RELATIONS     = YES
+TEMPLATE_RELATIONS     = NO
 
 # If the INCLUDE_GRAPH, ENABLE_PREPROCESSING and SEARCH_INCLUDES tags are set to
 # YES then doxygen will generate a graph for each documented file showing the
@@ -2493,7 +2494,7 @@ CALLER_GRAPH           = NO
 # The default value is: YES.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-GRAPHICAL_HIERARCHY    = YES
+GRAPHICAL_HIERARCHY    = NO
 
 # If the DIRECTORY_GRAPH tag is set to YES then doxygen will show the
 # dependencies a directory has on other directories in a graphical way. The
