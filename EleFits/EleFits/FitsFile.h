@@ -5,6 +5,7 @@
 #ifndef _ELEFITS_FITSFILE_H
 #define _ELEFITS_FITSFILE_H
 
+#include "EleFitsData/DataUtils.h"
 #include "EleFitsData/FitsError.h"
 
 #include <fitsio.h>
@@ -60,6 +61,7 @@ enum class FileMode {
  */
 class ReadOnlyError : public FitsError {
 public:
+
   /**
    * @brief Constructor.
    * @details
@@ -82,12 +84,17 @@ public:
  * @see \ref handlers
  */
 class FitsFile {
-
 public:
+
+  /// @group_construction
+
   /**
    * @brief Create a new FITS file handler with given filename and permission.
    */
   FitsFile(const std::string& filename, FileMode permission = FileMode::Read);
+
+  ELEFITS_NON_COPYABLE(FitsFile)
+  ELEFITS_NON_MOVABLE(FitsFile)
 
   /**
    * @brief Destroy the object and close the file.
@@ -95,6 +102,8 @@ public:
    * Also remove the file for `FileMode::Temporary`.
    */
   virtual ~FitsFile();
+
+  /// @group_properties
 
   /**
    * @brief Get the file name.
@@ -106,12 +115,7 @@ public:
    */
   bool is_open() const;
 
-  /**
-   * @deprecated
-   */
-  bool isOpen() const {
-    return is_open();
-  }
+  /// @group_modifiers
 
   /**
    * @brief Reopen the file.
@@ -135,13 +139,6 @@ public:
   void close_remove(); // FIXME virtual?
 
   /**
-   * @deprecated Use close_remove()
-   */
-  [[deprecated("Use close_remove()")]] void closeAndDelete() {
-    return close_remove();
-  }
-
-  /**
    * @brief Get CFITSIO's `fitsfile*`.
    * @warning
    * There is no way back!
@@ -155,14 +152,36 @@ public:
    */
   fitsfile* handover_to_cfitsio();
 
+  /// @group_deprecated
+
   /**
    * @deprecated
    */
-  fitsfile* handoverToCfitsio() {
+  bool isOpen() const
+  {
+    return is_open();
+  }
+
+  /**
+   * @deprecated Use close_remove()
+   */
+  [[deprecated("Use close_remove()")]] void closeAndDelete()
+  {
+    return close_remove();
+  }
+
+  /**
+   * @deprecated
+   */
+  fitsfile* handoverToCfitsio()
+  {
     return handover_to_cfitsio();
   }
 
+  /// @}
+
 protected:
+
   /**
    * @brief Open a FITS file with given filename and permission.
    * @details
@@ -199,6 +218,7 @@ protected:
   FileMode m_permission;
 
 private:
+
   /**
    * @brief Non virtual implementation of `open()`.
    */

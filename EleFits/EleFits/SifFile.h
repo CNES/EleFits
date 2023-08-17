@@ -21,17 +21,24 @@ namespace Fits {
  * @see \ref handlers
  */
 class SifFile : public FitsFile {
-
 public:
-  /**
-   * @copydoc FitsFile::~FitsFile
-   */
-  virtual ~SifFile() = default;
+
+  /// @group_construction
 
   /**
    * @copydoc FitsFile::FitsFile
    */
   SifFile(const std::string& filename, FileMode permission = FileMode::Read);
+
+  ELEFITS_NON_COPYABLE(SifFile)
+  ELEFITS_NON_MOVABLE(SifFile)
+
+  /**
+   * @copydoc FitsFile::~FitsFile
+   */
+  virtual ~SifFile() = default;
+
+  /// @group_elements
 
   /**
    * @brief Access the header unit.
@@ -42,6 +49,8 @@ public:
    * @brief Access the data unit.
    */
   const ImageRaster& raster() const;
+
+  /// @group_operations
 
   /**
    * @brief Write both the records and the raster (resize the data unit if empty).
@@ -59,29 +68,37 @@ public:
    */
   void update_checksums() const;
 
+  /// @group_deprecated
+
   /**
    * @deprecated Use write()
    */
   template <typename TRaster>
-  [[deprecated("Use write()")]] void writeAll(const RecordSeq& records, const TRaster& raster) {
+  [[deprecated("Use write()")]] void writeAll(const RecordSeq& records, const TRaster& raster)
+  {
     return write(records, raster);
   }
 
   /**
    * @deprecated
    */
-  void verifyChecksums() const {
+  void verifyChecksums() const
+  {
     return verify_checksums();
   }
 
   /**
    * @deprecated
    */
-  void updateChecksums() const {
+  void updateChecksums() const
+  {
     return update_checksums();
   }
 
+  /// @}
+
 private:
+
   /**
    * @brief The Primary (and only) HDU
    */

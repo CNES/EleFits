@@ -19,8 +19,10 @@ namespace Fits {
  * @brief Binary table HDU reader-writer.
  */
 class BintableHdu : public Hdu {
-
 public:
+
+  /// @group_construction
+
   /// @cond INTERNAL
 
   /**
@@ -38,13 +40,24 @@ public:
   /**
    * @brief Destructor.
    */
-  virtual ~BintableHdu() = default;
+  ELEFITS_VIRTUAL_DTOR(BintableHdu)
+
+  /// @group_properties
+
+  /**
+   * @copydoc Hdu::category
+   */
+  HduCategory category() const override;
+
+  /// @group_elements
 
   /**
    * @brief Access the data unit column-wise.
    * @see BintableColumns
    */
   const BintableColumns& columns() const;
+
+  /// @group_operations
 
   /**
    * @brief Read the number of columns.
@@ -55,11 +68,6 @@ public:
    * @brief Read the number of rows.
    */
   long read_row_count() const;
-
-  /**
-   * @copydoc Hdu::category
-   */
-  HduCategory category() const override;
 
   /**
    * @brief Read a column with given name or index.
@@ -73,17 +81,21 @@ public:
   template <typename TColumn>
   void write_column(const TColumn& column) const;
 
+  /// @group_deprecated
+
   /**
    * @deprecated
    */
-  long readColumnCount() const {
+  long readColumnCount() const
+  {
     return read_column_count();
   }
 
   /**
    * @deprecated
    */
-  long readRowCount() const {
+  long readRowCount() const
+  {
     return read_row_count();
   }
 
@@ -91,7 +103,8 @@ public:
    * @deprecated
    */
   template <typename T, long N = 1>
-  VecColumn<T, N> readColumn(ColumnKey key) const {
+  VecColumn<T, N> readColumn(ColumnKey key) const
+  {
     return read_column<T, N>(key);
   }
 
@@ -99,11 +112,13 @@ public:
    * @deprecated
    */
   template <typename TColumn>
-  void writeColumn(const TColumn& column) const {
+  void writeColumn(const TColumn& column) const
+  {
     return write_column(column);
   }
 
 private:
+
   /**
    * @brief The column-wise data unit handler.
    */

@@ -33,7 +33,7 @@ BraceWrapping:
   AfterClass: false
   AfterControlStatement: Never
   AfterEnum: false
-  AfterFunction: false
+  AfterFunction: true
   AfterNamespace: false
   AfterStruct: false
   AfterUnion: false
@@ -51,7 +51,7 @@ BreakBeforeConceptDeclarations: true
 BreakBeforeInheritanceComma: false
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializers: AfterColon
-# BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializersBeforeComma: false
 BreakInheritanceList: AfterColon
 BreakStringLiterals: false
 ColumnLimit: 120
@@ -64,7 +64,7 @@ Cpp11BracedListStyle: true
 DeriveLineEnding: false
 DerivePointerAlignment: false
 DisableFormat: false
-# EmptyLineAfterAccessModifier: Always
+EmptyLineAfterAccessModifier: Always
 EmptyLineBeforeAccessModifier: LogicalBlock
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
@@ -81,7 +81,7 @@ IncludeCategories:
   - Regex: '.*'
     Priority: 1
 IncludeIsMainRegex: '(Test)?$'
-# IndentAccessModifiers: false
+IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
 IndentExternBlock: AfterExternBlock
@@ -91,7 +91,7 @@ IndentRequires: false
 IndentWidth: 2
 IndentWrappedFunctionNames: false
 InsertTrailingCommas: Wrapped # Only for JavaScript?
-KeepEmptyLinesAtTheStartOfBlocks: true
+KeepEmptyLinesAtTheStartOfBlocks: false
 MacroBlockBegin: ''
 MacroBlockEnd: ''
 MaxEmptyLinesToKeep: 1

@@ -75,8 +75,8 @@ enum class RecordMode {
  * As specified in the FITS definition, duplicated keywords lead to an undefined behavior.
  */
 class Header {
-
 private:
+
   friend class Hdu;
 
   /**
@@ -85,6 +85,7 @@ private:
   Header(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit);
 
 public:
+
   /**
    * @name Read the records of given categories
    */
@@ -464,7 +465,7 @@ public:
 
   /// @}
   /**
-   * @name Write comment records.
+   * @name Write comment records
    */
   /// @{
 
@@ -478,33 +479,37 @@ public:
    */
   void write_history(const std::string& history) const;
 
-  /// @}
+  /// @group_deprecated
 
   /**
    * @deprecated
    */
-  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const {
+  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const
+  {
     return read_keywords(categories);
   }
 
   /**
    * @deprecated
    */
-  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const {
+  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const
+  {
     return read_keywords_values(categories);
   }
 
   /**
    * @deprecated
    */
-  std::string readAll(KeywordCategory categories = KeywordCategory::All) const {
+  std::string readAll(KeywordCategory categories = KeywordCategory::All) const
+  {
     return read_all(categories);
   }
 
   /**
    * @deprecated
    */
-  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const {
+  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const
+  {
     return parse_all(categories);
   }
 
@@ -512,7 +517,8 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  auto parseOr(TArgs&&... args) const {
+  auto parseOr(TArgs&&... args) const
+  {
     return parse_or(std::forward<TArgs>(args)...);
   }
 
@@ -520,7 +526,8 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  auto parseSeq(TArgs&&... args) const {
+  auto parseSeq(TArgs&&... args) const
+  {
     return parse_seq(std::forward<TArgs>(args)...);
   }
 
@@ -528,7 +535,8 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  auto parseSeqOr(TArgs&&... args) const {
+  auto parseSeqOr(TArgs&&... args) const
+  {
     return parse_seq_or(std::forward<TArgs>(args)...);
   }
 
@@ -536,7 +544,8 @@ public:
    * @deprecated
    */
   template <typename TOut, typename... Ts>
-  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const {
+  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const
+  {
     return parse_struct(keywords...);
   }
 
@@ -544,7 +553,8 @@ public:
    * @deprecated
    */
   template <typename TOut, typename... TArgs>
-  TOut parseStructOr(TArgs&&... args) const {
+  TOut parseStructOr(TArgs&&... args) const
+  {
     return parse_struct_or<TOut>(std::forward<TArgs>(args)...);
   }
 
@@ -552,7 +562,8 @@ public:
    * @deprecated
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
-  void writeSeq(TArgs&&... args) const {
+  void writeSeq(TArgs&&... args) const
+  {
     return write_seq<Mode>(std::forward<TArgs>(args)...);
   }
 
@@ -560,25 +571,31 @@ public:
    * @deprecated
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
-  void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const {
+  void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const
+  {
     return write_seq_in<Mode>(std::forward<TArgs>(args)...);
   }
 
   /**
    * @deprecated
    */
-  void writeComment(const std::string& comment) const {
+  void writeComment(const std::string& comment) const
+  {
     return write_comment(comment);
   }
 
   /**
    * @deprecated
    */
-  void writeHistory(const std::string& history) const {
+  void writeHistory(const std::string& history) const
+  {
     return write_history(history);
   }
 
+  /// @}
+
 private:
+
   /**
    * @brief The fitsfile.
    */
@@ -600,7 +617,6 @@ private:
  * @brief Exception thrown when a keyword already exists.
  */
 struct KeywordExistsError : public FitsError {
-
   /**
    * @brief Constructor.
    */
@@ -627,7 +643,6 @@ struct KeywordExistsError : public FitsError {
  * @brief Exception thrown when a keyword is not found.
  */
 struct KeywordNotFoundError : public FitsError {
-
   /**
    * @brief Constructor.
    */

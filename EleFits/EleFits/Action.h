@@ -30,14 +30,19 @@ namespace Fits {
  */
 class Action {
 public:
-  ELEFITS_VIRTUAL_DTOR(Action)
-  ELEFITS_COPYABLE(Action)
-  ELEFITS_MOVABLE(Action)
+
+  /// @group_construction
 
   /**
    * @brief Constructor.
-  */
+   */
   Action() = default;
+
+  ELEFITS_COPYABLE(Action)
+  ELEFITS_MOVABLE(Action)
+  ELEFITS_VIRTUAL_DTOR(Action)
+
+  /// @group_operations
 
   /**
    * @brief Method called just after openning the file.
@@ -67,6 +72,8 @@ public:
    * @brief Method called just before closing the file.
    */
   virtual void closing(const Hdu&) {}
+
+  /// @}
 };
 
 /**
@@ -90,8 +97,8 @@ enum class UpdateChecksums {
  * @see `UpdateChecksums`
  */
 class VerifyChecksums : public Action {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(VerifyChecksums)
   ELEFITS_COPYABLE(VerifyChecksums)
   ELEFITS_MOVABLE(VerifyChecksums)
@@ -104,7 +111,8 @@ public:
   /**
    * @brief Verify the HDU checksums at first access, throw if incorrect.
    */
-  void accessed(const Hdu& hdu) override {
+  void accessed(const Hdu& hdu) override
+  {
     try {
       hdu.verify_checksums();
     } catch (ChecksumError& e) {
@@ -117,7 +125,8 @@ public:
   /**
    * @brief If the HDU was edited, update its checksums before closing.
    */
-  void closing(const Hdu& hdu) override {
+  void closing(const Hdu& hdu) override
+  {
     switch (m_mode) {
       case UpdateChecksums::None:
         return;
@@ -139,15 +148,18 @@ public:
     }
   }
 
-  bool edited(const Hdu& hdu) const {
+  bool edited(const Hdu& hdu) const
+  {
     return hdu.matches(HduCategory::Edited);
   }
 
-  bool has_checksums(const Hdu& hdu) const {
+  bool has_checksums(const Hdu& hdu) const
+  {
     return hdu.header().has("CHECKSUM") || hdu.header().has("DATASUM");
   }
 
 private:
+
   UpdateChecksums m_mode;
 };
 
@@ -156,8 +168,8 @@ private:
  * @brief An action which cites EleFits in the Primary header as a HISTORY record.
  */
 class CiteEleFits : public Action {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(CiteEleFits)
   ELEFITS_COPYABLE(CiteEleFits)
   ELEFITS_MOVABLE(CiteEleFits)
@@ -170,7 +182,8 @@ public:
   /**
    * @brief Write a HISTORY record to the Primary header.
    */
-  void closing(const Hdu& hdu) override {
+  void closing(const Hdu& hdu) override
+  {
     if (hdu.index() == 0) {
       std::string msg = date_to_string(m_time);
       msg += " This file was edited by EleFits <github.com/CNES/EleFits>";
@@ -179,13 +192,16 @@ public:
   }
 
 private:
-  static std::string date_to_string(const std::time_t& time) {
+
+  static std::string date_to_string(const std::time_t& time)
+  {
     char str[std::size("yyyy-mm-dd")];
     std::strftime(std::data(str), std::size(str), "%F", std::gmtime(&time));
     return str;
   }
 
-  static std::string datetime_to_string(const std::time_t& time) {
+  static std::string datetime_to_string(const std::time_t& time)
+  {
     char str[std::size("yyyy-mm-ddThh:mm:ss")];
     std::strftime(std::data(str), std::size(str), "%FT%T", std::gmtime(&time));
     return str;

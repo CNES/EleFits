@@ -43,28 +43,13 @@ namespace Fits {
  * ELEFITS_FOREACH_RASTER_TYPE and program EleFitsPrintSupportedTypes for the list of supported pixel types.
  */
 class ImageHdu : public Hdu {
-
 public:
-  /// @cond INTERNAL
-
-  /**
-   * @see Hdu
-   */
-  ImageHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
-
-  /**
-   * @see Hdu
-   */
-  ImageHdu();
-
-  /// @endcond
 
   /**
    * @brief A structure which holds everything known at image extension initialization.
    */
   template <typename T>
   struct Initializer {
-
     /**
      * @brief The extension index.
      */
@@ -91,21 +76,52 @@ public:
     const T* data;
   };
 
+  /// @group_construction
+
+  /// @cond
+
   /**
-   * @brief Destructor.
+   * @see Hdu
    */
-  virtual ~ImageHdu() = default;
+  ImageHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
+
+  /**
+   * @see Hdu
+   */
+  ImageHdu();
+
+  /// @endcond
+
+  // FIXME copyable?
+
+  ELEFITS_VIRTUAL_DTOR(ImageHdu)
 
   /**
    * @brief Copy the contents of another image HDU.
    */
   const ImageHdu& operator=(const ImageHdu& rhs) const;
 
+  /// @group_properties
+
+  /**
+   * @copydoc Hdu::category
+   */
+  HduCategory category() const override;
+
+  /**
+   * @brief Check whether the HDU is compressed.
+   */
+  bool is_compressed() const;
+
+  /// @group_elements
+
   /**
    * @brief Access the data unit to read and write the raster.
    * @see ImageRaster
    */
   const ImageRaster& raster() const;
+
+  /// @group_operations
 
   /**
    * @copybrief ImageRaster::read_typeid
@@ -122,16 +138,6 @@ public:
    */
   template <long N = 2>
   Position<N> read_shape() const;
-
-  /**
-   * @copydoc Hdu::category
-   */
-  HduCategory category() const override;
-
-  /**
-   * @brief Check whether the HDU is compressed.
-   */
-  bool is_compressed() const;
 
   /**
    * @brief Read the compression parameters.
@@ -156,17 +162,21 @@ public:
   template <typename TRaster>
   void write_raster(const TRaster& data) const;
 
+  /// @group_deprecated
+
   /**
    * @deprecated
    */
-  const std::type_info& readTypeid() const {
+  const std::type_info& readTypeid() const
+  {
     return read_typeid();
   }
 
   /**
    * @deprecated
    */
-  long readSize() const {
+  long readSize() const
+  {
     return read_size();
   }
 
@@ -174,7 +184,8 @@ public:
    * @deprecated
    */
   template <typename T, long N = 2>
-  void updateShape(const Position<N>& shape) const {
+  void updateShape(const Position<N>& shape) const
+  {
     return update_type_shape<T, N>(shape);
   }
 
@@ -182,7 +193,8 @@ public:
    * @deprecated
    */
   template <typename T, long N = 2>
-  VecRaster<T, N> readRaster() const {
+  VecRaster<T, N> readRaster() const
+  {
     return read_raster<T, N>();
   }
 
@@ -190,11 +202,15 @@ public:
    * @deprecated
    */
   template <typename TRaster>
-  void writeRaster(const TRaster& data) const {
+  void writeRaster(const TRaster& data) const
+  {
     return write_raster(data);
   }
 
+  /// @}
+
 private:
+
   /**
    * @brief The data unit handler.
    */

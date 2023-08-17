@@ -30,12 +30,12 @@ class MefFile; // necessary for friend class declaration in Hdu
  * (refer to the documentation of the `Header` class).
  */
 class Hdu {
-
   // A non-parent MefFile can be wanting to access the fitsfile of the parent MefFile of the hdu
   // FIXME: approach might be changed in the future
   friend class Euclid::Fits::MefFile;
 
 public:
+
   /// @cond
 
   /**
@@ -52,6 +52,7 @@ public:
     friend class BintableHdu;
 
   private:
+
     Token() {}
   };
 
@@ -79,10 +80,14 @@ public:
 
   /// @endcond
 
+  /// @group_construction
+
   /**
    * @brief Destructor.
    */
-  virtual ~Hdu() = default;
+  ELEFITS_VIRTUAL_DTOR(Hdu)
+
+  /// @group_properties
 
   /**
    * @brief Get the 0-based index of the HDU.
@@ -135,10 +140,22 @@ public:
   const T& as() const;
 
   /**
+   * @brief Read the number of bytes used by the Hdu.
+   * @details
+   * Total number of bits in the extension data array exclusive of fill that is needed after the data to complete the last record.
+   * According to doc: https://archive.stsci.edu/fits/fits_standard/node39.html#s:conf
+  */
+  std::size_t size_in_file() const;
+
+  /// @group_elements
+
+  /**
    * @brief Access the header unit to read and write records.
    * @see Header
    */
   const Header& header() const;
+
+  /// @group_operations
 
   /**
    * @brief Read the extension name.
@@ -149,14 +166,6 @@ public:
    * @brief Read the extension version.
    */
   long read_version() const;
-
-  /**
-   * @brief Read the number of bytes used by the Hdu.
-   * @details
-   * Total number of bits in the extension data array exclusive of fill that is needed after the data to complete the last record.
-   * According to doc: https://archive.stsci.edu/fits/fits_standard/node39.html#s:conf
-  */
-  std::size_t size_in_file() const;
 
   /**
    * @brief Write or update the extension name.
@@ -196,56 +205,66 @@ public:
    */
   void update_checksums() const;
 
+  /// @group_deprecated
+
   /**
    * @deprecated
    */
-  HduCategory readCategory() const {
+  HduCategory readCategory() const
+  {
     return category();
   }
 
   /**
    * @deprecated
    */
-  std::string readName() const {
+  std::string readName() const
+  {
     return read_name();
   }
 
   /**
    * @deprecated
    */
-  long readVersion() const {
+  long readVersion() const
+  {
     return read_version();
   }
 
   /**
    * @deprecated
    */
-  void updateName(const std::string& name) const {
+  void updateName(const std::string& name) const
+  {
     return update_name(name);
   }
 
   /**
    * @deprecated
    */
-  void updateVersion(long version) const {
+  void updateVersion(long version) const
+  {
     return update_version(version);
   }
 
   /**
    * @deprecated
    */
-  void verifyChecksums() const {
+  void verifyChecksums() const
+  {
     return verify_checksums();
   }
 
   /**
    * @deprecated
    */
-  void updateChecksums() const {
+  void updateChecksums() const
+  {
     return update_checksums();
   }
 
 protected:
+
   /**
    * @brief Set the current HDU to this one.
    * @details

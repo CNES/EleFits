@@ -82,8 +82,8 @@ class HduSelector;
  * @see \ref optim
  */
 class MefFile : public FitsFile {
-
 public:
+
   /// @group_construction
 
   /**
@@ -94,6 +94,9 @@ public:
    */
   template <typename... TActions>
   explicit MefFile(const std::string& filename, FileMode mode, TActions&&... actions);
+
+  ELEFITS_NON_COPYABLE(MefFile)
+  ELEFITS_NON_MOVABLE(MefFile)
 
   /**
    * @copydoc FitsFile::~FitsFile()
@@ -326,21 +329,24 @@ public:
   /**
    * @deprecated
    */
-  long hduCount() const {
+  long hduCount() const
+  {
     return hdu_count();
   }
 
   /**
    * @deprecated
    */
-  std::vector<std::string> readHduNames() {
+  std::vector<std::string> readHduNames()
+  {
     return read_hdu_names();
   }
 
   /**
    * @deprecated
    */
-  std::vector<std::pair<std::string, long>> readHduNamesVersions() {
+  std::vector<std::pair<std::string, long>> readHduNamesVersions()
+  {
     return read_hdu_names_versions();
   }
 
@@ -348,7 +354,8 @@ public:
    * @deprecated
    */
   template <typename T = unsigned char>
-  const ImageHdu& appendImageHeader(const std::string& name = "", const RecordSeq& records = {}) {
+  const ImageHdu& appendImageHeader(const std::string& name = "", const RecordSeq& records = {})
+  {
     return append_image_header(name, records);
   }
 
@@ -356,7 +363,8 @@ public:
    * @deprecated
    */
   template <typename T, long N = 2>
-  const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
+  const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape)
+  {
     return append_null_image(name, records, shape);
   }
 
@@ -364,7 +372,8 @@ public:
    * @deprecated
    */
   template <typename TRaster>
-  const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster) {
+  const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster)
+  {
     return append_image(name, records, raster);
   }
 
@@ -373,7 +382,8 @@ public:
    */
   template <typename... TInfos>
   const BintableHdu&
-  appendBintableHeader(const std::string& name = "", const RecordSeq& records = {}, const TInfos&... infos) {
+  appendBintableHeader(const std::string& name = "", const RecordSeq& records = {}, const TInfos&... infos)
+  {
     return append_bintable_header(name, records, infos...);
   }
 
@@ -382,7 +392,8 @@ public:
    */
   template <typename... TInfos>
   const BintableHdu&
-  appendNullBintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos) {
+  appendNullBintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos)
+  {
     return append_null_bintable(name, records, infos...);
   }
 
@@ -390,11 +401,13 @@ public:
    * @deprecated
    */
   template <typename... TColumns>
-  const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns&... columns) {
+  const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns&... columns)
+  {
     return append_bintable(name, records, columns...);
   }
 
 protected:
+
   /**
    * @copydoc FitsFile::open()
    */
@@ -408,6 +421,7 @@ protected:
   std::vector<std::unique_ptr<Hdu>> m_hdus;
 
 private:
+
   /**
    * @brief Non virtual implementation of `open()`.
    */

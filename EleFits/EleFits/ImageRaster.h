@@ -30,6 +30,7 @@ namespace Fits {
  */
 class ImageRaster {
 private:
+
   friend class ImageHdu;
 
   /**
@@ -38,10 +39,8 @@ private:
   ImageRaster(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit);
 
 public:
-  /**
-   * @name Image properties.
-   */
-  /// @{
+
+  /// @group_properties
 
   /**
    * @brief Read the image pixel value type.
@@ -78,7 +77,7 @@ public:
 
   /// @}
   /**
-   * @name Read the whole data unit.
+   * @name Read the whole data unit
    */
   /// @{
 
@@ -107,7 +106,7 @@ public:
 
   /// @}
   /**
-   * @name Read a region of the data unit.
+   * @name Read a region of the data unit
    */
   /// @{
 
@@ -152,7 +151,7 @@ public:
 
   /// @}
   /**
-   * @name Write the whole data unit.
+   * @name Write the whole data unit
    */
   /// @{
 
@@ -164,7 +163,7 @@ public:
 
   /// @}
   /**
-   * @name Write a region of the data unit.
+   * @name Write a region of the data unit
    */
   /// @{
 
@@ -194,24 +193,27 @@ public:
   template <typename TRaster, long N>
   void write_region(FileMemRegions<N> regions, const TRaster& raster) const; // TODO return bool = is_contiguous()?
 
-  /// @}
+  /// @group_deprecated
 
   /**
    * @deprecated
    */
-  const std::type_info& readTypeid() const {
+  const std::type_info& readTypeid() const
+  {
     return read_typeid();
   }
 
   /**
    * @deprecated
    */
-  long readSize() const {
+  long readSize() const
+  {
     return read_size();
   }
 
   template <long N = 2>
-  Position<N> readShape() const {
+  Position<N> readShape() const
+  {
     return read_shape<2>();
   }
 
@@ -219,7 +221,8 @@ public:
    * @deprecated
    */
   template <long N = 2>
-  void updateShape(const Position<N>& shape) const {
+  void updateShape(const Position<N>& shape) const
+  {
     return update_shape(shape);
   }
 
@@ -227,7 +230,8 @@ public:
    * @deprecated
   */
   template <typename T, long N = 2>
-  [[deprecated("Use update_type_shape()")]] void reinit(const Position<N>& shape) const {
+  [[deprecated("Use update_type_shape()")]] void reinit(const Position<N>& shape) const
+  {
     return update_type_shape<T>(shape);
   }
 
@@ -235,7 +239,8 @@ public:
    * @deprecated
    */
   template <typename T, long M, long N>
-  VecRaster<T, M> readRegion(const Region<N>& region) const {
+  VecRaster<T, M> readRegion(const Region<N>& region) const
+  {
     read_region<T, M>(region);
   }
 
@@ -243,7 +248,8 @@ public:
    * @deprecated
    */
   template <typename TRaster>
-  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const {
+  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const
+  {
     return read_region_to(regions, raster);
   }
 
@@ -251,11 +257,15 @@ public:
    * @deprecated
    */
   template <typename TRaster, long N>
-  void writeRegion(FileMemRegions<N> regions, const TRaster& raster) const {
+  void writeRegion(FileMemRegions<N> regions, const TRaster& raster) const
+  {
     return write_region(regions, raster);
   }
 
+  /// @}
+
 private:
+
   /**
    * @brief Read a region of the data unit into an existing `Raster`.
    * @copydetails read_region()
@@ -305,6 +315,7 @@ private:
   write_subraster(const Position<N>& front_position, const Subraster<T, M, TContainer>& subraster) const; // FIXME rm?
 
 private:
+
   /**
    * @brief The fitsfile.
    */

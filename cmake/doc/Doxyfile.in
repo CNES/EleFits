@@ -255,16 +255,17 @@ ALIASES                = FIXME=\todo \
                          TODO=\todo \
                          PROJECT_VERSION=@CMAKE_PROJECT_VERSION@ \
                          "requirements{1}=^^\interface \1^^" \
-                         "satisfies{1}=\implements \1^^\par Satisfies `\1` Requirements^^\copydetails \1^^" \
-                         "tspecialization{1}=\par Template Specialization \1^^\copybrief \1 \ref \1 \"More...\"" \
+                         "satisfies{1}=\implements \1^^\par Satisfies `\1` requirements^^\copydetails \1^^" \
+                         "tspecialization{1}=\par Template specialization \1^^\copybrief \1 \ref \1 \"More...\"" \
                          "par_example=\par Example^^" \
                          "group_construction=^^\}^^\name Construction^^\{" \
                          "group_properties=^^\}^^\name Properties^^\{^^" \
-                         "group_elements=^^\}^^\name Element Access^^\{^^" \
+                         "group_elements=^^\}^^\name Element access^^\{^^" \
                          "group_iterators=^^\}^^\name Iterators^^\{^^" \
                          "group_views=^^\}^^\name Views^^\{^^" \
-                         "group_modifiers=^^\}^^\name Data Modifiers^^\{^^" \
+                         "group_modifiers=^^\}^^\name Data modifiers^^\{^^" \
                          "group_operations=^^\}^^\name Operations^^\{^^" \
+                         "group_deprecated=^^\}^^\name Deprecated^^\{^^" \
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
