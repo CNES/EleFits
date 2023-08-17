@@ -324,7 +324,7 @@ public:
    */
   inline void remove(long index);
 
-  /// @}
+  /// @group_deprecated
 
   /**
    * @deprecated
@@ -405,6 +405,8 @@ public:
   {
     return append_bintable(name, records, columns...);
   }
+
+  /// @}
 
 protected:
 

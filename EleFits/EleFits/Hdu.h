@@ -134,12 +134,6 @@ public:
   bool matches(HduFilter filter) const;
 
   /**
-   * @brief View as an `ImageHdu`, `ImageRaster`, `BintableHdu` or `BintableColumns` (if possible).
-   */
-  template <typename T>
-  const T& as() const;
-
-  /**
    * @brief Read the number of bytes used by the Hdu.
    * @details
    * Total number of bits in the extension data array exclusive of fill that is needed after the data to complete the last record.
@@ -154,6 +148,14 @@ public:
    * @see Header
    */
   const Header& header() const;
+
+  /// @group_views
+
+  /**
+   * @brief View as an `ImageHdu`, `ImageRaster`, `BintableHdu` or `BintableColumns` (if possible).
+   */
+  template <typename T>
+  const T& as() const;
 
   /// @group_operations
 
