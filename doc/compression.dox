@@ -146,7 +146,7 @@ or not comress at all if the HDU is very small.
 
 More elaborated actions can be user-defined by extending the base class `CompressionAction`
 (e.g. to use PLIO only for HDUs whose name ends with "MASK").
-The generic action `CompressAptly` is the recommended default.
+The generic action `CompressAuto` is the recommended default.
 It draws on the various papers pointed by the FITS support office and on internal benchmarks,
 and has variants for lossless and lossy compressions.
 
@@ -205,12 +205,12 @@ As an order of magnitude, expect a compression ratio of around 10 with quantizat
 instead of just above 1 with quantization turned of.
 
 
-\subsection compression-guidelines-aptly Try CompressAptly!
+\subsection compression-guidelines-auto Try CompressAuto!
 
 
 This is the default recommendation when you have no specific knowledge on the data stationnarity.
 It was designed with care based on already published studies, and tuned with internal benchmarks.
-More specifically, following the previous guideline, try `CompressAptly(CompressionType::LosslessInts)`!
+More specifically, following the previous guideline, try `CompressAuto(CompressionType::LosslessInts)`!
 
 
 */
