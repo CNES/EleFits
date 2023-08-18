@@ -115,12 +115,12 @@ or whatever fancier array you wish (with _n_ < 1000, but this should not be a sh
 
 Pixels are stored contiguously (in row-major order) in binary format,
 and the properties of the image are stored in the header unit as special records.
-For example, the size of the image is given by the values associated with keys `NAXIS1`, `NAXIS2`, `NAXIS3`...
+For example, the size of the image is given by the values associated with keywords `NAXIS1`, `NAXIS2`, `NAXIS3`...
 The pixel value type can be an 8- to 64-bit integer, or a 32- or 64-bit floating-point.
 The value type is also encoded in the header unit with keyword `BITPIX`.
 Here is a typical Primary header unit:
 
-\code
+\verbatim
 SIMPLE  =                    T / file does conform to FITS standard             
 BITPIX  =                   16 / number of bits per data pixel                  
 NAXIS   =                    2 / number of data axes                            
@@ -129,7 +129,7 @@ NAXIS2  =                 2066 / length of data axis 2
 TELESCOP= 'EUCLID'             / telescope name                                 
 EXPTIME =               1500.0 / [s] exposure time                              
 END
-\endcode
+\endverbatim
 
 \note
 FITS' arrays are EleFits' *rasters*.
@@ -138,8 +138,8 @@ FITS' arrays are EleFits' *rasters*.
 More details on the name are given in `Raster`'s documentation.
 
 \see
-- file_handlers
-- image_data_classes
+- \ref file_handlers
+- \ref image_data_classes
 - \ref types
 - Signed byte and unsigned integer pixel %types (reserved use of keyword `BZERO`)
 
@@ -175,13 +175,13 @@ that is, an image HDU with empty array.
 
 There are two types of table HDUs: ASCII tables and binary tables.
 ASCII tables are hardly used anymore, and are not supported at all by EleFits.
-Binary tables are sequences of rows, themselves made of *entries*.
-Obviously, they can be seen as columns made of entries, but the FITS file is written row-wise.
-Binary table entries can be *scalar* (one element per field) or *vector* (several elements per field).
-In the latter case, entries can even be *multidimensional*, and seen as rasters like in image data units.
+Binary tables are sequences of rows, themselves made of *fields*.
+Obviously, they can be seen as columns made of fields, but the FITS file is written row-wise.
+Binary table fields can be *scalar* (one element per field) or *vector* (several elements per field).
+In the latter case, fields can even be *multidimensional*, and seen as rasters like in image data units.
 
 A more recent addition to the standard is binary tables with vector columns of varying size,
-i.e. the entries of a single column have different value counts.
+i.e. the fields of a single column have different value counts.
 This is not supported by EleFits.
 
 \see
@@ -276,13 +276,13 @@ In a header:
 - *Keyword:* The key of a keyword record.
 
 In an image data unit:
-- *%Raster:* An _n_-D array or values stored contiguously, in row-major order.
+- *%Raster:* An _n_-D array of values stored contiguously, in row-major order.
 
 In a binary table data unit:
 - *Field:* A cell of a table HDU, i.e. the intersection of a row and column; It may contain several elements!
-- *Element:* (Termed entry in the standard) A single value of an field, of simple type (e.g. one character of a string field, one pixel of a multidimensional field).
-- *Scalar field:* An field which contains one element.
-- *Vector field:* An field which contains several elements.
+- *Element:* Termed entry in the standard. A single value of a field, of simple type (e.g. one character of a string field, one pixel of a multidimensional field).
+- *Scalar field:* A field which contains one element.
+- *Vector field:* A field which contains several elements.
 - *Multidimensional field:* A vector field which can be viewed as a raster.
 
 */
