@@ -140,7 +140,7 @@ const ImageHdu& MefFile::append_image_header(const std::string& name, const Reco
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created)); // FIXME factorize
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   m_strategy.created(hdu);
-  hdu.header().write_seq(records);
+  hdu.header().write_n(records);
   return hdu;
 
   // FIXME inverse dependency (see appendImageExt's FIXME)
@@ -157,7 +157,7 @@ MefFile::append_null_image(const std::string& name, const RecordSeq& records, co
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   m_strategy.created(hdu);
-  hdu.header().write_seq(records);
+  hdu.header().write_n(records);
 
   // CFITSIO's fits_write_img_null does not support compression
   if (shapeSize(shape) != 0) {
@@ -191,7 +191,7 @@ const ImageHdu& MefFile::append_image(const std::string& name, const RecordSeq& 
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<ImageHdu>();
   m_strategy.created(hdu);
-  hdu.header().write_seq(records);
+  hdu.header().write_n(records);
   hdu.raster().write(raster);
   return hdu;
   // FIXME Is it more efficient to (1) create dataless HDU and then resize and fill data,
@@ -207,7 +207,7 @@ MefFile::append_bintable_header(const std::string& name, const RecordSeq& record
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
   m_strategy.created(hdu);
-  hdu.header().write_seq(records);
+  hdu.header().write_n(records);
   return hdu;
 }
 
@@ -234,7 +234,7 @@ template <typename... TColumns>
 const BintableHdu&
 MefFile::append_bintable(const std::string& name, const RecordSeq& records, const TColumns&... columns) {
   const auto& hdu = append_bintable_header(name, records, columns.info()...);
-  hdu.columns().write_seq(std::forward_as_tuple(columns...)); // FIXME rm forwarding => should accept single column
+  hdu.columns().write_n(std::forward_as_tuple(columns...)); // FIXME rm forwarding => should accept single column
   return hdu;
 }
 
@@ -247,7 +247,7 @@ MefFile::append_bintable(const std::string& name, const RecordSeq& records, cons
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
   const auto& hdu = m_hdus[index]->as<BintableHdu>();
   m_strategy.created(hdu);
-  hdu.header().write_seq(records);
+  hdu.header().write_n(records);
   return hdu;
   // FIXME use append_bintable(name, records, columns...) or inverse dependency
 }

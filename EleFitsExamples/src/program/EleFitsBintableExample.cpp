@@ -68,7 +68,7 @@ void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* 
 double read_columns(const Fits::BintableColumns& du) {
 
   /* Read with different types (implicit conversion) */
-  const auto cols = du.read_seq(Fits::as<double>("VECTOR"), Fits::as<float>("MULTIDIM"));
+  const auto cols = du.read_n(Fits::as<double>("VECTOR"), Fits::as<float>("MULTIDIM"));
 
   /* Compute something */
   double result = 0;

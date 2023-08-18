@@ -69,7 +69,7 @@ void write_some_records(const Header& header) {
       {"LATPOLE", "", "deg", "Native latitude of celestial pole"},
       {"RADESYS", "", "", "Equatorial coordinate system"},
       {"EQUINOX", "", "", "Equinox of celestial coordinate system (e.g. 2000)"}};
-  header.write_seq(records);
+  header.write_n(records);
 }
 
 /**

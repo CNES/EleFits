@@ -32,7 +32,7 @@ void write_primary_header(const Header& h, long nobj) {
   Record<std::int64_t> nobj_record {"N_OBJ", nobj, "", "number of objects in the package"};
   Record<std::string> telescope_record {"TELESCOP", "EUCLID", "", "telescope name"};
   Record<std::string> instrument_record {"INSTRUME", "NISP", "", "instrument name"};
-  h.write_seq(nobj_record, telescope_record, instrument_record);
+  h.write_n(nobj_record, telescope_record, instrument_record);
 }
 
 /*
@@ -132,7 +132,7 @@ void insert_columns(const BintableColumns& du, const AstroObjInfo& info) {
   du.init(comb_qual_info, du.read_index("COMBINED1D_VAR"));
   du.init(dith1d_qual_info, du.read_index("DITH1D_VAR"));
   du.init(dith2d_qual_info, du.read_index("DITH2D_VAR"));
-  du.write_seq(
+  du.write_n(
       make_column(std::move(comb_qual_info), std::move(comb_qual_data)),
       make_column(std::move(dith1d_qual_info), std::move(dith1d_qual_data)),
       make_column(std::move(dith2d_qual_info), std::move(dith2d_qual_data)));

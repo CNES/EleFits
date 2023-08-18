@@ -13,7 +13,7 @@ namespace Fits {
 template <typename TRaster>
 void SifFile::write(const RecordSeq& records, const TRaster& raster) {
   m_raster.update_type_shape<typename TRaster::Value, TRaster::Dim>(raster.shape());
-  m_header.write_seq(records);
+  m_header.write_n(records);
   m_raster.write(raster);
 }
 

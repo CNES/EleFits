@@ -90,17 +90,17 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.write<RecordMode::CreateNew>("I", 0);
 
   /* Heterogeneous write */
-  h.write_seq(i, f);
-  h.write_seq(t);
-  h.write_seq_in({"I"}, i, f);
-  h.write_seq_in({"F"}, t);
-  h.write_seq<RecordMode::CreateNew>(i, f);
-  h.write_seq<RecordMode::CreateNew>(t);
+  h.write_n(i, f);
+  h.write_n(t);
+  h.write_n_in({"I"}, i, f);
+  h.write_n_in({"F"}, t);
+  h.write_n<RecordMode::CreateNew>(i, f);
+  h.write_n<RecordMode::CreateNew>(t);
 
   /* Homogeneous write */
-  h.write_seq(v.vector);
-  h.write_seq_in({"I"}, v.vector);
-  h.write_seq<RecordMode::CreateNew>(v.vector);
+  h.write_n(v.vector);
+  h.write_n_in({"I"}, v.vector);
+  h.write_n<RecordMode::CreateNew>(v.vector);
 
   /* Global read */
   h.read_all(~KeywordCategory::Comment);
@@ -112,14 +112,14 @@ BOOST_AUTO_TEST_CASE(syntax_test) {
   h.parse_or(i);
 
   /* Heterogeneous read */
-  h.parse_seq(as<int>("I"), as<float>("F"));
-  h.parse_seq_or(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
+  h.parse_n(as<int>("I"), as<float>("F"));
+  h.parse_n_or(std::make_tuple(Record<int>("I", 0), Record<float>("F", 3.14)));
   const auto [bound_i, bound_f] = h.parse_struct<S>(as<int>("I"), as<float>("F")); // Structured binding
   BOOST_TEST(bound_i == i);
   BOOST_TEST(bound_f == f);
 
   /* Homogeneous read */
-  h.parse_seq<VariantValue>({"I", "F"});
+  h.parse_n<VariantValue>({"I", "F"});
 }
 
 //-----------------------------------------------------------------------------

@@ -236,7 +236,7 @@ void write_file(const std::string& filename) {
 
   /* Write several columns */
 
-  table2.columns().write_seq(columns.int32_column, columns.float_column);
+  table2.columns().write_n(columns.int32_column, columns.float_column);
 
   //! [Write columns]
 
@@ -266,11 +266,11 @@ void write_records(const Fits::Header& h) {
 
   /* Write several records */
 
-  h.write_seq(records.int_record, records.float_record, records.complex_record);
+  h.write_n(records.int_record, records.float_record, records.complex_record);
 
   /* Update using initialization lists */
 
-  h.write_seq<Fits::RecordMode::UpdateExisting>(
+  h.write_n<Fits::RecordMode::UpdateExisting>(
       Fits::Record<int>("INT", 1),
       Fits::Record<float>("FLOAT", 3.14159F, "", "A larger piece of Pi"),
       Fits::Record<std::complex<double>>("COMPLEX", {180., 90.}));
@@ -339,7 +339,7 @@ void read_records(const Fits::Header& h) {
 
   /* Read several records */
 
-  const auto some_records = h.parse_seq(
+  const auto some_records = h.parse_n(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
@@ -348,7 +348,7 @@ void read_records(const Fits::Header& h) {
 
   /* Read as VariantValue */
 
-  const auto variant_records = h.parse_seq<>({"INT", "COMPLEX"});
+  const auto variant_records = h.parse_n<>({"INT", "COMPLEX"});
   const auto complex_record = variant_records.as<std::complex<double>>("COMPLEX");
 
   /* Read as a user-defined structure */
@@ -400,12 +400,12 @@ void read_columns(const Fits::BintableColumns& du) {
 
   /* Read several columns by their name */
 
-  const auto by_name = du.read_seq(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
+  const auto by_name = du.read_n(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
   const auto& string_column = std::get<0>(by_name);
 
   /* Read several columns by their index */
 
-  const auto by_index = du.read_seq(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
+  const auto by_index = du.read_n(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
   const auto& int_column = std::get<1>(by_index);
 
   /* Use values */

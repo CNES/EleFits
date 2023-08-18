@@ -76,7 +76,7 @@ void BintableColumns::remove(ColumnKey key) const {
   // TODO to Cfitsio
 }
 
-void BintableColumns::remove_seq(std::vector<ColumnKey> keys) const {
+void BintableColumns::remove_n(std::vector<ColumnKey> keys) const {
   std::sort(keys.begin(), keys.end(), [&](auto& lhs, auto& rhs) {
     return lhs.index(*this) > rhs.index(*this); // descending order to avoid shifting
   });

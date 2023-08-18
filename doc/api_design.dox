@@ -73,14 +73,14 @@ Last but not least, for performance, it is preferable to read several columns at
 FitsFile f("catalog.fits", FileMode::READ);
 const auto& hdu = f.access(4);
 auto name = hdu.read_name();
-auto catalog = hdu.columns().read_seq<std::string, std::complex<double>>({"ID", "RADEC"});
+auto catalog = hdu.columns().read_n<std::string, std::complex<double>>({"ID", "RADEC"});
 \endcode
 
 One issue remains with the above proposal.
 Imagine a more realistic use case where more columns should be read:
 
 \code
-auto catalog = hdu.columns().read_seq<
+auto catalog = hdu.columns().read_n<
     std::string, std::complex<double>, double, float, double, float, std::int16_t>(
         {"ID", "RADEC", "Z", "FLUX", "SHAPE", "SPECTRUM", "THUMBNAIL"});
 \endcode
@@ -89,7 +89,7 @@ It is very easy to make mistakes in the order of the arguments.
 To solve this, we can manage to have each column data type written alongside its name:
 
 \code
-auto catalog = hdu.columns().read_seq(
+auto catalog = hdu.columns().read_n(
     as<std::string>("ID"),
     as<std::complex<double>>("RADEC"),
     as<double>("Z"),
@@ -130,7 +130,7 @@ const TypedKey<Radec, std::string> radec_key(id_name);
 MefFile f(filename, mode);
 const BintableHdu& hdu = f.access<BintableHdu>(hdu_index);
 const BintableColumns& du = hdu.columns();
-std::tuple<VecColumn<Id>, VecColumn<Radec>> coords = du.read_seq(id_key, radec_key);
+std::tuple<VecColumn<Id>, VecColumn<Radec>> coords = du.read_n(id_key, radec_key);
 \endcode
 
 Here we see how verbose the implementation can be for a rather simple example.
@@ -152,7 +152,7 @@ using Radec = std::complex<double>;
 
 MefFile f(filename, FileMode::READ);
 const auto& hdu = f.access<BintableHdu>(hdu_index);
-auto coords = hdu.columns().read_seq(as<Id>(id_name), as<Radec>(radec_name));
+auto coords = hdu.columns().read_n(as<Id>(id_name), as<Radec>(radec_name));
 \endcode
 
 
@@ -163,7 +163,7 @@ Although they are simple to read, large fluent APIs are hard to document,
 due to the relatively large amount of classes.
 Because it is not convenient to browse many class documentation pages when trying to perform such a simple operation,
 the documentation of EleFits is built around examples.
-For example, if you check the documentation of `BintableColumns::read_seq()`,
+For example, if you check the documentation of `BintableColumns::read_n()`,
 you will see that, although the parameters are of type `TypedKey`,
 the method documentation explains that they can be fed with a name or index
 and provides simple and more complex examples,

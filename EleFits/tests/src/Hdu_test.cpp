@@ -66,7 +66,7 @@ BOOST_FIXTURE_TEST_CASE(records_with_fallback_are_read_back_test, Test::Temporar
   header.write(written);
   written.value++;
   fallback.value++;
-  const auto output = header.parse_seq_or(written, fallback);
+  const auto output = header.parse_n_or(written, fallback);
   BOOST_TEST(std::get<0>(output).value == written.value - 1);
   BOOST_TEST(std::get<1>(output).value == fallback.value);
 }
@@ -134,12 +134,12 @@ BOOST_FIXTURE_TEST_CASE(record_tuple_is_updated_and_read_back_test, Test::Tempor
   const Record<short> short_record {"SHORT", 1};
   const Record<long> long_record {"LONG", 1000};
   auto records = std::make_tuple(short_record, long_record);
-  h.write_seq(records);
+  h.write_n(records);
   BOOST_TEST(h.parse<short>("SHORT") == 1);
   BOOST_TEST(h.parse<long>("LONG") == 1000);
   std::get<0>(records).value = 2;
   std::get<1>(records).value = 2000;
-  h.write_seq<RecordMode::UpdateExisting>(records);
+  h.write_n<RecordMode::UpdateExisting>(records);
   BOOST_TEST(h.parse<short>("SHORT") == 2);
   BOOST_TEST(h.parse<long>("LONG") == 2000);
 }
@@ -150,7 +150,7 @@ BOOST_FIXTURE_TEST_CASE(vector_of_any_records_is_read_back_test, Test::Temporary
   records.push_back({"STRING", std::string("WIDE")});
   records.push_back({"FLOAT", 3.14F});
   records.push_back({"INT", 666});
-  h.write_seq(records);
+  h.write_n(records);
   auto parsed = h.parse_all();
   BOOST_TEST(parsed.as<std::string>("STRING").value == "WIDE");
   BOOST_TEST(parsed.as<int>("INT").value == 666);
@@ -163,9 +163,9 @@ BOOST_FIXTURE_TEST_CASE(subset_of_vector_of_any_records_is_read_back_test, Test:
   records.vector[0].assign(Record<std::string>("STRING", "WIDE"));
   records.vector[1].assign(Record<float>("FLOAT", 3.14F));
   records.vector[2].assign(Record<int>("INT", 666));
-  h.write_seq_in({"FLOAT", "INT"}, records);
+  h.write_n_in({"FLOAT", "INT"}, records);
   BOOST_CHECK_THROW(h.parse<VariantValue>("STRING"), std::exception);
-  auto parsed = h.parse_seq({"INT"});
+  auto parsed = h.parse_n({"INT"});
   BOOST_TEST(parsed.as<int>("INT").value == 666);
   BOOST_CHECK_THROW(parsed.as<float>("FLOAT"), std::exception);
 }
@@ -217,7 +217,7 @@ BOOST_FIXTURE_TEST_CASE(records_are_read_as_a_struct_test, Test::TemporarySifFil
   };
   const auto& header = this->header();
   const MyHeader input {false, 1, 3.14F, "VAL"};
-  header.write_seq(
+  header.write_n(
       Record<bool>("BOOL", input.b),
       Record<int>("INT", input.i),
       Record<float>("FLOAT", input.f),

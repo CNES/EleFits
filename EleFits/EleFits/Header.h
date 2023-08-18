@@ -42,7 +42,7 @@ enum class RecordMode {
  * - `write`-prefixed methods write provided values following a strategy defined as a `RecordMode` enumerator.
  * 
  * When reading or writing several records, it is recommended to use the `Seq`-suffixed methods
- * (e.g. one call to `write_seq()` instead of several calls to `write()`), which are optimized.
+ * (e.g. one call to `write_n()` instead of several calls to `write()`), which are optimized.
  * 
  * To write sequences of records, the following types are accepted,
  * as well as their constant and reference counterparts:
@@ -230,53 +230,53 @@ public:
    * Example usages without fallbacks:
    * \code
    * // Homogeneous records
-   * auto vector = h.parse_seq<int>({"A", "B", "C"});
+   * auto vector = h.parse_n<int>({"A", "B", "C"});
    * 
    * // Heterogeneous records
-   * auto tuple = h.parse_seq(as<int>("INT"), as<float>("FLOAT"));
+   * auto tuple = h.parse_n(as<int>("INT"), as<float>("FLOAT"));
    * \endcode
    * 
    * Example usages with fallbacks:
    * \code
    * // std::vector to std::vector
    * std::vector<Records<VariantValue>> fallbacks {{"ONE", 1}, {"TWO", 2.0}};
-   * auto vector = h.parse_seq_or(fallbacks);
+   * auto vector = h.parse_n_or(fallbacks);
    * 
    * // RecordVec to RecordVec
    * RecordSeq fallbacks {{{"ONE", 1}, {"TWO", 2.0}}};
-   * auto rec_vec = h.parse_seq_or(fallbacks);
+   * auto rec_vec = h.parse_n_or(fallbacks);
    * 
    * // std::tuple to std::tuple
    * auto fallbacks = std::make_tuple(Record<int>("ONE", 1), Record<double>("TWO", 2.0));
-   * auto tuple = h.parse_seq_or(fallbacks);
+   * auto tuple = h.parse_n_or(fallbacks);
    * 
    * // Variadic to std::tuple
-   * auto tuple = h.parse_seq_or(Record<int>("INT", 0), Record<float>("FLOAT", 3.14));
+   * auto tuple = h.parse_n_or(Record<int>("INT", 0), Record<float>("FLOAT", 3.14));
    * \endcode
    */
   template <typename T = VariantValue>
-  RecordVec<T> parse_seq(const std::vector<std::string>& keywords) const;
+  RecordVec<T> parse_n(const std::vector<std::string>& keywords) const;
 
   /**
    * @brief Parse a sequence of heterogeneous records.
-   * @copydetails parse_seq()
+   * @copydetails parse_n()
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parse_seq(const TypedKey<Ts, std::string>&... keywords) const;
+  std::tuple<Record<Ts>...> parse_n(const TypedKey<Ts, std::string>&... keywords) const;
 
   /**
    * @brief Parse a sequence of records if they exist, return fallbacks for those which don't.
-   * @copydetails parse_seq()
+   * @copydetails parse_n()
    */
   template <typename TSeq>
-  TSeq parse_seq_or(TSeq&& fallbacks) const;
+  TSeq parse_n_or(TSeq&& fallbacks) const;
 
   /**
    * @brief Parse a heterogeneous sequence of records if they exist, return fallbacks for those which don't.
-   * @copydetails parse_seq()
+   * @copydetails parse_n()
    */
   template <typename... Ts>
-  std::tuple<Record<Ts>...> parse_seq_or(const Record<Ts>&... fallbacks) const;
+  std::tuple<Record<Ts>...> parse_n_or(const Record<Ts>&... fallbacks) const;
 
   /// @}
   /**
@@ -293,7 +293,7 @@ public:
    * 
    * Several methods are provided to return records or record values as a user-defined structure,
    * instead of a `std::vector` or `std::tuple`.
-   * These methods differe from `parse_seq`-prefixed methods in that the returned sequence
+   * These methods differe from `parse_n`-prefixed methods in that the returned sequence
    * is interpretted as a user-defined structure,
    * provided that it can be constructed from a brace-enclosed list of `Record`s
    * or from a brace-enclosed list of record values.
@@ -430,9 +430,9 @@ public:
    * 
    * Example usage:
    * \code
-   * h0.write_seq(records);
-   * h1.write_seq_in<RecordMode::CreateNew>({"A", "B"}, records);
-   * h2.write_seq_in<RecordMode::CreateNew>({"B", "C"}, records);
+   * h0.write_n(records);
+   * h1.write_n_in<RecordMode::CreateNew>({"A", "B"}, records);
+   * h2.write_n_in<RecordMode::CreateNew>({"B", "C"}, records);
    * \endcode
    * where `h0`, `h1`, `h2` are headers of different HDUs and `records` is a sequence of records,
    * like a `RecordSeq`.
@@ -440,28 +440,28 @@ public:
    * @see RecordMode
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void write_seq(const Record<Ts>&... records) const;
+  void write_n(const Record<Ts>&... records) const;
 
   /**
    * @brief Write a homogeneous or heterogeneous sequence of records.
-   * @copydetails write_seq()
+   * @copydetails write_n()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
-  void write_seq(TSeq&& records) const;
+  void write_n(TSeq&& records) const;
 
   /**
    * @brief Write a subset of a heterogeneous sequence of records.
-   * @copydetails write_seq()
+   * @copydetails write_n()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... Ts>
-  void write_seq_in(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
+  void write_n_in(const std::vector<std::string>& keywords, const Record<Ts>&... records) const;
 
   /**
    * @brief Write a subset of a homogeneous or heterogeneous sequence of records.
-   * @copydetails write_seq()
+   * @copydetails write_n()
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename TSeq>
-  void write_seq_in(const std::vector<std::string>& keywords, TSeq&& records) const;
+  void write_n_in(const std::vector<std::string>& keywords, TSeq&& records) const;
 
   /// @}
   /**
@@ -528,7 +528,7 @@ public:
   template <typename... TArgs>
   auto parseSeq(TArgs&&... args) const
   {
-    return parse_seq(std::forward<TArgs>(args)...);
+    return parse_n(std::forward<TArgs>(args)...);
   }
 
   /**
@@ -537,7 +537,7 @@ public:
   template <typename... TArgs>
   auto parseSeqOr(TArgs&&... args) const
   {
-    return parse_seq_or(std::forward<TArgs>(args)...);
+    return parse_n_or(std::forward<TArgs>(args)...);
   }
 
   /**
@@ -564,7 +564,7 @@ public:
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
   void writeSeq(TArgs&&... args) const
   {
-    return write_seq<Mode>(std::forward<TArgs>(args)...);
+    return write_n<Mode>(std::forward<TArgs>(args)...);
   }
 
   /**
@@ -573,7 +573,7 @@ public:
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
   void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const
   {
-    return write_seq_in<Mode>(std::forward<TArgs>(args)...);
+    return write_n_in<Mode>(std::forward<TArgs>(args)...);
   }
 
   /**

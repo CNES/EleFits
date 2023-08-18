@@ -6,12 +6,13 @@
 
 * `parseAll()` threw when parsing long string user-defined keywords
 
-### Breaking changes
+### Breaking changes (with backward compatibility aliases)
 
 * `Column::entry()` deprecated and renamed as `field()` (name was wrong wrt. the FITS standard)
 * Snake-cased functions names for better integration with the standard library and `Linx`
   * Pascal-cased names are kept but deprecated
   * Data classes due to be replaced with `Linx` in version 6 are unchanged
+* Rename `Seq` suffix as `n` (e.g. `parseSeq()` is now `parse_n()`) following standard library convention
 
 ### New features
 

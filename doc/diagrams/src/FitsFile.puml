@@ -54,8 +54,8 @@ class Header {
 + read_all() : string
 + parse(keyword) : Record
 + write(record)
-+ parse_seq(keywords...) : Record...
-+ write_seq(records...)
++ parse_n(keywords...) : Record...
++ write_n(records...)
 }
 
 class ImageRaster {
@@ -67,9 +67,9 @@ class BintableColumns {
 + read(index) : Column
 + read(name) : Column
 + write(column)
-+ read_seq(indices...) : Column...
-+ read_seq(names...) : Column...
-+ write_seq(columns...)
++ read_n(indices...) : Column...
++ read_n(names...) : Column...
++ write_n(columns...)
 }
 
 }

@@ -39,13 +39,13 @@ It conveys alone both the name and type of the record.
 that is, writing:
 
 \code
-header.parse_seq(as<int>("A"), as<float>("B"), as<std::string>("C"));
+header.parse_n(as<int>("A"), as<float>("B"), as<std::string>("C"));
 \endcode
 
 instead of:
 
 \code
-header.parse_seq<int, float, std::string>({ "A", "B", "C" });
+header.parse_n<int, float, std::string>({ "A", "B", "C" });
 \endcode
 
 which would be error-prone when reading many records.

@@ -34,7 +34,7 @@ Record<T> Header::parse_or(
 }
 
 template <typename T>
-RecordVec<T> Header::parse_seq(const std::vector<std::string>& keywords) const {
+RecordVec<T> Header::parse_n(const std::vector<std::string>& keywords) const {
   m_touch();
   RecordVec<T> res(keywords.size());
   std::transform(keywords.begin(), keywords.end(), res.vector.begin(), [&](const std::string& k) {
@@ -44,12 +44,12 @@ RecordVec<T> Header::parse_seq(const std::vector<std::string>& keywords) const {
 }
 
 template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parse_seq(const TypedKey<Ts, std::string>&... keywords) const {
+std::tuple<Record<Ts>...> Header::parse_n(const TypedKey<Ts, std::string>&... keywords) const {
   return parse_struct<std::tuple<Record<Ts>...>, Ts...>(keywords...);
 }
 
 template <typename TSeq>
-TSeq Header::parse_seq_or(TSeq&& fallbacks) const {
+TSeq Header::parse_n_or(TSeq&& fallbacks) const {
   auto func = [&](const auto& f) {
     return parse_or(f);
   };
@@ -57,7 +57,7 @@ TSeq Header::parse_seq_or(TSeq&& fallbacks) const {
 }
 
 template <typename... Ts>
-std::tuple<Record<Ts>...> Header::parse_seq_or(const Record<Ts>&... fallbacks) const {
+std::tuple<Record<Ts>...> Header::parse_n_or(const Record<Ts>&... fallbacks) const {
   return parse_struct_or<std::tuple<Record<Ts>...>, Ts...>(fallbacks...);
 }
 
@@ -166,12 +166,12 @@ void Header::write<RecordMode::UpdateExisting, const char*>(
     const std::string& comment) const; // TODO dispatch Mode
 
 template <RecordMode Mode, typename... Ts>
-void Header::write_seq(const Record<Ts>&... records) const {
-  write_seq<Mode>(std::forward_as_tuple(records...));
+void Header::write_n(const Record<Ts>&... records) const {
+  write_n<Mode>(std::forward_as_tuple(records...));
 }
 
 template <RecordMode Mode, typename TSeq>
-void Header::write_seq(TSeq&& records) const {
+void Header::write_n(TSeq&& records) const {
   m_edit();
   auto func = [&](const auto& r) {
     Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
@@ -180,12 +180,12 @@ void Header::write_seq(TSeq&& records) const {
 }
 
 template <RecordMode Mode, typename... Ts>
-void Header::write_seq_in(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
-  write_seq_in<Mode>(keywords, std::forward_as_tuple(records...));
+void Header::write_n_in(const std::vector<std::string>& keywords, const Record<Ts>&... records) const {
+  write_n_in<Mode>(keywords, std::forward_as_tuple(records...));
 }
 
 template <RecordMode Mode, typename TSeq>
-void Header::write_seq_in(const std::vector<std::string>& keywords, TSeq&& records) const {
+void Header::write_n_in(const std::vector<std::string>& keywords, TSeq&& records) const {
   m_edit();
   auto func = [&](const auto& r) {
     if (std::find(keywords.begin(), keywords.end(), r.keyword) != keywords.end()) {

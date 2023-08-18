@@ -41,7 +41,7 @@ std::string Header::read_all(KeywordCategory categories) const {
 }
 
 RecordSeq Header::parse_all(KeywordCategory categories) const {
-  return parse_seq<VariantValue>(read_keywords(categories & ~KeywordCategory::Comment));
+  return parse_n<VariantValue>(read_keywords(categories & ~KeywordCategory::Comment));
   // TODO return comments as string Records?
 }
 

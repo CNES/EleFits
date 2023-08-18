@@ -80,67 +80,67 @@ void BintableColumns::read_segment_to(FileMemSegments rows, ColumnKey key, TColu
       &column(rows.memory().front, 0));
 }
 
-// read_seq
+// read_n
 
 template <typename TKey, typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableColumns::read_seq(const TypedKey<Ts, TKey>&... keys) const {
+std::tuple<VecColumn<Ts>...> BintableColumns::read_n(const TypedKey<Ts, TKey>&... keys) const {
   const auto row_count = read_row_count();
   std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(read_info<Ts>(keys.key), row_count)...};
-  read_seq_to({ColumnKey(keys.key)...}, res);
+  read_n_to({ColumnKey(keys.key)...}, res);
   return res;
 }
 
 template <typename T, long N>
-std::vector<VecColumn<T, N>> BintableColumns::read_seq(std::vector<ColumnKey> keys) const {
+std::vector<VecColumn<T, N>> BintableColumns::read_n(std::vector<ColumnKey> keys) const {
   const auto row_count = read_row_count();
   std::vector<VecColumn<T, N>> res(keys.size());
   std::transform(keys.begin(), keys.end(), res.begin(), [&](ColumnKey& k) {
     return VecColumn<T, N>(read_info<T>(k.index(*this)), row_count);
   });
-  read_seq_to(std::move(keys), res);
+  read_n_to(std::move(keys), res);
   return res;
 }
 
-// read_seq_to
+// read_n_to
 
 template <typename TSeq>
-void BintableColumns::read_seq_to(TSeq&& columns) const {
+void BintableColumns::read_n_to(TSeq&& columns) const {
   auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
-  read_seq_to(std::move(keys), std::forward<TSeq>(columns));
+  read_n_to(std::move(keys), std::forward<TSeq>(columns));
 }
 
 template <typename... TColumns>
-void BintableColumns::read_seq_to(TColumns&... columns) const {
-  read_seq_to(std::forward_as_tuple(columns...));
+void BintableColumns::read_n_to(TColumns&... columns) const {
+  read_n_to(std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
-void BintableColumns::read_seq_to(std::vector<ColumnKey> keys, TSeq&& columns) const {
-  read_segment_seq_to(0, std::move(keys), std::forward<TSeq>(columns));
+void BintableColumns::read_n_to(std::vector<ColumnKey> keys, TSeq&& columns) const {
+  read_n_segments_to(0, std::move(keys), std::forward<TSeq>(columns));
 }
 
 template <typename... TColumns>
-void BintableColumns::read_seq_to(std::vector<ColumnKey> keys, TColumns&... columns) const {
-  read_seq_to(std::move(keys), std::forward_as_tuple(columns...));
+void BintableColumns::read_n_to(std::vector<ColumnKey> keys, TColumns&... columns) const {
+  read_n_to(std::move(keys), std::forward_as_tuple(columns...));
 }
 
-// read_segment_seq
+// read_n_segments
 
 template <typename TKey, typename... Ts>
 std::tuple<VecColumn<Ts, 1>...>
-BintableColumns::read_segment_seq(Segment rows, const TypedKey<Ts, TKey>&... keys) const {
+BintableColumns::read_n_segments(Segment rows, const TypedKey<Ts, TKey>&... keys) const {
   if (rows.back == -1) {
     rows.back = read_row_count() - 1;
   }
   auto columns = std::make_tuple(VecColumn<Ts, 1>(read_info<Ts, 1>(keys.key), rows.size())...);
-  read_segment_seq_to(rows, {ColumnKey(keys.key)...}, columns);
+  read_n_segments_to(rows, {ColumnKey(keys.key)...}, columns);
   return columns;
 }
 
 template <typename T, long N>
-std::vector<VecColumn<T, N>> BintableColumns::read_segment_seq(Segment rows, std::vector<ColumnKey> keys) const {
+std::vector<VecColumn<T, N>> BintableColumns::read_n_segments(Segment rows, std::vector<ColumnKey> keys) const {
   if (rows.back == -1) {
     rows.back = read_row_count() - 1;
   }
@@ -149,28 +149,28 @@ std::vector<VecColumn<T, N>> BintableColumns::read_segment_seq(Segment rows, std
   for (const auto& k : keys) {
     columns.emplace_back(read_info<T>(k), rows.size()); // TODO std::transform?
   }
-  read_segment_seq_to(rows, keys, columns);
+  read_n_segments_to(rows, keys, columns);
   return columns;
 }
 
-// read_segment_seq_to
+// read_n_segments_to
 
 template <typename TSeq>
-void BintableColumns::read_segment_seq_to(FileMemSegments rows, TSeq&& columns) const {
+void BintableColumns::read_n_segments_to(FileMemSegments rows, TSeq&& columns) const {
   auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
-  read_segment_seq_to(std::move(rows), keys, std::forward<TSeq>(columns));
+  read_n_segments_to(std::move(rows), keys, std::forward<TSeq>(columns));
 }
 
 template <typename... TColumns>
-void BintableColumns::read_segment_seq_to(FileMemSegments rows, TColumns&... columns) const {
-  read_segment_seq_to(std::move(rows), {ColumnKey(columns.info().name)...}, columns...);
+void BintableColumns::read_n_segments_to(FileMemSegments rows, TColumns&... columns) const {
+  read_n_segments_to(std::move(rows), {ColumnKey(columns.info().name)...}, columns...);
   // Could forward_as_tuple but would be 1 more indirection for the same amount of lines
 }
 
 template <typename TSeq>
-void BintableColumns::read_segment_seq_to(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const {
+void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const {
   const auto buffer_size = read_buffer_row_count();
   const long row_count = columns_row_count(std::forward<TSeq>(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
@@ -191,9 +191,9 @@ void BintableColumns::read_segment_seq_to(FileMemSegments rows, std::vector<Colu
 }
 
 template <typename... TColumns>
-void BintableColumns::read_segment_seq_to(FileMemSegments rows, std::vector<ColumnKey> keys, TColumns&... columns)
+void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TColumns&... columns)
     const {
-  read_segment_seq_to(std::move(rows), std::move(keys), std::forward_as_tuple(columns...));
+  read_n_segments_to(std::move(rows), std::move(keys), std::forward_as_tuple(columns...));
 }
 
 // write
@@ -236,20 +236,20 @@ void BintableColumns::write_segment(FileMemSegments rows, const TColumn& column)
       &column(rows.memory().front, 0));
 }
 
-// write_seq
+// write_n
 
 template <typename TSeq>
-void BintableColumns::write_seq(TSeq&& columns) const {
-  write_segment_seq(0, std::forward<TSeq>(columns));
+void BintableColumns::write_n(TSeq&& columns) const {
+  write_n_segments(0, std::forward<TSeq>(columns));
 }
 
 template <typename... TColumns>
-void BintableColumns::write_seq(const TColumns&... columns) const {
-  write_seq(std::forward_as_tuple(columns...));
+void BintableColumns::write_n(const TColumns&... columns) const {
+  write_n(std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
-void BintableColumns::insert_null_seq(long index, TSeq&& infos) const {
+void BintableColumns::insert_n_null(long index, TSeq&& infos) const {
   m_edit();
   const auto name_vec = seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
     return info.name;
@@ -276,14 +276,14 @@ void BintableColumns::insert_null_seq(long index, TSeq&& infos) const {
 }
 
 template <typename... TInfos>
-void BintableColumns::insert_null_seq(long index, const TInfos&... infos) const {
-  insert_null_seq(index, std::forward_as_tuple(infos...));
+void BintableColumns::insert_n_null(long index, const TInfos&... infos) const {
+  insert_n_null(index, std::forward_as_tuple(infos...));
 }
 
-// write_segment_seq
+// write_n_segments
 
 template <typename TSeq>
-void BintableColumns::write_segment_seq(FileMemSegments rows, TSeq&& columns) const {
+void BintableColumns::write_n_segments(FileMemSegments rows, TSeq&& columns) const {
   const auto row_count = columns_row_count(std::forward<TSeq>(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
   const long last_mem_row = rows.memory().back;
@@ -302,8 +302,8 @@ void BintableColumns::write_segment_seq(FileMemSegments rows, TSeq&& columns) co
 }
 
 template <typename... TColumns>
-void BintableColumns::write_segment_seq(FileMemSegments rows, const TColumns&... columns) const {
-  write_segment_seq(std::move(rows), std::forward_as_tuple(columns...));
+void BintableColumns::write_n_segments(FileMemSegments rows, const TColumns&... columns) const {
+  write_n_segments(std::move(rows), std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>

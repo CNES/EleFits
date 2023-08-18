@@ -17,31 +17,31 @@ using namespace Euclid::Fits;
 //     read(key) => TEST
 //   read_segment_to(rows, column) => TEST
 //
-// read_segment_seq_to (rows, keys, columns) -> loop on read_segment_to (rows, key, column)
-//   read_seq_to (keys, columns)
-//     read_seq (indices...)
-//       read_seq (names...) => SEQ_WRITE_READ_TEST
-//     read_seq_to (columns)
-//       read_seq_to (columns...) => TEST
-//     read_seq_to (keys, columns...) => TEST
-//   read_segment_seq (rows, indices...)
-//     read_segment_seq (rows, names...) => SEQ_WRITE_READ_TEST
-//   read_segment_seq_to (rows, keys, columns)
-//     read_segment_seq_to (rows, columns) => TEST
-//       read_segment_seq_to (rows, columns...) => TEST
+// read_n_segments_to (rows, keys, columns) -> loop on read_segment_to (rows, key, column)
+//   read_n_to (keys, columns)
+//     read_n (indices...)
+//       read_n (names...) => SEQ_WRITE_READ_TEST
+//     read_n_to (columns)
+//       read_n_to (columns...) => TEST
+//     read_n_to (keys, columns...) => TEST
+//   read_n_segments (rows, indices...)
+//     read_n_segments (rows, names...) => SEQ_WRITE_READ_TEST
+//   read_n_segments_to (rows, keys, columns)
+//     read_n_segments_to (rows, columns) => TEST
+//       read_n_segments_to (rows, columns...) => TEST
 //
 // write_segment(rows, column)
 //   write_segment(column)
 //
-// write_segment_seq (first_row, columns) -> loop on write_segment (row, column)
-//   write_seq (columns) => SEQ_WRITE_READ_TEST
-//     write_seq (columns...) => SEQ_WRITE_READ_TEST
-//   write_segment_seq (first_row, columns...) => SEQ_WRITE_READ_TEST
+// write_n_segments (first_row, columns) -> loop on write_segment (row, column)
+//   write_n (columns) => SEQ_WRITE_READ_TEST
+//     write_n (columns...) => SEQ_WRITE_READ_TEST
+//   write_n_segments (first_row, columns...) => SEQ_WRITE_READ_TEST
 //
-// insert_null_seq (index, infos) => SEQ_WRITE_READ_TEST
-//   insert_null_seq (index, infos...) => SEQ_WRITE_READ_TEST
+// insert_n_null (index, infos) => SEQ_WRITE_READ_TEST
+//   insert_n_null (index, infos...) => SEQ_WRITE_READ_TEST
 //
-// remove_seq (keys) => SEQ_WRITE_READ_TEST
+// remove_n (keys) => SEQ_WRITE_READ_TEST
 
 //-----------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
   const auto& ext = append_bintable("TABLE", {}, table.name_col, table.radec_col);
   const auto& columns = ext.columns();
   BOOST_TEST(columns.read_row_count() == init_size);
-  columns.write_segment_seq(-1, table.name_col, table.radec_col);
+  columns.write_n_segments(-1, table.name_col, table.radec_col);
   BOOST_TEST(columns.read_row_count() == init_size * 2);
 }
 
@@ -71,22 +71,22 @@ void check_tuple_write_read(const BintableColumns& du, const VecColumn<T>& first
 
   /* Write */
   const auto row_count = first.row_count();
-  du.write_seq(last, first);
+  du.write_n(last, first);
   BOOST_TEST(du.read_row_count() == row_count);
 
   /* Read */
-  const auto [res0, res1] = du.read_seq(as<T>(last.info().name), as<T>(first.info().name)); // Structured binding
+  const auto [res0, res1] = du.read_n(as<T>(last.info().name), as<T>(first.info().name)); // Structured binding
   BOOST_TEST((res0.info() == last.info()));
   BOOST_TEST((res1.info() == first.info()));
   BOOST_TEST(res0.container() == last.container());
   BOOST_TEST(res1.container() == first.container());
 
   /* Append */
-  du.write_segment_seq(-1, last, first);
+  du.write_n_segments(-1, last, first);
   BOOST_TEST(du.read_row_count() == row_count * 2);
 
   /* Read */
-  const auto res2 = du.read_segment_seq({row_count, -1}, as<T>(last.info().name), as<T>(first.info().name));
+  const auto res2 = du.read_n_segments({row_count, -1}, as<T>(last.info().name), as<T>(first.info().name));
   const auto& res20 = std::get<0>(res2);
   const auto& res21 = std::get<1>(res2);
   BOOST_TEST((res20.info() == last.info()));
@@ -131,9 +131,9 @@ void check_array_write_read(const BintableColumns& du) {
       VecColumn<T> {infos[0], Test::generate_random_vector<T>(repeat_count * row_count)}};
 
   /* Write */
-  du.insert_null_seq(0, infos);
-  du.write_seq(seq);
-  const auto res = du.read_seq<T>({0, 1});
+  du.insert_n_null(0, infos);
+  du.write_n(seq);
+  const auto res = du.read_n<T>({0, 1});
 
   /* Read */
   const auto& res0 = res[0];
@@ -144,7 +144,7 @@ void check_array_write_read(const BintableColumns& du) {
   BOOST_TEST(res1.container() == seq[0].container());
 
   /* Remove */
-  du.remove_seq({1, 0}); // Inverted for robustness test
+  du.remove_n({1, 0}); // Inverted for robustness test
   BOOST_TEST(not du.has(infos[0].name)); // FIXME accept ColumnInfo as key
   BOOST_TEST(not du.has(infos[1].name)); // FIXME idem
 }
@@ -201,9 +201,9 @@ void check_vector_write_read(const BintableColumns& du) {
       {infos[0], Test::generate_random_vector<T>(repeat_count * row_count)}};
 
   /* Write */
-  du.insert_null_seq(0, infos);
-  du.write_seq(seq);
-  const auto res = du.read_seq<T>({infos[0].name, infos[1].name}); // FIXME accept ColumnInfo as key
+  du.insert_n_null(0, infos);
+  du.write_n(seq);
+  const auto res = du.read_n<T>({infos[0].name, infos[1].name}); // FIXME accept ColumnInfo as key
 
   /* Read */
   const auto& res0 = res[0];
@@ -214,7 +214,7 @@ void check_vector_write_read(const BintableColumns& du) {
   BOOST_TEST(res1.container() == seq[0].container());
 
   /* Remove */
-  du.remove_seq({infos[0].name, infos[1].name}); // Inverted for robustness test
+  du.remove_n({infos[0].name, infos[1].name}); // Inverted for robustness test
   BOOST_TEST(not du.has(infos[0].name));
   BOOST_TEST(not du.has(infos[1].name));
 }

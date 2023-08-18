@@ -82,7 +82,7 @@ Ultimate optimization when creating an HDU is to complete the header unit first 
 const auto &ext = f.append_image_header<float, 3>(name);
 
 // Write user records
-ext.header().write_seq(record1, record2, record3);
+ext.header().write_n(record1, record2, record3);
 
 // Write data unit
 ext.raster().write(data);
@@ -132,7 +132,7 @@ to avoid passing through the data unit several times.
 \code
 // Good :)
 const auto &ext = f.access<BintableHdu>(index);
-const auto columns = ext.columns().read_seq(
+const auto columns = ext.columns().read_n(
     as<std::string>("A"),
     as<float>("B"),
     as<std::int16_t>("C")); // Reads the whole data unit once

@@ -68,7 +68,7 @@ public:
       Record<std::string> string_record("STRING", "string");
       logger.info() << "Writing record: INTEGER = 8";
       Record<int> integer_record("INTEGER", 8);
-      ext.header().write_seq(string_record, integer_record);
+      ext.header().write_n(string_record, integer_record);
 
       logger.info();
 
@@ -117,7 +117,7 @@ public:
       const auto extname = ext2.read_name();
       //! [Get HDU name]
       logger.info() << "Name of HDU #3: " << extname;
-      const auto records = ext2.header().parse_seq(as<std::string>("STRING"), as<int>("INTEGER"));
+      const auto records = ext2.header().parse_n(as<std::string>("STRING"), as<int>("INTEGER"));
       logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
       logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
       const auto& image = f.find<ImageHdu>("SMALLIMG");
