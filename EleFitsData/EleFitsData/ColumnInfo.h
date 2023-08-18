@@ -60,11 +60,11 @@ namespace Fits {
  * -- and more details follow.
  * 
  * <table class="fieldtable">
- * <tr><th>Category <th>`T`<th>`N`<th>`repeat_count()`<th>`element_count()`<th>`shape`
- * <tr><td>%String<td>`std::string`<td>1<td>> max number of characters<td>1<td>`{repeat_count()}`
- * <tr><td>Scalar<td>Not `std::string`<td>1<td>1<td>1<td>`{1}`
- * <tr><td>Vector<td>Not `std::string`<td>1<td>> 1<td> = repeat count<td>`{repeat_count()}`
- * <tr><td>Multidimensional<td>Not `std::string`<td>-1 or > 1<td>= shape size<td>= shape size<td>Unconstrained
+ * <tr><th> Category <th> `T` <th> `N` <th> `repeat_count()` <th> `element_count()` <th> `shape`
+ * <tr><td> %String <td> `std::string` <td> 1 <td> > max number of characters <td> 1 <td> `{repeat_count()}`
+ * <tr><td> Scalar <td> Not `std::string` <td> 1 <td> 1 <td> 1 <td> `{1}`
+ * <tr><td> Vector <td> Not `std::string` <td> 1 <td> > 1 <td>  = repeat count <td> `{repeat_count()}`
+ * <tr><td> Multidimensional <td> Not `std::string` <td> -1 or > 1 <td> = shape size <td> = shape size <td> Unconstrained
  * </table>
  * 
  * For string columns, the element count differs from the repeat count,
@@ -77,11 +77,11 @@ namespace Fits {
  * Here is an example of a 4-row table with each column category:
  * 
  * <table class="fieldtable">
- * <tr><th>Row<th>%String<th>Scalar<th>Vector<th>Multidim
- * <tr><td>0<td>`"ZERO"`<td>0<td>00 01 02<td>000 001 002<br>010 011 012
- * <tr><td>1<td>`"ONE"`<td>1<td>10 11 12<td>100 101 102<br>110 111 112
- * <tr><td>2<td>`"TWO"`<td>2<td>20 21 22<td>200 201 202<br>210 211 212
- * <tr><td>3<td>`"THREE"`<td>3<td>30 31 32<td>300 301 302<br>310 311 312
+ * <tr><th> Row <th> %String <th> Scalar <th> Vector <th> Multidim
+ * <tr><td> 0 <td> `"ZERO"` <td> 0 <td> 00 01 02 <td> 000 001 002<br>010 011 012
+ * <tr><td> 1 <td> `"ONE"` <td> 1 <td> 10 11 12 <td> 100 101 102<br>110 111 112
+ * <tr><td> 2 <td> `"TWO"` <td> 2 <td> 20 21 22 <td> 200 201 202<br>210 211 212
+ * <tr><td> 3 <td> `"THREE"` <td> 3 <td> 30 31 32 <td> 300 301 302<br>310 311 312
  * </table>
  * 
  * For performance, the values are stored sequentially in a 1D array as follows:
@@ -131,7 +131,6 @@ namespace Fits {
  */
 template <typename T, long N = 1>
 struct ColumnInfo {
-
   /**
    * @brief The value decay type.
    */
@@ -151,7 +150,8 @@ struct ColumnInfo {
    * The field shape is deduced from the repeat count
    * (first axis' lenght is the repeat count, others are set to 1).
    */
-  ColumnInfo(std::string n = "", std::string u = "", long r = 1) : name(n), unit(u), shape(Position<N>::one()) {
+  ColumnInfo(std::string n = "", std::string u = "", long r = 1) : name(n), unit(u), shape(Position<N>::one())
+  {
     shape[0] = r;
   }
 
@@ -193,14 +193,16 @@ struct ColumnInfo {
   /**
    * @deprecated
    */
-  long repeatCount() const {
+  long repeatCount() const
+  {
     return repeat_count();
   }
 
   /**
    * @deprecated
    */
-  long elementCount() const {
+  long elementCount() const
+  {
     return element_count();
   }
 };
@@ -238,7 +240,8 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
  * \endcode
  */
 template <typename T, typename... Longs>
-ColumnInfo<T, sizeof...(Longs)> make_column_info(const std::string& name, const std::string& unit, Longs... shape) {
+ColumnInfo<T, sizeof...(Longs)> make_column_info(const std::string& name, const std::string& unit, Longs... shape)
+{
   return {name, unit, Position<sizeof...(Longs)> {shape...}};
 }
 
@@ -247,7 +250,8 @@ ColumnInfo<T, sizeof...(Longs)> make_column_info(const std::string& name, const 
  * @brief Scalar column specialization.
  */
 template <typename T>
-ColumnInfo<T> make_column_info(const std::string& name, const std::string& unit = "") {
+ColumnInfo<T> make_column_info(const std::string& name, const std::string& unit = "")
+{
   return {name, unit};
 }
 
@@ -255,7 +259,8 @@ ColumnInfo<T> make_column_info(const std::string& name, const std::string& unit 
  * @deprecated
  */
 template <typename T, typename... TArgs>
-[[deprecated("Use make_column_info")]] auto makeColumnInfo(TArgs&&... args) {
+[[deprecated("Use make_column_info")]] auto makeColumnInfo(TArgs&&... args)
+{
   return make_column_info<T>(std::forward<TArgs>(args)...);
 }
 

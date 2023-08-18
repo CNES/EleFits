@@ -91,13 +91,13 @@ EleFits refers to the comment with unit as the "raw comment".
 \note
 The naming conventions of the FITS standard, CFITSIO and EleFits for the keyword records are compared below:
 <table class="fieldtable">
-<tr><th>EleFits<th>Standard<th>CFITSIO<th>Example
-<tr><td>%Record<td>Keyword record<td>Keyword or Keyword record<td>`EXPTIME = 1500.0 / [s] exposure time`
-<tr><td>Keyword<td>Name<td>Name or Keyword<td>`EXPTIME`
-<tr><td>Value<td>Value<td>Value<td>`1500.0`
-<tr><td>Raw comment<td>Comment<td>Comment<td>`[s] exposure time`
-<tr><td>Unit<td>Unit<td>Unit<td>`s`
-<tr><td>Comment<td>Unnamed<td>Comment or Unnamed<td>`exposure time`
+<tr><th> EleFits <th> Standard <th> CFITSIO <th> Example
+<tr><td> %Record <td> Keyword record <td> Keyword or Keyword record <td> `EXPTIME = 1500.0 / [s] exposure time`
+<tr><td> Keyword <td> Name <td> Name or Keyword <td> `EXPTIME`
+<tr><td> Value <td> Value <td> Value <td> `1500.0`
+<tr><td> Raw comment <td> Comment <td> Comment <td> `[s] exposure time`
+<tr><td> Unit <td> Unit <td> Unit <td> `s`
+<tr><td> Comment <td> Unnamed <td> Comment or Unnamed <td> `exposure time`
 </table>
 
 \see
@@ -204,7 +204,7 @@ There is almost a 1-to-1 mapping of the FITS and EleFits structures:
 
 <table class="fieldtable">
 <tr>
-<th>File structure<th>Class structure
+<th> File structure <th> Class structure
 <tr>
 <td>
 SIF file
