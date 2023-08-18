@@ -991,6 +991,7 @@ pre.fragment {
     border-radius: var(--border-radius-small);
     border: none;
     overflow: hidden;
+    font-variant-ligatures: no-common-ligatures;
 }
 
 code {
@@ -998,7 +999,7 @@ code {
     background: var(--code-background);
     color: var(--code-foreground);
     padding: 2px 6px;
-    word-break: break-word;
+    word-break: break-all;
 }
 
 div.fragment,
