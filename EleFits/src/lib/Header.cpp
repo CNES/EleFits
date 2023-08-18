@@ -24,12 +24,12 @@ void Header::remove(const std::string& keyword) const {
   Cfitsio::HeaderIo::remove_record(m_fptr, keyword);
 }
 
-std::vector<std::string> Header::read_keywords(KeywordCategory categories) const {
+std::vector<std::string> Header::read_all_keywords(KeywordCategory categories) const {
   m_touch();
   return Cfitsio::HeaderIo::list_keywords(m_fptr, categories);
 }
 
-std::map<std::string, std::string> Header::read_keywords_values(KeywordCategory categories) const {
+std::map<std::string, std::string> Header::read_all_keywords_values(KeywordCategory categories) const {
   m_touch();
   return Cfitsio::HeaderIo::list_keywords_values(m_fptr, categories);
 }
@@ -41,7 +41,7 @@ std::string Header::read_all(KeywordCategory categories) const {
 }
 
 RecordSeq Header::parse_all(KeywordCategory categories) const {
-  return parse_n<VariantValue>(read_keywords(categories & ~KeywordCategory::Comment));
+  return parse_n<VariantValue>(read_all_keywords(categories & ~KeywordCategory::Comment));
   // TODO return comments as string Records?
 }
 
@@ -101,7 +101,7 @@ void KeywordExistsError::may_throw(const std::string& existing_keyword, const He
 }
 
 void KeywordExistsError::may_throw(const std::vector<std::string>& existing_keywords, const Header& header) {
-  const auto found = header.read_keywords();
+  const auto found = header.read_all_keywords();
   for (const auto& k : existing_keywords) {
     if (std::find(found.begin(), found.end(), k) != found.end()) {
       throw KeywordExistsError(k);
@@ -119,7 +119,7 @@ void KeywordNotFoundError::may_throw(const std::string& missing_keyword, const H
 }
 
 void KeywordNotFoundError::may_throw(const std::vector<std::string>& missing_keywords, const Header& header) {
-  const auto found = header.read_keywords();
+  const auto found = header.read_all_keywords();
   for (const auto& k : missing_keywords) {
     if (std::find(found.begin(), found.end(), k) == found.end()) {
       throw KeywordNotFoundError(k);

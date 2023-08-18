@@ -106,8 +106,8 @@ public:
    * 
    * Example usages:
    * \code
-   * auto keywords = h.read_keywords(~KeywordCategory::Comment);
-   * auto keywords_vals = h.read_keywords_values();
+   * auto keywords = h.read_all_keywords(~KeywordCategory::Comment);
+   * auto keywords_vals = h.read_all_keywords_values();
    * auto header = h.read_all();
    * auto records = h.parse_all(KeywordCategory::Reserved);
    * \endcode
@@ -115,17 +115,17 @@ public:
    * 
    * @see KeywordCategory
    */
-  std::vector<std::string> read_keywords(KeywordCategory categories = KeywordCategory::All) const;
+  std::vector<std::string> read_all_keywords(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief List keywords and their values.
    * 
-   * @copydetails read_keywords()
+   * @copydetails read_all_keywords()
    * 
    * @warning
    * If several records have the same keywords, the returned value is a line break-separated list.
    */
-  std::map<std::string, std::string> read_keywords_values(KeywordCategory categories = KeywordCategory::All) const;
+  std::map<std::string, std::string> read_all_keywords_values(KeywordCategory categories = KeywordCategory::All) const;
 
   /**
    * @brief Read the whole header as a single string.
@@ -135,7 +135,7 @@ public:
 
   /**
    * @brief Parse records of given categories.
-   * @copydetails read_keywords()
+   * @copydetails read_all_keywords()
    * @warning
    * Comment records are not parsed, as of today.
    */
@@ -484,23 +484,25 @@ public:
   /**
    * @deprecated
    */
-  std::vector<std::string> readKeywords(KeywordCategory categories = KeywordCategory::All) const
+  [[deprecated("Use read_all_keywords")]] std::vector<std::string>
+  readKeywords(KeywordCategory categories = KeywordCategory::All) const
   {
-    return read_keywords(categories);
+    return read_all_keywords(categories);
   }
 
   /**
    * @deprecated
    */
-  std::map<std::string, std::string> readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const
+  [[deprecated("Use read_all_keywords_values")]] std::map<std::string, std::string>
+  readKeywordsValues(KeywordCategory categories = KeywordCategory::All) const
   {
-    return read_keywords_values(categories);
+    return read_all_keywords_values(categories);
   }
 
   /**
    * @deprecated
    */
-  std::string readAll(KeywordCategory categories = KeywordCategory::All) const
+  [[deprecated]] std::string readAll(KeywordCategory categories = KeywordCategory::All) const
   {
     return read_all(categories);
   }
@@ -508,7 +510,7 @@ public:
   /**
    * @deprecated
    */
-  RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const
+  [[deprecated]] RecordSeq parseAll(KeywordCategory categories = KeywordCategory::All) const
   {
     return parse_all(categories);
   }
@@ -517,7 +519,7 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  auto parseOr(TArgs&&... args) const
+  [[deprecated]] auto parseOr(TArgs&&... args) const
   {
     return parse_or(std::forward<TArgs>(args)...);
   }
@@ -526,7 +528,7 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  auto parseSeq(TArgs&&... args) const
+  [[deprecated]] auto parseSeq(TArgs&&... args) const
   {
     return parse_n(std::forward<TArgs>(args)...);
   }
@@ -535,7 +537,7 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  auto parseSeqOr(TArgs&&... args) const
+  [[deprecated]] auto parseSeqOr(TArgs&&... args) const
   {
     return parse_n_or(std::forward<TArgs>(args)...);
   }
@@ -544,7 +546,7 @@ public:
    * @deprecated
    */
   template <typename TOut, typename... Ts>
-  TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const
+  [[deprecated]] TOut parseStruct(const TypedKey<Ts, std::string>&... keywords) const
   {
     return parse_struct(keywords...);
   }
@@ -553,7 +555,7 @@ public:
    * @deprecated
    */
   template <typename TOut, typename... TArgs>
-  TOut parseStructOr(TArgs&&... args) const
+  [[deprecated]] TOut parseStructOr(TArgs&&... args) const
   {
     return parse_struct_or<TOut>(std::forward<TArgs>(args)...);
   }
@@ -562,7 +564,7 @@ public:
    * @deprecated
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
-  void writeSeq(TArgs&&... args) const
+  [[deprecated]] void writeSeq(TArgs&&... args) const
   {
     return write_n<Mode>(std::forward<TArgs>(args)...);
   }
@@ -571,7 +573,7 @@ public:
    * @deprecated
    */
   template <RecordMode Mode = RecordMode::CreateOrUpdate, typename... TArgs>
-  void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const
+  [[deprecated]] void writeSeqIn(const std::vector<std::string>& keywords, TArgs&&... args) const
   {
     return write_n_in<Mode>(std::forward<TArgs>(args)...);
   }
@@ -579,7 +581,7 @@ public:
   /**
    * @deprecated
    */
-  void writeComment(const std::string& comment) const
+  [[deprecated]] void writeComment(const std::string& comment) const
   {
     return write_comment(comment);
   }
@@ -587,7 +589,7 @@ public:
   /**
    * @deprecated
    */
-  void writeHistory(const std::string& history) const
+  [[deprecated]] void writeHistory(const std::string& history) const
   {
     return write_history(history);
   }

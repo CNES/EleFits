@@ -20,14 +20,15 @@ using namespace Euclid::Fits;
     return #name; \
   }
 
-std::string read_type_name(const ImageHdu& hdu) {
+std::string read_type_name(const ImageHdu& hdu)
+{
   const auto& id = hdu.read_typeid();
   ELEFITS_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
   return "UNKNOWN TYPE";
 }
 
-std::string read_compression_name(const ImageHdu& hdu) {
-
+std::string read_compression_name(const ImageHdu& hdu)
+{
   if (not hdu.is_compressed()) {
     return "None";
   }
@@ -58,7 +59,8 @@ std::string read_compression_name(const ImageHdu& hdu) {
   return "Unknown";
 }
 
-KeywordCategory parse_keyword_categories(const std::string& filter) {
+KeywordCategory parse_keyword_categories(const std::string& filter)
+{
   auto categories = KeywordCategory::None;
   static const std::map<char, KeywordCategory> mapping {
       {'m', KeywordCategory::Mandatory},
@@ -72,9 +74,10 @@ KeywordCategory parse_keyword_categories(const std::string& filter) {
 }
 
 class EleFitsReadStructure : public Elements::Program {
-
 public:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
     auto options = ProgramOptions::from_aux_file("ReadStructure.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.named("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter");
@@ -82,8 +85,8 @@ public:
     return options.as_pair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
-
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
+  {
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsReadStructure");
 
     /* Read options */
@@ -141,7 +144,7 @@ public:
 
       /* Read keywords */
       if (categories) {
-        const auto records = hdu.header().read_keywords_values(categories);
+        const auto records = hdu.header().read_all_keywords_values(categories);
         if (records.size() == 0) {
           logger.info() << "  No keywords";
         } else {
