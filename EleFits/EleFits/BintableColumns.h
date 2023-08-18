@@ -120,7 +120,7 @@ public:
   /**
    * @brief Get the indices of the columns with given names.
    */
-  std::vector<long> read_indices(const std::vector<std::string>& names) const;
+  std::vector<long> read_n_indices(const std::vector<std::string>& names) const;
 
   /**
    * @brief Get the name of the column with given index.
@@ -508,7 +508,7 @@ public:
   /**
    * @deprecated
    */
-  long readColumnCount() const
+  [[deprecated]] long readColumnCount() const
   {
     return read_column_count();
   }
@@ -516,7 +516,7 @@ public:
   /**
    * @deprecated
    */
-  long readRowCount() const
+  [[deprecated]] long readRowCount() const
   {
     return read_row_count();
   }
@@ -524,7 +524,7 @@ public:
   /**
    * @deprecated
    */
-  long readBufferRowCount() const
+  [[deprecated]] long readBufferRowCount() const
   {
     return read_buffer_row_count();
   }
@@ -532,7 +532,7 @@ public:
   /**
    * @deprecated
    */
-  long readIndex(const std::string& name) const
+  [[deprecated]] long readIndex(const std::string& name) const
   {
     return read_index(name);
   }
@@ -540,15 +540,15 @@ public:
   /**
    * @deprecated
    */
-  std::vector<long> readIndices(const std::vector<std::string>& names) const
+  [[deprecated("Use read_n_indices()")]] std::vector<long> readIndices(const std::vector<std::string>& names) const
   {
-    return read_indices(names);
+    return read_n_indices(names);
   }
 
   /**
    * @deprecated
    */
-  std::string readName(long index) const
+  [[deprecated]] std::string readName(long index) const
   {
     return read_name(index);
   }
@@ -556,7 +556,7 @@ public:
   /**
    * @deprecated
    */
-  std::vector<std::string> readAllNames() const
+  [[deprecated]] std::vector<std::string> readAllNames() const
   {
     return read_all_names();
   }
@@ -565,7 +565,7 @@ public:
    * @deprecated
    */
   template <typename T, long N = 1>
-  ColumnInfo<T, N> readInfo(ColumnKey key) const
+  [[deprecated]] ColumnInfo<T, N> readInfo(ColumnKey key) const
   {
     return read_info<T, N>(key);
   }
@@ -574,7 +574,7 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  void readTo(TArgs&&... args)
+  [[deprecated]] void readTo(TArgs&&... args)
   {
     return read_to(std::forward<TArgs>(args)...); // FIXME test
   }
@@ -583,13 +583,13 @@ public:
    * @deprecated
    */
   template <typename T, long N = 1>
-  VecColumn<T, N> readSegment(const Segment& rows, ColumnKey key) const
+  [[deprecated]] VecColumn<T, N> readSegment(const Segment& rows, ColumnKey key) const
   {
     return read_segment<T, N>(rows, key);
   }
 
   template <typename... TArgs>
-  void readSegmentTo(TArgs&&... args) const
+  [[deprecated]] void readSegmentTo(TArgs&&... args) const
   {
     return read_segment_to(std::forward<TArgs>(args)...);
   }
@@ -598,7 +598,7 @@ public:
    * @deprecated
    */
   template <typename TKey, typename... Ts> // FIXME add long... Ns
-  std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const
+  [[deprecated]] std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const
   {
     return read_n(keys...);
   }
@@ -607,7 +607,7 @@ public:
    * @deprecated
    */
   template <typename T, long N = 1>
-  std::vector<VecColumn<T, N>> readSeq(std::vector<ColumnKey> keys) const
+  [[deprecated]] std::vector<VecColumn<T, N>> readSeq(std::vector<ColumnKey> keys) const
   {
     return read_n<T, N>(keys);
   }
@@ -616,7 +616,7 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  void readSeqTo(TArgs&... args) const
+  [[deprecated]] void readSeqTo(TArgs&... args) const
   {
     return read_n_to(std::forward<TArgs>(args)...);
   }
@@ -625,7 +625,7 @@ public:
    * @deprecated
    */
   template <typename TKey, typename... Ts>
-  std::tuple<VecColumn<Ts, 1>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const
+  [[deprecated]] std::tuple<VecColumn<Ts, 1>...> readSegmentSeq(Segment rows, const TypedKey<Ts, TKey>&... keys) const
   {
     return read_n_segments(rows, keys...);
   }
@@ -634,7 +634,7 @@ public:
    * @deprecated
    */
   template <typename T, long N = 1>
-  std::vector<VecColumn<T, N>> readSegmentSeq(Segment rows, const std::vector<ColumnKey> keys) const
+  [[deprecated]] std::vector<VecColumn<T, N>> readSegmentSeq(Segment rows, const std::vector<ColumnKey> keys) const
   {
     return read_n_segments<T, N>(rows, keys);
   }
@@ -643,7 +643,7 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  void readSegmentSeqTo(TArgs&&... args) const
+  [[deprecated]] void readSegmentSeqTo(TArgs&&... args) const
   {
     return read_n_segments_to(std::forward<TArgs>(args)...);
   }
@@ -652,13 +652,13 @@ public:
    * @deprecated Replaced with append_null() and insert_null()
   */
   template <typename TInfo>
-  void init(const TInfo& info, long index = -1) const;
+  [[deprecated("Use append_null() or insert_null()")]] void init(const TInfo& info, long index = -1) const;
 
   /**
    * @deprecated
    */
   template <typename TColumn>
-  void writeSegment(FileMemSegments rows, const TColumn& column) const
+  [[deprecated]] void writeSegment(FileMemSegments rows, const TColumn& column) const
   {
     return write_segment(rows, column);
   }
@@ -667,7 +667,7 @@ public:
    * @deprecated
    */
   template <typename... TArgs>
-  void writeSeq(const TArgs&... args) const
+  [[deprecated]] void writeSeq(const TArgs&... args) const
   {
     return write_n(std::forward<TArgs>(args)...);
   }
@@ -676,7 +676,7 @@ public:
    * @deprecated Use insert_n_null()
    */
   template <typename... TArgs>
-  void initSeq(TArgs&&... args) const
+  [[deprecated("Use insert_n_null()")]] void initSeq(TArgs&&... args) const
   {
     return insert_n_null(std::forward<TArgs>(args)...);
   }
@@ -684,13 +684,16 @@ public:
   /**
    * @deprecated
    */
-  void removeSeq(std::vector<ColumnKey> keys) const
+  [[deprecated]] void removeSeq(std::vector<ColumnKey> keys) const
   {
     return remove_n(keys);
   }
 
+  /**
+   * @deprecated
+   */
   template <typename... TArgs>
-  void writeSegmentSeq(TArgs&&... args) const
+  [[deprecated]] void writeSegmentSeq(TArgs&&... args) const
   {
     return write_n_segments(std::forward<TArgs>(args)...);
   }

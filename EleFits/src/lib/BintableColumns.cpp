@@ -40,7 +40,7 @@ long BintableColumns::read_index(const std::string& name) const {
   return Cfitsio::BintableIo::column_index(m_fptr, name) - 1;
 }
 
-std::vector<long> BintableColumns::read_indices(const std::vector<std::string>& names) const {
+std::vector<long> BintableColumns::read_n_indices(const std::vector<std::string>& names) const {
   m_touch();
   std::vector<long> indices(names.size());
   std::transform(names.begin(), names.end(), indices.begin(), [&](const std::string& n) {
