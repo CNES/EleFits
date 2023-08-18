@@ -138,7 +138,10 @@ public:
    * @param name The name to be given
    * @warning This is a write operation.
    */
-  void rename(ColumnKey key, const std::string& name) const; // FIXME update name?
+  void update_name(ColumnKey key, const std::string& name) const
+  {
+    return rename(key, name);
+  }
 
   /// @}
   /**
@@ -569,6 +572,11 @@ public:
   {
     return read_info<T, N>(key);
   }
+
+  /**
+   * @deprecated
+   */
+  [[deprecated("Use update_name()")]] void rename(ColumnKey key, const std::string& name) const; // FIXME update name?
 
   /**
    * @deprecated

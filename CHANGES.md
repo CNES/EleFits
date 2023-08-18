@@ -13,6 +13,7 @@
   * Pascal-cased names are kept but deprecated
   * Data classes due to be replaced with `Linx` in version 6 are unchanged
 * Rename `Seq` suffix as `n` (e.g. `parseSeq()` is now `parse_n()`) following standard library convention
+* Rename `BintableColumns::rename()` as `update_name()` to emphasize the write operation
 
 ### New features
 
