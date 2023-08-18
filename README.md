@@ -16,7 +16,7 @@ As compared to CFITSIO, the benefits are mainly those of C++ over C:
 * Structures dedicated to data storage;
 * A lightweight class hierarchy to represent the actual FITS organization (e.g. HDUs, records, columns).
 
-Furthermore, exclusive features are provided, like HDU selectors and automatic buffering of binary tables.
+Furthermore, exclusive features are provided, like adaptive compression, HDU selectors and automatic buffering of binary tables.
 
 To maximize performance, EleFits is built as a CFITSIO wrapper as thin as possible.
 While the two libraries are generally equivalent, optimizations implemented internally make EleFits even faster in some classical cases, unless the CFITSIO user spends considerable development efforts.
@@ -26,12 +26,15 @@ The following (a bit extreme) example shows how natural it is
 to read the columns named "RA" and "DEC" in the 4th extension of a Multi-Extension FITS (MEF) file:
 
 ```cpp
-auto [ra, dec] = MefFile("file.fits").access<BintableColumns>(4).read_seq(as<double>("RA"), as<double>("DEC"));
+auto [ra, dec] = MefFile("file.fits")
+    .access<BintableColumns>(4)
+    .read_n(as<double>("RA"), as<double>("DEC"));
 ```
 
 ## Comparison to alternatives
 
-A more realistic use case than the toy example above is creating a Single Image FITS (SIF) file with a keyword record and an array.
+For a more realistic use case than the toy example above, let us rely on a classical demo:
+Create a Single Image FITS (SIF) file with a keyword record and an array.
 Here is a comparison of EleFits with the main alternatives:
 
 ```cpp
@@ -68,7 +71,7 @@ fits_write_key(fits, TDOUBLE, name.c_str(), &value, comment.c_str(), &status);
 fits_write_img(fits, TSHORT, 1, width * height, data, &status);
 ```
 
-To go further, here are Python options:
+For completeness, here are Python options:
 
 ```py
 # Astropy
@@ -86,11 +89,11 @@ with fitsio.FITS(filename, 'rw') as fits:
 
 ## Exclusive features
 
-In addition, exclusive features are provided to simplify the implementation of classical use cases.
+In addition, exclusive features are provided to simplify the implementation of classical tasks.
 A few examples are given below.
 
 Strategies are predefined or user-defined lists of actions to be performed automatically.
-Among strategies, compression strategies enables internal compression of image HDUs:
+Among strategies, compression strategies enables adaptive internal compression of image HDUs:
 
 ```cpp
 // Given:
@@ -98,8 +101,7 @@ Among strategies, compression strategies enables internal compression of image H
 // - Raster<float> data: A 2D intensity image
 // - Raster<char> mask: A 2D mask image
 
-MefFile f(filename, FileMode::Edit);
-f.strategy(CompressAptly(), ValidateChecksums());
+MefFile f(filename, FileMode::Edit, CompressAuto(), ValidateChecksums());
 f.append_image("", {}, image); // Automatically compresses with shuffled GZIP
 f.append_image("", {}, mask); // Automatically compresses with PLIO
 const auto& p = f.primary(); // Automatically validates Primary's checksums, if any
@@ -151,7 +153,8 @@ to take advantage of an internal buffer:
 // Given:
 // - BintableColumns columns: The binary table data unit handler
 
-auto [col_a, col_b, col_c] = columns.read_seq(as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
+auto [col_a, col_b, col_c] = columns.read_n(
+    as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
 ```
 
 ```cpp
@@ -159,7 +162,7 @@ auto [col_a, col_b, col_c] = columns.read_seq(as<char>("A"), as<double>("B"), as
 // - BintableColumns columns: The binary table data unit handler
 // - Column col_a, col_b, col_c: Column containers of various value types
 
-columns.write_seq(col_a, col_b, col_c);
+columns.write_n(col_a, col_b, col_c);
 ```
 
 Fields of mutidimensional columns can be accessed as rasters directly:
@@ -187,7 +190,7 @@ See [the dedicated page](INSTALL.md).
 
 ## User documentation
 
-The [Modules page](https://cnes.github.io/EleFits/5.0.0/modules.html) is the main entry point for usage documentation.
+The [User Guide](https://cnes.github.io/EleFits/5.0.0/modules.html) is the main entry point for usage documentation.
 Each so-called documentation module addresses a specific topic to learn how to use EleFits and understand why it is designed the way it is.
 The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.
 
