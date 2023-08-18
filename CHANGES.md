@@ -34,11 +34,18 @@
 
 * Previously deprecated `MefFile` members were removed
 
+### Considered features for 6.0
+
+* Make EleFits header only
+* Rely on the Linx library for data classes (e.g. replace `Fits::Raster` with `Linx::Raster`)
+* Refactor `HduCategory` and `KeywordCategory` for cleaner API and better performance
+* Remove `Euclid` namespace
+
 ## 5.2
 
-### Breaking changes
+### Dependency change
 
-* Updated to Elements 6.2.1, requires C++17
+* Updated to Elements 6.2.1 and C++17
 
 ### New features
 
@@ -52,20 +59,23 @@
 * Fixed `BintableColumns::readSegmentSeq()` with unresolved bound (-1)
 * Calling `BintableColumns::init()` while having accessed another HDU edited the wrong HDU
 
-### Breaking changes
+### Dependency change
 
 * Updated to Elements 6.1.1
 
-## 5.0
+## 5.0 (breaking)
 
 ### Bug fixes
 
 * Function `shapeSize()` was wrong for `N = 0`
 * Method `readSize()` of `ImageHdu` and `ImageRaster` was wrong for `N != 2`
 
-### Breaking changes
+### Dependency change
 
 * Updated to Elements 6.0.1
+
+### Breaking changes
+
 * `Raster<T, N>` becomes `Raster<T, N, TContainer>` to work with any contiguous container
   (with `PtrRaster<T, N> = Raster<T, N, T*>` and `VecRaster<T, N> = Raster<T, N, vector<T>>`)
 * `ColumnInfo<T>` becomes `ColumnInfo<T, N>` and variable `repeatCount` becomes method `repeatCount()`
@@ -112,7 +122,11 @@
 * Formatting has been reviewed
 * This change log was added to Doxygen pages
 
-## 4.0
+## 4.0 (breaking)
+
+### Dependency change
+
+* Update to Elements 5.14.0
 
 ### Renaming
 
@@ -134,7 +148,6 @@
 
 ### Other breaking changes
 
-* Update to Elements 5.14.0
 * `SifFile::header()` returns a `Header` instead of an `Hdu`
 * `Raster.shape` and `Column.info` become `Raster.shape()` and `Column.info()`
 * `Raster.data()`, `Column.data()` and `Column.elementCount()` are not virtual anymore:
@@ -223,7 +236,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### Cleaning
 
-* `FitsFile::open` is protected again, `FitsFile::reopen` is more robust
+* `FitsFile::open()` is protected again, `FitsFile::reopen()` is more robust
 * HDU handlers cannot be created on their own
 * Error messages contain more informations
 * Benchmark is made more complete, extensible and more automated
@@ -258,16 +271,12 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 * Internal optimizations
 
-### Expected changes for 3.0
-
-* HDU indices will be 0-based, just like positions and other indices
-
 ## 2.1 (breaking)
 
 ### API changes
 
 * Naming homogeneization:
-  * `ColumnInfo::repeat` -> `ColumnInfo::repeatCount`
+  * `ColumnInfo::repeat()` -> `ColumnInfo::repeatCount()`
 
 ### Bug fixes
 
@@ -289,7 +298,7 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 ### Cleaning
 
-* `FitsFile::open` throws an error if already open
+* `FitsFile::open()` throws an error if already open
 * Fixture classes better organized
 * Comprehensive testing of the supported types
 * Reviewed documentation
@@ -311,14 +320,14 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 
 * pascalCase functions and methods
 * Reading and writing operations are made explicit in method naming:
-  * `ImageHdu::resize` -> `ImageHdu::updateShape`
-  * `MefFile::hduNames` -> `MefFile::readHduNames`
-  * `RecordHdu::keywords` -> `RecordHdu::readKeywords`
-  * `RecordHdu::name` -> `RecordHdu::readName`
-  * `RecordHdu::rename` -> `RecordHdu::updateName`
+  * `ImageHdu::resize()` -> `ImageHdu::updateShape()`
+  * `MefFile::hduNames()` -> `MefFile::readHduNames()`
+  * `RecordHdu::keywords()` -> `RecordHdu::readKeywords()`
+  * `RecordHdu::name()` -> `RecordHdu::readName()`
+  * `RecordHdu::rename()` -> `RecordHdu::updateName()`
 * Naming homogeneization:
-  * `Column::nelements` -> `Column::elementCount`
-  * `Column::rows` -> `Column::rowCount`
+  * `Column::nelements()` -> `Column::elementCount()`
+  * `Column::rows()` -> `Column::rowCount()`
 
 ### New features
 
@@ -327,9 +336,9 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 * New helper method `Record<T>::cast<U>()` where `T` and `U` can be `any`
 * Vectors of homogeneous records can be read and written
 * New helper class `RecordVector` to find homogeneous records by keyword
-* Method `RecordHdu::parseAllRecords` parses a whole header unit
+* Method `RecordHdu::parseAllRecords()` parses a whole header unit
 * Minor additions:
-  * `ImageHdu::readShape`
+  * `ImageHdu::readShape()`
 
 ### Cleaning
 
@@ -366,11 +375,6 @@ They should be replaced with analogous methods of `Header`, `ImageRaster` and `B
 * `unsigned long` records larger than the greatest `long` cannot be read (CFITSIO bug), although they can be written
 * Boolean columns are not supported
 * Columns are assumed to have consistent sizes
-
-### Considered changes for 2.0
-
-* pascalCase functions and methods
-* C++14
 
 ## 1.4
 
@@ -429,12 +433,6 @@ Binary tables:
 
 * Row-wise binary table reading and writing (huge performance improvement, not available in CFITSIO)
 * Append new columns in a binary table
-
-### Considered features for 1.4
-
-* Insert columns in a binary table
-* Changes made to the record IOs (return user-defined struct) could be ported to analogous column functions (TBC)
-* Functions which input parameter packs could have tuple counterparts in order to manipulate proper objects (TBC)
 
 ### Known bugs
 
