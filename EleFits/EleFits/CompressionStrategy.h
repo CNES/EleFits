@@ -311,13 +311,20 @@ bool can_compress(const Plio&, const ImageHdu::Initializer<T>& init)
 
   // Maybe
   if constexpr (bp > 16) {
+    // Max from records
+    if (init.records.has("DATAMAX")) {
+      const auto max = init.records.template as<T>("DATAMAX");
+      return max < (T(1) << 24);
+    }
+
+    // No max
     if (not init.data) {
       return false;
     }
+
+    // Max from data
     const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
-    if (max >= (T(1) << 24)) {
-      return false;
-    }
+    return max < (T(1) << 24);
   }
 
   return true;
