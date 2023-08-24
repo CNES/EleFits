@@ -17,7 +17,7 @@
   * Compression actions specify image HDU compression
 * Image HDU compression
   * Added compression data classes `Quantization`, `Gzip`, `Rice`...
-  * Added compression actions `Compress` and `CompressAptly`
+  * Added compression actions `Compress` and `CompressAuto`
   * Implemented compression benchmark
   * Program `EleFitsReadStructure` prints the compression type (algorithm and losslessness)
   * New program `EleFitsCompress` compresses FITS files according to the desired strategy
