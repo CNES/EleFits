@@ -19,7 +19,7 @@ std::string version() {
 
 ReadOnlyError::ReadOnlyError(const std::string& prefix) : FitsError(prefix + ": Trying to write a read-only file.") {}
 
-void ReadOnlyError::mayThrow(const std::string& prefix, FileMode mode) {
+void ReadOnlyError::may_throw(const std::string& prefix, FileMode mode) {
   if (mode == FileMode::Read) {
     throw ReadOnlyError(prefix);
   }
@@ -38,7 +38,7 @@ std::string FitsFile::filename() const {
   return m_filename;
 }
 
-bool FitsFile::isOpen() const {
+bool FitsFile::is_open() const {
   return m_fptr;
 }
 
@@ -104,21 +104,21 @@ void FitsFile::close_impl() {
   }
   switch (m_permission) {
     case FileMode::Temporary:
-      closeAndDelete();
+      close_remove();
       break;
     default:
       Cfitsio::FileAccess::close(m_fptr);
   }
 }
 
-void FitsFile::closeAndDelete() {
+void FitsFile::close_remove() {
   if (not m_fptr) {
     return; // TODO should we delete if not open?
   }
   Cfitsio::FileAccess::close_delete(m_fptr);
 }
 
-fitsfile* FitsFile::handoverToCfitsio() {
+fitsfile* FitsFile::handover_to_cfitsio() {
   auto fptr = m_fptr;
   m_fptr = nullptr;
   return fptr;

@@ -22,7 +22,7 @@ Instead of doing so manually, e.g.:
 MefFile f(filename, FileMode::Edit);
 
 const auto& p = f.primary();
-p.verifyChecksums();
+p.verify_checksums();
 ... // Do something with Primary
 
 for (const auto& image : f.filter<ImageRaster>()) {
@@ -31,7 +31,7 @@ for (const auto& image : f.filter<ImageRaster>()) {
 
 for (const auto& h : f.filter<Header>(HduCategory::Edited)) {
   if (h.has("CHECKSUM") || h.has("DATASUM")) {
-    h.updateChecksums();
+    h.update_checksums();
   }
 }
 \endcode

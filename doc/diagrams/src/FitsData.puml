@@ -28,15 +28,15 @@ class VectorArithmeticMixin<T, TDerived> {
 class DataContainer<T, TContainer, TDerived> {
 + DataContainer(args...)
 + container()
-+ moveTo(destination)
++ move_to(destination)
 }
 class Position<N> {
 + Position(indices)
 + {static} zero()
 + {static} max()
 + dimension()
-+ isZero()
-+ isMax()
++ is_zero()
++ is_max()
 + slice()
 + extend(padding)
 }
@@ -64,21 +64,21 @@ class Raster<T, N> {
 }
 class Column<T> {
 - m_info
-+ Column(info, rowCount)
-+ Column(info, rowCount, data)
++ Column(info, row_count)
++ Column(info, row_count, data)
 + info()
 + rename(name)
-+ reshape(repeatCount)
-+ elementCount()
-+ rowCount()
-+ operator()(rowIndex, repeatIndex)
++ reshape(repeat_count)
++ size()
++ row_count()
++ operator()(row_index, repeat_index)
 + at(row, repeat)
 + slice(front, back)
 }
 class ColumnInfo<T> {
 + name
 + unit
-+ repeatCount
++ repeat_count
 }
 class Segment {
 + front

@@ -18,30 +18,30 @@ BOOST_FIXTURE_TEST_SUITE(ColumnKey_test, Test::TestBintable<float>)
 BOOST_AUTO_TEST_CASE(from_resolved_index_test) {
   ColumnKey key(0);
   BOOST_TEST(key.index(columns) == 0);
-  BOOST_TEST(key.name(columns) == scalarColumn.info().name);
+  BOOST_TEST(key.name(columns) == scalar_column.info().name);
 }
 
 BOOST_AUTO_TEST_CASE(from_unresolved_index_test) {
   ColumnKey key(-1);
   BOOST_TEST(key.index(columns) == 1);
-  BOOST_TEST(key.name(columns) == vectorColumn.info().name);
+  BOOST_TEST(key.name(columns) == vector_column.info().name);
 }
 
 BOOST_AUTO_TEST_CASE(from_name_test) {
-  ColumnKey key(scalarColumn.info().name);
-  BOOST_TEST(key.name(columns) == scalarColumn.info().name);
+  ColumnKey key(scalar_column.info().name);
+  BOOST_TEST(key.name(columns) == scalar_column.info().name);
   BOOST_TEST(key.index(columns) == 0);
 }
 
-void checkIsLast(ColumnKey key, const BintableColumns& columns) {
+void check_is_last(ColumnKey key, const BintableColumns& columns) {
   BOOST_TEST(key.index(columns) == 1);
 }
 
 BOOST_AUTO_TEST_CASE(implicit_cast_test) {
-  checkIsLast(1, columns);
-  checkIsLast(-1, columns);
-  checkIsLast(lastColumn.info().name, columns);
-  checkIsLast(lastColumn.info().name.c_str(), columns);
+  check_is_last(1, columns);
+  check_is_last(-1, columns);
+  check_is_last(last_column.info().name, columns);
+  check_is_last(last_column.info().name.c_str(), columns);
 }
 
 //-----------------------------------------------------------------------------

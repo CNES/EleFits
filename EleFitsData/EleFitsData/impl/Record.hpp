@@ -18,13 +18,13 @@ namespace Internal {
  * @brief Valid only if TFrom and TTo are different.
  */
 template <typename TFrom, typename TTo>
-using ifDifferent = typename std::enable_if<not std::is_same<TFrom, TTo>::value>::type;
+using EnableIfDifferent = typename std::enable_if_t<not std::is_same<TFrom, TTo>::value>;
 
 /**
  * @brief Valid only if TTo is a number (not a complex, not a string, and not an any).
  */
 template <typename TTo>
-using ifScalar = typename std::enable_if<std::is_arithmetic<TTo>::value>::type;
+using EnableIfScalar = typename std::enable_if_t<std::is_arithmetic<TTo>::value>;
 
 /**
  * @brief Helper class to cast TFrom to TTo.
@@ -54,7 +54,7 @@ struct CasterImpl<TFrom, TFrom, void> {
  * @brief Cast complex<TFrom> to complex<TTo>.
  */
 template <typename TFrom, typename TTo>
-struct CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>> {
+struct CasterImpl<std::complex<TFrom>, std::complex<TTo>, EnableIfDifferent<TFrom, TTo>> {
   /** @brief Cast. */
   inline static std::complex<TTo> cast(std::complex<TFrom> value);
 };
@@ -63,7 +63,7 @@ struct CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo
  * @brief Cast any to number.
  */
 template <typename TTo>
-struct CasterImpl<VariantValue, TTo, ifScalar<TTo>> {
+struct CasterImpl<VariantValue, TTo, EnableIfScalar<TTo>> {
   /** @brief Cast. */
   inline static TTo cast(VariantValue value);
 };
@@ -72,7 +72,7 @@ struct CasterImpl<VariantValue, TTo, ifScalar<TTo>> {
  * @brief Cast any to complex.
  */
 template <typename TTo>
-struct CasterImpl<VariantValue, std::complex<TTo>, ifScalar<TTo>> {
+struct CasterImpl<VariantValue, std::complex<TTo>, EnableIfScalar<TTo>> {
   /** @brief Cast. */
   inline static std::complex<TTo> cast(VariantValue value);
 };
@@ -90,7 +90,7 @@ struct CasterImpl<VariantValue, std::string, void> {
  * @brief Cast all to any.
  */
 template <typename TFrom>
-struct CasterImpl<TFrom, VariantValue, ifDifferent<TFrom, VariantValue>> {
+struct CasterImpl<TFrom, VariantValue, EnableIfDifferent<TFrom, VariantValue>> {
   /** @brief Cast. */
   inline static VariantValue cast(TFrom value);
 };
@@ -107,7 +107,7 @@ TFrom CasterImpl<TFrom, TFrom, void>::cast(TFrom value) {
 
 template <typename TFrom, typename TTo>
 std::complex<TTo>
-CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cast(std::complex<TFrom> value) {
+CasterImpl<std::complex<TFrom>, std::complex<TTo>, EnableIfDifferent<TFrom, TTo>>::cast(std::complex<TFrom> value) {
   return {CasterImpl<TFrom, TTo>::cast(value.real()), CasterImpl<TFrom, TTo>::cast(value.imag())};
 }
 
@@ -115,11 +115,11 @@ CasterImpl<std::complex<TFrom>, std::complex<TTo>, ifDifferent<TFrom, TTo>>::cas
  * TODO
  * This function only handles a subset of the supported types (scalar types),
  * therefore macro ELEFITS_FOREACH_RECORD_TYPE cannot be used straightforwardly:
- * ifScalar could be used.
+ * EnableIfScalar could be used.
  * Another option is to rely on a map<typeid, function>
  */
 template <typename TTo>
-TTo CasterImpl<VariantValue, TTo, ifScalar<TTo>>::cast(VariantValue value) {
+TTo CasterImpl<VariantValue, TTo, EnableIfScalar<TTo>>::cast(VariantValue value) {
   const auto& id = value.type();
   if (id == typeid(TTo)) {
     return boost::any_cast<TTo>(value);
@@ -155,7 +155,7 @@ TTo CasterImpl<VariantValue, TTo, ifScalar<TTo>>::cast(VariantValue value) {
 }
 
 template <typename TTo>
-std::complex<TTo> CasterImpl<VariantValue, std::complex<TTo>, ifScalar<TTo>>::cast(VariantValue value) {
+std::complex<TTo> CasterImpl<VariantValue, std::complex<TTo>, EnableIfScalar<TTo>>::cast(VariantValue value) {
   const auto& id = value.type();
   if (id == typeid(std::complex<TTo>)) {
     return boost::any_cast<std::complex<TTo>>(value);
@@ -173,7 +173,7 @@ std::string CasterImpl<VariantValue, std::string, void>::cast(VariantValue value
 }
 
 template <typename TFrom>
-VariantValue CasterImpl<TFrom, VariantValue, ifDifferent<TFrom, VariantValue>>::cast(TFrom value) {
+VariantValue CasterImpl<TFrom, VariantValue, EnableIfDifferent<TFrom, VariantValue>>::cast(TFrom value) {
   return VariantValue(value);
 }
 
@@ -218,7 +218,7 @@ T Record<T>::cast(TFrom value) {
 }
 
 template <typename T>
-std::string Record<T>::rawComment() const {
+std::string Record<T>::raw_comment() const {
   if (unit.empty()) {
     return comment;
   }
@@ -226,23 +226,23 @@ std::string Record<T>::rawComment() const {
 }
 
 template <typename T>
-bool Record<T>::hasLongKeyword() const {
+bool Record<T>::has_long_keyword() const {
   return keyword.length() > 8;
 }
 
 template <typename T>
-bool Record<T>::hasLongStringValue() const {
+bool Record<T>::has_long_string_value() const {
   return false;
 }
 
 template <>
-bool Record<std::string>::hasLongStringValue() const;
+bool Record<std::string>::has_long_string_value() const;
 
 template <>
-bool Record<const char*>::hasLongStringValue() const;
+bool Record<const char*>::has_long_string_value() const;
 
 template <>
-bool Record<VariantValue>::hasLongStringValue() const;
+bool Record<VariantValue>::has_long_string_value() const;
 
 #ifndef DECLARE_RECORD_CLASS
 #define DECLARE_RECORD_CLASS(type, unused) extern template struct Record<type>;

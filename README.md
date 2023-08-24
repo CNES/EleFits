@@ -16,22 +16,25 @@ As compared to CFITSIO, the benefits are mainly those of C++ over C:
 * Structures dedicated to data storage;
 * A lightweight class hierarchy to represent the actual FITS organization (e.g. HDUs, records, columns).
 
-Furthermore, exclusive features are provided, like HDU selectors and automatic buffering of binary tables.
+Furthermore, exclusive features are provided, like adaptive compression, HDU selectors and automatic buffering of binary tables.
 
 To maximize performance, EleFits is built as a CFITSIO wrapper as thin as possible.
 While the two libraries are generally equivalent, optimizations implemented internally make EleFits even faster in some classical cases, unless the CFITSIO user spends considerable development efforts.
 
 The EleFits API was specifically designed to be very fluent and compact.
 The following (a bit extreme) example shows how natural it is
-to read a column named "RA" in the 4th extension of a Multi-Extension FITS (MEF) file:
+to read the columns named "RA" and "DEC" in the 4th extension of a Multi-Extension FITS (MEF) file:
 
 ```cpp
-auto ra = MefFile("file.fits").access<BintableColumns>(4).read<double>("RA");
+auto [ra, dec] = MefFile("file.fits")
+    .access<BintableColumns>(4)
+    .read_n(as<double>("RA"), as<double>("DEC"));
 ```
 
 ## Comparison to alternatives
 
-A more realistic use case than the toy example above is creating a Single Image FITS (SIF) file with a keyword record and an array.
+For a more realistic use case than the toy example above, let us rely on a classical demo:
+Create a Single Image FITS (SIF) file with a keyword record and an array.
 Here is a comparison of EleFits with the main alternatives:
 
 ```cpp
@@ -47,7 +50,7 @@ Here is a comparison of EleFits with the main alternatives:
 
 SifFile fits(filename, FileMode::CREATE);
 fits.header().write(keyword, value, "", comment);
-fits.raster().write(makeRaster(data, width, height));
+fits.raster().write(make_raster(data, width, height));
 
 // CCfits
 
@@ -68,7 +71,7 @@ fits_write_key(fits, TDOUBLE, name.c_str(), &value, comment.c_str(), &status);
 fits_write_img(fits, TSHORT, 1, width * height, data, &status);
 ```
 
-To go further, here are Python options:
+For completeness, here are Python options:
 
 ```py
 # Astropy
@@ -86,11 +89,11 @@ with fitsio.FITS(filename, 'rw') as fits:
 
 ## Exclusive features
 
-In addition, exclusive features are provided to simplify the implementation of classical use cases.
+In addition, exclusive features are provided to simplify the implementation of classical tasks.
 A few examples are given below.
 
 Strategies are predefined or user-defined lists of actions to be performed automatically.
-Among strategies, compression strategies enables internal compression of image HDUs:
+Among strategies, compression strategies enables adaptive internal compression of image HDUs:
 
 ```cpp
 // Given:
@@ -98,10 +101,9 @@ Among strategies, compression strategies enables internal compression of image H
 // - Raster<float> data: A 2D intensity image
 // - Raster<char> mask: A 2D mask image
 
-MefFile f(filename, FileMode::Edit);
-f.strategy(CompressAuto(), ValidateChecksums());
-f.appendImage("", {}, image); // Automatically compresses with shuffled GZIP
-f.appendImage("", {}, mask); // Automatically compresses with PLIO
+MefFile f(filename, FileMode::Edit, CompressAuto(), ValidateChecksums());
+f.append_image("", {}, image); // Automatically compresses with shuffled GZIP
+f.append_image("", {}, mask); // Automatically compresses with PLIO
 const auto& p = f.primary(); // Automatically validates Primary's checksums, if any
 f.close(); // Automatically updates checksums of edited HDUs
 ```
@@ -112,10 +114,10 @@ Files are iterable, and selectors enable looping over filtered HDUs
 ```cpp
 // Given:
 // - MefFile f: The MEF file handler
-// - processNewImage: A user-defined function
+// - process_new_image: A user-defined function
 
 for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) {
-  processNewImage(hdu);
+  process_new_image(hdu);
 }
 ```
 
@@ -126,7 +128,7 @@ and a comprehensive type conversion system is provided:
 // Given:
 // - Header header: The header unit handler
 
-auto records = header.parseAll(KeywordCategory::Reserved);
+auto records = header.parse_all(KeywordCategory::Reserved);
 auto instrument = records.as<std::string>("INSTRUME");
 auto exptime = records.as<double>("EXPTIME");
 ```
@@ -139,9 +141,9 @@ by mapping -- possibly non-contiguous -- in-file and in-memory regions, e.g.:
 // - ImageRaster raster: The image data unit handler
 // - Raster data: The image container
 
-Region<2> inFile {{32, 16}, {64, 32}};
-Position<2> inMemory {8, 8};
-raster.readRegionTo({inFile, inMemory}, data);
+Region<2> in_file {{32, 16}, {64, 32}};
+Position<2> in_memory {8, 8};
+raster.read_region_to({in_file, in_memory}, data);
 ```
 
 For binary tables, multiple columns can be read or written at once
@@ -151,25 +153,26 @@ to take advantage of an internal buffer:
 // Given:
 // - BintableColumns columns: The binary table data unit handler
 
-auto [columnA, columnB, columnC] = columns.readSeq(as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
+auto [col_a, col_b, col_c] = columns.read_n(
+    as<char>("A"), as<double>("B"), as<std::complex<float>>("C"));
 ```
 
 ```cpp
 // Given:
 // - BintableColumns columns: The binary table data unit handler
-// - Column columnA, columnB, columnC: Column containers of various value types
+// - Column col_a, col_b, col_c: Column containers of various value types
 
-columns.writeSeq(columnA, columnB, columnC);
+columns.write_n(col_a, col_b, col_c);
 ```
 
-Entries of mutidimensional columns can be accessed as rasters directly:
+Fields of mutidimensional columns can be accessed as rasters directly:
 
 ```cpp
 // Given:
 // - BintableColumns columns: The binary table data unit handler
 
 auto column = columns.read<double, 2>("THUMBNAILS");
-auto raster = column.entry(42);
+auto raster = column.field(42);
 auto pixel = raster[{3, 14}];
 ```
 
@@ -187,7 +190,7 @@ See [the dedicated page](INSTALL.md).
 
 ## User documentation
 
-The [Modules page](https://cnes.github.io/EleFits/5.0.0/modules.html) is the main entry point for usage documentation.
+The [User Guide](https://cnes.github.io/EleFits/5.0.0/modules.html) is the main entry point for usage documentation.
 Each so-called documentation module addresses a specific topic to learn how to use EleFits and understand why it is designed the way it is.
 The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.
 

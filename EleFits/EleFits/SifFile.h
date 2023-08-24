@@ -21,17 +21,24 @@ namespace Fits {
  * @see \ref handlers
  */
 class SifFile : public FitsFile {
-
 public:
-  /**
-   * @copydoc FitsFile::~FitsFile
-   */
-  virtual ~SifFile() = default;
+
+  /// @group_construction
 
   /**
    * @copydoc FitsFile::FitsFile
    */
   SifFile(const std::string& filename, FileMode permission = FileMode::Read);
+
+  ELEFITS_NON_COPYABLE(SifFile)
+  ELEFITS_NON_MOVABLE(SifFile)
+
+  /**
+   * @copydoc FitsFile::~FitsFile
+   */
+  virtual ~SifFile() = default;
+
+  /// @group_elements
 
   /**
    * @brief Access the header unit.
@@ -43,52 +50,55 @@ public:
    */
   const ImageRaster& raster() const;
 
+  /// @group_operations
+
   /**
    * @brief Write both the records and the raster (resize the data unit if empty).
    */
   template <typename TRaster>
-  void writeAll(const RecordSeq& records, const TRaster& raster);
+  void write(const RecordSeq& records, const TRaster& raster);
 
   /**
-   * @brief Read the raster.
-   * @details
-   * This is a shortcut for:
-   * - Accessing the data unit;
-   * - Reading the raster.
-   * 
-   * Anything more complex (e.g. region-wise reading) can be done via `raster()`.
-   * 
-   * @deprecated Use `raster().read()` instead.
+   * @copydoc Hdu::verify_checksums()
    */
-  template <typename T, long N = 2>
-  VecRaster<T, N> readRaster() const;
+  void verify_checksums() const;
 
   /**
-   * @brief Write the raster (resize the data unit if empty).
-   * @details
-   * This is a shortcut for:
-   * - Accessing the data unit;
-   * - Resizing it;
-   * - Writing the raster.
-   * 
-   * Anything more complex (e.g. region-wise writing) can be done via `raster()`.
-   * 
-   * @deprecated Use `raster().write()` instead.
+   * @copydoc Hdu::update_checksums()
+   */
+  void update_checksums() const;
+
+  /// @group_deprecated
+
+  /**
+   * @deprecated Use write()
    */
   template <typename TRaster>
-  void writeRaster(const TRaster& raster) const;
+  [[deprecated("Use write()")]] void writeAll(const RecordSeq& records, const TRaster& raster)
+  {
+    return write(records, raster);
+  }
 
   /**
-   * @copydoc Hdu::verifyChecksums()
+   * @deprecated
    */
-  void verifyChecksums() const;
+  void verifyChecksums() const
+  {
+    return verify_checksums();
+  }
 
   /**
-   * @copydoc Hdu::updateChecksums()
+   * @deprecated
    */
-  void updateChecksums() const;
+  void updateChecksums() const
+  {
+    return update_checksums();
+  }
+
+  /// @}
 
 private:
+
   /**
    * @brief The Primary (and only) HDU
    */

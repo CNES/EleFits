@@ -18,20 +18,20 @@ void CfitsioBenchmark::setup_column_info(
     std::vector<std::string>& units) {
   const auto& col = std::get<i>(columns);
   names[i] = col.info().name;
-  formats[i] = Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::tform(col.info().repeatCount());
+  formats[i] = Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::tform(col.info().repeat_count());
   units[i] = col.info().unit;
 }
 
 template <std::size_t i>
 void CfitsioBenchmark::write_column(const BColumns& columns, long first_row, long row_count) {
   const auto& col = std::get<i>(columns);
-  const auto b = col.vector().begin() + first_row;
+  const auto b = col.container().begin() + first_row;
   const auto e = b + row_count;
   using Value = typename std::decay_t<decltype(col)>::Value;
   std::vector<Value> nonconst_vec(b, e);
   fits_write_col(
       m_fptr,
-      Cfitsio::TypeCode<Value>::forBintable(),
+      Cfitsio::TypeCode<Value>::for_bintable(),
       i + 1,
       first_row + 1,
       1,
@@ -60,7 +60,7 @@ void CfitsioBenchmark::read_column(BColumns& columns, long first_row, long row_c
   using Value = typename std::decay_t<decltype(col)>::Value;
   fits_read_col(
       m_fptr,
-      Cfitsio::TypeCode<Value>::forBintable(),
+      Cfitsio::TypeCode<Value>::for_bintable(),
       i + 1,
       first_row + 1,
       1,

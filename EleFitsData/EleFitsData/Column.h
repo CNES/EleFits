@@ -7,7 +7,7 @@
 
 #include "EleFitsData/ColumnInfo.h"
 #include "EleFitsData/DataContainer.h"
-#include "EleFitsData/Raster.h" // PtrRaster for Entry
+#include "EleFitsData/Raster.h" // PtrRaster for multidimensional columns
 #include "EleFitsData/Segment.h"
 
 #include <complex>
@@ -44,14 +44,14 @@ using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
 /**
  * @ingroup bintable_data_classes
  * @tparam T The value type, possibly const-qualified for read-only columns
- * @tparam N The entry dimension (number of axes) or -1 for runtime dimension
+ * @tparam N The field dimension (number of axes) or -1 for runtime dimension
  * @tparam THolder The data container, which must meet `SizedData` requirements
  * @brief Binary table column data and metadata.
  * @details
- * A column is a contiguous container for the entry data of a binary table column.
+ * A column is a contiguous container for the field data of a binary table column.
  * As explained in the `ColumnInfo` documentation (make sure to have read it before going further),
- * entries can be made of several values.
- * Template parameter `N` is bound to the entry category:
+ * fields can be made of several values.
+ * Template parameter `N` is bound to the field category:
  * - `N` = 1 for scalar, string and vector columns;
  * - `N` > 1 for multidimensional columns with fixed dimension;
  * - `N` = -1 for multidimensional columns with runtime dimension.
@@ -62,8 +62,8 @@ using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
  * @satisfies{ContiguousContainer}
  * @satisfies{VectorArithmetic}
  * 
- * @see `ColumnInfo` for details on the entry properties.
- * @see `makeColumn()` for creation shortcuts.
+ * @see `ColumnInfo` for details on the field properties.
+ * @see `make_column()` for creation shortcuts.
  */
 template <typename T, long N, typename THolder>
 class Column : public DataContainer<T, THolder, Column<T, N, THolder>> {
@@ -103,20 +103,20 @@ public:
   /**
    * @brief Create an empty column with given metadata.
    * @param info The column metadata
-   * @param rowCount The row count
+   * @param row_count The row count
    */
-  explicit Column(Info info, long rowCount = 0);
+  explicit Column(Info info, long row_count = 0);
 
   /**
    * @brief Create a column with given metadata and data.
    * @param info The column metadata
-   * @param rowCount The row count
+   * @param row_count The row count
    * @param data The raw data
    * @warning
    * `PtrColumn` constructor used to get the **element** count as input instead of the **row count**,
    * which makes a difference for vector columns.
    */
-  Column(Info info, long rowCount, T* data);
+  Column(Info info, long row_count, T* data);
 
   /**
    * @brief Create a column with given metadata and data.
@@ -142,14 +142,14 @@ public:
    * @brief Change the column repeat count (fold/unfold).
    * @details
    * The repeat count must be a divisor of the column size, except for string columns.
-   * The resulting entry shape will be flat, with the first component = `repeatCount`
+   * The resulting field shape will be flat, with the first component = `repeat_count`
    * and the other components = 1.
    * @see reshape(Position<N>)
    */
-  void reshape(long repeatCount = 1);
+  void reshape(long repeat_count = 1);
 
   /**
-   * @brief Change the entry shape.
+   * @brief Change the field shape.
    * @details
    * The shape size must be a divisor of the column size.
    * @see reshape(long)
@@ -157,18 +157,9 @@ public:
   void reshape(Position<N> shape);
 
   /**
-   * @brief Number of elements in the column, i.e. repeat count times number of rows.
-   * @warning
-   * For string columns, the element count is just the number of rows,
-   * although they are vector columns.
-   * @deprecated Use standard `size()` instead.
-   */
-  long elementCount() const;
-
-  /**
    * @brief Number of rows in the column.
    */
-  long rowCount() const;
+  long row_count() const;
 
   /// @group_elements
 
@@ -205,14 +196,14 @@ public:
   /// @group_views
 
   /**
-   * @brief Access the entry at given row as a raster.
+   * @brief Access the field at given row index as a raster.
    */
-  const PtrRaster<const T, N> entry(long row) const;
+  const PtrRaster<const T, N> field(long row) const;
 
   /**
-   * @copybrief entry(long)const
+   * @copybrief field(long)const
    */
-  PtrRaster<T, N> entry(long row);
+  PtrRaster<T, N> field(long row);
 
   /**
    * @brief Get a view on contiguous rows.
@@ -225,6 +216,27 @@ public:
   PtrColumn<T, N> slice(const Segment& rows);
 
   /// @}
+
+  /**
+   * @deprecated
+   */
+  long rowCount() const {
+    return row_count();
+  }
+
+  /**
+   * @deprecated Name was wrong wrt. the FITS standard
+   */
+  [[deprecated("Use field(long)")]] const PtrRaster<const T, N> entry(long row) const {
+    return field(row);
+  }
+
+  /**
+   * @deprecated Name was wrong wrt. the FITS standard
+   */
+  [[deprecated("Use field(long)")]] PtrRaster<T, N> entry(long row) {
+    return field(row);
+  }
 
 private:
   /**
@@ -242,7 +254,7 @@ private:
  * @details
  * Example usage:
  * \code
- * auto column = makeColumn(std::move(info), std::move(vector)); // Copy-less
+ * auto column = make_column(std::move(info), std::move(vector)); // Copy-less
  * \endcode
  */
 template <typename TInfo, typename TContainer>
@@ -250,7 +262,7 @@ Column<
     typename TContainer::value_type,
     std::decay_t<TInfo>::Dim,
     DataContainerHolder<typename TContainer::value_type, TContainer>>
-makeColumn(TInfo info, TContainer&& data) {
+make_column(TInfo info, TContainer&& data) {
   return {std::forward<TInfo>(info), std::forward<TContainer>(data)};
 }
 
@@ -259,8 +271,16 @@ makeColumn(TInfo info, TContainer&& data) {
  * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-PtrColumn<T, std::decay_t<TInfo>::Dim> makeColumn(TInfo&& info, long rowCount, T* data) {
-  return {std::forward<TInfo>(info), rowCount, data};
+PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, long row_count, T* data) {
+  return {std::forward<TInfo>(info), row_count, data};
+}
+
+/**
+ * @deprecated
+ */
+template <typename... TArgs>
+[[deprecated("Use make_column")]] auto makeColumn(TArgs&&... args) {
+  return make_column(std::forward<TArgs>(args)...);
 }
 
 } // namespace Fits

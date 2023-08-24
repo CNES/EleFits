@@ -27,12 +27,13 @@ namespace Fits {
 template <typename THdu>
 struct HduSelector {
   /**
-     * @brief The MefFile to apply the selector on.
-     */
+   * @brief The MefFile to apply the selector on.
+   */
   MefFile& mef;
+
   /**
-     * @brief The HDU filter to be applied.
-     */
+   * @brief The HDU filter to be applied.
+   */
   HduFilter filter;
 };
 
@@ -52,10 +53,15 @@ struct HduSelector {
 template <typename THdu = Hdu>
 class HduIterator : public std::iterator<std::input_iterator_tag, const THdu> {
 public:
+
+  /// @group_construction
+
   /**
    * @brief Constructor.
    */
   HduIterator(MefFile& f, long index, HduFilter filter = HduCategory::Any);
+
+  /// @group_operations
 
   /**
    * @brief Dereference operator.
@@ -87,7 +93,10 @@ public:
    */
   bool operator!=(const HduIterator<THdu>& rhs) const;
 
+  /// @}
+
 private:
+
   /**
    * @brief Move to next HDU with valid category.
    */
@@ -116,7 +125,7 @@ private:
   /**
    * @brief Dummy HDU for past-the-last element access.
    */
-  const THdu m_dummyHdu;
+  const THdu m_dummy_hdu;
 };
 
 /**

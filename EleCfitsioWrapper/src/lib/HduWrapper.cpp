@@ -18,7 +18,7 @@ long count(fitsfile* fptr) {
   int count = 0;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot count HDUs");
+  CfitsioError::may_throw(status, fptr, "Cannot count HDUs");
   return count;
 }
 
@@ -29,50 +29,50 @@ long current_index(fitsfile* fptr) {
 }
 
 std::string current_name(fitsfile* fptr) {
-  if (HeaderIo::hasKeyword(fptr, "EXTNAME")) {
-    return HeaderIo::parseRecord<std::string>(fptr, "EXTNAME");
+  if (HeaderIo::has_keyword(fptr, "EXTNAME")) {
+    return HeaderIo::parse_record<std::string>(fptr, "EXTNAME");
   }
-  if (HeaderIo::hasKeyword(fptr, "HDUNAME")) {
-    return HeaderIo::parseRecord<std::string>(fptr, "HDUNAME");
+  if (HeaderIo::has_keyword(fptr, "HDUNAME")) {
+    return HeaderIo::parse_record<std::string>(fptr, "HDUNAME");
   }
   return "";
 }
 
 long current_version(fitsfile* fptr) {
-  if (HeaderIo::hasKeyword(fptr, "EXTVER")) {
-    return HeaderIo::parseRecord<long>(fptr, "EXTVER");
+  if (HeaderIo::has_keyword(fptr, "EXTVER")) {
+    return HeaderIo::parse_record<long>(fptr, "EXTVER");
   }
-  if (HeaderIo::hasKeyword(fptr, "HDUVER")) {
-    return HeaderIo::parseRecord<long>(fptr, "HDUVER");
+  if (HeaderIo::has_keyword(fptr, "HDUVER")) {
+    return HeaderIo::parse_record<long>(fptr, "HDUVER");
   }
   return 1;
 }
 
 std::size_t current_size(fitsfile* fptr) {
   int status = 0;
-  LONGLONG currentHeadStart;
-  LONGLONG nextHeadStart;
+  LONGLONG current_head_start;
+  LONGLONG next_head_start;
 
-  const auto currentIdx = current_index(fptr);
+  const auto index = current_index(fptr);
 
-  if (currentIdx < count(fptr)) { // its not the the last hdu
-    fits_get_hduaddrll(fptr, &currentHeadStart, nullptr, nullptr, &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot get Hdu address");
+  if (index < count(fptr)) { // its not the the last hdu
+    fits_get_hduaddrll(fptr, &current_head_start, nullptr, nullptr, &status);
+    CfitsioError::may_throw(status, fptr, "Cannot get Hdu address");
     fits_movrel_hdu(fptr, static_cast<int>(1), nullptr, &status); // HDU indices are int
-    CfitsioError::mayThrow(status, fptr, "Cannot move to next HDU (step +1)");
-    fits_get_hduaddrll(fptr, &nextHeadStart, nullptr, nullptr, &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot get Hdu address");
+    CfitsioError::may_throw(status, fptr, "Cannot move to next HDU (step +1)");
+    fits_get_hduaddrll(fptr, &next_head_start, nullptr, nullptr, &status);
+    CfitsioError::may_throw(status, fptr, "Cannot get Hdu address");
 
   } else { // its the last hdu
-    // dataend arg (nextHeadStart) should be the end of file:
-    fits_get_hduaddrll(fptr, &currentHeadStart, nullptr, &nextHeadStart, &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot get Hdu address");
+    // dataend arg (next_head_start) should be the end of file:
+    fits_get_hduaddrll(fptr, &current_head_start, nullptr, &next_head_start, &status);
+    CfitsioError::may_throw(status, fptr, "Cannot get Hdu address");
   }
 
   // return to current hdu
-  goto_index(fptr, currentIdx);
+  goto_index(fptr, index);
 
-  return static_cast<std::size_t>(nextHeadStart - currentHeadStart);
+  return static_cast<std::size_t>(next_head_start - current_head_start);
 }
 
 Fits::HduCategory current_type(fitsfile* fptr) {
@@ -99,7 +99,7 @@ bool goto_index(fitsfile* fptr, long index) {
   int type = 0;
   int status = 0;
   fits_movabs_hdu(fptr, static_cast<int>(index), &type, &status); // HDU indices are int
-  CfitsioError::mayThrow(status, fptr, "Cannot access HDU: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot access HDU: #" + std::to_string(index - 1));
   return true;
 }
 
@@ -116,8 +116,8 @@ bool goto_name(fitsfile* fptr, const std::string& name, long version, Fits::HduC
   } else if (category != Fits::HduCategory::Any) {
     throw Fits::FitsError("Invalid HduCategory; Only Any, Image and Bintable are supported.");
   }
-  fits_movnam_hdu(fptr, hdutype, Fits::String::toCharPtr(name).get(), version, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot move to HDU: " + name);
+  fits_movnam_hdu(fptr, hdutype, Fits::String::to_char_ptr(name).get(), version, &status);
+  CfitsioError::may_throw(status, fptr, "Cannot move to HDU: " + name);
   return true;
 }
 
@@ -128,7 +128,7 @@ bool goto_next(fitsfile* fptr, long step) {
   int status = 0;
   int type = 0;
   fits_movrel_hdu(fptr, static_cast<int>(step), &type, &status); // HDU indices are int
-  CfitsioError::mayThrow(status, fptr, "Cannot move to next HDU (step " + std::to_string(step) + ")");
+  CfitsioError::may_throw(status, fptr, "Cannot move to next HDU (step " + std::to_string(step) + ")");
   return true;
 }
 
@@ -148,7 +148,7 @@ bool update_name(fitsfile* fptr, const std::string& name) {
   if (name == "") {
     return false;
   }
-  HeaderIo::updateRecord(fptr, Fits::Record<std::string>("EXTNAME", name));
+  HeaderIo::update_record(fptr, Fits::Record<std::string>("EXTNAME", name));
   return true;
 }
 
@@ -156,21 +156,21 @@ bool update_version(fitsfile* fptr, long version) {
   if (version == 0) {
     return false;
   }
-  HeaderIo::updateRecord(fptr, Fits::Record<long>("EXTVER", version));
+  HeaderIo::update_record(fptr, Fits::Record<long>("EXTVER", version));
   return true;
 }
 
-void copy_verbatim(fitsfile* srcFptr, fitsfile* dstFptr) {
+void copy_verbatim(fitsfile* from, fitsfile* to) {
   int status = 0;
-  fits_copy_hdu(srcFptr, dstFptr, 0, &status);
-  Cfitsio::CfitsioError::mayThrow(status, dstFptr, "Cannot copy HDU");
+  fits_copy_hdu(from, to, 0, &status);
+  Cfitsio::CfitsioError::may_throw(status, to, "Cannot copy HDU");
 }
 
 void remove(fitsfile* fptr, long index) {
   goto_index(fptr, index);
   int status = 0;
   fits_delete_hdu(fptr, nullptr, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot delete HDU: " + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot delete HDU: " + std::to_string(index - 1));
 }
 
 } // namespace HduAccess

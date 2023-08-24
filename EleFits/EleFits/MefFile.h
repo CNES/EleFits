@@ -82,8 +82,8 @@ class HduSelector;
  * @see \ref optim
  */
 class MefFile : public FitsFile {
-
 public:
+
   /// @group_construction
 
   /**
@@ -94,6 +94,9 @@ public:
    */
   template <typename... TActions>
   explicit MefFile(const std::string& filename, FileMode mode, TActions&&... actions);
+
+  ELEFITS_NON_COPYABLE(MefFile)
+  ELEFITS_NON_MOVABLE(MefFile)
 
   /**
    * @copydoc FitsFile::~FitsFile()
@@ -115,14 +118,14 @@ public:
    * This way, incomplete HDUs are also taken into account where CFITSIO would exclude them.
    * This means, for example, that the initial number of HDUs in a new file is 1 instead of 0 with CFITSIO.
    */
-  long hduCount() const;
+  long hdu_count() const;
 
   /**
    * @brief Read the name of each HDU.
    * 
    * Unnamed HDUs are taken into account: an empty string is returned for them.
    */
-  std::vector<std::string> readHduNames();
+  std::vector<std::string> read_hdu_names();
 
   /**
    * @brief Read the name and version of each HDU.
@@ -130,7 +133,7 @@ public:
    * When there is no name specified, an empty string is returned.
    * When there is no version specified, 1 is returned.
    */
-  std::vector<std::pair<std::string, long>> readHduNamesVersions();
+  std::vector<std::pair<std::string, long>> read_hdu_names_versions();
 
   /**
    * @brief Get the strategy.
@@ -138,7 +141,7 @@ public:
   inline const Strategy& strategy() const;
 
   /**
-   * @copybrief strategy()
+   * @copybrief strategy()const
    */
   inline Strategy& strategy();
 
@@ -183,7 +186,7 @@ public:
    * 
    * In the case where several HDUs have the same type, name and version
    * (which is discouraged by the standard, but not forbidden),
-   * method `readHduNames()` should be used to get the indices
+   * method `read_hdu_names()` should be used to get the indices
    * and then `access(long)` should be called.
    * 
    * @see access(long)
@@ -221,7 +224,7 @@ public:
    * @par_example
    * \code
    * for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) {
-   *   processNewImage(hdu);
+   *   process_new_image(hdu);
    * }
    * \endcode
    * @see `iterators`
@@ -254,7 +257,7 @@ public:
    * @brief Append a new image extension with empty data unit (`NAXIS = 0`).
    */
   template <typename T = unsigned char>
-  const ImageHdu& appendImageHeader(const std::string& name = "", const RecordSeq& records = {});
+  const ImageHdu& append_image_header(const std::string& name = "", const RecordSeq& records = {});
 
   /**
    * @brief Append a new image extension and fill the data unit with null values.
@@ -269,11 +272,11 @@ public:
    * 
    * @par_example
    * \code
-   * f.appendNullImage<char, 3>("CUBE", {{"BLANK", 255}}, {28, 06, 1989});
+   * f.append_null_image<char, 3>("CUBE", {{"BLANK", 255}}, {28, 06, 1989});
    * \endcode
    */
   template <typename T, long N = 2>
-  const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape);
+  const ImageHdu& append_null_image(const std::string& name, const RecordSeq& records, const Position<N>& shape);
 
   /**
    * @brief Append and write a new image extension.
@@ -282,14 +285,14 @@ public:
    * @param raster The data
    */
   template <typename TRaster>
-  const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster);
+  const ImageHdu& append_image(const std::string& name, const RecordSeq& records, const TRaster& raster);
 
   /**
    * @brief Append a binary table extension with empty data unit (0 rows, and possibly 0 columns).
    */
   template <typename... TInfos>
   const BintableHdu&
-  appendBintableHeader(const std::string& name = "", const RecordSeq& records = {}, const TInfos&... infos);
+  append_bintable_header(const std::string& name = "", const RecordSeq& records = {}, const TInfos&... infos);
 
   /**
    * @brief Append a binary table extension and fill it with null values.
@@ -302,28 +305,111 @@ public:
    */
   template <typename... TInfos>
   const BintableHdu&
-  appendNullBintable(const std::string& name, const RecordSeq& records, long rowCount, const TInfos&... infos);
+  append_null_bintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos);
 
   /**
    * @brief Append and write a new binary table extension.
    */
   template <typename... TColumns>
-  const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns&... columns);
+  const BintableHdu& append_bintable(const std::string& name, const RecordSeq& records, const TColumns&... columns);
 
   /**
    * @brief Append and write a new binary table extension.
    */
   template <typename TColumns, std::size_t Size = std::tuple_size<TColumns>::value> // FIXME rm Size => enable_if
-  const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns& columns);
+  const BintableHdu& append_bintable(const std::string& name, const RecordSeq& records, const TColumns& columns);
 
   /**
    * @brief Remove the HDU with given index.
    */
   inline void remove(long index);
 
+  /// @group_deprecated
+
+  /**
+   * @deprecated
+   */
+  long hduCount() const
+  {
+    return hdu_count();
+  }
+
+  /**
+   * @deprecated
+   */
+  std::vector<std::string> readHduNames()
+  {
+    return read_hdu_names();
+  }
+
+  /**
+   * @deprecated
+   */
+  std::vector<std::pair<std::string, long>> readHduNamesVersions()
+  {
+    return read_hdu_names_versions();
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T = unsigned char>
+  const ImageHdu& appendImageHeader(const std::string& name = "", const RecordSeq& records = {})
+  {
+    return append_image_header(name, records);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 2>
+  const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape)
+  {
+    return append_null_image(name, records, shape);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename TRaster>
+  const ImageHdu& appendImage(const std::string& name, const RecordSeq& records, const TRaster& raster)
+  {
+    return append_image(name, records, raster);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TInfos>
+  const BintableHdu&
+  appendBintableHeader(const std::string& name = "", const RecordSeq& records = {}, const TInfos&... infos)
+  {
+    return append_bintable_header(name, records, infos...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TInfos>
+  const BintableHdu&
+  appendNullBintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos)
+  {
+    return append_null_bintable(name, records, infos...);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename... TColumns>
+  const BintableHdu& appendBintable(const std::string& name, const RecordSeq& records, const TColumns&... columns)
+  {
+    return append_bintable(name, records, columns...);
+  }
+
   /// @}
 
 protected:
+
   /**
    * @copydoc FitsFile::open()
    */
@@ -337,6 +423,7 @@ protected:
   std::vector<std::unique_ptr<Hdu>> m_hdus;
 
 private:
+
   /**
    * @brief Non virtual implementation of `open()`.
    */

@@ -25,9 +25,9 @@ An object-based API following the CFITSIO approach (one single class does everyt
 \code
 FitsFile f("catalog.fits", FileMode::READ);
 f.access(4);
-auto name = f.readHduName();
-auto id = f.readColumn<std::string>("ID");
-auto radec = f.readColumn<std::complex<double>>("RADEC");
+auto name = f.read_hdu_name();
+auto id = f.read_column<std::string>("ID");
+auto radec = f.read_column<std::complex<double>>("RADEC");
 \endcode
 
 Here, `FitsFile` is responsible for everything:
@@ -42,9 +42,9 @@ A CCfits-like approach would go down to the level of HDUs but not header units a
 \code
 FitsFile f("catalog.fits", FileMode::READ);
 const auto& hdu = f.access(4); // Returns an Hdu
-auto name = hdu.readName();
-auto id = hdu.readColumn<std::string>("ID");
-auto radec = hdu.readColumn<std::complex<double>>("RADEC");
+auto name = hdu.read_name();
+auto id = hdu.read_column<std::string>("ID");
+auto radec = hdu.read_column<std::complex<double>>("RADEC");
 \endcode
 
 We have decoupled HDU access and creation on one hand (in `FitsFile`)
@@ -62,7 +62,7 @@ classes have been introduced as follows:
 \code
 FitsFile f("catalog.fits", FileMode::READ);
 const auto& hdu = f.access<BintableHdu>(4); // Get a BintableHdu instead of an Hdu
-auto name = hdu.readName(); // From parent class Hdu
+auto name = hdu.read_name(); // From parent class Hdu
 auto id = hdu.columns().read<std::string>("ID");
 auto radec = hdu.columns().read<std::complex<double>>("RADEC");
 \endcode
@@ -72,15 +72,15 @@ Last but not least, for performance, it is preferable to read several columns at
 \code
 FitsFile f("catalog.fits", FileMode::READ);
 const auto& hdu = f.access(4);
-auto name = hdu.readName();
-auto catalog = hdu.columns().readSeq<std::string, std::complex<double>>({"ID", "RADEC"});
+auto name = hdu.read_name();
+auto catalog = hdu.columns().read_n<std::string, std::complex<double>>({"ID", "RADEC"});
 \endcode
 
 One issue remains with the above proposal.
 Imagine a more realistic use case where more columns should be read:
 
 \code
-auto catalog = hdu.columns().readSeq<
+auto catalog = hdu.columns().read_n<
     std::string, std::complex<double>, double, float, double, float, std::int16_t>(
         {"ID", "RADEC", "Z", "FLUX", "SHAPE", "SPECTRUM", "THUMBNAIL"});
 \endcode
@@ -89,7 +89,7 @@ It is very easy to make mistakes in the order of the arguments.
 To solve this, we can manage to have each column data type written alongside its name:
 
 \code
-auto catalog = hdu.columns().readSeq(
+auto catalog = hdu.columns().read_n(
     as<std::string>("ID"),
     as<std::complex<double>>("RADEC"),
     as<double>("Z"),
@@ -117,20 +117,20 @@ The main drawback of fluent APIs is that they often involve many classes which s
 For example, the above line can be decomposed as follows:
 
 \code
-const std::string fileName = "catalog.fits";
+const std::string filename = "catalog.fits";
 const FileMode mode = FileMode::READ;
-const long hduIndex = 4;
-const std::string idName = "ID";
-const std::string radecName = "RADEC";
+const long hdu_index = 4;
+const std::string id_name = "ID";
+const std::string radec_name = "RADEC";
 using Id = std::string;
 using Radec = std::complex<double>;
-const TypedKey<Id, std::string> idKey(idName);
-const TypedKey<Radec, std::string> radecKey(idName);
+const TypedKey<Id, std::string> id_key(id_name);
+const TypedKey<Radec, std::string> radec_key(id_name);
 
-MefFile f(fileName, mode);
-const BintableHdu& hdu = f.access<BintableHdu>(hduIndex);
+MefFile f(filename, mode);
+const BintableHdu& hdu = f.access<BintableHdu>(hdu_index);
 const BintableColumns& du = hdu.columns();
-std::tuple<VecColumn<Id>, VecColumn<Radec>> coords = du.readSeq(idKey, radecKey);
+std::tuple<VecColumn<Id>, VecColumn<Radec>> coords = du.read_n(id_key, radec_key);
 \endcode
 
 Here we see how verbose the implementation can be for a rather simple example.
@@ -143,16 +143,16 @@ Also, `auto` should be favored over explicit return types.
 Finally, a more natural writing of the example is:
 
 \code
-const std::string fileName = "catalog.fits";
-const long hduIndex = 4;
-const std::string idName = "ID";
-const std::string radecName = "RADEC";
+const std::string filename = "catalog.fits";
+const long hdu_index = 4;
+const std::string id_name = "ID";
+const std::string radec_name = "RADEC";
 using Id = std::string;
 using Radec = std::complex<double>;
 
-MefFile f(fileName, FileMode::READ);
-const auto& hdu = f.access<BintableHdu>(hduIndex);
-auto coords = hdu.columns().readSeq(as<Id>(idName), as<Radec>(radecName));
+MefFile f(filename, FileMode::READ);
+const auto& hdu = f.access<BintableHdu>(hdu_index);
+auto coords = hdu.columns().read_n(as<Id>(id_name), as<Radec>(radec_name));
 \endcode
 
 
@@ -163,7 +163,7 @@ Although they are simple to read, large fluent APIs are hard to document,
 due to the relatively large amount of classes.
 Because it is not convenient to browse many class documentation pages when trying to perform such a simple operation,
 the documentation of EleFits is built around examples.
-For example, if you check the documentation of `BintableColumns::readSeq()`,
+For example, if you check the documentation of `BintableColumns::read_n()`,
 you will see that, although the parameters are of type `TypedKey`,
 the method documentation explains that they can be fed with a name or index
 and provides simple and more complex examples,

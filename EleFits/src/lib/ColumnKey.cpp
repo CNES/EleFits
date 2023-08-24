@@ -20,17 +20,17 @@ ColumnKey::ColumnKey(const char* name) : ColumnKey(std::string(name)) {}
 long ColumnKey::index(const BintableColumns& columns) {
   if (m_index) {
     if (*m_index < 0) {
-      *m_index += columns.readColumnCount(); // FIXME check range
+      *m_index += columns.read_column_count(); // FIXME check range
     }
   } else {
-    m_index = columns.readIndex(*m_name);
+    m_index = columns.read_index(*m_name);
   }
   return *m_index;
 }
 
 const std::string& ColumnKey::name(const BintableColumns& columns) {
   if (not m_name) {
-    m_name = columns.readName(*m_index);
+    m_name = columns.read_name(*m_index);
   }
   return *m_name;
 }

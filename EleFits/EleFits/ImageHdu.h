@@ -43,28 +43,13 @@ namespace Fits {
  * ELEFITS_FOREACH_RASTER_TYPE and program EleFitsPrintSupportedTypes for the list of supported pixel types.
  */
 class ImageHdu : public Hdu {
-
 public:
-  /// @cond INTERNAL
-
-  /**
-   * @see Hdu
-   */
-  ImageHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
-
-  /**
-   * @see Hdu
-   */
-  ImageHdu();
-
-  /// @endcond
 
   /**
    * @brief A structure which holds everything known at image extension initialization.
    */
   template <typename T>
   struct Initializer {
-
     /**
      * @brief The extension index.
      */
@@ -91,15 +76,44 @@ public:
     const T* data;
   };
 
+  /// @group_construction
+
+  /// @cond
+
   /**
-   * @brief Destructor.
+   * @see Hdu
    */
-  virtual ~ImageHdu() = default;
+  ImageHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
+
+  /**
+   * @see Hdu
+   */
+  ImageHdu();
+
+  /// @endcond
+
+  // FIXME copyable?
+
+  ELEFITS_VIRTUAL_DTOR(ImageHdu)
 
   /**
    * @brief Copy the contents of another image HDU.
    */
   const ImageHdu& operator=(const ImageHdu& rhs) const;
+
+  /// @group_properties
+
+  /**
+   * @copydoc Hdu::category
+   */
+  HduCategory category() const override;
+
+  /**
+   * @brief Check whether the HDU is compressed.
+   */
+  bool is_compressed() const;
+
+  /// @group_elements
 
   /**
    * @brief Access the data unit to read and write the raster.
@@ -107,36 +121,23 @@ public:
    */
   const ImageRaster& raster() const;
 
-  /**
-   * @copybrief ImageRaster::readTypeid
-   */
-  const std::type_info& readTypeid() const;
+  /// @group_operations
 
   /**
-   * @copybrief ImageRaster::read_bitpix
+   * @copybrief ImageRaster::read_typeid
    */
-  long read_bitpix() const;
+  const std::type_info& read_typeid() const;
 
   /**
-   * @copybrief ImageRaster::readSize
+   * @copybrief ImageRaster::read_size
    */
-  long readSize() const;
+  long read_size() const;
 
   /**
-   * @copybrief ImageRaster::readShape
+   * @copybrief ImageRaster::read_shape
    */
   template <long N = 2>
-  Position<N> readShape() const;
-
-  /**
-   * @copydoc Hdu::readCategory
-   */
-  HduCategory readCategory() const override;
-
-  /**
-   * @brief Check whether the HDU is compressed.
-   */
-  bool is_compressed() const;
+  Position<N> read_shape() const;
 
   /**
    * @brief Read the compression parameters.
@@ -147,21 +148,69 @@ public:
    * @brief Redefine the image shape and type.
    */
   template <typename T, long N = 2>
-  void updateShape(const Position<N>& shape) const;
+  void update_type_shape(const Position<N>& shape) const;
 
   /**
    * @brief Read the Raster.
    */
   template <typename T, long N = 2>
-  VecRaster<T, N> readRaster() const;
+  VecRaster<T, N> read_raster() const;
 
   /**
    * @brief Write the Raster.
    */
   template <typename TRaster>
-  void writeRaster(const TRaster& data) const;
+  void write_raster(const TRaster& data) const;
+
+  /// @group_deprecated
+
+  /**
+   * @deprecated
+   */
+  const std::type_info& readTypeid() const
+  {
+    return read_typeid();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readSize() const
+  {
+    return read_size();
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 2>
+  void updateShape(const Position<N>& shape) const
+  {
+    return update_type_shape<T, N>(shape);
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename T, long N = 2>
+  VecRaster<T, N> readRaster() const
+  {
+    return read_raster<T, N>();
+  }
+
+  /**
+   * @deprecated
+   */
+  template <typename TRaster>
+  void writeRaster(const TRaster& data) const
+  {
+    return write_raster(data);
+  }
+
+  /// @}
 
 private:
+
   /**
    * @brief The data unit handler.
    */

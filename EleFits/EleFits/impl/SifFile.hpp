@@ -11,22 +11,10 @@ namespace Euclid {
 namespace Fits {
 
 template <typename TRaster>
-void SifFile::writeAll(const RecordSeq& records, const TRaster& raster) {
-  m_raster.reinit<typename TRaster::Value, TRaster::Dim>(raster.shape());
-  m_header.writeSeq(records);
+void SifFile::write(const RecordSeq& records, const TRaster& raster) {
+  m_raster.update_type_shape<typename TRaster::Value, TRaster::Dim>(raster.shape());
+  m_header.write_n(records);
   m_raster.write(raster);
-}
-
-template <typename T, long N>
-VecRaster<T, N> SifFile::readRaster() const {
-  return Cfitsio::ImageIo::readRaster<T, N>(m_fptr);
-}
-
-template <typename TRaster>
-void SifFile::writeRaster(const TRaster& raster) const {
-  Cfitsio::HduAccess::goto_primary(m_fptr); // FXME needed?
-  Cfitsio::ImageIo::updateTypeShape<typename TRaster::Value, TRaster::Dim>(m_fptr, raster.shape());
-  Cfitsio::ImageIo::writeRaster(m_fptr, raster);
 }
 
 } // namespace Fits

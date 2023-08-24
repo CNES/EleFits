@@ -20,7 +20,7 @@ namespace Test {
 /**
  * @brief Generate a random record.
  * @tparam T The value type.
- * @param typeName The type name as a string, e.g. `"unsigned long int"`.
+ * @param typename The type name as a string, e.g. `"unsigned long int"`.
  * @details
  * In `"unsigned long int"`, `"unsigned"` and `"long"` are prefixes, and `"int"` is the suffix.
  * The generated record is as follows:
@@ -30,13 +30,13 @@ namespace Test {
  * - The comment is made of the first letter of the prefixes, a space, and the suffix, e.g. `"ul int"`.
  */
 template <typename T>
-static Record<T> generateRandomRecord(const std::string& typeName);
+static Record<T> generate_random_record(const std::string& type_name);
 
 /**
  * @brief Generate a random record.
  */
 template <typename T>
-static Record<T> generateRandomRecord(const std::string& k, const std::string& u, const std::string& c);
+static Record<T> generate_random_record(const std::string& k, const std::string& u, const std::string& c);
 
 /**
  * @brief A random set of Records.
@@ -87,21 +87,21 @@ struct RandomHeader {
    * @brief Get the record with given type.
    */
   template <typename T>
-  const Record<T>& getRecord() const;
+  const Record<T>& get_record() const;
 
   /**
    * @brief Get the record with given type.
    */
   template <typename T>
-  Record<T>& getRecord();
+  Record<T>& get_record();
 
   /**
    * @brief Get all the records.
    */
-  RecordSeq allRecords() const;
+  RecordSeq all_record() const;
 
   /** @brief The number of records. */
-  static constexpr long recordCount = 16;
+  static constexpr long record_count = 16;
 };
 
 } // namespace Test

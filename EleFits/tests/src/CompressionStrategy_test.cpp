@@ -20,7 +20,8 @@ BOOST_AUTO_TEST_SUITE(CompressionStrategy_test)
  * @brief Whatever the type and shape, check losslessness.
  */
 template <typename T>
-auto check_basic_lossless(Position<-1> shape) {
+auto check_basic_lossless(Position<-1> shape)
+{
   auto strategy = CompressAuto();
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
@@ -37,7 +38,8 @@ auto check_basic_lossless(Position<-1> shape) {
  * @brief Whatever the type and shape, check losslessness for integers.
  */
 template <typename T>
-void check_basic_lossless_ints(Position<-1> shape) {
+void check_basic_lossless_ints(Position<-1> shape)
+{
   auto strategy = CompressAuto(CompressionType::LosslessInts);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
@@ -50,7 +52,8 @@ void check_basic_lossless_ints(Position<-1> shape) {
 }
 
 template <typename T>
-void check_basic_lossy(Position<-1> shape) {
+void check_basic_lossy(Position<-1> shape)
+{
   auto strategy = CompressAuto(CompressionType::LosslessInts);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
@@ -60,14 +63,16 @@ void check_basic_lossy(Position<-1> shape) {
 }
 
 template <typename T>
-void check_basic(Position<-1> shape) {
+void check_basic(Position<-1> shape)
+{
   check_basic_lossless<T>(shape);
   check_basic_lossless_ints<T>(shape);
   check_basic_lossy<T>(shape);
 }
 
 #define BASIC_LOSSLESSNESS_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_basic_losslessness_test) { \
+  BOOST_AUTO_TEST_CASE(name##_basic_losslessness_test) \
+  { \
     check_basic<type>({0}); \
     check_basic<type>({1}); \
     check_basic<type>({2879}); \
@@ -78,7 +83,8 @@ void check_basic(Position<-1> shape) {
 // ELEFITS_FOREACH_RASTER_TYPE(BASIC_LOSSLESSNESS_TEST) // FIXME re-enable
 
 template <typename T, typename TAction>
-void check_can_compress(TAction action) {
+void check_can_compress(TAction action)
+{
   ImageHdu::Initializer<T> zero {1, "", {}, {2880 / sizeof(T)}, nullptr};
   BOOST_TEST(not action.compression(zero));
   ImageHdu::Initializer<T> one {1, "", {}, {2880 / sizeof(T), 4}, nullptr};
@@ -86,13 +92,14 @@ void check_can_compress(TAction action) {
 }
 
 template <typename T, typename TAction>
-void check_cannot_compress(TAction action) {
+void check_cannot_compress(TAction action)
+{
   ImageHdu::Initializer<T> many {1, "", {}, {2880 / sizeof(T), 2880 / sizeof(T)}, nullptr};
   BOOST_TEST(not action.compression(many));
 }
 
-BOOST_AUTO_TEST_CASE(lossless_compression_ability_test) {
-
+BOOST_AUTO_TEST_CASE(lossless_compression_ability_test)
+{
   check_can_compress<std::uint16_t>(Compress<Gzip>());
   check_cannot_compress<std::int64_t>(Compress<Gzip>());
   check_can_compress<float>(Compress<Gzip>());
@@ -123,10 +130,38 @@ BOOST_AUTO_TEST_CASE(lossless_compression_ability_test) {
   check_can_compress<float>(CompressFloats<Gzip>());
 }
 
-BOOST_AUTO_TEST_CASE(lossy_compression_ability_test) {
+BOOST_AUTO_TEST_CASE(lossy_compression_ability_test)
+{
   check_can_compress<float>(Compress<Rice>(Tile::rowwise(), Quantization(4)));
   check_can_compress<float>(Compress<HCompress>(Tile::rowwise(16), Quantization(4)));
   check_cannot_compress<float>(Compress<Plio>(Tile::rowwise(), Quantization(4)));
+}
+
+BOOST_AUTO_TEST_CASE(plio_limit_test)
+{
+  using T = std::int32_t;
+  constexpr T limit = T(1) << 24;
+  Position<-1> shape {2881};
+  Plio algo;
+
+  ImageHdu::Initializer<T> minimal {1, "", {}, shape, nullptr};
+  BOOST_TEST(not can_compress(algo, minimal));
+
+  ImageHdu::Initializer<T> datamax_good {1, "", {{"DATAMAX", limit - 1}}, shape, nullptr};
+  BOOST_TEST(can_compress(algo, datamax_good));
+
+  ImageHdu::Initializer<T> datamax_bad {1, "", {{"DATAMAX", limit}}, shape, nullptr};
+  BOOST_TEST(not can_compress(algo, datamax_bad));
+
+  VecRaster<T, -1> raster_good(shape);
+  raster_good[0] = limit - 1;
+  ImageHdu::Initializer<T> data_good {1, "", {}, shape, raster_good.data()};
+  BOOST_TEST(can_compress(algo, data_good));
+
+  VecRaster<T, -1> raster_bad(shape);
+  raster_bad[0] = limit;
+  ImageHdu::Initializer<T> data_bad {1, "", {}, shape, raster_bad.data()};
+  BOOST_TEST(not can_compress(algo, data_bad));
 }
 
 //-----------------------------------------------------------------------------

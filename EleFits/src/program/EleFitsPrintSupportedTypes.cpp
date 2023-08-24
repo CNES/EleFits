@@ -22,13 +22,13 @@ class EleFitsPrintSupportedTypes : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = ProgramOptions::fromAuxFile("PrintSupportedTypes.txt");
-    return options.asPair();
+    auto options = ProgramOptions::from_aux_file("PrintSupportedTypes.txt");
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>&) override {
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsPrintSupportedTypes");
-    std::string contents = String::readAuxFile("PrintSupportedTypes.txt");
+    std::string contents = String::read_aux_file("PrintSupportedTypes.txt");
     std::vector<std::string> lines;
     for (const auto& line : boost::split(lines, contents, boost::is_any_of("\n"))) {
       logger.info(line);

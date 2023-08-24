@@ -16,7 +16,7 @@ OutOfBoundsError::OutOfBoundsError(const std::string& prefix, long value, std::p
         prefix + ": " + std::to_string(value) + " not in (" + std::to_string(bounds.first) + ", " +
         std::to_string(bounds.second) + ")") {}
 
-void OutOfBoundsError::mayThrow(const std::string& prefix, long value, std::pair<long, long> bounds) {
+void OutOfBoundsError::may_throw(const std::string& prefix, long value, std::pair<long, long> bounds) {
   if (value < bounds.first || value > bounds.second) {
     throw OutOfBoundsError(prefix, value, bounds);
   }

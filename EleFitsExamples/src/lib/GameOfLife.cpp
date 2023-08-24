@@ -16,7 +16,7 @@ GameOfLife::GameOfLife(long width, long height, long turns) :
 const PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(long count) {
   long done = 0;
   while (done <= count) {
-    const long i = Test::generateRandomValue<long>(0, m_width * m_height - 1);
+    const long i = Test::generate_random_value<long>(0, m_width * m_height - 1);
     if (not m_previous[i]) {
       m_previous[i] = 1;
       ++done;

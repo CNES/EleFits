@@ -21,11 +21,11 @@ namespace Fits {
  * In the associated Elements::Program, override defineProgramArguments() as follows:
  * \code
  * std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
- *   auto options = ProgramOptions::fromAuxdir("help.txt");
+ *   auto options = ProgramOptions::from_auxdir("help.txt");
  *   options.positional("positional", value<std::string>(), "Positional option");
  *   options.named("named1", value<int>(), "Named option 1");
  *   options.named("named2", value<int>(), "Named option 2");
- *   return options.asPair();
+ *   return options.as_pair();
  * }
  * \endcode
  */
@@ -54,17 +54,17 @@ public:
 
   /**
    * @brief Create option descriptions with help message.
-   * @param helpMessage The help message
+   * @param help_message The help message
    */
-  ProgramOptions(const std::string& helpMessage = "");
+  ProgramOptions(const std::string& help_message = "");
 
   /**
    * @brief Create option descriptions from help file.
-   * @param helpFile The path to the help file relative to the auxiliary directory
+   * @param help_file The path to the help file relative to the auxiliary directory
    * @details
    * The help file is a file which contains the text to be used as the help message.
    */
-  static ProgramOptions fromAuxFile(const std::string& helpFile);
+  static ProgramOptions from_aux_file(const std::string& help_file);
 
   /**
    * @brief Add a named option.
@@ -86,8 +86,8 @@ public:
    * @brief Add a named option with default value.
    */
   template <typename T>
-  void named(const char* name, const char* description, T defaultValue) {
-    named(name, boost::program_options::value<T>()->default_value(defaultValue), description);
+  void named(const char* name, const char* description, T default_value) {
+    named(name, boost::program_options::value<T>()->default_value(default_value), description);
   }
 
   /**
@@ -118,8 +118,8 @@ public:
    * @brief Add a positional option with default value.
    */
   template <typename T>
-  void positional(const char* name, const char* description, T defaultValue) {
-    positional(name, boost::program_options::value<T>()->default_value(defaultValue), description);
+  void positional(const char* name, const char* description, T default_value) {
+    positional(name, boost::program_options::value<T>()->default_value(default_value), description);
   }
 
   /**
@@ -140,13 +140,13 @@ public:
    * This methods is primarily intended as the return of the override
    * of Elements::Program::defineProgramArguments().
    */
-  std::pair<OptionsDescription, PositionalOptionsDescription> asPair() const;
+  std::pair<OptionsDescription, PositionalOptionsDescription> as_pair() const;
 
 private:
   /**
    * @brief Build the options description from a possibly empty help message.
    */
-  static std::string makeDesc(const std::string& helpMessage);
+  static std::string make_desc(const std::string& help_message);
 
   /**
    * @brief Named options description.

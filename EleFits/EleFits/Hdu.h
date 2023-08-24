@@ -30,12 +30,12 @@ class MefFile; // necessary for friend class declaration in Hdu
  * (refer to the documentation of the `Header` class).
  */
 class Hdu {
-
   // A non-parent MefFile can be wanting to access the fitsfile of the parent MefFile of the hdu
   // FIXME: approach might be changed in the future
   friend class Euclid::Fits::MefFile;
 
 public:
+
   /// @cond
 
   /**
@@ -52,6 +52,7 @@ public:
     friend class BintableHdu;
 
   private:
+
     Token() {}
   };
 
@@ -79,10 +80,14 @@ public:
 
   /// @endcond
 
+  /// @group_construction
+
   /**
    * @brief Destructor.
    */
-  virtual ~Hdu() = default;
+  ELEFITS_VIRTUAL_DTOR(Hdu)
+
+  /// @group_properties
 
   /**
    * @brief Get the 0-based index of the HDU.
@@ -93,14 +98,14 @@ public:
    * @brief Get the type of the HDU.
    * @return Either HduCategory::Image or HduCategory::Bintable
    * @details
-   * As opposed to readCategory(), the return value of this method can be tested for equality, e.g.:
+   * As opposed to category(), the return value of this method can be tested for equality, e.g.:
    * \code
    * if (ext.type() == HduCategory::Image) {
-   *   processImage(ext);
+   *   process_image(ext);
    * }
    * \endcode
    */
-  HduCategory type() const;
+  HduCategory type() const; // FIXME return HduType
 
   /**
    * @ingroup iterators
@@ -117,38 +122,16 @@ public:
    * @see HduCategory
    * @see matches
    */
-  virtual HduCategory readCategory() const;
+  virtual HduCategory category() const; // FIXME refactor HduCategory
 
   /**
    * @ingroup iterators
    * @brief Check whether the HDU matches a given filter.
    * @param filter The list of categories to be tested
    * @warning
-   * Like readCategory, this is a read operation.
+   * Like category, this is a read operation.
    */
   bool matches(HduFilter filter) const;
-
-  /**
-   * @brief View as an `ImageHdu`, `ImageRaster`, `BintableHdu` or `BintableColumns` (if possible).
-   */
-  template <typename T>
-  const T& as() const;
-
-  /**
-   * @brief Access the header unit to read and write records.
-   * @see Header
-   */
-  const Header& header() const;
-
-  /**
-   * @brief Read the extension name.
-   */
-  std::string readName() const;
-
-  /**
-   * @brief Read the extension version.
-   */
-  long readVersion() const;
 
   /**
    * @brief Read the number of bytes used by the Hdu.
@@ -158,15 +141,43 @@ public:
   */
   std::size_t size_in_file() const;
 
+  /// @group_elements
+
+  /**
+   * @brief Access the header unit to read and write records.
+   * @see Header
+   */
+  const Header& header() const;
+
+  /// @group_views
+
+  /**
+   * @brief View as an `ImageHdu`, `ImageRaster`, `BintableHdu` or `BintableColumns` (if possible).
+   */
+  template <typename T>
+  const T& as() const;
+
+  /// @group_operations
+
+  /**
+   * @brief Read the extension name.
+   */
+  std::string read_name() const;
+
+  /**
+   * @brief Read the extension version.
+   */
+  long read_version() const;
+
   /**
    * @brief Write or update the extension name.
    */
-  void updateName(const std::string& name) const;
+  void update_name(const std::string& name) const;
 
   /**
    * @brief Write or update the extension version.
    */
-  void updateVersion(long version) const;
+  void update_version(long version) const;
 
   /**
    * @brief Compute the HDU and data checksums and compare them to the values in the header.
@@ -177,26 +188,85 @@ public:
    * To get details on the error, ask the `ChecksumError` object itself:
    * \code
    * try {
-   *   hdu.verifyChecksums();
+   *   hdu.verify_checksums();
    * } catch (ChecksumError& e) {
    *   if (e.data == ChecksumError::Status::Missing) {
    *     // ...
    *   }
    * }
    * \endcode
-   * @see updateChecksums()
+   * @see update_checksums()
    */
-  void verifyChecksums() const;
+  void verify_checksums() const;
 
   /**
    * @brief Compute and write (or update) the HDU and data checksums.
    * @details
    * Two checksums are computed: at whole HDU level (keyword `CHECKSUM`), and at data unit level (keyword `DATASUM`).
-   * @see verifyChecksums()
+   * @see verify_checksums()
    */
-  void updateChecksums() const;
+  void update_checksums() const;
+
+  /// @group_deprecated
+
+  /**
+   * @deprecated
+   */
+  HduCategory readCategory() const
+  {
+    return category();
+  }
+
+  /**
+   * @deprecated
+   */
+  std::string readName() const
+  {
+    return read_name();
+  }
+
+  /**
+   * @deprecated
+   */
+  long readVersion() const
+  {
+    return read_version();
+  }
+
+  /**
+   * @deprecated
+   */
+  void updateName(const std::string& name) const
+  {
+    return update_name(name);
+  }
+
+  /**
+   * @deprecated
+   */
+  void updateVersion(long version) const
+  {
+    return update_version(version);
+  }
+
+  /**
+   * @deprecated
+   */
+  void verifyChecksums() const
+  {
+    return verify_checksums();
+  }
+
+  /**
+   * @deprecated
+   */
+  void updateChecksums() const
+  {
+    return update_checksums();
+  }
 
 protected:
+
   /**
    * @brief Set the current HDU to this one.
    * @details

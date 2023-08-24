@@ -32,7 +32,7 @@ void write_primary_header(const Header& h, long nobj) {
   Record<std::int64_t> nobj_record {"N_OBJ", nobj, "", "number of objects in the package"};
   Record<std::string> telescope_record {"TELESCOP", "EUCLID", "", "telescope name"};
   Record<std::string> instrument_record {"INSTRUME", "NISP", "", "instrument name"};
-  h.writeSeq(nobj_record, telescope_record, instrument_record);
+  h.write_n(nobj_record, telescope_record, instrument_record);
 }
 
 /*
@@ -70,42 +70,42 @@ const BintableHdu& write_ext(MefFile& f, const std::string& name, const AstroObj
 
   /* Random data */
 
-  auto objectid_data = Test::generateRandomVector<std::int64_t>(row_count);
-  auto radec_data = Test::generateRandomVector<std::complex<float>>(row_count);
-  auto exptime_data = Test::generateRandomVector<float>(row_count);
+  auto objectid_data = Test::generate_random_vector<std::int64_t>(row_count);
+  auto radec_data = Test::generate_random_vector<std::complex<float>>(row_count);
+  auto exptime_data = Test::generate_random_vector<float>(row_count);
 
-  auto com_signal_data = Test::generateRandomVector<float>(comb_size * row_count);
-  auto comb_var_data = Test::generateRandomVector<float>(comb_size * row_count);
+  auto com_signal_data = Test::generate_random_vector<float>(comb_size * row_count);
+  auto comb_var_data = Test::generate_random_vector<float>(comb_size * row_count);
 
-  auto ptgid_data = Test::generateRandomVector<std::int64_t>(dith_count * row_count);
+  auto ptgid_data = Test::generate_random_vector<std::int64_t>(dith_count * row_count);
 
-  auto dith1d_signal_data = Test::generateRandomVector<float>(dith1d_size * dith_count * row_count);
-  auto dith1d_var_data = Test::generateRandomVector<float>(dith1d_size * dith_count * row_count);
+  auto dith1d_signal_data = Test::generate_random_vector<float>(dith1d_size * dith_count * row_count);
+  auto dith1d_var_data = Test::generate_random_vector<float>(dith1d_size * dith_count * row_count);
 
-  auto dith2d_signal_data = Test::generateRandomVector<float>(dith2d_width * dith2d_height * dith_count * row_count);
-  auto dith2d_var_data = Test::generateRandomVector<float>(dith2d_width * dith2d_height * dith_count * row_count);
+  auto dith2d_signal_data = Test::generate_random_vector<float>(dith2d_width * dith2d_height * dith_count * row_count);
+  auto dith2d_var_data = Test::generate_random_vector<float>(dith2d_width * dith2d_height * dith_count * row_count);
 
   /* Create and assign extension */
 
-  return f.appendBintable(
+  return f.append_bintable(
       name,
       {},
-      makeColumn(std::move(objectid_info), std::move(objectid_data)),
-      makeColumn(std::move(radec_info), std::move(radec_data)),
-      makeColumn(std::move(exptime_info), std::move(exptime_data)),
-      makeColumn(std::move(comb_signal_info), std::move(com_signal_data)),
-      makeColumn(std::move(comb_var_info), std::move(comb_var_data)),
-      makeColumn(std::move(ptgid_info), std::move(ptgid_data)),
-      makeColumn(std::move(dith1d_signal_info), std::move(dith1d_signal_data)),
-      makeColumn(std::move(dith1d_var_info), std::move(dith1d_var_data)),
-      makeColumn(std::move(dith2d_signal_info), std::move(dith2d_signal_data)),
-      makeColumn(std::move(dith2d_var_info), std::move(dith2d_var_data)));
+      make_column(std::move(objectid_info), std::move(objectid_data)),
+      make_column(std::move(radec_info), std::move(radec_data)),
+      make_column(std::move(exptime_info), std::move(exptime_data)),
+      make_column(std::move(comb_signal_info), std::move(com_signal_data)),
+      make_column(std::move(comb_var_info), std::move(comb_var_data)),
+      make_column(std::move(ptgid_info), std::move(ptgid_data)),
+      make_column(std::move(dith1d_signal_info), std::move(dith1d_signal_data)),
+      make_column(std::move(dith1d_var_info), std::move(dith1d_var_data)),
+      make_column(std::move(dith2d_signal_info), std::move(dith2d_signal_data)),
+      make_column(std::move(dith2d_var_info), std::move(dith2d_var_data)));
 }
 
 /**
  * Insert quality columns to a binary table HDU.
  */
-void insertColumns(const BintableColumns& du, const AstroObjInfo& info) {
+void insert_columns(const BintableColumns& du, const AstroObjInfo& info) {
 
   /* Infos */
 
@@ -121,21 +121,21 @@ void insertColumns(const BintableColumns& du, const AstroObjInfo& info) {
 
   /* Random data */
 
-  const auto row_count = du.readRowCount();
-  auto comb_qual_data = Test::generateRandomVector<std::int32_t>(comb_size * row_count);
-  auto dith1d_qual_data = Test::generateRandomVector<std::int32_t>(dith1d_size * dith_count * row_count);
+  const auto row_count = du.read_row_count();
+  auto comb_qual_data = Test::generate_random_vector<std::int32_t>(comb_size * row_count);
+  auto dith1d_qual_data = Test::generate_random_vector<std::int32_t>(dith1d_size * dith_count * row_count);
   auto dith2d_qual_data =
-      Test::generateRandomVector<std::int32_t>(dith2d_width * dith2d_height * dith_count * row_count);
+      Test::generate_random_vector<std::int32_t>(dith2d_width * dith2d_height * dith_count * row_count);
 
   /* Insert before variance columns */
 
-  du.init(comb_qual_info, du.readIndex("COMBINED1D_VAR"));
-  du.init(dith1d_qual_info, du.readIndex("DITH1D_VAR"));
-  du.init(dith2d_qual_info, du.readIndex("DITH2D_VAR"));
-  du.writeSeq(
-      makeColumn(std::move(comb_qual_info), std::move(comb_qual_data)),
-      makeColumn(std::move(dith1d_qual_info), std::move(dith1d_qual_data)),
-      makeColumn(std::move(dith2d_qual_info), std::move(dith2d_qual_data)));
+  du.init(comb_qual_info, du.read_index("COMBINED1D_VAR"));
+  du.init(dith1d_qual_info, du.read_index("DITH1D_VAR"));
+  du.init(dith2d_qual_info, du.read_index("DITH2D_VAR"));
+  du.write_n(
+      make_column(std::move(comb_qual_info), std::move(comb_qual_data)),
+      make_column(std::move(dith1d_qual_info), std::move(dith1d_qual_data)),
+      make_column(std::move(dith2d_qual_info), std::move(dith2d_qual_data)));
 }
 
 /*
@@ -156,7 +156,7 @@ public:
     options.named("ndith", value<long>()->default_value(4), "Dither count per AstroObj");
     options.named("height", value<long>()->default_value(15), "Dither 2D height");
     options.flag("qual", "Flag to write quality columns");
-    return options.asPair();
+    return options.as_pair();
   }
 
   /*
@@ -186,7 +186,7 @@ public:
       logger.info() << "Writing HDU " << i + 1;
       const auto& ext = write_ext(f, std::to_string(i + 1), info, nobj);
       if (qual) {
-        insertColumns(ext.columns(), info);
+        insert_columns(ext.columns(), info);
       }
     }
 

@@ -53,7 +53,7 @@ public:
     options.named("rows", value<int>()->default_value(1), "Number of rows");
     options.named("output", value<std::string>()->default_value("/tmp/test.fits"), "Output FITS file");
     options.named("res", value<std::string>()->default_value("/tmp/benchmark.csv"), "Output result file");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
@@ -62,7 +62,7 @@ public:
 
     const auto test_setup = args["setup"].as<std::string>();
     const auto image_count = args["images"].as<int>();
-    const auto pixelCount = args["pixels"].as<int>();
+    const auto pixel_count = args["pixels"].as<int>();
     const auto table_count = args["tables"].as<int>();
     const auto row_count = args["rows"].as<int>();
     const auto filename = args["output"].as<std::string>();
@@ -70,7 +70,7 @@ public:
 
     logger.info("Setting up the benchmark...");
 
-    const auto factory = init_factory(); // TODO pass factory to CTor of the program, with initFactory() as default
+    const auto factory = init_factory(); // TODO pass factory to CTor of the program, with init_factory() as default
     for (const auto& k : factory.keys()) {
       logger.info(k);
     }
@@ -99,20 +99,20 @@ public:
 
       logger.info("Generating raster...");
 
-      const Validation::BRaster raster = Test::RandomRaster<std::int64_t, 1>({pixelCount});
+      const Validation::BRaster raster = Test::RandomRaster<std::int64_t, 1>({pixel_count});
 
       logger.info("Writing image HDUs...");
 
       try {
         const auto chrono = benchmark->write_images(image_count, raster);
-        writer.writeRow(
+        writer.write_row(
             "TODO",
             test_setup,
             "Write",
             "Image",
             image_count,
-            pixelCount,
-            image_count * pixelCount,
+            pixel_count,
+            image_count * pixel_count,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),
@@ -128,14 +128,14 @@ public:
 
       try {
         const auto chrono = benchmark->read_images(1, image_count);
-        writer.writeRow(
+        writer.write_row(
             "TODO",
             test_setup,
             "Read",
             "Image",
             image_count,
-            pixelCount,
-            image_count * pixelCount,
+            pixel_count,
+            image_count * pixel_count,
             boost::filesystem::file_size(filename),
             chrono.elapsed().count(),
             chrono.min(),
@@ -153,22 +153,22 @@ public:
 
       const auto table = Test::RandomTable(1, row_count);
       const Validation::BColumns columns = std::make_tuple(
-          std::move(table.getColumn<unsigned char>()),
-          std::move(table.getColumn<std::int32_t>()),
-          std::move(table.getColumn<std::int64_t>()),
-          std::move(table.getColumn<float>()),
-          std::move(table.getColumn<double>()),
-          std::move(table.getColumn<std::complex<float>>()),
-          std::move(table.getColumn<std::complex<double>>()),
-          std::move(table.getColumn<char>()),
-          std::move(table.getColumn<std::uint32_t>()),
-          std::move(table.getColumn<std::uint64_t>()));
+          std::move(table.get_column<unsigned char>()),
+          std::move(table.get_column<std::int32_t>()),
+          std::move(table.get_column<std::int64_t>()),
+          std::move(table.get_column<float>()),
+          std::move(table.get_column<double>()),
+          std::move(table.get_column<std::complex<float>>()),
+          std::move(table.get_column<std::complex<double>>()),
+          std::move(table.get_column<char>()),
+          std::move(table.get_column<std::uint32_t>()),
+          std::move(table.get_column<std::uint64_t>()));
 
       logger.info("Writing binary table HDUs...");
 
       try {
         const auto chrono = benchmark->write_bintables(table_count, columns);
-        writer.writeRow(
+        writer.write_row(
             "TODO",
             test_setup,
             "Write",
@@ -191,7 +191,7 @@ public:
 
       try {
         const auto chrono = benchmark->read_bintables(1 + image_count, table_count);
-        writer.writeRow(
+        writer.write_row(
             "TODO",
             test_setup,
             "Read",

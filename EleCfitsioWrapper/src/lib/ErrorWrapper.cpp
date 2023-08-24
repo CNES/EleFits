@@ -10,10 +10,10 @@
 namespace Euclid {
 namespace Cfitsio {
 
-CfitsioError::CfitsioError(int cfitsioStatus) : FitsError(message(cfitsioStatus)), status(cfitsioStatus) {}
+CfitsioError::CfitsioError(int cfitsio_status) : FitsError(message(cfitsio_status)), status(cfitsio_status) {}
 
-CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string& context) :
-    FitsError(context), status(cfitsioStatus) {
+CfitsioError::CfitsioError(int cfitsio_status, fitsfile* fptr, const std::string& context) :
+    FitsError(context), status(cfitsio_status) {
   append("");
   if (not fptr) {
     append("CFITSIO fitsfile pointer is null.");
@@ -42,36 +42,36 @@ CfitsioError::CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string&
   };
 }
 
-std::string CfitsioError::message(int cfitsioStatus) {
-  float cfitsioVersion = 0;
-  fits_get_version(&cfitsioVersion);
-  char cfitsioMessage[FLEN_ERRMSG];
-  cfitsioMessage[0] = '\0';
-  fits_get_errstatus(cfitsioStatus, cfitsioMessage);
-  std::string message =
-      "CFITSIO v" + std::to_string(cfitsioVersion) + " error " + std::to_string(cfitsioStatus) + ": " + cfitsioMessage;
+std::string CfitsioError::message(int cfitsio_status) {
+  float cfitsio_version = 0;
+  fits_get_version(&cfitsio_version);
+  char cfitsio_message[FLEN_ERRMSG];
+  cfitsio_message[0] = '\0';
+  fits_get_errstatus(cfitsio_status, cfitsio_message);
+  std::string message = "CFITSIO v" + std::to_string(cfitsio_version) + " error " + std::to_string(cfitsio_status) +
+      ": " + cfitsio_message;
   return message;
 }
 
-void CfitsioError::mayThrow(int cfitsioStatus) {
-  if (cfitsioStatus != 0) {
-    throw CfitsioError(cfitsioStatus);
+void CfitsioError::may_throw(int cfitsio_status) {
+  if (cfitsio_status != 0) {
+    throw CfitsioError(cfitsio_status);
   }
 }
 
-void CfitsioError::mayThrow(int cfitsioStatus, fitsfile* fptr, const std::string& message) {
-  if (cfitsioStatus != 0) {
-    throw CfitsioError(cfitsioStatus, fptr, message);
+void CfitsioError::may_throw(int cfitsio_status, fitsfile* fptr, const std::string& message) {
+  if (cfitsio_status != 0) {
+    throw CfitsioError(cfitsio_status, fptr, message);
   }
 }
 
-void mayThrowReadonlyError(fitsfile* fptr) {
+void may_throw_readonly(fitsfile* fptr) {
   if (not FileAccess::is_writable(fptr)) {
     throw CfitsioError(READONLY_FILE);
   }
 }
 
-void mayThrowInvalidFileError(fitsfile* fptr) {
+void may_throw_invalid_file(fitsfile* fptr) {
   if (not fptr) {
     throw CfitsioError(BAD_FILEPTR);
   }

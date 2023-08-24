@@ -121,7 +121,7 @@ or to spend runtime in conversions at each reading and writing operation.
 One of the main purposes of EleFits is to abstract from type codes, and to provide homogeneous template functions.
 This is implemented as type traits in class `Cfitsio::TypeCode`, which provides one method per column of the \ref type_map.
 Template specialization are made with built-in types or fixed types depending on what the CFITSIO functions expect.
-For example, `TSHORT` is `TypeCode<short>::forImage()` and `SHORT_IMG` is `TypeCode<std::int16_t>::bitpix()`.
+For example, `TSHORT` is `TypeCode<short>::for_image()` and `SHORT_IMG` is `TypeCode<std::int16_t>::bitpix()`.
 
 \note
 Internally, CFITSIO does the opposite when working with built-in types:
@@ -183,7 +183,7 @@ Variatic template design patterns to be documented:
 - packs vs. tuples
 - TSeq vs. variadic
 - use of forward and forward_as_tuple
-- seqForeach() and seqTransform()
+- seq_foreach() and seq_transform()
 
 
 \section design-data-classes Data classes

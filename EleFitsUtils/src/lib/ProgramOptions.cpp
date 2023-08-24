@@ -9,11 +9,11 @@
 namespace Euclid {
 namespace Fits {
 
-ProgramOptions::ProgramOptions(const std::string& helpMessage) :
-    m_named {makeDesc(helpMessage)}, m_add {m_named.add_options()}, m_positional {} {}
+ProgramOptions::ProgramOptions(const std::string& help_message) :
+    m_named {make_desc(help_message)}, m_add {m_named.add_options()}, m_positional {} {}
 
-ProgramOptions ProgramOptions::fromAuxFile(const std::string& helpFile) {
-  return ProgramOptions(String::readAuxFile(helpFile));
+ProgramOptions ProgramOptions::from_aux_file(const std::string& help_file) {
+  return ProgramOptions(String::read_aux_file(help_file));
 }
 
 void ProgramOptions::named(const char* name, const ProgramOptions::ValueSemantics* value, const char* description) {
@@ -25,8 +25,8 @@ void ProgramOptions::positional(
     const ProgramOptions::ValueSemantics* value,
     const char* description) {
   m_add(name, value, description);
-  const int maxArgs = value->max_tokens();
-  m_positional.add(name, maxArgs);
+  const int max_args = value->max_tokens();
+  m_positional.add(name, max_args);
 }
 
 void ProgramOptions::flag(const char* name, const char* description) {
@@ -34,16 +34,16 @@ void ProgramOptions::flag(const char* name, const char* description) {
 }
 
 std::pair<ProgramOptions::OptionsDescription, ProgramOptions::PositionalOptionsDescription>
-ProgramOptions::asPair() const {
+ProgramOptions::as_pair() const {
   return std::make_pair(m_named, m_positional);
 }
 
-std::string ProgramOptions::makeDesc(const std::string& helpMessage) {
-  const std::string optionsGroup = "Specific options";
-  if (helpMessage.length() > 0) {
-    return String::trim(helpMessage, "\n") + "\n\n" + optionsGroup;
+std::string ProgramOptions::make_desc(const std::string& help_message) {
+  const std::string options_group = "Specific options";
+  if (help_message.length() > 0) {
+    return String::trim(help_message, "\n") + "\n\n" + options_group;
   }
-  return optionsGroup;
+  return options_group;
 }
 
 } // namespace Fits

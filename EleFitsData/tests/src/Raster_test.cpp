@@ -68,7 +68,7 @@ BOOST_FIXTURE_TEST_CASE(small_raster_size_test, Test::SmallRaster) {
   std::size_t size = this->width * this->height;
   BOOST_TEST(this->dimension() == 2);
   BOOST_TEST(this->size() == size);
-  BOOST_TEST(this->vector().size() == size);
+  BOOST_TEST(this->container().size() == size);
 }
 
 BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test) {
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test) {
   Test::RandomRaster<int, -1> raster({width, height});
   BOOST_TEST(raster.dimension() == 2);
   BOOST_TEST(raster.size() == size);
-  BOOST_TEST(raster.vector().size() == size);
+  BOOST_TEST(raster.container().size() == size);
 }
 
 BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   Test::RandomRaster<int> raster({width, height});
   raster.at({1, -1}) = 1;
   BOOST_TEST(raster.at({1, -1}) == 1);
-  const auto& vec = raster.vector();
+  const auto& vec = raster.container();
   BOOST_TEST((raster[{0, 0}]) == vec[0]);
   BOOST_TEST(raster.at({0, 0}) == vec[0]);
   BOOST_TEST(raster.at({-1, 0}) == vec[width - 1]);
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
 }
 
 BOOST_FIXTURE_TEST_CASE(vecraster_move_test, Test::SmallRaster) {
-  const auto copied = this->vector();
+  const auto copied = this->container();
   const auto data = this->data();
   std::vector<Value> moved;
   this->moveTo(moved);

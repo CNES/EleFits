@@ -24,30 +24,31 @@ struct TestBintable { // FIXME add multidimensional column
    * @brief Constructor.
    */
   TestBintable(long rows = 10) :
-      scalarColumn(rows), vectorColumn(3, rows), firstColumn(scalarColumn), lastColumn(vectorColumn), file(),
-      hdu(file.appendBintableHeader("BINTABLE", {}, firstColumn.info(), lastColumn.info())), columns(hdu.columns()) {
-    assert(scalarColumn.info().name != vectorColumn.info().name);
+      scalar_column(rows), vector_column(3, rows), first_column(scalar_column), last_column(vector_column), file(),
+      hdu(file.append_bintable_header("BINTABLE", {}, first_column.info(), last_column.info())), columns(hdu.columns())
+  {
+    assert(scalar_column.info().name != vector_column.info().name);
   }
 
   /**
    * @brief The scalar column.
    */
-  Test::RandomScalarColumn<T> scalarColumn;
+  Test::RandomScalarColumn<T> scalar_column;
 
   /**
    * @brief The vector column.
    */
-  Test::RandomVectorColumn<T> vectorColumn;
+  Test::RandomVectorColumn<T> vector_column;
 
   /**
    * @brief A reference to the first column.
    */
-  VecColumn<T>& firstColumn;
+  VecColumn<T>& first_column;
 
   /**
    * @brief A reference to the last column.
    */
-  VecColumn<T>& lastColumn;
+  VecColumn<T>& last_column;
 
   /**
    * @brief The MEF file.

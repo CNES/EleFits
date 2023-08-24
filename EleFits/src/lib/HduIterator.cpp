@@ -12,7 +12,7 @@ HduIterator<> begin(MefFile& f) {
 }
 
 HduIterator<> end(MefFile& f) {
-  return {f, f.hduCount()};
+  return {f, f.hdu_count()};
 }
 
 } // namespace Fits

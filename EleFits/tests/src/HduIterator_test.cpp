@@ -16,50 +16,50 @@ BOOST_AUTO_TEST_SUITE(HduIterator_test)
 //-----------------------------------------------------------------------------
 
 BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
-  this->appendImageHeader("1");
-  this->appendImageHeader("2");
+  this->append_image_header("1");
+  this->append_image_header("2");
   int count = 0;
   for (const auto& hdu : *this) {
     BOOST_TEST(hdu.matches(HduCategory::Image));
     count++;
   }
-  BOOST_TEST(count == this->hduCount());
+  BOOST_TEST(count == this->hdu_count());
 }
 
 BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile) {
   ColumnInfo<float> info {"COL", "", 1};
   std::vector<std::string> names {"", "BINTABLE1", "BINTABLE2", "IMAGE"};
-  this->appendBintableHeader(names[1], {}, info);
-  this->appendBintableHeader(names[2], {}, info);
-  this->appendNullImage<float, 2>(names[3], {}, {1, 1});
+  this->append_bintable_header(names[1], {}, info);
+  this->append_bintable_header(names[2], {}, info);
+  this->append_null_image<float, 2>(names[3], {}, {1, 1});
 
   int count = 0;
-  std::vector<std::string> readNames;
+  std::vector<std::string> read_names;
 
   for (const auto& hdu : this->filter<ImageHdu>(HduCategory::Primary)) {
-    const std::string name = hdu.readName();
+    const std::string name = hdu.read_name();
     BOOST_TEST(name == names[0]);
-    readNames.push_back(name);
+    read_names.push_back(name);
     BOOST_TEST(hdu.matches(HduCategory::Image));
     count++;
   }
   BOOST_TEST(count == 1);
 
   for (const auto& hdu : this->filter<BintableHdu>(HduCategory::Any)) {
-    readNames.push_back(hdu.readName());
+    read_names.push_back(hdu.read_name());
     BOOST_TEST(hdu.matches(HduCategory::Bintable & HduCategory::Ext));
     count++;
   }
   BOOST_TEST(count == 3);
 
   for (const auto& hdu : this->filter<ImageHdu>(HduCategory::Ext)) {
-    readNames.push_back(hdu.readName());
+    read_names.push_back(hdu.read_name());
     BOOST_TEST(hdu.matches(HduCategory::Image - HduCategory::Primary));
     count++;
   }
   BOOST_TEST(count == 4);
 
-  BOOST_TEST(readNames == names);
+  BOOST_TEST(read_names == names);
 }
 
 //-----------------------------------------------------------------------------

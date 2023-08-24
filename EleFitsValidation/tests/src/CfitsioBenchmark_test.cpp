@@ -27,13 +27,13 @@ BOOST_AUTO_TEST_CASE(parameter_test) {
   const auto rowwise = factory.create_benchmark("rowwise", "file.fits");
 
   // Cast to raw pointers
-  const auto colwiseCPtr = dynamic_cast<Validation::CfitsioBenchmark*>(colwise.get());
-  const auto optimalPtr = dynamic_cast<Validation::CfitsioBenchmark*>(optimal.get());
-  const auto rowwisePtr = dynamic_cast<Validation::CfitsioBenchmark*>(rowwise.get());
+  const auto colwise_c_ptr = dynamic_cast<Validation::CfitsioBenchmark*>(colwise.get());
+  const auto optimal_ptr = dynamic_cast<Validation::CfitsioBenchmark*>(optimal.get());
+  const auto rowwise_ptr = dynamic_cast<Validation::CfitsioBenchmark*>(rowwise.get());
 
-  BOOST_TEST(colwiseCPtr->chunk_row_count() == -1);
-  BOOST_TEST(optimalPtr->chunk_row_count() == 0);
-  BOOST_TEST(rowwisePtr->chunk_row_count() == 1);
+  BOOST_TEST(colwise_c_ptr->chunk_row_count() == -1);
+  BOOST_TEST(optimal_ptr->chunk_row_count() == 0);
+  BOOST_TEST(rowwise_ptr->chunk_row_count() == 1);
 }
 
 //-----------------------------------------------------------------------------

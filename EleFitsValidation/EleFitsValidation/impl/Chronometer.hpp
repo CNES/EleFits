@@ -44,7 +44,7 @@ TUnit Chronometer<TUnit>::stop() {
 }
 
 template <typename TUnit>
-bool Chronometer<TUnit>::isRunning() const {
+bool Chronometer<TUnit>::is_running() const {
   return m_running; // TODO m_running could be removed by comparing m_toc to m_tic, but is it relevant?
 }
 

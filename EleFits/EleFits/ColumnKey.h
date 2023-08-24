@@ -25,15 +25,18 @@ class BintableColumns;
  */
 class ColumnKey {
 public:
-  /**
-   * @brief Create a column key from an index.
-   */
-  ColumnKey(long index);
+
+  /// @group_construction
 
   /**
    * @brief Create a column key from an index.
    */
-  ColumnKey(int index);
+  ColumnKey(long index); // FIXME make explicit?
+
+  /**
+   * @brief Create a column key from an index.
+   */
+  ColumnKey(int index); // FIXME rm (use enable_if or implicit cast)
 
   /**
    * @brief Create a column key from a name.
@@ -45,6 +48,8 @@ public:
    */
   ColumnKey(const char* name);
 
+  /// @group_operations
+
   /**
    * @brief Get the evaluated index.
    */
@@ -55,7 +60,10 @@ public:
    */
   const std::string& name(const BintableColumns& columns);
 
+  /// @}
+
 private:
+
   /**
    * @brief The possibly missing index.
    */

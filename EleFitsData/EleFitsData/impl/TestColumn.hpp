@@ -14,54 +14,54 @@ namespace Fits {
 namespace Test {
 
 template <typename T>
-VecColumn<T> RandomTable::generateColumn(const std::string& typeName, long repeatCount, long rowCount) {
-  std::vector<std::string> typeChunks;
+VecColumn<T> RandomTable::generate_column(const std::string& type_name, long repeat_count, long row_count) {
+  std::vector<std::string> type_chunks;
   std::string chunk;
-  std::istringstream chunkStream(typeName);
-  while (std::getline(chunkStream, chunk, ' ')) {
-    typeChunks.push_back(chunk);
+  std::istringstream chunk_stream(type_name);
+  while (std::getline(chunk_stream, chunk, ' ')) {
+    type_chunks.push_back(chunk);
   }
-  const auto prefixCount = typeChunks.size() - 1;
-  std::string suffix = typeChunks[prefixCount];
-  std::string prefixes(prefixCount, 0);
-  for (std::size_t i = 0; i < prefixCount; ++i) {
-    prefixes[i] = typeChunks[i][0];
+  const auto prefix_count = type_chunks.size() - 1;
+  std::string suffix = type_chunks[prefix_count];
+  std::string prefixes(prefix_count, 0);
+  for (std::size_t i = 0; i < prefix_count; ++i) {
+    prefixes[i] = type_chunks[i][0];
   }
   std::string keyword = prefixes + suffix;
   std::transform(keyword.begin(), keyword.end(), keyword.begin(), [](unsigned char c) {
     return std::toupper(c);
   });
-  return {{keyword, prefixes + suffix[0], repeatCount}, generateRandomVector<T>(repeatCount * rowCount)};
+  return {{keyword, prefixes + suffix[0], repeat_count}, generate_random_vector<T>(repeat_count * row_count)};
 }
 
 template <typename T>
-const VecColumn<T>& RandomTable::getColumn() const {
+const VecColumn<T>& RandomTable::get_column() const {
   return std::get<VecColumn<T>>(columns);
 }
 
 template <typename T>
-VecColumn<T>& RandomTable::getColumn() {
-  return const_cast<VecColumn<T>&>(const_cast<const RandomTable*>(this)->getColumn<T>());
+VecColumn<T>& RandomTable::get_column() {
+  return const_cast<VecColumn<T>&>(const_cast<const RandomTable*>(this)->get_column<T>());
 }
 
 template <typename T>
 RandomScalarColumn<T>::RandomScalarColumn(long size, T min, T max) :
-    VecColumn<T>({"SCALAR", "m", 1}, generateRandomVector<T>(size, min, max)) {}
+    VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size, min, max)) {}
 
 template <>
 RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, std::string max) :
-    VecColumn<std::string>({"SCALAR", "m", 1}, generateRandomVector<std::string>(size, min, max)) {
-  for (const auto& v : vector()) {
+    VecColumn<std::string>({"SCALAR", "m", 1}, generate_random_vector<std::string>(size, min, max)) {
+  for (const auto& v : container()) {
     long current_size = static_cast<long>(v.length() + 1); // +1 for '\0'
-    if (current_size > info().repeatCount()) {
+    if (current_size > info().repeat_count()) {
       reshape(current_size);
     }
   }
 }
 
 template <typename T>
-RandomVectorColumn<T>::RandomVectorColumn(long repeatCount, long rowCount, T min, T max) :
-    VecColumn<T>({"VECTOR", "m", repeatCount}, generateRandomVector<T>(repeatCount * rowCount, min, max)) {}
+RandomVectorColumn<T>::RandomVectorColumn(long repeat_count, long row_count, T min, T max) :
+    VecColumn<T>({"VECTOR", "m", repeat_count}, generate_random_vector<T>(repeat_count * row_count, min, max)) {}
 
 } // namespace Test
 } // namespace Fits

@@ -59,7 +59,7 @@ protected:
    * @brief The type and index of the i-th column.
    */
   template <long i>
-  Indexed<typename std::tuple_element<i, BColumns>::type::Value> col_indexed() const;
+  TypedKey<typename std::tuple_element<i, BColumns>::type::Value, long> col_indexed() const;
 
 protected:
   /**

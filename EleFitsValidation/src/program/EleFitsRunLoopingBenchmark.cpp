@@ -37,7 +37,7 @@ public:
     ProgramOptions options;
     options.named("setup", value<char>(), "Test setup to be benchmarked (x, z, p, i, v)");
     options.named("side", value<long>()->default_value(400), "Image width, height and depth (same value)");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {

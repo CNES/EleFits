@@ -20,14 +20,15 @@ using namespace Euclid::Fits;
     return #name; \
   }
 
-std::string read_type_name(const ImageHdu& hdu) {
-  const auto& id = hdu.readTypeid();
+std::string read_type_name(const ImageHdu& hdu)
+{
+  const auto& id = hdu.read_typeid();
   ELEFITS_FOREACH_RASTER_TYPE(RETURN_TYPENAME_IF_MATCH)
   return "UNKNOWN TYPE";
 }
 
-std::string read_compression_name(const ImageHdu& hdu) {
-
+std::string read_compression_name(const ImageHdu& hdu)
+{
   if (not hdu.is_compressed()) {
     return "None";
   }
@@ -58,7 +59,8 @@ std::string read_compression_name(const ImageHdu& hdu) {
   return "Unknown";
 }
 
-KeywordCategory parse_keyword_categories(const std::string& filter) {
+KeywordCategory parse_keyword_categories(const std::string& filter)
+{
   auto categories = KeywordCategory::None;
   static const std::map<char, KeywordCategory> mapping {
       {'m', KeywordCategory::Mandatory},
@@ -72,18 +74,19 @@ KeywordCategory parse_keyword_categories(const std::string& filter) {
 }
 
 class EleFitsReadStructure : public Elements::Program {
-
 public:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = ProgramOptions::fromAuxFile("ReadStructure.txt");
+
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
+    auto options = ProgramOptions::from_aux_file("ReadStructure.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.named("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter");
     options.named("columns,C", value<long>()->default_value(0)->implicit_value(-1), "Maximum number of column names");
-    return options.asPair();
+    return options.as_pair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
-
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
+  {
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsReadStructure");
 
     /* Read options */
@@ -94,7 +97,7 @@ public:
 
     /* Read file */
     MefFile f(filename, FileMode::Read);
-    const auto hdu_count = f.hduCount();
+    const auto hdu_count = f.hdu_count();
     logger.info() << "HDU count: " << hdu_count;
 
     /* Loop over HDUs */
@@ -103,13 +106,13 @@ public:
 
       /* Read name (if present) */
       const auto& hdu = f[i];
-      logger.info() << "HDU #" << i << ": " << hdu.readName();
+      logger.info() << "HDU #" << i << ": " << hdu.read_name();
       logger.info() << "  Size: " << hdu.size_in_file() << " bytes";
 
       /* Read type */
-      const auto hduType = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
-      if (hduType == HduCategory::Image) {
-        const auto shape = hdu.as<ImageHdu>().readShape<-1>();
+      const auto hdu_type = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
+      if (hdu_type == HduCategory::Image) {
+        const auto shape = hdu.as<ImageHdu>().read_shape<-1>();
         if (shape.size() > 0) {
           std::ostringstream oss;
           std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
@@ -122,12 +125,12 @@ public:
           logger.info() << "  Metadata HDU";
         }
       } else {
-        const auto column_count = hdu.as<BintableHdu>().readColumnCount();
-        const auto row_count = hdu.as<BintableHdu>().readRowCount();
+        const auto column_count = hdu.as<BintableHdu>().read_column_count();
+        const auto row_count = hdu.as<BintableHdu>().read_row_count();
         logger.info() << "  Binary table HDU:";
         logger.info() << "    Shape: " << column_count << " columns x " << row_count << " rows";
         if (max_column_count != 0) {
-          auto column_names = hdu.as<BintableHdu>().columns().readAllNames();
+          auto column_names = hdu.as<BintableHdu>().columns().read_all_names();
           if (max_column_count > 0 && max_column_count < column_count) {
             column_names.resize(max_column_count);
             column_names.push_back("...");
@@ -141,7 +144,7 @@ public:
 
       /* Read keywords */
       if (categories) {
-        const auto records = hdu.header().readKeywordsValues(categories);
+        const auto records = hdu.header().read_all_keywords_values(categories);
         if (records.size() == 0) {
           logger.info() << "  No keywords";
         } else {

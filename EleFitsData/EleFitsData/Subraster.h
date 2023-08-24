@@ -48,12 +48,12 @@ public:
   /**
    * @brief Constructor.
    */
-  Subraster(const Parent& parent, const Region<N>& region) : m_cParent(&parent), m_parent(nullptr), m_region(region) {}
+  Subraster(const Parent& parent, const Region<N>& region) : m_c_parent(&parent), m_parent(nullptr), m_region(region) {}
 
   /**
    * @brief Constructor.
    */
-  Subraster(Parent& parent, const Region<N>& region) : m_cParent(&parent), m_parent(&parent), m_region(region) {}
+  Subraster(Parent& parent, const Region<N>& region) : m_c_parent(&parent), m_parent(&parent), m_region(region) {}
 
   /**
    * @brief The subraster shape.
@@ -73,7 +73,7 @@ public:
    * @brief The parent raster.
    */
   const Parent& parent() const {
-    return *m_cParent;
+    return *m_c_parent;
   }
 
   /**
@@ -94,7 +94,7 @@ public:
    * @brief Pixel at given position.
    */
   const T& operator[](const Position<N>& pos) const {
-    return (*m_cParent)[pos + m_region.front];
+    return (*m_c_parent)[pos + m_region.front];
   }
 
   /**
@@ -108,7 +108,7 @@ private:
   /**
    * @brief Read-only pointer to the raster.
    */
-  const Parent* m_cParent;
+  const Parent* m_c_parent;
 
   /**
    * @brief Read/write pointer to the raster.

@@ -27,22 +27,22 @@ struct TypeCode {
   /**
    * @brief Get the type code for a record.
    */
-  inline static int forRecord();
+  inline static int for_record();
 
   /**
    * @brief Get the type code for a binary table.
    */
-  inline static int forBintable();
+  inline static int for_bintable();
 
   /**
    * @brief Get the TFORM value to handle binary table columns.
    */
-  inline static std::string tform(long repeatCount);
+  inline static std::string tform(long repeat_count);
 
   /**
    * @brief Get the type code for an image.
    */
-  inline static int forImage();
+  inline static int for_image();
 
   /**
    * @brief Get the BITPIX value to handle images.

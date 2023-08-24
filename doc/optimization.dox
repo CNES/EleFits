@@ -79,10 +79,10 @@ Ultimate optimization when creating an HDU is to complete the header unit first 
 
 \code
 // Initialize the header unit (write some standard records)
-const auto &ext = f.appendImageHeader<float, 3>(name);
+const auto &ext = f.append_image_header<float, 3>(name);
 
 // Write user records
-ext.header().writeSeq(record1, record2, record3);
+ext.header().write_n(record1, record2, record3);
 
 // Write data unit
 ext.raster().write(data);
@@ -106,13 +106,13 @@ until its value matches the name.
 
 \code
 // Good :)
-void doSomethingWithHdu(const Hdu& hdu);
+void do_something_with_hdu(const Hdu& hdu);
 
 // Bad :(
-void doSomethingWithHdu(long index);
+void do_something_with_hdu(long index);
 
 // Very bad ;(
-void doSomethingWithHdu(const std::string& name);
+void do_something_with_hdu(const std::string& name);
 \endcode
 
 \section optim-multiple-read-write Read and write multiple values at once
@@ -132,16 +132,16 @@ to avoid passing through the data unit several times.
 \code
 // Good :)
 const auto &ext = f.access<BintableHdu>(index);
-const auto columns = ext.columns().readSeq(
+const auto columns = ext.columns().read_n(
     as<std::string>("A"),
     as<float>("B"),
     as<std::int16_t>("C")); // Reads the whole data unit once
 
 // Bad :(
 const auto &ext = f.access<BintableHdu>(index);
-const auto columnA = ext.columns().read<std::string>("A"); // Reads the whole data unit
-const auto columnB = ext.columns().read<float>("B"); // Reads the whole data unit again!
-const auto columnC = ext.columns().read<std::int16_t>("C"); // Reads the whole data unit again and again...
+const auto col_a = ext.columns().read<std::string>("A"); // Reads the whole data unit
+const auto col_b = ext.columns().read<float>("B"); // Reads the whole data unit again!
+const auto col_c = ext.columns().read<std::int16_t>("C"); // Reads the whole data unit again and again...
 \endcode
 
 The strategy holds for record IOs too, yet with smaller improvements to be expected.

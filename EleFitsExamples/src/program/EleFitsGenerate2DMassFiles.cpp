@@ -21,7 +21,7 @@ using namespace Fits;
  */
 template <typename T>
 VecColumn<T> random_column(const std::string& name, long rows) {
-  return VecColumn<T>({name, "", 1}, Test::generateRandomVector<T>(rows, T(0), T(1)));
+  return VecColumn<T>({name, "", 1}, Test::generate_random_vector<T>(rows, T(0), T(1)));
 }
 
 /**
@@ -38,7 +38,7 @@ void write_bintable(const std::string& filename, long rows) {
   const auto col5 = random_column<float>("PHZ_MEDIAN", rows);
   const auto col6 = random_column<float>("PHZ_LENSMC_CORRECTION", rows);
   const auto col7 = random_column<float>("SHE_LENSMC_WEIGHT", rows);
-  f.appendBintable("", {}, col1, col2, col3, col4, col5, col6, col7); // Unnamed extension
+  f.append_bintable("", {}, col1, col2, col3, col4, col5, col6, col7); // Unnamed extension
 }
 
 /**
@@ -69,7 +69,7 @@ void write_some_records(const Header& header) {
       {"LATPOLE", "", "deg", "Native latitude of celestial pole"},
       {"RADESYS", "", "", "Equatorial coordinate system"},
       {"EQUINOX", "", "", "Equinox of celestial coordinate system (e.g. 2000)"}};
-  header.writeSeq(records);
+  header.write_n(records);
 }
 
 /**
@@ -80,7 +80,7 @@ void write_some_records(const Header& header) {
 void write_image(const std::string& filename, const Position<3>& shape) {
   MefFile f(filename, FileMode::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
-  const auto& ext = f.appendImage("KAPPA_PATCH", {}, raster); // Named extension
+  const auto& ext = f.append_image("KAPPA_PATCH", {}, raster); // Named extension
   write_some_records(ext.header());
 }
 
@@ -94,7 +94,7 @@ public:
     options.named("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
     options.named("width", value<long>()->default_value(10), "Image width");
     options.named("height", value<long>()->default_value(10), "Image height");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
@@ -116,18 +116,18 @@ public:
 
     logger.info("Reading binary table...");
     MefFile b(bintable, FileMode::Read);
-    const auto some_column = b.access<BintableHdu>(1).readColumn<float>("SHE_LENSMC_G1");
-    logger.info() << "First value of SHE_LENSMC_G1 = " << some_column.vector()[0];
+    const auto some_column = b.access<BintableHdu>(1).read_column<float>("SHE_LENSMC_G1");
+    logger.info() << "First value of SHE_LENSMC_G1 = " << some_column.container()[0];
 
     logger.info("Reading image...");
     MefFile i(image, FileMode::Read);
     const auto& ext = i.find<ImageHdu>("KAPPA_PATCH");
-    const auto raster = ext.readRaster<float, 3>();
+    const auto raster = ext.read_raster<float, 3>();
     const Position<3> center {raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2};
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");
-    const auto records = ext.header().parseAll();
+    const auto records = ext.header().parse_all();
     const auto int_record = records.as<int>("CRVAL1");
     logger.info() << int_record.comment << " = " << int_record.value << " " << int_record.unit;
     const auto str_record = records.as<std::string>("CUNIT1");

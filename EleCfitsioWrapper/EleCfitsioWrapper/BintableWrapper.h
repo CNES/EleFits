@@ -23,80 +23,80 @@ namespace BintableIo {
 /**
  * @brief Get the number of columns.
  */
-long columnCount(fitsfile* fptr);
+long column_count(fitsfile* fptr);
 
 /**
  * @brief Get the number of rows.
  */
-long rowCount(fitsfile* fptr);
+long row_count(fitsfile* fptr);
 
 /**
  * @brief Check whether a given column exists.
  */
-bool hasColumn(fitsfile* fptr, const std::string& name);
+bool has_column(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Get the name of a given column.
  */
-std::string columnName(fitsfile* fptr, long index);
+std::string column_name(fitsfile* fptr, long index);
 
 /**
  * @brief Update the name of a given column.
  */
-void updateColumnName(fitsfile* fptr, long index, const std::string& newName);
+void update_column_name(fitsfile* fptr, long index, const std::string& new_name);
 
 /**
  * @brief Get the index of a binary table column.
  */
-long columnIndex(fitsfile* fptr, const std::string& name);
+long column_index(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Read the metadata of a binary table column with given index.
  */
 template <typename T, long N = 1>
-Fits::ColumnInfo<T, N> readColumnInfo(fitsfile* fptr, long index);
+Fits::ColumnInfo<T, N> read_column_info(fitsfile* fptr, long index);
 
 /**
  * @brief Read the TDIM keyword (if any).
  */
 template <long N>
-void readColumnDim(fitsfile* fptr, long index, Fits::Position<N>& info);
+void read_column_dim(fitsfile* fptr, long index, Fits::Position<N>& info);
 
 /**
  * @brief Read the binary table column with given index.
  */
 template <typename T, long N = 1>
-Fits::VecColumn<T, N> readColumn(fitsfile* fptr, long index);
+Fits::VecColumn<T, N> read_column(fitsfile* fptr, long index);
 
 /**
  * @brief Read the segment of a binary table column with given index.
  */
 template <typename TColumn>
-void readColumnSegment(fitsfile* fptr, const Fits::Segment& rows, long index, TColumn& column);
+void read_column_segment(fitsfile* fptr, const Fits::Segment& rows, long index, TColumn& column);
 
 /**
  * @brief Read a binary table column with given name.
  */
 template <typename T, long N = 1>
-Fits::VecColumn<T, N> readColumn(fitsfile* fptr, const std::string& name);
+Fits::VecColumn<T, N> read_column(fitsfile* fptr, const std::string& name);
 
 /**
  * @brief Read several binary table columns with given indices.
  */
 template <typename... Ts>
-std::tuple<Fits::VecColumn<Ts, 1>...> readColumns(fitsfile* fptr, const std::vector<long>& indices);
+std::tuple<Fits::VecColumn<Ts, 1>...> read_columns(fitsfile* fptr, const std::vector<long>& indices);
 
 /**
  * @brief Read several binary table columns with given names.
  */
 template <typename... Ts>
-std::tuple<Fits::VecColumn<Ts, 1>...> readColumns(fitsfile* fptr, const std::vector<std::string>& names);
+std::tuple<Fits::VecColumn<Ts, 1>...> read_columns(fitsfile* fptr, const std::vector<std::string>& names);
 
 /**
  * @brief Write a binary table column.
  */
 template <typename TColumn>
-void writeColumn(fitsfile* fptr, const TColumn& column);
+void write_column(fitsfile* fptr, const TColumn& column);
 
 /**
  * @brief Write the TDIM keyword if needed.
@@ -105,73 +105,78 @@ void writeColumn(fitsfile* fptr, const TColumn& column);
  * or if the shape does not correspond to the repeat count.
  */
 template <long N>
-void writeColumnDim(fitsfile* fptr, long index, const Fits::Position<N>& shape);
+void write_column_dim(fitsfile* fptr, long index, const Fits::Position<N>& shape);
 
 /**
  * @brief Write several TDIM keywords if needed.
  */
 template <typename... TInfos>
-void writeColumnDims(fitsfile* fptr, long index, const TInfos&... infos);
+void write_column_dims(fitsfile* fptr, long index, const TInfos&... infos);
 
 /**
  * @brief Write a segment of a binary table column.
  */
 template <typename TColumn>
-void writeColumnSegment(fitsfile* fptr, long firstRow, const TColumn& column);
+void write_column_segment(fitsfile* fptr, long first_row, const TColumn& column);
 
 /**
  * @brief Write several binary table columns.
  */
 template <typename... TColumns>
-void writeColumns(fitsfile* fptr, const TColumns&... columns);
+void write_columns(fitsfile* fptr, const TColumns&... columns);
 
 /**
  * @brief Insert a binary table column at given index.
  */
 template <typename TColumn>
-void insertColumn(fitsfile* fptr, long index, const TColumn& column);
+void insert_column(fitsfile* fptr, long index, const TColumn& column);
 
 /**
  * @brief Insert several binary table columns at given index.
  */
 template <typename... TColumns>
-void insertColumns(fitsfile* fptr, long index, const TColumns&... columns);
+void insert_columns(fitsfile* fptr, long index, const TColumns&... columns);
 
 /**
  * @brief Append a binary table column.
  */
 template <typename TColumn>
-void appendColumn(fitsfile* fptr, const TColumn& column);
+void append_column(fitsfile* fptr, const TColumn& column);
 
 /**
  * @brief Append several binary table columns.
  */
 template <typename... TColumns>
-void appendColumns(fitsfile* fptr, const TColumns&... columns);
+void append_columns(fitsfile* fptr, const TColumns&... columns);
 
 /**
  * @brief Read a segment of a column into some data pointer.
  */
 template <typename T>
-void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, T* data);
+void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeat_count, T* data);
 
 /**
- * @copydoc readColumnData()
+ * @copydoc read_column_data()
  */
 template <>
-void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data);
+void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeat_count, std::string* data);
 
 /**
  * @brief Write a segment of a column given by some data pointer.
  */
 template <typename T>
-void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const T* data);
+void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeat_count, const T* data);
 
 /**
- * @copydoc writeColumnData()
+ * @copydoc write_column_data()
  */
 template <>
-void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, const std::string* data);
+void write_column_data(
+    fitsfile* fptr,
+    const Fits::Segment& rows,
+    long index,
+    long repeat_count,
+    const std::string* data);
 
 } // namespace BintableIo
 } // namespace Cfitsio

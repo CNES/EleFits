@@ -16,7 +16,7 @@ Usage is straightforward:
 MefFile f(filename, FileMode::Edit);
 // ...
 for (const auto& hdu : f) {
-    processHdu(hdu); // Do something with each HDU
+    process_hdu(hdu); // Do something with each HDU
 }
 \endcode
 
@@ -47,11 +47,11 @@ It is possible to check if an HDU is of given category or matches a given filter
 \code
 for (const auto& hdu : f) {
   if (hdu.matches(HduCategory::Primary)) {
-    processPrimary(hdu);
+    process_primary(hdu);
   } else if (hdu.matches(HduCategory::Image)) {
-    processImageExt(hdu.as<ImageHdu>());
+    process_image_ext(hdu.as<ImageHdu>());
   } else if (hdu.matches(HduCategory::Bintable)) {
-    processBintableExt(hdu.as<BintableHdu>());
+    process_bintable_ext(hdu.as<BintableHdu>());
   }
 }
 \endcode
@@ -65,7 +65,7 @@ This is done by creating the adequate iterator using method `MefFile::filter()`:
 
 \code
 for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Image & HduCategory::Created)) {
-  processNewImage(hdu);
+  process_new_image(hdu);
 }
 \endcode
 
@@ -77,7 +77,7 @@ and the above example can be rewritten more straightforwardly:
 
 \code
 for (const auto& hdu : f.filter<ImageHdu>(HduCategory::Created)) { // Don't repeat Image
-  processNewImage(hdu);
+  process_new_image(hdu);
 }
 \endcode
 
@@ -87,19 +87,19 @@ It is therefore very inefficient to write several loops when one would be enough
 For example, instead of:
 \code
 for (const auto& hdu : f.filter<ImageHdu>()) { // Scans all HDUs
-  processImage(hdu);
+  process_image(hdu);
 }
 for (const auto& hdu : f.filter<BintableHdu>()) { // Scans all HDUs again
-  processBintable(hdu);
+  process_bintable(hdu);
 }
 \endcode
 write:
 \code
 for (const auto& hdu : f) {
   if (hdu.matches(HduCategory::Image)) {
-    processImage(hdu.as<ImageHdu>());
+    process_image(hdu.as<ImageHdu>());
   } else {
-    processBintable(hdu.as<BintableHdu>());
+    process_bintable(hdu.as<BintableHdu>());
   }
 }
 \endcode

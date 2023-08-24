@@ -11,24 +11,24 @@ from pandas import DataFrame
 import ElementsKernel.Logging as log
 
 
-def scientificNotation(value):
+def scientific_notation(value):
     b, e = f'{float(value):.2e}'.split('e')
     if float(b) % 1 == 0:
         b = int(float(b))
     return f'{b}e{int(e)}'
 
 
-def makeCommand(testCase, output, results, log_level):
+def make_command(test_case, output, results, log_level):
     """Run a test case specified as a dictionary with following keys:
     "Test setup", "HDU type", "HDU count", "Value count / HDU"
     """
     cmd = f'EleFitsRunBenchmark --log-level {log_level} --output {output} --res {results}'
-    cmd += f' --setup "{testCase["Test setup"]}"'
-    if testCase['HDU type'] == 'Image':
-        cmd += f' --images {int(float(testCase["HDU count"]))} --pixels {int(float(testCase["Value count / HDU"]))}'
+    cmd += f' --setup "{test_case["Test setup"]}"'
+    if test_case['HDU type'] == 'Image':
+        cmd += f' --images {int(float(test_case["HDU count"]))} --pixels {int(float(test_case["Value count / HDU"]))}'
         # int(float(value)) allows value to be an integer in scientific notation
-    if testCase['HDU type'] == 'Binary table':
-        cmd += f' --tables {int(float(testCase["HDU count"]))} --rows {int(float(testCase["Value count / HDU"]))//10}'
+    if test_case['HDU type'] == 'Binary table':
+        cmd += f' --tables {int(float(test_case["HDU count"]))} --rows {int(float(test_case["Value count / HDU"]))//10}'
     return cmd
 
 
@@ -50,9 +50,9 @@ def mainMethod(args):
 
     if args.tests is not None:
         with open(args.tests, 'r') as f:
-            for testCase in csv.DictReader(f, delimiter='\t'):
-                logger.debug(testCase)
-                cmd = makeCommand(testCase, args.output, args.res, 'INFO')  # TODO get log level from args
+            for test_case in csv.DictReader(f, delimiter='\t'):
+                logger.debug(test_case)
+                cmd = make_command(test_case, args.output, args.res, 'INFO')  # TODO get log level from args
                 logger.info('')
                 logger.info(cmd)
                 logger.info('')
@@ -61,18 +61,18 @@ def mainMethod(args):
     if args.plot is not None:
         results = defaultdict(DataFrame)
         with open(args.res, 'r') as f:
-            for testCase in csv.DictReader(f, delimiter='\t'):
-                hduType = testCase["HDU type"]
-                valueCount = int(testCase["Value count / HDU"])
-                if hduType == 'Image':
-                    shape = f'{scientificNotation(valueCount)} pixels'
+            for test_case in csv.DictReader(f, delimiter='\t'):
+                hdu_type = test_case["HDU type"]
+                value_count = int(test_case["Value count / HDU"])
+                if hdu_type == 'Image':
+                    shape = f'{scientific_notation(value_count)} pixels'
                 else:
-                    shape = f'10 columns x {scientificNotation(valueCount/10)} rows'
-                testName = f'{testCase["Mode"]} {hduType}\n({testCase["HDU count"]} HDUs x {shape})'
-                testCaseSetup = testCase['Test setup']
-                data = [float(s) for s in testCase["Samples (ms)"].split(',')]
-                logger.debug(testName.replace('\n', ' ') + ' ' + testCaseSetup + ': ' + str(data))
-                results[testName][testCaseSetup] = data
+                    shape = f'10 columns x {scientific_notation(value_count/10)} rows'
+                test_name = f'{test_case["Mode"]} {hdu_type}\n({test_case["HDU count"]} HDUs x {shape})'
+                test_case_setup = test_case['Test setup']
+                data = [float(s) for s in test_case["Samples (ms)"].split(',')]
+                logger.debug(test_name.replace('\n', ' ') + ' ' + test_case_setup + ': ' + str(data))
+                results[test_name][test_case_setup] = data
         cols = 2
         rows = (len(results) + cols - 1) // cols  # Equivalent to ceil(len(results)/2) for ints
         logger.info(f'Plotting {len(results)} graphs ({cols} columns x {rows} rows)...')

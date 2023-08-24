@@ -25,7 +25,7 @@ Two specialization are provided for convenience:
 Functions which return a `Raster` generally return a `VecRaster` (e.g. `ImageRaster::read()`).
 All methods which take a `Raster` as input accept whatever flavor of it.
 
-For convenience, `makeRaster()` functions enable raster creation
+For convenience, `make_raster()` functions enable raster creation
 without template parameters.
 
 

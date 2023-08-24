@@ -16,80 +16,80 @@ namespace ImageIo {
  * @brief Variable dimension case.
  */
 template <>
-Fits::Position<-1> readShape<-1>(fitsfile* fptr);
+Fits::Position<-1> read_shape<-1>(fitsfile* fptr);
 
 template <long N>
-Fits::Position<N> readShape(fitsfile* fptr) {
+Fits::Position<N> read_shape(fitsfile* fptr) {
   Fits::Position<N> shape;
   int status = 0;
   fits_get_img_size(fptr, N, &shape[0], &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read raster shape.");
+  CfitsioError::may_throw(status, fptr, "Cannot read raster shape.");
   return shape;
 }
 
 bool is_compressed(fitsfile* fptr) {
   int status = 0;
   bool is_compressed = fits_is_compressed_image(fptr, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot determine if image is compressed.");
+  CfitsioError::may_throw(status, fptr, "Cannot determine if image is compressed.");
   return is_compressed;
 }
 
 template <long N>
-void updateShape(fitsfile* fptr, const Fits::Position<N>& shape) {
+void update_shape(fitsfile* fptr, const Fits::Position<N>& shape) {
   int status = 0;
   int imgtype = 0;
   fits_get_img_type(fptr, &imgtype, &status);
-  auto nonconstShape = shape;
-  fits_resize_img(fptr, imgtype, shape.size(), nonconstShape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot reshape raster.");
+  auto nonconst_shape = shape;
+  fits_resize_img(fptr, imgtype, shape.size(), nonconst_shape.data(), &status);
+  CfitsioError::may_throw(status, fptr, "Cannot reshape raster.");
 }
 
 template <typename T, long N>
-void updateTypeShape(fitsfile* fptr, const Fits::Position<N>& shape) {
+void update_type_shape(fitsfile* fptr, const Fits::Position<N>& shape) {
   int status = 0;
-  auto nonconstShape = shape;
-  fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconstShape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot reshape raster.");
+  auto nonconst_shape = shape;
+  fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconst_shape.data(), &status);
+  CfitsioError::may_throw(status, fptr, "Cannot reshape raster.");
 }
 
 template <typename T, long N>
-Fits::VecRaster<T, N> readRaster(fitsfile* fptr) {
-  Fits::VecRaster<T, N> raster(readShape<N>(fptr));
-  readRasterTo(fptr, raster);
+Fits::VecRaster<T, N> read_raster(fitsfile* fptr) {
+  Fits::VecRaster<T, N> raster(read_shape<N>(fptr));
+  read_raster_to(fptr, raster);
   return raster;
 }
 
 template <typename TRaster>
-void readRasterTo(fitsfile* fptr, TRaster& destination) {
+void read_raster_to(fitsfile* fptr, TRaster& destination) {
   int status = 0;
   const auto size = destination.size();
   fits_read_img(
       fptr,
-      TypeCode<std::decay_t<typename TRaster::Value>>::forImage(),
+      TypeCode<std::decay_t<typename TRaster::Value>>::for_image(),
       1, // Number 1 is a 1-based index (so we read the whole raster here)
       size,
       nullptr,
       destination.data(),
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read raster.");
+  CfitsioError::may_throw(status, fptr, "Cannot read raster.");
 }
 
 template <typename T, long N, typename TContainer>
-void readRasterTo(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination) {
-  const auto region = Fits::Region<N>::fromShape(Fits::Position<N>::zero(), readShape<N>(fptr));
-  readRegionTo(fptr, region, destination);
+void read_raster_to(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination) {
+  const auto region = Fits::Region<N>::fromShape(Fits::Position<N>::zero(), read_shape<N>(fptr));
+  read_region_to(fptr, region, destination);
 }
 
 template <typename T, long M, long N>
-Fits::VecRaster<T, M> readRegion(fitsfile* fptr, const Fits::Region<N>& region) {
+Fits::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region) {
   Fits::VecRaster<T, M> raster(region.shape().template slice<M>());
-  readRegionTo(fptr, region, raster);
+  read_region_to(fptr, region, raster);
   return raster;
 }
 
 template <typename TRaster, long N>
-void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster) {
+void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster) {
   int status = 0;
   const std::size_t dim = region.dimension();
   Fits::Position<N> front = region.front; // Copy for const-correctness
@@ -101,7 +101,7 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster
   }
   fits_read_subset(
       fptr,
-      TypeCode<std::decay_t<typename TRaster::Value>>::forImage(),
+      TypeCode<std::decay_t<typename TRaster::Value>>::for_image(),
       front.data(),
       back.data(),
       step.data(),
@@ -109,62 +109,62 @@ void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster
       raster.data(),
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
+  CfitsioError::may_throw(status, fptr, "Cannot read image region.");
 }
 
 template <typename T, long M, long N, typename TContainer>
-void readRegionTo(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination) {
+void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination) {
 
   /* 1-based, flatten region (beginning of each line) */
-  Fits::Region<N> srcRegion = region + 1;
-  srcRegion.back[0] = srcRegion.front[0];
-  const auto srcCount = srcRegion.size();
+  Fits::Region<N> src_region = region + 1;
+  src_region.back[0] = src_region.front[0];
+  const auto src_count = src_region.size();
 
   /* Screening positions */
-  auto srcFront = srcRegion.front;
-  auto srcBack = srcFront;
-  srcBack[0] += region.shape()[0] - 1;
-  auto dstFront = destination.region().front;
-  Fits::RegionScreener<N> srcScreener(srcRegion, {srcBack, dstFront});
+  auto src_front = src_region.front;
+  auto src_back = src_front;
+  src_back[0] += region.shape()[0] - 1;
+  auto dst_front = destination.region().front;
+  Fits::RegionScreener<N> src_screener(src_region, {src_back, dst_front});
 
   /* Step */
-  std::vector<long> step(srcRegion.dimension(), 1L);
+  std::vector<long> step(src_region.dimension(), 1L);
 
   /* Process each line */
   int status = 0;
-  for (long i = 0; i < srcCount; ++i) {
+  for (long i = 0; i < src_count; ++i) {
     fits_read_subset(
         fptr,
-        TypeCode<T>::forImage(),
-        srcFront.data(),
-        srcBack.data(),
+        TypeCode<T>::for_image(),
+        src_front.data(),
+        src_back.data(),
         step.data(),
         nullptr,
-        &destination.parent()[dstFront],
+        &destination.parent()[dst_front],
         nullptr,
         &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot read image region.");
-    srcScreener.next();
-    srcFront = srcScreener.current();
-    srcBack = srcScreener.followers()[0];
-    dstFront = srcScreener.followers()[1];
+    CfitsioError::may_throw(status, fptr, "Cannot read image region.");
+    src_screener.next();
+    src_front = src_screener.current();
+    src_back = src_screener.followers()[0];
+    dst_front = src_screener.followers()[1];
   }
 }
 
 template <typename TRaster>
-void writeRaster(fitsfile* fptr, const TRaster& raster) {
-  mayThrowReadonlyError(fptr);
+void write_raster(fitsfile* fptr, const TRaster& raster) {
+  may_throw_readonly(fptr);
   int status = 0;
   const auto begin = raster.data();
   const auto end = begin + raster.size();
   using Value = std::decay_t<typename TRaster::Value>;
-  std::vector<Value> nonconstData(begin, end); // For const-correctness issue
-  fits_write_img(fptr, TypeCode<Value>::forImage(), 1, raster.size(), nonconstData.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write image.");
+  std::vector<Value> nonconst_data(begin, end); // For const-correctness issue
+  fits_write_img(fptr, TypeCode<Value>::for_image(), 1, raster.size(), nonconst_data.data(), &status);
+  CfitsioError::may_throw(status, fptr, "Cannot write image.");
 }
 
 template <typename TRaster, long N>
-void writeRegion(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>& destination) {
+void write_region(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>& destination) {
   int status = 0;
   auto front = destination + 1;
   const auto shape = raster.shape().extend(destination);
@@ -172,39 +172,39 @@ void writeRegion(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>&
   const auto begin = raster.data();
   const auto end = begin + raster.size();
   using Value = std::decay_t<typename TRaster::Value>;
-  std::vector<Value> nonconstData(begin, end); // For const-correctness issue
-  fits_write_subset(fptr, TypeCode<Value>::forImage(), front.data(), back.data(), nonconstData.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write image region.");
+  std::vector<Value> nonconst_data(begin, end); // For const-correctness issue
+  fits_write_subset(fptr, TypeCode<Value>::for_image(), front.data(), back.data(), nonconst_data.data(), &status);
+  CfitsioError::may_throw(status, fptr, "Cannot write image region.");
 }
 
 template <typename T, long M, long N, typename TContainer>
-void writeRegion(
+void write_region(
     fitsfile* fptr,
     const Fits::Subraster<T, M, TContainer>& subraster,
     const Fits::Position<N>& destination) {
 
   /* 1-based, flatten region (beginning of each line) */
   const auto shape = subraster.shape().extend(destination);
-  Fits::Region<N> dstRegion {destination + 1, destination + shape};
-  dstRegion.back[0] = dstRegion.front[0];
+  Fits::Region<N> dst_region {destination + 1, destination + shape};
+  dst_region.back[0] = dst_region.front[0];
 
   /* Screening positions */
-  const auto dstSize = shape[0];
-  const auto delta = subraster.region().front.extend(dstRegion.front) - dstRegion.front;
+  const auto dst_size = shape[0];
+  const auto delta = subraster.region().front.extend(dst_region.front) - dst_region.front;
 
   /* Process each line */
   int status = 0;
-  Fits::Position<N> dstBack;
-  Fits::Position<N> srcFront;
-  std::vector<std::decay_t<T>> line(dstSize);
-  for (auto dstFront : dstRegion) {
-    dstBack = dstFront;
-    dstBack[0] += dstSize - 1;
-    srcFront = dstFront + delta;
-    line.assign(&subraster[srcFront], &subraster[srcFront] + dstSize);
-    fits_write_pix(fptr, TypeCode<T>::forImage(), dstFront.data(), dstSize, line.data(), &status);
-    // fits_write_subset(fptr, TypeCode<T>::forImage(), dstFront.data(), dstBack.data(), line.data(), &status);
-    CfitsioError::mayThrow(status, fptr, "Cannot write image region.");
+  Fits::Position<N> dst_back;
+  Fits::Position<N> src_front;
+  std::vector<std::decay_t<T>> line(dst_size);
+  for (auto dst_front : dst_region) {
+    dst_back = dst_front;
+    dst_back[0] += dst_size - 1;
+    src_front = dst_front + delta;
+    line.assign(&subraster[src_front], &subraster[src_front] + dst_size);
+    fits_write_pix(fptr, TypeCode<T>::for_image(), dst_front.data(), dst_size, line.data(), &status);
+    // fits_write_subset(fptr, TypeCode<T>::for_image(), dst_front.data(), dst_back.data(), line.data(), &status);
+    CfitsioError::may_throw(status, fptr, "Cannot write image region.");
   }
 }
 

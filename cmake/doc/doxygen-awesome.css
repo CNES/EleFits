@@ -54,21 +54,22 @@ html {
     --spacing-large: 16px;
 
     /* default box shadow used for raising an element above the normal content. Used in dropdowns, Searchresult, ... */
-    --box-shadow: 0 2px 10px 0 rgba(0,0,0,.1);
+    --box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .1);
 
-    --odd-color: rgba(0,0,0,.03);
+    --odd-color: rgba(0, 0, 0, .03);
 
     /* font-families. will affect all text on the website
      * font-family: the normal font for text, headlines, menus
      * font-family-monospace: used for preformatted text in memtitle, code, fragments
      */
-    --font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
-    --font-family-monospace: source-code-pro,Menlo,Monaco,Consolas,Courier New,monospace;
+    --font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+    --font-family-monospace: source-code-pro, Menlo, Monaco, Consolas, Courier New, monospace;
 
     /* font sizes */
     --page-font-size: 15.6px;
     --navigation-font-size: 14.4px;
-    --code-font-size: 14.4px; /* affects code, fragment */
+    --code-font-size: 14.4px;
+    /* affects code, fragment */
     --title-font-size: 22px;
 
     /* content text properties. These only affect the page content, not the navigation or any other ui elements */
@@ -83,7 +84,7 @@ html {
     --note-color: rgb(214, 216, 224);
     --note-color-dark: #5b6269;
     --note-color-darker: #43454a;
-    --deprecated-color: rgba(255,229,100,.3);
+    --deprecated-color: rgba(255, 229, 100, .3);
     --deprecated-color-dark: #c39900;
     --deprecated-color-darker: #8d7400;
     --bug-color: rgb(246, 208, 178);
@@ -109,7 +110,7 @@ html {
 
     --menu-focus-foreground: var(--page-background-color);
     --menu-focus-background: var(--primary-color);
-    --menu-selected-background: rgba(0,0,0,.05);
+    --menu-selected-background: rgba(0, 0, 0, .05);
 
 
     --header-background: var(--page-background-color);
@@ -162,7 +163,8 @@ html {
     html {
         --page-font-size: 16px;
         --navigation-font-size: 16px;
-        --code-font-size: 15px; /* affects code, fragment */
+        --code-font-size: 15px;
+        /* affects code, fragment */
         --title-font-size: 22px;
     }
 }
@@ -175,11 +177,11 @@ html {
         --primary-lighter-color: #191e21;
         --primary-lightest-color: #191a1c;
 
-        --box-shadow: 0 2px 10px 0 rgba(0,0,0,.35);
+        --box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .35);
 
-        --odd-color: rgba(0,0,0,.1);
+        --odd-color: rgba(0, 0, 0, .1);
 
-        --menu-selected-background: rgba(0,0,0,.4);
+        --menu-selected-background: rgba(0, 0, 0, .4);
 
         --page-background-color: #1C1D1F;
         --page-foreground-color: #d2dbde;
@@ -219,11 +221,11 @@ html.dark-mode {
     --primary-lighter-color: #191e21;
     --primary-lightest-color: #191a1c;
 
-    --box-shadow: 0 2px 10px 0 rgba(0,0,0,.35);
+    --box-shadow: 0 2px 10px 0 rgba(0, 0, 0, .35);
 
-    --odd-color: rgba(0,0,0,.1);
+    --odd-color: rgba(0, 0, 0, .1);
 
-    --menu-selected-background: rgba(0,0,0,.4);
+    --menu-selected-background: rgba(0, 0, 0, .4);
 
     --page-background-color: #1C1D1F;
     --page-foreground-color: #d2dbde;
@@ -260,18 +262,36 @@ body {
     font-size: var(--page-font-size);
 }
 
-body, table, div, p, dl, #nav-tree .label, .title, .sm-dox a, .sm-dox a:hover, .sm-dox a:focus, #projectname, .SelectItem, #MSearchField, .navpath li.navelem a, .navpath li.navelem a:hover {
+body,
+table,
+div,
+p,
+dl,
+#nav-tree .label,
+.title,
+.sm-dox a,
+.sm-dox a:hover,
+.sm-dox a:focus,
+#projectname,
+.SelectItem,
+#MSearchField,
+.navpath li.navelem a,
+.navpath li.navelem a:hover {
     font-family: var(--font-family);
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
     margin-top: .9em;
     font-weight: 600;
     line-height: initial;
 }
 
 /* Hide Detailed Description title */
-.contents #details + h2 { 
+.contents #details+h2 {
     display: none;
 }
 
@@ -279,11 +299,18 @@ h1, h2, h3, h4, h5 {
     text-align: justify;
 }
 
-p, div, table, dl {
+p,
+div,
+table,
+dl {
     font-size: var(--page-font-size);
 }
 
-a:link, a:visited, a:hover, a:focus, a:active {
+a:link,
+a:visited,
+a:hover,
+a:focus,
+a:active {
     color: var(--primary-color) !important;
     font-weight: 500;
 }
@@ -354,12 +381,17 @@ a:link, a:visited, a:hover, a:focus, a:active {
     margin-right: var(--spacing-small);
 }
 
-.sm-dox, .tabs, .tabs2, .tabs3 {
+.sm-dox,
+.tabs,
+.tabs2,
+.tabs3 {
     background: none;
     padding: 0;
 }
 
-.tabs, .tabs2, .tabs3 {
+.tabs,
+.tabs2,
+.tabs3 {
     border-bottom: 1px solid var(--separator-color);
     margin-bottom: -1px;
 }
@@ -371,7 +403,9 @@ a:link, a:visited, a:hover, a:focus, a:active {
 }
 
 @media screen and (min-width: 768px) {
-    .sm-dox li, .tablist li {
+
+    .sm-dox li,
+    .tablist li {
         display: var(--menu-display);
     }
 
@@ -427,7 +461,9 @@ a:link, a:visited, a:hover, a:focus, a:active {
     border-bottom-color: var(--separator-color) !important;
 }
 
-.sm-dox ul a:hover, .sm-dox ul a:active, .sm-dox ul a:focus {
+.sm-dox ul a:hover,
+.sm-dox ul a:active,
+.sm-dox ul a:focus {
     font-size: var(--navigation-font-size) !important;
     color: var(--menu-focus-foreground) !important;
     text-shadow: none;
@@ -435,7 +471,11 @@ a:link, a:visited, a:hover, a:focus, a:active {
     border-radius: var(--border-radius-small) !important;
 }
 
-.sm-dox a, .sm-dox a:focus, .tablist li, .tablist li a, .tablist li.current a {
+.sm-dox a,
+.sm-dox a:focus,
+.tablist li,
+.tablist li a,
+.tablist li.current a {
     text-shadow: none;
     background: transparent;
     background-image: none !important;
@@ -448,7 +488,9 @@ a:link, a:visited, a:hover, a:focus, a:active {
     outline: auto;
 }
 
-.sm-dox a:hover, .sm-dox a:active, .tablist li a:hover {
+.sm-dox a:hover,
+.sm-dox a:active,
+.tablist li a:hover {
     text-shadow: none;
     font-weight: normal;
     background: var(--menu-focus-background);
@@ -510,7 +552,8 @@ a:link, a:visited, a:hover, a:focus, a:active {
     }
 }
 
-#MSearchSelectWindow, #MSearchResultsWindow {
+#MSearchSelectWindow,
+#MSearchResultsWindow {
     z-index: 9999;
 }
 
@@ -519,12 +562,12 @@ a:link, a:visited, a:hover, a:focus, a:active {
     box-shadow: inset 0 0 0 1px var(--primary-color);
 }
 
-#main-menu > li:last-child {
+#main-menu>li:last-child {
     margin-right: 0;
 }
 
 @media screen and (max-width: 767px) {
-    #main-menu > li:last-child {
+    #main-menu>li:last-child {
         height: 50px;
     }
 }
@@ -548,7 +591,8 @@ a:link, a:visited, a:hover, a:focus, a:active {
     padding-left: 8px;
 }
 
-#MSearchBox span.left, #MSearchBox span.right {
+#MSearchBox span.left,
+#MSearchBox span.right {
     background: none;
 }
 
@@ -627,7 +671,7 @@ html.dark-mode iframe#MSearchResults {
         width: calc(100vw - 30px);
     }
 
-    #main-menu > li:last-child {
+    #main-menu>li:last-child {
         float: none !important;
     }
 
@@ -726,7 +770,8 @@ html.dark-mode iframe#MSearchResults {
     text-align: right;
 }
 
-#nav-tree div.item:hover .arrow, #nav-tree a:focus .arrow {
+#nav-tree div.item:hover .arrow,
+#nav-tree a:focus .arrow {
     opacity: var(--side-nav-arrow-hover-opacity);
 }
 
@@ -751,11 +796,14 @@ div.header {
     background-image: none;
 }
 
-div.contents, div.header .title, div.header .summary {
+div.contents,
+div.header .title,
+div.header .summary {
     max-width: var(--content-maxwidth);
 }
 
-div.contents, div.header .title  {
+div.contents,
+div.header .title {
     line-height: initial;
     margin: calc(var(--spacing-medium) + .2em) auto var(--spacing-medium) auto;
 }
@@ -787,7 +835,13 @@ td.memSeparator {
     opacity: 0;
 }
 
-.mdescLeft, .mdescRight, .memItemLeft, .memItemRight, .memTemplItemLeft, .memTemplItemRight, .memTemplParams {
+.mdescLeft,
+.mdescRight,
+.memItemLeft,
+.memItemRight,
+.memTemplItemLeft,
+.memTemplItemRight,
+.memTemplParams {
     background: var(--code-background);
     background-color: transparent;
 }
@@ -812,7 +866,8 @@ div.contents {
     padding: 0 var(--spacing-large);
 }
 
-div.contents p, div.contents li {
+div.contents p,
+div.contents li {
     line-height: var(--content-line-height);
 }
 
@@ -821,6 +876,7 @@ div.contents div.dyncontent {
 }
 
 @media (prefers-color-scheme: dark) {
+
     html:not(.light-mode) div.contents div.dyncontent img,
     html:not(.light-mode) div.contents div.dyncontent iframe {
         filter: hue-rotate(180deg) invert();
@@ -854,12 +910,14 @@ blockquote {
 blockquote p {
     margin: var(--spacing-small) 0 var(--spacing-medium) 0;
 }
+
 .paramname {
     font-weight: 600;
     color: var(--primary-dark-color);
 }
 
-.tparams .paramname, .params .paramname {
+.tparams .paramname,
+.params .paramname {
     text-align: right;
 }
 
@@ -909,7 +967,8 @@ div.toc ul li.level1 {
     margin: 0;
 }
 
-div.toc ul li.level2, div.toc ul li.level3 {
+div.toc ul li.level2,
+div.toc ul li.level3 {
     margin-top: 0;
 }
 
@@ -926,21 +985,25 @@ div.toc ul li.level2, div.toc ul li.level3 {
  Code & Fragments
  */
 
-/*code,*/ div.fragment, pre.fragment {
+code,
+div.fragment,
+pre.fragment {
     border-radius: var(--border-radius-small);
     border: none;
     overflow: hidden;
+    font-variant-ligatures: no-common-ligatures;
 }
 
-/*code {
+code {
     display: inline;
     background: var(--code-background);
     color: var(--code-foreground);
     padding: 2px 6px;
-    word-break: break-word;
-}*/
+    word-break: break-all;
+}
 
-div.fragment, pre.fragment {
+div.fragment,
+pre.fragment {
     margin: var(--spacing-medium) 0;
     padding: 14px 16px;
     background: var(--fragment-background);
@@ -949,37 +1012,50 @@ div.fragment, pre.fragment {
 }
 
 @media screen and (max-width: 767px) {
-    div.fragment, pre.fragment {
+
+    div.fragment,
+    pre.fragment {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
 
-    .contents > div.fragment, .textblock > div.fragment, .textblock > pre.fragment {
+    .contents>div.fragment,
+    .textblock>div.fragment,
+    .textblock>pre.fragment {
         margin: var(--spacing-medium) calc(0px - var(--spacing-large));
         border-radius: 0;
     }
 
-    .textblock li > .fragment {
+    .textblock li>.fragment {
         margin: var(--spacing-medium) calc(0px - var(--spacing-large));
     }
 
-    .memdoc li > .fragment {
+    .memdoc li>.fragment {
         margin: var(--spacing-medium) calc(0px - var(--spacing-medium));
     }
 
-    .memdoc > div.fragment, .memdoc > pre.fragment, dl dd > div.fragment, dl dd pre.fragment {
+    .memdoc>div.fragment,
+    .memdoc>pre.fragment,
+    dl dd>div.fragment,
+    dl dd pre.fragment {
         margin: var(--spacing-medium) calc(0px - var(--spacing-medium));
         border-radius: 0;
     }
 }
 
 /* No styling for inline code */
-code, code a {
+code,
+code a {
     font-family: var(--font-family);
     font-size: var(--page-font-size);
 }
 
-pre.fragment, div.fragment, div.fragment .line, div.fragment span, div.fragment .line a, div.fragment .line span {
+pre.fragment,
+div.fragment,
+div.fragment .line,
+div.fragment span,
+div.fragment .line a,
+div.fragment .line span {
     font-family: var(--font-family-monospace);
     font-size: var(--code-font-size) !important;
 }
@@ -988,7 +1064,8 @@ div.line:after {
     margin-right: var(--spacing-medium);
 }
 
-div.fragment .line, pre.fragment {
+div.fragment .line,
+pre.fragment {
     white-space: pre;
     word-wrap: initial;
     line-height: var(--fragment-lineheight);
@@ -1043,7 +1120,13 @@ div.fragment .line:first-child .lineno {
  dl warning, attention, note, deprecated, bug, ...
  */
 
-dl.warning, dl.attention, dl.note, dl.deprecated, dl.bug, dl.invariant, dl.pre {
+dl.warning,
+dl.attention,
+dl.note,
+dl.deprecated,
+dl.bug,
+dl.invariant,
+dl.pre {
     padding: var(--spacing-medium);
     margin: var(--spacing-medium) 0;
     color: var(--page-background-color);
@@ -1056,13 +1139,15 @@ dl.section dd {
     margin-bottom: 2px;
 }
 
-dl.warning, dl.attention {
+dl.warning,
+dl.attention {
     background: var(--warning-color);
     border-left: 8px solid var(--warning-color-dark);
     color: var(--warning-color-darker);
 }
 
-dl.warning dt, dl.attention dt {
+dl.warning dt,
+dl.attention dt {
     color: var(--warning-color-dark);
 }
 
@@ -1096,11 +1181,14 @@ dl.deprecated dt a {
     color: var(--deprecated-color-dark) !important;
 }
 
-dl.section dd, dl.bug dd, dl.deprecated dd {
+dl.section dd,
+dl.bug dd,
+dl.deprecated dd {
     margin-inline-start: 0px;
 }
 
-dl.invariant, dl.pre {
+dl.invariant,
+dl.pre {
     background: var(--invariant-color);
     border-left: 8px solid var(--invariant-color-dark);
     color: var(--invariant-color-darker);
@@ -1110,7 +1198,9 @@ dl.invariant, dl.pre {
  memitem
  */
 
-div.memdoc, div.memproto, h2.memtitle {
+div.memdoc,
+div.memproto,
+h2.memtitle {
     box-shadow: none;
     background-image: none;
     border: none;
@@ -1121,11 +1211,13 @@ div.memdoc {
     background: var(--page-background-color);
 }
 
-h2.memtitle, div.memitem {
+h2.memtitle,
+div.memitem {
     border: 1px solid var(--separator-color);
 }
 
-div.memproto, h2.memtitle {
+div.memproto,
+h2.memtitle {
     background: var(--code-background);
     text-shadow: none;
 }
@@ -1139,15 +1231,16 @@ h2.memtitle {
     word-break: break-all;
 }
 
-a:target + h2.memtitle, a:target + h2.memtitle + div.memitem {
+a:target+h2.memtitle,
+a:target+h2.memtitle+div.memitem {
     border-color: var(--primary-light-color);
 }
 
-a:target + h2.memtitle {
+a:target+h2.memtitle {
     box-shadow: -3px -3px 3px 0 var(--primary-lightest-color), 3px -3px 3px 0 var(--primary-lightest-color);
 }
 
-a:target + h2.memtitle + div.memitem {
+a:target+h2.memtitle+div.memitem {
     box-shadow: 0 0 10px 0 var(--primary-lighter-color);
 }
 
@@ -1181,7 +1274,8 @@ div.memproto table.memname {
     color: var(--page-foreground-color);
 }
 
-table.mlabels, table.mlabels > tbody {
+table.mlabels,
+table.mlabels>tbody {
     display: block;
 }
 
@@ -1189,13 +1283,14 @@ td.mlabels-left {
     width: auto;
 }
 
-table.mlabels > tbody > tr:first-child {
+table.mlabels>tbody>tr:first-child {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
 }
 
-.memname, .memitem span.mlabels {
+.memname,
+.memitem span.mlabels {
     margin: 0
 }
 
@@ -1212,7 +1307,8 @@ dl.reflist {
 }
 
 
-dl.reflist dt, dl.reflist dd {
+dl.reflist dt,
+dl.reflist dd {
     box-shadow: none;
     text-shadow: none;
     background-image: none;
@@ -1238,7 +1334,8 @@ dl.reflist dd {
  Table
  */
 
-table.markdownTable, table.fieldtable {
+table.markdownTable,
+table.fieldtable {
     width: 100%;
     border: 1px solid var(--separator-color);
     margin: var(--spacing-medium) 0;
@@ -1249,14 +1346,19 @@ table.fieldtable {
     border-radius: var(--border-radius-small);
 }
 
-th.markdownTableHeadLeft, th.markdownTableHeadRight, th.markdownTableHeadCenter, th.markdownTableHeadNone {
+th.markdownTableHeadLeft,
+th.markdownTableHeadRight,
+th.markdownTableHeadCenter,
+th.markdownTableHeadNone {
     background: var(--tablehead-background);
     color: var(--tablehead-foreground);
     font-weight: 600;
     font-size: var(--page-font-size);
 }
 
-table.markdownTable td, table.markdownTable th, table.fieldtable dt {
+table.markdownTable td,
+table.markdownTable th,
+table.fieldtable dt {
     border: 1px solid var(--separator-color);
     padding: var(--spacing-small) var(--spacing-medium);
 }
@@ -1270,7 +1372,8 @@ table.fieldtable th {
     border-bottom: 1px solid var(--separator-color);
 }
 
-.fieldtable td.fieldtype, .fieldtable td.fieldname {
+.fieldtable td.fieldtype,
+.fieldtable td.fieldname {
     border-bottom: 1px solid var(--separator-color);
     border-right: 1px solid var(--separator-color);
 }
@@ -1279,7 +1382,8 @@ table.fieldtable th {
     border-bottom: 1px solid var(--separator-color);
 }
 
-.memberdecls td.glow, .fieldtable tr.glow {
+.memberdecls td.glow,
+.fieldtable tr.glow {
     background-color: var(--primary-light-color);
     box-shadow: 0 0 15px var(--primary-lighter-color);
 }
@@ -1298,7 +1402,7 @@ table.memberdecls {
 hr {
     margin-top: var(--spacing-large);
     margin-bottom: var(--spacing-large);
-    border-top:1px solid var(--separator-color);
+    border-top: 1px solid var(--separator-color);
 }
 
 .contents hr {
@@ -1347,7 +1451,9 @@ table.directory {
     line-height: 18px;
 }
 
-.iconfopen, .icondoc, .iconfclosed {
+.iconfopen,
+.icondoc,
+.iconfclosed {
     background-position: center;
     margin-bottom: 0;
 }
@@ -1364,12 +1470,15 @@ table.directory {
 }
 
 @media (prefers-color-scheme: dark) {
-    html:not(.light-mode) .iconfopen, html:not(.light-mode) .iconfclosed {
+
+    html:not(.light-mode) .iconfopen,
+    html:not(.light-mode) .iconfclosed {
         filter: hue-rotate(180deg) invert();
     }
 }
 
-html.dark-mode .iconfopen, html.dark-mode .iconfclosed {
+html.dark-mode .iconfopen,
+html.dark-mode .iconfclosed {
     filter: hue-rotate(180deg) invert();
 }
 
@@ -1519,18 +1628,23 @@ doxygen-awesome-dark-mode-toggle:after {
     0% {
         transform: rotate(0deg);
     }
+
     20% {
         transform: rotate(-25deg);
     }
+
     40% {
         transform: rotate(10deg);
     }
+
     60% {
         transform: rotate(-25deg);
     }
+
     80% {
         transform: rotate(10deg);
     }
+
     100% {
         transform: rotate(0deg);
     }
@@ -1540,6 +1654,7 @@ doxygen-awesome-dark-mode-toggle:after {
     .github-corner:hover .octo-arm {
         animation: none;
     }
+
     .github-corner .octo-arm {
         animation: octocat-wave 560ms ease-in-out;
     }

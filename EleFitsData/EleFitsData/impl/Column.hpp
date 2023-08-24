@@ -17,14 +17,14 @@ template <typename T, long N, typename TContainer>
 Column<T, N, TContainer>::Column() : Column(Column<T, N, TContainer>::Info {}) {}
 
 template <typename T, long N, typename TContainer>
-Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long rowCount) :
-    Column<T, N, TContainer>::Base(info.elementCount() * rowCount), m_info(std::move(info)) {
-  // FIXME assert size() % m_info.elementCount() == 0;
+Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_count) :
+    Column<T, N, TContainer>::Base(info.element_count() * row_count), m_info(std::move(info)) {
+  // FIXME assert size() % m_info.element_count() == 0;
 }
 
 template <typename T, long N, typename TContainer>
-Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long rowCount, T* data) :
-    Column<T, N, TContainer>::Base(data, data + info.elementCount() * rowCount), m_info(std::move(info)) {
+Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_count, T* data) :
+    Column<T, N, TContainer>::Base(data, data + info.element_count() * row_count), m_info(std::move(info)) {
   // FIXME idem
 }
 
@@ -46,10 +46,10 @@ void Column<T, N, TContainer>::rename(const std::string& name) {
 }
 
 template <typename T, long N, typename TContainer>
-void Column<T, N, TContainer>::reshape(long repeatCount) {
-  // FIXME check that elementCount() % repeatCount = 0, but for strings!
+void Column<T, N, TContainer>::reshape(long repeat_count) {
+  // FIXME check that element_count() % repeat_count = 0, but for strings!
   auto shape = Position<N>::one();
-  shape[0] = repeatCount;
+  shape[0] = repeat_count;
   reshape(std::move(shape));
 }
 
@@ -60,18 +60,13 @@ void Column<T, N, TContainer>::reshape(Position<N> shape) {
 }
 
 template <typename T, long N, typename TContainer>
-long Column<T, N, TContainer>::elementCount() const {
-  return this->size();
-}
-
-template <typename T, long N, typename TContainer>
-long Column<T, N, TContainer>::rowCount() const {
-  return elementCount() / m_info.elementCount();
+long Column<T, N, TContainer>::row_count() const {
+  return this->size() / m_info.element_count();
 }
 
 template <typename T, long N, typename TContainer>
 const T& Column<T, N, TContainer>::operator()(long row, long repeat) const {
-  const long index = row * m_info.elementCount() + repeat;
+  const long index = row * m_info.element_count() + repeat;
   return *(this->data() + index);
 }
 
@@ -82,12 +77,12 @@ T& Column<T, N, TContainer>::operator()(long row, long repeat) {
 
 template <typename T, long N, typename TContainer>
 const T& Column<T, N, TContainer>::at(long row, long repeat) const {
-  OutOfBoundsError::mayThrow("Cannot access row index", row, {-rowCount(), rowCount() - 1});
-  const auto bound = m_info.elementCount();
-  OutOfBoundsError::mayThrow("Cannot access repeat index", repeat, {-bound, bound - 1});
-  const long boundedRow = row < 0 ? rowCount() + row : row;
-  const long boundedRepeat = repeat < 0 ? bound + repeat : repeat;
-  return operator()(boundedRow, boundedRepeat);
+  OutOfBoundsError::may_throw("Cannot access row index", row, {-row_count(), row_count() - 1});
+  const auto bound = m_info.element_count();
+  OutOfBoundsError::may_throw("Cannot access repeat index", repeat, {-bound, bound - 1});
+  const long bounded_row = row < 0 ? row_count() + row : row;
+  const long bounded_repeat = repeat < 0 ? bound + repeat : repeat;
+  return operator()(bounded_row, bounded_repeat);
 }
 
 template <typename T, long N, typename TContainer>
@@ -96,12 +91,12 @@ T& Column<T, N, TContainer>::at(long row, long repeat) {
 }
 
 template <typename T, long N, typename TContainer>
-const PtrRaster<const T, N> Column<T, N, TContainer>::entry(long row) const {
+const PtrRaster<const T, N> Column<T, N, TContainer>::field(long row) const {
   return PtrRaster<const T, N>({m_info.shape}, &at(row));
 }
 
 template <typename T, long N, typename TContainer>
-PtrRaster<T, N> Column<T, N, TContainer>::entry(long row) {
+PtrRaster<T, N> Column<T, N, TContainer>::field(long row) {
   return PtrRaster<T, N>({m_info.shape}, &at(row));
 }
 

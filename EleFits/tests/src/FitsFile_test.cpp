@@ -21,26 +21,26 @@ BOOST_AUTO_TEST_CASE(empty_file_test) {
   std::string filename = tmp.path().string();
   BOOST_TEST(not boost::filesystem::exists(filename));
 
-  FitsFile newFile(filename, FileMode::Create);
-  BOOST_TEST(newFile.filename() == filename);
+  FitsFile new_file(filename, FileMode::Create);
+  BOOST_TEST(new_file.filename() == filename);
   BOOST_TEST(boost::filesystem::is_regular_file(filename));
-  newFile.close();
+  new_file.close();
 
   BOOST_CHECK_THROW(FitsFile(filename, FileMode::Create), std::exception);
 
-  FitsFile overwrittenFile(filename, FileMode::Overwrite);
-  overwrittenFile.close();
+  FitsFile overwritten_file(filename, FileMode::Overwrite);
+  overwritten_file.close();
 
-  FitsFile readonlyFile(filename);
-  BOOST_CHECK_THROW(readonlyFile.closeAndDelete(), std::exception);
-  readonlyFile.close();
+  FitsFile readonly_file(filename);
+  BOOST_CHECK_THROW(readonly_file.close_remove(), std::exception);
+  readonly_file.close();
 
-  FitsFile editableFile(filename, FileMode::Edit);
-  editableFile.closeAndDelete();
+  FitsFile editable_file(filename, FileMode::Edit);
+  editable_file.close_remove();
   BOOST_TEST(not boost::filesystem::exists(filename));
 
   {
-    FitsFile tempFile(filename, FileMode::Temporary);
+    FitsFile temp_file(filename, FileMode::Temporary);
     BOOST_TEST(boost::filesystem::is_regular_file(filename));
   }
   BOOST_TEST(not boost::filesystem::exists(filename));

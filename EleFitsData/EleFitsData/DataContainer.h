@@ -243,16 +243,6 @@ public:
     return this->m_container;
   }
 
-  /// @group_operations
-
-  /**
-   * @brief Copy the container values into an `std::vector`.
-   * @deprecated Use more generic `container()` instead, which performs no copy.
-   */
-  std::vector<T> vector() const {
-    return {this->begin(), this->end()};
-  }
-
   /// @group_modifiers
 
   /**
@@ -265,7 +255,7 @@ public:
    * std::vector<float> data;
    * raster.moveTo(data);
    * // Values have been moved to data without copy.
-   * // raster.vector() is in an unspecified state now.
+   * // raster.container() is in an unspecified state now.
    * \endcode
    * @warning
    * The container is not usable anymore after this call.

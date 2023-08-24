@@ -8,8 +8,7 @@ namespace Fits {
 
 There are two main classes to perform image HDU I/Os:
 - `ImageHdu` is dedicated to HDU-level tasks;
-  It roughly extends `Hdu` by providing a `raster()` method, to access the data unit,
-  as well as a few shortcuts like `readRaster()`.
+  It roughly extends `Hdu` by providing a `raster()` method, to access the data unit.
 - `ImageRaster` focuses on services to read and write the data unit.
 
 In addition, `FileMemRegions` is a helper class to specify which regions to consider,
@@ -20,7 +19,7 @@ For example, here is how to write the 2D region of a raster spanning from (8, 16
 into the HDU at position (144, 36):
 
 \code
-hdu.raster().writeRegion<2>({ { 144, 36 }, { { 8, 16 }, { 32, 48 } } }, data);
+hdu.raster().write_region<2>({ { 144, 36 }, { { 8, 16 }, { 32, 48 } } }, data);
 \endcode
 
 where:

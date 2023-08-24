@@ -100,7 +100,7 @@ TutoRecords create_records() {
 
   /* Generate a random record */
 
-  auto complex_record = Fits::Test::generateRandomRecord<std::complex<double>>("COMPLEX");
+  auto complex_record = Fits::Test::generate_random_record<std::complex<double>>("COMPLEX");
 
   //! [Create records]
 
@@ -149,7 +149,7 @@ TutoColumns create_columns() {
 
   Fits::VecColumn<std::string> string_column({"STRING", "unit", 3}, 100);
   // String columns must be wide-enough to hold each character.
-  for (long i = 0; i < string_column.rowCount(); ++i) {
+  for (long i = 0; i < string_column.row_count(); ++i) {
     string_column(i) = std::to_string(i);
   }
   // operator() takes two parameters: the row index, and repeat index (=0 by default)
@@ -192,11 +192,11 @@ void write_file(const std::string& filename) {
 
   /* Fill the header and data units */
 
-  const auto& image1 = f.appendImage("IMAGE1", {}, rasters.int32_raster3d);
+  const auto& image1 = f.append_image("IMAGE1", {}, rasters.int32_raster3d);
 
   /* Fill the header only (for now) */
 
-  const auto& image2 = f.appendNullImage<std::int16_t>("IMAGE2", {}, rasters.int16_raster2d.shape());
+  const auto& image2 = f.append_null_image<std::int16_t>("IMAGE2", {}, rasters.int16_raster2d.shape());
 
   //! [Create image extensions]
 
@@ -215,11 +215,11 @@ void write_file(const std::string& filename) {
   /* Fill the header and data units */
 
   const auto& table1 =
-      f.appendBintable("TABLE1", {}, columns.string_column, columns.int32_column, columns.float_column);
+      f.append_bintable("TABLE1", {}, columns.string_column, columns.int32_column, columns.float_column);
 
   /* Fill the header unit only (for now) */
 
-  const auto& table2 = f.appendBintableHeader(
+  const auto& table2 = f.append_bintable_header(
       "TABLE2",
       {},
       columns.string_column.info(),
@@ -236,7 +236,7 @@ void write_file(const std::string& filename) {
 
   /* Write several columns */
 
-  table2.columns().writeSeq(columns.int32_column, columns.float_column);
+  table2.columns().write_n(columns.int32_column, columns.float_column);
 
   //! [Write columns]
 
@@ -266,11 +266,11 @@ void write_records(const Fits::Header& h) {
 
   /* Write several records */
 
-  h.writeSeq(records.int_record, records.float_record, records.complex_record);
+  h.write_n(records.int_record, records.float_record, records.complex_record);
 
   /* Update using initialization lists */
 
-  h.writeSeq<Fits::RecordMode::UpdateExisting>(
+  h.write_n<Fits::RecordMode::UpdateExisting>(
       Fits::Record<int>("INT", 1),
       Fits::Record<float>("FLOAT", 3.14159F, "", "A larger piece of Pi"),
       Fits::Record<std::complex<double>>("COMPLEX", {180., 90.}));
@@ -305,7 +305,7 @@ void read_file(const std::string& filename) {
   /* Access an HDU by its index */
 
   const auto& image2 = f.access<Fits::ImageHdu>(2);
-  const auto image_name = image2.readName();
+  const auto image_name = image2.read_name();
 
   /* Access an HDU by its name */
 
@@ -335,11 +335,11 @@ void read_records(const Fits::Header& h) {
   const auto int_record = h.parse<int>("INT");
 
   // Records can be sliced as their value for immediate use:
-  const int intValue = h.parse<int>("INT");
+  const int int_value = h.parse<int>("INT");
 
   /* Read several records */
 
-  const auto some_records = h.parseSeq(
+  const auto some_records = h.parse_n(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
@@ -348,22 +348,22 @@ void read_records(const Fits::Header& h) {
 
   /* Read as VariantValue */
 
-  const auto variant_records = h.parseSeq<>({"INT", "COMPLEX"});
+  const auto variant_records = h.parse_n<>({"INT", "COMPLEX"});
   const auto complex_record = variant_records.as<std::complex<double>>("COMPLEX");
 
   /* Read as a user-defined structure */
 
-  const auto tutoRecords = h.parseStruct<TutoRecords>(
+  const auto tuto_records = h.parse_struct<TutoRecords>(
       Fits::as<std::string>("STRING"),
       Fits::as<int>("INT"),
       Fits::as<float>("FLOAT"),
       Fits::as<std::complex<double>>("COMPLEX"));
-  const auto& string_record = tutoRecords.string_record;
+  const auto& string_record = tuto_records.string_record;
 
   //! [Read records]
 
   logger.info() << "    " << int_record.keyword << " = " << int_record.value << " " << int_record.unit;
-  logger.info() << "    INT value: " << intValue;
+  logger.info() << "    INT value: " << int_value;
   logger.info() << "    " << third_record.keyword << " = " << third_record.value << " " << third_record.unit;
   logger.info() << "    " << complex_record.keyword << " = " << complex_record.value.real() << " + "
                 << complex_record.value.imag() << "j " << complex_record.unit;
@@ -400,12 +400,12 @@ void read_columns(const Fits::BintableColumns& du) {
 
   /* Read several columns by their name */
 
-  const auto by_name = du.readSeq(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
+  const auto by_name = du.read_n(Fits::as<std::string>("STRING"), Fits::as<std::int32_t>("INT32"));
   const auto& string_column = std::get<0>(by_name);
 
   /* Read several columns by their index */
 
-  const auto by_index = du.readSeq(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
+  const auto by_index = du.read_n(Fits::as<std::string>(0), Fits::as<std::int32_t>(1));
   const auto& int_column = std::get<1>(by_index);
 
   /* Use values */
@@ -431,9 +431,9 @@ class EleFitsTutorial : public Elements::Program {
 
 public:
   std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = Fits::ProgramOptions::fromAuxFile("Tutorial.txt");
+    auto options = Fits::ProgramOptions::from_aux_file("Tutorial.txt");
     options.positional("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
-    return options.asPair();
+    return options.as_pair();
   }
 
   Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {

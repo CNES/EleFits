@@ -45,7 +45,7 @@ BChronometer::Unit CfitsioBenchmark::write_image(const BRaster& raster) {
   std::vector<BRaster::Value> nonconst_data(raster.data(), raster.data() + raster.size());
   fits_write_img(
       m_fptr,
-      Cfitsio::TypeCode<BRaster::Value>::forImage(),
+      Cfitsio::TypeCode<BRaster::Value>::for_image(),
       1,
       raster.size(),
       nonconst_data.data(),
@@ -63,7 +63,7 @@ BRaster CfitsioBenchmark::read_image(long index) {
   BRaster raster(shape);
   fits_read_img(
       m_fptr,
-      Cfitsio::TypeCode<BRaster::Value>::forImage(),
+      Cfitsio::TypeCode<BRaster::Value>::for_image(),
       1,
       raster.size(),
       nullptr,
@@ -76,7 +76,7 @@ BRaster CfitsioBenchmark::read_image(long index) {
 }
 
 BChronometer::Unit CfitsioBenchmark::write_bintable(const BColumns& columns) {
-  long row_count = std::get<0>(columns).rowCount();
+  long row_count = std::get<0>(columns).row_count();
   std::vector<std::string> names(row_count);
   std::vector<std::string> formats(row_count);
   std::vector<std::string> units(row_count);
@@ -178,7 +178,7 @@ long CfitsioBenchmark::compute_chunk_row_count(long row_count) {
 }
 
 void CfitsioBenchmark::may_throw(const std::string& context) const {
-  Cfitsio::CfitsioError::mayThrow(m_status, m_fptr, context);
+  Cfitsio::CfitsioError::may_throw(m_status, m_fptr, context);
 }
 
 } // namespace Validation

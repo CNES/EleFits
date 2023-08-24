@@ -28,32 +28,32 @@ public:
    * @brief Create from CFITSIO error code.
    * @details This generate the associated CFITSIO message with no context.
    */
-  explicit CfitsioError(int cfitsioStatus);
+  explicit CfitsioError(int cfitsio_status);
 
   /**
    * @brief Create a CfitsioError.
-   * @param cfitsioStatus The CFITSIO error status
+   * @param cfitsio_status The CFITSIO error status
    * @param fptr The fitsfile pointer to provide informations on the file
    * @param context A more human-friendly message to explain the error context
    * @details
    * Prints the context, then some file metadata, and then the CFITSIO error stack.
    */
-  CfitsioError(int cfitsioStatus, fitsfile* fptr, const std::string& context);
+  CfitsioError(int cfitsio_status, fitsfile* fptr, const std::string& context);
 
   /**
    * @brief Get the error message of an error code.
    */
-  static std::string message(int cfitsioStatus);
+  static std::string message(int cfitsio_status);
 
   /**
-   * @brief Throw a CfitsioError if `cfitsioStatus > 0`.
+   * @brief Throw a CfitsioError if `cfitsio_status > 0`.
    */
-  static void mayThrow(int cfitsioStatus);
+  static void may_throw(int cfitsio_status);
 
   /**
-   * @brief Throw a CfitsioError if `cfitsioStatus > 0`.
+   * @brief Throw a CfitsioError if `cfitsio_status > 0`.
    */
-  static void mayThrow(int cfitsioStatus, fitsfile* fptr, const std::string& context);
+  static void may_throw(int cfitsio_status, fitsfile* fptr, const std::string& context);
 
 public:
   /**
@@ -65,12 +65,12 @@ public:
 /**
  * @brief Check whether the file is valid and throw an error if not.
  */
-void mayThrowInvalidFileError(fitsfile* fptr);
+void may_throw_invalid_file(fitsfile* fptr);
 
 /**
  * @brief Check whether the file is writable and throw an error if not.
  */
-void mayThrowReadonlyError(fitsfile* fptr);
+void may_throw_readonly(fitsfile* fptr);
 
 } // namespace Cfitsio
 } // namespace Euclid

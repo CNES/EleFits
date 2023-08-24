@@ -99,7 +99,7 @@ template <typename TFunc, typename... TContainers>
 TDerived& VectorArithmeticMixin<T, TDerived, Incrementable>::generate(TFunc&& func, const TContainers&... args) {
   auto its = std::make_tuple(args.begin()...);
   for (auto& v : static_cast<TDerived&>(*this)) {
-    v = iteratorTupleApply(its, func);
+    v = iterator_tuple_apply(its, func);
   }
   return static_cast<TDerived&>(*this);
 }

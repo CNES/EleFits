@@ -14,30 +14,30 @@ namespace Euclid {
 namespace Cfitsio {
 namespace BintableIo {
 
-long columnCount(fitsfile* fptr) {
+long column_count(fitsfile* fptr) {
   int status = 0;
   int ncols = 0;
   fits_get_num_cols(fptr, &ncols, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read the number of columns");
+  CfitsioError::may_throw(status, fptr, "Cannot read the number of columns");
   return ncols;
 }
 
-long rowCount(fitsfile* fptr) {
+long row_count(fitsfile* fptr) {
   int status = 0;
   long nrows = 0;
   fits_get_num_rows(fptr, &nrows, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read the number of rows");
+  CfitsioError::may_throw(status, fptr, "Cannot read the number of rows");
   return nrows;
 }
 
-bool hasColumn(fitsfile* fptr, const std::string& name) {
+bool has_column(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
-  fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
+  fits_get_colnum(fptr, CASESEN, Fits::String::to_char_ptr(name).get(), &index, &status);
   return (status == 0) || (status == COL_NOT_UNIQUE);
 }
 
-std::string columnName(fitsfile* fptr, long index) {
+std::string column_name(fitsfile* fptr, long index) {
   int status = 0;
   char ttype[FLEN_VALUE];
   fits_get_bcolparms(
@@ -53,51 +53,51 @@ std::string columnName(fitsfile* fptr, long index) {
       nullptr, // tdisp
       &status);
   // TODO Should we just read TTYPEn instead ?
-  CfitsioError::mayThrow(status, fptr, "Cannot find name of column: " + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot find name of column: " + std::to_string(index - 1));
   return ttype;
 }
 
-void updateColumnName(fitsfile* fptr, long index, const std::string& newName) {
+void update_column_name(fitsfile* fptr, long index, const std::string& new_name) {
   const std::string keyword = "TTYPE" + std::to_string(index);
-  Cfitsio::HeaderIo::updateRecord<std::string>(fptr, {keyword, newName});
+  Cfitsio::HeaderIo::update_record<std::string>(fptr, {keyword, new_name});
   int status = 0;
   fits_set_hdustruc(fptr, &status); // Update internal fptr state to take into account new value
   // FIXME fits_set_hdustruc is deprecated => ask CFITSIO support
-  CfitsioError::mayThrow(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
 }
 
-long columnIndex(fitsfile* fptr, const std::string& name) {
+long column_index(fitsfile* fptr, const std::string& name) {
   int index = 0;
   int status = 0;
-  fits_get_colnum(fptr, CASESEN, Fits::String::toCharPtr(name).get(), &index, &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot find index of column: " + name);
+  fits_get_colnum(fptr, CASESEN, Fits::String::to_char_ptr(name).get(), &index, &status);
+  CfitsioError::may_throw(status, fptr, "Cannot find index of column: " + name);
   return index;
 }
 
 template <>
-void readColumnDim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
-  if (not HeaderIo::hasKeyword(fptr, std::string("TDIM") + std::to_string(index))) {
+void read_column_dim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
+  if (not HeaderIo::has_keyword(fptr, std::string("TDIM") + std::to_string(index))) {
     return;
   }
   int status = 0;
   Fits::Indices<-1> naxes(999); // Max allowed number of axes
   int naxis = 0;
   fits_read_tdim(fptr, static_cast<int>(index), 999, &naxis, shape.data(), &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
   naxes.resize(naxis);
   shape = Fits::Position<-1>(naxes.begin(), naxes.end()); // TODO assign
 }
 
 template <>
-void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long repeatCount, std::string* data) {
+void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeat_count, std::string* data) {
   int status = 0;
   std::vector<char*> vec(rows.size());
   std::generate(vec.begin(), vec.end(), [&]() {
-    return (char*)malloc(repeatCount);
+    return (char*)malloc(repeat_count);
   });
   fits_read_col(
       fptr,
-      TypeCode<std::string>::forBintable(),
+      TypeCode<std::string>::for_bintable(),
       static_cast<int>(index), // column indices are int
       rows.front,
       1,
@@ -106,28 +106,28 @@ void readColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long 
       vec.data(),
       nullptr,
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
-  auto columnIt = data;
-  for (auto vecIt = vec.begin(); vecIt != vec.end(); ++vecIt, ++columnIt) {
-    *columnIt = std::string(*vecIt);
-    free(*vecIt);
+  CfitsioError::may_throw(status, fptr, "Cannot read column data: #" + std::to_string(index - 1));
+  auto column_it = data;
+  for (auto vec_it = vec.begin(); vec_it != vec.end(); ++vec_it, ++column_it) {
+    *column_it = std::string(*vec_it);
+    free(*vec_it);
   }
 }
 
 template <>
-void writeColumnData(fitsfile* fptr, const Fits::Segment& rows, long index, long, const std::string* data) {
+void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long, const std::string* data) {
   int status = 0;
   Fits::String::CStrArray array(data, data + rows.size());
   fits_write_col(
       fptr,
-      TypeCode<std::string>::forBintable(),
+      TypeCode<std::string>::for_bintable(),
       static_cast<int>(index), // column indices are int
       rows.front,
       1,
       rows.size(),
       array.data(),
       &status);
-  CfitsioError::mayThrow(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
+  CfitsioError::may_throw(status, fptr, "Cannot write column data: #" + std::to_string(index - 1));
 }
 
 } // namespace BintableIo

@@ -23,13 +23,13 @@ BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile) {
   const std::string keyword = "KEYWORD";
   const int value = 8;
   this->header().write(keyword, value);
-  this->writeRaster(input);
+  this->write({}, input);
   this->close();
   this->open(this->filename(), FileMode::Read); // Reopen as read-only
   const auto record = this->header().parse<int>(keyword);
   BOOST_TEST((record == value));
-  const auto output = this->readRaster<float>();
-  BOOST_TEST(input.vector() == output.vector());
+  const auto output = this->raster().read<float>();
+  BOOST_TEST(input.container() == output.container());
   BOOST_TEST(input.approx(output));
   remove(this->filename().c_str());
 }
@@ -39,21 +39,21 @@ BOOST_AUTO_TEST_CASE(write_all_test) {
   const Record<int> i {"INT", 1, "i", "integer"};
   const Record<std::string> s {"STR", "TWO", "s", "text"};
   SifFile f(Elements::TempPath().path().string(), FileMode::Temporary);
-  f.writeAll({i, s}, input);
-  const auto records = f.header().parseAll();
+  f.write({i, s}, input);
+  const auto records = f.header().parse_all();
   const auto output = f.raster().read<float>();
   auto r = records.as<int>(i.keyword);
   BOOST_TEST((records.as<int>(i.keyword) == i));
   BOOST_TEST((records.as<std::string>(s.keyword) == s));
-  BOOST_TEST(output.vector() == input.vector());
+  BOOST_TEST(output.container() == input.container());
 }
 
 BOOST_FIXTURE_TEST_CASE(checksum_test, Test::TemporarySifFile) {
-  BOOST_CHECK_THROW(this->verifyChecksums(), ChecksumError);
-  this->updateChecksums();
-  BOOST_CHECK_NO_THROW(this->verifyChecksums());
+  BOOST_CHECK_THROW(this->verify_checksums(), ChecksumError);
+  this->update_checksums();
+  BOOST_CHECK_NO_THROW(this->verify_checksums());
   this->header().write("DATASUM", std::string(""));
-  BOOST_CHECK_THROW(this->verifyChecksums(), ChecksumError);
+  BOOST_CHECK_THROW(this->verify_checksums(), ChecksumError);
 }
 
 //-----------------------------------------------------------------------------

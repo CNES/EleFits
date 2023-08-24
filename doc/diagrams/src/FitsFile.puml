@@ -22,24 +22,24 @@ class FitsFile {
 class SifFile {
 + header() : Header&
 + raster() : ImageRaster&
-+ verifyChecksums()
-+ updateChecksums()
++ verify_checksums()
++ update_checksums()
 }
 
 class MefFile {
-+ hduCount() : long
++ hdu_count() : long
 + access(index) : Hdu&
 + find(name, version) : Hdu&
-+ assignImageExt(name, raster) : ImageHdu&
-+ assignBintableExt(name, columns...) : BintableHdu&
++ append_image(name, raster) : ImageHdu&
++ append_bintable(name, columns...) : BintableHdu&
 }
 
 class Hdu {
 + index() : long
 + name() : string
 + header() : Header&
-+ verifyChecksums()
-+ updateChecksums()
++ verify_checksums()
++ update_checksums()
 }
 
 class ImageHdu {
@@ -51,11 +51,11 @@ class BintableHdu {
 }
 
 class Header {
-+ readAll() : string
++ read_all() : string
 + parse(keyword) : Record
 + write(record)
-+ parseSeq(keywords...) : Record...
-+ writeSeq(records...)
++ parse_n(keywords...) : Record...
++ write_n(records...)
 }
 
 class ImageRaster {
@@ -67,9 +67,9 @@ class BintableColumns {
 + read(index) : Column
 + read(name) : Column
 + write(column)
-+ readSeq(indices...) : Column...
-+ readSeq(names...) : Column...
-+ writeSeq(columns...)
++ read_n(indices...) : Column...
++ read_n(names...) : Column...
++ write_n(columns...)
 }
 
 }

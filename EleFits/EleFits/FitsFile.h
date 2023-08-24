@@ -5,6 +5,7 @@
 #ifndef _ELEFITS_FITSFILE_H
 #define _ELEFITS_FITSFILE_H
 
+#include "EleFitsData/DataUtils.h"
 #include "EleFitsData/FitsError.h"
 
 #include <fitsio.h>
@@ -29,11 +30,11 @@ namespace Euclid {
  * instead of being simply forwarded:
  * for example, `Header::parse()` returns a `Record` with user-defined type
  * by parsing the characters in the FITS file,
- * while `Hdu::readName()` returns the raw value of the `EXTNAME` keyword.
+ * while `Hdu::read_name()` returns the raw value of the `EXTNAME` keyword.
  * * `write`, `init` and `assign` means that some data are written to the FITS file;
  * * `init` methods write metadata (e.g. image size) while `assign` methods also write data (e.g. image pixels);
  * * Getters -- which do not imply reading from the Files but only working with class members -- are nouns:
- * for example, `Hdu::readName()` is a reading operation, while `Hdu::index()` is a simple getter.
+ * for example, `Hdu::read_name()` is a reading operation, while `Hdu::index()` is a simple getter.
  */
 namespace Fits {
 
@@ -60,6 +61,7 @@ enum class FileMode {
  */
 class ReadOnlyError : public FitsError {
 public:
+
   /**
    * @brief Constructor.
    * @details
@@ -70,7 +72,7 @@ public:
   /**
    * @brief Throw if mode is read-only.
    */
-  static void mayThrow(const std::string& prefix, FileMode mode);
+  static void may_throw(const std::string& prefix, FileMode mode);
 };
 
 /**
@@ -82,12 +84,17 @@ public:
  * @see \ref handlers
  */
 class FitsFile {
-
 public:
+
+  /// @group_construction
+
   /**
    * @brief Create a new FITS file handler with given filename and permission.
    */
   FitsFile(const std::string& filename, FileMode permission = FileMode::Read);
+
+  ELEFITS_NON_COPYABLE(FitsFile)
+  ELEFITS_NON_MOVABLE(FitsFile)
 
   /**
    * @brief Destroy the object and close the file.
@@ -95,6 +102,8 @@ public:
    * Also remove the file for `FileMode::Temporary`.
    */
   virtual ~FitsFile();
+
+  /// @group_properties
 
   /**
    * @brief Get the file name.
@@ -104,7 +113,9 @@ public:
   /**
    * @brief Check whether the file is open.
    */
-  bool isOpen() const;
+  bool is_open() const;
+
+  /// @group_modifiers
 
   /**
    * @brief Reopen the file.
@@ -125,7 +136,7 @@ public:
   /**
    * @brief Close and delete the file.
    */
-  void closeAndDelete(); // FIXME virtual?
+  void close_remove(); // FIXME virtual?
 
   /**
    * @brief Get CFITSIO's `fitsfile*`.
@@ -139,9 +150,38 @@ public:
    * The behaviour of all other handler methods (not only `MefFile`'s ones)
    * after calling this function is undefined.
    */
-  fitsfile* handoverToCfitsio();
+  fitsfile* handover_to_cfitsio();
+
+  /// @group_deprecated
+
+  /**
+   * @deprecated
+   */
+  bool isOpen() const
+  {
+    return is_open();
+  }
+
+  /**
+   * @deprecated Use close_remove()
+   */
+  [[deprecated("Use close_remove()")]] void closeAndDelete()
+  {
+    return close_remove();
+  }
+
+  /**
+   * @deprecated
+   */
+  fitsfile* handoverToCfitsio()
+  {
+    return handover_to_cfitsio();
+  }
+
+  /// @}
 
 protected:
+
   /**
    * @brief Open a FITS file with given filename and permission.
    * @details
@@ -178,6 +218,7 @@ protected:
   FileMode m_permission;
 
 private:
+
   /**
    * @brief Non virtual implementation of `open()`.
    */
@@ -190,8 +231,7 @@ private:
 };
 
 /**
- * @relates FitsFile
- * @brief Check whether a file exists.
+ * @deprecated Use std::filesystem
  */
 bool fileExists(const std::string& filename);
 

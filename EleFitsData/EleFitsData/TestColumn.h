@@ -23,31 +23,31 @@ struct RandomTable {
 
   /**
    * @brief Generate the table.
-   * @param repeatCount The repeat count of each column.
-   * @param rowCount The row count of each column.
+   * @param repeat_count The repeat count of each column.
+   * @param row_count The row count of each column.
    */
-  RandomTable(long repeatCount = 1, long rowCount = 3);
+  RandomTable(long repeat_count = 1, long row_count = 3);
 
   /**
    * @brief Generate a column.
-   * @param typeName The value type name.
-   * @param repeatCount The repeat count.
-   * @param rowCount The row count.
+   * @param type_name The value type name.
+   * @param repeat_count The repeat count.
+   * @param row_count The row count.
    */
   template <typename T>
-  static VecColumn<T> generateColumn(const std::string& typeName, long repeatCount = 1, long rowCount = 3);
+  static VecColumn<T> generate_column(const std::string& type_name, long repeat_count = 1, long row_count = 3);
 
   /**
    * @brief Get the column with given value type.
    */
   template <typename T>
-  const VecColumn<T>& getColumn() const;
+  const VecColumn<T>& get_column() const;
 
   /**
    * @brief Get the column with given value type.
    */
   template <typename T>
-  VecColumn<T>& getColumn();
+  VecColumn<T>& get_column();
 
   /**
    * @brief The columns.
@@ -69,7 +69,7 @@ struct RandomTable {
       columns;
 
   /** @brief The number of columns. */
-  static constexpr long columnCount = 13;
+  static constexpr long column_count = 13;
 }; // namespace Test
 
 /**
@@ -126,27 +126,27 @@ public:
   /**
    * @brief Values of the DIST_MAG column.
    */
-  std::vector<DistMag> distsMags;
+  std::vector<DistMag> dists_mags;
 
   /**
    * @brief NUM column.
    */
-  PtrColumn<Num> numCol;
+  PtrColumn<Num> num_col;
 
   /**
    * @brief RADEC column.
    */
-  PtrColumn<Radec> radecCol;
+  PtrColumn<Radec> radec_col;
 
   /**
    * @brief NAME column.
    */
-  PtrColumn<Name> nameCol;
+  PtrColumn<Name> name_col;
 
   /**
    * @brief DIST_MAG column.
    */
-  PtrColumn<DistMag> distMagCol;
+  PtrColumn<DistMag> dist_mag_col;
 };
 
 /**
@@ -159,7 +159,7 @@ public:
   /**
    * @brief Generate a Column of given size.
    */
-  explicit RandomScalarColumn(long size = 3, T min = almostMin<T>(), T max = almostMax<T>());
+  explicit RandomScalarColumn(long size = 3, T min = almost_min<T>(), T max = almost_max<T>());
 
   /** @brief Destructor. */
   virtual ~RandomScalarColumn() = default;
@@ -175,7 +175,7 @@ public:
   /**
    * @brief Generate a Column.
    */
-  explicit RandomVectorColumn(long repeatCount = 3, long size = 3, T min = almostMin<T>(), T max = almostMax<T>());
+  explicit RandomVectorColumn(long repeat_count = 3, long size = 3, T min = almost_min<T>(), T max = almost_max<T>());
 
   /** @brief Destructor. */
   virtual ~RandomVectorColumn() = default;
