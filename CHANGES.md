@@ -5,6 +5,7 @@
 ### Bug fixes
 
 * `parseAll()` threw when parsing long string user-defined keywords
+* Typo: `Position::emtpy()` renamed as `Position::empty()`
 
 ### Breaking changes (with backward compatibility aliases)
 

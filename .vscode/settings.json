@@ -73,6 +73,7 @@
         "variant": "cpp",
         "*.inc": "cpp",
         "iterativesolvers": "cpp",
-        "svd": "cpp"
+        "svd": "cpp",
+        "ciso646": "cpp"
     }
 }

@@ -12,6 +12,20 @@
 namespace Euclid {
 namespace Fits {
 
+/// @cond
+template <long N>
+Position<N> unravel_index(long index, Position<N> shape) // FIXME to Linx
+{
+  const auto size = shape.size();
+  for (auto i = size - 1; i >= 0; --i) {
+    const auto length = shape[i];
+    shape[i] = index % length;
+    index /= length;
+  }
+  return shape; // FIXME test
+}
+/// @endcond
+
 /**
  * @ingroup compression
  * @brief The interface for implementing compression actions.
@@ -143,11 +157,17 @@ public:
       return nullptr;
     }
 
+    // Unsuitable algorithm
     if (not can_compress(m_algo, init)) {
       return nullptr;
     }
 
-    return std::make_unique<TAlgo>(m_algo);
+    // Suitable algorithm
+    auto out = std::make_unique<TAlgo>(m_algo);
+    if (out->tiling().empty()) {
+      adapt_tiling(*out, init);
+    }
+    return out;
   }
 
   /// @}
@@ -280,7 +300,7 @@ private:
 template <typename TAlgo, typename T>
 bool can_compress(const TAlgo&, const ImageHdu::Initializer<T>&)
 {
-  return true;
+  return std::is_base_of_v<Compression, TAlgo>;
 }
 
 template <typename T>
@@ -328,6 +348,50 @@ bool can_compress(const Plio&, const ImageHdu::Initializer<T>& init)
   }
 
   return true;
+}
+
+template <typename TAlgo, typename T>
+TAlgo& adapt_tiling(TAlgo& algo, const ImageHdu::Initializer<T>& init)
+{
+  static constexpr long min_size = 1024 * 1024 / sizeof(T);
+
+  // Small image
+  if (init.shape.size() <= min_size) {
+    return algo.tiling(Tile::whole());
+  }
+
+  // Large image: tiles as sections
+  auto tiling = unravel_index(min_size, init.shape);
+  for (auto i = tiling.size() - 1; i >= 0; --i) {
+    if (tiling[i] > 1) {
+      tiling[i] = init.shape[i];
+      return algo.tiling(std::move(tiling));
+    }
+  }
+
+  // FIXME throw
+  return algo;
+}
+
+template <typename T>
+HCompress& adapt_tiling(HCompress& algo, const ImageHdu::Initializer<T>& init)
+{
+  // Small image
+  if (init.shape[1] <= 30) {
+    // FIXME what about large rows?
+    return algo.tiling(Tile::whole());
+  }
+
+  // Find acceptable row count
+  for (auto rows : {16, 24, 20, 30, 28, 26, 22, 18, 14}) { // FIXME better heuristic?
+    auto modulo = init.shape[1] % rows;
+    if (modulo == 0 || modulo >= 4) {
+      return algo.tiling(Tile::rowwise(rows));
+    }
+  }
+
+  // Fallback
+  return algo.tiling(Tile::rowwise(17)); // FIXME safe?
 }
 /// @endcond
 
@@ -395,18 +459,6 @@ private:
    */
   template <typename T>
   Quantization quantization() const;
-
-  /**
-   * @brief Adapt the tiling to the raster shape.
-   */
-  template <typename T>
-  Position<-1> tiling(const ImageHdu::Initializer<T>& init) const;
-
-  /**
-   * @brief Adapt the H-compress tiling to the raster shape.
-   */
-  template <typename T>
-  Position<-1> hcompress_tiling(const ImageHdu::Initializer<T>& init) const;
 
   /**
    * @brief Adapt the H-compress scaling to the raster shape.
