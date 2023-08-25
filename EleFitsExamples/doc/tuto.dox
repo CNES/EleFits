@@ -311,23 +311,6 @@ values of which are accessed with the call operator `()`:
 
 \see bintable_handlers
 
-
-\section tuto-conclusion Wrap up
-
-
-A picture is worth a thousand words; below is the class diagram of what we've just learned
-(i.e. the main contents of the `Euclid::Fits` namespace).
-
-To go further or out of curiosity, head to the [module pages](modules.html) or [related pages](pages.html).
-Specifically, data classes and service classes are described in more details in
-\ref data_classes and \ref handlers.
-To practice or test your own code, you can also browse the `Euclid::Fits::Test` namespace,
-which provides ready-to-use functions and classes, such as the random records, rasters and columns we've seen above.
-
-\image html doc/diagrams/out/FitsData.png
-
-\image html doc/diagrams/out/FitsFile.png
-
 */
 
 }
