@@ -16,6 +16,51 @@ BOOST_AUTO_TEST_SUITE(CompressionStrategy_test)
 
 //-----------------------------------------------------------------------------
 
+template <typename T>
+void check_adaptive_tiling(const Position<-1>& shape)
+{
+  Gzip algo;
+  ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
+  adapt_tiling(algo, init);
+  if (shapeSize(shape) * sizeof(T) <= 1024 * 1024) {
+    BOOST_TEST((algo.tiling() == shape || algo.tiling() == Tile::whole()));
+  } else {
+    BOOST_TEST(shapeSize(algo.tiling()) * sizeof(T) >= 1024 * 1024);
+    long dim = 6;
+    for (std::size_t i = 0; i < shape.size(); ++i) {
+      const auto length = algo.tiling()[i];
+      if (i < dim && length != shape[i]) {
+        dim = i;
+      }
+      if (i < dim) {
+        BOOST_TEST(length == shape[i]);
+      }
+      if (i == dim) {
+        BOOST_TEST(length <= shape[i]);
+      }
+      if (i > dim) {
+        BOOST_TEST(length == 1);
+      }
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(adaptive_tiling_test)
+{
+  using T = float; // FIXME loop over types
+  check_adaptive_tiling<T>({});
+  check_adaptive_tiling<T>({1});
+  check_adaptive_tiling<T>({2, 2, 2, 2, 2, 2});
+  check_adaptive_tiling<T>({1024 * 1024});
+  check_adaptive_tiling<T>({1024 * 1024 + 1});
+  check_adaptive_tiling<T>({1, 1024 * 1024});
+  check_adaptive_tiling<T>({1, 1024 * 1024 + 1});
+  check_adaptive_tiling<T>({1, 1024, 1024});
+  check_adaptive_tiling<T>({1, 1024, 1024 + 1});
+  check_adaptive_tiling<T>({1024, 1024, 1024});
+  check_adaptive_tiling<T>({1024, 1024, 1024 + 1});
+}
+
 /**
  * @brief Whatever the type and shape, check losslessness.
  */
