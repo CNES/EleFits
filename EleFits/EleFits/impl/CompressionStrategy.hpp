@@ -70,12 +70,12 @@ TAlgo& adapt_tiling(TAlgo& algo, const ImageHdu::Initializer<T>& init)
   static constexpr long min_size = 1024 * 1024 / sizeof(T);
 
   // Small image
-  if (init.shape.size() <= min_size) {
+  if (shapeSize(init.shape) <= min_size) {
     return algo.tiling(Tile::whole());
   }
 
   // Large image: tiles as sections
-  auto tiling = unravel_index(min_size, init.shape);
+  auto tiling = unravel_index(min_size - 1, init.shape) + 1;
   for (auto i = tiling.size() - 1; i >= 0; --i) {
     if (tiling[i] > 1) {
       tiling[i] = init.shape[i];

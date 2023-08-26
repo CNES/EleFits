@@ -16,6 +16,27 @@ BOOST_AUTO_TEST_SUITE(CompressionStrategy_test)
 
 //-----------------------------------------------------------------------------
 
+void check_index_to_position(long index, const Position<-1>& shape, const Position<-1>& expected)
+{
+  auto position = unravel_index(index, shape);
+  BOOST_TEST(position == expected);
+}
+
+BOOST_AUTO_TEST_CASE(index_to_position_1d_test)
+{
+  for (long i = 0; i <= 1024; ++i) { // Including out-of-bounds
+    check_index_to_position(i, {1024}, {i});
+  }
+}
+
+BOOST_AUTO_TEST_CASE(index_to_position_2d_test)
+{
+  check_index_to_position(0, {1024, 1024}, {0, 0});
+  check_index_to_position(1023, {1024, 1024}, {1023, 0});
+  check_index_to_position(1024, {1024, 1024}, {0, 1});
+  check_index_to_position(1024 * 1024, {1024, 1024}, {0, 1024});
+}
+
 template <typename T>
 void check_adaptive_tiling(const Position<-1>& shape)
 {
@@ -45,9 +66,9 @@ void check_adaptive_tiling(const Position<-1>& shape)
   }
 }
 
-BOOST_AUTO_TEST_CASE(adaptive_tiling_test)
+template <typename T>
+void check_adaptive_tiling()
 {
-  using T = float; // FIXME loop over types
   check_adaptive_tiling<T>({});
   check_adaptive_tiling<T>({1});
   check_adaptive_tiling<T>({2, 2, 2, 2, 2, 2});
@@ -59,6 +80,14 @@ BOOST_AUTO_TEST_CASE(adaptive_tiling_test)
   check_adaptive_tiling<T>({1, 1024, 1024 + 1});
   check_adaptive_tiling<T>({1024, 1024, 1024});
   check_adaptive_tiling<T>({1024, 1024, 1024 + 1});
+}
+
+BOOST_AUTO_TEST_CASE(adaptive_tiling_test)
+{
+  check_adaptive_tiling<unsigned char>();
+  check_adaptive_tiling<int>();
+  check_adaptive_tiling<float>();
+  check_adaptive_tiling<double>();
 }
 
 /**

@@ -16,9 +16,8 @@ namespace Fits {
 template <long N>
 Position<N> unravel_index(long index, Position<N> shape) // FIXME to Linx
 {
-  const auto size = shape.size();
-  for (auto i = size - 1; i >= 0; --i) {
-    const auto length = shape[i];
+  for (long i = 0; i < shape.size(); ++i) {
+    const long length = shape[i];
     shape[i] = index % length;
     index /= length;
   }
