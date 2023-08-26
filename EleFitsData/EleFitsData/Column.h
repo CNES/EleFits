@@ -67,13 +67,13 @@ using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
  */
 template <typename T, long N, typename THolder>
 class Column : public DataContainer<T, THolder, Column<T, N, THolder>> {
-
   /**
    * @brief Shortcut for DataContainer.
    */
   using Base = DataContainer<T, THolder, Column<T, N, THolder>>;
 
 public:
+
   /**
    * @brief The element value type.
    */
@@ -107,6 +107,11 @@ public:
    */
   explicit Column(Info info, long row_count = 0);
 
+  /// @cond
+  /** @brief int overload, to be handled differently! */
+  explicit Column(Info info, int row_count) : Column(std::move(info), long(row_count)) {}
+  /// @endcond
+
   /**
    * @brief Create a column with given metadata and data.
    * @param info The column metadata
@@ -116,7 +121,12 @@ public:
    * `PtrColumn` constructor used to get the **element** count as input instead of the **row count**,
    * which makes a difference for vector columns.
    */
-  Column(Info info, long row_count, T* data);
+  explicit Column(Info info, long row_count, T* data);
+
+  /// @cond
+  /** @brief int overload, to be handled differently! */
+  explicit Column(Info info, int row_count, T* data) : Column(std::move(info), long(row_count), data) {}
+  /// @endcond
 
   /**
    * @brief Create a column with given metadata and data.
@@ -220,25 +230,29 @@ public:
   /**
    * @deprecated
    */
-  long rowCount() const {
+  long rowCount() const
+  {
     return row_count();
   }
 
   /**
    * @deprecated Name was wrong wrt. the FITS standard
    */
-  [[deprecated("Use field(long)")]] const PtrRaster<const T, N> entry(long row) const {
+  [[deprecated("Use field(long)")]] const PtrRaster<const T, N> entry(long row) const
+  {
     return field(row);
   }
 
   /**
    * @deprecated Name was wrong wrt. the FITS standard
    */
-  [[deprecated("Use field(long)")]] PtrRaster<T, N> entry(long row) {
+  [[deprecated("Use field(long)")]] PtrRaster<T, N> entry(long row)
+  {
     return field(row);
   }
 
 private:
+
   /**
    * @brief Column metadata.
    */
@@ -262,8 +276,14 @@ Column<
     typename TContainer::value_type,
     std::decay_t<TInfo>::Dim,
     DataContainerHolder<typename TContainer::value_type, TContainer>>
-make_column(TInfo info, TContainer&& data) {
-  return {std::forward<TInfo>(info), std::forward<TContainer>(data)};
+make_column(TInfo info, TContainer&& data)
+{
+  return Column<
+      typename TContainer::value_type,
+      std::decay_t<TInfo>::Dim,
+      DataContainerHolder<typename TContainer::value_type, TContainer>> {
+      std::forward<TInfo>(info),
+      std::forward<TContainer>(data)};
 }
 
 /**
@@ -271,15 +291,17 @@ make_column(TInfo info, TContainer&& data) {
  * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, long row_count, T* data) {
-  return {std::forward<TInfo>(info), row_count, data};
+PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, long row_count, T* data)
+{
+  return PtrColumn<T, std::decay_t<TInfo>::Dim> {std::forward<TInfo>(info), row_count, data};
 }
 
 /**
  * @deprecated
  */
 template <typename... TArgs>
-[[deprecated("Use make_column")]] auto makeColumn(TArgs&&... args) {
+[[deprecated("Use make_column")]] auto makeColumn(TArgs&&... args)
+{
   return make_column(std::forward<TArgs>(args)...);
 }
 

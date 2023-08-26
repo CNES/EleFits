@@ -15,7 +15,8 @@ BOOST_AUTO_TEST_SUITE(Column_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test) {
+BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test)
+{
   std::vector<int> input {1, 2, 3};
   PtrColumn<int> column({"SHARED", "", 1}, input.size(), input.data());
   BOOST_TEST(column.data()[1] == 2);
@@ -23,7 +24,8 @@ BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test) {
   BOOST_TEST(column.data()[1] == 4);
 }
 
-BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test) {
+BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test)
+{
   std::vector<int> input {4, 5, 6};
   VecColumn<int> column({"DATA", "", 1}, std::move(input));
   BOOST_TEST(column.container()[1] == 5);
@@ -34,7 +36,8 @@ BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test) {
   BOOST_TEST(column.size() == 0);
 }
 
-BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
+BOOST_AUTO_TEST_CASE(subscript_bounds_test)
+{
   const long row_count = 10;
   const long repeat_count = 3;
   Test::RandomVectorColumn<int> column(repeat_count, row_count);
@@ -52,10 +55,10 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   BOOST_CHECK_THROW(column.at(0, -1 - repeat_count), FitsError);
 }
 
-BOOST_AUTO_TEST_CASE(numeric_column_elementcount_is_rowcount_times_repeatcount_test) {
-
-  constexpr long row_count = 17;
-  constexpr long repeat_count = 7;
+BOOST_AUTO_TEST_CASE(numeric_column_elementcount_is_rowcount_times_repeatcount_test)
+{
+  constexpr int row_count = 17;
+  constexpr int repeat_count = 7;
   // FIXME Breaks with int instead of long:
   // CTor overload forwards to vector and creates 17 values instead of 17 * 7
 
@@ -84,8 +87,8 @@ BOOST_AUTO_TEST_CASE(numeric_column_elementcount_is_rowcount_times_repeatcount_t
   BOOST_TEST(c_ptr_olumn.size() == row_count * repeat_count);
 }
 
-BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
-
+BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test)
+{
   constexpr long row_count = 17;
   constexpr long repeat_count = 7;
 
@@ -114,7 +117,8 @@ BOOST_AUTO_TEST_CASE(string_column_elementcount_is_rowcount_test) {
   BOOST_TEST(c_ptr_olumn.size() == row_count);
 }
 
-BOOST_AUTO_TEST_CASE(make_veccolumn_test) {
+BOOST_AUTO_TEST_CASE(make_veccolumn_test)
+{
   constexpr long repeat = 3;
   constexpr long rows = 9;
   constexpr long size = repeat * rows;
@@ -131,7 +135,8 @@ BOOST_AUTO_TEST_CASE(make_veccolumn_test) {
   BOOST_TEST(column.data() == data);
 }
 
-BOOST_AUTO_TEST_CASE(make_ptrcolumn_test) {
+BOOST_AUTO_TEST_CASE(make_ptrcolumn_test)
+{
   constexpr long repeat = 3;
   constexpr long rows = 9;
   constexpr long size = repeat * rows;
