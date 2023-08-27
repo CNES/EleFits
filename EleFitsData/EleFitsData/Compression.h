@@ -291,11 +291,6 @@ public:
   inline const Scaling& scaling() const;
 
   /**
-   * @brief Check whether the image is smoothed at reading.
-   */
-  inline bool is_smooth() const;
-
-  /**
    * @brief Set the quantization.
    * 
    * H-compress does not support `Dithering::NonZeroPixel`.
@@ -307,27 +302,12 @@ public:
    */
   inline HCompress& scaling(Scaling scale);
 
-  /**
-   * @brief Enable image smoothing at reading.
-   */
-  inline HCompress& enable_smoothing();
-
-  /**
-   * @brief Disable image smoothing at reading.
-   */
-  inline HCompress& disable_smoothing();
-
 private:
 
   /**
    * @brief The scale parameter.
    */
   Scaling m_scale;
-
-  /**
-   * @brief The smoothing flag.
-   */
-  bool m_smooth;
 };
 
 /**

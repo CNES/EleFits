@@ -77,7 +77,7 @@ Rice::Rice(Position<-1> tiling, Quantization quantization) : AlgoMixin<Rice>(std
 {}
 
 HCompress::HCompress(Position<-1> tiling, Quantization quantization, Scaling scaling) :
-    AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(std::move(scaling)), m_smooth(false)
+    AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(std::move(scaling))
 {
   this->quantization(std::move(quantization));
 }
@@ -95,11 +95,6 @@ const Scaling& HCompress::scaling() const
   return m_scale;
 }
 
-bool HCompress::is_smooth() const
-{
-  return m_smooth;
-}
-
 HCompress& HCompress::scaling(Scaling scale)
 {
   m_scale = std::move(scale);
@@ -112,18 +107,6 @@ HCompress& HCompress::quantization(Quantization quantization)
     throw FitsError("H-compress does not support non-zero pixel dithering");
   }
   AlgoMixin<HCompress>::quantization(quantization);
-  return *this;
-}
-
-HCompress& HCompress::enable_smoothing()
-{
-  m_smooth = true;
-  return *this;
-}
-
-HCompress& HCompress::disable_smoothing()
-{
-  m_smooth = false;
   return *this;
 }
 

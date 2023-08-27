@@ -176,14 +176,11 @@ BOOST_AUTO_TEST_CASE(hcompress_test)
 
   // check default hcompress params values:
   BOOST_TEST((algo.scaling() == Scaling(0)));
-  BOOST_TEST(algo.is_smooth() == false);
 
   // setters & getters:
   Scaling scale = 5;
   algo.scaling(scale);
-  algo.enable_smoothing();
   BOOST_TEST((algo.scaling() == scale));
-  BOOST_TEST(algo.is_smooth() == true);
 }
 
 //-----------------------------------------------------------------------------
