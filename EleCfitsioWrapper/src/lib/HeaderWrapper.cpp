@@ -13,7 +13,8 @@ namespace Euclid {
 namespace Cfitsio {
 namespace HeaderIo {
 
-std::string read_header(fitsfile* fptr, bool inc_non_valued) {
+std::string read_header(fitsfile* fptr, bool inc_non_valued)
+{
   int status = 0;
   char* header = nullptr;
   int record_count = 0;
@@ -31,7 +32,8 @@ std::string read_header(fitsfile* fptr, bool inc_non_valued) {
   return header_htring;
 }
 
-std::vector<std::string> list_keywords(fitsfile* fptr, Fits::KeywordCategory categories) {
+std::vector<std::string> list_keywords(fitsfile* fptr, Fits::KeywordCategory categories)
+{
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
@@ -47,7 +49,8 @@ std::vector<std::string> list_keywords(fitsfile* fptr, Fits::KeywordCategory cat
   return keywords;
 }
 
-std::map<std::string, std::string> list_keywords_values(fitsfile* fptr, Fits::KeywordCategory categories) {
+std::map<std::string, std::string> list_keywords_values(fitsfile* fptr, Fits::KeywordCategory categories)
+{
   int count = 0;
   int status = 0;
   fits_get_hdrspace(fptr, &count, nullptr, &status);
@@ -63,7 +66,8 @@ std::map<std::string, std::string> list_keywords_values(fitsfile* fptr, Fits::Ke
   return records;
 }
 
-bool has_keyword(fitsfile* fptr, const std::string& keyword) {
+bool has_keyword(fitsfile* fptr, const std::string& keyword)
+{
   int status = 0;
   int length = 0;
   fits_get_key_strlen(fptr, keyword.c_str(), &length, &status);
@@ -75,7 +79,8 @@ bool has_keyword(fitsfile* fptr, const std::string& keyword) {
 }
 
 template <>
-Fits::Record<bool> parse_record<bool>(fitsfile* fptr, const std::string& keyword) { // TODO rm duplication
+Fits::Record<bool> parse_record<bool>(fitsfile* fptr, const std::string& keyword)
+{ // TODO rm duplication
   int status = 0;
   /* Read value and comment */
   int nonconst_int_value; // TLOGICAL is for int in CFITSIO
@@ -101,7 +106,8 @@ Fits::Record<bool> parse_record<bool>(fitsfile* fptr, const std::string& keyword
 }
 
 template <>
-Fits::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::string& keyword) {
+Fits::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::string& keyword)
+{
   // TODO rm duplication
   int status = 0;
   int length = 0;
@@ -145,14 +151,19 @@ Fits::Record<std::string> parse_record<std::string>(fitsfile* fptr, const std::s
   }
 
 template <>
-Fits::Record<Fits::VariantValue> parse_record<Fits::VariantValue>(fitsfile* fptr, const std::string& keyword) {
+Fits::Record<Fits::VariantValue> parse_record<Fits::VariantValue>(fitsfile* fptr, const std::string& keyword)
+{
   const auto& id = record_typeid(fptr, keyword);
+  if (id == typeid(std::nullptr_t)) {
+    return Fits::Record<Fits::VariantValue> {keyword, std::string()};
+  }
   ELEFITS_FOREACH_RECORD_TYPE(PARSE_RECORD_ANY_FOR_TYPE)
   throw Fits::FitsError("Cannot deduce type for record: " + keyword);
 }
 
 template <>
-void write_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
+void write_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record)
+{
   int status = 0;
   int nonconst_int_value = record.value; // TLOGICAL is for int in CFITSIO
   fits_write_key(
@@ -166,7 +177,8 @@ void write_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
 }
 
 template <>
-void write_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record) {
+void write_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record)
+{
   int status = 0;
   if (record.has_long_string_value()) { // https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node118.html
     fits_write_key_longwarn(fptr, &status);
@@ -176,12 +188,14 @@ void write_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>& 
 }
 
 template <>
-void write_record<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
+void write_record<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record)
+{
   write_record<std::string>(fptr, {record.keyword, std::string(record.value), record.unit, record.comment});
 }
 
 template <typename T>
-void write_record_any_impl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
+void write_record_any_impl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record)
+{
   write_record<T>(fptr, {record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment});
 }
 
@@ -191,7 +205,8 @@ void write_record_any_impl(fitsfile* fptr, const Fits::Record<Fits::VariantValue
   }
 
 template <>
-void write_record<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
+void write_record<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record)
+{
   const auto& id = record.value.type();
   ELEFITS_FOREACH_RECORD_TYPE(WRITE_RECORD_ANY_FOR_TYPE)
   WRITE_RECORD_ANY_FOR_TYPE(const char*, C_str)
@@ -199,7 +214,8 @@ void write_record<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::V
 }
 
 template <>
-void update_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
+void update_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record)
+{
   int status = 0;
   std::string comment = record.raw_comment();
   int nonconst_int_value = record.value; // TLOGICAL is for int in CFITSIO
@@ -214,7 +230,8 @@ void update_record<bool>(fitsfile* fptr, const Fits::Record<bool>& record) {
 }
 
 template <>
-void update_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record) {
+void update_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>& record)
+{
   if (record.has_long_string_value()) { // Cannot use fits_update_key for long string records
     if (has_keyword(fptr, record)) {
       remove_record(fptr, record.keyword);
@@ -236,12 +253,14 @@ void update_record<std::string>(fitsfile* fptr, const Fits::Record<std::string>&
 }
 
 template <>
-void update_record<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record) {
+void update_record<const char*>(fitsfile* fptr, const Fits::Record<const char*>& record)
+{
   update_record<std::string>(fptr, {record.keyword, std::string(record.value), record.unit, record.comment});
 }
 
 template <typename T>
-void update_record_any_impl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
+void update_record_any_impl(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record)
+{
   update_record<T>(fptr, {record.keyword, boost::any_cast<T>(record.value), record.unit, record.comment});
 }
 
@@ -251,14 +270,16 @@ void update_record_any_impl(fitsfile* fptr, const Fits::Record<Fits::VariantValu
   }
 
 template <>
-void update_record<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record) {
+void update_record<Fits::VariantValue>(fitsfile* fptr, const Fits::Record<Fits::VariantValue>& record)
+{
   const auto& id = record.value.type();
   ELEFITS_FOREACH_RECORD_TYPE(UPDATE_RECORD_ANY_FOR_TYPE)
   UPDATE_RECORD_ANY_FOR_TYPE(const char*, C_str)
   throw Fits::FitsError("Cannot deduce type for record: " + record.keyword);
 }
 
-void remove_record(fitsfile* fptr, const std::string& keyword) {
+void remove_record(fitsfile* fptr, const std::string& keyword)
+{
   int status = 0;
   fits_delete_key(fptr, keyword.c_str(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot delete record: " + keyword);
@@ -269,7 +290,8 @@ namespace Internal {
 /**
  * @brief Get the a typeid compatible with a negative integer value given as a string.
  */
-const std::type_info& neg_int_record_typeid_impl(const std::string& value) {
+const std::type_info& neg_int_record_typeid_impl(const std::string& value)
+{
   const long long parsed = std::stoll(value);
   if (parsed >= std::numeric_limits<char>::lowest()) {
     return typeid(char);
@@ -289,7 +311,8 @@ const std::type_info& neg_int_record_typeid_impl(const std::string& value) {
 /**
  * @brief Get the a typeid compatible with a positive integer value given as a string.
  */
-const std::type_info& pos_int_record_typeid_impl(const std::string& value) {
+const std::type_info& pos_int_record_typeid_impl(const std::string& value)
+{
   const unsigned long long parsed = std::stoull(value);
   if (parsed <= std::numeric_limits<unsigned char>::max()) {
     return typeid(unsigned char);
@@ -311,14 +334,16 @@ const std::type_info& pos_int_record_typeid_impl(const std::string& value) {
  * @return The typeid of the smallest signed (resp. unsigned) int type which can accommodate the value
  * if the first character is (resp. is not) '-'.
  */
-const std::type_info& int_record_typeid_impl(const std::string& value) {
+const std::type_info& int_record_typeid_impl(const std::string& value)
+{
   return (value[0] == '-') ? neg_int_record_typeid_impl(value) : pos_int_record_typeid_impl(value);
 }
 
 /**
  * @return typeid(float) if in (lowest(float), max(float)); typeid(double) otherwise.
  */
-const std::type_info& float_record_typeid_impl(const std::string& value) {
+const std::type_info& float_record_typeid_impl(const std::string& value)
+{
   double parsed = std::stod(value);
   if (parsed < std::numeric_limits<float>::lowest()) {
     return typeid(double);
@@ -333,7 +358,8 @@ const std::type_info& float_record_typeid_impl(const std::string& value) {
  * @return typeid(std::complex<float>) if both real and imaginary parts are in (lowest(float), max(float));
  * typeid(std::complex<double>) otherwise.
  */
-const std::type_info& complex_record_typeid_impl(const std::string& value) {
+const std::type_info& complex_record_typeid_impl(const std::string& value)
+{
   const std::size_t re_begin = 1; // 1 for '('
   const std::size_t re_end = value.find(",");
   const std::size_t im_begin = re_end + 2; // 2 for ", "
@@ -357,13 +383,17 @@ const std::type_info& complex_record_typeid_impl(const std::string& value) {
 /**
  * @see https://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node52.html
  */
-const std::type_info& record_typeid(fitsfile* fptr, const std::string& keyword) {
+const std::type_info& record_typeid(fitsfile* fptr, const std::string& keyword)
+{
   int status = 0;
   char value[FLEN_VALUE];
   fits_read_keyword(fptr, &keyword[0], value, nullptr, &status);
   CfitsioError::may_throw(status, fptr, "Cannot read record: " + keyword);
   char dtype = ' ';
   fits_get_keytype(value, &dtype, &status);
+  if (status == VALUE_UNDEFINED) { // No value
+    return typeid(std::nullptr_t);
+  }
   CfitsioError::may_throw(status, fptr, "Cannot deduce type code of record: " + keyword);
   // 'C', 'L', 'I', 'F' or 'X', for character string, logical, integer, floating point, or complex
   switch (dtype) {
@@ -382,14 +412,16 @@ const std::type_info& record_typeid(fitsfile* fptr, const std::string& keyword) 
   }
 }
 
-void write_comment(fitsfile* fptr, const std::string& comment) {
+void write_comment(fitsfile* fptr, const std::string& comment)
+{
   int status = 0;
   std::string nonconst_comment = comment;
   fits_write_comment(fptr, &nonconst_comment[0], &status);
   CfitsioError::may_throw(status, fptr, "Cannot write COMMENT record");
 }
 
-void write_history(fitsfile* fptr, const std::string& history) {
+void write_history(fitsfile* fptr, const std::string& history)
+{
   int status = 0;
   std::string nonconst_history = history;
   fits_write_history(fptr, &nonconst_history[0], &status);
