@@ -15,6 +15,52 @@
 using boost::program_options::value;
 using namespace Euclid::Fits;
 
+void set_strategy(MefFile& out, const std::string& algo, char lossless)
+{
+  auto type = CompressionType::Lossless;
+  if (lossless == 'i') {
+    type = CompressionType::LosslessInts;
+  } else if (lossless == 'n') {
+    type = CompressionType::Lossy;
+  } else if (lossless != 'y') {
+    throw FitsError(std::string("Unknown losslessness: ") + lossless);
+  }
+
+  Quantization q0;
+  Quantization q(Tile::rms);
+  auto qints = (type == CompressionType::Lossy) ? q : q0;
+  auto qfloats = (type == CompressionType::Lossless) ? q0 : q;
+
+  Scaling s0;
+  Scaling s(Tile::rms * 2.5);
+  auto sints = (type == CompressionType::Lossy) ? s : s0;
+  auto sfloats = (type == CompressionType::Lossless) ? s0 : s;
+
+  if (algo == "AUTO") {
+    out.strategy(CompressAuto(type));
+  } else if (algo == "GZIP") {
+    out.strategy(CompressFloats<Gzip>(Tile::adaptive(), qfloats), CompressInts<Gzip>(Tile::adaptive(), qints));
+  } else if (algo == "SGZIP") {
+    out.strategy(
+        CompressFloats<ShuffledGzip>(Tile::adaptive(), qfloats),
+        CompressInts<ShuffledGzip>(Tile::adaptive(), qints));
+  } else if (algo == "RICE") {
+    if (type != CompressionType::Lossless) {
+      out.strategy(CompressFloats<Rice>(Tile::adaptive(), qfloats));
+    }
+    out.strategy(CompressInts<Rice>(Tile::adaptive(), qints));
+  } else if (algo == "HCOMPRESS") {
+    if (type != CompressionType::Lossless) {
+      out.strategy(CompressFloats<HCompress>(Tile::adaptive(), qfloats, sfloats));
+    }
+    out.strategy(CompressInts<HCompress>(Tile::adaptive(), qints, sints));
+  } else if (algo == "PLIO") {
+    out.strategy(CompressInts<Plio>(Tile::adaptive(), q0));
+  } else if (algo != "NONE") {
+    throw FitsError(std::string("Unknown compression algorithm: ") + algo);
+  }
+}
+
 class EleFitsCompress : public Elements::Program {
 public:
 
@@ -23,7 +69,10 @@ public:
     auto options = ProgramOptions::from_aux_file("Compress.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.positional("output", value<std::string>(), "Output file (if ends with .gz, compress externally)");
-    options.flag("decompress", "Decompress instead of compressing"); // FIXME --algo none would be more flexible
+    options.named(
+        "algo",
+        value<std::string>()->default_value("AUTO"),
+        "Compression algorithm (NONE, GZIP, SGZIP, RICE, HCOMPRESS, PLIO, AUTO)");
     options.named("lossless", value<char>()->default_value('y'), "Losslessness: yes (y), no (n), integers only (i)");
     options.flag("primary", "Compress the Primary (as the first extension)");
     return options.as_pair();
@@ -36,7 +85,7 @@ public:
     /* Read options */
     const auto input = args["input"].as<std::string>();
     const auto output = args["output"].as<std::string>();
-    const auto decompress = args["decompress"].as<bool>();
+    const auto algo = args["algo"].as<std::string>();
     const auto lossless = args["lossless"].as<char>();
     const auto compress_primary = args["primary"].as<bool>();
 
@@ -52,18 +101,8 @@ public:
       compressed.primary() = raw.primary();
     }
 
-    /* Enable compression */
-    if (not decompress) {
-      if (lossless == 'y') {
-        compressed.strategy(CompressAuto());
-      } else if (lossless == 'i') {
-        compressed.strategy(CompressAuto(CompressionType::LosslessInts));
-      } else if (lossless == 'n') {
-        compressed.strategy(CompressAuto(CompressionType::Lossy));
-      } else {
-        throw FitsError("Unknown compression type");
-      }
-    }
+    /* Enable compression (or not) */
+    set_strategy(compressed, algo, lossless);
 
     /* Loop over HDUs or extensions */
     for (long i = 1 - compress_primary; i < hdu_count; ++i) {
