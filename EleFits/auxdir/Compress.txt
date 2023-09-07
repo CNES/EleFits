@@ -1,1 +1,2 @@
-Compress an input file using internal compression wherever possible and, if required, compress externally, too.
+Compress or decompress an input file using internal compression wherever possible
+and, if requested, compress externally, too, by using an output file with extension .gz.

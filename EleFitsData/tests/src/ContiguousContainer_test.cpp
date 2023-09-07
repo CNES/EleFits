@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(mixin_test) {
   TestContiguousContainer tcc(size);
   TestContiguousContainer empty;
 
-  BOOST_TEST(not tcc.emtpy());
+  BOOST_TEST(not tcc.empty());
   BOOST_TEST(&tcc[size / 2] == &tcc.vector[size / 2]);
   BOOST_TEST(tcc.begin() == tcc.vector.data());
   BOOST_TEST(tcc.cbegin() == tcc.vector.data());

@@ -45,17 +45,30 @@ struct Tile {
   static Scaling rms;
 
   /**
+   * @brief Create an adaptive tiling.
+   * 
+   * The tile size will be adapted to the image data,
+   * while ensuring that tile data is contiguous in memory.
+   */
+  inline static Position<-1> adaptive()
+  {
+    return Position<-1> {};
+  }
+
+  /**
    * @brief Create a rowwise tiling.
    * @param row_count The number of rows per tile
    */
-  inline static Position<-1> rowwise(long row_count = 1) {
+  inline static Position<-1> rowwise(long row_count = 1)
+  {
     return Position<-1> {-1, row_count};
   }
 
   /**
    * @brief Create a whole-data array tiling.
    */
-  inline static Position<-1> whole() {
+  inline static Position<-1> whole()
+  {
     return Position<-1> {-1};
   }
 };
@@ -71,8 +84,8 @@ struct Tile {
  * @see Tile::whole()
  */
 class Compression {
-
 public:
+
   explicit Compression() = default;
   ELEFITS_VIRTUAL_DTOR(Compression)
   ELEFITS_COPYABLE(Compression)
@@ -94,6 +107,7 @@ public:
   inline virtual bool is_lossless() const;
 
 protected:
+
   /**
    * @brief Constructor.
    */
@@ -116,8 +130,8 @@ protected:
  */
 template <typename TDerived>
 class AlgoMixin : public Compression {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(AlgoMixin)
   ELEFITS_COPYABLE(AlgoMixin)
   ELEFITS_MOVABLE(AlgoMixin)
@@ -137,6 +151,7 @@ public:
   virtual TDerived& quantization(Quantization quantization);
 
 protected:
+
   /**
    * @brief Constructor.
    */
@@ -148,8 +163,8 @@ protected:
  * @brief No compression.
  */
 class NoCompression : public AlgoMixin<NoCompression> {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(NoCompression)
   ELEFITS_COPYABLE(NoCompression)
   ELEFITS_MOVABLE(NoCompression)
@@ -181,8 +196,8 @@ public:
  * Along with `ShuffledGzip`, this is the only algorithm which supports lossless compression of floating point data.
  */
 class Gzip : public AlgoMixin<Gzip> {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(Gzip)
   ELEFITS_COPYABLE(Gzip)
   ELEFITS_MOVABLE(Gzip)
@@ -190,7 +205,7 @@ public:
   /**
    * @brief Constructor
    */
-  inline explicit Gzip(Position<-1> tiling = Tile::rowwise(), Quantization quantization = Quantization());
+  inline explicit Gzip(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
 };
 
 /**
@@ -203,6 +218,7 @@ public:
 class ShuffledGzip : public AlgoMixin<ShuffledGzip> { // FIXME merge with Gzip with option to shuffle
 
 public:
+
   ELEFITS_VIRTUAL_DTOR(ShuffledGzip)
   ELEFITS_COPYABLE(ShuffledGzip)
   ELEFITS_MOVABLE(ShuffledGzip)
@@ -210,7 +226,7 @@ public:
   /**
    * @brief Constructor.
    */
-  inline explicit ShuffledGzip(Position<-1> tiling = Tile::rowwise(), Quantization quantization = Quantization());
+  inline explicit ShuffledGzip(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
 };
 
 /**
@@ -218,8 +234,8 @@ public:
  * @brief The Rice algorithm.
  */
 class Rice : public AlgoMixin<Rice> {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(Rice)
   ELEFITS_COPYABLE(Rice)
   ELEFITS_MOVABLE(Rice)
@@ -227,7 +243,7 @@ public:
   /**
    * @brief Constructor.
    */
-  inline explicit Rice(Position<-1> tiling = Tile::rowwise(), Quantization quantization = Quantization());
+  inline explicit Rice(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
 };
 
 /**
@@ -249,8 +265,8 @@ public:
  * \endcode
  */
 class HCompress : public AlgoMixin<HCompress> {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(HCompress)
   ELEFITS_COPYABLE(HCompress)
   ELEFITS_MOVABLE(HCompress)
@@ -258,7 +274,7 @@ public:
    * @brief Constructor.
    */
   inline explicit HCompress(
-      Position<-1> tiling = Tile::rowwise(16),
+      Position<-1> tiling = Tile::adaptive(),
       Quantization quantization = Quantization(),
       Scaling scaling = Scaling(0));
 
@@ -275,11 +291,6 @@ public:
   inline const Scaling& scaling() const;
 
   /**
-   * @brief Check whether the image is smoothed at reading.
-   */
-  inline bool is_smooth() const;
-
-  /**
    * @brief Set the quantization.
    * 
    * H-compress does not support `Dithering::NonZeroPixel`.
@@ -291,26 +302,12 @@ public:
    */
   inline HCompress& scaling(Scaling scale);
 
-  /**
-   * @brief Enable image smoothing at reading.
-   */
-  inline HCompress& enable_smoothing();
-
-  /**
-   * @brief Disable image smoothing at reading.
-   */
-  inline HCompress& disable_smoothing();
-
 private:
+
   /**
    * @brief The scale parameter.
    */
   Scaling m_scale;
-
-  /**
-   * @brief The smoothing flag.
-   */
-  bool m_smooth;
 };
 
 /**
@@ -323,8 +320,8 @@ private:
  * @warning Only integer values between 0 and 2^24 are supported.
  */
 class Plio : public AlgoMixin<Plio> {
-
 public:
+
   ELEFITS_VIRTUAL_DTOR(Plio)
   ELEFITS_COPYABLE(Plio)
   ELEFITS_MOVABLE(Plio)
@@ -332,7 +329,7 @@ public:
   /**
    * @brief Constructor
    */
-  inline explicit Plio(Position<-1> tiling = Tile::rowwise(), Quantization quantization = Quantization());
+  inline explicit Plio(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
 };
 
 } // namespace Fits

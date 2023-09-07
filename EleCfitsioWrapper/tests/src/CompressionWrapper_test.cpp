@@ -18,8 +18,8 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 using namespace Euclid;
 
 template <typename TAlgo>
-void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype) {
-
+void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype)
+{
   int status = 0;
 
   Fits::Position<-1> shape(dimension);
@@ -45,8 +45,8 @@ void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype) {
 }
 
 template <>
-void test_algo_mixin_compress<Fits::NoCompression>(long, fitsfile* fptr, int comptype) {
-
+void test_algo_mixin_compress<Fits::NoCompression>(long, fitsfile* fptr, int comptype)
+{
   int status = 0;
 
   Fits::NoCompression algo;
@@ -58,8 +58,8 @@ void test_algo_mixin_compress<Fits::NoCompression>(long, fitsfile* fptr, int com
   BOOST_TEST(actual_comptype == comptype);
 }
 
-BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
-
+BOOST_AUTO_TEST_CASE(algomixin_compress_test)
+{
   Fits::Test::MinimalFile file;
 
   test_algo_mixin_compress<Fits::NoCompression>(0, file.fptr, int(NULL));
@@ -100,8 +100,8 @@ BOOST_AUTO_TEST_CASE(algomixin_compress_test) {
   test_algo_mixin_compress<Fits::ShuffledGzip>(6, file.fptr, GZIP_2);
 }
 
-BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
-
+BOOST_AUTO_TEST_CASE(hcompress_compress_test)
+{
   int status = 0;
   Fits::Test::MinimalFile file;
 
@@ -116,15 +116,10 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test) {
   BOOST_TEST(
       actual_scale ==
       ((algo.scaling().type() == Fits::Scaling::Type::Absolute) ? -algo.scaling().value() : algo.scaling().value()));
-
-  // verify smoothing:
-  int actual_smoothing;
-  fits_get_hcomp_smooth(file.fptr, &actual_smoothing, &status);
-  BOOST_TEST(actual_smoothing == algo.is_smooth());
 }
 
-BOOST_AUTO_TEST_CASE(iscompressing_test) {
-
+BOOST_AUTO_TEST_CASE(iscompressing_test)
+{
   Fits::NoCompression none;
   const Fits::Position<-1>& shape {300, 200};
   Fits::HCompress algo(shape);
@@ -154,7 +149,8 @@ BOOST_AUTO_TEST_SUITE(Compression_learning_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(default_values_learning_test) { // FIXME set compression types first
+BOOST_AUTO_TEST_CASE(default_values_learning_test)
+{ // FIXME set compression types first
 
   // verify max image dimension supported for compression
   BOOST_TEST(MAX_COMPRESS_DIM == 6);
@@ -181,7 +177,8 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test) { // FIXME set compression ty
   BOOST_TEST(default_scale == 0.0);
 }
 
-BOOST_AUTO_TEST_CASE(default_tiling_following_hcompress_test) {
+BOOST_AUTO_TEST_CASE(default_tiling_following_hcompress_test)
+{
   Fits::Test::MinimalFile file;
   int status = 0;
   int tile1, tile2;

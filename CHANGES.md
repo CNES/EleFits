@@ -5,6 +5,8 @@
 ### Bug fixes
 
 * `parseAll()` threw when parsing long string user-defined keywords
+* Row count-based `Column` constructors accept `int` in addition to `long`
+* Typo: `Position::emtpy()` renamed as `Position::empty()`
 
 ### Breaking changes (with backward compatibility aliases)
 

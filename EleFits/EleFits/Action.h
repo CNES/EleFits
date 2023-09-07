@@ -53,18 +53,16 @@ public:
 
   /**
    * @brief Method called just after accessing an HDU for the first time.
-   * 
-   * @warning Created HDUs are not considered, but copied HDUs are.
    */
   virtual void accessed(const Hdu&) {}
 
-  // FIXME copying() applies to the source HDU and copied() to the new HDU?
-  // E.g. copying() would call accessed() while copied() would call created()
+  /**
+   * @brief Method called just after copying an HDU.
+   */
+  virtual void copied(const Hdu&) {}
 
   /**
    * @brief Method called just after creating an HDU.
-   * 
-   * @warning Copied HDUs are not considered.
    */
   virtual void created(const Hdu&) {}
 

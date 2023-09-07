@@ -16,7 +16,8 @@ template <typename... TActions>
 MefFile::MefFile(const std::string& filename, FileMode permission, TActions&&... actions) :
     FitsFile(filename, permission), // FIXME create Primary after strategy is set?
     m_hdus(std::max(1L, Cfitsio::HduAccess::count(m_fptr))), // 1 for create, count() for open
-    m_strategy() {
+    m_strategy()
+{
   if (m_permission != FileMode::Read) {
     strategy(CiteEleFits()); // FIXME document
   }
@@ -28,16 +29,19 @@ MefFile::MefFile(const std::string& filename, FileMode permission, TActions&&...
   }
 }
 
-const Strategy& MefFile::strategy() const {
+const Strategy& MefFile::strategy() const
+{
   return m_strategy;
 }
 
-Strategy& MefFile::strategy() {
+Strategy& MefFile::strategy()
+{
   return m_strategy;
 }
 
 template <class T>
-const T& MefFile::access(long index) {
+const T& MefFile::access(long index)
+{
   if (index < 0) { // Backward indexing
     index += hdu_count();
   }
@@ -58,13 +62,15 @@ const T& MefFile::access(long index) {
 }
 
 template <class T>
-const T& MefFile::find(const std::string& name, long version) {
+const T& MefFile::find(const std::string& name, long version)
+{
   Cfitsio::HduAccess::goto_name(m_fptr, name, version, HduCategory::forClass<T>());
   return access<T>(Cfitsio::HduAccess::current_index(m_fptr) - 1); // -1 because CFITSIO index is 1-based
 }
 
 template <class T>
-const T& MefFile::access(const std::string& name, long version) {
+const T& MefFile::access(const std::string& name, long version)
+{
   const auto category = HduCategory::forClass<T>();
   const Hdu* hdu_ptr = nullptr;
   for (long i = 0; i < hdu_count(); ++i) {
@@ -87,18 +93,20 @@ const T& MefFile::access(const std::string& name, long version) {
 }
 
 template <typename T>
-HduSelector<T> MefFile::filter(const HduFilter& filter) {
+HduSelector<T> MefFile::filter(const HduFilter& filter)
+{
   return {*this, filter * HduCategory::forClass<T>()};
 }
 
 template <typename... TActions>
-void MefFile::strategy(TActions&&... actions) {
+void MefFile::strategy(TActions&&... actions)
+{
   m_strategy.append(std::forward<TActions>(actions)...);
 }
 
 template <typename T>
-const T& MefFile::append(const T& hdu) {
-
+const T& MefFile::append(const T& hdu)
+{
   const auto index = m_hdus.size();
 
   if (hdu.matches(HduCategory::Bintable)) {
@@ -128,13 +136,14 @@ const T& MefFile::append(const T& hdu) {
     }
   }
 
-  const auto& copied = access<T>(index);
-  m_strategy.accessed(copied); // FIXME is it access or creation?
-  return copied;
+  const auto& copy = access<T>(index);
+  m_strategy.copied(copy);
+  return copy;
 }
 
 template <typename T>
-const ImageHdu& MefFile::append_image_header(const std::string& name, const RecordSeq& records) {
+const ImageHdu& MefFile::append_image_header(const std::string& name, const RecordSeq& records)
+{
   Cfitsio::HduAccess::init_image<T, 0>(m_fptr, name, {});
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created)); // FIXME factorize
@@ -147,8 +156,8 @@ const ImageHdu& MefFile::append_image_header(const std::string& name, const Reco
 }
 
 template <typename T, long N>
-const ImageHdu&
-MefFile::append_null_image(const std::string& name, const RecordSeq& records, const Position<N>& shape) {
+const ImageHdu& MefFile::append_null_image(const std::string& name, const RecordSeq& records, const Position<N>& shape)
+{
   const auto index = m_hdus.size();
   Position<-1> dynamic_shape(shape.begin(), shape.end());
   ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamic_shape, nullptr};
@@ -181,7 +190,8 @@ MefFile::append_null_image(const std::string& name, const RecordSeq& records, co
 }
 
 template <typename TRaster>
-const ImageHdu& MefFile::append_image(const std::string& name, const RecordSeq& records, const TRaster& raster) {
+const ImageHdu& MefFile::append_image(const std::string& name, const RecordSeq& records, const TRaster& raster)
+{
   const auto index = m_hdus.size();
   using T = std::decay_t<typename TRaster::Value>;
   Position<-1> dynamic_shape(raster.shape().begin(), raster.shape().end());
@@ -201,7 +211,8 @@ const ImageHdu& MefFile::append_image(const std::string& name, const RecordSeq& 
 
 template <typename... TInfos>
 const BintableHdu&
-MefFile::append_bintable_header(const std::string& name, const RecordSeq& records, const TInfos&... infos) {
+MefFile::append_bintable_header(const std::string& name, const RecordSeq& records, const TInfos&... infos)
+{
   Cfitsio::HduAccess::init_bintable(m_fptr, name, infos...);
   const auto index = m_hdus.size();
   m_hdus.push_back(std::make_unique<BintableHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -212,11 +223,9 @@ MefFile::append_bintable_header(const std::string& name, const RecordSeq& record
 }
 
 template <typename... TInfos>
-const BintableHdu& MefFile::append_null_bintable(
-    const std::string& name,
-    const RecordSeq& records,
-    long row_count,
-    const TInfos&... infos) {
+const BintableHdu&
+MefFile::append_null_bintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos)
+{
   const auto& hdu = append_bintable_header(name, records, infos...);
 
   int status = 0;
@@ -232,15 +241,16 @@ const BintableHdu& MefFile::append_null_bintable(
 
 template <typename... TColumns>
 const BintableHdu&
-MefFile::append_bintable(const std::string& name, const RecordSeq& records, const TColumns&... columns) {
+MefFile::append_bintable(const std::string& name, const RecordSeq& records, const TColumns&... columns)
+{
   const auto& hdu = append_bintable_header(name, records, columns.info()...);
   hdu.columns().write_n(std::forward_as_tuple(columns...)); // FIXME rm forwarding => should accept single column
   return hdu;
 }
 
 template <typename TColumns, std::size_t Size>
-const BintableHdu&
-MefFile::append_bintable(const std::string& name, const RecordSeq& records, const TColumns& columns) {
+const BintableHdu& MefFile::append_bintable(const std::string& name, const RecordSeq& records, const TColumns& columns)
+{
   Cfitsio::HduAccess::assign_bintable<TColumns, Size>(m_fptr, name,
                                                       columns); // FIXME doesn't check for column size
   const auto index = m_hdus.size();
@@ -252,7 +262,8 @@ MefFile::append_bintable(const std::string& name, const RecordSeq& records, cons
   // FIXME use append_bintable(name, records, columns...) or inverse dependency
 }
 
-void MefFile::remove(long index) {
+void MefFile::remove(long index)
+{
   if (index == 0) {
     primary() = access<ImageHdu>(1);
     remove(1);

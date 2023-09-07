@@ -106,6 +106,16 @@ public:
   }
 
   /**
+   * @copydoc Action::copied
+   */
+  void copied(const Hdu& hdu)
+  {
+    for (auto& a : m_actions) {
+      a->copied(hdu);
+    }
+  }
+
+  /**
    * @copydoc Action::created
    */
   void created(const Hdu& hdu)
