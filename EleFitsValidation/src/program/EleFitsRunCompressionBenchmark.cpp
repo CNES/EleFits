@@ -27,7 +27,8 @@ using namespace Euclid;
 static Elements::Logging logger = Elements::Logging::getLogger("RunCompressionBenchmark");
 
 template <typename T>
-std::string join(const std::vector<T>& values, const std::string& sep = ",") {
+std::string join(const std::vector<T>& values, const std::string& sep = ",")
+{
   const auto begin = values.begin() + 1; // values[0] is used as initial value of accumulator
   const auto end = values.end();
   const auto init = std::to_string(values[0]);
@@ -37,7 +38,8 @@ std::string join(const std::vector<T>& values, const std::string& sep = ",") {
 }
 
 template <typename T>
-std::string join_string(const std::vector<T>& values, const std::string& sep = ",") {
+std::string join_string(const std::vector<T>& values, const std::string& sep = ",")
+{
   const auto begin = values.begin() + 1; // values[0] is used as initial value of accumulator
   const auto end = values.end();
   const auto init = values[0];
@@ -46,13 +48,14 @@ std::string join_string(const std::vector<T>& values, const std::string& sep = "
   });
 }
 
-int read_bitpix(const Fits::ImageHdu& hdu) {
+int read_bitpix(const Fits::ImageHdu& hdu)
+{
   ELEFITS_FOREACH_RASTER_TYPE(IF_TYPEID_MATCHES_RETURN_BITPIX)
   return 0;
 }
 
-std::string read_algo_name(const Fits::ImageHdu& hdu) {
-
+std::string read_algo_name(const Fits::ImageHdu& hdu)
+{
   if (not hdu.is_compressed()) {
     return "NONE";
   }
@@ -83,18 +86,19 @@ std::string read_algo_name(const Fits::ImageHdu& hdu) {
   return "Unknown";
 }
 
-void set_strategy(Fits::MefFile& g, const std::string& test_case, bool lossy) {
-
+void set_strategy(Fits::MefFile& g, const std::string& test_case, bool lossy)
+{
   Fits::Quantization q(lossy ? Fits::Tile::rms / 16 : 0);
   Fits::Scaling s(lossy ? Fits::Tile::rms * 2.5 : 0);
   Fits::Plio plio(Fits::Tile::rowwise(), q);
   Fits::HCompress hc(Fits::Tile::rowwise(16), q, s);
+  auto hcInts = Fits::CompressInts<Fits::HCompress>(Fits::Tile::rowwise(16), Fits::Quantization(0), Fits::Scaling(0));
   Fits::Rice rice(Fits::Tile::rowwise(), q);
   Fits::ShuffledGzip sgzip(Fits::Tile::rowwise(), q);
   Fits::Gzip gzip(Fits::Tile::rowwise(), q);
 
   if (test_case == "AUTO") {
-    g.strategy(lossy ? Fits::CompressAuto(Fits::CompressionType::Lossy) : Fits::CompressAuto());
+    g.strategy(lossy ? Fits::CompressAuto(Fits::CompressionType::LosslessInts) : Fits::CompressAuto());
   } else if (test_case == "FULL") {
     g.strategy(std::move(plio), std::move(hc), std::move(rice), std::move(sgzip));
   } else if (test_case == "GZIP") {
@@ -104,7 +108,11 @@ void set_strategy(Fits::MefFile& g, const std::string& test_case, bool lossy) {
   } else if (test_case == "RICE") {
     g.strategy(std::move(rice), std::move(sgzip));
   } else if (test_case == "HCOMPRESS") {
-    g.strategy(std::move(hc), std::move(sgzip));
+    if (lossy) {
+      g.strategy(std::move(hcInts), std::move(hc), std::move(sgzip));
+    } else {
+      g.strategy(std::move(hc), std::move(sgzip));
+    }
   } else if (test_case == "PLIO") {
     g.strategy(std::move(plio), std::move(sgzip));
   } else if (test_case != "NONE") {
@@ -116,10 +124,11 @@ void set_strategy(Fits::MefFile& g, const std::string& test_case, bool lossy) {
  * The program.
  */
 class EleFitsCompressionExample : public Elements::Program {
-
 public:
+
   // program options:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
     Fits::ProgramOptions options("Compress a FITS file using given strategy.");
     options.positional("input", value<std::string>(), "Input file");
     options.positional("output", value<std::string>()->default_value("/tmp/compressionBenchmark.fits"), "Output file");
@@ -140,8 +149,8 @@ public:
     return options.as_pair();
   }
 
-  ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
-
+  ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
+  {
     const bool ext_gzip = args["extGZIP"].as<bool>();
     const auto input = args["input"].as<std::string>();
     auto output = args["output"].as<std::string>();
@@ -211,7 +220,6 @@ public:
     logger.info("Compressing file...");
     const auto hdu_count = f.hdu_count();
     for (const auto& hdu : f) {
-
       long bitpix;
       std::string algo;
       long hdu_size;
