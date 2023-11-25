@@ -109,7 +109,7 @@ cd "${build_dir}"
 cd "${build_dir}"
 git clone https://github.com/astrorama/Elements.git
 cd Elements
-git checkout 5.14.0
+git checkout 6.2.1
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
 make -j "${parallel_build}"
@@ -117,7 +117,7 @@ make install
 
 
 cd "${build_dir}"
-git clone -b release-4.0 https://github.com/CNES/EleFits.git
+git clone -b release-5.3 https://github.com/CNES/EleFits.git
 cd EleFits
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_PREFIX_PATH=/usr/local ..

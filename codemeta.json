@@ -6,7 +6,7 @@
     "datePublished": "2021-10-28",
     "issueTracker": "https://github.com/CNES/EleFits/issues",
     "name": "EleFits",
-    "version": "5.0.0",
+    "version": "5.3.0",
     "identifier": "10.24400/815952/elefits",
     "description": "EleFits is a modern C++ package to read and write Fits files which focuses on safety, user-friendliness, and performance.",
     "applicationCategory": "Astronomy",
