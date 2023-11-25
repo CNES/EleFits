@@ -24,7 +24,7 @@ void check_index_to_position(long index, const Position<-1>& shape, const Positi
 
 BOOST_AUTO_TEST_CASE(index_to_position_1d_test)
 {
-  for (long i = 0; i <= 1024; ++i) { // Including out-of-bounds
+  for (long i = 0; i < 1024; ++i) {
     check_index_to_position(i, {1024}, {i});
   }
 }
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(index_to_position_2d_test)
   check_index_to_position(0, {1024, 1024}, {0, 0});
   check_index_to_position(1023, {1024, 1024}, {1023, 0});
   check_index_to_position(1024, {1024, 1024}, {0, 1});
-  check_index_to_position(1024 * 1024, {1024, 1024}, {0, 1024});
+  check_index_to_position(1024 * 1024, {1024, 1024}, {0, 0}); // Cycle
 }
 
 template <typename T>
@@ -47,7 +47,7 @@ void check_adaptive_tiling(const Position<-1>& shape)
     BOOST_TEST((algo.tiling() == shape || algo.tiling() == Tile::whole()));
   } else {
     BOOST_TEST(shapeSize(algo.tiling()) * sizeof(T) >= 1024 * 1024);
-    long dim = 6;
+    std::size_t dim = 6;
     for (std::size_t i = 0; i < shape.size(); ++i) {
       const auto length = algo.tiling()[i];
       if (i < dim && length != shape[i]) {
