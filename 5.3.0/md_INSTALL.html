@@ -110,8 +110,8 @@ EDEN users</h2>
 Non-EDEN users</h2>
 <h3><a class="anchor" id="autotoc_md22"></a>
 TL;DR</h3>
-<p >Download and run <a href="https://raw.githubusercontent.com/CNES/EleFits/5.0.0/install.sh">the installation script</a>:</p>
-<div class="fragment"><div class="line">wget https://raw.githubusercontent.com/CNES/EleFits/5.0.0/install.sh</div>
+<p >Download and run <a href="https://raw.githubusercontent.com/CNES/EleFits/5.3.0/install.sh">the installation script</a>:</p>
+<div class="fragment"><div class="line">wget https://raw.githubusercontent.com/CNES/EleFits/5.3.0/install.sh</div>
 <div class="line">chmod +x install.sh</div>
 <div class="line">sudo ./install.sh</div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md23"></a>
@@ -119,14 +119,14 @@ More details</h3>
 <p >In the remaining, we assume that you're putting the source code of Elements and EleFits in some <code>&lt;root&gt;</code> directory.</p>
 <p >You'll first need to get Elements:</p>
 <div class="fragment"><div class="line"><span class="keyword">cd</span> &lt;<span class="keywordtype">root</span>&gt;</div>
-<div class="line"><span class="keyword">git</span> <span class="keyword">clone</span> -<span class="keyword">b</span> 5.14.0 <span class="keyword">https:</span>//<span class="keyword">github.com</span>/<span class="keyword">astrorama</span>/<span class="keyword">Elements.git</span></div>
+<div class="line"><span class="keyword">git</span> <span class="keyword">clone</span> -<span class="keyword">b</span> 6.2.1 <span class="keyword">https:</span>//<span class="keyword">github.com</span>/<span class="keyword">astrorama</span>/<span class="keyword">Elements.git</span></div>
 <div class="line"><span class="keyword">cd</span> <span class="keyword">Elements</span></div>
 <div class="line"><span class="keyword">mkdir</span> <span class="keyword">build</span> ; <span class="keyword">cd</span> <span class="keyword">build</span></div>
 <div class="line"><span class="keyword">cmake</span> -<span class="keyword">DCMAKE_INSTALL_PREFIX</span>=/<span class="keyword">usr</span>/<span class="keyword">local</span> ..</div>
 <div class="line"><span class="keyword">sudo</span> <span class="keyword">make</span> <span class="keyword">install</span></div>
 </div><!-- fragment --><p >Finally, install EleFits the same way:</p>
 <div class="fragment"><div class="line"><span class="keyword">cd</span> &lt;<span class="keywordtype">root</span>&gt;</div>
-<div class="line"><span class="keyword">git</span> <span class="keyword">clone</span> -<span class="keyword">b</span> 5.0.0 <span class="keyword">https:</span>//<span class="keyword">github.com</span>/<span class="keyword">cnes</span>/<span class="keyword">EleFits.git</span></div>
+<div class="line"><span class="keyword">git</span> <span class="keyword">clone</span> -<span class="keyword">b</span> 5.3.0 <span class="keyword">https:</span>//<span class="keyword">github.com</span>/<span class="keyword">cnes</span>/<span class="keyword">EleFits.git</span></div>
 <div class="line"><span class="keyword">cd</span> <span class="keyword">EleFits</span></div>
 <div class="line"><span class="keyword">mkdir</span> <span class="keyword">build</span> ; <span class="keyword">cd</span> <span class="keyword">build</span></div>
 <div class="line"><span class="keyword">cmake</span> -<span class="keyword">DCMAKE_INSTALL_PREFIX</span>=/<span class="keyword">usr</span>/<span class="keyword">local</span> -<span class="keyword">DCMAKE_PREFIX_PATH</span>=/<span class="keyword">usr</span>/<span class="keyword">local</span> ..</div>
@@ -163,7 +163,7 @@ CMake project</h2>
 <div class="line"><span class="keyword">target_link_libraries</span>(&lt;<span class="keywordtype">exe_name</span>&gt; <span class="keyword">EleFits</span>)</div>
 </div><!-- fragment --><p >The <code>find_package</code> command expects parent folder of the file <code>FindEleFits.cmake</code> to be in the <code>CMAKE_MODULE_PATH</code>. For now, this file is located in the sources of EleFits, in <code>cmake/modules</code> (we'd like it to be installed in a more standard location in some future version). To work with the proposed <code>CMakeLists.txt</code>, it should be copied inside your project:</p>
 <div class="fragment"><div class="line">cd &lt;root&gt;/&lt;project_name&gt;</div>
-<div class="line">wget https://raw.githubusercontent.com/CNES/EleFits/5.0.0/cmake/modules/FindEleFits.cmake -P cmake/modules</div>
+<div class="line">wget https://raw.githubusercontent.com/CNES/EleFits/5.3.0/cmake/modules/FindEleFits.cmake -P cmake/modules</div>
 <div class="line">mkdir build ; cd build</div>
 <div class="line">cmake ..</div>
 <div class="line">make</div>
