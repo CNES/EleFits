@@ -9,6 +9,20 @@ namespace Fits {
 \tableofcontents
 
 
+\section compression-tldr TL;DR
+
+
+To enable the compression of image HDUs, simply activate one compression strategy, like `CompressAuto` as follows:
+
+\code
+MefFile f(filename, FileMode::Create);
+f.strategy(CompressAuto(CompressionType::LosslessInts)); // Activate compression
+f.append_image("", {}, raster); // Automatically compressed
+\endcode
+
+At read-time, nothing special has to be done.
+
+
 \section compression-intro External vs. Internal Compressions
 
 
@@ -142,7 +156,7 @@ The simplest compression action is made of a single compression algorithm, `Comp
 which consists in applying the same compression algorithm to all HDUs unless impossible.
 A list of such actions can build up a compression strategy which selects the preferred algorithm which works.
 For example, registering `Compress<Plio>` and then `Compress<Rice>` will activate PLIO if possible, and Rice otherwise,
-or not comress at all if the HDU is very small.
+or not compress at all if the HDU is very small.
 
 More elaborated actions can be user-defined by extending the base class `CompressionAction`
 (e.g. to use PLIO only for HDUs whose name ends with "MASK").
@@ -179,14 +193,14 @@ This way, compressing and decompressing the file returns the original file.
 
 \code
 # Default: copy the Primary
-EleFitsCompress uncompressed.fits compressed.fits
+EleFitsCompress original.fits compressed.fits
 EleFitsDecompress compressed.fits decompressed.fits
-# decompressed.fits = uncompressed.fits
+# decompressed.fits = original.fits
 
 # Compress the Primary, too
-EleFitsCompress uncompressed.fits compressed.fits --primary
+EleFitsCompress original.fits compressed.fits --primary
 EleFitsDecompress compressed.fits decompressed.fits
-# decompressed.fits = empty Primary + uncompressed.fits
+# decompressed.fits = empty Primary + original.fits
 \endcode
 
 
