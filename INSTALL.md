@@ -34,7 +34,7 @@ You'll first need to get Elements:
 
 ```xml
 cd <root>
-git clone -b 5.14.0 https://github.com/astrorama/Elements.git
+git clone -b 6.2.1 https://github.com/astrorama/Elements.git
 cd Elements
 mkdir build ; cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
