@@ -182,7 +182,7 @@ auto pixel = raster[{3, 14}];
 
 ## Tutorial
 
-The tutorial composed of an example program and [associated documentation](https://cnes.github.io/EleFits/5.3.0/tuto.html) is probably the good entry point for newcomers.
+The tutorial composed of an example program and [associated documentation](https://cnes.github.io/EleFits/5.3.1/tuto.html) is probably the good entry point for newcomers.
 
 ## Installation instructions
 
@@ -190,11 +190,11 @@ See [the dedicated page](INSTALL.md).
 
 ## User documentation
 
-The [User Guide](https://cnes.github.io/EleFits/5.3.0/modules.html) is the main entry point for usage documentation.
+The [User Guide](https://cnes.github.io/EleFits/5.3.1/modules.html) is the main entry point for usage documentation.
 Each so-called documentation module addresses a specific topic to learn how to use EleFits and understand why it is designed the way it is.
 The API documentation of related namespaces, classes and functions is linked at the bottom of each module page.
 
-To go further, many other topics are discussed in the [Related pages](https://cnes.github.io/EleFits/5.3.0/pages.html), as unordered documents.
+To go further, many other topics are discussed in the [Related pages](https://cnes.github.io/EleFits/5.3.1/pages.html), as unordered documents.
 Among others, you'll find there thoughts on CFITSIO, the tutorial, and some design documentation. 
 
 ## Feedbacks
