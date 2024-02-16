@@ -57,20 +57,44 @@ BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable)
   BOOST_TEST(columns_row_count(columns) == static_cast<long>(row_count));
 }
 
-BOOST_FIXTURE_TEST_CASE(append_column_test, Test::TemporaryMefFile)
+void check_insert_column(MefFile& f, long index)
 {
   const Test::SmallTable table;
-  const auto& ext = append_bintable("TABLE", {}, table.name_col, table.radec_col);
+  const auto& ext = f.append_bintable("TABLE", {}, table.name_col, table.radec_col);
   const auto& columns = ext.columns();
   const auto init_size = columns.read_column_count();
   BOOST_TEST(not columns.has("COL"));
-  columns.append_null(ColumnInfo<char>("COL"));
+  if (index == -1) {
+    columns.append_null(ColumnInfo<char>("COL"));
+  } else {
+    columns.insert_null(index, ColumnInfo<char>("COL"));
+  }
   BOOST_TEST(columns.read_column_count() == init_size + 1);
   BOOST_TEST(columns.has("COL"));
+  if (index == -1) {
+    BOOST_TEST(columns.read_index("COL") == init_size);
+  } else {
+    BOOST_TEST(columns.read_index("COL") == index);
+  }
   const auto col = columns.read<char>("COL");
   for (auto e : col) {
-    BOOST_TEST(e == -128); // -BZERO
+    BOOST_TEST(e == -128); // BZERO
   }
+}
+
+BOOST_FIXTURE_TEST_CASE(prepend_column_test, Test::TemporaryMefFile)
+{
+  check_insert_column(*this, 0);
+}
+
+BOOST_FIXTURE_TEST_CASE(insert_column_test, Test::TemporaryMefFile)
+{
+  check_insert_column(*this, 2);
+}
+
+BOOST_FIXTURE_TEST_CASE(append_column_test, Test::TemporaryMefFile)
+{
+  check_insert_column(*this, -1);
 }
 
 BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile)
