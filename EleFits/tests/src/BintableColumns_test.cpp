@@ -231,7 +231,7 @@ void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */)
   BOOST_TEST(status == BAD_BTABLE_FORMAT); // FIXME CFITSIO bug (works with all other types)
 
   /* Tear down */
-  remove(f.filename().c_str());
+  fits_delete_file(fptr, &status);
 }
 
 template <typename T>
