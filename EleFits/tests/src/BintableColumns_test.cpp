@@ -49,14 +49,32 @@ BOOST_AUTO_TEST_SUITE(BintableColumns_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable) {
+BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable)
+{
   const auto row_count = nums.size();
   BOOST_TEST(names.size() == row_count);
   const auto columns = std::make_tuple(num_col, radec_col, name_col, dist_mag_col);
   BOOST_TEST(columns_row_count(columns) == static_cast<long>(row_count));
 }
 
-BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(append_column_test, Test::TemporaryMefFile)
+{
+  const Test::SmallTable table;
+  const auto& ext = append_bintable("TABLE", {}, table.name_col, table.radec_col);
+  const auto& columns = ext.columns();
+  const auto init_size = columns.read_column_count();
+  BOOST_TEST(not columns.has("COL"));
+  columns.append_null(ColumnInfo<char>("COL"));
+  BOOST_TEST(columns.read_column_count() == init_size + 1);
+  BOOST_TEST(columns.has("COL"));
+  const auto col = columns.read<char>("COL");
+  for (auto e : col) {
+    BOOST_TEST(e == -128); // -BZERO
+  }
+}
+
+BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile)
+{
   const Test::SmallTable table;
   const auto init_size = static_cast<long>(table.names.size());
   const auto& ext = append_bintable("TABLE", {}, table.name_col, table.radec_col);
@@ -67,8 +85,8 @@ BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile) {
 }
 
 template <typename T>
-void check_tuple_write_read(const BintableColumns& du, const VecColumn<T>& first, const VecColumn<T>& last) {
-
+void check_tuple_write_read(const BintableColumns& du, const VecColumn<T>& first, const VecColumn<T>& last)
+{
   /* Write */
   const auto row_count = first.row_count();
   du.write_n(last, first);
@@ -99,7 +117,8 @@ template <>
 void check_tuple_write_read<std::string>(
     const BintableColumns& du,
     const VecColumn<std::string>& first,
-    const VecColumn<std::string>& last) {
+    const VecColumn<std::string>& last)
+{
   // FIXME (cannot use RandomVectorColumn)
   (void)du;
   (void)first;
@@ -110,7 +129,8 @@ template <>
 void check_tuple_write_read<std::uint64_t>(
     const BintableColumns& du,
     const VecColumn<std::uint64_t>& first,
-    const VecColumn<std::uint64_t>& last) {
+    const VecColumn<std::uint64_t>& last)
+{
   // FIXME CFITSIO bug, see below
   (void)du;
   (void)first;
@@ -118,8 +138,8 @@ void check_tuple_write_read<std::uint64_t>(
 }
 
 template <typename T>
-void check_array_write_read(const BintableColumns& du) {
-
+void check_array_write_read(const BintableColumns& du)
+{
   /* Generate */
   const long row_count = 10000;
   const long repeat_count = 3;
@@ -150,7 +170,8 @@ void check_array_write_read(const BintableColumns& du) {
 }
 
 template <>
-void check_array_write_read<std::string>(const BintableColumns& du) {
+void check_array_write_read<std::string>(const BintableColumns& du)
+{
   // FIXME (cannot use RandomVectorColumn)
   (void)du;
 }
@@ -159,8 +180,8 @@ void check_array_write_read<std::string>(const BintableColumns& du) {
  * @brief Show CFITSIO bug when inserting a uint64 column.
  */
 template <>
-void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */) {
-
+void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */)
+{
   /* Setup */
   using T = std::uint64_t;
   Test::TemporaryMefFile f;
@@ -190,8 +211,8 @@ void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */) {
 }
 
 template <typename T>
-void check_vector_write_read(const BintableColumns& du) {
-
+void check_vector_write_read(const BintableColumns& du)
+{
   /* Generate */
   const long row_count = 10000;
   const long repeat_count = 3;
@@ -220,27 +241,32 @@ void check_vector_write_read(const BintableColumns& du) {
 }
 
 template <>
-void check_vector_write_read<std::string>(const BintableColumns& du) {
+void check_vector_write_read<std::string>(const BintableColumns& du)
+{
   // FIXME (cannot use RandomVectorColumn)
   (void)du;
 }
 
 template <>
-void check_vector_write_read<std::uint64_t>(const BintableColumns& du) {
+void check_vector_write_read<std::uint64_t>(const BintableColumns& du)
+{
   // FIXME CFITSIO bug, see above
   (void)du;
 }
 
 #define SEQ_WRITE_READ_TEST(type, name) \
-  BOOST_FIXTURE_TEST_CASE(name##_tuple_write_read_test, Test::TestBintable<type>) { \
+  BOOST_FIXTURE_TEST_CASE(name##_tuple_write_read_test, Test::TestBintable<type>) \
+  { \
     check_tuple_write_read<type>(columns, first_column, last_column); \
   } \
-  BOOST_FIXTURE_TEST_CASE(name##_array_write_read_test, Test::TemporaryMefFile) { \
-    const auto& ext = this->append_bintable_header("ARRAY"); \
+  BOOST_FIXTURE_TEST_CASE(name##_array_write_read_test, Test::TemporaryMefFile) \
+  { \
+    const auto& ext = this -> append_bintable_header("ARRAY"); \
     check_array_write_read<type>(ext.columns()); \
   } \
-  BOOST_FIXTURE_TEST_CASE(name##_vector_write_read_test, Test::TemporaryMefFile) { \
-    const auto& ext = this->append_bintable_header("VECTOR"); \
+  BOOST_FIXTURE_TEST_CASE(name##_vector_write_read_test, Test::TemporaryMefFile) \
+  { \
+    const auto& ext = this -> append_bintable_header("VECTOR"); \
     check_vector_write_read<type>(ext.columns()); \
   }
 

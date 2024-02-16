@@ -400,10 +400,7 @@ public:
    * @param info The column info
    */
   template <typename TInfo>
-  void insert_null(long index, const TInfo& info) const
-  {
-    return init(index, info);
-  }
+  void insert_null(long index, const TInfo& info) const;
 
   /**
    * @brief Insert and fill a column.

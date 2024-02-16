@@ -23,33 +23,38 @@ namespace Fits {
 // read_info
 
 template <typename T, long N>
-ColumnInfo<T, N> BintableColumns::read_info(ColumnKey key) const {
+ColumnInfo<T, N> BintableColumns::read_info(ColumnKey key) const
+{
   return Cfitsio::BintableIo::read_column_info<T, N>(m_fptr, key.index(*this) + 1); // 1-based
 }
 
 // read
 
 template <typename T, long N>
-VecColumn<T, N> BintableColumns::read(ColumnKey key) const {
+VecColumn<T, N> BintableColumns::read(ColumnKey key) const
+{
   return read_segment<T, N>({0, -1}, key);
 }
 
 // read_to
 
 template <typename TColumn>
-void BintableColumns::read_to(TColumn& column) const {
+void BintableColumns::read_to(TColumn& column) const
+{
   read_to(column.info().name, column);
 }
 
 template <typename TColumn>
-void BintableColumns::read_to(ColumnKey key, TColumn& column) const {
+void BintableColumns::read_to(ColumnKey key, TColumn& column) const
+{
   read_segment_to({0, -1}, key, column);
 }
 
 // read_segment
 
 template <typename T, long N>
-VecColumn<T, N> BintableColumns::read_segment(const Segment& rows, ColumnKey key) const {
+VecColumn<T, N> BintableColumns::read_segment(const Segment& rows, ColumnKey key) const
+{
   const auto index = key.index(*this);
   auto resolved_rows = rows;
   if (rows.back == -1) {
@@ -63,12 +68,14 @@ VecColumn<T, N> BintableColumns::read_segment(const Segment& rows, ColumnKey key
 // read_segment_to
 
 template <typename TColumn>
-void BintableColumns::read_segment_to(FileMemSegments rows, TColumn& column) const {
+void BintableColumns::read_segment_to(FileMemSegments rows, TColumn& column) const
+{
   read_segment_to(std::move(rows), column.info().name, column);
 }
 
 template <typename TColumn>
-void BintableColumns::read_segment_to(FileMemSegments rows, ColumnKey key, TColumn& column) const {
+void BintableColumns::read_segment_to(FileMemSegments rows, ColumnKey key, TColumn& column) const
+{
   m_touch();
   rows.resolve(read_row_count() - 1, column.row_count() - 1);
   auto slice = column.slice(rows.memory()); // TODO do we need a temporary variable?
@@ -83,7 +90,8 @@ void BintableColumns::read_segment_to(FileMemSegments rows, ColumnKey key, TColu
 // read_n
 
 template <typename TKey, typename... Ts>
-std::tuple<VecColumn<Ts>...> BintableColumns::read_n(const TypedKey<Ts, TKey>&... keys) const {
+std::tuple<VecColumn<Ts>...> BintableColumns::read_n(const TypedKey<Ts, TKey>&... keys) const
+{
   const auto row_count = read_row_count();
   std::tuple<VecColumn<Ts>...> res {VecColumn<Ts>(read_info<Ts>(keys.key), row_count)...};
   read_n_to({ColumnKey(keys.key)...}, res);
@@ -91,7 +99,8 @@ std::tuple<VecColumn<Ts>...> BintableColumns::read_n(const TypedKey<Ts, TKey>&..
 }
 
 template <typename T, long N>
-std::vector<VecColumn<T, N>> BintableColumns::read_n(std::vector<ColumnKey> keys) const {
+std::vector<VecColumn<T, N>> BintableColumns::read_n(std::vector<ColumnKey> keys) const
+{
   const auto row_count = read_row_count();
   std::vector<VecColumn<T, N>> res(keys.size());
   std::transform(keys.begin(), keys.end(), res.begin(), [&](ColumnKey& k) {
@@ -104,7 +113,8 @@ std::vector<VecColumn<T, N>> BintableColumns::read_n(std::vector<ColumnKey> keys
 // read_n_to
 
 template <typename TSeq>
-void BintableColumns::read_n_to(TSeq&& columns) const {
+void BintableColumns::read_n_to(TSeq&& columns) const
+{
   auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
@@ -112,25 +122,28 @@ void BintableColumns::read_n_to(TSeq&& columns) const {
 }
 
 template <typename... TColumns>
-void BintableColumns::read_n_to(TColumns&... columns) const {
+void BintableColumns::read_n_to(TColumns&... columns) const
+{
   read_n_to(std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
-void BintableColumns::read_n_to(std::vector<ColumnKey> keys, TSeq&& columns) const {
+void BintableColumns::read_n_to(std::vector<ColumnKey> keys, TSeq&& columns) const
+{
   read_n_segments_to(0, std::move(keys), std::forward<TSeq>(columns));
 }
 
 template <typename... TColumns>
-void BintableColumns::read_n_to(std::vector<ColumnKey> keys, TColumns&... columns) const {
+void BintableColumns::read_n_to(std::vector<ColumnKey> keys, TColumns&... columns) const
+{
   read_n_to(std::move(keys), std::forward_as_tuple(columns...));
 }
 
 // read_n_segments
 
 template <typename TKey, typename... Ts>
-std::tuple<VecColumn<Ts, 1>...>
-BintableColumns::read_n_segments(Segment rows, const TypedKey<Ts, TKey>&... keys) const {
+std::tuple<VecColumn<Ts, 1>...> BintableColumns::read_n_segments(Segment rows, const TypedKey<Ts, TKey>&... keys) const
+{
   if (rows.back == -1) {
     rows.back = read_row_count() - 1;
   }
@@ -140,7 +153,8 @@ BintableColumns::read_n_segments(Segment rows, const TypedKey<Ts, TKey>&... keys
 }
 
 template <typename T, long N>
-std::vector<VecColumn<T, N>> BintableColumns::read_n_segments(Segment rows, std::vector<ColumnKey> keys) const {
+std::vector<VecColumn<T, N>> BintableColumns::read_n_segments(Segment rows, std::vector<ColumnKey> keys) const
+{
   if (rows.back == -1) {
     rows.back = read_row_count() - 1;
   }
@@ -156,7 +170,8 @@ std::vector<VecColumn<T, N>> BintableColumns::read_n_segments(Segment rows, std:
 // read_n_segments_to
 
 template <typename TSeq>
-void BintableColumns::read_n_segments_to(FileMemSegments rows, TSeq&& columns) const {
+void BintableColumns::read_n_segments_to(FileMemSegments rows, TSeq&& columns) const
+{
   auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
@@ -164,13 +179,15 @@ void BintableColumns::read_n_segments_to(FileMemSegments rows, TSeq&& columns) c
 }
 
 template <typename... TColumns>
-void BintableColumns::read_n_segments_to(FileMemSegments rows, TColumns&... columns) const {
+void BintableColumns::read_n_segments_to(FileMemSegments rows, TColumns&... columns) const
+{
   read_n_segments_to(std::move(rows), {ColumnKey(columns.info().name)...}, columns...);
   // Could forward_as_tuple but would be 1 more indirection for the same amount of lines
 }
 
 template <typename TSeq>
-void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const {
+void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const
+{
   const auto buffer_size = read_buffer_row_count();
   const long row_count = columns_row_count(std::forward<TSeq>(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
@@ -191,22 +208,41 @@ void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<Colum
 }
 
 template <typename... TColumns>
-void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TColumns&... columns)
-    const {
+void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TColumns&... columns) const
+{
   read_n_segments_to(std::move(rows), std::move(keys), std::forward_as_tuple(columns...));
 }
 
 // write
 
 template <typename TColumn>
-void BintableColumns::write(const TColumn& column) const {
+void BintableColumns::write(const TColumn& column) const
+{
   write_segment(0, column);
 }
 
 // init
 
 template <typename TInfo>
-void BintableColumns::init(const TInfo& info, long index) const {
+void BintableColumns::insert_null(long index, const TInfo& info) const
+{
+  m_edit();
+  auto name = Fits::String::to_char_ptr(info.name);
+  auto tform = Fits::String::to_char_ptr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeat_count()));
+  int status = 0;
+  int cfitsio_index = index == -1 ? Cfitsio::BintableIo::column_count(m_fptr) + 1 : index + 1;
+  fits_insert_col(m_fptr, cfitsio_index, name.get(), tform.get(), &status);
+  Cfitsio::CfitsioError::may_throw(status, m_fptr, "Cannot init new column: #" + std::to_string(index));
+  if (info.unit != "") {
+    const Record<std::string> record {"TUNIT" + std::to_string(cfitsio_index), info.unit, "", "physical unit of field"};
+    Cfitsio::HeaderIo::update_record(m_fptr, record);
+  }
+  // TODO to Cfitsio
+}
+
+template <typename TInfo>
+void BintableColumns::init(const TInfo& info, long index) const
+{
   m_edit();
   auto name = Fits::String::to_char_ptr(info.name);
   auto tform = Fits::String::to_char_ptr(Cfitsio::TypeCode<typename TInfo::Value>::tform(info.repeat_count()));
@@ -224,7 +260,8 @@ void BintableColumns::init(const TInfo& info, long index) const {
 // write_segment
 
 template <typename TColumn>
-void BintableColumns::write_segment(FileMemSegments rows, const TColumn& column) const {
+void BintableColumns::write_segment(FileMemSegments rows, const TColumn& column) const
+{
   m_edit();
   rows.resolve(read_row_count() - 1, column.row_count() - 1);
   const auto index = read_index(column.info().name); // FIXME avoid?
@@ -239,17 +276,20 @@ void BintableColumns::write_segment(FileMemSegments rows, const TColumn& column)
 // write_n
 
 template <typename TSeq>
-void BintableColumns::write_n(TSeq&& columns) const {
+void BintableColumns::write_n(TSeq&& columns) const
+{
   write_n_segments(0, std::forward<TSeq>(columns));
 }
 
 template <typename... TColumns>
-void BintableColumns::write_n(const TColumns&... columns) const {
+void BintableColumns::write_n(const TColumns&... columns) const
+{
   write_n(std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
-void BintableColumns::insert_n_null(long index, TSeq&& infos) const {
+void BintableColumns::insert_n_null(long index, TSeq&& infos) const
+{
   m_edit();
   const auto name_vec = seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
     return info.name;
@@ -276,14 +316,16 @@ void BintableColumns::insert_n_null(long index, TSeq&& infos) const {
 }
 
 template <typename... TInfos>
-void BintableColumns::insert_n_null(long index, const TInfos&... infos) const {
+void BintableColumns::insert_n_null(long index, const TInfos&... infos) const
+{
   insert_n_null(index, std::forward_as_tuple(infos...));
 }
 
 // write_n_segments
 
 template <typename TSeq>
-void BintableColumns::write_n_segments(FileMemSegments rows, TSeq&& columns) const {
+void BintableColumns::write_n_segments(FileMemSegments rows, TSeq&& columns) const
+{
   const auto row_count = columns_row_count(std::forward<TSeq>(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
   const long last_mem_row = rows.memory().back;
@@ -302,12 +344,14 @@ void BintableColumns::write_n_segments(FileMemSegments rows, TSeq&& columns) con
 }
 
 template <typename... TColumns>
-void BintableColumns::write_n_segments(FileMemSegments rows, const TColumns&... columns) const {
+void BintableColumns::write_n_segments(FileMemSegments rows, const TColumns&... columns) const
+{
   write_n_segments(std::move(rows), std::forward_as_tuple(columns...));
 }
 
 template <typename TSeq>
-long columns_row_count(TSeq&& columns) {
+long columns_row_count(TSeq&& columns)
+{
   long rows = -1;
   seq_foreach(std::forward<TSeq>(columns), [&](const auto& c) {
     const auto c_rows = c.row_count();

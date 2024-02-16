@@ -1,5 +1,11 @@
 # Change log
 
+## 5.3.1
+
+### Bug fix
+
+* `BintableColumns::insert_null()` was ill-formed
+
 ## 5.3
 
 ### Bug fixes
