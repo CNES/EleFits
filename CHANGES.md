@@ -1,5 +1,11 @@
 # Change log
 
+## 6.0
+
+### Breaking changes
+
+* Rely on Linx for data classes and low level tools
+
 ## 5.4
 
 ### Bug fix

@@ -16,5 +16,5 @@ set(USE_SPHINX OFF
 #                         elements_project(MyProject 1.0 USE Element 3.9)
 #===============================================================================
 
-elements_project(EleFits 5.4 USE Elements 6.2.1
+elements_project(EleFits 6.0 USE Linx 1.0
         DESCRIPTION "A modern C++ API on top of CFITSIO")

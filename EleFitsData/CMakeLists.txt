@@ -13,7 +13,7 @@ elements_subdir(EleFitsData)
 #   For creating a dependency onto an other accessible module
 #         elements_depends_on_subdirs(ElementsKernel)
 #===============================================================================
-elements_depends_on_subdirs(ElementsKernel)
+elements_depends_on_subdirs(ElementsKernel Linx)
 
 #===============================================================================
 # Add the find_package macro (a pure CMake command) here to locate the
@@ -32,8 +32,8 @@ find_package(Boost)
 #                     PUBLIC_HEADERS ElementsExamples)
 #===============================================================================
 elements_add_library(EleFitsData src/lib/*.cpp
-                     INCLUDE_DIRS Boost ElementsKernel
-                     LINK_LIBRARIES Boost ElementsKernel
+                     INCLUDE_DIRS Boost ElementsKernel Linx
+                     LINK_LIBRARIES Boost ElementsKernel Linx
                      PUBLIC_HEADERS EleFitsData)
 
 #===============================================================================
