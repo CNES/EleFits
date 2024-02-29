@@ -38,9 +38,9 @@ public:
    */
   Action() = default;
 
-  ELEFITS_COPYABLE(Action)
-  ELEFITS_MOVABLE(Action)
-  ELEFITS_VIRTUAL_DTOR(Action)
+  LINX_DEFAULT_COPYABLE(Action)
+  LINX_DEFAULT_MOVABLE(Action)
+  LINX_VIRTUAL_DTOR(Action)
 
   /// @group_operations
 
@@ -97,9 +97,9 @@ enum class UpdateChecksums {
 class VerifyChecksums : public Action {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(VerifyChecksums)
-  ELEFITS_COPYABLE(VerifyChecksums)
-  ELEFITS_MOVABLE(VerifyChecksums)
+  LINX_VIRTUAL_DTOR(VerifyChecksums)
+  LINX_DEFAULT_COPYABLE(VerifyChecksums)
+  LINX_DEFAULT_MOVABLE(VerifyChecksums)
 
   /**
    * @brief Constructor.
@@ -168,9 +168,9 @@ private:
 class CiteEleFits : public Action {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(CiteEleFits)
-  ELEFITS_COPYABLE(CiteEleFits)
-  ELEFITS_MOVABLE(CiteEleFits)
+  LINX_VIRTUAL_DTOR(CiteEleFits)
+  LINX_DEFAULT_COPYABLE(CiteEleFits)
+  LINX_DEFAULT_MOVABLE(CiteEleFits)
 
   /**
    * @brief Constructor.

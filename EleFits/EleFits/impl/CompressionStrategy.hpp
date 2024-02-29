@@ -27,7 +27,7 @@ template <typename T>
 bool can_compress(const HCompress& algo, const ImageHdu::Initializer<T>& init)
 {
   const auto& shape = init.shape;
-  if (shapeSize(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
+  if (shape_size(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
     return false;
   }
   return std::is_integral_v<T> || not algo.is_lossless();
@@ -57,7 +57,7 @@ bool can_compress(const Plio&, const ImageHdu::Initializer<T>& init)
     }
 
     // Max from data
-    const auto max = *std::max_element(init.data, init.data + shapeSize(init.shape));
+    const auto max = *std::max_element(init.data, init.data + shape_size(init.shape));
     return max < (T(1) << 24);
   }
 
@@ -70,7 +70,7 @@ TAlgo& adapt_tiling(TAlgo& algo, const ImageHdu::Initializer<T>& init)
   static constexpr long min_size = 1024 * 1024 / sizeof(T);
 
   // Small image
-  if (shapeSize(init.shape) <= min_size) {
+  if (shape_size(init.shape) <= min_size) {
     return algo.tiling(Tile::whole());
   }
 
@@ -133,7 +133,7 @@ std::unique_ptr<TAlgo> Compress<TAlgo>::compression(const ImageHdu::Initializer<
 
   // No compression of data units less than one block long
   static constexpr std::size_t block_size = 2880;
-  if (shapeSize(init.shape) * sizeof(T) <= block_size) {
+  if (shape_size(init.shape) * sizeof(T) <= block_size) {
     return nullptr;
   }
 
@@ -191,7 +191,7 @@ std::unique_ptr<Compress<HCompress>> CompressAuto::hcompress(const ImageHdu::Ini
   }
 
   const auto& shape = init.shape;
-  if (shapeSize(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
+  if (shape_size(shape) < 2 || shape[0] < 4 || shape[1] < 4) {
     return nullptr;
   }
 

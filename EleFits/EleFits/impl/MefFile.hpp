@@ -169,7 +169,7 @@ const ImageHdu& MefFile::append_null_image(const std::string& name, const Record
   hdu.header().write_n(records);
 
   // CFITSIO's fits_write_img_null does not support compression
-  if (shapeSize(shape) != 0) {
+  if (shape_size(shape) != 0) {
     VecRaster<T, N> raster(shape);
     if constexpr (std::is_floating_point_v<T>) {
       std::fill(raster.begin(), raster.end(), std::numeric_limits<T>::quiet_NaN());

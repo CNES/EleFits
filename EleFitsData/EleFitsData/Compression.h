@@ -87,9 +87,9 @@ class Compression {
 public:
 
   explicit Compression() = default;
-  ELEFITS_VIRTUAL_DTOR(Compression)
-  ELEFITS_COPYABLE(Compression)
-  ELEFITS_MOVABLE(Compression)
+  LINX_VIRTUAL_DTOR(Compression)
+  LINX_DEFAULT_COPYABLE(Compression)
+  LINX_DEFAULT_MOVABLE(Compression)
 
   /**
    * @brief Get the tiling.
@@ -132,9 +132,9 @@ template <typename TDerived>
 class AlgoMixin : public Compression {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(AlgoMixin)
-  ELEFITS_COPYABLE(AlgoMixin)
-  ELEFITS_MOVABLE(AlgoMixin)
+  LINX_VIRTUAL_DTOR(AlgoMixin)
+  LINX_DEFAULT_COPYABLE(AlgoMixin)
+  LINX_DEFAULT_MOVABLE(AlgoMixin)
 
   using Compression::tiling;
 
@@ -165,9 +165,9 @@ protected:
 class NoCompression : public AlgoMixin<NoCompression> {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(NoCompression)
-  ELEFITS_COPYABLE(NoCompression)
-  ELEFITS_MOVABLE(NoCompression)
+  LINX_VIRTUAL_DTOR(NoCompression)
+  LINX_DEFAULT_COPYABLE(NoCompression)
+  LINX_DEFAULT_MOVABLE(NoCompression)
 
   /**
    * @brief Constructor.
@@ -198,9 +198,9 @@ public:
 class Gzip : public AlgoMixin<Gzip> {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(Gzip)
-  ELEFITS_COPYABLE(Gzip)
-  ELEFITS_MOVABLE(Gzip)
+  LINX_VIRTUAL_DTOR(Gzip)
+  LINX_DEFAULT_COPYABLE(Gzip)
+  LINX_DEFAULT_MOVABLE(Gzip)
 
   /**
    * @brief Constructor
@@ -219,9 +219,9 @@ class ShuffledGzip : public AlgoMixin<ShuffledGzip> { // FIXME merge with Gzip w
 
 public:
 
-  ELEFITS_VIRTUAL_DTOR(ShuffledGzip)
-  ELEFITS_COPYABLE(ShuffledGzip)
-  ELEFITS_MOVABLE(ShuffledGzip)
+  LINX_VIRTUAL_DTOR(ShuffledGzip)
+  LINX_DEFAULT_COPYABLE(ShuffledGzip)
+  LINX_DEFAULT_MOVABLE(ShuffledGzip)
 
   /**
    * @brief Constructor.
@@ -236,9 +236,9 @@ public:
 class Rice : public AlgoMixin<Rice> {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(Rice)
-  ELEFITS_COPYABLE(Rice)
-  ELEFITS_MOVABLE(Rice)
+  LINX_VIRTUAL_DTOR(Rice)
+  LINX_DEFAULT_COPYABLE(Rice)
+  LINX_DEFAULT_MOVABLE(Rice)
 
   /**
    * @brief Constructor.
@@ -267,9 +267,9 @@ public:
 class HCompress : public AlgoMixin<HCompress> {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(HCompress)
-  ELEFITS_COPYABLE(HCompress)
-  ELEFITS_MOVABLE(HCompress)
+  LINX_VIRTUAL_DTOR(HCompress)
+  LINX_DEFAULT_COPYABLE(HCompress)
+  LINX_DEFAULT_MOVABLE(HCompress)
   /**
    * @brief Constructor.
    */
@@ -322,9 +322,9 @@ private:
 class Plio : public AlgoMixin<Plio> {
 public:
 
-  ELEFITS_VIRTUAL_DTOR(Plio)
-  ELEFITS_COPYABLE(Plio)
-  ELEFITS_MOVABLE(Plio)
+  LINX_VIRTUAL_DTOR(Plio)
+  LINX_DEFAULT_COPYABLE(Plio)
+  LINX_DEFAULT_MOVABLE(Plio)
 
   /**
    * @brief Constructor

@@ -55,13 +55,13 @@ template <typename T, long N, typename TContainer>
 void Column<T, N, TContainer>::reshape(long repeat_count)
 {
   // FIXME check that element_count() % repeat_count = 0, but for strings!
-  auto shape = Position<N>::one();
+  auto shape = Linx::Position<N>::one();
   shape[0] = repeat_count;
   reshape(std::move(shape));
 }
 
 template <typename T, long N, typename TContainer>
-void Column<T, N, TContainer>::reshape(Position<N> shape)
+void Column<T, N, TContainer>::reshape(Linx::Position<N> shape)
 {
   // FIXME check that shape is valid
   m_info.shape = std::move(shape);
@@ -104,15 +104,15 @@ T& Column<T, N, TContainer>::at(long row, long repeat)
 }
 
 template <typename T, long N, typename TContainer>
-const PtrRaster<const T, N> Column<T, N, TContainer>::field(long row) const
+const Linx::PtrRaster<const T, N> Column<T, N, TContainer>::field(long row) const
 {
-  return PtrRaster<const T, N>({m_info.shape}, &at(row));
+  return Linx::PtrRaster<const T, N>({m_info.shape}, &at(row));
 }
 
 template <typename T, long N, typename TContainer>
-PtrRaster<T, N> Column<T, N, TContainer>::field(long row)
+Linx::PtrRaster<T, N> Column<T, N, TContainer>::field(long row)
 {
-  return PtrRaster<T, N>({m_info.shape}, &at(row));
+  return Linx::PtrRaster<T, N>({m_info.shape}, &at(row));
 }
 
 template <typename T, long N, typename TContainer>
@@ -126,16 +126,6 @@ PtrColumn<T, N> Column<T, N, TContainer>::slice(const Segment& rows)
 {
   return PtrColumn<T, N> {info(), rows.size(), &operator()(rows.front)};
 }
-
-#ifndef DECLARE_COLUMN_CLASSES
-#define DECLARE_COLUMN_CLASSES(T, unused) \
-  extern template struct ColumnInfo<T, 1>; \
-  extern template class Column<T, 1, DataContainerHolder<T, T*>>; \
-  extern template class Column<const T, 1, DataContainerHolder<const T, const T*>>; \
-  extern template class Column<T, 1, DataContainerHolder<T, std::vector<T>>>;
-ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_COLUMN_CLASSES)
-#undef DECLARE_COLUMN_CLASSES
-#endif
 
 } // namespace Fits
 } // namespace Euclid

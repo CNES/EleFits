@@ -19,12 +19,14 @@ BOOST_AUTO_TEST_SUITE(MefFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(primary_index_is_consistent_test, Test::TemporaryMefFile)
+{
   const auto& primary = this->primary();
   BOOST_TEST(primary.index() == 0);
 }
 
-BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
+BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile)
+{
   Test::SmallRaster input; // TODO RandomRaster
   const auto& primary = this->primary();
   primary.update_type_shape<float, 2>(input.shape());
@@ -36,7 +38,8 @@ BOOST_FIXTURE_TEST_CASE(primary_resize_test, Test::NewMefFile) {
   std::remove(this->filename().c_str());
 }
 
-BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile)
+{
   BOOST_TEST(this->hdu_count() == 1); // 0 with CFITSIO
   Test::SmallRaster raster;
   const auto& primary = this->primary();
@@ -48,7 +51,8 @@ BOOST_FIXTURE_TEST_CASE(count_test, Test::TemporaryMefFile) {
   BOOST_TEST(this->hdu_count() == 2);
 }
 
-BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
+BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile)
+{
   Test::SmallRaster raster; // TODO RandomRaster
   const auto& ext1 = this->append_image("IMG1", {}, raster);
   BOOST_TEST(ext1.index() == 1);
@@ -66,7 +70,8 @@ BOOST_FIXTURE_TEST_CASE(append_test, Test::NewMefFile) {
   std::remove(this->filename().c_str());
 }
 
-BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile)
+{
   Test::SmallRaster raster;
   this->append_image("IMAGE", {{"KEY", 1}}, raster);
   this->append_image_header("EXT", {});
@@ -79,7 +84,8 @@ BOOST_FIXTURE_TEST_CASE(remove_primary_test, Test::TemporaryMefFile) {
   BOOST_TEST(ext.index() == 1);
 }
 
-BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::TemporaryMefFile)
+{
   const auto& firstly_accessed_primary = this->primary();
   BOOST_CHECK_NO_THROW(firstly_accessed_primary.read_name());
   this->append_null_image<float, 2>("IMG", {}, {});
@@ -87,7 +93,8 @@ BOOST_FIXTURE_TEST_CASE(reaccess_hdu_and_use_previous_reference_test, Test::Temp
   BOOST_TEST(firstly_accessed_primary.read_name() == secondly_accessed_primary.read_name());
 }
 
-BOOST_FIXTURE_TEST_CASE(access_single_named_hdu_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(access_single_named_hdu_test, Test::TemporaryMefFile)
+{
   const std::string extname = "EXT";
   BOOST_CHECK_THROW(this->access<>(extname), FitsError);
   this->append_image_header(extname);
@@ -96,7 +103,8 @@ BOOST_FIXTURE_TEST_CASE(access_single_named_hdu_test, Test::TemporaryMefFile) {
   BOOST_CHECK_THROW(this->access<>(extname), FitsError);
 }
 
-BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile)
+{
   const Position<2> shape {2, 56};
   const ColumnInfo<char, 2> info {"COL", "unit", shape};
   this->append_null_image<char>("IMAGE", {}, shape);
@@ -109,7 +117,8 @@ BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile) {
   BOOST_TEST(this->access<BintableColumns>("TABLE").read_name(0) == info.name);
 }
 
-BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile)
+{
   /* Image */
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& image = this->append_image_header("IMAGE", records);
@@ -151,27 +160,31 @@ BOOST_FIXTURE_TEST_CASE(append_header_test, Test::TemporaryMefFile) {
 }
 
 template <typename T>
-bool is_null(T value) {
+bool is_null(T value)
+{
   return value == T();
 }
 
 template <>
-bool is_null(float value) {
+bool is_null(float value)
+{
   return value != value;
 }
 
 template <>
-bool is_null(double value) {
+bool is_null(double value)
+{
   return value != value;
 }
 
 template <typename T>
-void check_append_zero_image(MefFile& f) {
+void check_append_zero_image(MefFile& f)
+{
   Position<1> shape {10};
   RecordSeq without_blank {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_null_image<T>("ZERO", without_blank, shape);
   BOOST_TEST(ext.read_name() == "ZERO");
-  BOOST_TEST(ext.read_size() == shapeSize(shape));
+  BOOST_TEST(ext.read_size() == shape_size(shape));
   BOOST_TEST(ext.template read_shape<1>() == shape);
   BOOST_TEST(not ext.header().has("BLANK"));
   BOOST_TEST(ext.header().template parse<int>("FOO").value == 3);
@@ -184,8 +197,8 @@ void check_append_zero_image(MefFile& f) {
 }
 
 template <typename T>
-void check_append_null_image(MefFile& f) {
-
+void check_append_null_image(MefFile& f)
+{
   if (std::is_same<T, std::uint64_t>::value) {
     return; // FIXME CFITSIO bug?
   }
@@ -194,7 +207,7 @@ void check_append_null_image(MefFile& f) {
   RecordSeq with_blank {{"BLANK", T(1)}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_null_image<T>("NULL", with_blank, shape);
   BOOST_TEST(ext.read_name() == "NULL");
-  BOOST_TEST(ext.read_size() == shapeSize(shape));
+  BOOST_TEST(ext.read_size() == shape_size(shape));
   BOOST_TEST(ext.template read_shape<1>() == shape);
   BOOST_TEST(ext.header().template parse<int>("NAXIS").value == 1);
   BOOST_TEST(ext.header().template parse<int>("NAXIS1").value == 10);
@@ -209,24 +222,27 @@ void check_append_null_image(MefFile& f) {
 }
 
 template <>
-void check_append_null_image<float>(MefFile&) {
+void check_append_null_image<float>(MefFile&)
+{
   // Cannot use BLANK for float images
 }
 
 template <>
-void check_append_null_image<double>(MefFile&) {
+void check_append_null_image<double>(MefFile&)
+{
   // Cannot use BLANK for double images
 }
 
 template <typename T>
-void check_append_image(MefFile& f) {
+void check_append_image(MefFile& f)
+{
   Position<1> shape {10};
   Test::RandomRaster<T, 1> raster(shape);
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_image("ZERO", records, raster);
   BOOST_TEST(ext.read_name() == "ZERO");
-  BOOST_TEST(ext.read_size() == shapeSize(shape));
-  BOOST_TEST(ext.read_size() == shapeSize(shape));
+  BOOST_TEST(ext.read_size() == shape_size(shape));
+  BOOST_TEST(ext.read_size() == shape_size(shape));
   BOOST_TEST(ext.header().template parse<int>("FOO").value == 3);
   BOOST_TEST(ext.header().template parse<int>("BAR").value == 41);
   const auto output = ext.raster().template read<T, 1>();
@@ -235,20 +251,23 @@ void check_append_image(MefFile& f) {
 }
 
 #define APPEND_IMAGE_TEST(T, name) \
-  BOOST_FIXTURE_TEST_CASE(append_zero_##name##_image_test, Test::TemporaryMefFile) { \
+  BOOST_FIXTURE_TEST_CASE(append_zero_##name##_image_test, Test::TemporaryMefFile) \
+  { \
     check_append_zero_image<T>(*this); \
   } \
-  BOOST_FIXTURE_TEST_CASE(append_null_##name##_image_test, Test::TemporaryMefFile) { \
+  BOOST_FIXTURE_TEST_CASE(append_null_##name##_image_test, Test::TemporaryMefFile) \
+  { \
     check_append_null_image<T>(*this); \
   } \
-  BOOST_FIXTURE_TEST_CASE(append_##name##_image_test, Test::TemporaryMefFile) { \
+  BOOST_FIXTURE_TEST_CASE(append_##name##_image_test, Test::TemporaryMefFile) \
+  { \
     check_append_image<T>(*this); \
   }
 ELEFITS_FOREACH_RASTER_TYPE(APPEND_IMAGE_TEST)
 
 template <typename T>
-void check_append_null_bintable(MefFile& f) {
-
+void check_append_null_bintable(MefFile& f)
+{
   if (std::is_same<T, std::uint64_t>::value) {
     return; // FIXME CFITSIO bug?
   }
@@ -273,12 +292,14 @@ void check_append_null_bintable(MefFile& f) {
 }
 
 #define APPEND_BINTABLE_TEST(T, name) \
-  BOOST_FIXTURE_TEST_CASE(append_null_##name##_bintable_test, Test::TemporaryMefFile) { \
+  BOOST_FIXTURE_TEST_CASE(append_null_##name##_bintable_test, Test::TemporaryMefFile) \
+  { \
     check_append_null_bintable<T>(*this); \
   }
 ELEFITS_FOREACH_RASTER_TYPE(APPEND_BINTABLE_TEST)
 
-BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME split into cases
+BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile)
+{ // FIXME split into cases
 
   Test::TemporaryMefFile file_copy;
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}}; // for images
@@ -370,8 +391,8 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile) { // FIXME spl
   BOOST_TEST(image_copy3.matches(HduCategory::RawImage)); // the copy should now be uncompressed
 }
 
-void check_append_copy(bool zin, bool zout) {
-
+void check_append_copy(bool zin, bool zout)
+{
   VecRaster<float> raster({2881, 1});
   Test::TemporaryMefFile in;
   Test::TemporaryMefFile out;
@@ -402,25 +423,29 @@ void check_append_copy(bool zin, bool zout) {
   BOOST_TEST(blank_copy.raster().read<float>().shape() == raster.shape());
 }
 
-BOOST_AUTO_TEST_CASE(copy_raw_to_raw_test) {
+BOOST_AUTO_TEST_CASE(copy_raw_to_raw_test)
+{
   check_append_copy(false, false);
 }
 
-BOOST_AUTO_TEST_CASE(copy_raw_to_compressed_test) {
+BOOST_AUTO_TEST_CASE(copy_raw_to_compressed_test)
+{
   check_append_copy(false, true);
 }
 
-BOOST_AUTO_TEST_CASE(copy_compressed_to_compressed_test) {
+BOOST_AUTO_TEST_CASE(copy_compressed_to_compressed_test)
+{
   check_append_copy(true, true);
 }
 
-BOOST_AUTO_TEST_CASE(copy_compressed_to_raw_test) {
+BOOST_AUTO_TEST_CASE(copy_compressed_to_raw_test)
+{
   check_append_copy(true, false);
 }
 
 // This tests the is_compressed function from the ImageWrapper
-BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile) {
-
+BOOST_FIXTURE_TEST_CASE(is_compressed_test, Test::TemporaryMefFile)
+{
   Test::RandomRaster<double, 1> raster({2881});
 
   this->strategy(Gzip());

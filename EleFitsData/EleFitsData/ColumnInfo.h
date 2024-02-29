@@ -5,7 +5,7 @@
 #ifndef _ELEFITSDATA_COLUMNINFO_H
 #define _ELEFITSDATA_COLUMNINFO_H
 
-#include "EleFitsData/Position.h"
+#include "Linx/Data/Vector.h" // Position
 
 #include <complex>
 #include <cstdint>
@@ -150,7 +150,7 @@ struct ColumnInfo {
    * The field shape is deduced from the repeat count
    * (first axis' lenght is the repeat count, others are set to 1).
    */
-  ColumnInfo(std::string n = "", std::string u = "", long r = 1) : name(n), unit(u), shape(Position<N>::one())
+  ColumnInfo(std::string n = "", std::string u = "", long r = 1) : name(n), unit(u), shape(Linx::Position<N>::one())
   {
     shape[0] = r;
   }
@@ -163,7 +163,7 @@ struct ColumnInfo {
    * @details
    * The repeat count is deduced from the shape.
    */
-  ColumnInfo(std::string n, std::string u, Position<N> s) : name(n), unit(u), shape(std::move(s)) {}
+  ColumnInfo(std::string n, std::string u, Linx::Position<N> s) : name(n), unit(u), shape(std::move(s)) {}
 
   /**
    * @brief The column name.
@@ -178,7 +178,7 @@ struct ColumnInfo {
   /**
    * @brief The shape of one field.
    */
-  Position<N> shape;
+  Linx::Position<N> shape;
 
   /**
    * @brief Get the repeat count.
@@ -242,7 +242,7 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
 template <typename T, typename... Longs>
 ColumnInfo<T, sizeof...(Longs)> make_column_info(const std::string& name, const std::string& unit, Longs... shape)
 {
-  return {name, unit, Position<sizeof...(Longs)> {shape...}};
+  return {name, unit, Linx::Position<sizeof...(Longs)> {shape...}};
 }
 
 /**

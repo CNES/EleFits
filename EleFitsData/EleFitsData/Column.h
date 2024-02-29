@@ -6,9 +6,8 @@
 #define _ELEFITSDATA_COLUMN_H
 
 #include "EleFitsData/ColumnInfo.h"
-#include "EleFitsData/DataContainer.h"
-#include "EleFitsData/Raster.h" // PtrRaster for multidimensional columns
 #include "EleFitsData/Segment.h"
+#include "Linx/Data/Raster.h" // PtrRaster for multidimensional columns
 
 #include <complex>
 #include <cstdint>
@@ -22,7 +21,7 @@ namespace Fits {
 // Issue with forward declarations: https://github.com/doxygen/doxygen/issues/8177
 
 // Forward declaration for PtrColumn and VecColumn
-template <typename T, long N, typename THolder>
+template <typename T, Linx::Index N, typename THolder>
 class Column;
 
 /// @endcond
@@ -31,15 +30,15 @@ class Column;
  * @ingroup bintable_data_classes
  * @brief `Column` which points to some external data (`THolder` = `T*`).
  */
-template <typename T, long N = 1>
-using PtrColumn = Column<T, N, DataContainerHolder<T, T*>>;
+template <typename T, Linx::Index N = 1>
+using PtrColumn = Column<T, N, Linx::PtrHolder<T>>;
 
 /**
  * @ingroup bintable_data_classes
  * @brief `Column` which owns a data vector (`THolder` = `std::vector<T>`).
  */
-template <typename T, long N = 1>
-using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
+template <typename T, Linx::Index N = 1>
+using VecColumn = Column<T, N, Linx::StdHolder<std::vector<T>>>;
 
 /**
  * @ingroup bintable_data_classes
@@ -65,12 +64,12 @@ using VecColumn = Column<T, N, DataContainerHolder<T, std::vector<T>>>;
  * @see `ColumnInfo` for details on the field properties.
  * @see `make_column()` for creation shortcuts.
  */
-template <typename T, long N, typename THolder>
-class Column : public DataContainer<T, THolder, Column<T, N, THolder>> {
+template <typename T, Linx::Index N, typename THolder = Linx::DefaultHolder<T>>
+class Column : public Linx::DataContainer<T, THolder, Linx::EuclidArithmetic, Column<T, N, THolder>> {
   /**
    * @brief Shortcut for DataContainer.
    */
-  using Base = DataContainer<T, THolder, Column<T, N, THolder>>;
+  using Base = Linx::DataContainer<T, THolder, Linx::EuclidArithmetic, Column<T, N, THolder>>;
 
 public:
 
@@ -82,7 +81,7 @@ public:
   /**
    * @brief The dimension parameter.
    */
-  static constexpr long Dim = N;
+  static constexpr Linx::Index Dim = N;
 
   /**
    * @brief The info type.
@@ -91,9 +90,9 @@ public:
 
   /// @group_construction
 
-  ELEFITS_VIRTUAL_DTOR(Column)
-  ELEFITS_COPYABLE(Column)
-  ELEFITS_MOVABLE(Column)
+  LINX_VIRTUAL_DTOR(Column)
+  LINX_DEFAULT_COPYABLE(Column)
+  LINX_DEFAULT_MOVABLE(Column)
 
   /**
    * @brief Default constructor.
@@ -105,11 +104,11 @@ public:
    * @param info The column metadata
    * @param row_count The row count
    */
-  explicit Column(Info info, long row_count = 0);
+  explicit Column(Info info, Linx::Index row_count = 0);
 
   /// @cond
   /** @brief int overload, to be handled differently! */
-  explicit Column(Info info, int row_count) : Column(std::move(info), long(row_count)) {}
+  explicit Column(Info info, int row_count) : Column(std::move(info), Linx::Index(row_count)) {}
   /// @endcond
 
   /**
@@ -121,11 +120,11 @@ public:
    * `PtrColumn` constructor used to get the **element** count as input instead of the **row count**,
    * which makes a difference for vector columns.
    */
-  explicit Column(Info info, long row_count, T* data);
+  explicit Column(Info info, Linx::Index row_count, T* data);
 
   /// @cond
   /** @brief int overload, to be handled differently! */
-  explicit Column(Info info, int row_count, T* data) : Column(std::move(info), long(row_count), data) {}
+  explicit Column(Info info, int row_count, T* data) : Column(std::move(info), Linx::Index(row_count), data) {}
   /// @endcond
 
   /**
@@ -154,22 +153,22 @@ public:
    * The repeat count must be a divisor of the column size, except for string columns.
    * The resulting field shape will be flat, with the first component = `repeat_count`
    * and the other components = 1.
-   * @see reshape(Position<N>)
+   * @see reshape(Linx::Position<N>)
    */
-  void reshape(long repeat_count = 1);
+  void reshape(Linx::Index repeat_count = 1);
 
   /**
    * @brief Change the field shape.
    * @details
    * The shape size must be a divisor of the column size.
-   * @see reshape(long)
+   * @see reshape(Linx::Index)
    */
-  void reshape(Position<N> shape);
+  void reshape(Linx::Position<N> shape);
 
   /**
    * @brief Number of rows in the column.
    */
-  long row_count() const;
+  Linx::Index row_count() const;
 
   /// @group_elements
 
@@ -186,34 +185,34 @@ public:
    * - `operator()()` gives access to the element at given row and repeat indices;
    * - `at()` additionally perform bound checking and allows for backward (negative) indexing.
    */
-  const T& operator()(long row, long repeat = 0) const;
+  const T& operator()(Linx::Index row, Linx::Index repeat = 0) const;
 
   /**
-   * @copybrief operator()(long,long)const
+   * @copybrief operator()(Linx::Index,Linx::Index)const
    */
-  T& operator()(long row, long repeat = 0);
+  T& operator()(Linx::Index row, Linx::Index repeat = 0);
 
   /**
-   * @copybrief operator()(long,long)const
+   * @copybrief operator()(Linx::Index,Linx::Index)const
    */
-  const T& at(long row, long repeat = 0) const;
+  const T& at(Linx::Index row, Linx::Index repeat = 0) const;
 
   /**
    * @copybrief at()
    */
-  T& at(long row, long repeat = 0);
+  T& at(Linx::Index row, Linx::Index repeat = 0);
 
   /// @group_views
 
   /**
    * @brief Access the field at given row index as a raster.
    */
-  const PtrRaster<const T, N> field(long row) const;
+  const Linx::PtrRaster<const T, N> field(Linx::Index row) const;
 
   /**
-   * @copybrief field(long)const
+   * @copybrief field(Linx::Index)const
    */
-  PtrRaster<T, N> field(long row);
+  Linx::PtrRaster<T, N> field(Linx::Index row);
 
   /**
    * @brief Get a view on contiguous rows.
@@ -230,7 +229,7 @@ public:
   /**
    * @deprecated
    */
-  long rowCount() const
+  Linx::Index rowCount() const
   {
     return row_count();
   }
@@ -238,7 +237,7 @@ public:
   /**
    * @deprecated Name was wrong wrt. the FITS standard
    */
-  [[deprecated("Use field(long)")]] const PtrRaster<const T, N> entry(long row) const
+  [[deprecated("Use field(Linx::Index)")]] const Linx::PtrRaster<const T, N> entry(Linx::Index row) const
   {
     return field(row);
   }
@@ -246,7 +245,7 @@ public:
   /**
    * @deprecated Name was wrong wrt. the FITS standard
    */
-  [[deprecated("Use field(long)")]] PtrRaster<T, N> entry(long row)
+  [[deprecated("Use field(Linx::Index)")]] Linx::PtrRaster<T, N> entry(Linx::Index row)
   {
     return field(row);
   }
@@ -272,16 +271,10 @@ private:
  * \endcode
  */
 template <typename TInfo, typename TContainer>
-Column<
-    typename TContainer::value_type,
-    std::decay_t<TInfo>::Dim,
-    DataContainerHolder<typename TContainer::value_type, TContainer>>
+Column<typename TContainer::value_type, std::decay_t<TInfo>::Dim, Linx::StdHolder<TContainer>>
 make_column(TInfo info, TContainer&& data)
 {
-  return Column<
-      typename TContainer::value_type,
-      std::decay_t<TInfo>::Dim,
-      DataContainerHolder<typename TContainer::value_type, TContainer>> {
+  return Column<typename TContainer::value_type, std::decay_t<TInfo>::Dim, Linx::StdHolder<TContainer>> {
       std::forward<TInfo>(info),
       std::forward<TContainer>(data)};
 }
@@ -291,7 +284,7 @@ make_column(TInfo info, TContainer&& data)
  * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, long row_count, T* data)
+PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, Linx::Index row_count, T* data)
 {
   return PtrColumn<T, std::decay_t<TInfo>::Dim> {std::forward<TInfo>(info), row_count, data};
 }

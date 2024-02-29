@@ -12,22 +12,26 @@ namespace Fits {
 namespace Test {
 
 template <typename TRaster>
-bool SmallRaster::approx(const TRaster& other, double tol) const {
+bool SmallRaster::approx(const TRaster& other, double tol) const
+{
   return raster_approx(*this, other, tol);
 }
 
 template <typename T, long N>
 RandomRaster<T, N>::RandomRaster(Position<N> raster_shape, T min, T max) :
-    VecRaster<T, N>(raster_shape, generate_random_vector<T>(shapeSize(raster_shape), min, max)) {}
+    VecRaster<T, N>(raster_shape, generate_random_vector<T>(shape_size(raster_shape), min, max))
+{}
 
 template <typename T, long N>
 template <typename TRaster>
-bool RandomRaster<T, N>::approx(const TRaster& other, double tol) const {
+bool RandomRaster<T, N>::approx(const TRaster& other, double tol) const
+{
   return raster_approx(*this, other, tol);
 }
 
 template <typename TRaster, typename URaster>
-bool raster_approx(const TRaster& test, const URaster& ref, double tol) {
+bool raster_approx(const TRaster& test, const URaster& ref, double tol)
+{
   if (test.shape() != ref.shape()) {
     return false;
   }

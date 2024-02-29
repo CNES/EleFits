@@ -15,7 +15,8 @@ BOOST_AUTO_TEST_SUITE(ColumnInfo_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_element_count() {
+void check_element_count()
+{
   constexpr long repeat = 17; // Not 1 ;)
   ColumnInfo<T> info {"COL", "unit", repeat};
   BOOST_TEST(info.repeat_count() == repeat);
@@ -27,23 +28,27 @@ void check_element_count() {
 }
 
 #define ELEMENT_COUNT_TEST(T, name) \
-  BOOST_AUTO_TEST_CASE(name##_element_count) { \
+  BOOST_AUTO_TEST_CASE(name##_element_count) \
+  { \
     check_element_count<T>(); \
   }
 
 template <long N>
-void check_repeat_count_from_shape(const Position<N>& shape) {
+void check_repeat_count_from_shape(const Position<N>& shape)
+{
   ColumnInfo<float, N> info("NAME", "unit", shape);
-  BOOST_TEST(info.repeat_count() == shapeSize(shape));
+  BOOST_TEST(info.repeat_count() == shape_size(shape));
 }
 
-BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test) {
+BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test)
+{
   check_repeat_count_from_shape<-1>({1, 2, 3});
   check_repeat_count_from_shape<2>({3, 14});
   check_repeat_count_from_shape<3>({28, 6, 1989});
 }
 
-BOOST_AUTO_TEST_CASE(make_column_info_test) {
+BOOST_AUTO_TEST_CASE(make_column_info_test)
+{
   auto string_info = make_column_info<std::string>("String", "", 6);
   BOOST_TEST((string_info.shape == Position<1> {6}));
   auto scalar_info = make_column_info<int>("Scalar");

@@ -22,7 +22,8 @@ struct Region {
   /**
    * @brief Create a region from a front position and shape.
    */
-  static Region<N> fromShape(Position<N> frontPosition, Position<N> shape) {
+  static Region<N> fromShape(Position<N> frontPosition, Position<N> shape)
+  {
     Region<N> region {frontPosition, frontPosition};
     region.back += shape - 1;
     return region;
@@ -33,29 +34,33 @@ struct Region {
    * @details
    * Front and back bounds along each axis are respectively 0 and -1.
    */
-  static Region<N> whole() {
+  static Region<N> whole()
+  {
     return {Position<N>::zero(), Position<N>::max()};
   }
 
   /**
    * @brief Compute the region shape.
    */
-  Position<N> shape() const {
+  Position<N> shape() const
+  {
     return back - front + 1;
   }
 
   /**
    * @brief Get the number of dimensions.
    */
-  long dimension() const {
+  long dimension() const
+  {
     return front.size();
   }
 
   /**
    * @brief Compute the region size, i.e. number of pixels.
    */
-  long size() const {
-    return shapeSize(shape());
+  long size() const
+  {
+    return shape_size(shape());
   }
 
   /**
@@ -74,7 +79,8 @@ struct Region {
  * @brief Check whether two regions are equal.
  */
 template <long N = 2>
-bool operator==(const Region<N>& lhs, const Region<N>& rhs) {
+bool operator==(const Region<N>& lhs, const Region<N>& rhs)
+{
   return lhs.front == rhs.front && lhs.back == rhs.back;
 }
 
@@ -83,7 +89,8 @@ bool operator==(const Region<N>& lhs, const Region<N>& rhs) {
  * @brief Check whether two regions are different.
  */
 template <long N = 2>
-bool operator!=(const Region<N>& lhs, const Region<N>& rhs) {
+bool operator!=(const Region<N>& lhs, const Region<N>& rhs)
+{
   return lhs.front != rhs.front || lhs.back != rhs.back;
 }
 
@@ -92,7 +99,8 @@ bool operator!=(const Region<N>& lhs, const Region<N>& rhs) {
  * @brief Add a position.
  */
 template <long N = 2>
-Region<N>& operator+=(Region<N>& lhs, const Position<N>& rhs) {
+Region<N>& operator+=(Region<N>& lhs, const Position<N>& rhs)
+{
   lhs.front += rhs;
   lhs.back += rhs;
   return lhs;
@@ -103,7 +111,8 @@ Region<N>& operator+=(Region<N>& lhs, const Position<N>& rhs) {
  * @brief Subtract a position.
  */
 template <long N = 2>
-Region<N>& operator-=(Region<N>& lhs, const Position<N>& rhs) {
+Region<N>& operator-=(Region<N>& lhs, const Position<N>& rhs)
+{
   lhs.front -= rhs;
   lhs.back -= rhs;
   return lhs;
@@ -114,7 +123,8 @@ Region<N>& operator-=(Region<N>& lhs, const Position<N>& rhs) {
  * @brief Add a scalar to each coordinate.
  */
 template <long N = 2>
-Region<N>& operator+=(Region<N>& lhs, long rhs) {
+Region<N>& operator+=(Region<N>& lhs, long rhs)
+{
   lhs.front += rhs;
   lhs.back += rhs;
   return lhs;
@@ -125,7 +135,8 @@ Region<N>& operator+=(Region<N>& lhs, long rhs) {
  * @brief Subtract a scalar to each coordinate.
  */
 template <long N = 2>
-Region<N>& operator-=(Region<N>& lhs, long rhs) {
+Region<N>& operator-=(Region<N>& lhs, long rhs)
+{
   lhs.front -= rhs;
   lhs.back -= rhs;
   return lhs;
@@ -136,7 +147,8 @@ Region<N>& operator-=(Region<N>& lhs, long rhs) {
  * @brief Add 1 to each coordinate.
  */
 template <long N = 2>
-Region<N>& operator++(Region<N>& lhs) {
+Region<N>& operator++(Region<N>& lhs)
+{
   lhs += 1;
   return lhs;
 }
@@ -146,7 +158,8 @@ Region<N>& operator++(Region<N>& lhs) {
  * @brief Subtract 1 to each coordinate.
  */
 template <long N = 2>
-Region<N>& operator--(Region<N>& lhs) {
+Region<N>& operator--(Region<N>& lhs)
+{
   lhs -= 1;
   return lhs;
 }
@@ -156,7 +169,8 @@ Region<N>& operator--(Region<N>& lhs) {
  * @brief Return the current region and then add 1 to each coordinate.
  */
 template <long N = 2>
-Region<N> operator++(Region<N>& lhs, int) {
+Region<N> operator++(Region<N>& lhs, int)
+{
   auto res = lhs;
   ++lhs;
   return res;
@@ -167,7 +181,8 @@ Region<N> operator++(Region<N>& lhs, int) {
  * @brief Return the current region and then subtract 1 to each coordinate.
  */
 template <long N = 2>
-Region<N> operator--(Region<N>& lhs, int) {
+Region<N> operator--(Region<N>& lhs, int)
+{
   auto res = lhs;
   --lhs;
   return res;
@@ -178,7 +193,8 @@ Region<N> operator--(Region<N>& lhs, int) {
  * @brief Identity.
  */
 template <long N = 2>
-Region<N> operator+(const Region<N>& rhs) {
+Region<N> operator+(const Region<N>& rhs)
+{
   return rhs;
 }
 
@@ -187,7 +203,8 @@ Region<N> operator+(const Region<N>& rhs) {
  * @brief Change the sign of each coordinate.
  */
 template <long N = 2>
-Region<N> operator-(const Region<N>& rhs) {
+Region<N> operator-(const Region<N>& rhs)
+{
   return {-rhs.front, -rhs.back};
 }
 
@@ -196,7 +213,8 @@ Region<N> operator-(const Region<N>& rhs) {
  * @brief Add a region and a position.
  */
 template <long N = 2>
-Region<N> operator+(const Region<N>& lhs, const Position<N>& rhs) {
+Region<N> operator+(const Region<N>& lhs, const Position<N>& rhs)
+{
   auto res = lhs;
   res += rhs;
   return res;
@@ -207,7 +225,8 @@ Region<N> operator+(const Region<N>& lhs, const Position<N>& rhs) {
  * @brief Subtract a region and a position.
  */
 template <long N = 2>
-Region<N> operator-(const Region<N>& lhs, const Position<N>& rhs) {
+Region<N> operator-(const Region<N>& lhs, const Position<N>& rhs)
+{
   auto res = lhs;
   res -= rhs;
   return res;
@@ -218,7 +237,8 @@ Region<N> operator-(const Region<N>& lhs, const Position<N>& rhs) {
  * @brief Add a region and a scalar.
  */
 template <long N = 2>
-Region<N> operator+(const Region<N>& lhs, long rhs) {
+Region<N> operator+(const Region<N>& lhs, long rhs)
+{
   auto res = lhs;
   res += rhs;
   return res;
@@ -229,7 +249,8 @@ Region<N> operator+(const Region<N>& lhs, long rhs) {
  * @brief Subtract a region and a scalar.
  */
 template <long N = 2>
-Region<N> operator-(const Region<N>& lhs, long rhs) {
+Region<N> operator-(const Region<N>& lhs, long rhs)
+{
   auto res = lhs;
   res -= rhs;
   return res;
@@ -245,32 +266,37 @@ Region<N> operator-(const Region<N>& lhs, long rhs) {
 template <long N = 2>
 class RegionScreener {
 public:
+
   /**
    * @brief Constructor.
    * @param region The region to be screened
    * @param followers Positions which follow the same moves as the current position
    */
   RegionScreener(const Region<N>& region, const std::vector<Position<N>>& followers = {}) :
-      m_region(region), m_current(region.front), m_fronts(followers), m_followers(followers) {}
+      m_region(region), m_current(region.front), m_fronts(followers), m_followers(followers)
+  {}
 
   /**
    * @brief Get the current position.
    */
-  const Position<N>& current() const {
+  const Position<N>& current() const
+  {
     return m_current;
   }
 
   /**
    * @brief Get the followers positions.
    */
-  const std::vector<Position<N>>& followers() const {
+  const std::vector<Position<N>>& followers() const
+  {
     return m_followers;
   }
 
   /**
    * @brief Reset the current and followers positions to the initial positions.
    */
-  void reset() {
+  void reset()
+  {
     m_current = m_region.front;
     m_followers = m_fronts;
   }
@@ -284,7 +310,8 @@ public:
    * The function follows a modulo arithmetics:
    * `next(back()) = front()`
    */
-  const Position<N>& next() {
+  const Position<N>& next()
+  {
     if (m_current == m_region.back) {
       m_current = m_region.front;
       m_followers = m_fronts;
@@ -308,6 +335,7 @@ public:
   }
 
 private:
+
   const Region<N>& m_region;
   Position<N> m_current;
   std::vector<Position<N>> m_fronts;

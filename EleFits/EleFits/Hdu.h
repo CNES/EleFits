@@ -85,7 +85,7 @@ public:
   /**
    * @brief Destructor.
    */
-  ELEFITS_VIRTUAL_DTOR(Hdu)
+  LINX_VIRTUAL_DTOR(Hdu)
 
   /// @group_properties
 

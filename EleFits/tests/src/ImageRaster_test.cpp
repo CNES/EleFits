@@ -30,7 +30,8 @@ BOOST_AUTO_TEST_SUITE(ImageRaster_test)
 // write_region (front_position, subraster) => TEST
 
 template <typename T>
-void check_raster_is_read_back() {
+void check_raster_is_read_back()
+{
   Test::RandomRaster<T, 3> input({16, 9, 3});
   Test::TemporarySifFile f;
   const auto& du = f.raster();
@@ -41,18 +42,22 @@ void check_raster_is_read_back() {
 }
 
 template <>
-void check_raster_is_read_back<char>() {} // CFITSIO bug
+void check_raster_is_read_back<char>()
+{} // CFITSIO bug
 
 template <>
-void check_raster_is_read_back<std::uint64_t>() {} // CFITSIO bug
+void check_raster_is_read_back<std::uint64_t>()
+{} // CFITSIO bug
 
 #define RASTER_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_raster_is_read_back_test) { \
+  BOOST_AUTO_TEST_CASE(name##_raster_is_read_back_test) \
+  { \
     check_raster_is_read_back<type>(); \
   }
 
 template <typename T>
-void check_slice3d_is_read_back() {
+void check_slice3d_is_read_back()
+{
   VecRaster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
@@ -75,20 +80,24 @@ void check_slice3d_is_read_back() {
 }
 
 template <>
-void check_slice3d_is_read_back<char>() {} // CFITSIO bug
+void check_slice3d_is_read_back<char>()
+{} // CFITSIO bug
 
 template <>
-void check_slice3d_is_read_back<std::uint64_t>() {} // CFITSIO bug
+void check_slice3d_is_read_back<std::uint64_t>()
+{} // CFITSIO bug
 
 #define SLICE_3D_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_slice_3d_is_read_back_test) { \
+  BOOST_AUTO_TEST_CASE(name##_slice_3d_is_read_back_test) \
+  { \
     check_slice3d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(SLICE_3D_IS_READ_BACK_TEST)
 
 template <typename T>
-void check_slice2d_is_read_back() {
+void check_slice2d_is_read_back()
+{
   VecRaster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
@@ -110,20 +119,24 @@ void check_slice2d_is_read_back() {
 }
 
 template <>
-void check_slice2d_is_read_back<char>() {} // CFITSIO bug
+void check_slice2d_is_read_back<char>()
+{} // CFITSIO bug
 
 template <>
-void check_slice2d_is_read_back<std::uint64_t>() {} // CFITSIO bug
+void check_slice2d_is_read_back<std::uint64_t>()
+{} // CFITSIO bug
 
 #define SLICE_2D_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_slice_2d_is_read_back_test) { \
+  BOOST_AUTO_TEST_CASE(name##_slice_2d_is_read_back_test) \
+  { \
     check_slice2d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(SLICE_2D_IS_READ_BACK_TEST)
 
 template <typename T>
-void check_subraster2d_is_read_back() {
+void check_subraster2d_is_read_back()
+{
   VecRaster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
@@ -145,21 +158,25 @@ void check_subraster2d_is_read_back() {
 }
 
 template <>
-void check_subraster2d_is_read_back<char>() {} // CFITSIO bug
+void check_subraster2d_is_read_back<char>()
+{} // CFITSIO bug
 
 template <>
-void check_subraster2d_is_read_back<std::uint64_t>() {} // CFITSIO bug
+void check_subraster2d_is_read_back<std::uint64_t>()
+{} // CFITSIO bug
 
 #define SUBRASTER_2D_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_subraster_2d_is_read_back_test) { \
+  BOOST_AUTO_TEST_CASE(name##_subraster_2d_is_read_back_test) \
+  { \
     check_subraster2d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(SUBRASTER_2D_IS_READ_BACK_TEST)
 
-BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile) {
+BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile)
+{
   const Position<2> shape {7, 2};
-  const auto c_data = Test::generate_random_vector<std::int16_t>(shapeSize(shape));
+  const auto c_data = Test::generate_random_vector<std::int16_t>(shape_size(shape));
   const PtrRaster<const std::int16_t> c_raster(shape, c_data.data());
   this->write({}, c_raster);
   const auto res = this->raster().read<std::int16_t>();

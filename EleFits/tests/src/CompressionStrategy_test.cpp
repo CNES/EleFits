@@ -43,10 +43,10 @@ void check_adaptive_tiling(const Position<-1>& shape)
   Gzip algo;
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   adapt_tiling(algo, init);
-  if (shapeSize(shape) * sizeof(T) <= 1024 * 1024) {
+  if (shape_size(shape) * sizeof(T) <= 1024 * 1024) {
     BOOST_TEST((algo.tiling() == shape || algo.tiling() == Tile::whole()));
   } else {
-    BOOST_TEST(shapeSize(algo.tiling()) * sizeof(T) >= 1024 * 1024);
+    BOOST_TEST(shape_size(algo.tiling()) * sizeof(T) >= 1024 * 1024);
     std::size_t dim = 6;
     for (std::size_t i = 0; i < shape.size(); ++i) {
       const auto length = algo.tiling()[i];
@@ -101,7 +101,7 @@ auto check_basic_lossless(Position<-1> shape)
   const auto& algo = strategy(init);
   BOOST_TEST(algo.is_lossless());
   bool none = dynamic_cast<const NoCompression*>(&algo);
-  auto bytes = shapeSize(shape) * sizeof(T);
+  auto bytes = shape_size(shape) * sizeof(T);
   BOOST_TEST(none == (bytes <= 2880));
   if (not none && std::is_floating_point_v<T>) {
     BOOST_CHECK_NO_THROW(dynamic_cast<const ShuffledGzip&>(algo));
@@ -121,7 +121,7 @@ void check_basic_lossless_ints(Position<-1> shape)
     BOOST_TEST(algo.is_lossless());
   }
   bool none = dynamic_cast<const NoCompression*>(&algo);
-  auto bytes = shapeSize(shape) * sizeof(T);
+  auto bytes = shape_size(shape) * sizeof(T);
   BOOST_TEST(none == (bytes <= 2880));
 }
 
@@ -132,7 +132,7 @@ void check_basic_lossy(Position<-1> shape)
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
   const auto& algo = strategy(init);
   bool none = dynamic_cast<const NoCompression*>(&algo);
-  auto bytes = shapeSize(shape) * sizeof(T);
+  auto bytes = shape_size(shape) * sizeof(T);
   BOOST_TEST(none == (bytes <= 2880));
 }
 

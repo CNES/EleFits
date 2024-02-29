@@ -94,7 +94,7 @@ public:
 
   // FIXME copyable?
 
-  ELEFITS_VIRTUAL_DTOR(ImageHdu)
+  LINX_VIRTUAL_DTOR(ImageHdu)
 
   /**
    * @brief Copy the contents of another image HDU.

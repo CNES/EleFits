@@ -32,8 +32,8 @@ namespace Fits {
  * When quantization is enabled, dithering is applied by default to all pixels.
  */
 class Quantization {
-
 public:
+
   /**
    * @brief Quantization dithering methods.
    */
@@ -43,9 +43,9 @@ public:
     EveryPixel ///< Dither all pixels
   };
 
-  ELEFITS_VIRTUAL_DTOR(Quantization)
-  ELEFITS_COPYABLE(Quantization)
-  ELEFITS_MOVABLE(Quantization)
+  LINX_VIRTUAL_DTOR(Quantization)
+  LINX_DEFAULT_COPYABLE(Quantization)
+  LINX_DEFAULT_MOVABLE(Quantization)
 
   /**
      * @brief Default, lossless compression constructor.
@@ -100,6 +100,7 @@ public:
   inline bool operator!=(const Quantization& rhs) const;
 
 private:
+
   /**
      * @brief The quantization level.
      */

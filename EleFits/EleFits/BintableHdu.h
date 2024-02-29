@@ -40,7 +40,7 @@ public:
   /**
    * @brief Destructor.
    */
-  ELEFITS_VIRTUAL_DTOR(BintableHdu)
+  LINX_VIRTUAL_DTOR(BintableHdu)
 
   /// @group_properties
 

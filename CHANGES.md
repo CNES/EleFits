@@ -82,7 +82,7 @@
 
 ### Bug fixes
 
-* Function `shapeSize()` was wrong for `N = 0`
+* Function `shape_size()` was wrong for `N = 0`
 * Method `readSize()` of `ImageHdu` and `ImageRaster` was wrong for `N != 2`
 
 ### Dependency change

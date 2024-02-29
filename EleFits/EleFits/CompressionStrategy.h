@@ -47,9 +47,9 @@ public:
   /// @group_construction
 
   CompressionAction() = default;
-  ELEFITS_COPYABLE(CompressionAction)
-  ELEFITS_MOVABLE(CompressionAction)
-  ELEFITS_VIRTUAL_DTOR(CompressionAction)
+  LINX_DEFAULT_COPYABLE(CompressionAction)
+  LINX_DEFAULT_MOVABLE(CompressionAction)
+  LINX_VIRTUAL_DTOR(CompressionAction)
 
   /// @group_operations
 
@@ -76,9 +76,9 @@ public:
   /// @group_construction
 
   CompressionActionMixin() = default;
-  ELEFITS_COPYABLE(CompressionActionMixin)
-  ELEFITS_MOVABLE(CompressionActionMixin)
-  ELEFITS_VIRTUAL_DTOR(CompressionActionMixin)
+  LINX_DEFAULT_COPYABLE(CompressionActionMixin)
+  LINX_DEFAULT_MOVABLE(CompressionActionMixin)
+  LINX_VIRTUAL_DTOR(CompressionActionMixin)
 
   /// @group_operations
 
@@ -112,9 +112,9 @@ public:
   explicit Compress(Ts&&... args) : m_algo(std::forward<Ts>(args)...)
   {}
 
-  ELEFITS_VIRTUAL_DTOR(Compress)
-  ELEFITS_COPYABLE(Compress)
-  ELEFITS_MOVABLE(Compress)
+  LINX_VIRTUAL_DTOR(Compress)
+  LINX_DEFAULT_COPYABLE(Compress)
+  LINX_DEFAULT_MOVABLE(Compress)
 
   /// @group_operations
 
@@ -164,9 +164,9 @@ public:
   explicit CompressInts(Ts&&... args) : m_compress(std::forward<Ts>(args)...)
   {}
 
-  ELEFITS_COPYABLE(CompressInts)
-  ELEFITS_MOVABLE(CompressInts)
-  ELEFITS_VIRTUAL_DTOR(CompressInts)
+  LINX_DEFAULT_COPYABLE(CompressInts)
+  LINX_DEFAULT_MOVABLE(CompressInts)
+  LINX_VIRTUAL_DTOR(CompressInts)
 
   /// @group_operations
 
@@ -222,9 +222,9 @@ public:
   explicit CompressFloats(Ts&&... args) : m_compress(std::forward<Ts>(args)...)
   {}
 
-  ELEFITS_COPYABLE(CompressFloats)
-  ELEFITS_MOVABLE(CompressFloats)
-  ELEFITS_VIRTUAL_DTOR(CompressFloats)
+  LINX_DEFAULT_COPYABLE(CompressFloats)
+  LINX_DEFAULT_MOVABLE(CompressFloats)
+  LINX_VIRTUAL_DTOR(CompressFloats)
 
   /// @group_operations
 

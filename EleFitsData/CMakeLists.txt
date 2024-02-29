@@ -64,14 +64,6 @@ elements_add_unit_test(Compression tests/src/Compression_test.cpp
                      EXECUTABLE EleFitsData_Compression_test
                      LINK_LIBRARIES EleFitsData
                      TYPE Boost)
-elements_add_unit_test(ContiguousContainer tests/src/ContiguousContainer_test.cpp 
-                     EXECUTABLE EleFitsData_ContiguousContainer_test
-                     LINK_LIBRARIES EleFitsData
-                     TYPE Boost)
-elements_add_unit_test(DataContainer tests/src/DataContainer_test.cpp 
-                     EXECUTABLE EleFitsData_DataContainer_test
-                     LINK_LIBRARIES EleFitsData
-                     TYPE Boost)
 elements_add_unit_test(DataUtils tests/src/DataUtils_test.cpp 
                      EXECUTABLE EleFitsData_DataUtils_test
                      LINK_LIBRARIES EleFitsData
@@ -86,18 +78,6 @@ elements_add_unit_test(HduCategory tests/src/HduCategory_test.cpp
                      TYPE Boost)
 elements_add_unit_test(KeywordCategory tests/src/KeywordCategory_test.cpp 
                      EXECUTABLE EleFitsData_KeywordCategory_test
-                     LINK_LIBRARIES EleFitsData
-                     TYPE Boost)
-elements_add_unit_test(Position tests/src/Position_test.cpp 
-                     EXECUTABLE EleFitsData_Position_test
-                     LINK_LIBRARIES EleFitsData
-                     TYPE Boost)
-elements_add_unit_test(PositionIterator tests/src/PositionIterator_test.cpp 
-                     EXECUTABLE EleFitsData_PositionIterator_test
-                     LINK_LIBRARIES EleFitsData
-                     TYPE Boost)
-elements_add_unit_test(Raster tests/src/Raster_test.cpp 
-                     EXECUTABLE EleFitsData_Raster_test
                      LINK_LIBRARIES EleFitsData
                      TYPE Boost)
 elements_add_unit_test(Record tests/src/Record_test.cpp 
@@ -130,10 +110,6 @@ elements_add_unit_test(TestRaster tests/src/TestRaster_test.cpp
                      TYPE Boost)
 elements_add_unit_test(TestRecord tests/src/TestRecord_test.cpp 
                      EXECUTABLE EleFitsData_TestRecord_test
-                     LINK_LIBRARIES EleFitsData
-                     TYPE Boost)
-elements_add_unit_test(VectorArithmetic tests/src/VectorArithmetic_test.cpp 
-                     EXECUTABLE EleFitsData_VectorArithmetic_test
                      LINK_LIBRARIES EleFitsData
                      TYPE Boost)
 
