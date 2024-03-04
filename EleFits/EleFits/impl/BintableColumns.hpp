@@ -7,6 +7,7 @@
 #include "EleCfitsioWrapper/BintableWrapper.h"
 #include "EleCfitsioWrapper/HeaderWrapper.h" // TODO rm when implementation of init(Seq) is in BintableWrapper
 #include "EleFits/BintableColumns.h"
+#include "Linx/Base/SeqUtils.h" // seq_foreach
 
 namespace Euclid {
 namespace Fits {
@@ -15,7 +16,7 @@ namespace Fits {
 //
 // - Flow should go from names to indices: never call read_name() internally, and call read_index() once;
 // - Variadic methods should call TSeq methods through std::forward_as_tuple because TSec is more generic;
-// - TSeq&& should be forwarded as std::forward<TSeq>();
+// - TSeq&& should be forwarded with `LINX_FORWARD()`;
 // - Duplication should be minimal: when there are two ways with unavoidable duplication, choose the minimalist option.
 //
 // Exceptions to these rules must be explicitely justified.
@@ -118,7 +119,7 @@ void BintableColumns::read_n_to(TSeq&& columns) const
   auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
-  read_n_to(std::move(keys), std::forward<TSeq>(columns));
+  read_n_to(std::move(keys), LINX_FORWARD(columns));
 }
 
 template <typename... TColumns>
@@ -130,7 +131,7 @@ void BintableColumns::read_n_to(TColumns&... columns) const
 template <typename TSeq>
 void BintableColumns::read_n_to(std::vector<ColumnKey> keys, TSeq&& columns) const
 {
-  read_n_segments_to(0, std::move(keys), std::forward<TSeq>(columns));
+  read_n_segments_to(0, std::move(keys), LINX_FORWARD(columns));
 }
 
 template <typename... TColumns>
@@ -175,7 +176,7 @@ void BintableColumns::read_n_segments_to(FileMemSegments rows, TSeq&& columns) c
   auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
-  read_n_segments_to(std::move(rows), keys, std::forward<TSeq>(columns));
+  read_n_segments_to(std::move(rows), keys, LINX_FORWARD(columns));
 }
 
 template <typename... TColumns>
@@ -189,7 +190,7 @@ template <typename TSeq>
 void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const
 {
   const auto buffer_size = read_buffer_row_count();
-  const long row_count = columns_row_count(std::forward<TSeq>(columns));
+  const long row_count = columns_row_count(LINX_FORWARD(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
   const long last_mem_row = rows.memory().back;
   for (Segment file = Segment::fromSize(rows.file().front, buffer_size), // FIXME use a FileMemSegments
@@ -200,7 +201,7 @@ void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<Colum
       mem.back = last_mem_row;
     }
     auto it = keys.begin();
-    seq_foreach(std::forward<TSeq>(columns), [&](auto& c) {
+    Linx::seq_foreach(LINX_FORWARD(columns), [&](auto& c) {
       read_segment_to({file.front, mem}, it->index(*this), c);
       ++it;
     });
@@ -278,7 +279,7 @@ void BintableColumns::write_segment(FileMemSegments rows, const TColumn& column)
 template <typename TSeq>
 void BintableColumns::write_n(TSeq&& columns) const
 {
-  write_n_segments(0, std::forward<TSeq>(columns));
+  write_n_segments(0, LINX_FORWARD(columns));
 }
 
 template <typename... TColumns>
@@ -305,7 +306,7 @@ void BintableColumns::insert_n_null(long index, TSeq&& infos) const
   fits_insert_cols(m_fptr, cfitsio_index, names.size(), names.data(), tforms.data(), &status);
   // TODO to Cfitsio
   long i = cfitsio_index;
-  seq_foreach(std::forward<TSeq>(infos), [&](const auto& info) { // FIXME duplication
+  Linx::seq_foreach(LINX_FORWARD(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
       const Record<std::string> record {"TUNIT" + std::to_string(i), info.unit, "", "physical unit of field"};
       Cfitsio::HeaderIo::update_record(m_fptr, record);
@@ -326,7 +327,7 @@ void BintableColumns::insert_n_null(long index, const TInfos&... infos) const
 template <typename TSeq>
 void BintableColumns::write_n_segments(FileMemSegments rows, TSeq&& columns) const
 {
-  const auto row_count = columns_row_count(std::forward<TSeq>(columns));
+  const auto row_count = columns_row_count(LINX_FORWARD(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
   const long last_mem_row = rows.memory().back;
   const auto buffer_size = read_buffer_row_count();
@@ -337,7 +338,7 @@ void BintableColumns::write_n_segments(FileMemSegments rows, TSeq&& columns) con
     if (mem.back > last_mem_row) {
       mem.back = last_mem_row;
     }
-    seq_foreach(std::forward<TSeq>(columns), [&](const auto& c) {
+    Linx::seq_foreach(LINX_FORWARD(columns), [&](const auto& c) {
       write_segment({file.front, mem}, c); // FIXME don't recalculate index
     });
   }
@@ -353,7 +354,7 @@ template <typename TSeq>
 long columns_row_count(TSeq&& columns)
 {
   long rows = -1;
-  seq_foreach(std::forward<TSeq>(columns), [&](const auto& c) {
+  Linx::seq_foreach(LINX_FORWARD(columns), [&](const auto& c) {
     const auto c_rows = c.row_count();
     if (rows == -1) {
       rows = c_rows;

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "EleFitsData/DataUtils.h"
+#include "Linx/Base/SeqUtils.h" // FIXME move tests to Linx
 
 #include <boost/test/unit_test.hpp>
 #include <cstdint>
@@ -65,7 +66,7 @@ void dispatch_sequence(std::vector<T>&& seq, bool is_tuple);
 template <typename TSeq>
 void dispatch_sequence(TSeq&& seq, bool is_tuple)
 {
-  seq_foreach(std::forward<TSeq>(seq), [&](const auto& e) {
+  Linx::seq_foreach(std::forward<TSeq>(seq), [&](const auto& e) { // FIXME to Linx
     (void)e;
     BOOST_TEST(is_tuple);
   });
@@ -145,7 +146,7 @@ BOOST_AUTO_TEST_CASE(tuple_foreach_test)
   auto twice = [](auto& e) {
     e += e;
   };
-  seq_foreach(me, twice);
+  Linx::seq_foreach(me, twice);
   BOOST_TEST(std::get<0>(me) == "MEME");
   BOOST_TEST(std::get<1>(me) > 32);
   BOOST_TEST(std::get<2>(me) > 1.75);
