@@ -66,7 +66,7 @@ void ImageRaster::read_region_to(FileMemRegions<TRaster::Dimension> regions, TRa
 }
 
 template <typename T, long N, typename TContainer>
-void ImageRaster::read_region_to(typename Linx::Raster<T, N, TContainer>::Tile& subraster) const
+void ImageRaster::read_region_to(typename Linx::Raster<T, N, TContainer>::Tile<N>& subraster) const
 {
   read_region_to_subraster(subraster.region().front, subraster);
 }
@@ -84,7 +84,7 @@ void ImageRaster::read_region_to_slice(const Position<N>& front_position, TRaste
 template <typename T, long M, long N, typename TContainer>
 void ImageRaster::read_region_to_subraster(
     const Position<N>& front_position,
-    typename Linx::Raster<T, M, TContainer>::Tile& subraster) const
+    typename Linx::Raster<T, M, TContainer>::Tile<M>& subraster) const
 {
   m_touch();
   Cfitsio::ImageIo::read_region_to(

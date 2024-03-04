@@ -277,9 +277,9 @@ private:
    * @copydetails read_region()
    */
   template <typename T, long M, long N, typename TContainer>
-  void
-  read_region_to_subraster(const Position<N>& front_position, typename Linx::Raster<T, M, TContainer>::Tile& subraster)
-      const; // FIXME rm?
+  void read_region_to_subraster(
+      const Position<N>& front_position,
+      typename Linx::Raster<T, M, TContainer>::Tile<M>& subraster) const; // FIXME rm?
 
   /**
    * @brief Read a region of the data unit into an existing `Patch`.
@@ -292,7 +292,7 @@ private:
    * where `region` would be the subraster region, and `raster` the subraster parent.
    */
   template <typename T, long N, typename TContainer>
-  void read_region_to(typename Linx::Raster<T, N, TContainer>::Tile& subraster) const; // FIXME rm?
+  void read_region_to(typename Linx::Raster<T, N, TContainer>::Tile<N>& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.

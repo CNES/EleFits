@@ -82,7 +82,7 @@ void read_raster_to(fitsfile* fptr, TRaster& destination)
 }
 
 template <typename T, long N, typename TContainer>
-void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile& destination)
+void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile<N>& destination)
 {
   const auto region = Linx::Box<N>::fromShape(Linx::Position<N>::zero(), read_shape<N>(fptr));
   read_region_to(fptr, region, destination);
@@ -125,7 +125,7 @@ template <typename T, long M, long N, typename TContainer>
 void read_region_to(
     fitsfile* fptr,
     const Linx::Box<N>& region,
-    typename Linx::Raster<T, N, TContainer>::Tile& destination)
+    typename Linx::Raster<T, M, TContainer>::Tile<M>& destination)
 {
   int status = 0;
   std::vector<long> step(region.dimension(), 1L);

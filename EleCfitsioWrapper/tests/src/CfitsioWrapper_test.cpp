@@ -18,20 +18,22 @@ BOOST_AUTO_TEST_SUITE(CfitsioWrapper_test)
  * This is just a smoke test to ckeck that we can import the whole Cfitsio namespace
  * and get the necessary classes with a single import.
  */
-BOOST_AUTO_TEST_CASE(smoke_test) {
+BOOST_AUTO_TEST_CASE(smoke_test)
+{
   using namespace Euclid;
   using namespace Cfitsio;
   fitsfile* fptr;
   (void)fptr;
   using Fits::Column;
-  using Fits::Raster;
   using Fits::Record;
+  using Linx::Raster;
 }
 
 /**
  * Check that CFITSIO is not able to read unsigned long records if greater than max(long).
  */
-BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::Fits::Test::MinimalFile)
+{
   /* Write */
   int status = 0;
   unsigned long signed_max = std::numeric_limits<long>::max();
@@ -50,7 +52,8 @@ BOOST_FIXTURE_TEST_CASE(read_ulong_record_learning_test, Euclid::Fits::Test::Min
   BOOST_TEST(output != unsigned_max); // CFITSIO bug
 }
 
-BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::Fits::Test::MinimalFile)
+{
   // Fixture creates file and empty primary of type uchar
   int status = 0;
   long naxes = 1;
@@ -60,7 +63,8 @@ BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::Fits::Test::Min
   BOOST_TEST(status == BAD_BITPIX); // CFITSIO bug
 }
 
-BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::Fits::Test::MinimalFile)
+{
   // Fixture creates file and empty primary of type uchar
   int status = 0;
   long naxes = 1;

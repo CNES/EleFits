@@ -59,10 +59,10 @@ template <typename TRaster>
 void read_raster_to(fitsfile* fptr, TRaster& destination);
 
 /**
- * @brief Read the whole raster of the current image HDU into a pre-existing subraster.
+ * @brief Read the whole raster of the current image HDU into a pre-existing patch.
  */
 template <typename T, long N = 2, typename TContainer>
-void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile& destination);
+void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile<N>& destination);
 
 /**
  * @brief Read a region of the current image HDU.
@@ -76,24 +76,24 @@ Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region);
  * @param destination The destination raster
  * @details
  * Similarly to a blit operation, this method reads the data line-by-line
- * directly in a destination raster.
+ * directly into a destination raster.
  */
 template <typename TRaster, long N>
 void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TRaster& destination);
 
 /**
- * @brief Read a region of the current image HDU into a pre-existing subraster.
+ * @brief Read a region of the current image HDU into a pre-existing patch.
  * @param region The source region
- * @param destination The destination subraster
+ * @param destination The destination patch
  * @details
  * Similarly to a blit operation, this method reads the data line-by-line
- * directly in a destination subraster.
+ * directly in a destination patch.
  */
 template <typename T, long M, long N, typename TContainer>
 void read_region_to(
     fitsfile* fptr,
     const Linx::Box<N>& region,
-    typename Linx::Raster<T, M, TContainer>::Tile& destination);
+    typename Linx::Raster<T, M, TContainer>::Tile<M>& destination);
 
 /**
  * @brief Write a whole raster in the current image HDU.
@@ -110,14 +110,14 @@ template <typename TRaster, long N>
 void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>& destination);
 
 /**
- * @brief Write a subraster into a region of the current image HDU.
- * @param subraster The subraster to be written
- * @param destination The destination position (size is deduced from subraster size)
+ * @brief Write a patch into a region of the current image HDU.
+ * @param patch The patch to be written
+ * @param destination The destination position (size is deduced from patch size)
  */
 template <typename T, long M, long N, typename TContainer> // FIXME where's M?
 void write_region(
     fitsfile* fptr,
-    const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster,
+    const typename Linx::Raster<const T, N, TContainer>::ConstTile& patch,
     const Linx::Position<N>& destination);
 
 } // namespace ImageIo

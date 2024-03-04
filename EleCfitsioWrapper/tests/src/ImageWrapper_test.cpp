@@ -43,20 +43,20 @@ ELEFITS_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)
 BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
 {
   Linx::VecRaster<long, 3> input({3, 4, 5});
-  for (long z = 0; z < input.length<2>(); ++z) {
-    for (long y = 0; y < input.length<1>(); ++y) {
-      for (long x = 0; x < input.length<0>(); ++x) {
+  for (long z = 0; z < input.length(2); ++z) {
+    for (long y = 0; y < input.length(1); ++y) {
+      for (long x = 0; x < input.length(0); ++x) {
         input[{x, y, z}] = x * 100 + y * 10 + z;
       }
     }
   }
   HduAccess::assign_image(fptr, "EXT", input);
-  const auto region = Linx::Box<3>::fromShape({1, 0, 1}, {2, 3, 3});
+  const auto region = Linx::Box<3>::from_shape({1, 0, 1}, {2, 3, 3});
   const auto view = ImageIo::read_region<long, 3>(fptr, region);
   BOOST_TEST(view.shape() == region.shape());
-  for (long z = 0; z < view.length<2>(); ++z) {
-    for (long y = 0; y < view.length<1>(); ++y) {
-      for (long x = 0; x < view.length<0>(); ++x) {
+  for (long z = 0; z < view.length(2); ++z) {
+    for (long y = 0; y < view.length(1); ++y) {
+      for (long x = 0; x < view.length(0); ++x) {
         const auto& v = view[{x, y, z}];
         const auto& i = input[{x + 1, y + 0, z + 1}]; // TODO no hardcoded offsets
         BOOST_TEST(v == i);
@@ -64,9 +64,7 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
     }
   }
   Linx::VecRaster<long, 3> output({3, 4, 5});
-  Linx::VecRaster<long, 3, Fits::DataContainerHolder<long, std::vector<long>>>::Tile dst {
-      output,
-      region}; // TODO don't use the same region
+  Linx::VecRaster<long, 3>::Tile<3> dst {output, region}; // TODO don't use the same region
   ImageIo::read_region_to<long, 3>(fptr, region, dst);
   for (long z = region.front[2]; z <= region.back[2]; ++z) {
     for (long y = region.front[1]; y <= region.back[1]; ++y) {
