@@ -124,7 +124,9 @@ public:
 
   /// @cond
   /** @brief int overload, to be handled differently! */
-  explicit Column(Info info, int row_count, T* data) : Column(std::move(info), Linx::Index(row_count), data) {}
+  [[deprecated]] explicit Column(Info info, int row_count, T* data) :
+      Column(std::move(info), Linx::Index(row_count), data)
+  {}
   /// @endcond
 
   /**
@@ -133,7 +135,14 @@ public:
    * @param args Arguments to be forwarded to the underlying container
    */
   template <typename... Ts>
-  Column(Info info, Ts&&... args);
+  [[deprecated]] Column(Info info, Ts&&... args); // FIXME rm
+
+  /**
+   * @brief Create a column from given range.
+   */
+  template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr>
+  Column(Info info, TRange&& container) : Column(LINX_MOVE(info), container.size(), LINX_FORWARD(container))
+  {}
 
   /// @group_properties
 

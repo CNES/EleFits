@@ -5,9 +5,6 @@
 #ifndef _ELEFITSDATA_RASTER_H
 #define _ELEFITSDATA_RASTER_H
 
-#include "EleFitsData/DataContainer.h"
-#include "EleFitsData/Position.h"
-#include "EleFitsData/Region.h"
 #include "Linx/Data/Raster.h"
 
 #include <complex>
