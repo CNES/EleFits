@@ -77,7 +77,7 @@ void ImageRaster::read_region_to_slice(const Position<N>& front_position, TRaste
   m_touch();
   Cfitsio::ImageIo::read_region_to(
       m_fptr,
-      Region<N>::fromShape(front_position, raster.shape()), // FIXME use front_position in ImageIo
+      Region<N>::from_shape(front_position, raster.shape()), // FIXME use front_position in ImageIo
       raster);
 }
 
@@ -89,7 +89,7 @@ void ImageRaster::read_region_to_subraster(
   m_touch();
   Cfitsio::ImageIo::read_region_to(
       m_fptr,
-      Region<N>::fromShape(front_position, subraster.shape()), // FIXME use front_position in ImageIo
+      Region<N>::from_shape(front_position, subraster.shape()), // FIXME use front_position in ImageIo
       subraster);
   // FIXME move algo here, rely solely on read_region_to(fitsfile, Position, Raster)
 }
@@ -131,7 +131,7 @@ void ImageRaster::write_subraster(
 {
   m_edit();
   int status = 0;
-  auto locus = Region<M>::fromShape(Position<M>::zero(), subraster.shape());
+  auto locus = Region<M>::from_shape(Position<M>::zero(), subraster.shape());
   locus.back[0] = locus.front[0];
   const auto nelem = subraster.shape()[0];
   const auto delta = front_position.template slice<M>();

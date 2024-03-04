@@ -53,16 +53,10 @@ template <typename T, long N = 2>
 Linx::VecRaster<T, N> read_raster(fitsfile* fptr);
 
 /**
- * @brief Read the whole raster of the current image HDU into a pre-existing raster.
+ * @brief Read the whole raster of the current image HDU into a pre-existing raster or patch.
  */
-template <typename TRaster>
-void read_raster_to(fitsfile* fptr, TRaster& destination);
-
-/**
- * @brief Read the whole raster of the current image HDU into a pre-existing patch.
- */
-template <typename T, long N = 2, typename TContainer>
-void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile<N>& destination);
+template <typename TOut>
+void read_raster_to(fitsfile* fptr, TOut& out);
 
 /**
  * @brief Read a region of the current image HDU.
@@ -73,27 +67,13 @@ Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region);
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.
  * @param region The source region
- * @param destination The destination raster
+ * @param out The destination raster or patch
  * @details
  * Similarly to a blit operation, this method reads the data line-by-line
- * directly into a destination raster.
+ * directly into a destination raster or patch.
  */
-template <typename TRaster, long N>
-void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TRaster& destination);
-
-/**
- * @brief Read a region of the current image HDU into a pre-existing patch.
- * @param region The source region
- * @param destination The destination patch
- * @details
- * Similarly to a blit operation, this method reads the data line-by-line
- * directly in a destination patch.
- */
-template <typename T, long M, long N, typename TContainer>
-void read_region_to(
-    fitsfile* fptr,
-    const Linx::Box<N>& region,
-    typename Linx::Raster<T, M, TContainer>::Tile<M>& destination);
+template <long N, typename TOut>
+void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TOut& out);
 
 /**
  * @brief Write a whole raster in the current image HDU.

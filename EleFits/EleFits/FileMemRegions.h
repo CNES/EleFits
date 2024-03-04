@@ -20,8 +20,8 @@ namespace Fits {
  */
 template <long n = 2>
 class FileMemRegions {
-
 public:
+
   /**
    * @brief Create a mapping from an in-file region and an in-memory position.
    * @details
@@ -29,7 +29,8 @@ public:
    * This constructor is not marked explicit, which allows casting from a `Region`.
    */
   FileMemRegions(const Region<n>& fileRegion, const Position<n>& memoryPosition = Position<n>::zero()) :
-      m_file(fileRegion), m_memory(Region<n>::fromShape(memoryPosition, fileRegion.shape())) {
+      m_file(fileRegion), m_memory(Region<n>::from_shape(memoryPosition, fileRegion.shape()))
+  {
     if (m_file.back.isMax()) {
       m_memory.back = Position<n>::zero();
     }
@@ -42,7 +43,8 @@ public:
    * This constructor is not marked explicit, which allows casting from a `Position`.
    */
   FileMemRegions(const Position<n>& filePosition, const Region<n>& memoryRegion = Region<n>::whole()) :
-      m_file(Region<n>::fromShape(filePosition, memoryRegion.shape())), m_memory(memoryRegion) {
+      m_file(Region<n>::from_shape(filePosition, memoryRegion.shape())), m_memory(memoryRegion)
+  {
     if (m_memory.back.isMax()) {
       m_file.back = Position<n>::zero();
     }
@@ -51,21 +53,24 @@ public:
   /**
    * @brief Get the in-file region.
    */
-  const Region<n>& file() const {
+  const Region<n>& file() const
+  {
     return m_file;
   }
 
   /**
    * @brief Get the in-memory region.
    */
-  const Region<n>& memory() const {
+  const Region<n>& memory() const
+  {
     return m_memory;
   }
 
   /**
    * @brief Resolve the unknown (-1) indices, given known in-file and in-memory back positions.
    */
-  void resolve(const Position<n>& fileBack, const Position<n>& memoryBack) {
+  void resolve(const Position<n>& fileBack, const Position<n>& memoryBack)
+  {
     const auto ftom = fileToMemory();
     for (auto fit = m_file.back.begin(),
               fitEnd = m_file.back.end(),
@@ -89,18 +94,21 @@ public:
   /**
    * @brief Compute the translation vector from in-file region to in-memory region.
    */
-  Position<n> fileToMemory() const {
+  Position<n> fileToMemory() const
+  {
     return m_memory.front - m_file.front;
   }
 
   /**
    * @brief Compute the translation vector from in-memory region to in-file region.
    */
-  Position<n> memoryToFile() const {
+  Position<n> memoryToFile() const
+  {
     return m_file.front - m_memory.front;
   }
 
 private:
+
   /**
    * @brief The in-file region.
    */
@@ -117,7 +125,8 @@ private:
  * @brief Create a `FileMemRegions` with in-file position at origin.
  */
 template <long n>
-FileMemRegions<n> makeMemRegion(const Region<n>& memoryRegion) {
+FileMemRegions<n> makeMemRegion(const Region<n>& memoryRegion)
+{
   return FileMemRegions<n>(Position<n>::zero(), memoryRegion);
 }
 
@@ -126,7 +135,8 @@ FileMemRegions<n> makeMemRegion(const Region<n>& memoryRegion) {
  * @brief Create a `FileMemRegions` with whole in-file region.
  */
 template <long n>
-FileMemRegions<n> makeMemRegion(const Position<n>& memoryPosition) {
+FileMemRegions<n> makeMemRegion(const Position<n>& memoryPosition)
+{
   return FileMemRegions<n>(Region<n>::whole(), memoryPosition);
 }
 

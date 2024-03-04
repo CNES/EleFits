@@ -65,10 +65,10 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
   }
   Linx::VecRaster<long, 3> output({3, 4, 5});
   Linx::VecRaster<long, 3>::Tile<3> dst {output, region}; // TODO don't use the same region
-  ImageIo::read_region_to<long, 3>(fptr, region, dst);
-  for (long z = region.front[2]; z <= region.back[2]; ++z) {
-    for (long y = region.front[1]; y <= region.back[1]; ++y) {
-      for (long x = region.front[0]; x <= region.back[0]; ++x) {
+  ImageIo::read_region_to(fptr, region, dst);
+  for (long z = region.front()[2]; z <= region.back()[2]; ++z) {
+    for (long y = region.front()[1]; y <= region.back()[1]; ++y) {
+      for (long x = region.front()[0]; x <= region.back()[0]; ++x) {
         const auto& o = output[{x, y, z}];
         const auto& i = input[{x, y, z}];
         BOOST_TEST(o == i);

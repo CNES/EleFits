@@ -7,6 +7,7 @@
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleCfitsioWrapper/TypeWrapper.h"
+#include "Linx/Data/Tiling.h" // rows
 
 namespace Euclid {
 namespace Cfitsio {
@@ -64,28 +65,12 @@ Linx::VecRaster<T, N> read_raster(fitsfile* fptr)
   return raster;
 }
 
-template <typename TRaster>
-void read_raster_to(fitsfile* fptr, TRaster& destination)
+template <typename TOut>
+void read_raster_to(fitsfile* fptr, TOut& out)
 {
-  int status = 0;
-  const auto size = destination.size();
-  fits_read_img(
-      fptr,
-      TypeCode<std::decay_t<typename TRaster::Value>>::for_image(),
-      1, // Number 1 is a 1-based index (so we read the whole raster here)
-      size,
-      nullptr,
-      destination.data(),
-      nullptr,
-      &status);
-  CfitsioError::may_throw(status, fptr, "Cannot read raster.");
-}
-
-template <typename T, long N, typename TContainer>
-void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile<N>& destination)
-{
-  const auto region = Linx::Box<N>::fromShape(Linx::Position<N>::zero(), read_shape<N>(fptr));
-  read_region_to(fptr, region, destination);
+  static constexpr auto N = TOut::Dimension;
+  const auto region = Linx::Box<N>::from_shape(Linx::Position<N>::zero(), read_shape<N>(fptr));
+  read_region_to(fptr, region, out);
 }
 
 template <typename T, long M, long N>
@@ -96,52 +81,24 @@ Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
   return raster;
 }
 
-template <typename TRaster, long N>
-void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TRaster& raster)
-{
-  int status = 0;
-  const std::size_t dim = region.dimension();
-  Linx::Position<N> front = region.front; // Copy for const-correctness
-  Linx::Position<N> back = region.back; // idem
-  std::vector<long> step(dim, 1);
-  for (std::size_t i = 0; i < dim; ++i) {
-    front[i]++; // CFITSIO is 1-based
-    back[i]++; // idem
-  }
-  fits_read_subset(
-      fptr,
-      TypeCode<std::decay_t<typename TRaster::Value>>::for_image(),
-      front.data(),
-      back.data(),
-      step.data(),
-      nullptr,
-      raster.data(),
-      nullptr,
-      &status);
-  CfitsioError::may_throw(status, fptr, "Cannot read image region.");
-}
-
-template <typename T, long M, long N, typename TContainer>
-void read_region_to(
-    fitsfile* fptr,
-    const Linx::Box<N>& region,
-    typename Linx::Raster<T, M, TContainer>::Tile<M>& destination)
+template <Linx::Index N, typename TOut>
+void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TOut& out)
 {
   int status = 0;
   std::vector<long> step(region.dimension(), 1L);
-  auto delta = region.front() + 1 - destination.domain().front();
-  for (const auto& dst : rows(destination)) {
-    auto front = dst.front() + delta; // FIXME pre-allocate
+  auto delta = region.front() + 1 - out.domain().front(); // FIXME Handle TOut::Dimension > N ?
+  for (auto dst : rows(out)) {
+    auto front = dst.domain().front() + delta; // FIXME pre-allocate
     auto back = front; // FIXME idem
     back[0] += region.length(0) - 1;
     fits_read_subset(
         fptr,
-        TypeCode<T>::for_image(),
+        TypeCode<typename TOut::Value>::for_image(),
         front.data(),
         back.data(),
         step.data(),
         nullptr,
-        &dst[0],
+        &(*dst.begin()),
         nullptr,
         &status);
   }
