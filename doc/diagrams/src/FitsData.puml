@@ -40,7 +40,7 @@ class Position<N> {
 + slice()
 + extend(padding)
 }
-class Region<N> {
+class Box<N> {
 + front
 + back
 + operator+=(position)
@@ -95,9 +95,9 @@ VectorArithmeticMixin <|-- DataContainer
 DataContainer <|-- Position
 DataContainer <|-- Raster
 DataContainer <|-- Column
-Position --* Region
+Position --* Box
 Position -* Raster
-Raster --> Region
+Raster --> Box
 Column *- ColumnInfo
 Column --> Segment
 @enduml

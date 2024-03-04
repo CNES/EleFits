@@ -20,7 +20,8 @@ using namespace Fits;
  * @brief Generate a random scalar column without unit.
  */
 template <typename T>
-VecColumn<T> random_column(const std::string& name, long rows) {
+VecColumn<T> random_column(const std::string& name, long rows)
+{
   return VecColumn<T>({name, "", 1}, Test::generate_random_vector<T>(rows, T(0), T(1)));
 }
 
@@ -29,7 +30,8 @@ VecColumn<T> random_column(const std::string& name, long rows) {
  * @details
  * Random columns of type double ('D') and float ('E') are generated and written.
  */
-void write_bintable(const std::string& filename, long rows) {
+void write_bintable(const std::string& filename, long rows)
+{
   MefFile f(filename, FileMode::Overwrite);
   const auto col1 = random_column<double>("SHE_LENSMC_UPDATED_RA", rows);
   const auto col2 = random_column<double>("SHE_LENSMC_UPDATED_DEC", rows);
@@ -48,7 +50,8 @@ void write_bintable(const std::string& filename, long rows) {
  * We rely on VariantValue, but it would be possible to skip this abstraction and go with raw types
  * using a tuple instead of a vector.
  */
-void write_some_records(const Header& header) {
+void write_some_records(const Header& header)
+{
   std::vector<Record<VariantValue>> records = {
       {"WCSAXES", 2, "", "Number of axes in World Coordinate System"},
       {"CRPIX1", "", "", "Pixel coordinate of reference point"},
@@ -77,7 +80,8 @@ void write_some_records(const Header& header) {
  * @details
  * A random 3D raster is generated and written.
  */
-void write_image(const std::string& filename, const Position<3>& shape) {
+void write_image(const std::string& filename, const Linx::Position<3>& shape)
+{
   MefFile f(filename, FileMode::Overwrite);
   Test::RandomRaster<float, 3> raster(shape, 0.F, 1.F);
   const auto& ext = f.append_image("KAPPA_PATCH", {}, raster); // Named extension
@@ -85,9 +89,10 @@ void write_image(const std::string& filename, const Position<3>& shape) {
 }
 
 class EleFitsGenerate2DMassFiles : public Elements::Program {
-
 public:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
     Euclid::Fits::ProgramOptions options("Generate random 2DMASS-like outputs.");
     options.named("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
     options.named("rows", value<long>()->default_value(10), "Binary table row count");
@@ -97,14 +102,14 @@ public:
     return options.as_pair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
-
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
+  {
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerate2DMassFiles");
 
     const std::string bintable = args["bintable"].as<std::string>();
     const long rows = args["rows"].as<long>();
     const std::string image = args["image"].as<std::string>();
-    const Position<3> shape {args["width"].as<long>(), args["height"].as<long>(), 3};
+    const Linx::Position<3> shape {args["width"].as<long>(), args["height"].as<long>(), 3};
 
     logger.info("Writing binary table...");
     write_bintable(bintable, rows);
@@ -123,7 +128,7 @@ public:
     MefFile i(image, FileMode::Read);
     const auto& ext = i.find<ImageHdu>("KAPPA_PATCH");
     const auto raster = ext.read_raster<float, 3>();
-    const Position<3> center {raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2};
+    const Linx::Position<3> center {raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2};
     logger.info() << "Central pixel = " << raster[center];
 
     logger.info("Reading header...");

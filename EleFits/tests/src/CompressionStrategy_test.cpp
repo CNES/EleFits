@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_SUITE(CompressionStrategy_test)
 
 //-----------------------------------------------------------------------------
 
-void check_index_to_position(long index, const Position<-1>& shape, const Position<-1>& expected)
+void check_index_to_position(long index, const Linx::Position<-1>& shape, const Linx::Position<-1>& expected)
 {
   auto position = unravel_index(index, shape);
   BOOST_TEST(position == expected);
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(index_to_position_2d_test)
 }
 
 template <typename T>
-void check_adaptive_tiling(const Position<-1>& shape)
+void check_adaptive_tiling(const Linx::Position<-1>& shape)
 {
   Gzip algo;
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(adaptive_tiling_test)
  * @brief Whatever the type and shape, check losslessness.
  */
 template <typename T>
-auto check_basic_lossless(Position<-1> shape)
+auto check_basic_lossless(Linx::Position<-1> shape)
 {
   auto strategy = CompressAuto();
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
@@ -112,7 +112,7 @@ auto check_basic_lossless(Position<-1> shape)
  * @brief Whatever the type and shape, check losslessness for integers.
  */
 template <typename T>
-void check_basic_lossless_ints(Position<-1> shape)
+void check_basic_lossless_ints(Linx::Position<-1> shape)
 {
   auto strategy = CompressAuto(CompressionType::LosslessInts);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
@@ -126,7 +126,7 @@ void check_basic_lossless_ints(Position<-1> shape)
 }
 
 template <typename T>
-void check_basic_lossy(Position<-1> shape)
+void check_basic_lossy(Linx::Position<-1> shape)
 {
   auto strategy = CompressAuto(CompressionType::LosslessInts);
   ImageHdu::Initializer<T> init {1, "", {}, shape, nullptr};
@@ -137,7 +137,7 @@ void check_basic_lossy(Position<-1> shape)
 }
 
 template <typename T>
-void check_basic(Position<-1> shape)
+void check_basic(Linx::Position<-1> shape)
 {
   check_basic_lossless<T>(shape);
   check_basic_lossless_ints<T>(shape);
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE(plio_limit_test)
 {
   using T = std::int32_t;
   constexpr T limit = T(1) << 24;
-  Position<-1> shape {2881};
+  Linx::Position<-1> shape {2881};
   Plio algo;
 
   ImageHdu::Initializer<T> minimal {1, "", {}, shape, nullptr};

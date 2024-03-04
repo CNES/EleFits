@@ -64,9 +64,9 @@ const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::update()
   return m_current;
 }
 
-long GameOfLife::count_lives(const Position<2>& p) const
+long GameOfLife::count_lives(const Linx::Position<2>& p) const
 {
-  const Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+  const Linx::Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
   long count = 0;
   for (const auto& n : neighbors) {
     const auto q = p + n;
@@ -77,7 +77,7 @@ long GameOfLife::count_lives(const Position<2>& p) const
   return count;
 }
 
-bool GameOfLife::is_in_domain(const Position<2>& p) const
+bool GameOfLife::is_in_domain(const Linx::Position<2>& p) const
 {
   if (p[0] < 0 || p[0] >= m_width) {
     return false;

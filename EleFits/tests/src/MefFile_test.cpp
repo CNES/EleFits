@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE(access_single_named_hdu_test, Test::TemporaryMefFile)
 
 BOOST_FIXTURE_TEST_CASE(access_data_units_test, Test::TemporaryMefFile)
 {
-  const Position<2> shape {2, 56};
+  const Linx::Position<2> shape {2, 56};
   const ColumnInfo<char, 2> info {"COL", "unit", shape};
   this->append_null_image<char>("IMAGE", {}, shape);
   this->append_bintable_header("TABLE", {}, info);
@@ -180,7 +180,7 @@ bool is_null(double value)
 template <typename T>
 void check_append_zero_image(MefFile& f)
 {
-  Position<1> shape {10};
+  Linx::Position<1> shape {10};
   RecordSeq without_blank {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_null_image<T>("ZERO", without_blank, shape);
   BOOST_TEST(ext.read_name() == "ZERO");
@@ -203,7 +203,7 @@ void check_append_null_image(MefFile& f)
     return; // FIXME CFITSIO bug?
   }
 
-  Position<1> shape {10};
+  Linx::Position<1> shape {10};
   RecordSeq with_blank {{"BLANK", T(1)}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_null_image<T>("NULL", with_blank, shape);
   BOOST_TEST(ext.read_name() == "NULL");
@@ -236,7 +236,7 @@ void check_append_null_image<double>(MefFile&)
 template <typename T>
 void check_append_image(MefFile& f)
 {
-  Position<1> shape {10};
+  Linx::Position<1> shape {10};
   Test::RandomRaster<T, 1> raster(shape);
   RecordSeq records {{"FOO", 3.14}, {"BAR", 41, "s", "useless"}};
   const auto& ext = f.append_image("ZERO", records, raster);
@@ -315,7 +315,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile)
   BOOST_TEST(empty_image.matches(HduCategory::RawImage));
 
   /* Random Image in source MefFile */
-  Position<1> shape {2881}; // More than a block
+  Linx::Position<1> shape {2881}; // More than a block
   Test::RandomRaster<double, 1> raster(shape);
   const auto& image = this->append_image("IMAGE", records, raster);
   const auto input = image.raster().template read<double, 1>();

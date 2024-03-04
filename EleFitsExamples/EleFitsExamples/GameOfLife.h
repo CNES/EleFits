@@ -46,17 +46,17 @@ public:
   /**
    * @brief Update the current frame.
    */
-  const PtrRaster<Value, 2>& update();
+  const Linx::PtrRaster<Value, 2>& update();
 
   /**
    * @brief Count lives around a given position.
    */
-  long count_lives(const Position<2>& p) const;
+  long count_lives(const Linx::Position<2>& p) const;
 
   /**
    * @brief Check whether a given position is in the board domain.
    */
-  bool is_in_domain(const Position<2>& p) const;
+  bool is_in_domain(const Linx::Position<2>& p) const;
 
 private:
 
@@ -88,12 +88,12 @@ private:
   /**
    * @brief The previous frame.
    */
-  PtrRaster<Value, 2> m_previous;
+  Linx::PtrRaster<Value, 2> m_previous;
 
   /**
    * @brief The current frame.
    */
-  PtrRaster<Value, 2> m_current;
+  Linx::PtrRaster<Value, 2> m_current;
 };
 
 } // namespace Fits

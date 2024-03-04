@@ -62,7 +62,7 @@ void check_slice3d_is_read_back()
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }
-  const Region<3> slice3d {{0, 0, 2}, {4, 5, 4}};
+  const Linx::Box<3> slice3d {{0, 0, 2}, {4, 5, 4}};
   Test::TemporarySifFile f;
   const auto& du = f.raster();
   du.update_type_shape<T>(slice3d.shape());
@@ -102,8 +102,8 @@ void check_slice2d_is_read_back()
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }
-  const Region<3> slice2d {{0, 2, 1}, {4, 5, 1}};
-  const Position<2> shape = slice2d.shape().slice<2>();
+  const Linx::Box<3> slice2d {{0, 2, 1}, {4, 5, 1}};
+  const Linx::Position<2> shape = slice2d.shape().slice<2>();
   Test::TemporarySifFile f;
   const auto& du = f.raster();
   du.update_type_shape<T>(shape);
@@ -141,8 +141,8 @@ void check_subraster2d_is_read_back()
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }
-  const Region<3> region2d {{1, 2, 1}, {3, 5, 1}};
-  const Position<2> shape = region2d.shape().slice<2>();
+  const Linx::Box<3> region2d {{1, 2, 1}, {3, 5, 1}};
+  const Linx::Position<2> shape = region2d.shape().slice<2>();
   Test::TemporarySifFile f;
   const auto& du = f.raster();
   du.update_type_shape<T>(shape);
@@ -175,9 +175,9 @@ ELEFITS_FOREACH_RASTER_TYPE(SUBRASTER_2D_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(const_data_raster_is_read_back_test, Test::TemporarySifFile)
 {
-  const Position<2> shape {7, 2};
+  const Linx::Position<2> shape {7, 2};
   const auto c_data = Test::generate_random_vector<std::int16_t>(shape_size(shape));
-  const PtrRaster<const std::int16_t> c_raster(shape, c_data.data());
+  const Linx::PtrRaster<const std::int16_t> c_raster(shape, c_data.data());
   this->write({}, c_raster);
   const auto res = this->raster().read<std::int16_t>();
   const auto& vec = res.container();

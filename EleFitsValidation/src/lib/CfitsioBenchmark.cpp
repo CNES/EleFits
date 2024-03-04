@@ -65,7 +65,7 @@ BRaster CfitsioBenchmark::read_image(long index)
   m_chrono.start();
   int hdu_type = 0;
   fits_movabs_hdu(m_fptr, index + 1, &hdu_type, &m_status);
-  Position<BRaster::Dimension> shape;
+  Linx::Position<BRaster::Dimension> shape;
   fits_get_img_size(m_fptr, BRaster::Dimension, shape.data(), &m_status);
   BRaster raster(shape);
   fits_read_img(

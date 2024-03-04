@@ -22,7 +22,7 @@ struct AstroObjInfo {
   long comb_size;
   long dith_count;
   long dith1d_size;
-  Position<2> dith2d_shape;
+  Linx::Position<2> dith2d_shape;
 };
 
 /*
