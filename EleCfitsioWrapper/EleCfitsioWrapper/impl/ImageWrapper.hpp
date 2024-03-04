@@ -58,9 +58,9 @@ void update_type_shape(fitsfile* fptr, const Linx::Position<N>& shape)
 }
 
 template <typename T, long N>
-Linx::VecRaster<T, N> read_raster(fitsfile* fptr)
+Linx::Raster<T, N> read_raster(fitsfile* fptr)
 {
-  Linx::VecRaster<T, N> raster(read_shape<N>(fptr));
+  Linx::Raster<T, N> raster(read_shape<N>(fptr));
   read_raster_to(fptr, raster);
   return raster;
 }
@@ -74,9 +74,9 @@ void read_raster_to(fitsfile* fptr, TOut& out)
 }
 
 template <typename T, long M, long N>
-Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
+Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
 {
-  Linx::VecRaster<T, M> raster(region.shape().template slice<M>());
+  Linx::Raster<T, M> raster(region.shape().template slice<M>());
   read_region_to(fptr, region, raster);
   return raster;
 }

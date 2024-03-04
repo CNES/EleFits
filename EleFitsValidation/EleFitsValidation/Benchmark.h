@@ -22,7 +22,7 @@ namespace Validation {
 /**
  * @brief The raster type used for benchmarking.
  */
-using BRaster = VecRaster<std::int64_t, 1>;
+using BRaster = Raster<std::int64_t, 1>;
 
 /**
  * @brief The column types used for benchmarking.
@@ -54,17 +54,18 @@ using BChronometer = Chronometer<std::chrono::milliseconds>;
  * @brief The exception which is thrown when a test case is not implemented.
  */
 struct TestCaseNotImplemented : public std::exception {
-
   /**
    * @brief Constructor.
    */
   explicit TestCaseNotImplemented(const std::string& test_case_name) :
-      message("Test case not implemented: " + test_case_name) {}
+      message("Test case not implemented: " + test_case_name)
+  {}
 
   /**
    * @brief Get the error message.
    */
-  virtual const char* what() const noexcept override {
+  virtual const char* what() const noexcept override
+  {
     return message.c_str();
   }
 
@@ -79,6 +80,7 @@ struct TestCaseNotImplemented : public std::exception {
  */
 class Benchmark {
 public:
+
   /**
    * @brief Destructor.
    */
@@ -133,7 +135,8 @@ public:
    * This method is implemented by the child classes when part of the test case.
    * They have to manage the internal chronometer by calling m_chrono.start() and m_chrono.stop() at the right place.
    */
-  virtual BChronometer::Unit write_image(const BRaster&) {
+  virtual BChronometer::Unit write_image(const BRaster&)
+  {
     throw TestCaseNotImplemented("Write image");
   }
 
@@ -141,7 +144,8 @@ public:
    * @brief Write the given columns in a new binary table extension.
    * @copydetails write_image
    */
-  virtual BChronometer::Unit write_bintable(const BColumns&) {
+  virtual BChronometer::Unit write_bintable(const BColumns&)
+  {
     throw TestCaseNotImplemented("Write binary table");
   }
 
@@ -149,7 +153,8 @@ public:
    * @brief Read the image raster in the given image extension.
    * @copydetails write_image
    */
-  virtual BRaster read_image(long) {
+  virtual BRaster read_image(long)
+  {
     throw TestCaseNotImplemented("Read image");
   }
 
@@ -157,11 +162,13 @@ public:
    * @brief Read the columns in the given binary table extension.
    * @copydetails write_image
    */
-  virtual BColumns read_bintable(long) {
+  virtual BColumns read_bintable(long)
+  {
     throw TestCaseNotImplemented("Read binary table");
   }
 
 protected:
+
   /** @brief The file name. */
   std::string m_filename;
   /** @brief The chronometer. */
@@ -175,6 +182,7 @@ protected:
  */
 class BenchmarkFactory {
 public:
+
   /**
    * @brief The type of the benchmark factory function.
    * @details
@@ -197,7 +205,8 @@ public:
    * \endcode
    */
   template <typename TBenchmark, typename... Ts>
-  void register_benchmark(const std::string& key, const Ts&... args) {
+  void register_benchmark(const std::string& key, const Ts&... args)
+  {
     register_benchmark_maker(key, [=](const std::string& filename) { // Force copy
       return std::make_unique<TBenchmark>(filename, args...);
     });
@@ -214,6 +223,7 @@ public:
   std::vector<std::string> keys() const;
 
 private:
+
   std::unordered_map<std::string, BenchmarkMaker> m_register;
 };
 

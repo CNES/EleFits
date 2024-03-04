@@ -20,7 +20,7 @@ namespace Fits {
  * @details
  * This handler provides methods to access image metadata (image-related keyword records) and data.
  * 
- * Reading methods either return a `VecRaster` or fill an existing `Raster`.
+ * Reading methods either return a `Raster` or fill an existing `Raster`.
  * 
  * Data can be read and written region-wise.
  * Source and destination regions are specified by a `FileMemRegions` object.
@@ -60,19 +60,19 @@ public:
    * @brief Read the image shape.
    */
   template <long N = 2>
-  Position<N> read_shape() const;
+  Linx::Position<N> read_shape() const;
 
   /**
    * @brief Update the image shape.
    */
   template <long N = 2>
-  void update_shape(const Position<N>& shape) const;
+  void update_shape(const Linx::Position<N>& shape) const;
 
   /**
    * @brief Update the image type and shape.
    */
   template <typename T, long N = 2>
-  void update_type_shape(const Position<N>& shape) const;
+  void update_type_shape(const Linx::Position<N>& shape) const;
 
   /// @}
   /**
@@ -81,10 +81,10 @@ public:
   /// @{
 
   /**
-   * @brief Read the whole data unit as a new `VecRaster`.
+   * @brief Read the whole data unit as a new `Raster`.
    * @details
    * There are several options to read the whole data unit:
-   * - as a new `VecRaster` object;
+   * - as a new `Raster` object;
    * - by filling an existing `Raster` object;
    * - by filling an existing `Patch` object.
    * 
@@ -94,7 +94,7 @@ public:
    * Filling a `Patch` is much slower than filling a `Raster`.
    */
   template <typename T, long N = 2>
-  VecRaster<T, N> read() const;
+  Linx::Raster<T, N> read() const;
 
   /**
    * @brief Read the whole data unit into an existing `Raster`.
@@ -110,7 +110,7 @@ public:
   /// @{
 
   /**
-   * @brief Read a region as a new `VecRaster`.
+   * @brief Read a region as a new `Raster`.
    * @tparam T The desired raster type
    * @tparam M The desired raster dimension, which can be smaller than the data dimension in file
    * @tparam N The region dimension, which corresponds to the data dimension in file
@@ -119,7 +119,7 @@ public:
    * @param raster The destination raster
    * @details
    * There are several options to read a region of the data unit:
-   * - as a new `VecRaster` object;
+   * - as a new `Raster` object;
    * - by filling an existing `Raster` object;
    * - by filling an existing `Patch` object.
    * In the last two cases, the in-file and in-memory regions are given as a `FileMemRegions` object.
@@ -139,7 +139,7 @@ public:
    * \endcode
    */
   template <typename T, long M, long N>
-  VecRaster<T, M> read_region(const Region<N>& region) const;
+  Linx::Raster<T, M> read_region(const Linx::Box<N>& region) const;
 
   /**
    * @brief Read a region of the data unit into a region of an existing `Raster`.
@@ -173,13 +173,13 @@ public:
    * @details
    * In-file and in-memory (raster) regions are specified as the first parameter.
    * Max bounds (-1) can be used in one, several, or all axes.
-   * Shortcuts offered by `FileMemRegions` and `Region` can be used to implement special cases:
+   * Shortcuts offered by `FileMemRegions` and `Box` can be used to implement special cases:
    * \code
    * // Write the whole raster at position (10, 20, 30)
    * du.write_region<3>({10, 20, 30}, raster);
    * 
    * // Write the whole HDU with a region of the raster starting at (10, 20, 30)
-   * du.write_region<3>({Region<3>::whole(), {10, 20, 30}}, raster);
+   * du.write_region<3>({Linx::Box<3>::whole(), {10, 20, 30}}, raster);
    * \endcode
    * 
    * Note that the raster dimension can be lower than the HDU dimension.
@@ -211,7 +211,7 @@ public:
   }
 
   template <long N = 2>
-  Position<N> readShape() const
+  Linx::Position<N> readShape() const
   {
     return read_shape<2>();
   }
@@ -220,7 +220,7 @@ public:
    * @deprecated
    */
   template <long N = 2>
-  void updateShape(const Position<N>& shape) const
+  void updateShape(const Linx::Position<N>& shape) const
   {
     return update_shape(shape);
   }
@@ -229,7 +229,7 @@ public:
    * @deprecated
   */
   template <typename T, long N = 2>
-  [[deprecated("Use update_type_shape()")]] void reinit(const Position<N>& shape) const
+  [[deprecated("Use update_type_shape()")]] void reinit(const Linx::Position<N>& shape) const
   {
     return update_type_shape<T>(shape);
   }
@@ -238,7 +238,7 @@ public:
    * @deprecated
    */
   template <typename T, long M, long N>
-  VecRaster<T, M> readRegion(const Region<N>& region) const
+  Linx::Raster<T, M> readRegion(const Linx::Box<N>& region) const
   {
     read_region<T, M>(region);
   }
@@ -270,7 +270,7 @@ private:
    * @copydetails read_region()
    */
   template <typename TRaster, long N>
-  void read_region_to_slice(const Position<N>& front_position, TRaster& raster) const;
+  void read_region_to_slice(const Linx::Position<N>& front_position, TRaster& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Patch`.
@@ -278,7 +278,7 @@ private:
    */
   template <typename T, long M, long N, typename TContainer>
   void read_region_to_subraster(
-      const Position<N>& front_position,
+      const Linx::Position<N>& front_position,
       typename Linx::Raster<T, M, TContainer>::Tile<M>& subraster) const; // FIXME rm?
 
   /**
@@ -298,7 +298,7 @@ private:
    * @brief Write a `Raster` at a given position of the data unit.
    */
   template <typename TRaster, long N>
-  void write_slice(const Position<N>& front_position, const TRaster& raster) const;
+  void write_slice(const Linx::Position<N>& front_position, const TRaster& raster) const;
 
   /**
    * @brief Write a `Patch` at a corresponding position of the data unit.
@@ -312,7 +312,7 @@ private:
    */
   template <typename T, long M, long N, typename TContainer>
   void write_subraster(
-      const Position<N>& front_position,
+      const Linx::Position<N>& front_position,
       const typename Linx::Raster<const T, M, TContainer>::ConstTile& subraster) const; // FIXME rm?
 
 private:

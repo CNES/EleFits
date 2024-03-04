@@ -9,7 +9,7 @@ namespace Fits {
 namespace Test {
 
 SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
-    Linx::VecRaster<float>({rasterWidth, rasterHeight}), width(rasterWidth), height(rasterHeight)
+    Linx::Raster<float>({rasterWidth, rasterHeight}), width(rasterWidth), height(rasterHeight)
 {
   for (long y = 0; y < shape()[1]; ++y) {
     for (long x = 0; x < shape()[0]; ++x) {

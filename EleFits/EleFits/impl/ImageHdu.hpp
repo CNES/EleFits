@@ -9,23 +9,27 @@
 namespace Euclid {
 namespace Fits {
 
-template <long n>
-Position<n> ImageHdu::read_shape() const {
-  return m_raster.read_shape<n>();
+template <long N>
+Linx::Position<N> ImageHdu::read_shape() const
+{
+  return m_raster.read_shape<N>();
 }
 
-template <typename T, long n>
-void ImageHdu::update_type_shape(const Position<n>& shape) const {
-  return m_raster.update_type_shape<T, n>(shape);
+template <typename T, long N>
+void ImageHdu::update_type_shape(const Linx::Position<N>& shape) const
+{
+  return m_raster.update_type_shape<T, N>(shape);
 }
 
-template <typename T, long n>
-VecRaster<T, n> ImageHdu::read_raster() const {
-  return m_raster.read<T, n>();
+template <typename T, long N>
+Linx::Raster<T, N> ImageHdu::read_raster() const
+{
+  return m_raster.read<T, N>();
 }
 
 template <typename TRaster>
-void ImageHdu::write_raster(const TRaster& data) const {
+void ImageHdu::write_raster(const TRaster& data) const
+{
   m_raster.write(data);
 }
 
@@ -34,27 +38,6 @@ void ImageHdu::write_raster(const TRaster& data) const {
  */
 template <>
 const ImageRaster& Hdu::as() const;
-
-#ifndef DECLARE_READ_RASTER
-#define DECLARE_READ_RASTER(type, unused) \
-  extern template VecRaster<type, -1> ImageHdu::read_raster() const; \
-  extern template VecRaster<type, 2> ImageHdu::read_raster() const; \
-  extern template VecRaster<type, 3> ImageHdu::read_raster() const;
-ELEFITS_FOREACH_RASTER_TYPE(DECLARE_READ_RASTER)
-#undef DECLARE_READ_RASTER
-#endif
-
-#ifndef DECLARE_WRITE_RASTER
-#define DECLARE_WRITE_RASTER(type, unused) \
-  extern template void ImageHdu::write_raster(const PtrRaster<type, -1>&) const; \
-  extern template void ImageHdu::write_raster(const PtrRaster<type, 2>&) const; \
-  extern template void ImageHdu::write_raster(const PtrRaster<type, 3>&) const; \
-  extern template void ImageHdu::write_raster(const VecRaster<type, -1>&) const; \
-  extern template void ImageHdu::write_raster(const VecRaster<type, 2>&) const; \
-  extern template void ImageHdu::write_raster(const VecRaster<type, 3>&) const;
-ELEFITS_FOREACH_RASTER_TYPE(DECLARE_WRITE_RASTER)
-#undef DECLARE_WRITE_RASTER
-#endif
 
 } // namespace Fits
 } // namespace Euclid

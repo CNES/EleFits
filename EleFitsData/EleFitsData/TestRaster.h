@@ -20,7 +20,7 @@ namespace Test {
 /**
  * @brief A 2D image Raster of floats.
  */
-class SmallRaster : public Linx::VecRaster<float> { // FIXME useless with Linx::random()
+class SmallRaster : public Linx::Raster<float> { // FIXME useless with Linx::random()
 public:
 
   /**
@@ -52,7 +52,7 @@ public:
  * @brief A random Raster of given type and shape.
  */
 template <typename T, long N = 2>
-class RandomRaster : public Linx::VecRaster<T, N> {
+class RandomRaster : public Linx::Raster<T, N> {
 public:
 
   /**

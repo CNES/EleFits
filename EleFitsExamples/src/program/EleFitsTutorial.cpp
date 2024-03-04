@@ -50,9 +50,9 @@ struct TutoRecords {
 
 //! [Tuto rasters]
 struct TutoRasters {
-  Linx::VecRaster<std::int16_t, 2> int16_raster2d;
-  Linx::VecRaster<std::int32_t, 3> int32_raster3d;
-  Linx::VecRaster<std::int64_t, 4> int64_raster4d;
+  Linx::Raster<std::int16_t, 2> int16_raster2d;
+  Linx::Raster<std::int32_t, 3> int32_raster3d;
+  Linx::Raster<std::int64_t, 4> int64_raster4d;
 };
 //! [Tuto rasters]
 
@@ -115,7 +115,7 @@ TutoRasters create_rasters()
 
   /* Initialize and later fill a raster */
 
-  Linx::VecRaster<std::int16_t, 2> int16_raster2d({4, 3});
+  Linx::Raster<std::int16_t, 2> int16_raster2d({4, 3});
   for (const auto& position : int16_raster2d.domain()) {
     int16_raster2d[position] = position[0] + position[1];
   }
@@ -126,7 +126,7 @@ TutoRasters create_rasters()
 
   std::vector<std::int32_t> int32_vec(16 * 9 * 3, 0);
   // ... do what you have to do with the vector, and then move it to the raster ...
-  Linx::VecRaster<std::int32_t, 3> int32_raster3d({16, 9, 3}, std::move(int32_vec));
+  Linx::Raster<std::int32_t, 3> int32_raster3d({16, 9, 3}, std::move(int32_vec));
   // Instead of moving a vector, it's also possible to work with
   // a raw pointer with the PtrRaster class.
 

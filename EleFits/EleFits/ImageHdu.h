@@ -38,7 +38,7 @@ namespace Fits {
  * @see
  * Hdu for services to read and write records.
  * @see
- * Position for details on the handling of fixed- and variable-dimension arrays.
+ * Linx::Position for details on the handling of fixed- and variable-dimension arrays.
  * @see
  * ELEFITS_FOREACH_RASTER_TYPE and program EleFitsPrintSupportedTypes for the list of supported pixel types.
  */
@@ -68,7 +68,7 @@ public:
     /**
      * @brief The shape.
      */
-    Position<-1> shape;
+    Linx::Position<-1> shape;
 
     /**
      * @brief The data, if any.
@@ -137,7 +137,7 @@ public:
    * @copybrief ImageRaster::read_shape
    */
   template <long N = 2>
-  Position<N> read_shape() const;
+  Linx::Position<N> read_shape() const;
 
   /**
    * @brief Read the compression parameters.
@@ -148,13 +148,13 @@ public:
    * @brief Redefine the image shape and type.
    */
   template <typename T, long N = 2>
-  void update_type_shape(const Position<N>& shape) const;
+  void update_type_shape(const Linx::Position<N>& shape) const;
 
   /**
    * @brief Read the Raster.
    */
   template <typename T, long N = 2>
-  VecRaster<T, N> read_raster() const;
+  Linx::Raster<T, N> read_raster() const;
 
   /**
    * @brief Write the Raster.
@@ -184,7 +184,7 @@ public:
    * @deprecated
    */
   template <typename T, long N = 2>
-  void updateShape(const Position<N>& shape) const
+  void updateShape(const Linx::Position<N>& shape) const
   {
     return update_type_shape<T, N>(shape);
   }
@@ -193,7 +193,7 @@ public:
    * @deprecated
    */
   template <typename T, long N = 2>
-  VecRaster<T, N> readRaster() const
+  Linx::Raster<T, N> readRaster() const
   {
     return read_raster<T, N>();
   }

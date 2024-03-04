@@ -11,30 +11,30 @@ namespace Euclid {
 namespace Fits {
 
 template <long N>
-Position<N> ImageRaster::read_shape() const
+Linx::Position<N> ImageRaster::read_shape() const
 {
   m_edit();
   return Cfitsio::ImageIo::read_shape<N>(m_fptr);
 }
 
 template <long N>
-void ImageRaster::update_shape(const Position<N>& shape) const
+void ImageRaster::update_shape(const Linx::Position<N>& shape) const
 {
   m_edit();
   Cfitsio::ImageIo::update_shape<N>(m_fptr, shape);
 }
 
 template <typename T, long N>
-void ImageRaster::update_type_shape(const Position<N>& shape) const
+void ImageRaster::update_type_shape(const Linx::Position<N>& shape) const
 {
   m_edit();
   Cfitsio::ImageIo::update_type_shape<T, N>(m_fptr, shape);
 }
 
 template <typename T, long N>
-VecRaster<T, N> ImageRaster::read() const
+Linx::Raster<T, N> ImageRaster::read() const
 {
-  VecRaster<T, N> raster(read_shape<N>());
+  Linx::Raster<T, N> raster(read_shape<N>());
   read_to(raster);
   return raster;
 }
@@ -47,9 +47,9 @@ void ImageRaster::read_to(TRaster& raster) const
 }
 
 template <typename T, long M, long N>
-VecRaster<T, M> ImageRaster::read_region(const Region<N>& region) const
+Linx::Raster<T, M> ImageRaster::read_region(const Linx::Box<N>& region) const
 {
-  VecRaster<T, M> raster(region.shape().template slice<M>());
+  Linx::Raster<T, M> raster(region.shape().template slice<M>());
   read_region_to(region.front, raster);
   return raster;
 }
@@ -72,26 +72,26 @@ void ImageRaster::read_region_to(typename Linx::Raster<T, N, TContainer>::Tile<N
 }
 
 template <typename TRaster, long N>
-void ImageRaster::read_region_to_slice(const Position<N>& front_position, TRaster& raster) const
+void ImageRaster::read_region_to_slice(const Linx::Position<N>& front_position, TRaster& raster) const
 {
   m_touch();
   Cfitsio::ImageIo::read_region_to(
       m_fptr,
-      Region<N>::from_shape(front_position, raster.shape()), // FIXME use front_position in ImageIo
+      Linx::Box<N>::from_shape(front_position, raster.shape()), // FIXME use front_position in ImageIo
       raster);
 }
 
 template <typename T, long M, long N, typename TContainer>
 void ImageRaster::read_region_to_subraster(
-    const Position<N>& front_position,
+    const Linx::Position<N>& front_position,
     typename Linx::Raster<T, M, TContainer>::Tile<M>& subraster) const
 {
   m_touch();
   Cfitsio::ImageIo::read_region_to(
       m_fptr,
-      Region<N>::from_shape(front_position, subraster.shape()), // FIXME use front_position in ImageIo
+      Linx::Box<N>::from_shape(front_position, subraster.shape()), // FIXME use front_position in ImageIo
       subraster);
-  // FIXME move algo here, rely solely on read_region_to(fitsfile, Position, Raster)
+  // FIXME move algo here, rely solely on read_region_to(fitsfile, Linx::Position, Raster)
 }
 
 template <typename TRaster>
@@ -119,23 +119,23 @@ void ImageRaster::write_region(const typename Linx::Raster<const T, N, TContaine
 }
 
 template <typename TRaster, long N>
-void ImageRaster::write_slice(const Position<N>& front_position, const TRaster& raster) const
+void ImageRaster::write_slice(const Linx::Position<N>& front_position, const TRaster& raster) const
 {
   Cfitsio::ImageIo::write_region(m_fptr, raster, front_position);
 }
 
 template <typename T, long M, long N, typename TContainer>
 void ImageRaster::write_subraster(
-    const Position<N>& front_position,
+    const Linx::Position<N>& front_position,
     const typename Linx::Raster<const T, M, TContainer>::ConstTile& subraster) const
 {
   m_edit();
   int status = 0;
-  auto locus = Region<M>::from_shape(Position<M>::zero(), subraster.shape());
+  auto locus = Linx::Box<M>::from_shape(Linx::Position<M>::zero(), subraster.shape());
   locus.back[0] = locus.front[0];
   const auto nelem = subraster.shape()[0];
   const auto delta = front_position.template slice<M>();
-  Position<N> target;
+  Linx::Position<N> target;
   for (const auto& source : locus) {
     target = (source + delta).extend(front_position) + 1; // 1-based
     const auto b = &subraster[source];

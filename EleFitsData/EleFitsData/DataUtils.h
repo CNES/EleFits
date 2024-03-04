@@ -333,40 +333,6 @@ constexpr decltype(auto) iterator_tuple_apply(TIteratorTuple&& tuple, TFunc&& fu
 }
 
 /**
- * @brief Apply a void-returning function to each element of a sequence.
- */
-template <typename TSeq, typename TFunc>
-std::enable_if_t<is_tuple<TSeq>()> seq_foreach(TSeq&& seq, TFunc&& func)
-{
-  Internal::tuple_foreach_impl(
-      std::forward<TSeq>(seq),
-      std::forward<TFunc>(func),
-      Internal::tuple_index_sequence<TSeq>());
-}
-
-/**
- * @copydoc seq_foreach()
- */
-template <typename TSeq, typename TFunc>
-std::enable_if_t<not is_tuple<TSeq>()> seq_foreach(const TSeq& seq, TFunc&& func)
-{
-  for (const auto& element : seq) {
-    func(element);
-  }
-}
-
-/**
- * @copydoc seq_foreach()
- */
-template <typename TSeq, typename TFunc>
-std::enable_if_t<not is_tuple<TSeq>()> seq_foreach(TSeq& seq, TFunc&& func)
-{
-  for (auto& element : seq) {
-    func(element);
-  }
-}
-
-/**
  * @brief Apply a transform to each element of a sequence and create a user-defined struct from the results.
  */
 template <typename TReturn, typename TSeq, typename TFunc>

@@ -9,11 +9,13 @@ namespace Fits {
 
 GameOfLife::GameOfLife(long width, long height, long turns) :
     m_width(width), m_height(height), m_turns(turns), m_board({width, height, turns}), m_t(0),
-    m_previous(m_board.section(0)), m_current(m_board.section(1)) {
+    m_previous(m_board.section(0)), m_current(m_board.section(1))
+{
   // The board is filled with zeros
 }
 
-const PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(long count) {
+const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(long count)
+{
   long done = 0;
   while (done <= count) {
     const long i = Test::generate_random_value<long>(0, m_width * m_height - 1);
@@ -25,7 +27,8 @@ const PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(long count) {
   return m_previous;
 }
 
-const VecRaster<GameOfLife::Value, 3>& GameOfLife::run() {
+const Linx::Raster<GameOfLife::Value, 3>& GameOfLife::run()
+{
   while (m_t < m_turns) {
     update();
     next();
@@ -33,14 +36,16 @@ const VecRaster<GameOfLife::Value, 3>& GameOfLife::run() {
   return m_board;
 }
 
-long GameOfLife::next() {
+long GameOfLife::next()
+{
   m_previous = m_current;
   ++m_t;
   m_current = m_board.section(m_t);
   return m_t;
 }
 
-const PtrRaster<GameOfLife::Value, 2>& GameOfLife::update() {
+const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::update()
+{
   for (const auto& p : m_previous.domain()) {
     const auto lives = count_lives(p);
     if (m_previous[p]) { // Live in previous frame
@@ -59,7 +64,8 @@ const PtrRaster<GameOfLife::Value, 2>& GameOfLife::update() {
   return m_current;
 }
 
-long GameOfLife::count_lives(const Position<2>& p) const {
+long GameOfLife::count_lives(const Position<2>& p) const
+{
   const Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
   long count = 0;
   for (const auto& n : neighbors) {
@@ -71,7 +77,8 @@ long GameOfLife::count_lives(const Position<2>& p) const {
   return count;
 }
 
-bool GameOfLife::is_in_domain(const Position<2>& p) const {
+bool GameOfLife::is_in_domain(const Position<2>& p) const
+{
   if (p[0] < 0 || p[0] >= m_width) {
     return false;
   }

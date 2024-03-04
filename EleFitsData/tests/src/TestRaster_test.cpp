@@ -77,9 +77,9 @@ BOOST_AUTO_TEST_CASE(small_rasters_with_different_shapes_differ_test)
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 
 template <typename T, long N>
-void checkRastersWithDifferentValuesDiffer(const Linx::VecRaster<T, N>& raster)
+void checkRastersWithDifferentValuesDiffer(const Linx::Raster<T, N>& raster)
 {
-  Linx::VecRaster<T, N> other(raster.shape());
+  Linx::Raster<T, N> other(raster.shape());
   BOOST_TEST(not Test::raster_approx(other, raster));
   BOOST_TEST(not Test::raster_approx(raster, other));
 }

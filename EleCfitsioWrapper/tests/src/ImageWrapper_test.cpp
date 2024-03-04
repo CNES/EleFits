@@ -42,7 +42,7 @@ ELEFITS_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
 {
-  Linx::VecRaster<long, 3> input({3, 4, 5});
+  Linx::Raster<long, 3> input({3, 4, 5});
   for (long z = 0; z < input.length(2); ++z) {
     for (long y = 0; y < input.length(1); ++y) {
       for (long x = 0; x < input.length(0); ++x) {
@@ -63,8 +63,8 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
       }
     }
   }
-  Linx::VecRaster<long, 3> output({3, 4, 5});
-  Linx::VecRaster<long, 3>::Tile<3> dst {output, region}; // TODO don't use the same region
+  Linx::Raster<long, 3> output({3, 4, 5});
+  Linx::Raster<long, 3>::Tile<3> dst {output, region}; // TODO don't use the same region
   ImageIo::read_region_to(fptr, region, dst);
   for (long z = region.front()[2]; z <= region.back()[2]; ++z) {
     for (long y = region.front()[1]; y <= region.back()[1]; ++y) {

@@ -58,7 +58,7 @@ void check_raster_is_read_back<std::uint64_t>()
 template <typename T>
 void check_slice3d_is_read_back()
 {
-  VecRaster<T, 3> input({5, 6, 7});
+  Linx::Raster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }
@@ -98,7 +98,7 @@ ELEFITS_FOREACH_RASTER_TYPE(SLICE_3D_IS_READ_BACK_TEST)
 template <typename T>
 void check_slice2d_is_read_back()
 {
-  VecRaster<T, 3> input({5, 6, 7});
+  Linx::Raster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }
@@ -137,7 +137,7 @@ ELEFITS_FOREACH_RASTER_TYPE(SLICE_2D_IS_READ_BACK_TEST)
 template <typename T>
 void check_subraster2d_is_read_back()
 {
-  VecRaster<T, 3> input({5, 6, 7});
+  Linx::Raster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
     input[p] = 100 * p[2] + 10 * p[1] + p[0];
   }

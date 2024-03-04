@@ -21,7 +21,8 @@ ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index, HduCategory status)
         },
         [&]() {
           edit();
-        }) {}
+        })
+{}
 
 ImageHdu::ImageHdu() :
     Hdu(),
@@ -32,9 +33,11 @@ ImageHdu::ImageHdu() :
         },
         [&]() {
           edit();
-        }) {}
+        })
+{}
 
-const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const {
+const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const
+{
   update_name(rhs.read_name());
   header().write_n(rhs.header().parse_all(KeywordCategory::User)); // FIXME others?
 #define ELEFITS_COPY_HDU(T, _) \
@@ -51,19 +54,23 @@ const ImageHdu& ImageHdu::operator=(const ImageHdu& rhs) const {
   return *this;
 }
 
-const ImageRaster& ImageHdu::raster() const {
+const ImageRaster& ImageHdu::raster() const
+{
   return m_raster;
 }
 
-const std::type_info& ImageHdu::read_typeid() const {
+const std::type_info& ImageHdu::read_typeid() const
+{
   return m_raster.read_typeid();
 }
 
-long ImageHdu::read_size() const {
+long ImageHdu::read_size() const
+{
   return m_raster.read_size();
 }
 
-HduCategory ImageHdu::category() const {
+HduCategory ImageHdu::category() const
+{
   auto cat = Hdu::category();
   if (read_size() == 0) {
     cat &= HduCategory::Metadata;
@@ -84,41 +91,23 @@ HduCategory ImageHdu::category() const {
   return cat;
 }
 
-bool ImageHdu::is_compressed() const {
+bool ImageHdu::is_compressed() const
+{
   touch();
   return Cfitsio::ImageIo::is_compressed(m_fptr);
 }
 
-std::unique_ptr<Compression> ImageHdu::read_compression() const {
+std::unique_ptr<Compression> ImageHdu::read_compression() const
+{
   touch();
   return Cfitsio::ImageCompression::read_parameters(m_fptr);
 }
 
 template <>
-const ImageRaster& Hdu::as() const {
+const ImageRaster& Hdu::as() const
+{
   return as<ImageHdu>().raster();
 }
-
-#ifndef COMPILE_READ_RASTER
-#define COMPILE_READ_RASTER(type, unused) \
-  template VecRaster<type, -1> ImageHdu::read_raster() const; \
-  template VecRaster<type, 2> ImageHdu::read_raster() const; \
-  template VecRaster<type, 3> ImageHdu::read_raster() const;
-ELEFITS_FOREACH_RASTER_TYPE(COMPILE_READ_RASTER)
-#undef COMPILE_READ_RASTER
-#endif
-
-#ifndef COMPILE_WRITE_RASTER
-#define COMPILE_WRITE_RASTER(type, unused) \
-  template void ImageHdu::write_raster(const PtrRaster<type, -1>&) const; \
-  template void ImageHdu::write_raster(const PtrRaster<type, 2>&) const; \
-  template void ImageHdu::write_raster(const PtrRaster<type, 3>&) const; \
-  template void ImageHdu::write_raster(const VecRaster<type, -1>&) const; \
-  template void ImageHdu::write_raster(const VecRaster<type, 2>&) const; \
-  template void ImageHdu::write_raster(const VecRaster<type, 3>&) const;
-ELEFITS_FOREACH_RASTER_TYPE(COMPILE_WRITE_RASTER)
-#undef COMPILE_WRITE_RASTER
-#endif
 
 } // namespace Fits
 } // namespace Euclid

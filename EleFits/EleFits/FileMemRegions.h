@@ -5,7 +5,7 @@
 #ifndef _ELEFITS_FILEMEMREGIONS_H
 #define _ELEFITS_FILEMEMREGIONS_H
 
-#include "EleFitsData/Region.h"
+#include "Linx/Data/Box.h"
 
 namespace Euclid {
 namespace Fits {
@@ -18,7 +18,7 @@ namespace Fits {
  * In-file and in-memory regions have the same shape.
  * Both back positions cannot be -1 at the same index at the same time.
  */
-template <long n = 2>
+template <long N = 2>
 class FileMemRegions {
 public:
 
@@ -26,13 +26,13 @@ public:
    * @brief Create a mapping from an in-file region and an in-memory position.
    * @details
    * The shape of the in-memory region is deduced from that of the in-file region.
-   * This constructor is not marked explicit, which allows casting from a `Region`.
+   * This constructor is not marked explicit, which allows casting from a `Box`.
    */
-  FileMemRegions(const Region<n>& fileRegion, const Position<n>& memoryPosition = Position<n>::zero()) :
-      m_file(fileRegion), m_memory(Region<n>::from_shape(memoryPosition, fileRegion.shape()))
+  FileMemRegions(const Linx::Box<N>& fileRegion, const Linx::Position<N>& memoryPosition = Linx::Position<N>::zero()) :
+      m_file(fileRegion), m_memory(Linx::Box<N>::from_shape(memoryPosition, fileRegion.shape()))
   {
     if (m_file.back.isMax()) {
-      m_memory.back = Position<n>::zero();
+      m_memory.back = Linx::Position<N>::zero();
     }
   }
 
@@ -42,18 +42,18 @@ public:
    * The shape of the in-file region is deduced from that of the in-memory region.
    * This constructor is not marked explicit, which allows casting from a `Position`.
    */
-  FileMemRegions(const Position<n>& filePosition, const Region<n>& memoryRegion = Region<n>::whole()) :
-      m_file(Region<n>::from_shape(filePosition, memoryRegion.shape())), m_memory(memoryRegion)
+  FileMemRegions(const Linx::Position<N>& filePosition, const Linx::Box<N>& memoryRegion = Linx::Box<N>::whole()) :
+      m_file(Linx::Box<N>::from_shape(filePosition, memoryRegion.shape())), m_memory(memoryRegion)
   {
     if (m_memory.back.isMax()) {
-      m_file.back = Position<n>::zero();
+      m_file.back = Linx::Position<N>::zero();
     }
   }
 
   /**
    * @brief Get the in-file region.
    */
-  const Region<n>& file() const
+  const Linx::Box<N>& file() const
   {
     return m_file;
   }
@@ -61,7 +61,7 @@ public:
   /**
    * @brief Get the in-memory region.
    */
-  const Region<n>& memory() const
+  const Linx::Box<N>& memory() const
   {
     return m_memory;
   }
@@ -69,7 +69,7 @@ public:
   /**
    * @brief Resolve the unknown (-1) indices, given known in-file and in-memory back positions.
    */
-  void resolve(const Position<n>& fileBack, const Position<n>& memoryBack)
+  void resolve(const Linx::Position<N>& fileBack, const Linx::Position<N>& memoryBack)
   {
     const auto ftom = fileToMemory();
     for (auto fit = m_file.back.begin(),
@@ -94,7 +94,7 @@ public:
   /**
    * @brief Compute the translation vector from in-file region to in-memory region.
    */
-  Position<n> fileToMemory() const
+  Linx::Position<N> fileToMemory() const
   {
     return m_memory.front - m_file.front;
   }
@@ -102,7 +102,7 @@ public:
   /**
    * @brief Compute the translation vector from in-memory region to in-file region.
    */
-  Position<n> memoryToFile() const
+  Linx::Position<N> memoryToFile() const
   {
     return m_file.front - m_memory.front;
   }
@@ -112,32 +112,32 @@ private:
   /**
    * @brief The in-file region.
    */
-  Region<n> m_file;
+  Linx::Box<N> m_file;
 
   /**
    * @brief The in-memory region.
    */
-  Region<n> m_memory;
+  Linx::Box<N> m_memory;
 };
 
 /**
  * @relates FileMemRegions
  * @brief Create a `FileMemRegions` with in-file position at origin.
  */
-template <long n>
-FileMemRegions<n> makeMemRegion(const Region<n>& memoryRegion)
+template <long N>
+FileMemRegions<N> makeMemRegion(const Linx::Box<N>& memoryRegion)
 {
-  return FileMemRegions<n>(Position<n>::zero(), memoryRegion);
+  return FileMemRegions<N>(Linx::Position<N>::zero(), memoryRegion);
 }
 
 /**
  * @relates FileMemRegions
  * @brief Create a `FileMemRegions` with whole in-file region.
  */
-template <long n>
-FileMemRegions<n> makeMemRegion(const Position<n>& memoryPosition)
+template <long N>
+FileMemRegions<N> makeMemRegion(const Linx::Position<N>& memoryPosition)
 {
-  return FileMemRegions<n>(Region<n>::whole(), memoryPosition);
+  return FileMemRegions<N>(Linx::Box<N>::whole(), memoryPosition);
 }
 
 } // namespace Fits

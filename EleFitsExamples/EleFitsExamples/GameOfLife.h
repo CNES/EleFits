@@ -15,8 +15,8 @@ namespace Fits {
  * @brief A Game of Life as an example usage of `Raster` and a few features like slicing.
  */
 class GameOfLife {
-
 public:
+
   /**
    * @brief The cell type.
    */
@@ -31,12 +31,12 @@ public:
    * @brief Generate lives at random positions.
    * @param count The number of lives to generate (should be much smaller than the number of cells)
    */
-  const PtrRaster<Value, 2>& generate(long count);
+  const Linx::PtrRaster<Value, 2>& generate(long count);
 
   /**
    * @brief Run the game.
    */
-  const VecRaster<Value, 3>& run();
+  const Linx::Raster<Value, 3>& run();
 
   /**
    * @brief Move to the next frame.
@@ -59,6 +59,7 @@ public:
   bool is_in_domain(const Position<2>& p) const;
 
 private:
+
   /**
    * @brief The board width.
    */
@@ -77,7 +78,7 @@ private:
   /**
    * @brief The board and its evolution in time.
    */
-  VecRaster<Value, 3> m_board;
+  Linx::Raster<Value, 3> m_board;
 
   /**
    * @brief The current turn index (aka time).

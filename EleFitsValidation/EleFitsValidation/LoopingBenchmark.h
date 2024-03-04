@@ -70,7 +70,7 @@ private:
   const long m_depth;
   const Test::RandomRaster<Value, Dimension> m_a;
   const Test::RandomRaster<Value, Dimension> m_b;
-  VecRaster<Value, Dimension> m_c;
+  Linx::Raster<Value, Dimension> m_c;
   Chronometer<Duration> m_chrono;
 };
 

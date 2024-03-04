@@ -156,10 +156,11 @@ const ImageHdu& MefFile::append_image_header(const std::string& name, const Reco
 }
 
 template <typename T, long N>
-const ImageHdu& MefFile::append_null_image(const std::string& name, const RecordSeq& records, const Position<N>& shape)
+const ImageHdu&
+MefFile::append_null_image(const std::string& name, const RecordSeq& records, const Linx::Position<N>& shape)
 {
   const auto index = m_hdus.size();
-  Position<-1> dynamic_shape(shape.begin(), shape.end());
+  Linx::Position<-1> dynamic_shape(shape);
   ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamic_shape, nullptr};
   m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::init_image<T>(m_fptr, name, shape);
@@ -170,7 +171,7 @@ const ImageHdu& MefFile::append_null_image(const std::string& name, const Record
 
   // CFITSIO's fits_write_img_null does not support compression
   if (shape_size(shape) != 0) {
-    VecRaster<T, N> raster(shape);
+    Linx::Raster<T, N> raster(shape);
     if constexpr (std::is_floating_point_v<T>) {
       std::fill(raster.begin(), raster.end(), std::numeric_limits<T>::quiet_NaN());
     } else if (records.has("BLANK")) {
@@ -194,7 +195,7 @@ const ImageHdu& MefFile::append_image(const std::string& name, const RecordSeq& 
 {
   const auto index = m_hdus.size();
   using T = std::decay_t<typename TRaster::Value>;
-  Position<-1> dynamic_shape(raster.shape().begin(), raster.shape().end());
+  Linx::Position<-1> dynamic_shape(raster.shape());
   ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamic_shape, raster.data()};
   m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::init_image<typename TRaster::value_type>(m_fptr, name, raster.shape());

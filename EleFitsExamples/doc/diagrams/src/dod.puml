@@ -38,7 +38,7 @@ sources_n *-- thumbnail_n
 thumbnail_n o-- data
 
 object observation {
-    raster : VecRaster<Flux>
+    raster : Raster<Flux>
 }
 
 data <-- observation : use

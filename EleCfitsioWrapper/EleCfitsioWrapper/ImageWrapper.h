@@ -50,7 +50,7 @@ void update_shape(fitsfile* fptr, const Linx::Position<N>& shape);
  * @brief Read the whole raster of the current image HDU.
  */
 template <typename T, long N = 2>
-Linx::VecRaster<T, N> read_raster(fitsfile* fptr);
+Linx::Raster<T, N> read_raster(fitsfile* fptr);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing raster or patch.
@@ -62,7 +62,7 @@ void read_raster_to(fitsfile* fptr, TOut& out);
  * @brief Read a region of the current image HDU.
  */
 template <typename T, long M, long N>
-Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region);
+Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.

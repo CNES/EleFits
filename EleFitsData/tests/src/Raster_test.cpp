@@ -15,8 +15,8 @@ BOOST_AUTO_TEST_SUITE(Raster_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(index_test) {
-
+BOOST_AUTO_TEST_CASE(index_test)
+{
   /* Fixed dimension */
   Position<4> fixedShape;
   for (auto& length : fixedShape) {
@@ -38,40 +38,46 @@ BOOST_AUTO_TEST_CASE(index_test) {
   BOOST_TEST(variableIndex == fixedIndex);
 }
 
-BOOST_AUTO_TEST_CASE(ptrraster_data_test) {
+BOOST_AUTO_TEST_CASE(ptrraster_data_test)
+{
   int data[] = {0, 1, 2};
   PtrRaster<int, 1> raster({3}, data);
   BOOST_TEST(raster.data() != nullptr);
   BOOST_TEST(raster[{0}] == 0);
 }
 
-BOOST_AUTO_TEST_CASE(const_ptrraster_data_test) {
+BOOST_AUTO_TEST_CASE(const_ptrraster_data_test)
+{
   const int cData[] = {3, 4, 5};
   PtrRaster<const int, 1> cRaster({3}, cData);
   BOOST_TEST(cRaster.data() != nullptr);
   BOOST_TEST(cRaster[{0}] == 3);
 }
 
-BOOST_AUTO_TEST_CASE(vecraster_data_test) {
-  VecRaster<int, 1> vecRaster({3});
+BOOST_AUTO_TEST_CASE(vecraster_data_test)
+{
+  Linx::Raster<int, 1> vecRaster({3});
   BOOST_TEST(vecRaster.data() != nullptr);
   BOOST_TEST(vecRaster[{0}] == 0);
 }
 
-BOOST_AUTO_TEST_CASE(const_vecraster_data_test) {
-  const VecRaster<int, 1> cVecRaster({3});
+BOOST_AUTO_TEST_CASE(const_vecraster_data_test)
+{
+  const Linx::Raster<int, 1> cVecRaster({3});
   BOOST_TEST(cVecRaster.data() != nullptr);
   BOOST_TEST(cVecRaster[{0}] == 0);
 }
 
-BOOST_FIXTURE_TEST_CASE(small_raster_size_test, Test::SmallRaster) {
+BOOST_FIXTURE_TEST_CASE(small_raster_size_test, Test::SmallRaster)
+{
   std::size_t size = this->width * this->height;
   BOOST_TEST(this->dimension() == 2);
   BOOST_TEST(this->size() == size);
   BOOST_TEST(this->container().size() == size);
 }
 
-BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test) {
+BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test)
+{
   const long width = 4;
   const long height = 3;
   const long size = width * height;
@@ -81,7 +87,8 @@ BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test) {
   BOOST_TEST(raster.container().size() == size);
 }
 
-BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
+BOOST_AUTO_TEST_CASE(subscript_bounds_test)
+{
   const long width = 4;
   const long height = 3;
   Test::RandomRaster<int> raster({width, height});
@@ -100,7 +107,8 @@ BOOST_AUTO_TEST_CASE(subscript_bounds_test) {
   BOOST_CHECK_THROW(raster.at({0, -1 - height}), OutOfBoundsError);
 }
 
-BOOST_FIXTURE_TEST_CASE(vecraster_move_test, Test::SmallRaster) {
+BOOST_FIXTURE_TEST_CASE(vecraster_move_test, Test::SmallRaster)
+{
   const auto copied = this->container();
   const auto data = this->data();
   std::vector<Value> moved;
@@ -109,7 +117,8 @@ BOOST_FIXTURE_TEST_CASE(vecraster_move_test, Test::SmallRaster) {
   BOOST_TEST(moved.data() == data);
 }
 
-BOOST_AUTO_TEST_CASE(make_raster_test) {
+BOOST_AUTO_TEST_CASE(make_raster_test)
+{
   constexpr long width = 16;
   constexpr long height = 9;
   constexpr long depth = 3;
@@ -127,8 +136,8 @@ BOOST_AUTO_TEST_CASE(make_raster_test) {
   BOOST_TEST(constRaster3.dimension() == 3);
 }
 
-BOOST_AUTO_TEST_CASE(slicing_test) {
-
+BOOST_AUTO_TEST_CASE(slicing_test)
+{
   Test::RandomRaster<float, 3> raster({5, 3, 4});
 
   // Several x-y planes
@@ -165,8 +174,8 @@ BOOST_AUTO_TEST_CASE(slicing_test) {
   BOOST_CHECK_THROW(raster.slice<3>(bad), FitsError);
 }
 
-BOOST_AUTO_TEST_CASE(sectionning_test) {
-
+BOOST_AUTO_TEST_CASE(sectionning_test)
+{
   const Test::RandomRaster<short, 3> raster3D({8, 9, 12});
 
   // 3D

@@ -8,6 +8,7 @@
 #include "EleFits/ColumnKey.h"
 #include "EleFits/FileMemSegments.h"
 #include "EleFitsData/Column.h"
+#include "EleFitsData/DataUtils.h" // TypedKey
 
 #include <fitsio.h>
 #include <functional>

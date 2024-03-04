@@ -227,12 +227,12 @@ BOOST_AUTO_TEST_CASE(plio_limit_test)
   ImageHdu::Initializer<T> datamax_bad {1, "", {{"DATAMAX", limit}}, shape, nullptr};
   BOOST_TEST(not can_compress(algo, datamax_bad));
 
-  VecRaster<T, -1> raster_good(shape);
+  Linx::Raster<T, -1> raster_good(shape);
   raster_good[0] = limit - 1;
   ImageHdu::Initializer<T> data_good {1, "", {}, shape, raster_good.data()};
   BOOST_TEST(can_compress(algo, data_good));
 
-  VecRaster<T, -1> raster_bad(shape);
+  Linx::Raster<T, -1> raster_bad(shape);
   raster_bad[0] = limit;
   ImageHdu::Initializer<T> data_bad {1, "", {}, shape, raster_bad.data()};
   BOOST_TEST(not can_compress(algo, data_bad));

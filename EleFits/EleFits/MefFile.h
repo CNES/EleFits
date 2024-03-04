@@ -276,7 +276,7 @@ public:
    * \endcode
    */
   template <typename T, long N = 2>
-  const ImageHdu& append_null_image(const std::string& name, const RecordSeq& records, const Position<N>& shape);
+  const ImageHdu& append_null_image(const std::string& name, const RecordSeq& records, const Linx::Position<N>& shape);
 
   /**
    * @brief Append and write a new image extension.
@@ -363,7 +363,7 @@ public:
    * @deprecated
    */
   template <typename T, long N = 2>
-  const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Position<N>& shape)
+  const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Linx::Position<N>& shape)
   {
     return append_null_image(name, records, shape);
   }

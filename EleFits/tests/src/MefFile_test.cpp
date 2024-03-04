@@ -393,7 +393,7 @@ BOOST_FIXTURE_TEST_CASE(append_copy_test, Test::TemporaryMefFile)
 
 void check_append_copy(bool zin, bool zout)
 {
-  VecRaster<float> raster({2881, 1});
+  Linx::Raster<float> raster({2881, 1});
   Test::TemporaryMefFile in;
   Test::TemporaryMefFile out;
 

@@ -6,13 +6,13 @@ object "universe : Universe" as universe {
 
 object "sources[0] : Source" as sources_0 {
     ra_dec : Coordinates
-    thumbnail : VecRaster<Flux>
+    thumbnail : Raster<Flux>
 }
 
 object "sources[1]" as sources_1
 object "sources[n]" as sources_n
 
-object "thumbnail : VecRaster<Flux>" as thumbnail_0 {
+object "thumbnail : Raster<Flux>" as thumbnail_0 {
     shape : Shape
     data : vector<float>
 }
@@ -36,7 +36,7 @@ sources_n *-- thumbnail_n
 thumbnail_n *-- data_n
 
 object observation {
-    raster : VecRaster<Flux>
+    raster : Raster<Flux>
 }
 
 data_0 <-- observation : use
