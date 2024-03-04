@@ -51,7 +51,7 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
     }
   }
   HduAccess::assign_image(fptr, "EXT", input);
-  const auto region = Fits::Region<3>::fromShape({1, 0, 1}, {2, 3, 3});
+  const auto region = Linx::Box<3>::fromShape({1, 0, 1}, {2, 3, 3});
   const auto view = ImageIo::read_region<long, 3>(fptr, region);
   BOOST_TEST(view.shape() == region.shape());
   for (long z = 0; z < view.length<2>(); ++z) {
@@ -64,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
     }
   }
   Linx::VecRaster<long, 3> output({3, 4, 5});
-  Fits::Subraster<long, 3, Fits::DataContainerHolder<long, std::vector<long>>> dst {
+  Linx::VecRaster<long, 3, Fits::DataContainerHolder<long, std::vector<long>>>::Tile dst {
       output,
       region}; // TODO don't use the same region
   ImageIo::read_region_to<long, 3>(fptr, region, dst);

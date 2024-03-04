@@ -25,8 +25,7 @@ namespace Fits {
  * Data can be read and written region-wise.
  * Source and destination regions are specified by a `FileMemRegions` object.
  * 
- * @see Raster
- * @see Subraster
+ * @see Linx
  */
 class ImageRaster {
 private:
@@ -87,12 +86,12 @@ public:
    * There are several options to read the whole data unit:
    * - as a new `VecRaster` object;
    * - by filling an existing `Raster` object;
-   * - by filling an existing `Subraster` object.
+   * - by filling an existing `Patch` object.
    * 
    * In the last two cases, the raster or subraster is assumed to already have a conforming shape.
    * 
    * @warning
-   * Filling a `Subraster` is much slower than filling a `Raster`.
+   * Filling a `Patch` is much slower than filling a `Raster`.
    */
   template <typename T, long N = 2>
   VecRaster<T, N> read() const;
@@ -122,7 +121,7 @@ public:
    * There are several options to read a region of the data unit:
    * - as a new `VecRaster` object;
    * - by filling an existing `Raster` object;
-   * - by filling an existing `Subraster` object.
+   * - by filling an existing `Patch` object.
    * In the last two cases, the in-file and in-memory regions are given as a `FileMemRegions` object.
    * 
    * For example, to read the HDU region from position (50, 80) to position (100, 120)
@@ -274,15 +273,16 @@ private:
   void read_region_to_slice(const Position<N>& front_position, TRaster& raster) const;
 
   /**
-   * @brief Read a region of the data unit into an existing `Subraster`.
+   * @brief Read a region of the data unit into an existing `Patch`.
    * @copydetails read_region()
    */
   template <typename T, long M, long N, typename TContainer>
-  void read_region_to_subraster(const Position<N>& front_position, Subraster<T, M, TContainer>& subraster)
+  void
+  read_region_to_subraster(const Position<N>& front_position, typename Linx::Raster<T, M, TContainer>::Tile& subraster)
       const; // FIXME rm?
 
   /**
-   * @brief Read a region of the data unit into an existing `Subraster`.
+   * @brief Read a region of the data unit into an existing `Patch`.
    * @details
    * The region is that of the subraster.
    * This function is equivalent to:
@@ -292,7 +292,7 @@ private:
    * where `region` would be the subraster region, and `raster` the subraster parent.
    */
   template <typename T, long N, typename TContainer>
-  void read_region_to(Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
+  void read_region_to(typename Linx::Raster<T, N, TContainer>::Tile& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.
@@ -301,18 +301,19 @@ private:
   void write_slice(const Position<N>& front_position, const TRaster& raster) const;
 
   /**
-   * @brief Write a `Subraster` at a corresponding position of the data unit.
+   * @brief Write a `Patch` at a corresponding position of the data unit.
    * @copydetails write_region()
    */
   template <typename T, long N, typename TContainer>
-  void write_region(const Subraster<T, N, TContainer>& subraster) const; // FIXME rm?
+  void write_region(const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster) const; // FIXME rm?
 
   /**
-   * @brief Write a `Subraster` at a given position of the data unit.
+   * @brief Write a `Patch` at a given position of the data unit.
    */
   template <typename T, long M, long N, typename TContainer>
-  void
-  write_subraster(const Position<N>& front_position, const Subraster<T, M, TContainer>& subraster) const; // FIXME rm?
+  void write_subraster(
+      const Position<N>& front_position,
+      const typename Linx::Raster<const T, M, TContainer>::ConstTile& subraster) const; // FIXME rm?
 
 private:
 

@@ -62,13 +62,13 @@ void read_raster_to(fitsfile* fptr, TRaster& destination);
  * @brief Read the whole raster of the current image HDU into a pre-existing subraster.
  */
 template <typename T, long N = 2, typename TContainer>
-void read_raster_to(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination);
+void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile& destination);
 
 /**
  * @brief Read a region of the current image HDU.
  */
 template <typename T, long M, long N>
-Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region);
+Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.
@@ -79,7 +79,7 @@ Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region)
  * directly in a destination raster.
  */
 template <typename TRaster, long N>
-void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& destination);
+void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TRaster& destination);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing subraster.
@@ -90,7 +90,10 @@ void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& dest
  * directly in a destination subraster.
  */
 template <typename T, long M, long N, typename TContainer>
-void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination);
+void read_region_to(
+    fitsfile* fptr,
+    const Linx::Box<N>& region,
+    typename Linx::Raster<T, M, TContainer>::Tile& destination);
 
 /**
  * @brief Write a whole raster in the current image HDU.
@@ -114,7 +117,7 @@ void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>
 template <typename T, long M, long N, typename TContainer> // FIXME where's M?
 void write_region(
     fitsfile* fptr,
-    const Fits::Subraster<T, N, TContainer>& subraster,
+    const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster,
     const Linx::Position<N>& destination);
 
 } // namespace ImageIo

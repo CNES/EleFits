@@ -82,14 +82,14 @@ void read_raster_to(fitsfile* fptr, TRaster& destination)
 }
 
 template <typename T, long N, typename TContainer>
-void read_raster_to(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination)
+void read_raster_to(fitsfile* fptr, typename Linx::Raster<T, N, TContainer>::Tile& destination)
 {
-  const auto region = Fits::Region<N>::fromShape(Linx::Position<N>::zero(), read_shape<N>(fptr));
+  const auto region = Linx::Box<N>::fromShape(Linx::Position<N>::zero(), read_shape<N>(fptr));
   read_region_to(fptr, region, destination);
 }
 
 template <typename T, long M, long N>
-Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region)
+Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
 {
   Linx::VecRaster<T, M> raster(region.shape().template slice<M>());
   read_region_to(fptr, region, raster);
@@ -97,7 +97,7 @@ Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region)
 }
 
 template <typename TRaster, long N>
-void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster)
+void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TRaster& raster)
 {
   int status = 0;
   const std::size_t dim = region.dimension();
@@ -122,41 +122,28 @@ void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& rast
 }
 
 template <typename T, long M, long N, typename TContainer>
-void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination)
+void read_region_to(
+    fitsfile* fptr,
+    const Linx::Box<N>& region,
+    typename Linx::Raster<T, N, TContainer>::Tile& destination)
 {
-  /* 1-based, flatten region (beginning of each line) */
-  Fits::Region<N> src_region = region + 1;
-  src_region.back[0] = src_region.front[0];
-  const auto src_count = src_region.size();
-
-  /* Screening positions */
-  auto src_front = src_region.front;
-  auto src_back = src_front;
-  src_back[0] += region.shape()[0] - 1;
-  auto dst_front = destination.region().front;
-  Fits::RegionScreener<N> src_screener(src_region, {src_back, dst_front});
-
-  /* Step */
-  std::vector<long> step(src_region.dimension(), 1L);
-
-  /* Process each line */
   int status = 0;
-  for (long i = 0; i < src_count; ++i) {
+  std::vector<long> step(region.dimension(), 1L);
+  auto delta = region.front() + 1 - destination.domain().front();
+  for (const auto& dst : rows(destination)) {
+    auto front = dst.front() + delta; // FIXME pre-allocate
+    auto back = front; // FIXME idem
+    back[0] += region.length(0) - 1;
     fits_read_subset(
         fptr,
         TypeCode<T>::for_image(),
-        src_front.data(),
-        src_back.data(),
+        front.data(),
+        back.data(),
         step.data(),
         nullptr,
-        &destination.parent()[dst_front],
+        &dst[0],
         nullptr,
         &status);
-    CfitsioError::may_throw(status, fptr, "Cannot read image region.");
-    src_screener.next();
-    src_front = src_screener.current();
-    src_back = src_screener.followers()[0];
-    dst_front = src_screener.followers()[1];
   }
 }
 
@@ -191,12 +178,12 @@ void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>
 template <typename T, long M, long N, typename TContainer>
 void write_region(
     fitsfile* fptr,
-    const Fits::Subraster<T, M, TContainer>& subraster,
+    const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster,
     const Linx::Position<N>& destination)
 {
   /* 1-based, flatten region (beginning of each line) */
   const auto shape = subraster.shape().extend(destination);
-  Fits::Region<N> dst_region {destination + 1, destination + shape};
+  Linx::Box<N> dst_region {destination + 1, destination + shape};
   dst_region.back[0] = dst_region.front[0];
 
   /* Screening positions */
