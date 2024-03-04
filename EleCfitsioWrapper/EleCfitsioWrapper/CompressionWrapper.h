@@ -32,7 +32,7 @@ inline std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr);
 /**
  * @brief Read the current compression tiling.
  */
-inline Fits::Position<-1> read_tiling(fitsfile* fptr);
+inline Linx::Position<-1> read_tiling(fitsfile* fptr);
 
 /**
  * @brief Declare the to-be-added compressed HDU as huge.

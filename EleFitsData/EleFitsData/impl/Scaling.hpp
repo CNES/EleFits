@@ -4,6 +4,7 @@
 
 #if defined(_ELEFITSDATA_SCALING_IMPL) || defined(CHECK_QUALITY)
 
+#include "EleFitsData/FitsError.h"
 #include "EleFitsData/Scaling.h"
 
 namespace Euclid {
@@ -11,33 +12,38 @@ namespace Fits {
 
 Scaling::Scaling() : Scaling(1, Type::Factor) {}
 
-Scaling::Scaling(double value, Type type) : m_type(type), m_value(value) {
+Scaling::Scaling(double value, Type type) : m_type(type), m_value(value)
+{
   if (value < 0) {
     throw FitsError("Scaling value must be positive or null");
   }
 }
 
-Scaling::operator bool() const {
+Scaling::operator bool() const
+{
   return m_value;
 }
 
-bool Scaling::is_identity() const {
+bool Scaling::is_identity() const
+{
   if (m_type == Type::Absolute) {
     return false;
   }
   return m_value == 1.;
 }
 
-Scaling::Type Scaling::type() const {
+Scaling::Type Scaling::type() const
+{
   return m_type;
 }
 
-double Scaling::value() const {
+double Scaling::value() const
+{
   return m_value;
 }
 
-bool Scaling::operator==(const Scaling& rhs) const {
-
+bool Scaling::operator==(const Scaling& rhs) const
+{
   // Both disabled
   if (not *this && not rhs) {
     return true;
@@ -57,11 +63,13 @@ bool Scaling::operator==(const Scaling& rhs) const {
   return m_value == 1. / rhs.m_value;
 }
 
-bool Scaling::operator!=(const Scaling& rhs) const {
+bool Scaling::operator!=(const Scaling& rhs) const
+{
   return not(*this == rhs);
 }
 
-Scaling& Scaling::operator*=(double value) {
+Scaling& Scaling::operator*=(double value)
+{
   if (value <= 0) {
     throw FitsError("Scaling multiplication requires positive value");
   }
@@ -76,7 +84,8 @@ Scaling& Scaling::operator*=(double value) {
   return *this;
 }
 
-Scaling& Scaling::operator/=(double value) {
+Scaling& Scaling::operator/=(double value)
+{
   if (value <= 0) {
     throw FitsError("Scaling division requires positive value");
   }
@@ -91,13 +100,15 @@ Scaling& Scaling::operator/=(double value) {
   return *this;
 }
 
-Scaling Scaling::operator*(double value) const {
+Scaling Scaling::operator*(double value) const
+{
   Scaling out = *this;
   out *= value;
   return out;
 }
 
-Scaling Scaling::operator/(double value) {
+Scaling Scaling::operator/(double value)
+{
   Scaling out = *this;
   out /= value;
   return out;

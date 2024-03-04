@@ -81,7 +81,7 @@ public:
   /**
    * @brief The dimension parameter.
    */
-  static constexpr Linx::Index Dim = N;
+  static constexpr Linx::Index Dimension = N;
 
   /**
    * @brief The info type.
@@ -280,10 +280,10 @@ private:
  * \endcode
  */
 template <typename TInfo, typename TContainer>
-Column<typename TContainer::value_type, std::decay_t<TInfo>::Dim, Linx::StdHolder<TContainer>>
+Column<typename TContainer::value_type, std::decay_t<TInfo>::Dimension, Linx::StdHolder<TContainer>>
 make_column(TInfo info, TContainer&& data)
 {
-  return Column<typename TContainer::value_type, std::decay_t<TInfo>::Dim, Linx::StdHolder<TContainer>> {
+  return Column<typename TContainer::value_type, std::decay_t<TInfo>::Dimension, Linx::StdHolder<TContainer>> {
       std::forward<TInfo>(info),
       std::forward<TContainer>(data)};
 }
@@ -293,9 +293,9 @@ make_column(TInfo info, TContainer&& data)
  * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-PtrColumn<T, std::decay_t<TInfo>::Dim> make_column(TInfo&& info, Linx::Index row_count, T* data)
+PtrColumn<T, std::decay_t<TInfo>::Dimension> make_column(TInfo&& info, Linx::Index row_count, T* data)
 {
-  return PtrColumn<T, std::decay_t<TInfo>::Dim> {std::forward<TInfo>(info), row_count, data};
+  return PtrColumn<T, std::decay_t<TInfo>::Dimension> {std::forward<TInfo>(info), row_count, data};
 }
 
 /**

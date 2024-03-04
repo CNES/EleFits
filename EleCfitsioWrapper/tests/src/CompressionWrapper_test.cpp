@@ -22,7 +22,7 @@ void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype)
 {
   int status = 0;
 
-  Fits::Position<-1> shape(dimension);
+  Linx::Position<-1> shape(dimension);
   std::fill(shape.begin(), shape.end(), 300);
 
   TAlgo algo(shape);
@@ -34,7 +34,7 @@ void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype)
   BOOST_TEST(actual_comptype == comptype);
 
   // verify tile size:
-  Fits::Position<-1> actual_shape(dimension);
+  Linx::Position<-1> actual_shape(dimension);
   fits_get_tile_dim(fptr, actual_shape.size(), actual_shape.data(), &status);
   BOOST_TEST(actual_shape == shape);
 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test)
   int status = 0;
   Fits::Test::MinimalFile file;
 
-  const Fits::Position<-1>& shape {300, 200};
+  const Linx::Position<-1>& shape {300, 200};
 
   Fits::HCompress algo(shape);
   ImageCompression::compress(file.fptr, algo);
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(hcompress_compress_test)
 BOOST_AUTO_TEST_CASE(iscompressing_test)
 {
   Fits::NoCompression none;
-  const Fits::Position<-1>& shape {300, 200};
+  const Linx::Position<-1>& shape {300, 200};
   Fits::HCompress algo(shape);
 
   Fits::Test::MinimalFile file;

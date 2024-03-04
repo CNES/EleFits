@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test)
   VecColumn<int> column({"DATA", "", 1}, std::move(input));
   BOOST_TEST(column.container()[1] == 5);
   BOOST_TEST(input.size() == 0);
-  column.moveTo(input);
+  column.move_to(input);
   BOOST_TEST(input[1] == 5);
   BOOST_TEST(column.container().size() == 0);
   BOOST_TEST(column.size() == 0);
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(make_veccolumn_test)
   BOOST_TEST((std::is_same<Value, char>::value));
   BOOST_TEST(column.info().name == "NAME");
   BOOST_TEST(column.info().unit == "unit");
-  BOOST_TEST(column.info().shape == Position<1> {repeat});
+  BOOST_TEST(column.info().shape == Linx::Position<1> {repeat});
   BOOST_TEST(column.row_count() == rows);
   BOOST_TEST(column.data() == data);
 }
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(make_ptrcolumn_test)
   BOOST_TEST((std::is_same<Value, char>::value));
   BOOST_TEST(column.info().name == "NAME");
   BOOST_TEST(column.info().unit == "unit");
-  BOOST_TEST(column.info().shape == Position<1> {repeat});
+  BOOST_TEST(column.info().shape == Linx::Position<1> {repeat});
   BOOST_TEST(column.row_count() == rows);
   BOOST_TEST(column.data() == vector.data());
 }

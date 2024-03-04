@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/cvmfs/euclid-dev.in2p3.fr/EDEN-3.1/include",
-                "/cvmfs/euclid-dev.in2p3.fr/EDEN-3.1/opt/euclid/Linx/1.0/InstallArea/x86_64-conda_ry9-gcc11-o2g/include"
+                "/home/user/Work/Projects/Linx/Linx"
             ],
             "defines": [
                 "CHECK_QUALITY"

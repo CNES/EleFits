@@ -14,7 +14,8 @@ namespace Euclid {
 namespace Cfitsio {
 namespace HduAccess {
 
-long count(fitsfile* fptr) {
+long count(fitsfile* fptr)
+{
   int count = 0;
   int status = 0;
   fits_get_num_hdus(fptr, &count, &status);
@@ -22,13 +23,15 @@ long count(fitsfile* fptr) {
   return count;
 }
 
-long current_index(fitsfile* fptr) {
+long current_index(fitsfile* fptr)
+{
   int index = 0;
   fits_get_hdu_num(fptr, &index);
   return index;
 }
 
-std::string current_name(fitsfile* fptr) {
+std::string current_name(fitsfile* fptr)
+{
   if (HeaderIo::has_keyword(fptr, "EXTNAME")) {
     return HeaderIo::parse_record<std::string>(fptr, "EXTNAME");
   }
@@ -38,7 +41,8 @@ std::string current_name(fitsfile* fptr) {
   return "";
 }
 
-long current_version(fitsfile* fptr) {
+long current_version(fitsfile* fptr)
+{
   if (HeaderIo::has_keyword(fptr, "EXTVER")) {
     return HeaderIo::parse_record<long>(fptr, "EXTVER");
   }
@@ -48,7 +52,8 @@ long current_version(fitsfile* fptr) {
   return 1;
 }
 
-std::size_t current_size(fitsfile* fptr) {
+std::size_t current_size(fitsfile* fptr)
+{
   int status = 0;
   LONGLONG current_head_start;
   LONGLONG next_head_start;
@@ -75,7 +80,8 @@ std::size_t current_size(fitsfile* fptr) {
   return static_cast<std::size_t>(next_head_start - current_head_start);
 }
 
-Fits::HduCategory current_type(fitsfile* fptr) {
+Fits::HduCategory current_type(fitsfile* fptr)
+{
   int type = 0;
   int status = 0;
   fits_get_hdu_type(fptr, &type, &status);
@@ -88,11 +94,13 @@ Fits::HduCategory current_type(fitsfile* fptr) {
   throw Fits::FitsError("Unknown HDU type (code " + std::to_string(type) + ").");
 }
 
-bool current_is_primary(fitsfile* fptr) {
+bool current_is_primary(fitsfile* fptr)
+{
   return current_index(fptr) == 1;
 }
 
-bool goto_index(fitsfile* fptr, long index) {
+bool goto_index(fitsfile* fptr, long index)
+{
   if (index == current_index(fptr)) {
     return false;
   }
@@ -103,7 +111,8 @@ bool goto_index(fitsfile* fptr, long index) {
   return true;
 }
 
-bool goto_name(fitsfile* fptr, const std::string& name, long version, Fits::HduCategory category) {
+bool goto_name(fitsfile* fptr, const std::string& name, long version, Fits::HduCategory category)
+{
   if (name == "") {
     return false;
   }
@@ -121,7 +130,8 @@ bool goto_name(fitsfile* fptr, const std::string& name, long version, Fits::HduC
   return true;
 }
 
-bool goto_next(fitsfile* fptr, long step) {
+bool goto_next(fitsfile* fptr, long step)
+{
   if (step == 0) {
     return false;
   }
@@ -132,19 +142,22 @@ bool goto_next(fitsfile* fptr, long step) {
   return true;
 }
 
-bool goto_primary(fitsfile* fptr) {
+bool goto_primary(fitsfile* fptr)
+{
   return goto_index(fptr, 1);
 }
 
-bool init_primary(fitsfile* fptr) {
+bool init_primary(fitsfile* fptr)
+{
   if (count(fptr) > 0) {
     return false;
   }
-  init_image<unsigned char, 0>(fptr, "", Fits::Position<0>());
+  init_image<unsigned char, 0>(fptr, "", Linx::Position<0>());
   return true;
 }
 
-bool update_name(fitsfile* fptr, const std::string& name) {
+bool update_name(fitsfile* fptr, const std::string& name)
+{
   if (name == "") {
     return false;
   }
@@ -152,7 +165,8 @@ bool update_name(fitsfile* fptr, const std::string& name) {
   return true;
 }
 
-bool update_version(fitsfile* fptr, long version) {
+bool update_version(fitsfile* fptr, long version)
+{
   if (version == 0) {
     return false;
   }
@@ -160,13 +174,15 @@ bool update_version(fitsfile* fptr, long version) {
   return true;
 }
 
-void copy_verbatim(fitsfile* from, fitsfile* to) {
+void copy_verbatim(fitsfile* from, fitsfile* to)
+{
   int status = 0;
   fits_copy_hdu(from, to, 0, &status);
   Cfitsio::CfitsioError::may_throw(status, to, "Cannot copy HDU");
 }
 
-void remove(fitsfile* fptr, long index) {
+void remove(fitsfile* fptr, long index)
+{
   goto_index(fptr, index);
   int status = 0;
   fits_delete_hdu(fptr, nullptr, &status);

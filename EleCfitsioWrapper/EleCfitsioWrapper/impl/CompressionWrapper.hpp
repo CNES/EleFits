@@ -34,7 +34,7 @@ std::unique_ptr<Fits::Compression> get_compression(fitsfile* fptr)
   }
 
   // Read tiling
-  Fits::Position<-1> tiling(MAX_COMPRESS_DIM);
+  Linx::Position<-1> tiling(MAX_COMPRESS_DIM);
   std::fill(tiling.begin(), tiling.end(), 1); // FIXME useful?
   fits_get_tile_dim(fptr, MAX_COMPRESS_DIM, tiling.data(), &status);
   // FIXME remove useless 1's down to dimension 2
@@ -51,7 +51,7 @@ std::unique_ptr<Fits::Compression> get_compression(fitsfile* fptr)
     return std::make_unique<Fits::Rice>(std::move(tiling), std::move(quantization));
   }
   if (algo == HCOMPRESS_1) {
-    auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {tiling[0], tiling[1]}, std::move(quantization));
+    auto out = std::make_unique<Fits::HCompress>(Linx::Position<-1> {tiling[0], tiling[1]}, std::move(quantization));
     fits_get_hcomp_scale(fptr, &scale, &status);
     CfitsioError::may_throw(status, fptr, "Cannot read H-compress scaling");
     out->scaling(scale <= 0 ? Fits::Scaling(-scale) : Fits::Tile::rms * scale);
@@ -103,7 +103,7 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr)
   /* Tiling */
 
   const auto dimension = std::min<long>(HeaderIo::parse_record<long>(fptr, "ZNAXIS"), MAX_COMPRESS_DIM);
-  Fits::Position<-1> shape(dimension);
+  Linx::Position<-1> shape(dimension);
   for (long i = 0; i < dimension; ++i) {
     shape[i] = 1;
     try {
@@ -162,7 +162,7 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr)
   }
   if (name == "HCOMPRESS_1") {
     const auto scale = parse_value_or<double>(fptr, "SCALE", 0);
-    auto out = std::make_unique<Fits::HCompress>(Fits::Position<-1> {shape[0], shape[1]}, std::move(quantization));
+    auto out = std::make_unique<Fits::HCompress>(Linx::Position<-1> {shape[0], shape[1]}, std::move(quantization));
     out->scaling(scale <= 0 ? Fits::Scaling(-scale) : Fits::Tile::rms * scale);
     return out;
   }
@@ -180,10 +180,10 @@ void enable_huge_compression(fitsfile* fptr, bool huge)
   Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot set huge HDU");
 }
 
-inline void set_tiling(fitsfile* fptr, const Fits::Position<-1>& shape)
+inline void set_tiling(fitsfile* fptr, const Linx::Position<-1>& shape)
 {
   int status = 0;
-  Euclid::Fits::Position<-1> nonconst_shape = shape;
+  Linx::Position<-1> nonconst_shape = shape;
   fits_set_tile_dim(fptr, nonconst_shape.size(), nonconst_shape.data(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot set compression tiling");
 }

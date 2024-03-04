@@ -60,7 +60,7 @@ Fits::ColumnInfo<T, N> read_column_info(fitsfile* fptr, long index);
  * @brief Read the TDIM keyword (if any).
  */
 template <long N>
-void read_column_dim(fitsfile* fptr, long index, Fits::Position<N>& info);
+void read_column_dim(fitsfile* fptr, long index, Linx::Position<N>& info);
 
 /**
  * @brief Read the binary table column with given index.
@@ -105,7 +105,7 @@ void write_column(fitsfile* fptr, const TColumn& column);
  * or if the shape does not correspond to the repeat count.
  */
 template <long N>
-void write_column_dim(fitsfile* fptr, long index, const Fits::Position<N>& shape);
+void write_column_dim(fitsfile* fptr, long index, const Linx::Position<N>& shape);
 
 /**
  * @brief Write several TDIM keywords if needed.

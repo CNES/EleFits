@@ -15,7 +15,8 @@ namespace Cfitsio {
 namespace HduAccess {
 
 template <typename T, long N>
-void init_image(fitsfile* fptr, const std::string& name, const Fits::Position<N>& shape) {
+void init_image(fitsfile* fptr, const std::string& name, const Linx::Position<N>& shape)
+{
   may_throw_readonly(fptr);
   int status = 0;
   auto nonconst_shape = shape; // const-correctness issue
@@ -25,13 +26,15 @@ void init_image(fitsfile* fptr, const std::string& name, const Fits::Position<N>
 }
 
 template <typename TRaster>
-void assign_image(fitsfile* fptr, const std::string& name, const TRaster& raster) {
-  init_image<typename TRaster::Value, TRaster::Dim>(fptr, name, raster.shape());
+void assign_image(fitsfile* fptr, const std::string& name, const TRaster& raster)
+{
+  init_image<typename TRaster::Value, TRaster::Dimension>(fptr, name, raster.shape());
   ImageIo::write_raster(fptr, raster);
 }
 
 template <typename... TInfos>
-void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... infos) {
+void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... infos)
+{
   constexpr long ncols = sizeof...(TInfos);
   Fits::String::CStrArray col_name {infos.name...};
   Fits::String::CStrArray col_format {TypeCode<typename TInfos::Value>::tform(infos.repeat_count())...};
@@ -52,7 +55,8 @@ void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... inf
 }
 
 template <typename... TColumns>
-void assign_bintable(fitsfile* fptr, const std::string& name, const TColumns&... columns) {
+void assign_bintable(fitsfile* fptr, const std::string& name, const TColumns&... columns)
+{
   init_bintable(fptr, name, columns.info()...);
   BintableIo::write_columns(fptr, columns...);
 }
@@ -60,19 +64,22 @@ void assign_bintable(fitsfile* fptr, const std::string& name, const TColumns&...
 /// @cond INTERNAL
 namespace Internal {
 template <typename TColumns, std::size_t... Is>
-void assign_bintableImpl(fitsfile* fptr, const std::string& name, const TColumns& columns, std::index_sequence<Is...>) {
+void assign_bintableImpl(fitsfile* fptr, const std::string& name, const TColumns& columns, std::index_sequence<Is...>)
+{
   assign_bintable(fptr, name, std::get<Is>(columns)...);
 }
 } // namespace Internal
 /// @endcond
 
 template <typename TTuple, std::size_t Size>
-void assign_bintable(fitsfile* fptr, const std::string& name, const TTuple& columns) { // TODO tuple_apply?
+void assign_bintable(fitsfile* fptr, const std::string& name, const TTuple& columns)
+{ // TODO tuple_apply?
   Internal::assign_bintableImpl<TTuple>(fptr, name, columns, std::make_index_sequence<Size>());
 }
 
 template <typename TColumn>
-void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& column) { // TODO used?
+void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& column)
+{ // TODO used?
   constexpr long column_count = 1;
   std::string col_name = column.info().name;
   char* c_name = &col_name[0];

@@ -5,8 +5,9 @@
 #ifndef _ELEFITSDATA_TESTRASTER_H
 #define _ELEFITSDATA_TESTRASTER_H
 
-#include "EleFitsData/Raster.h"
+#include "EleFitsData/Raster.h" // ELEFITS_FOREACH_RASTER_TYPE
 #include "EleFitsData/TestUtils.h"
+#include "Linx/Data/Raster.h"
 
 #include <algorithm>
 #include <complex>
@@ -19,9 +20,9 @@ namespace Test {
 /**
  * @brief A 2D image Raster of floats.
  */
-class SmallRaster : public VecRaster<float> {
-
+class SmallRaster : public Linx::VecRaster<float> { // FIXME useless with Linx::random()
 public:
+
   /**
    * @brief Generate a SmallRaster with given width and height.
    */
@@ -51,13 +52,13 @@ public:
  * @brief A random Raster of given type and shape.
  */
 template <typename T, long N = 2>
-class RandomRaster : public VecRaster<T, N> {
-
+class RandomRaster : public Linx::VecRaster<T, N> {
 public:
+
   /**
    * @brief Generate a Raster with given shape.
    */
-  explicit RandomRaster(Position<N> raster_shape, T min = almost_min<T>(), T max = almost_max<T>());
+  explicit RandomRaster(Linx::Position<N> raster_shape, T min = almost_min<T>(), T max = almost_max<T>());
 
   /**
    * @brief Destructor.

@@ -10,7 +10,7 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T, long N>
-constexpr long ColumnInfo<T, N>::Dim;
+constexpr long ColumnInfo<T, N>::Dimension;
 
 template <typename T, long N>
 long ColumnInfo<T, N>::repeat_count() const

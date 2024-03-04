@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(quantization_equality_test)
 template <typename TAlgo>
 void test_algo_mixin_parameters(long dimension = 0)
 {
-  Position<-1> shape(dimension);
+  Linx::Position<-1> shape(dimension);
   std::fill(shape.begin(), shape.end(), 300);
   TAlgo algo(shape);
 
@@ -143,7 +143,7 @@ template <>
 void test_algo_mixin_parameters<NoCompression>(long)
 {
   NoCompression algo;
-  BOOST_TEST((algo.tiling() == Position<-1> {0}));
+  BOOST_TEST((algo.tiling() == Linx::Position<-1> {0}));
 }
 
 BOOST_AUTO_TEST_CASE(algo_mixin_test)
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(algo_mixin_test)
 
 BOOST_AUTO_TEST_CASE(hcompress_test)
 {
-  const Position<-1>& shape {300, 200};
+  const Linx::Position<-1>& shape {300, 200};
   HCompress algo(shape);
 
   // check default hcompress params values:

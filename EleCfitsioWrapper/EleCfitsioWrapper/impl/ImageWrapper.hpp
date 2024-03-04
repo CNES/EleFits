@@ -16,18 +16,20 @@ namespace ImageIo {
  * @brief Variable dimension case.
  */
 template <>
-Fits::Position<-1> read_shape<-1>(fitsfile* fptr);
+Linx::Position<-1> read_shape<-1>(fitsfile* fptr);
 
 template <long N>
-Fits::Position<N> read_shape(fitsfile* fptr) {
-  Fits::Position<N> shape;
+Linx::Position<N> read_shape(fitsfile* fptr)
+{
+  Linx::Position<N> shape;
   int status = 0;
   fits_get_img_size(fptr, N, &shape[0], &status);
   CfitsioError::may_throw(status, fptr, "Cannot read raster shape.");
   return shape;
 }
 
-bool is_compressed(fitsfile* fptr) {
+bool is_compressed(fitsfile* fptr)
+{
   int status = 0;
   bool is_compressed = fits_is_compressed_image(fptr, &status);
   CfitsioError::may_throw(status, fptr, "Cannot determine if image is compressed.");
@@ -35,7 +37,8 @@ bool is_compressed(fitsfile* fptr) {
 }
 
 template <long N>
-void update_shape(fitsfile* fptr, const Fits::Position<N>& shape) {
+void update_shape(fitsfile* fptr, const Linx::Position<N>& shape)
+{
   int status = 0;
   int imgtype = 0;
   fits_get_img_type(fptr, &imgtype, &status);
@@ -45,7 +48,8 @@ void update_shape(fitsfile* fptr, const Fits::Position<N>& shape) {
 }
 
 template <typename T, long N>
-void update_type_shape(fitsfile* fptr, const Fits::Position<N>& shape) {
+void update_type_shape(fitsfile* fptr, const Linx::Position<N>& shape)
+{
   int status = 0;
   auto nonconst_shape = shape;
   fits_resize_img(fptr, TypeCode<T>::bitpix(), shape.size(), nonconst_shape.data(), &status);
@@ -53,14 +57,16 @@ void update_type_shape(fitsfile* fptr, const Fits::Position<N>& shape) {
 }
 
 template <typename T, long N>
-Fits::VecRaster<T, N> read_raster(fitsfile* fptr) {
-  Fits::VecRaster<T, N> raster(read_shape<N>(fptr));
+Linx::VecRaster<T, N> read_raster(fitsfile* fptr)
+{
+  Linx::VecRaster<T, N> raster(read_shape<N>(fptr));
   read_raster_to(fptr, raster);
   return raster;
 }
 
 template <typename TRaster>
-void read_raster_to(fitsfile* fptr, TRaster& destination) {
+void read_raster_to(fitsfile* fptr, TRaster& destination)
+{
   int status = 0;
   const auto size = destination.size();
   fits_read_img(
@@ -76,24 +82,27 @@ void read_raster_to(fitsfile* fptr, TRaster& destination) {
 }
 
 template <typename T, long N, typename TContainer>
-void read_raster_to(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination) {
-  const auto region = Fits::Region<N>::fromShape(Fits::Position<N>::zero(), read_shape<N>(fptr));
+void read_raster_to(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destination)
+{
+  const auto region = Fits::Region<N>::fromShape(Linx::Position<N>::zero(), read_shape<N>(fptr));
   read_region_to(fptr, region, destination);
 }
 
 template <typename T, long M, long N>
-Fits::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region) {
-  Fits::VecRaster<T, M> raster(region.shape().template slice<M>());
+Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region)
+{
+  Linx::VecRaster<T, M> raster(region.shape().template slice<M>());
   read_region_to(fptr, region, raster);
   return raster;
 }
 
 template <typename TRaster, long N>
-void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster) {
+void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& raster)
+{
   int status = 0;
   const std::size_t dim = region.dimension();
-  Fits::Position<N> front = region.front; // Copy for const-correctness
-  Fits::Position<N> back = region.back; // idem
+  Linx::Position<N> front = region.front; // Copy for const-correctness
+  Linx::Position<N> back = region.back; // idem
   std::vector<long> step(dim, 1);
   for (std::size_t i = 0; i < dim; ++i) {
     front[i]++; // CFITSIO is 1-based
@@ -113,8 +122,8 @@ void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, TRaster& rast
 }
 
 template <typename T, long M, long N, typename TContainer>
-void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination) {
-
+void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subraster<T, M, TContainer>& destination)
+{
   /* 1-based, flatten region (beginning of each line) */
   Fits::Region<N> src_region = region + 1;
   src_region.back[0] = src_region.front[0];
@@ -152,7 +161,8 @@ void read_region_to(fitsfile* fptr, const Fits::Region<N>& region, Fits::Subrast
 }
 
 template <typename TRaster>
-void write_raster(fitsfile* fptr, const TRaster& raster) {
+void write_raster(fitsfile* fptr, const TRaster& raster)
+{
   may_throw_readonly(fptr);
   int status = 0;
   const auto begin = raster.data();
@@ -164,7 +174,8 @@ void write_raster(fitsfile* fptr, const TRaster& raster) {
 }
 
 template <typename TRaster, long N>
-void write_region(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>& destination) {
+void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>& destination)
+{
   int status = 0;
   auto front = destination + 1;
   const auto shape = raster.shape().extend(destination);
@@ -181,8 +192,8 @@ template <typename T, long M, long N, typename TContainer>
 void write_region(
     fitsfile* fptr,
     const Fits::Subraster<T, M, TContainer>& subraster,
-    const Fits::Position<N>& destination) {
-
+    const Linx::Position<N>& destination)
+{
   /* 1-based, flatten region (beginning of each line) */
   const auto shape = subraster.shape().extend(destination);
   Fits::Region<N> dst_region {destination + 1, destination + shape};
@@ -194,8 +205,8 @@ void write_region(
 
   /* Process each line */
   int status = 0;
-  Fits::Position<N> dst_back;
-  Fits::Position<N> src_front;
+  Linx::Position<N> dst_back;
+  Linx::Position<N> src_front;
   std::vector<std::decay_t<T>> line(dst_size);
   for (auto dst_front : dst_region) {
     dst_back = dst_front;

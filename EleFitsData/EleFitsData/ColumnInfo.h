@@ -139,7 +139,7 @@ struct ColumnInfo {
   /**
    * @brief The dimension parameter.
    */
-  static constexpr long Dim = N;
+  static constexpr long Dimension = N;
 
   /**
    * @brief Create a column info with given field repeat count.

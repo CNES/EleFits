@@ -122,7 +122,7 @@ bool update_version(fitsfile* fptr, long version);
  * @brief Create a new image HDU with given name, pixel type and shape.
  */
 template <typename T, long N = 2>
-void init_image(fitsfile* fptr, const std::string& name, const Fits::Position<N>& shape);
+void init_image(fitsfile* fptr, const std::string& name, const Linx::Position<N>& shape);
 
 /**
  * @brief Write a Raster in a new image HDU.

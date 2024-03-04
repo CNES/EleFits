@@ -16,12 +16,12 @@ namespace Validation {
  * @brief Benchmark to measure the impact of pixel looping approach.
  */
 class LoopingBenchmark {
-
 public:
+
   /**
    * @brief The raster dimension.
    */
-  static constexpr long Dim = 3;
+  static constexpr long Dimension = 3;
 
   /**
    * @brief The raster value type.
@@ -64,12 +64,13 @@ public:
   Duration loop_over_values();
 
 private:
+
   const long m_width;
   const long m_height;
   const long m_depth;
-  const Test::RandomRaster<Value, Dim> m_a;
-  const Test::RandomRaster<Value, Dim> m_b;
-  VecRaster<Value, Dim> m_c;
+  const Test::RandomRaster<Value, Dimension> m_a;
+  const Test::RandomRaster<Value, Dimension> m_b;
+  VecRaster<Value, Dimension> m_c;
   Chronometer<Duration> m_chrono;
 };
 

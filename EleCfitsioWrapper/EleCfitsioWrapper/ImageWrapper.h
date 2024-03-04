@@ -33,7 +33,7 @@ long read_bitpix(fitsfile* fptr);
  * @brief Read the shape of the current image HDU.
  */
 template <long N = 2>
-Fits::Position<N> read_shape(fitsfile* fptr);
+Linx::Position<N> read_shape(fitsfile* fptr);
 
 /**
  * @brief Know if the current image HDU is compressed
@@ -44,13 +44,13 @@ inline bool is_compressed(fitsfile* fptr);
  * @brief Reshape the current image HDU.
  */
 template <typename T, long N = 2>
-void update_shape(fitsfile* fptr, const Fits::Position<N>& shape);
+void update_shape(fitsfile* fptr, const Linx::Position<N>& shape);
 
 /**
  * @brief Read the whole raster of the current image HDU.
  */
 template <typename T, long N = 2>
-Fits::VecRaster<T, N> read_raster(fitsfile* fptr);
+Linx::VecRaster<T, N> read_raster(fitsfile* fptr);
 
 /**
  * @brief Read the whole raster of the current image HDU into a pre-existing raster.
@@ -68,7 +68,7 @@ void read_raster_to(fitsfile* fptr, Fits::Subraster<T, N, TContainer>& destinati
  * @brief Read a region of the current image HDU.
  */
 template <typename T, long M, long N>
-Fits::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region);
+Linx::VecRaster<T, M> read_region(fitsfile* fptr, const Fits::Region<N>& region);
 
 /**
  * @brief Read a region of the current image HDU into a pre-existing raster.
@@ -104,7 +104,7 @@ void write_raster(fitsfile* fptr, const TRaster& raster);
  * @param destination The destination position (size is deduced from raster size)
  */
 template <typename TRaster, long N>
-void write_region(fitsfile* fptr, const TRaster& raster, const Fits::Position<N>& destination);
+void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>& destination);
 
 /**
  * @brief Write a subraster into a region of the current image HDU.
@@ -115,7 +115,7 @@ template <typename T, long M, long N, typename TContainer> // FIXME where's M?
 void write_region(
     fitsfile* fptr,
     const Fits::Subraster<T, N, TContainer>& subraster,
-    const Fits::Position<N>& destination);
+    const Linx::Position<N>& destination);
 
 } // namespace ImageIo
 } // namespace Cfitsio

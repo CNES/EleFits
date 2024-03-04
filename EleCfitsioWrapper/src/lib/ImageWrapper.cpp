@@ -17,7 +17,8 @@ namespace ImageIo {
     return typeid(type); \
   }
 
-const std::type_info& read_typeid(fitsfile* fptr) {
+const std::type_info& read_typeid(fitsfile* fptr)
+{
   int status = 0;
   int bitpix = 0;
   fits_get_img_equivtype(fptr, &bitpix, &status);
@@ -26,7 +27,8 @@ const std::type_info& read_typeid(fitsfile* fptr) {
   throw Fits::FitsError("Unknown BITPIX: " + std::to_string(bitpix));
 }
 
-long read_bitpix(fitsfile* fptr) {
+long read_bitpix(fitsfile* fptr)
+{
   int status = 0;
   int bitpix = 0;
   fits_get_img_type(fptr, &bitpix, &status);
@@ -35,11 +37,12 @@ long read_bitpix(fitsfile* fptr) {
 }
 
 template <>
-Fits::Position<-1> read_shape<-1>(fitsfile* fptr) {
+Linx::Position<-1> read_shape<-1>(fitsfile* fptr)
+{
   int status = 0;
   int naxis = 0;
   fits_get_img_dim(fptr, &naxis, &status);
-  Fits::Position<-1> shape(naxis);
+  Linx::Position<-1> shape(naxis);
   fits_get_img_size(fptr, naxis, &shape[0], &status);
   CfitsioError::may_throw(status, fptr, "Cannot read raster shape");
   return shape;

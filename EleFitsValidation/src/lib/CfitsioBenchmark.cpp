@@ -8,31 +8,37 @@ namespace Euclid {
 namespace Fits {
 namespace Validation {
 
-CfitsioBenchmark::~CfitsioBenchmark() {
+CfitsioBenchmark::~CfitsioBenchmark()
+{
   fits_close_file(m_fptr, &m_status);
 }
 
 CfitsioBenchmark::CfitsioBenchmark(const std::string& filename, long chunk_row_count) :
-    Benchmark(filename), m_fptr(nullptr), m_status(0), m_chunk_row_count(chunk_row_count) {
+    Benchmark(filename), m_fptr(nullptr), m_status(0), m_chunk_row_count(chunk_row_count)
+{
   m_logger.info() << "CFITSIO benchmark (chunk_row_count: " << chunk_row_count << ", filename: " << filename << ")";
   fits_create_file(&m_fptr, (std::string("!") + filename).c_str(), &m_status);
   fits_create_img(m_fptr, BYTE_IMG, 0, nullptr, &m_status); // Create empty Primary
   may_throw("Cannot create file");
 }
 
-long CfitsioBenchmark::chunk_row_count() const {
+long CfitsioBenchmark::chunk_row_count() const
+{
   return m_chunk_row_count;
 }
 
-void CfitsioBenchmark::open() {
+void CfitsioBenchmark::open()
+{
   fits_open_file(&m_fptr, m_filename.c_str(), READWRITE, &m_status);
 }
 
-void CfitsioBenchmark::close() {
+void CfitsioBenchmark::close()
+{
   fits_close_file(m_fptr, &m_status);
 }
 
-BChronometer::Unit CfitsioBenchmark::write_image(const BRaster& raster) {
+BChronometer::Unit CfitsioBenchmark::write_image(const BRaster& raster)
+{
   m_chrono.start();
   auto nonconst_shape = raster.shape();
   fits_create_img(
@@ -54,12 +60,13 @@ BChronometer::Unit CfitsioBenchmark::write_image(const BRaster& raster) {
   return m_chrono.stop();
 }
 
-BRaster CfitsioBenchmark::read_image(long index) {
+BRaster CfitsioBenchmark::read_image(long index)
+{
   m_chrono.start();
   int hdu_type = 0;
   fits_movabs_hdu(m_fptr, index + 1, &hdu_type, &m_status);
-  Position<BRaster::Dim> shape;
-  fits_get_img_size(m_fptr, BRaster::Dim, shape.data(), &m_status);
+  Position<BRaster::Dimension> shape;
+  fits_get_img_size(m_fptr, BRaster::Dimension, shape.data(), &m_status);
   BRaster raster(shape);
   fits_read_img(
       m_fptr,
@@ -75,7 +82,8 @@ BRaster CfitsioBenchmark::read_image(long index) {
   return raster;
 }
 
-BChronometer::Unit CfitsioBenchmark::write_bintable(const BColumns& columns) {
+BChronometer::Unit CfitsioBenchmark::write_bintable(const BColumns& columns)
+{
   long row_count = std::get<0>(columns).row_count();
   std::vector<std::string> names(row_count);
   std::vector<std::string> formats(row_count);
@@ -123,7 +131,8 @@ BChronometer::Unit CfitsioBenchmark::write_bintable(const BColumns& columns) {
   return m_chrono.stop();
 }
 
-BColumns CfitsioBenchmark::read_bintable(long index) {
+BColumns CfitsioBenchmark::read_bintable(long index)
+{
   int hdu_type = 0;
   fits_movabs_hdu(m_fptr, index + 1, &hdu_type, &m_status);
   may_throw("Cannot access HDU");
@@ -161,7 +170,8 @@ BColumns CfitsioBenchmark::read_bintable(long index) {
   return columns;
 }
 
-long CfitsioBenchmark::compute_chunk_row_count(long row_count) {
+long CfitsioBenchmark::compute_chunk_row_count(long row_count)
+{
   if (m_chunk_row_count == -1) {
     m_logger.debug() << "Row chunk size: " << row_count;
     return row_count;
@@ -177,7 +187,8 @@ long CfitsioBenchmark::compute_chunk_row_count(long row_count) {
   return m_chunk_row_count;
 }
 
-void CfitsioBenchmark::may_throw(const std::string& context) const {
+void CfitsioBenchmark::may_throw(const std::string& context) const
+{
   Cfitsio::CfitsioError::may_throw(m_status, m_fptr, context);
 }
 

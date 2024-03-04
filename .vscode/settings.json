@@ -74,6 +74,7 @@
         "*.inc": "cpp",
         "iterativesolvers": "cpp",
         "svd": "cpp",
-        "ciso646": "cpp"
+        "ciso646": "cpp",
+        "alignedvector3": "cpp"
     }
 }

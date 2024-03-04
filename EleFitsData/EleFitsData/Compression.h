@@ -6,7 +6,6 @@
 #define _ELEFITSDATA_COMPRESSION_H
 
 #include "EleFitsData/DataUtils.h"
-#include "EleFitsData/Position.h"
 #include "EleFitsData/Quantization.h"
 #include "EleFitsData/Raster.h"
 #include "EleFitsData/Scaling.h"
@@ -50,26 +49,26 @@ struct Tile {
    * The tile size will be adapted to the image data,
    * while ensuring that tile data is contiguous in memory.
    */
-  inline static Position<-1> adaptive()
+  inline static Linx::Position<-1> adaptive()
   {
-    return Position<-1> {};
+    return Linx::Position<-1> {};
   }
 
   /**
    * @brief Create a rowwise tiling.
    * @param row_count The number of rows per tile
    */
-  inline static Position<-1> rowwise(long row_count = 1)
+  inline static Linx::Position<-1> rowwise(long row_count = 1)
   {
-    return Position<-1> {-1, row_count};
+    return Linx::Position<-1> {-1, row_count};
   }
 
   /**
    * @brief Create a whole-data array tiling.
    */
-  inline static Position<-1> whole()
+  inline static Linx::Position<-1> whole()
   {
-    return Position<-1> {-1};
+    return Linx::Position<-1> {-1};
   }
 };
 
@@ -77,7 +76,7 @@ struct Tile {
  * @ingroup compression
  * @brief Interface for compression algorithms.
  * 
- * Tiling shape is represented as a `Position<-1>`.
+ * Tiling shape is represented as a `Linx::Position<-1>`.
  * The maximum dimension possible is equal to 6 (which is an internal CFITSIO limitation).
  * 
  * @see Tile::rowwise()
@@ -94,7 +93,7 @@ public:
   /**
    * @brief Get the tiling.
    */
-  inline const Position<-1>& tiling() const;
+  inline const Linx::Position<-1>& tiling() const;
 
   /**
    * @brief Get the quantization.
@@ -111,12 +110,12 @@ protected:
   /**
    * @brief Constructor.
    */
-  inline explicit Compression(Position<-1> tiling, Quantization quantization);
+  inline explicit Compression(Linx::Position<-1> tiling, Quantization quantization);
 
   /**
    * @brief The tiling shape.
    */
-  Position<-1> m_tiling;
+  Linx::Position<-1> m_tiling;
 
   /**
    * @brief The quantization parameters.
@@ -143,7 +142,7 @@ public:
   /**
    * @brief Set the tiling.
    */
-  virtual TDerived& tiling(Position<-1> shape);
+  virtual TDerived& tiling(Linx::Position<-1> shape);
 
   /**
    * @brief Set the quantization.
@@ -155,7 +154,7 @@ protected:
   /**
    * @brief Constructor.
    */
-  explicit AlgoMixin(Position<-1> tiling, Quantization quantization);
+  explicit AlgoMixin(Linx::Position<-1> tiling, Quantization quantization);
 };
 
 /**
@@ -181,7 +180,7 @@ public:
   /**
    * @brief Disabled setter.
    */
-  inline NoCompression& tiling(Position<-1>) override;
+  inline NoCompression& tiling(Linx::Position<-1>) override;
 
   /**
    * @brief Disabled setter.
@@ -205,7 +204,7 @@ public:
   /**
    * @brief Constructor
    */
-  inline explicit Gzip(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
+  inline explicit Gzip(Linx::Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
 };
 
 /**
@@ -226,7 +225,9 @@ public:
   /**
    * @brief Constructor.
    */
-  inline explicit ShuffledGzip(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
+  inline explicit ShuffledGzip(
+      Linx::Position<-1> tiling = Tile::adaptive(),
+      Quantization quantization = Quantization());
 };
 
 /**
@@ -243,7 +244,7 @@ public:
   /**
    * @brief Constructor.
    */
-  inline explicit Rice(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
+  inline explicit Rice(Linx::Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
 };
 
 /**
@@ -274,7 +275,7 @@ public:
    * @brief Constructor.
    */
   inline explicit HCompress(
-      Position<-1> tiling = Tile::adaptive(),
+      Linx::Position<-1> tiling = Tile::adaptive(),
       Quantization quantization = Quantization(),
       Scaling scaling = Scaling(0));
 
@@ -329,7 +330,7 @@ public:
   /**
    * @brief Constructor
    */
-  inline explicit Plio(Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
+  inline explicit Plio(Linx::Position<-1> tiling = Tile::adaptive(), Quantization quantization = Quantization());
 };
 
 } // namespace Fits

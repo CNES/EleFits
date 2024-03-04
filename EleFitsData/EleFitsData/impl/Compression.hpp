@@ -12,13 +12,13 @@ namespace Fits {
 
 inline Scaling Tile::rms; // Definition
 
-Compression::Compression(Position<-1> tiling, Quantization quantization) :
+Compression::Compression(Linx::Position<-1> tiling, Quantization quantization) :
     m_tiling(std::move(tiling)), m_quantization(std::move(quantization))
 {
   OutOfBoundsError::may_throw("Tiling dimension error", m_tiling.size(), {0, 6});
 }
 
-const Position<-1>& Compression::tiling() const
+const Linx::Position<-1>& Compression::tiling() const
 {
   return m_tiling;
 }
@@ -34,7 +34,7 @@ bool Compression::is_lossless() const
 }
 
 template <typename TDerived>
-TDerived& AlgoMixin<TDerived>::tiling(Position<-1> tiling)
+TDerived& AlgoMixin<TDerived>::tiling(Linx::Position<-1> tiling)
 {
   m_tiling = std::move(tiling);
   return static_cast<TDerived&>(*this);
@@ -48,13 +48,13 @@ TDerived& AlgoMixin<TDerived>::quantization(Quantization quantization)
 }
 
 template <typename TDerived>
-AlgoMixin<TDerived>::AlgoMixin(Position<-1> tiling, Quantization quantization) :
+AlgoMixin<TDerived>::AlgoMixin(Linx::Position<-1> tiling, Quantization quantization) :
     Compression(std::move(tiling), std::move(quantization))
 {}
 
 NoCompression::NoCompression() : AlgoMixin<NoCompression>({0}, Quantization()) {}
 
-NoCompression& NoCompression::tiling(Position<-1>)
+NoCompression& NoCompression::tiling(Linx::Position<-1>)
 {
   throw FitsError("Cannot set tiling for disabled compression");
   return *this;
@@ -66,17 +66,19 @@ NoCompression& NoCompression::quantization(Quantization)
   return *this;
 }
 
-Gzip::Gzip(Position<-1> tiling, Quantization quantization) : AlgoMixin<Gzip>(std::move(tiling), std::move(quantization))
+Gzip::Gzip(Linx::Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<Gzip>(std::move(tiling), std::move(quantization))
 {}
 
-ShuffledGzip::ShuffledGzip(Position<-1> tiling, Quantization quantization) :
+ShuffledGzip::ShuffledGzip(Linx::Position<-1> tiling, Quantization quantization) :
     AlgoMixin<ShuffledGzip>(std::move(tiling), std::move(quantization))
 {}
 
-Rice::Rice(Position<-1> tiling, Quantization quantization) : AlgoMixin<Rice>(std::move(tiling), std::move(quantization))
+Rice::Rice(Linx::Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<Rice>(std::move(tiling), std::move(quantization))
 {}
 
-HCompress::HCompress(Position<-1> tiling, Quantization quantization, Scaling scaling) :
+HCompress::HCompress(Linx::Position<-1> tiling, Quantization quantization, Scaling scaling) :
     AlgoMixin<HCompress>(std::move(tiling), std::move(quantization)), m_scale(std::move(scaling))
 {
   this->quantization(std::move(quantization));
@@ -110,7 +112,8 @@ HCompress& HCompress::quantization(Quantization quantization)
   return *this;
 }
 
-Plio::Plio(Position<-1> tiling, Quantization quantization) : AlgoMixin<Plio>(std::move(tiling), std::move(quantization))
+Plio::Plio(Linx::Position<-1> tiling, Quantization quantization) :
+    AlgoMixin<Plio>(std::move(tiling), std::move(quantization))
 {}
 
 } // namespace Fits

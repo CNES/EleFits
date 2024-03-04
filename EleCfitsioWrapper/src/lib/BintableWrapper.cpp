@@ -14,7 +14,8 @@ namespace Euclid {
 namespace Cfitsio {
 namespace BintableIo {
 
-long column_count(fitsfile* fptr) {
+long column_count(fitsfile* fptr)
+{
   int status = 0;
   int ncols = 0;
   fits_get_num_cols(fptr, &ncols, &status);
@@ -22,7 +23,8 @@ long column_count(fitsfile* fptr) {
   return ncols;
 }
 
-long row_count(fitsfile* fptr) {
+long row_count(fitsfile* fptr)
+{
   int status = 0;
   long nrows = 0;
   fits_get_num_rows(fptr, &nrows, &status);
@@ -30,14 +32,16 @@ long row_count(fitsfile* fptr) {
   return nrows;
 }
 
-bool has_column(fitsfile* fptr, const std::string& name) {
+bool has_column(fitsfile* fptr, const std::string& name)
+{
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, Fits::String::to_char_ptr(name).get(), &index, &status);
   return (status == 0) || (status == COL_NOT_UNIQUE);
 }
 
-std::string column_name(fitsfile* fptr, long index) {
+std::string column_name(fitsfile* fptr, long index)
+{
   int status = 0;
   char ttype[FLEN_VALUE];
   fits_get_bcolparms(
@@ -57,7 +61,8 @@ std::string column_name(fitsfile* fptr, long index) {
   return ttype;
 }
 
-void update_column_name(fitsfile* fptr, long index, const std::string& new_name) {
+void update_column_name(fitsfile* fptr, long index, const std::string& new_name)
+{
   const std::string keyword = "TTYPE" + std::to_string(index);
   Cfitsio::HeaderIo::update_record<std::string>(fptr, {keyword, new_name});
   int status = 0;
@@ -66,7 +71,8 @@ void update_column_name(fitsfile* fptr, long index, const std::string& new_name)
   CfitsioError::may_throw(status, fptr, "Cannot update name of column #" + std::to_string(index - 1));
 }
 
-long column_index(fitsfile* fptr, const std::string& name) {
+long column_index(fitsfile* fptr, const std::string& name)
+{
   int index = 0;
   int status = 0;
   fits_get_colnum(fptr, CASESEN, Fits::String::to_char_ptr(name).get(), &index, &status);
@@ -75,21 +81,23 @@ long column_index(fitsfile* fptr, const std::string& name) {
 }
 
 template <>
-void read_column_dim(fitsfile* fptr, long index, Fits::Position<-1>& shape) {
+void read_column_dim(fitsfile* fptr, long index, Linx::Position<-1>& shape)
+{
   if (not HeaderIo::has_keyword(fptr, std::string("TDIM") + std::to_string(index))) {
     return;
   }
   int status = 0;
-  Fits::Indices<-1> naxes(999); // Max allowed number of axes
+  std::vector<Linx::Index> naxes(999); // Max allowed number of axes
   int naxis = 0;
   fits_read_tdim(fptr, static_cast<int>(index), 999, &naxis, shape.data(), &status);
   CfitsioError::may_throw(status, fptr, "Cannot read column dimension: #" + std::to_string(index - 1));
   naxes.resize(naxis);
-  shape = Fits::Position<-1>(naxes.begin(), naxes.end()); // TODO assign
+  shape = Linx::Position<-1>(LINX_MOVE(naxes));
 }
 
 template <>
-void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeat_count, std::string* data) {
+void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long repeat_count, std::string* data)
+{
   int status = 0;
   std::vector<char*> vec(rows.size());
   std::generate(vec.begin(), vec.end(), [&]() {
@@ -98,7 +106,7 @@ void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lon
   fits_read_col(
       fptr,
       TypeCode<std::string>::for_bintable(),
-      static_cast<int>(index), // column indices are int
+      static_cast<int>(index), // Column indices are int
       rows.front,
       1,
       rows.size(),
@@ -115,7 +123,8 @@ void read_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, lon
 }
 
 template <>
-void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long, const std::string* data) {
+void write_column_data(fitsfile* fptr, const Fits::Segment& rows, long index, long, const std::string* data)
+{
   int status = 0;
   Fits::String::CStrArray array(data, data + rows.size());
   fits_write_col(

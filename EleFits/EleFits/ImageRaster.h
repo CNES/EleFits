@@ -147,7 +147,7 @@ public:
    * @copydetails read_region()
    */
   template <typename TRaster>
-  void read_region_to(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const;
+  void read_region_to(FileMemRegions<TRaster::Dimension> regions, TRaster& raster) const;
 
   /// @}
   /**
@@ -248,7 +248,7 @@ public:
    * @deprecated
    */
   template <typename TRaster>
-  void readRegionTo(FileMemRegions<TRaster::Dim> regions, TRaster& raster) const
+  void readRegionTo(FileMemRegions<TRaster::Dimension> regions, TRaster& raster) const
   {
     return read_region_to(regions, raster);
   }

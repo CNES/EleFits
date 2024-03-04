@@ -11,7 +11,7 @@ namespace Euclid {
 namespace Fits {
 
 template <typename T, long N, typename TContainer>
-constexpr long Column<T, N, TContainer>::Dim;
+constexpr long Column<T, N, TContainer>::Dimension;
 
 template <typename T, long N, typename TContainer>
 Column<T, N, TContainer>::Column() : Column(Column<T, N, TContainer>::Info {})
@@ -26,7 +26,7 @@ Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_c
 
 template <typename T, long N, typename TContainer>
 Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_count, T* data) :
-    Column<T, N, TContainer>::Base(data, data + info.element_count() * row_count), m_info(std::move(info))
+    Column<T, N, TContainer>::Base(info.element_count() * row_count, data), m_info(std::move(info))
 {
   // FIXME idem
 }

@@ -5,8 +5,6 @@
 #ifndef _ELEFITSDATA_SCALING_H
 #define _ELEFITSDATA_SCALING_H
 
-#include "EleFitsData/Position.h"
-
 namespace Euclid {
 namespace Fits {
 
@@ -20,6 +18,7 @@ namespace Fits {
  */
 class Scaling {
 public:
+
   /**
    * @brief The type of scaling value.
    */
@@ -95,6 +94,7 @@ public:
   inline Scaling operator/(double value);
 
 private:
+
   /**
      * @brief The value type.
      */

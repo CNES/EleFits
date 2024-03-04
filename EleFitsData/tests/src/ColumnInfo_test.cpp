@@ -34,7 +34,7 @@ void check_element_count()
   }
 
 template <long N>
-void check_repeat_count_from_shape(const Position<N>& shape)
+void check_repeat_count_from_shape(const Linx::Position<N>& shape)
 {
   ColumnInfo<float, N> info("NAME", "unit", shape);
   BOOST_TEST(info.repeat_count() == shape_size(shape));
@@ -50,13 +50,13 @@ BOOST_AUTO_TEST_CASE(repeat_count_from_shape_test)
 BOOST_AUTO_TEST_CASE(make_column_info_test)
 {
   auto string_info = make_column_info<std::string>("String", "", 6);
-  BOOST_TEST((string_info.shape == Position<1> {6}));
+  BOOST_TEST((string_info.shape == Linx::Position<1> {6}));
   auto scalar_info = make_column_info<int>("Scalar");
-  BOOST_TEST((scalar_info.shape == Position<1> {1}));
+  BOOST_TEST((scalar_info.shape == Linx::Position<1> {1}));
   auto vector_info = make_column_info<int>("Vector", "", 3);
-  BOOST_TEST((vector_info.shape == Position<1> {3}));
+  BOOST_TEST((vector_info.shape == Linx::Position<1> {3}));
   auto multidim_info = make_column_info<int>("Multidim", "", 3, 2);
-  BOOST_TEST((multidim_info.shape == Position<2> {3, 2}));
+  BOOST_TEST((multidim_info.shape == Linx::Position<2> {3, 2}));
 }
 
 ELEFITS_FOREACH_COLUMN_TYPE(ELEMENT_COUNT_TEST)

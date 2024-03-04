@@ -50,9 +50,9 @@ struct TutoRecords {
 
 //! [Tuto rasters]
 struct TutoRasters {
-  Fits::VecRaster<std::int16_t, 2> int16_raster2d;
-  Fits::VecRaster<std::int32_t, 3> int32_raster3d;
-  Fits::VecRaster<std::int64_t, 4> int64_raster4d;
+  Linx::VecRaster<std::int16_t, 2> int16_raster2d;
+  Linx::VecRaster<std::int32_t, 3> int32_raster3d;
+  Linx::VecRaster<std::int64_t, 4> int64_raster4d;
 };
 //! [Tuto rasters]
 
@@ -79,8 +79,8 @@ void read_columns(const Fits::BintableColumns& du);
 // DATA CLASSES //
 /////////////////
 
-TutoRecords create_records() {
-
+TutoRecords create_records()
+{
   logger.info("  Creating records...");
 
   //! [Create records]
@@ -107,15 +107,15 @@ TutoRecords create_records() {
   return {string_record, int_record, float_record, complex_record};
 }
 
-TutoRasters create_rasters() {
-
+TutoRasters create_rasters()
+{
   logger.info("  Creating rasters...");
 
   //! [Create rasters]
 
   /* Initialize and later fill a raster */
 
-  Fits::VecRaster<std::int16_t, 2> int16_raster2d({4, 3});
+  Linx::VecRaster<std::int16_t, 2> int16_raster2d({4, 3});
   for (const auto& position : int16_raster2d.domain()) {
     int16_raster2d[position] = position[0] + position[1];
   }
@@ -126,7 +126,7 @@ TutoRasters create_rasters() {
 
   std::vector<std::int32_t> int32_vec(16 * 9 * 3, 0);
   // ... do what you have to do with the vector, and then move it to the raster ...
-  Fits::VecRaster<std::int32_t, 3> int32_raster3d({16, 9, 3}, std::move(int32_vec));
+  Linx::VecRaster<std::int32_t, 3> int32_raster3d({16, 9, 3}, std::move(int32_vec));
   // Instead of moving a vector, it's also possible to work with
   // a raw pointer with the PtrRaster class.
 
@@ -139,8 +139,8 @@ TutoRasters create_rasters() {
   return {int16_raster2d, int32_raster3d, int64_raster4d};
 }
 
-TutoColumns create_columns() {
-
+TutoColumns create_columns()
+{
   logger.info("  Creating columns...");
 
   //! [Create columns]
@@ -174,8 +174,8 @@ TutoColumns create_columns() {
 // WRITING //
 ////////////
 
-void write_file(const std::string& filename) {
-
+void write_file(const std::string& filename)
+{
   logger.info("Creating a MEF file...");
 
   //! [Create a MEF file]
@@ -252,8 +252,8 @@ void write_file(const std::string& filename) {
   // File is closed at destruction of f.
 }
 
-void write_records(const Fits::Header& h) {
-
+void write_records(const Fits::Header& h)
+{
   const auto records = create_records();
 
   logger.info("  Writing records...");
@@ -282,8 +282,8 @@ void write_records(const Fits::Header& h) {
 // READING //
 ////////////
 
-void read_file(const std::string& filename) {
-
+void read_file(const std::string& filename)
+{
   logger.info("Reading the MEF file...");
 
   //! [Open a MEF file]
@@ -324,8 +324,8 @@ void read_file(const std::string& filename) {
   read_columns(table1.columns());
 }
 
-void read_records(const Fits::Header& h) {
-
+void read_records(const Fits::Header& h)
+{
   logger.info("  Reading records...");
 
   //! [Read records]
@@ -370,8 +370,8 @@ void read_records(const Fits::Header& h) {
   logger.info() << "    " << string_record.keyword << " = " << string_record.value << " " << string_record.unit;
 }
 
-void read_raster(const Fits::ImageRaster& du) {
-
+void read_raster(const Fits::ImageRaster& du)
+{
   logger.info("  Reading a raster...");
 
   //! [Read a raster]
@@ -388,8 +388,8 @@ void read_raster(const Fits::ImageRaster& du) {
   logger.info() << "    Last pixel: " << last_pixel;
 }
 
-void read_columns(const Fits::BintableColumns& du) {
-
+void read_columns(const Fits::BintableColumns& du)
+{
   logger.info("  Reading columns...");
 
   //! [Read columns]
@@ -428,16 +428,17 @@ void read_columns(const Fits::BintableColumns& du) {
 ////////////
 
 class EleFitsTutorial : public Elements::Program {
-
 public:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
     auto options = Fits::ProgramOptions::from_aux_file("Tutorial.txt");
     options.positional("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
     return options.as_pair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override {
-
+  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override
+  {
     const auto filename = args["output"].as<std::string>();
 
     logger.info() << "---";

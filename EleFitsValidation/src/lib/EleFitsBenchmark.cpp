@@ -9,19 +9,23 @@ namespace Fits {
 namespace Validation {
 
 EleFitsColwiseBenchmark::EleFitsColwiseBenchmark(const std::string& filename) :
-    Benchmark(filename), m_f(filename, FileMode::Overwrite) {
+    Benchmark(filename), m_f(filename, FileMode::Overwrite)
+{
   m_logger.info() << "EleFits benchmark (column-wise, filename: " << filename << ")";
 }
 
-void EleFitsColwiseBenchmark::open() {
+void EleFitsColwiseBenchmark::open()
+{
   m_f.reopen();
 }
 
-void EleFitsColwiseBenchmark::close() {
+void EleFitsColwiseBenchmark::close()
+{
   m_f.close();
 }
 
-BChronometer::Unit EleFitsColwiseBenchmark::write_bintable(const BColumns& columns) {
+BChronometer::Unit EleFitsColwiseBenchmark::write_bintable(const BColumns& columns)
+{
   m_chrono.start();
   const auto& ext = m_f.append_bintable_header(
       "",
@@ -49,7 +53,8 @@ BChronometer::Unit EleFitsColwiseBenchmark::write_bintable(const BColumns& colum
   return m_chrono.stop();
 }
 
-BColumns EleFitsColwiseBenchmark::read_bintable(long index) {
+BColumns EleFitsColwiseBenchmark::read_bintable(long index)
+{
   m_chrono.start();
   const auto& ext = m_f.access<BintableHdu>(index);
   const auto columns = std::make_tuple(
@@ -67,30 +72,35 @@ BColumns EleFitsColwiseBenchmark::read_bintable(long index) {
   return columns;
 }
 
-EleFitsBenchmark::EleFitsBenchmark(const std::string& filename) : EleFitsColwiseBenchmark(filename) {
+EleFitsBenchmark::EleFitsBenchmark(const std::string& filename) : EleFitsColwiseBenchmark(filename)
+{
   m_logger.info() << "EleFits benchmark (buffered, filename: " << filename << ")";
 }
 
-BChronometer::Unit EleFitsBenchmark::write_image(const BRaster& raster) {
+BChronometer::Unit EleFitsBenchmark::write_image(const BRaster& raster)
+{
   m_chrono.start();
   m_f.append_image("", {}, raster);
   return m_chrono.stop();
 }
 
-BChronometer::Unit EleFitsBenchmark::write_bintable(const BColumns& columns) {
+BChronometer::Unit EleFitsBenchmark::write_bintable(const BColumns& columns)
+{
   m_chrono.start();
   m_f.append_bintable("", {}, columns);
   return m_chrono.stop();
 }
 
-BRaster EleFitsBenchmark::read_image(long index) {
+BRaster EleFitsBenchmark::read_image(long index)
+{
   m_chrono.start();
-  const auto raster = m_f.access<ImageHdu>(index).read_raster<BRaster::Value, BRaster::Dim>();
+  const auto raster = m_f.access<ImageHdu>(index).read_raster<BRaster::Value, BRaster::Dimension>();
   m_chrono.stop();
   return raster;
 }
 
-BColumns EleFitsBenchmark::read_bintable(long index) {
+BColumns EleFitsBenchmark::read_bintable(long index)
+{
   m_chrono.start();
   const auto columns = m_f.access<BintableColumns>(index).read_n(
       col_indexed<0>(),

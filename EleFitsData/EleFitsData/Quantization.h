@@ -5,7 +5,6 @@
 #ifndef _ELEFITSDATA_QUANTIZATION_H
 #define _ELEFITSDATA_QUANTIZATION_H
 
-#include "EleFitsData/Position.h"
 #include "EleFitsData/Scaling.h"
 
 #include <memory>
