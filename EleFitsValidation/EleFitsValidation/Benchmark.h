@@ -22,7 +22,7 @@ namespace Validation {
 /**
  * @brief The raster type used for benchmarking.
  */
-using BRaster = Raster<std::int64_t, 1>;
+using BRaster = Linx::Raster<std::int64_t, 1>;
 
 /**
  * @brief The column types used for benchmarking.
