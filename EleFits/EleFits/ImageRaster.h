@@ -304,16 +304,16 @@ private:
    * @brief Write a `Patch` at a corresponding position of the data unit.
    * @copydetails write_region()
    */
-  template <typename T, long N, typename TContainer>
-  void write_region(const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster) const; // FIXME rm?
+  template <typename TPatch>
+  void write_region(const TPatch& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Patch` at a given position of the data unit.
    */
-  template <typename T, long M, long N, typename TContainer>
+  template <long N, typename TPatch>
   void write_subraster(
       const Linx::Position<N>& front_position,
-      const typename Linx::Raster<const T, M, TContainer>::ConstTile& subraster) const; // FIXME rm?
+      const TPatch& subraster) const; // FIXME rm?
 
 private:
 

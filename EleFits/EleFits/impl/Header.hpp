@@ -60,7 +60,7 @@ TSeq Header::parse_n_or(TSeq&& fallbacks) const
   auto func = [&](const auto& f) {
     return parse_or(f);
   };
-  return seq_transform<TSeq>(fallbacks, func);
+  return Linx::seq_transform<TSeq>(fallbacks, func);
 }
 
 template <typename... Ts>
@@ -85,7 +85,7 @@ TReturn Header::parse_struct_or(const Record<Ts>&... fallbacks) const
 template <typename TReturn, typename TSeq>
 TReturn Header::parse_struct_or(TSeq&& fallbacks) const
 {
-  return seq_transform<TReturn>(fallbacks, [&](auto f) {
+  return Linx::seq_transform<TReturn>(fallbacks, [&](auto f) {
     return parse_or(f);
   }); // FIXME test
 }
@@ -213,20 +213,8 @@ void Header::write_n_in(const std::vector<std::string>& keywords, TSeq&& records
       Internal::RecordWriterImpl<Mode>::write(m_fptr, *this, r);
     }
   };
-  seq_foreach(std::forward<TSeq>(records), func);
+  Linx::seq_foreach(LINX_FORWARD(records), func);
 }
-
-#ifndef DECLARE_PARSE
-#define DECLARE_PARSE(type, unused) extern template Record<type> Header::parse(const std::string&) const;
-ELEFITS_FOREACH_RECORD_TYPE(DECLARE_PARSE)
-#undef DECLARE_PARSE
-#endif
-
-#ifndef DECLARE_WRITE_RECORD
-#define DECLARE_WRITE_RECORD(type, unused) extern template void Header::write(const Record<type>&) const;
-ELEFITS_FOREACH_RECORD_TYPE(DECLARE_WRITE_RECORD)
-#undef DECLARE_WRITE_RECORD
-#endif
 
 // TODO extern declare more?
 

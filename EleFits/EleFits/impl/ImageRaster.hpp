@@ -105,17 +105,11 @@ template <typename TRaster, long N>
 void ImageRaster::write_region(FileMemRegions<N> regions, const TRaster& raster) const
 {
   regions.resolve(read_shape<N>() - 1, raster.shape() - 1);
-  if (raster.isContiguous(regions.memory())) {
+  if (raster.is_contiguous(regions.memory())) {
     write_slice(regions.file().front(), raster.slice(regions.memory()));
   } else {
-    write_subraster(regions.file().front(), raster.subraster(regions.memory()));
+    write_subraster(regions.file().front(), raster(regions.memory()));
   }
-}
-
-template <typename T, long N, typename TContainer>
-void ImageRaster::write_region(const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster) const
-{
-  write_region(subraster.region().front(), subraster);
 }
 
 template <typename TRaster, long N>
@@ -124,26 +118,30 @@ void ImageRaster::write_slice(const Linx::Position<N>& front_position, const TRa
   Cfitsio::ImageIo::write_region(m_fptr, raster, front_position);
 }
 
-template <typename T, long M, long N, typename TContainer>
-void ImageRaster::write_subraster(
-    const Linx::Position<N>& front_position,
-    const typename Linx::Raster<const T, M, TContainer>::ConstTile& subraster) const
+template <long N, typename TPatch>
+void ImageRaster::write_subraster(const Linx::Position<N>& front_position, const TPatch& subraster) const
 {
   m_edit();
   int status = 0;
-  auto front = Linx::Position<M>::zero();
-  auto back = subraster.shape() - 1;
+  auto front = Linx::Position<TPatch::Dimension>::zero();
+  auto back = subraster.domain().shape() - 1;
   back[0] = 0;
-  Linx::Box<M> locus {front, back};
-  const auto nelem = subraster.shape()[0];
-  const auto delta = front_position.template slice<M>();
+  Linx::Box<TPatch::Dimension> locus {front, back};
+  const auto nelem = subraster.domain().length(0);
+  const auto delta = front_position.template slice<TPatch::Dimension>();
   Linx::Position<N> target;
   for (const auto& source : locus) {
     target = (source + delta).extend(front_position) + 1; // 1-based
     const auto b = &subraster[source];
     const auto e = b + nelem;
-    std::vector<std::decay_t<T>> nonconst_data(b, e);
-    fits_write_pix(m_fptr, Cfitsio::TypeCode<T>::for_image(), target.data(), nelem, nonconst_data.data(), &status);
+    std::vector<std::decay_t<typename TPatch::Value>> nonconst_data(b, e);
+    fits_write_pix(
+        m_fptr,
+        Cfitsio::TypeCode<typename TPatch::Value>::for_image(),
+        target.data(),
+        nelem,
+        nonconst_data.data(),
+        &status);
     // TODO to ImageWrapper
   }
 }
