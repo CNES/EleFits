@@ -140,18 +140,20 @@ void write_region(
 {
   /* 1-based, flatten region (beginning of each line) */
   const auto shape = subraster.shape().extend(destination);
-  Linx::Box<N> dst_region {destination + 1, destination + shape};
-  dst_region.back[0] = dst_region.front[0];
+  auto front = destination + 1;
+  auto back = destination + shape;
+  back[0] = front[0];
 
   /* Screening positions */
   const auto dst_size = shape[0];
-  const auto delta = subraster.region().front.extend(dst_region.front) - dst_region.front;
+  const auto delta = extend(subraster.region().front(), front) - front;
 
   /* Process each line */
   int status = 0;
   Linx::Position<N> dst_back;
   Linx::Position<N> src_front;
   std::vector<std::decay_t<T>> line(dst_size);
+  Linx::Box<N> dst_region {LINX_MOVE(front), LINX_MOVE(back)};
   for (auto dst_front : dst_region) {
     dst_back = dst_front;
     dst_back[0] += dst_size - 1;

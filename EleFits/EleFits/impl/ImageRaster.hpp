@@ -50,7 +50,7 @@ template <typename T, long M, long N>
 Linx::Raster<T, M> ImageRaster::read_region(const Linx::Box<N>& region) const
 {
   Linx::Raster<T, M> raster(region.shape().template slice<M>());
-  read_region_to(region.front, raster);
+  read_region_to(region.front(), raster);
   return raster;
 }
 
@@ -59,16 +59,16 @@ void ImageRaster::read_region_to(FileMemRegions<TRaster::Dimension> regions, TRa
 {
   const auto& mem_region = regions.inMemory();
   if (raster.isContiguous(mem_region)) {
-    read_region_to_slice(regions.inFile().front, raster.slice(mem_region));
+    read_region_to_slice(regions.inFile().front(), raster.slice(mem_region));
   } else {
-    read_region_to_subraster(regions.inFile().front, raster.subraster(mem_region));
+    read_region_to_subraster(regions.inFile().front(), raster.subraster(mem_region));
   }
 }
 
 template <typename T, long N, typename TContainer>
 void ImageRaster::read_region_to(typename Linx::Raster<T, N, TContainer>::Tile<N>& subraster) const
 {
-  read_region_to_subraster(subraster.region().front, subraster);
+  read_region_to_subraster(subraster.region().front(), subraster);
 }
 
 template <typename TRaster, long N>
@@ -106,16 +106,16 @@ void ImageRaster::write_region(FileMemRegions<N> regions, const TRaster& raster)
 {
   regions.resolve(read_shape<N>() - 1, raster.shape() - 1);
   if (raster.isContiguous(regions.memory())) {
-    write_slice(regions.file().front, raster.slice(regions.memory()));
+    write_slice(regions.file().front(), raster.slice(regions.memory()));
   } else {
-    write_subraster(regions.file().front, raster.subraster(regions.memory()));
+    write_subraster(regions.file().front(), raster.subraster(regions.memory()));
   }
 }
 
 template <typename T, long N, typename TContainer>
 void ImageRaster::write_region(const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster) const
 {
-  write_region(subraster.region().front, subraster);
+  write_region(subraster.region().front(), subraster);
 }
 
 template <typename TRaster, long N>
@@ -131,8 +131,10 @@ void ImageRaster::write_subraster(
 {
   m_edit();
   int status = 0;
-  auto locus = Linx::Box<M>::from_shape(Linx::Position<M>::zero(), subraster.shape());
-  locus.back[0] = locus.front[0];
+  auto front = Linx::Position<M>::zero();
+  auto back = subraster.shape() - 1;
+  back[0] = 0;
+  Linx::Box<M> locus {front, back};
   const auto nelem = subraster.shape()[0];
   const auto delta = front_position.template slice<M>();
   Linx::Position<N> target;

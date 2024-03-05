@@ -72,7 +72,7 @@ void check_slice3d_is_read_back()
     for (long y = 0; y < slice3d.shape()[1]; ++y) {
       for (long x = 0; x < slice3d.shape()[0]; ++x) {
         const auto o = output[{x, y, z}];
-        const auto i = input[{x + slice3d.front[0], y + slice3d.front[1], z + slice3d.front[2]}];
+        const auto i = input[{x + slice3d.front()[0], y + slice3d.front()[1], z + slice3d.front()[2]}];
         BOOST_TEST(o == i);
       }
     }
@@ -112,7 +112,7 @@ void check_slice2d_is_read_back()
   for (long y = 0; y < shape[1]; ++y) {
     for (long x = 0; x < shape[0]; ++x) {
       const auto o = output[{x, y}];
-      const auto i = input[{x + slice2d.front[0], y + slice2d.front[1], slice2d.front[2]}];
+      const auto i = input[{x + slice2d.front()[0], y + slice2d.front()[1], slice2d.front()[2]}];
       BOOST_TEST(o == i);
     }
   }
@@ -151,7 +151,7 @@ void check_subraster2d_is_read_back()
   for (long y = 0; y < shape[1]; ++y) {
     for (long x = 0; x < shape[0]; ++x) {
       const auto o = output[{x, y}];
-      const auto i = input[{x + region2d.front[0], y + region2d.front[1], region2d.front[2]}];
+      const auto i = input[{x + region2d.front()[0], y + region2d.front()[1], region2d.front()[2]}];
       BOOST_TEST(o == i);
     }
   }

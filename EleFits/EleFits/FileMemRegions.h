@@ -31,8 +31,8 @@ public:
   FileMemRegions(const Linx::Box<N>& fileRegion, const Linx::Position<N>& memoryPosition = Linx::Position<N>::zero()) :
       m_file(fileRegion), m_memory(Linx::Box<N>::from_shape(memoryPosition, fileRegion.shape()))
   {
-    if (m_file.back.isMax()) {
-      m_memory.back = Linx::Position<N>::zero();
+    if (m_file.back().contains_only(-1)) {
+      m_memory = {m_memory.front(), Linx::Position<N>::zero()};
     }
   }
 
@@ -45,8 +45,8 @@ public:
   FileMemRegions(const Linx::Position<N>& filePosition, const Linx::Box<N>& memoryRegion = Linx::Box<N>::whole()) :
       m_file(Linx::Box<N>::from_shape(filePosition, memoryRegion.shape())), m_memory(memoryRegion)
   {
-    if (m_memory.back.isMax()) {
-      m_file.back = Linx::Position<N>::zero();
+    if (m_memory.back().contains_only(-1)) {
+      m_file = {m_file.front(), Linx::Position<N>::zero()};
     }
   }
 
@@ -72,9 +72,11 @@ public:
   void resolve(const Linx::Position<N>& fileBack, const Linx::Position<N>& memoryBack)
   {
     const auto ftom = fileToMemory();
-    for (auto fit = m_file.back.begin(),
-              fitEnd = m_file.back.end(),
-              mit = m_memory.back.begin(),
+    auto f = m_file.back();
+    auto m = m_memory.back();
+    for (auto fit = f.begin(),
+              fitEnd = f.end(),
+              mit = m.begin(),
               fbit = fileBack.begin(),
               mbit = memoryBack.begin(),
               ftomit = ftom.begin();
@@ -89,6 +91,8 @@ public:
         *fit = *mit - *ftomit;
       }
     }
+    m_file = {m_file.front(), f};
+    m_memory = {m_memory.front(), m};
   }
 
   /**
@@ -96,7 +100,7 @@ public:
    */
   Linx::Position<N> fileToMemory() const
   {
-    return m_memory.front - m_file.front;
+    return m_memory.front() - m_file.front();
   }
 
   /**
@@ -104,7 +108,7 @@ public:
    */
   Linx::Position<N> memoryToFile() const
   {
-    return m_file.front - m_memory.front;
+    return m_file.front() - m_memory.front();
   }
 
 private:

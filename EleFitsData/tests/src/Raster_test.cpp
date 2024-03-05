@@ -145,28 +145,28 @@ BOOST_AUTO_TEST_CASE(slicing_test)
   BOOST_TEST(raster.isContiguous<3>(cube));
   const auto cubed = raster.slice<3>(cube);
   BOOST_TEST((cubed.shape() == Linx::Position<3>({5, 3, 2})));
-  BOOST_TEST((cubed[{0, 0, 0}] == raster[cube.front]));
+  BOOST_TEST((cubed[{0, 0, 0}] == raster[cube.front()]));
 
   // One full x-y plane
   Linx::Box<3> plane {{0, 0, 1}, {4, 2, 1}};
   BOOST_TEST(raster.isContiguous<2>(plane));
   const auto planed = raster.slice<2>(plane);
   BOOST_TEST((planed.shape() == Linx::Position<2>({5, 3})));
-  BOOST_TEST((planed[{0, 0}] == raster[plane.front]));
+  BOOST_TEST((planed[{0, 0}] == raster[plane.front()]));
 
   // One partial x-y plane
   Linx::Box<3> rectangle {{0, 1, 1}, {4, 2, 1}};
   BOOST_TEST(raster.isContiguous<2>(rectangle));
   const auto rectangled = raster.slice<2>(rectangle);
   BOOST_TEST((rectangled.shape() == Linx::Position<2>({5, 2})));
-  BOOST_TEST((rectangled[{0, 0}] == raster[rectangle.front]));
+  BOOST_TEST((rectangled[{0, 0}] == raster[rectangle.front()]));
 
   // One partial x line
   Linx::Box<3> segment {{1, 1, 1}, {3, 1, 1}};
   BOOST_TEST(raster.isContiguous<1>(segment));
   const auto segmented = raster.slice<1>(segment);
   BOOST_TEST((segmented.shape() == Linx::Position<1>({3})));
-  BOOST_TEST((segmented[{0}] == raster[segment.front]));
+  BOOST_TEST((segmented[{0}] == raster[segment.front()]));
 
   // Non-contiguous region
   Linx::Box<3> bad {{1, 1, 1}, {2, 2, 2}};
