@@ -23,6 +23,14 @@ class FileMemRegions {
 public:
 
   /**
+   * @brief Create an unbounded region.
+   */
+  static Linx::Box<N> whole()
+  {
+    return {Linx::Position<N>::zero(), -Linx::Position<N>::one()};
+  }
+
+  /**
    * @brief Create a mapping from an in-file region and an in-memory position.
    * @details
    * The shape of the in-memory region is deduced from that of the in-file region.
@@ -42,7 +50,7 @@ public:
    * The shape of the in-file region is deduced from that of the in-memory region.
    * This constructor is not marked explicit, which allows casting from a `Position`.
    */
-  FileMemRegions(const Linx::Position<N>& filePosition, const Linx::Box<N>& memoryRegion = Linx::Box<N>::whole()) :
+  FileMemRegions(const Linx::Position<N>& filePosition, const Linx::Box<N>& memoryRegion = FileMemRegions<N>::whole()) :
       m_file(Linx::Box<N>::from_shape(filePosition, memoryRegion.shape())), m_memory(memoryRegion)
   {
     if (m_memory.back().contains_only(-1)) {
@@ -141,7 +149,7 @@ FileMemRegions<N> makeMemRegion(const Linx::Box<N>& memoryRegion)
 template <long N>
 FileMemRegions<N> makeMemRegion(const Linx::Position<N>& memoryPosition)
 {
-  return FileMemRegions<N>(Linx::Box<N>::whole(), memoryPosition);
+  return FileMemRegions<N>(FileMemRegions<N>::whole(), memoryPosition);
 }
 
 } // namespace Fits

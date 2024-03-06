@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(shift_test)
 
 BOOST_AUTO_TEST_CASE(max_test)
 {
-  const auto region = Linx::Box<3>::whole();
+  const auto region = FileMemRegions<3>::whole();
   FileMemRegions<3> mapping(region);
   BOOST_TEST((mapping.file() == region));
   BOOST_TEST(mapping.memory().front() == Linx::Position<3>::zero());
