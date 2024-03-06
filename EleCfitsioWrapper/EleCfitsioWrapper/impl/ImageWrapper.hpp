@@ -9,6 +9,8 @@
 #include "EleCfitsioWrapper/TypeWrapper.h"
 #include "Linx/Data/Tiling.h" // rows
 
+#include <iostream> // FIXME rm
+
 namespace Euclid {
 namespace Cfitsio {
 namespace ImageIo {
@@ -60,7 +62,10 @@ void update_type_shape(fitsfile* fptr, const Linx::Position<N>& shape)
 template <typename T, long N>
 Linx::Raster<T, N> read_raster(fitsfile* fptr)
 {
+  std::cout << "read_raster()" << std::endl;
   Linx::Raster<T, N> raster(read_shape<N>(fptr));
+  std::cout << raster.shape() << std::endl;
+  std::cout << raster.domain().front() << " - " << raster.domain().back() << std::endl;
   read_raster_to(fptr, raster);
   return raster;
 }
@@ -68,9 +73,8 @@ Linx::Raster<T, N> read_raster(fitsfile* fptr)
 template <typename TOut>
 void read_raster_to(fitsfile* fptr, TOut& out)
 {
-  static constexpr auto N = TOut::Dimension;
-  const auto region = Linx::Box<N>::from_shape(Linx::Position<N>::zero(), read_shape<N>(fptr));
-  read_region_to(fptr, region, out);
+  std::cout << "read_raster_to()" << std::endl;
+  read_region_to(fptr, Linx::Box<N>::from_shape(read_shape<N>(fptr)), out);
 }
 
 template <typename T, long M, long N>
@@ -84,13 +88,18 @@ Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
 template <Linx::Index N, typename TOut>
 void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TOut& out)
 {
+  std::cout << "read_region_to(): " << region.front() << " - " << region.back() << std::endl;
+  std::cout << "                  " << out.domain().front() << " - " << out.domain().back() << std::endl;
   int status = 0;
   std::vector<long> step(region.dimension(), 1L);
   auto delta = region.front() + 1 - out.domain().front(); // FIXME Handle TOut::Dimension > N ?
+  std::cout << "Delta: " << delta << std::endl;
   for (auto dst : rows(out)) {
+    std::cout << "Row: " << dst.domain().front() << " - " << dst.domain().back() << std::endl;
     auto front = dst.domain().front() + delta; // FIXME pre-allocate
     auto back = front; // FIXME idem
     back[0] += region.length(0) - 1;
+    std::cout << "Region: " << front << " - " << back << std::endl;
     fits_read_subset(
         fptr,
         TypeCode<typename TOut::Value>::for_image(),

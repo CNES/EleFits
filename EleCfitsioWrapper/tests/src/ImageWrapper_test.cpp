@@ -19,14 +19,32 @@ BOOST_AUTO_TEST_SUITE(ImageWrapper_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_random3d_is_read_back()
+void check_random_3d_is_read_back()
 {
   using namespace Fits::Test;
   RandomRaster<T, 3> input({2, 3, 4});
   MinimalFile file;
   HduAccess::assign_image(file.fptr, "IMGEXT", input);
+  const auto fixed_shape = ImageIo::read_shape<3>(file.fptr);
+  BOOST_TEST(fixed_shape == input.shape());
   const auto fixed_output = ImageIo::read_raster<T, 3>(file.fptr);
   BOOST_TEST(fixed_output.container() == input.container());
+}
+
+template <typename T>
+void check_random_nd_is_read_back()
+{
+  std::cout << "random ND" << std::endl;
+  using namespace Fits::Test;
+  RandomRaster<T, -1> input({2, 3, 4});
+  MinimalFile file;
+  std::cout << "assign_image()" << std::endl;
+  HduAccess::assign_image(file.fptr, "IMGEXT", input);
+  std::cout << "read_shape()" << std::endl;
+  const auto variable_shape = ImageIo::read_shape<-1>(file.fptr);
+  std::cout << variable_shape << std::endl;
+  BOOST_TEST(variable_shape == input.shape());
+  std::cout << "read_raster()" << std::endl;
   const auto variable_output = ImageIo::read_raster<T, -1>(file.fptr);
   BOOST_TEST(variable_output.dimension() == 3);
   BOOST_TEST(variable_output.container() == input.container());
@@ -35,10 +53,18 @@ void check_random3d_is_read_back()
 #define RANDOM_3D_RASTER_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_random_3d_raster_is_read_back_test) \
   { \
-    check_random3d_is_read_back<type>(); \
+    check_random_3d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_3D_RASTER_IS_READ_BACK_TEST)
+
+#define RANDOM_ND_RASTER_IS_READ_BACK_TEST(type, name) \
+  BOOST_AUTO_TEST_CASE(name##_random_nd_raster_is_read_back_test) \
+  { \
+    check_random_nd_is_read_back<type>(); \
+  }
+
+ELEFITS_FOREACH_RASTER_TYPE(RANDOM_ND_RASTER_IS_READ_BACK_TEST)
 
 BOOST_FIXTURE_TEST_CASE(region_is_read_back, Fits::Test::MinimalFile)
 {
