@@ -62,10 +62,7 @@ void update_type_shape(fitsfile* fptr, const Linx::Position<N>& shape)
 template <typename T, long N>
 Linx::Raster<T, N> read_raster(fitsfile* fptr)
 {
-  std::cout << "read_raster()" << std::endl;
   Linx::Raster<T, N> raster(read_shape<N>(fptr));
-  std::cout << raster.shape() << std::endl;
-  std::cout << raster.domain().front() << " - " << raster.domain().back() << std::endl;
   read_raster_to(fptr, raster);
   return raster;
 }
@@ -73,8 +70,7 @@ Linx::Raster<T, N> read_raster(fitsfile* fptr)
 template <typename TOut>
 void read_raster_to(fitsfile* fptr, TOut& out)
 {
-  std::cout << "read_raster_to()" << std::endl;
-  read_region_to(fptr, Linx::Box<N>::from_shape(read_shape<N>(fptr)), out);
+  read_region_to(fptr, Linx::Box<TOut::Dimension>::from_shape(read_shape<TOut::Dimension>(fptr)), out);
 }
 
 template <typename T, long M, long N>
@@ -107,9 +103,10 @@ void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TOut& out)
         back.data(),
         step.data(),
         nullptr,
-        &(*dst.begin()),
+        &(*dst.begin()), // FIXME Patch.data() for contiguous patches
         nullptr,
         &status);
+    std::cout << "dst: " << *dst.begin() << std::endl;
   }
 }
 
