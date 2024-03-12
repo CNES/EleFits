@@ -7,6 +7,7 @@
 
 #include "EleFits/FitsFile.h"
 #include "EleFits/ImageHdu.h"
+#include "Linx/Base/TypeUtils.h"
 
 namespace Euclid {
 namespace Fits {
@@ -30,8 +31,8 @@ public:
    */
   SifFile(const std::string& filename, FileMode permission = FileMode::Read);
 
-  ELEFITS_NON_COPYABLE(SifFile)
-  ELEFITS_NON_MOVABLE(SifFile)
+  LINX_NON_COPYABLE(SifFile)
+  LINX_NON_MOVABLE(SifFile)
 
   /**
    * @copydoc FitsFile::~FitsFile

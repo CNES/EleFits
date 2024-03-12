@@ -6,6 +6,7 @@
 #define _ELEFITSDATA_QUANTIZATION_H
 
 #include "EleFitsData/Scaling.h"
+#include "Linx/Base/TypeUtils.h"
 
 #include <memory>
 #include <string>

@@ -10,6 +10,7 @@
 #include "EleFits/Hdu.h"
 #include "EleFits/ImageHdu.h"
 #include "EleFits/Strategy.h"
+#include "Linx/Base/TypeUtils.h"
 
 #include <memory>
 #include <vector>
@@ -95,8 +96,8 @@ public:
   template <typename... TActions>
   explicit MefFile(const std::string& filename, FileMode mode, TActions&&... actions);
 
-  ELEFITS_NON_COPYABLE(MefFile)
-  ELEFITS_NON_MOVABLE(MefFile)
+  LINX_NON_COPYABLE(MefFile)
+  LINX_NON_MOVABLE(MefFile)
 
   /**
    * @copydoc FitsFile::~FitsFile()

@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(typed_test)
 BOOST_AUTO_TEST_CASE(tuple_as_test)
 {
   const std::tuple<std::string, int, float, float> tuple {"TODO", 20, 1.8, 75};
-  const auto body = tuple_as<Body>(tuple);
+  const auto body = Linx::tuple_as<Body>(tuple);
   BOOST_TEST(body.name == "TODO");
   BOOST_TEST(body.age == 20);
   BOOST_TEST(body.height > 1.75);
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(tuple_as_test)
 BOOST_AUTO_TEST_CASE(tuple_apply_test)
 {
   std::tuple<std::string, int, float, float> guy {"GUY", 18, 1.7, 55};
-  const auto repr = tuple_apply(guy, to_string);
+  const auto repr = Linx::tuple_apply(guy, to_string);
   BOOST_TEST(not repr.empty());
 }
 
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(tuple_transform_test)
   auto twice = [](const auto& e) {
     return e + e;
   };
-  const auto jojo = seq_transform<Body>(jo, twice);
+  const auto jojo = Linx::seq_transform<Body>(jo, twice);
   BOOST_TEST(jojo.name == "JOJO");
   BOOST_TEST(jojo.age > std::get<1>(jo));
   BOOST_TEST(jojo.height > std::get<2>(jo));

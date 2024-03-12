@@ -7,6 +7,7 @@
 
 #include "EleFitsData/DataUtils.h"
 #include "EleFitsData/FitsError.h"
+#include "Linx/Base/TypeUtils.h"
 
 #include <fitsio.h>
 #include <string>
@@ -93,8 +94,8 @@ public:
    */
   FitsFile(const std::string& filename, FileMode permission = FileMode::Read);
 
-  ELEFITS_NON_COPYABLE(FitsFile)
-  ELEFITS_NON_MOVABLE(FitsFile)
+  LINX_NON_COPYABLE(FitsFile)
+  LINX_NON_MOVABLE(FitsFile)
 
   /**
    * @brief Destroy the object and close the file.

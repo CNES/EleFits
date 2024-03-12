@@ -116,7 +116,7 @@ std::vector<VecColumn<T, N>> BintableColumns::read_n(std::vector<ColumnKey> keys
 template <typename TSeq>
 void BintableColumns::read_n_to(TSeq&& columns) const
 {
-  auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
+  auto keys = Linx::seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
   read_n_to(std::move(keys), LINX_FORWARD(columns));
@@ -173,7 +173,7 @@ std::vector<VecColumn<T, N>> BintableColumns::read_n_segments(Segment rows, std:
 template <typename TSeq>
 void BintableColumns::read_n_segments_to(FileMemSegments rows, TSeq&& columns) const
 {
-  auto keys = seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
+  auto keys = Linx::seq_transform<std::vector<ColumnKey>>(columns, [&](const auto& c) {
     return c.info().name;
   });
   read_n_segments_to(std::move(rows), keys, LINX_FORWARD(columns));
@@ -292,11 +292,11 @@ template <typename TSeq>
 void BintableColumns::insert_n_null(long index, TSeq&& infos) const
 {
   m_edit();
-  const auto name_vec = seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
+  const auto name_vec = Linx::seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
     return info.name;
   });
   String::CStrArray names(name_vec);
-  const auto tform_vec = seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
+  const auto tform_vec = Linx::seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
     using Value = typename std::decay_t<decltype(info)>::Value;
     return Cfitsio::TypeCode<std::decay_t<Value>>::tform(info.repeat_count());
   });
