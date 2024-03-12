@@ -84,29 +84,21 @@ Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
 template <Linx::Index N, typename TOut>
 void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TOut& out)
 {
-  std::cout << "read_region_to(): " << region.front() << " - " << region.back() << std::endl;
-  std::cout << "                  " << out.domain().front() << " - " << out.domain().back() << std::endl;
   int status = 0;
-  std::vector<long> step(region.dimension(), 1L);
-  auto delta = region.front() + 1 - out.domain().front(); // FIXME Handle TOut::Dimension > N ?
-  std::cout << "Delta: " << delta << std::endl;
-  for (auto dst : rows(out)) {
-    std::cout << "Row: " << dst.domain().front() << " - " << dst.domain().back() << std::endl;
-    auto front = dst.domain().front() + delta; // FIXME pre-allocate
-    auto back = front; // FIXME idem
-    back[0] += region.length(0) - 1;
-    std::cout << "Region: " << front << " - " << back << std::endl;
-    fits_read_subset(
+  auto step = region.step();
+  auto row_fronts = project(region);
+  ++row_fronts; // 1-based
+
+  for (auto p : row_fronts) {
+    fits_read_pix(
         fptr,
         TypeCode<typename TOut::Value>::for_image(),
-        front.data(),
-        back.data(),
-        step.data(),
+        p.data(), // Cannot be const
+        region.length(0),
         nullptr,
-        &(*dst.begin()), // FIXME Patch.data() for contiguous patches
+        &out[p - row_fronts.front()],
         nullptr,
         &status);
-    std::cout << "dst: " << *dst.begin() << std::endl;
   }
 }
 
