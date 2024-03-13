@@ -27,10 +27,13 @@ BOOST_AUTO_TEST_CASE(column_data_can_be_shared_test)
 BOOST_AUTO_TEST_CASE(column_data_can_be_moved_test)
 {
   std::vector<int> input {4, 5, 6};
+  const auto data = input.data();
   VecColumn<int> column({"DATA", "", 1}, std::move(input));
+  BOOST_TEST(column.data() == data);
   BOOST_TEST(column.container()[1] == 5);
   BOOST_TEST(input.size() == 0);
   column.move_to(input);
+  BOOST_TEST(input.data() == data);
   BOOST_TEST(input[1] == 5);
   BOOST_TEST(column.container().size() == 0);
   BOOST_TEST(column.size() == 0);
