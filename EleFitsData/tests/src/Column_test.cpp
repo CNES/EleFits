@@ -125,10 +125,10 @@ BOOST_AUTO_TEST_CASE(make_veccolumn_test)
   constexpr long repeat = 3;
   constexpr long rows = 9;
   constexpr long size = repeat * rows;
-  auto info = makeColumnInfo<char>("NAME", "unit", repeat);
+  auto info = make_column_info<char>("NAME", "unit", repeat);
   auto vector = Test::generate_random_vector<char>(size);
   const auto* data = vector.data();
-  auto column = makeColumn(std::move(info), std::move(vector));
+  auto column = make_column(std::move(info), std::move(vector));
   using Value = decltype(column)::Value;
   BOOST_TEST((std::is_same<Value, char>::value));
   BOOST_TEST(column.info().name == "NAME");
@@ -143,9 +143,9 @@ BOOST_AUTO_TEST_CASE(make_ptrcolumn_test)
   constexpr long repeat = 3;
   constexpr long rows = 9;
   constexpr long size = repeat * rows;
-  auto info = makeColumnInfo<char>("NAME", "unit", repeat);
+  auto info = make_column_info<char>("NAME", "unit", repeat);
   auto vector = Test::generate_random_vector<char>(size);
-  auto column = makeColumn(std::move(info), rows, vector.data());
+  auto column = make_column(std::move(info), rows, vector.data());
   using Value = decltype(column)::Value;
   BOOST_TEST((std::is_same<Value, char>::value));
   BOOST_TEST(column.info().name == "NAME");

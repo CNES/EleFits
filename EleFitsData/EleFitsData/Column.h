@@ -28,14 +28,19 @@ class Column;
 
 /**
  * @ingroup bintable_data_classes
- * @brief `Column` which points to some external data (`THolder` = `T*`).
+ * @brief `Column` which points to some external data (`PtrHolder` is a mere wrapper of `T*`).
  */
 template <typename T, Linx::Index N = 1>
 using PtrColumn = Column<T, N, Linx::PtrHolder<T>>;
 
 /**
  * @ingroup bintable_data_classes
- * @brief `Column` which owns a data vector (`THolder` = `std::vector<T>`).
+ * @brief `Column` which owns a vector (`THolder` = `std::vector<T>`).
+ * 
+ * The data holder `StdHolder` supports move semantics,
+ * such that `VecColumn`s can be converted to/from `std::vector`s at negligible cost.
+ * 
+ * @warning Booleans are not supported since `std::vector<bool>` is _not_ a contiguous container.
  */
 template <typename T, Linx::Index N = 1>
 using VecColumn = Column<T, N, Linx::StdHolder<std::vector<T>>>;
@@ -46,8 +51,8 @@ using VecColumn = Column<T, N, Linx::StdHolder<std::vector<T>>>;
  * @tparam N The field dimension (number of axes) or -1 for runtime dimension
  * @tparam THolder The data container, which must meet `SizedData` requirements
  * @brief Binary table column data and metadata.
- * @details
- * A column is a contiguous container for the field data of a binary table column.
+ * 
+ * A column is a contiguous container for binary table columns.
  * As explained in the `ColumnInfo` documentation (make sure to have read it before going further),
  * fields can be made of several values.
  * Template parameter `N` is bound to the field category:
@@ -103,7 +108,7 @@ public:
    * @brief Create a column with given metadata and optional data.
    * @param info The column metadata
    * @param row_count The row count
-   * @param args The data arguments
+   * @param args Optional data holder arguments
    */
   template <typename... TArgs>
   explicit Column(Info info, Linx::Index row_count = 0, TArgs&&... args) :
@@ -111,7 +116,10 @@ public:
   {}
 
   /**
-   * @brief Create a column from given range.
+   * @brief Create a column from given initialization list.
+   * @param info The column metadata
+   * @param list The row-major ordered list of elements
+   * @param args Optional data holder arguments
    */
   template <typename TRange, typename... TArgs>
   explicit Column(Info info, std::initializer_list<T> list, TArgs&&... args) :
@@ -120,6 +128,9 @@ public:
 
   /**
    * @brief Create a column from given range.
+   * @param info The column metadata
+   * @param list The row-major ordered container of elements
+   * @param args Optional data holder arguments
    */
   template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr, typename... TArgs>
   explicit Column(Info info, TRange&& range, TArgs&&... args) :
@@ -127,7 +138,10 @@ public:
   {}
 
   /**
-   * @brief Create a column from given range.
+   * @brief Create a column from given read-only range.
+   * @param info The column metadata
+   * @param list The row-major ordered container of elements
+   * @param args Optional data holder arguments
    */
   template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr, typename... TArgs>
   explicit Column(Info info, const TRange& range, TArgs&&... args) :
@@ -166,7 +180,7 @@ public:
   void reshape(Linx::Position<N> shape);
 
   /**
-   * @brief Number of rows in the column.
+   * @brief Get the number of rows in the column.
    */
   Linx::Index row_count() const;
 
@@ -193,7 +207,9 @@ public:
   T& operator()(Linx::Index row, Linx::Index repeat = 0);
 
   /**
-   * @copybrief operator()(Linx::Index,Linx::Index)const
+   * @brief Access the value at given row and repeat indices.
+   * 
+   * As opposed to `operator()`, this method checks bounds and supports backward indexing.
    */
   const T& at(Linx::Index row, Linx::Index repeat = 0) const;
 
@@ -225,30 +241,6 @@ public:
   PtrColumn<T, N> slice(const Segment& rows);
 
   /// @}
-
-  /**
-   * @deprecated
-   */
-  Linx::Index rowCount() const
-  {
-    return row_count();
-  }
-
-  /**
-   * @deprecated Name was wrong wrt. the FITS standard
-   */
-  [[deprecated("Use field(Linx::Index)")]] const Linx::PtrRaster<const T, N> entry(Linx::Index row) const
-  {
-    return field(row);
-  }
-
-  /**
-   * @deprecated Name was wrong wrt. the FITS standard
-   */
-  [[deprecated("Use field(Linx::Index)")]] Linx::PtrRaster<T, N> entry(Linx::Index row)
-  {
-    return field(row);
-  }
 
 private:
 
@@ -287,15 +279,6 @@ template <typename T, typename TInfo>
 PtrColumn<T, std::decay_t<TInfo>::Dimension> make_column(TInfo&& info, Linx::Index row_count, T* data)
 {
   return PtrColumn<T, std::decay_t<TInfo>::Dimension> {std::forward<TInfo>(info), row_count, data};
-}
-
-/**
- * @deprecated
- */
-template <typename... TArgs>
-[[deprecated("Use make_column")]] auto makeColumn(TArgs&&... args)
-{
-  return make_column(std::forward<TArgs>(args)...);
 }
 
 } // namespace Fits

@@ -189,22 +189,6 @@ struct ColumnInfo {
    * @brief Get the number of elements per field.
    */
   long element_count() const;
-
-  /**
-   * @deprecated
-   */
-  long repeatCount() const
-  {
-    return repeat_count();
-  }
-
-  /**
-   * @deprecated
-   */
-  long elementCount() const
-  {
-    return element_count();
-  }
 };
 
 /**
@@ -253,15 +237,6 @@ template <typename T>
 ColumnInfo<T> make_column_info(const std::string& name, const std::string& unit = "")
 {
   return {name, unit};
-}
-
-/**
- * @deprecated
- */
-template <typename T, typename... TArgs>
-[[deprecated("Use make_column_info")]] auto makeColumnInfo(TArgs&&... args)
-{
-  return make_column_info<T>(std::forward<TArgs>(args)...);
 }
 
 } // namespace Fits
