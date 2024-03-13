@@ -69,7 +69,7 @@ class Column : public Linx::DataContainer<T, THolder, Linx::EuclidArithmetic, Co
   /**
    * @brief Shortcut for DataContainer.
    */
-  using Base = Linx::DataContainer<T, THolder, Linx::EuclidArithmetic, Column<T, N, THolder>>;
+  using Container = Linx::DataContainer<T, THolder, Linx::EuclidArithmetic, Column<T, N, THolder>>;
 
 public:
 
@@ -107,7 +107,7 @@ public:
    */
   template <typename... TArgs>
   explicit Column(Info info, Linx::Index row_count = 0, TArgs&&... args) :
-      Base(info.element_count() * row_count, LINX_FORWARD(args)...), m_info(std::move(info))
+      Container(info.element_count() * row_count, LINX_FORWARD(args)...), m_info(std::move(info))
   {}
 
   /**
@@ -115,7 +115,7 @@ public:
    */
   template <typename TRange, typename... TArgs>
   explicit Column(Info info, std::initializer_list<T> list, TArgs&&... args) :
-      Base(list.begin(), list.end(), std::forward<TArgs>(args)...), m_info(LINX_MOVE(info))
+      Container(list.begin(), list.end(), std::forward<TArgs>(args)...), m_info(LINX_MOVE(info))
   {}
 
   /**
@@ -123,7 +123,15 @@ public:
    */
   template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr, typename... TArgs>
   explicit Column(Info info, TRange&& range, TArgs&&... args) :
-      Base(LINX_FORWARD(range).begin(), LINX_FORWARD(range).end(), std::forward<TArgs>(args)...),
+      Container(range.size(), LINX_FORWARD(range), std::forward<TArgs>(args)...), m_info(LINX_MOVE(info))
+  {}
+
+  /**
+   * @brief Create a column from given range.
+   */
+  template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr, typename... TArgs>
+  explicit Column(Info info, const TRange& range, TArgs&&... args) :
+      Container(LINX_FORWARD(range).begin(), LINX_FORWARD(range).end(), std::forward<TArgs>(args)...),
       m_info(LINX_MOVE(info))
   {}
 
@@ -164,7 +172,7 @@ public:
 
   /// @group_elements
 
-  using Base::operator[];
+  using Container::operator[];
 
   /**
    * @brief Access the value at given row and repeat indices.
