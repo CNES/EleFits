@@ -5,6 +5,8 @@
 #ifndef _ELECFITSIOWRAPPER_TYPEWRAPPER_H
 #define _ELECFITSIOWRAPPER_TYPEWRAPPER_H
 
+#include "Linx/Base/TypeUtils.h" // Index
+
 #include <complex>
 #include <fitsio.h>
 #include <string>

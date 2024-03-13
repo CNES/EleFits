@@ -5,6 +5,8 @@
 #ifndef _ELEFITS_COLUMNKEY_H
 #define _ELEFITS_COLUMNKEY_H
 
+#include "Linx/Base/TypeUtils.h" // Index
+
 #include <boost/optional.hpp>
 #include <string>
 

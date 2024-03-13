@@ -5,6 +5,8 @@
 #ifndef _ELEFITSDATA_SEGMENT_H
 #define _ELEFITSDATA_SEGMENT_H
 
+#include "Linx/Base/TypeUtils.h" // Index
+
 namespace Euclid {
 namespace Fits {
 

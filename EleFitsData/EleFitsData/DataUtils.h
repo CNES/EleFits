@@ -5,6 +5,8 @@
 #ifndef _ELEFITSDATA_DATAUTILS_H
 #define _ELEFITSDATA_DATAUTILS_H
 
+#include "Linx/Base/TypeUtils.h" // Index
+
 #include <algorithm> // transform
 #include <array>
 #include <limits>

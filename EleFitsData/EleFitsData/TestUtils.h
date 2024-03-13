@@ -5,6 +5,8 @@
 #ifndef _ELEFITSDATA_TESTUTILS_H
 #define _ELEFITSDATA_TESTUTILS_H
 
+#include "Linx/Base/TypeUtils.h" // Index
+
 #include <complex>
 #include <string>
 #include <vector>

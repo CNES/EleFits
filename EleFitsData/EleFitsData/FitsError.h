@@ -5,6 +5,8 @@
 #ifndef _ELEFITSDATA_FITSIOERROR_H
 #define _ELEFITSDATA_FITSIOERROR_H
 
+#include "Linx/Base/TypeUtils.h" // Index
+
 #include <stdexcept>
 #include <string>
 #include <utility>
