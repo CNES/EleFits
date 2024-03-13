@@ -8,7 +8,7 @@
 #include "EleFitsData/FitsError.h"
 #include "ElementsKernel/Project.h"
 
-#include <fstream>
+#include <filesystem>
 
 namespace Euclid {
 namespace Fits {
@@ -72,7 +72,7 @@ void FitsFile::open_impl(const std::string& filename, FileMode permission) {
       m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadOnly);
       break;
     case FileMode::Write:
-      if (fileExists(filename)) {
+      if (std::filesystem::exists(filename)) {
         m_fptr = Cfitsio::FileAccess::open(filename, Cfitsio::FileAccess::OpenPolicy::ReadWrite);
       } else {
         m_fptr = Cfitsio::FileAccess::create_open(filename, Cfitsio::FileAccess::CreatePolicy::CreateOnly);
@@ -122,11 +122,6 @@ fitsfile* FitsFile::handover_to_cfitsio() {
   auto fptr = m_fptr;
   m_fptr = nullptr;
   return fptr;
-}
-
-bool fileExists(const std::string& filename) {
-  std::ifstream f(filename);
-  return f.is_open();
 }
 
 } // namespace Fits
