@@ -6,6 +6,11 @@
 
 * Rely on Linx for data classes and low level tools
 * Refactored `Column` constructors, and make them all `explicit`
+* Deprecated functions were removed
+
+### Cleaning
+
+* Indices are of type (alias) `Linx::Index` instead of `long`
 
 ## 5.4
 

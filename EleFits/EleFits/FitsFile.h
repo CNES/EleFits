@@ -153,32 +153,6 @@ public:
    */
   fitsfile* handover_to_cfitsio();
 
-  /// @group_deprecated
-
-  /**
-   * @deprecated
-   */
-  bool isOpen() const
-  {
-    return is_open();
-  }
-
-  /**
-   * @deprecated Use close_remove()
-   */
-  [[deprecated("Use close_remove()")]] void closeAndDelete()
-  {
-    return close_remove();
-  }
-
-  /**
-   * @deprecated
-   */
-  fitsfile* handoverToCfitsio()
-  {
-    return handover_to_cfitsio();
-  }
-
   /// @}
 
 protected:
@@ -230,11 +204,6 @@ private:
    */
   void close_impl();
 };
-
-/**
- * @deprecated Use std::filesystem
- */
-bool fileExists(const std::string& filename);
 
 } // namespace Fits
 } // namespace Euclid

@@ -72,7 +72,7 @@ std::vector<std::string> BintableColumns::read_all_names() const
   return names;
 }
 
-void BintableColumns::rename(ColumnKey key, const std::string& name) const
+void BintableColumns::update_name(ColumnKey key, const std::string& name) const
 {
   m_edit();
   Cfitsio::BintableIo::update_column_name(m_fptr, key.index(*this) + 1, name);

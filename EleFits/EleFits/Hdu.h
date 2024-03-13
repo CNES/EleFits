@@ -207,63 +207,7 @@ public:
    */
   void update_checksums() const;
 
-  /// @group_deprecated
-
-  /**
-   * @deprecated
-   */
-  HduCategory readCategory() const
-  {
-    return category();
-  }
-
-  /**
-   * @deprecated
-   */
-  std::string readName() const
-  {
-    return read_name();
-  }
-
-  /**
-   * @deprecated
-   */
-  long readVersion() const
-  {
-    return read_version();
-  }
-
-  /**
-   * @deprecated
-   */
-  void updateName(const std::string& name) const
-  {
-    return update_name(name);
-  }
-
-  /**
-   * @deprecated
-   */
-  void updateVersion(long version) const
-  {
-    return update_version(version);
-  }
-
-  /**
-   * @deprecated
-   */
-  void verifyChecksums() const
-  {
-    return verify_checksums();
-  }
-
-  /**
-   * @deprecated
-   */
-  void updateChecksums() const
-  {
-    return update_checksums();
-  }
+  /// @}
 
 protected:
 

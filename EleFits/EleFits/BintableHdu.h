@@ -81,41 +81,7 @@ public:
   template <typename TColumn>
   void write_column(const TColumn& column) const;
 
-  /// @group_deprecated
-
-  /**
-   * @deprecated
-   */
-  Linx::Index readColumnCount() const
-  {
-    return read_column_count();
-  }
-
-  /**
-   * @deprecated
-   */
-  Linx::Index readRowCount() const
-  {
-    return read_row_count();
-  }
-
-  /**
-   * @deprecated
-   */
-  template <typename T, Linx::Index N = 1>
-  VecColumn<T, N> readColumn(ColumnKey key) const
-  {
-    return read_column<T, N>(key);
-  }
-
-  /**
-   * @deprecated
-   */
-  template <typename TColumn>
-  void writeColumn(const TColumn& column) const
-  {
-    return write_column(column);
-  }
+  /// @}
 
 private:
 

@@ -162,51 +162,6 @@ public:
   template <typename TRaster>
   void write_raster(const TRaster& data) const;
 
-  /// @group_deprecated
-
-  /**
-   * @deprecated
-   */
-  const std::type_info& readTypeid() const
-  {
-    return read_typeid();
-  }
-
-  /**
-   * @deprecated
-   */
-  Linx::Index readSize() const
-  {
-    return read_size();
-  }
-
-  /**
-   * @deprecated
-   */
-  template <typename T, Linx::Index N = 2>
-  void updateShape(const Linx::Position<N>& shape) const
-  {
-    return update_type_shape<T, N>(shape);
-  }
-
-  /**
-   * @deprecated
-   */
-  template <typename T, Linx::Index N = 2>
-  Linx::Raster<T, N> readRaster() const
-  {
-    return read_raster<T, N>();
-  }
-
-  /**
-   * @deprecated
-   */
-  template <typename TRaster>
-  void writeRaster(const TRaster& data) const
-  {
-    return write_raster(data);
-  }
-
   /// @}
 
 private:

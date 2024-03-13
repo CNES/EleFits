@@ -201,27 +201,6 @@ struct Record {
   bool has_long_string_value() const;
 
   /**
-   * @deprecated
-   */
-  std::string rawComment() const {
-    return raw_comment();
-  }
-
-  /**
-   * @deprecated
-   */
-  bool hasLongKeyword() const {
-    return has_long_keyword();
-  }
-
-  /**
-   * @deprecated
-   */
-  bool hasLongStringValue() const {
-    return has_long_string_value();
-  }
-
-  /**
    * @brief The keyword.
    */
   std::string keyword;

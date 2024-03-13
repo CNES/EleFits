@@ -69,33 +69,6 @@ public:
    */
   void update_checksums() const;
 
-  /// @group_deprecated
-
-  /**
-   * @deprecated Use write()
-   */
-  template <typename TRaster>
-  [[deprecated("Use write()")]] void writeAll(const RecordSeq& records, const TRaster& raster)
-  {
-    return write(records, raster);
-  }
-
-  /**
-   * @deprecated
-   */
-  void verifyChecksums() const
-  {
-    return verify_checksums();
-  }
-
-  /**
-   * @deprecated
-   */
-  void updateChecksums() const
-  {
-    return update_checksums();
-  }
-
   /// @}
 
 private:
