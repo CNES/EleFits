@@ -76,6 +76,8 @@
         "svd": "cpp",
         "ciso646": "cpp",
         "alignedvector3": "cpp",
-        "fft": "cpp"
+        "fft": "cpp",
+        "codecvt": "cpp",
+        "valarray": "cpp"
     }
 }

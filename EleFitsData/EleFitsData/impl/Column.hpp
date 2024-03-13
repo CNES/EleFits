@@ -18,28 +18,6 @@ Column<T, N, TContainer>::Column() : Column(Column<T, N, TContainer>::Info {})
 {}
 
 template <typename T, long N, typename TContainer>
-Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_count) :
-    Column<T, N, TContainer>::Base(info.element_count() * row_count), m_info(std::move(info))
-{
-  // FIXME assert size() % m_info.element_count() == 0;
-}
-
-template <typename T, long N, typename TContainer>
-Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, long row_count, T* data) :
-    Column<T, N, TContainer>::Base(info.element_count() * row_count, data), m_info(std::move(info))
-{
-  // FIXME idem
-}
-
-template <typename T, long N, typename TContainer>
-template <typename... Ts>
-Column<T, N, TContainer>::Column(Column<T, N, TContainer>::Info info, Ts&&... args) :
-    Column<T, N, TContainer>::Base(std::forward<Ts>(args)...), m_info(std::move(info))
-{
-  // FIXME idem
-}
-
-template <typename T, long N, typename TContainer>
 const typename Column<T, N, TContainer>::Info& Column<T, N, TContainer>::info() const
 {
   return m_info;

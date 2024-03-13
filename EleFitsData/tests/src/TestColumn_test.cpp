@@ -15,7 +15,8 @@ BOOST_FIXTURE_TEST_SUITE(TestColumn_test, Test::RandomTable)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_random_vector_column_size(long repeat_count, long row_count) {
+void check_random_vector_column_size(long repeat_count, long row_count)
+{
   Test::RandomVectorColumn<T> column(repeat_count, row_count);
   BOOST_TEST(column.info().repeat_count() == repeat_count);
   BOOST_TEST(column.row_count() == row_count);
@@ -27,12 +28,14 @@ void check_random_vector_column_size(long repeat_count, long row_count) {
 }
 
 #define RANDOM_VECTOR_COLUMN_SIZE_TEST(T, name) \
-  BOOST_AUTO_TEST_CASE(name##_random_vector_column_size_test) { \
+  BOOST_AUTO_TEST_CASE(name##_random_vector_column_size_test) \
+  { \
     check_random_vector_column_size<T>(4, 5); \
   }
 
 #define COLUMN_HAS_MORE_THAN_2_ROWS_TEST(T, name) \
-  BOOST_AUTO_TEST_CASE(name##_column_has_more_than_2_rows_test) { \
+  BOOST_AUTO_TEST_CASE(name##_column_has_more_than_2_rows_test) \
+  { \
     BOOST_TEST(get_column<T>().row_count() > 2); \
   }
 
@@ -40,7 +43,8 @@ ELEFITS_FOREACH_COLUMN_TYPE(COLUMN_HAS_MORE_THAN_2_ROWS_TEST)
 
 #define PUSH_BACK_NAME(T, _) names.push_back(get_column<T>().info().name);
 
-BOOST_AUTO_TEST_CASE(names_are_all_different_test) {
+BOOST_AUTO_TEST_CASE(names_are_all_different_test)
+{
   BOOST_TEST(std::tuple_size<decltype(columns)>::value == column_count);
   std::vector<std::string> names;
   ELEFITS_FOREACH_COLUMN_TYPE(PUSH_BACK_NAME)
@@ -52,6 +56,15 @@ BOOST_AUTO_TEST_CASE(names_are_all_different_test) {
       BOOST_TEST(vlhs != vrhs);
     }
   }
+}
+
+BOOST_FIXTURE_TEST_CASE(small_table_size_test, Test::SmallTable)
+{
+  const auto rows = num_col.row_count();
+  BOOST_TEST(rows > 1);
+  BOOST_TEST(radec_col.row_count() == rows);
+  BOOST_TEST(name_col.row_count() == rows);
+  BOOST_TEST(dist_mag_col.row_count() == rows);
 }
 
 //-----------------------------------------------------------------------------

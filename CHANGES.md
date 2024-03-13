@@ -5,6 +5,7 @@
 ### Breaking changes
 
 * Rely on Linx for data classes and low level tools
+* Refactored `Column` constructors, and make them all `explicit`
 
 ## 5.4
 

@@ -14,7 +14,8 @@ namespace Fits {
 namespace Test {
 
 template <typename T>
-VecColumn<T> RandomTable::generate_column(const std::string& type_name, long repeat_count, long row_count) {
+VecColumn<T> RandomTable::generate_column(const std::string& type_name, long repeat_count, long row_count)
+{
   std::vector<std::string> type_chunks;
   std::string chunk;
   std::istringstream chunk_stream(type_name);
@@ -31,26 +32,32 @@ VecColumn<T> RandomTable::generate_column(const std::string& type_name, long rep
   std::transform(keyword.begin(), keyword.end(), keyword.begin(), [](unsigned char c) {
     return std::toupper(c);
   });
-  return {{keyword, prefixes + suffix[0], repeat_count}, generate_random_vector<T>(repeat_count * row_count)};
+  return VecColumn<T>(
+      {keyword, prefixes + suffix[0], repeat_count},
+      generate_random_vector<T>(repeat_count * row_count));
 }
 
 template <typename T>
-const VecColumn<T>& RandomTable::get_column() const {
+const VecColumn<T>& RandomTable::get_column() const
+{
   return std::get<VecColumn<T>>(columns);
 }
 
 template <typename T>
-VecColumn<T>& RandomTable::get_column() {
+VecColumn<T>& RandomTable::get_column()
+{
   return const_cast<VecColumn<T>&>(const_cast<const RandomTable*>(this)->get_column<T>());
 }
 
 template <typename T>
 RandomScalarColumn<T>::RandomScalarColumn(long size, T min, T max) :
-    VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size, min, max)) {}
+    VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size, min, max))
+{}
 
 template <>
 RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, std::string max) :
-    VecColumn<std::string>({"SCALAR", "m", 1}, generate_random_vector<std::string>(size, min, max)) {
+    VecColumn<std::string>({"SCALAR", "m", 1}, generate_random_vector<std::string>(size, min, max))
+{
   for (const auto& v : container()) {
     long current_size = static_cast<long>(v.length() + 1); // +1 for '\0'
     if (current_size > info().repeat_count()) {
@@ -61,7 +68,8 @@ RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, 
 
 template <typename T>
 RandomVectorColumn<T>::RandomVectorColumn(long repeat_count, long row_count, T min, T max) :
-    VecColumn<T>({"VECTOR", "m", repeat_count}, generate_random_vector<T>(repeat_count * row_count, min, max)) {}
+    VecColumn<T>({"VECTOR", "m", repeat_count}, generate_random_vector<T>(repeat_count * row_count, min, max))
+{}
 
 } // namespace Test
 } // namespace Fits

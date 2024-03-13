@@ -242,8 +242,8 @@ void check_vector_write_read(const BintableColumns& du)
   const long repeat_count = 3;
   std::vector<ColumnInfo<T>> infos {{"VECTOR", "m", repeat_count}, {"SCALAR", "s", 1}}; // Inverted for robustness test
   std::vector<VecColumn<T>> seq {
-      {infos[1], Test::generate_random_vector<T>(row_count)},
-      {infos[0], Test::generate_random_vector<T>(repeat_count * row_count)}};
+      VecColumn<T>(infos[1], Test::generate_random_vector<T>(row_count)),
+      VecColumn<T>(infos[0], Test::generate_random_vector<T>(repeat_count * row_count))};
 
   /* Write */
   du.insert_n_null(0, infos);

@@ -10,7 +10,8 @@ namespace Test {
 
 #define GENERATE_COLUMN(type, name) get_column<type>() = generate_column<type>(#name, repeat_count, row_count);
 
-RandomTable::RandomTable(long repeat_count, long row_count) : columns {} {
+RandomTable::RandomTable(long repeat_count, long row_count) : columns {}
+{
   ELEFITS_FOREACH_COLUMN_TYPE(GENERATE_COLUMN)
 }
 
@@ -23,7 +24,8 @@ SmallTable::SmallTable() :
     names {"Pleiades", "Ptolemy Cluster", "Andromeda Galaxy"}, dists_mags {0.44, 1.6, 0.8, 3.3, 2900.0, 3.4},
     num_col({"ID", "", 1}, nums.size(), nums.data()), radec_col({"RADEC", "deg", 1}, radecs.size(), radecs.data()),
     name_col({"NAME", "", 68}, names.size(), names.data()), // TODO 68?
-    dist_mag_col({"DIST_MAG", "kal", 2}, dists_mags.size(), dists_mags.data()) {}
+    dist_mag_col({"DIST_MAG", "kal", 2}, dists_mags.size() / 2, dists_mags.data())
+{}
 
 } // namespace Test
 } // namespace Fits

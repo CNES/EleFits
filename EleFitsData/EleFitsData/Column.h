@@ -95,53 +95,36 @@ public:
   LINX_DEFAULT_MOVABLE(Column)
 
   /**
-   * @brief Default constructor.
+   * @brief Default constructor, for compatibility.
    */
   Column();
 
   /**
-   * @brief Create an empty column with given metadata.
+   * @brief Create a column with given metadata and optional data.
    * @param info The column metadata
    * @param row_count The row count
+   * @param args The data arguments
    */
-  explicit Column(Info info, Linx::Index row_count = 0);
-
-  /// @cond
-  /** @brief int overload, to be handled differently! */
-  explicit Column(Info info, int row_count) : Column(std::move(info), Linx::Index(row_count)) {}
-  /// @endcond
-
-  /**
-   * @brief Create a column with given metadata and data.
-   * @param info The column metadata
-   * @param row_count The row count
-   * @param data The raw data
-   * @warning
-   * `PtrColumn` constructor used to get the **element** count as input instead of the **row count**,
-   * which makes a difference for vector columns.
-   */
-  explicit Column(Info info, Linx::Index row_count, T* data);
-
-  /// @cond
-  /** @brief int overload, to be handled differently! */
-  [[deprecated]] explicit Column(Info info, int row_count, T* data) :
-      Column(std::move(info), Linx::Index(row_count), data)
+  template <typename... TArgs>
+  explicit Column(Info info, Linx::Index row_count = 0, TArgs&&... args) :
+      Base(info.element_count() * row_count, LINX_FORWARD(args)...), m_info(std::move(info))
   {}
-  /// @endcond
-
-  /**
-   * @brief Create a column with given metadata and data.
-   * @param info The column metadata
-   * @param args Arguments to be forwarded to the underlying container
-   */
-  template <typename... Ts>
-  [[deprecated]] Column(Info info, Ts&&... args); // FIXME rm
 
   /**
    * @brief Create a column from given range.
    */
-  template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr>
-  Column(Info info, TRange&& container) : Column(LINX_MOVE(info), container.size(), LINX_FORWARD(container))
+  template <typename TRange, typename... TArgs>
+  explicit Column(Info info, std::initializer_list<T> list, TArgs&&... args) :
+      Base(list.begin(), list.end(), std::forward<TArgs>(args)...), m_info(LINX_MOVE(info))
+  {}
+
+  /**
+   * @brief Create a column from given range.
+   */
+  template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr, typename... TArgs>
+  explicit Column(Info info, TRange&& range, TArgs&&... args) :
+      Base(LINX_FORWARD(range).begin(), LINX_FORWARD(range).end(), std::forward<TArgs>(args)...),
+      m_info(LINX_MOVE(info))
   {}
 
   /// @group_properties
