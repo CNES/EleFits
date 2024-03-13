@@ -13,11 +13,11 @@ namespace Euclid {
 namespace Fits {
 
 /// @cond
-template <long N>
-Linx::Position<N> unravel_index(long index, Linx::Position<N> shape) // FIXME to Linx
+template <Linx::Index N>
+Linx::Position<N> unravel_index(Linx::Index index, Linx::Position<N> shape) // FIXME to Linx
 {
   for (auto& s : shape) {
-    const long length = s;
+    const Linx::Index length = s;
     s = index % length;
     index /= length;
   }

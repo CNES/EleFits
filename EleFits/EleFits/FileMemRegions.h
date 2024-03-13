@@ -18,7 +18,7 @@ namespace Fits {
  * In-file and in-memory regions have the same shape.
  * Both back positions cannot be -1 at the same index at the same time.
  */
-template <long N = 2>
+template <Linx::Index N = 2>
 class FileMemRegions {
 public:
 
@@ -136,7 +136,7 @@ private:
  * @relates FileMemRegions
  * @brief Create a `FileMemRegions` with in-file position at origin.
  */
-template <long N>
+template <Linx::Index N>
 FileMemRegions<N> makeMemRegion(const Linx::Box<N>& memoryRegion)
 {
   return FileMemRegions<N>(Linx::Position<N>::zero(), memoryRegion);
@@ -146,7 +146,7 @@ FileMemRegions<N> makeMemRegion(const Linx::Box<N>& memoryRegion)
  * @relates FileMemRegions
  * @brief Create a `FileMemRegions` with whole in-file region.
  */
-template <long N>
+template <Linx::Index N>
 FileMemRegions<N> makeMemRegion(const Linx::Position<N>& memoryPosition)
 {
   return FileMemRegions<N>(FileMemRegions<N>::whole(), memoryPosition);

@@ -19,16 +19,17 @@ using namespace Euclid::Fits;
  * Some properties of an `AstroObj`.
  */
 struct AstroObjInfo {
-  long comb_size;
-  long dith_count;
-  long dith1d_size;
+  Linx::Index comb_size;
+  Linx::Index dith_count;
+  Linx::Index dith1d_size;
   Linx::Position<2> dith2d_shape;
 };
 
 /*
  * Write records in the Primary.
  */
-void write_primary_header(const Header& h, long nobj) {
+void write_primary_header(const Header& h, Linx::Index nobj)
+{
   Record<std::int64_t> nobj_record {"N_OBJ", nobj, "", "number of objects in the package"};
   Record<std::string> telescope_record {"TELESCOP", "EUCLID", "", "telescope name"};
   Record<std::string> instrument_record {"INSTRUME", "NISP", "", "instrument name"};
@@ -38,8 +39,8 @@ void write_primary_header(const Header& h, long nobj) {
 /*
  * Write a binary table extension which represents one of several `AstroObj`s.
  */
-const BintableHdu& write_ext(MefFile& f, const std::string& name, const AstroObjInfo& info, long row_count) {
-
+const BintableHdu& write_ext(MefFile& f, const std::string& name, const AstroObjInfo& info, Linx::Index row_count)
+{
   /* Metadata */
 
   ColumnInfo<std::int64_t> objectid_info("OBJECT_ID");
@@ -105,8 +106,8 @@ const BintableHdu& write_ext(MefFile& f, const std::string& name, const AstroObj
 /**
  * Insert quality columns to a binary table HDU.
  */
-void insert_columns(const BintableColumns& du, const AstroObjInfo& info) {
-
+void insert_columns(const BintableColumns& du, const AstroObjInfo& info)
+{
   /* Infos */
 
   const auto comb_size = info.comb_size;
@@ -142,19 +143,20 @@ void insert_columns(const BintableColumns& du, const AstroObjInfo& info) {
  * The program.
  */
 class EleFitsGenerateAstroObj : public Elements::Program {
-
 public:
+
   /*
    * Program options.
    */
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
     Euclid::Fits::ProgramOptions options("Generate a random AstroObj file, as specified in the SpectrumLib.");
     options.positional("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file");
-    options.named("nobj", value<long>()->default_value(1), "AstroObj count per HDU");
-    options.named("nhdu", value<long>()->default_value(1), "HDU count");
-    options.named("nbin", value<long>()->default_value(1000), "Wavelength bin count");
-    options.named("ndith", value<long>()->default_value(4), "Dither count per AstroObj");
-    options.named("height", value<long>()->default_value(15), "Dither 2D height");
+    options.named("nobj", value<Linx::Index>()->default_value(1), "AstroObj count per HDU");
+    options.named("nhdu", value<Linx::Index>()->default_value(1), "HDU count");
+    options.named("nbin", value<Linx::Index>()->default_value(1000), "Wavelength bin count");
+    options.named("ndith", value<Linx::Index>()->default_value(4), "Dither count per AstroObj");
+    options.named("height", value<Linx::Index>()->default_value(15), "Dither 2D height");
     options.flag("qual", "Flag to write quality columns");
     return options.as_pair();
   }
@@ -162,16 +164,16 @@ public:
   /*
    * Run!
    */
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
-
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
+  {
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerateAstroObj");
 
     std::string filename = args["output"].as<std::string>();
-    const auto nobj = args["nobj"].as<long>();
-    const auto nhdu = args["nhdu"].as<long>();
-    const auto nbin = args["nbin"].as<long>();
-    const auto ndith = args["ndith"].as<long>();
-    const auto height = args["height"].as<long>();
+    const auto nobj = args["nobj"].as<Linx::Index>();
+    const auto nhdu = args["nhdu"].as<Linx::Index>();
+    const auto nbin = args["nbin"].as<Linx::Index>();
+    const auto ndith = args["ndith"].as<Linx::Index>();
+    const auto height = args["height"].as<Linx::Index>();
     const auto qual = args["qual"].as<bool>();
 
     AstroObjInfo info {nbin, ndith, nbin, {nbin, height}};
@@ -182,7 +184,7 @@ public:
     logger.info() << "Writing metadata";
     write_primary_header(f.primary().header(), nobj * nhdu);
 
-    for (long i = 0; i < nhdu; ++i) {
+    for (Linx::Index i = 0; i < nhdu; ++i) {
       logger.info() << "Writing HDU " << i + 1;
       const auto& ext = write_ext(f, std::to_string(i + 1), info, nobj);
       if (qual) {

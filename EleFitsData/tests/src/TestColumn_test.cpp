@@ -15,7 +15,7 @@ BOOST_FIXTURE_TEST_SUITE(TestColumn_test, Test::RandomTable)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_random_vector_column_size(long repeat_count, long row_count)
+void check_random_vector_column_size(Linx::Index repeat_count, Linx::Index row_count)
 {
   Test::RandomVectorColumn<T> column(repeat_count, row_count);
   BOOST_TEST(column.info().repeat_count() == repeat_count);
@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(names_are_all_different_test)
   std::vector<std::string> names;
   ELEFITS_FOREACH_COLUMN_TYPE(PUSH_BACK_NAME)
   BOOST_TEST(names.size() == column_count);
-  for (long lhs = 0; lhs < column_count; ++lhs) {
+  for (Linx::Index lhs = 0; lhs < column_count; ++lhs) {
     const auto& vlhs = names[lhs];
-    for (long rhs = 0; rhs < lhs; ++rhs) {
+    for (Linx::Index rhs = 0; rhs < lhs; ++rhs) {
       const auto& vrhs = names[rhs];
       BOOST_TEST(vlhs != vrhs);
     }

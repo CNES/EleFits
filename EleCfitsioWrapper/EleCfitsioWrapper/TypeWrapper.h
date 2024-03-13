@@ -23,7 +23,6 @@ namespace Cfitsio {
  */
 template <typename T>
 struct TypeCode {
-
   /**
    * @brief Get the type code for a record.
    */
@@ -37,7 +36,7 @@ struct TypeCode {
   /**
    * @brief Get the TFORM value to handle binary table columns.
    */
-  inline static std::string tform(long repeat_count);
+  inline static std::string tform(Linx::Index repeat_count);
 
   /**
    * @brief Get the type code for an image.

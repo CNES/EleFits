@@ -20,13 +20,12 @@ namespace Test {
  * @brief A set of random columns which cover the whole set of supported types.
  */
 struct RandomTable {
-
   /**
    * @brief Generate the table.
    * @param repeat_count The repeat count of each column.
    * @param row_count The row count of each column.
    */
-  RandomTable(long repeat_count = 1, long row_count = 3);
+  RandomTable(Linx::Index repeat_count = 1, Linx::Index row_count = 3);
 
   /**
    * @brief Generate a column.
@@ -35,7 +34,8 @@ struct RandomTable {
    * @param row_count The row count.
    */
   template <typename T>
-  static VecColumn<T> generate_column(const std::string& type_name, long repeat_count = 1, long row_count = 3);
+  static VecColumn<T>
+  generate_column(const std::string& type_name, Linx::Index repeat_count = 1, Linx::Index row_count = 3);
 
   /**
    * @brief Get the column with given value type.
@@ -69,15 +69,15 @@ struct RandomTable {
       columns;
 
   /** @brief The number of columns. */
-  static constexpr long column_count = 13;
+  static constexpr Linx::Index column_count = 13;
 }; // namespace Test
 
 /**
  * @brief A small set of columns with various types.
  */
 class SmallTable {
-
 public:
+
   /**
    * @brief Type of the NUM column.
    */
@@ -154,12 +154,12 @@ public:
  */
 template <typename T>
 class RandomScalarColumn : public VecColumn<T> {
-
 public:
+
   /**
    * @brief Generate a Column of given size.
    */
-  explicit RandomScalarColumn(long size = 3, T min = almost_min<T>(), T max = almost_max<T>());
+  explicit RandomScalarColumn(Linx::Index size = 3, T min = almost_min<T>(), T max = almost_max<T>());
 
   /** @brief Destructor. */
   virtual ~RandomScalarColumn() = default;
@@ -170,12 +170,16 @@ public:
  */
 template <typename T>
 class RandomVectorColumn : public VecColumn<T> {
-
 public:
+
   /**
    * @brief Generate a Column.
    */
-  explicit RandomVectorColumn(long repeat_count = 3, long size = 3, T min = almost_min<T>(), T max = almost_max<T>());
+  explicit RandomVectorColumn(
+      Linx::Index repeat_count = 3,
+      Linx::Index size = 3,
+      T min = almost_min<T>(),
+      T max = almost_max<T>());
 
   /** @brief Destructor. */
   virtual ~RandomVectorColumn() = default;

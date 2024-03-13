@@ -27,7 +27,7 @@ const std::type_info& read_typeid(fitsfile* fptr)
   throw Fits::FitsError("Unknown BITPIX: " + std::to_string(bitpix));
 }
 
-long read_bitpix(fitsfile* fptr)
+Linx::Index read_bitpix(fitsfile* fptr)
 {
   int status = 0;
   int bitpix = 0;

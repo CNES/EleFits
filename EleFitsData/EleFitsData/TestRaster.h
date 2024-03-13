@@ -26,7 +26,7 @@ public:
   /**
    * @brief Generate a SmallRaster with given width and height.
    */
-  SmallRaster(long width = 3, long height = 2);
+  SmallRaster(Linx::Index width = 3, Linx::Index height = 2);
 
   /** @brief Destructor. */
   virtual ~SmallRaster() = default;
@@ -40,18 +40,18 @@ public:
   /**
    * @brief Raster width.
    */
-  long width;
+  Linx::Index width;
 
   /**
    * @brief Raster height.
    */
-  long height;
+  Linx::Index height;
 };
 
 /**
  * @brief A random Raster of given type and shape.
  */
-template <typename T, long N = 2>
+template <typename T, Linx::Index N = 2>
 class RandomRaster : public Linx::Raster<T, N> {
 public:
 

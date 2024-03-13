@@ -60,8 +60,8 @@ namespace Fits {
  * \code
  * // Specs
  * const Segment rows {11, 50};
- * const long column_count = 3;
- * const long row_count = rows.size();
+ * const Linx::Index column_count = 3;
+ * const Linx::Index row_count = rows.size();
  * 
  * // Data container for all columns
  * std::vector<float> data(row_count * column_count);
@@ -92,12 +92,12 @@ public:
   /**
    * @brief Get the current number of columns.
    */
-  long read_column_count() const;
+  Linx::Index read_column_count() const;
 
   /**
    * @brief Get the current number of rows.
    */
-  long read_row_count() const;
+  Linx::Index read_row_count() const;
 
   /**
    * @brief Get the number of rows in the internal buffer.
@@ -105,7 +105,7 @@ public:
    * CFITSIO internally implements a buffer to read and write data units efficiently.
    * To optimize its usage, columns should be read and written by chunks of the buffer size at most.
    */
-  long read_buffer_row_count() const;
+  Linx::Index read_buffer_row_count() const;
 
   /**
    * @brief Check whether the HDU contains a given column.
@@ -116,17 +116,17 @@ public:
   /**
    * @brief Get the index of the column with given name.
    */
-  long read_index(const std::string& name) const;
+  Linx::Index read_index(const std::string& name) const;
 
   /**
    * @brief Get the indices of the columns with given names.
    */
-  std::vector<long> read_n_indices(const std::vector<std::string>& names) const;
+  std::vector<Linx::Index> read_n_indices(const std::vector<std::string>& names) const;
 
   /**
    * @brief Get the name of the column with given index.
    */
-  std::string read_name(long index) const;
+  std::string read_name(Linx::Index index) const;
 
   /**
    * @brief Get the names of all the columns.
@@ -154,7 +154,7 @@ public:
    * @brief Read the info of a column.
    * @param key The name or 0-based index of the column to be read
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   ColumnInfo<T, N> read_info(ColumnKey key) const;
 
   /**
@@ -174,7 +174,7 @@ public:
    * auto from_index = columns.read<float>(1);
    * 
    * // Concatenate two columns into an existing Column
-   * long row_count = read_row_count();
+   * Linx::Index row_count = read_row_count();
    * std::vector<float> values(row_count * 2);
    * PtrColumn<float> ra({"RA", "deg", 1}, row_count, &values[0]);
    * PtrColumn<float> dec({"DEC", "deg", 1}, row_count, &values[row_count]);
@@ -185,7 +185,7 @@ public:
    * @warning
    * Methods `read_to()` do not allocate memory: the user must ensure that enough space has been allocated previously.
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   VecColumn<T, N> read(ColumnKey key) const;
 
   /**
@@ -230,14 +230,14 @@ public:
    * // Read into an existing Column
    * // This is a more complex example which demonstrates the use of offsets
    * Segment source_bounds = {10, 50};
-   * long destination_row = 20;
+   * Linx::Index destination_row = 20;
    * std::vector<float> values(100);
    * PtrColumn<float> segment({"NAME", "m/s", 1}, 20, &values[destination_row]);
    * columns.read_segment_to(source_bounds, "NAME", segment);
    * \endcode
    * @see read()
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   VecColumn<T, N> read_segment(const Segment& rows, ColumnKey key) const;
 
   /**
@@ -276,14 +276,14 @@ public:
    * @warning
    * Multidimensional columns are read as vector columns as of today.
    */
-  template <typename TKey, typename... Ts> // FIXME add long... Ns
+  template <typename TKey, typename... Ts> // FIXME add Linx::Index... Ns
   std::tuple<VecColumn<Ts, 1>...> read_n(const TypedKey<Ts, TKey>&... keys) const; // FIXME Ns in TypedKey and as()
 
   /**
    * @brief Read a vector of columns with given names or indices.
    * @copydetails read_n()
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   std::vector<VecColumn<T, N>> read_n(std::vector<ColumnKey> keys) const; // TODO return a ColumnVec?
 
   /**
@@ -334,7 +334,7 @@ public:
   /**
    * @copydoc read_n_segments
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   std::vector<VecColumn<T, N>> read_n_segments(Segment rows, std::vector<ColumnKey> keys) const;
 
   /**
@@ -401,13 +401,13 @@ public:
    * @param info The column info
    */
   template <typename TInfo>
-  void insert_null(long index, const TInfo& info) const;
+  void insert_null(Linx::Index index, const TInfo& info) const;
 
   /**
    * @brief Insert and fill a column.
    */
   template <typename TColumn>
-  void insert(long index, const TColumn& column) const
+  void insert(Linx::Index index, const TColumn& column) const
   {
     insert_null(index, column.info());
     write(column);
@@ -469,13 +469,13 @@ public:
    * @param infos The column infos
    */
   template <typename TSeq>
-  void insert_n_null(long index, TSeq&& infos) const;
+  void insert_n_null(Linx::Index index, TSeq&& infos) const;
 
   /**
    * @copydoc insert_n_null
    */
   template <typename... TInfos>
-  void insert_n_null(long index, const TInfos&... infos) const;
+  void insert_n_null(Linx::Index index, const TInfos&... infos) const;
 
   /**
    * @brief Remove a sequence of columns specified by their names or indices.
@@ -509,7 +509,7 @@ public:
   /**
    * @deprecated
    */
-  [[deprecated]] long readColumnCount() const
+  [[deprecated]] Linx::Index readColumnCount() const
   {
     return read_column_count();
   }
@@ -517,7 +517,7 @@ public:
   /**
    * @deprecated
    */
-  [[deprecated]] long readRowCount() const
+  [[deprecated]] Linx::Index readRowCount() const
   {
     return read_row_count();
   }
@@ -525,7 +525,7 @@ public:
   /**
    * @deprecated
    */
-  [[deprecated]] long readBufferRowCount() const
+  [[deprecated]] Linx::Index readBufferRowCount() const
   {
     return read_buffer_row_count();
   }
@@ -533,7 +533,7 @@ public:
   /**
    * @deprecated
    */
-  [[deprecated]] long readIndex(const std::string& name) const
+  [[deprecated]] Linx::Index readIndex(const std::string& name) const
   {
     return read_index(name);
   }
@@ -541,7 +541,8 @@ public:
   /**
    * @deprecated
    */
-  [[deprecated("Use read_n_indices()")]] std::vector<long> readIndices(const std::vector<std::string>& names) const
+  [[deprecated("Use read_n_indices()")]] std::vector<Linx::Index>
+  readIndices(const std::vector<std::string>& names) const
   {
     return read_n_indices(names);
   }
@@ -549,7 +550,7 @@ public:
   /**
    * @deprecated
    */
-  [[deprecated]] std::string readName(long index) const
+  [[deprecated]] std::string readName(Linx::Index index) const
   {
     return read_name(index);
   }
@@ -565,7 +566,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   [[deprecated]] ColumnInfo<T, N> readInfo(ColumnKey key) const
   {
     return read_info<T, N>(key);
@@ -588,7 +589,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   [[deprecated]] VecColumn<T, N> readSegment(const Segment& rows, ColumnKey key) const
   {
     return read_segment<T, N>(rows, key);
@@ -603,7 +604,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename TKey, typename... Ts> // FIXME add long... Ns
+  template <typename TKey, typename... Ts> // FIXME add Linx::Index... Ns
   [[deprecated]] std::tuple<VecColumn<Ts, 1>...> readSeq(const TypedKey<Ts, TKey>&... keys) const
   {
     return read_n(keys...);
@@ -612,7 +613,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   [[deprecated]] std::vector<VecColumn<T, N>> readSeq(std::vector<ColumnKey> keys) const
   {
     return read_n<T, N>(keys);
@@ -639,7 +640,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   [[deprecated]] std::vector<VecColumn<T, N>> readSegmentSeq(Segment rows, const std::vector<ColumnKey> keys) const
   {
     return read_n_segments<T, N>(rows, keys);
@@ -658,7 +659,7 @@ public:
    * @deprecated Replaced with append_null() and insert_null()
   */
   template <typename TInfo>
-  [[deprecated("Use append_null() or insert_null()")]] void init(const TInfo& info, long index = -1) const;
+  [[deprecated("Use append_null() or insert_null()")]] void init(const TInfo& info, Linx::Index index = -1) const;
 
   /**
    * @deprecated
@@ -731,13 +732,13 @@ private:
  * Throws if columns do not have the same size.
  */
 template <typename TSeq>
-long columns_row_count(TSeq&& columns);
+Linx::Index columns_row_count(TSeq&& columns);
 
 /**
  * @deprecated
  */
 template <typename TSeq>
-long columnsRowCount(TSeq&& columns)
+Linx::Index columnsRowCount(TSeq&& columns)
 {
   return columns_row_count(std::forward<TSeq>(columns));
 }

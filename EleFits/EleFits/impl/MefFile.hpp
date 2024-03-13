@@ -40,7 +40,7 @@ Strategy& MefFile::strategy()
 }
 
 template <class T>
-const T& MefFile::access(long index)
+const T& MefFile::access(Linx::Index index)
 {
   if (index < 0) { // Backward indexing
     index += hdu_count();
@@ -73,7 +73,7 @@ const T& MefFile::access(const std::string& name, long version)
 {
   const auto category = HduCategory::forClass<T>();
   const Hdu* hdu_ptr = nullptr;
-  for (long i = 0; i < hdu_count(); ++i) {
+  for (Linx::Index i = 0; i < hdu_count(); ++i) {
     const auto& hdu = access<Hdu>(i);
     const bool c_match = (category == HduCategory::Any || hdu.type() == category);
     const bool cn_match = c_match && (name == "" || hdu.read_name() == name);
@@ -155,13 +155,13 @@ const ImageHdu& MefFile::append_image_header(const std::string& name, const Reco
   // FIXME inverse dependency (see appendImageExt's FIXME)
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 const ImageHdu&
 MefFile::append_null_image(const std::string& name, const RecordSeq& records, const Linx::Position<N>& shape)
 {
   const auto index = m_hdus.size();
   Linx::Position<-1> dynamic_shape(shape);
-  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamic_shape, nullptr};
+  ImageHdu::Initializer<T> init {static_cast<Linx::Index>(index), name, records, dynamic_shape, nullptr};
   m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::init_image<T>(m_fptr, name, shape);
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -196,7 +196,7 @@ const ImageHdu& MefFile::append_image(const std::string& name, const RecordSeq& 
   const auto index = m_hdus.size();
   using T = std::decay_t<typename TRaster::Value>;
   Linx::Position<-1> dynamic_shape(raster.shape());
-  ImageHdu::Initializer<T> init {static_cast<long>(index), name, records, dynamic_shape, raster.data()};
+  ImageHdu::Initializer<T> init {static_cast<Linx::Index>(index), name, records, dynamic_shape, raster.data()};
   m_strategy.compress(m_fptr, init);
   Cfitsio::HduAccess::init_image<typename TRaster::value_type>(m_fptr, name, raster.shape());
   m_hdus.push_back(std::make_unique<ImageHdu>(Hdu::Token {}, m_fptr, index, HduCategory::Created));
@@ -224,8 +224,11 @@ MefFile::append_bintable_header(const std::string& name, const RecordSeq& record
 }
 
 template <typename... TInfos>
-const BintableHdu&
-MefFile::append_null_bintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos)
+const BintableHdu& MefFile::append_null_bintable(
+    const std::string& name,
+    const RecordSeq& records,
+    Linx::Index row_count,
+    const TInfos&... infos)
 {
   const auto& hdu = append_bintable_header(name, records, infos...);
 
@@ -263,7 +266,7 @@ const BintableHdu& MefFile::append_bintable(const std::string& name, const Recor
   // FIXME use append_bintable(name, records, columns...) or inverse dependency
 }
 
-void MefFile::remove(long index)
+void MefFile::remove(Linx::Index index)
 {
   if (index == 0) {
     primary() = access<ImageHdu>(1);

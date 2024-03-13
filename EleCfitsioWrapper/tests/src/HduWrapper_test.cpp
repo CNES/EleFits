@@ -19,13 +19,15 @@ BOOST_AUTO_TEST_SUITE(HduWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(minimal_file_has_accessible_primary_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(minimal_file_has_accessible_primary_test, Fits::Test::MinimalFile)
+{
   HduAccess::goto_primary(this->fptr);
   BOOST_TEST(HduAccess::current_index(this->fptr) == 1);
   BOOST_TEST(HduAccess::current_is_primary(this->fptr));
 }
 
-BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, Fits::Test::MinimalFile)
+{
   using namespace Fits::Test;
   SmallRaster input;
   HduAccess::assign_image(this->fptr, "IMGEXT", input);
@@ -39,15 +41,16 @@ BOOST_FIXTURE_TEST_CASE(create_and_access_image_extension_test, Fits::Test::Mini
   BOOST_TEST(output.container() == input.container());
 }
 
-BOOST_FIXTURE_TEST_CASE(access_hdu_by_type, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(access_hdu_by_type, Fits::Test::MinimalFile)
+{
   using namespace Fits::Test;
   const std::string name = "NAME";
-  constexpr long primary_index = 1;
+  constexpr Linx::Index primary_index = 1;
   HduAccess::assign_image(this->fptr, name, SmallRaster());
-  constexpr long image_index = primary_index + 1;
+  constexpr Linx::Index image_index = primary_index + 1;
   BOOST_TEST(HduAccess::current_index(this->fptr) == image_index);
   HduAccess::assign_bintable(this->fptr, name, SmallTable().name_col);
-  constexpr long bintable_index = image_index + 1;
+  constexpr Linx::Index bintable_index = image_index + 1;
   BOOST_TEST(HduAccess::current_index(this->fptr) == bintable_index);
   HduAccess::goto_name(this->fptr, name);
   BOOST_TEST(HduAccess::current_index(this->fptr) == image_index);

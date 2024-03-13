@@ -14,11 +14,12 @@ BOOST_AUTO_TEST_SUITE(FileMemSegments_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(append_resolve_test) {
-  long fileBack = 9;
-  long memoryFront = 20;
-  long memoryBack = 99;
-  long size = memoryBack - memoryFront + 1;
+BOOST_AUTO_TEST_CASE(append_resolve_test)
+{
+  Linx::Index fileBack = 9;
+  Linx::Index memoryFront = 20;
+  Linx::Index memoryBack = 99;
+  Linx::Index size = memoryBack - memoryFront + 1;
 
   FileMemSegments segments {-1, {memoryFront, -1}};
   BOOST_TEST(segments.file().front == -1);
@@ -35,12 +36,13 @@ BOOST_AUTO_TEST_CASE(append_resolve_test) {
   BOOST_TEST(segments.memory().size() == size);
 }
 
-BOOST_AUTO_TEST_CASE(write_resolve_test) {
-  long fileFront = 10;
-  long fileBack = -2;
-  long memoryFront = 19;
-  long memoryBack = 99;
-  long size = memoryBack - memoryFront + 1;
+BOOST_AUTO_TEST_CASE(write_resolve_test)
+{
+  Linx::Index fileFront = 10;
+  Linx::Index fileBack = -2;
+  Linx::Index memoryFront = 19;
+  Linx::Index memoryBack = 99;
+  Linx::Index size = memoryBack - memoryFront + 1;
 
   FileMemSegments segments {fileFront, {memoryFront, -1}};
   BOOST_TEST(segments.file().front == fileFront);
@@ -57,12 +59,13 @@ BOOST_AUTO_TEST_CASE(write_resolve_test) {
   BOOST_TEST(segments.memory().size() == size);
 }
 
-BOOST_AUTO_TEST_CASE(partial_read_resolve_test) {
-  long fileFront = 200;
-  long fileBack = 999;
-  long memoryFront = 10;
-  long memoryBack = -2;
-  long size = fileBack - fileFront + 1;
+BOOST_AUTO_TEST_CASE(partial_read_resolve_test)
+{
+  Linx::Index fileFront = 200;
+  Linx::Index fileBack = 999;
+  Linx::Index memoryFront = 10;
+  Linx::Index memoryBack = -2;
+  Linx::Index size = fileBack - fileFront + 1;
 
   FileMemSegments segments {{fileFront, -1}, memoryFront};
   BOOST_TEST(segments.file().front == fileFront);

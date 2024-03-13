@@ -19,8 +19,8 @@ using namespace Euclid;
  * When several columns are written at once, the operation is optimized through an internal buffer,
  * which makes it much faster than writing columns one by one.
  */
-const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext_name, long rows) {
-
+const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext_name, Linx::Index rows)
+{
   /* A string column */
   auto string_info = Fits::make_column_info<std::string>("STRING", "", 6);
   auto string_data = Fits::Test::generate_random_vector<std::string>(rows);
@@ -53,7 +53,8 @@ const Fits::BintableHdu& write_bintable(Fits::MefFile& f, const std::string& ext
  * It is also possible to append or insert several columns at once, analogously to what's done in `write_bintable()`.
  */
 template <typename TInfo, typename T>
-void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* data) {
+void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* data)
+{
   const auto rows = du.read_row_count();
   du.init(info);
   du.write(make_column(info, rows, data));
@@ -65,8 +66,8 @@ void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* 
  * Like when writing, reading several columns at once is much faster than reading them one by one.
  * For more fun, let's compute something from all the elements of several columns.
  */
-double read_columns(const Fits::BintableColumns& du) {
-
+double read_columns(const Fits::BintableColumns& du)
+{
   /* Read with different types (implicit conversion) */
   const auto cols = du.read_n(Fits::as<double>("VECTOR"), Fits::as<float>("MULTIDIM"));
 
@@ -85,13 +86,13 @@ double read_columns(const Fits::BintableColumns& du) {
 /*
  * Manipulate the fields of a multidimensional column as nD-arrays.
  */
-void view_as_raster(const Fits::BintableColumns& du) {
-
+void view_as_raster(const Fits::BintableColumns& du)
+{
   /* Read a column of 2D fields */
   auto col = du.read<std::uint16_t, 2>("MULTIDIM");
 
   /* Zero pixels at odd positions */
-  for (long i = 0; i < col.row_count(); ++i) {
+  for (Linx::Index i = 0; i < col.row_count(); ++i) {
     auto raster = col.field(i);
     for (const auto& p : raster.domain()) {
       if ((p[0] + p[1]) % 2 == 1) {
@@ -108,26 +109,27 @@ void view_as_raster(const Fits::BintableColumns& du) {
  * The progam.
  */
 class EleFitsBintableExample : public Elements::Program {
-
 public:
+
   /*
    * Declare the program options.
    */
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
     Fits::ProgramOptions options("Generate, write and read a binary table.");
     options.positional("output", value<std::string>()->default_value("/tmp/bintable.fits"), "Output file");
-    options.named("rows", value<long>()->default_value(42), "Number of rows");
+    options.named("rows", value<Linx::Index>()->default_value(42), "Number of rows");
     return options.as_pair();
   }
 
   /*
    * Execute the program.
    */
-  ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
-
+  ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
+  {
     Logging logger = Logging::getLogger("EleFitsBintableExample");
     const auto filename = args["output"].as<std::string>();
-    const auto rows = args["rows"].as<long>();
+    const auto rows = args["rows"].as<Linx::Index>();
 
     logger.info("Opening or creating the file...");
     Fits::MefFile f(filename, Fits::FileMode::Write);

@@ -21,7 +21,8 @@ BOOST_AUTO_TEST_SUITE(BintableWrapper_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_scalar_column_is_read_back() {
+void check_scalar_column_is_read_back()
+{
   using namespace Fits::Test;
   RandomScalarColumn<T> input;
   MinimalFile file;
@@ -48,17 +49,19 @@ void check_scalar_column_is_read_back() {
 }
 
 #define SCALAR_COLUMN_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_scalar_column_is_read_back_test_test) { \
+  BOOST_AUTO_TEST_CASE(name##_scalar_column_is_read_back_test_test) \
+  { \
     check_scalar_column_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_COLUMN_TYPE(SCALAR_COLUMN_IS_READ_BACK_TEST)
 
 template <typename T>
-void check_vector_column_is_read_back() {
+void check_vector_column_is_read_back()
+{
   using namespace Fits::Test;
-  constexpr long row_count = 3;
-  constexpr long repeat_count = 2;
+  constexpr Linx::Index row_count = 3;
+  constexpr Linx::Index repeat_count = 2;
   RandomVectorColumn<T> input(repeat_count, row_count);
   MinimalFile file;
   try {
@@ -86,18 +89,21 @@ template <>
 void check_vector_column_is_read_back<std::string>();
 
 template <>
-void check_vector_column_is_read_back<std::string>() {
+void check_vector_column_is_read_back<std::string>()
+{
   // String is tested as a scalar column
 }
 
 #define VECTOR_COLUMN_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_vector_column_is_read_back_test) { \
+  BOOST_AUTO_TEST_CASE(name##_vector_column_is_read_back_test) \
+  { \
     check_vector_column_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_COLUMN_TYPE(VECTOR_COLUMN_IS_READ_BACK_TEST)
 
-BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile)
+{
   using namespace Fits::Test;
   SmallTable input;
   HduAccess::assign_bintable(this->fptr, "IMGEXT", input.num_col, input.radec_col, input.name_col, input.dist_mag_col);
@@ -112,9 +118,10 @@ BOOST_FIXTURE_TEST_CASE(small_table_test, Fits::Test::MinimalFile) {
   BOOST_TEST(output_dists_mags.container() == input.dists_mags);
 }
 
-BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile)
+{
   using namespace Fits::Test;
-  constexpr long row_count(10000); // Large enough to ensure CFITSIO buffer is full
+  constexpr Linx::Index row_count(10000); // Large enough to ensure CFITSIO buffer is full
   RandomScalarColumn<int> i(row_count);
   i.rename("I");
   RandomScalarColumn<float> f(row_count);
@@ -124,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   HduAccess::assign_bintable(this->fptr, "BINEXT", i, f, d);
   const auto table = BintableIo::read_columns<int, float, double>(this->fptr, {"I", "F", "D"});
   int status = 0;
-  long chunk_row_count = 0;
+  Linx::Index chunk_row_count = 0;
   fits_get_rowsize(fptr, &chunk_row_count, &status);
   BOOST_TEST(chunk_row_count < row_count);
   BOOST_TEST(std::get<0>(table).container() == i.container());
@@ -132,7 +139,8 @@ BOOST_FIXTURE_TEST_CASE(rowwise_test, Fits::Test::MinimalFile) {
   BOOST_TEST(std::get<2>(table).container() == d.container());
 }
 
-BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile)
+{
   using namespace Fits::Test;
   SmallTable table;
   HduAccess::assign_bintable(this->fptr, "TABLE", table.name_col);
@@ -145,8 +153,9 @@ BOOST_FIXTURE_TEST_CASE(append_columns_test, Fits::Test::MinimalFile) {
   BOOST_TEST(radecs.container() == table.radecs);
 }
 
-template <long N>
-void check_tdim_is_read_back(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info) {
+template <Linx::Index N>
+void check_tdim_is_read_back(fitsfile* fptr, const Fits::ColumnInfo<char, N>& info)
+{
   HduAccess::init_bintable(fptr, "TABLE", info);
   const bool should_have_tdim = (info.shape.size() > 1) || (info.shape[0] != info.repeat_count());
   BOOST_TEST(HeaderIo::has_keyword(fptr, "TDIM1") == should_have_tdim);
@@ -154,20 +163,22 @@ void check_tdim_is_read_back(fitsfile* fptr, const Fits::ColumnInfo<char, N>& in
   BOOST_TEST((result == info));
 }
 
-BOOST_FIXTURE_TEST_CASE(tdim_is_read_back_test, Fits::Test::MinimalFile) {
-  static constexpr long width = 10;
-  static constexpr long height = 6;
+BOOST_FIXTURE_TEST_CASE(tdim_is_read_back_test, Fits::Test::MinimalFile)
+{
+  static constexpr Linx::Index width = 10;
+  static constexpr Linx::Index height = 6;
   check_tdim_is_read_back(this->fptr, Fits::ColumnInfo<char, 1>("SCALAR"));
   check_tdim_is_read_back(this->fptr, Fits::ColumnInfo<char, 1>("VECTOR", "", width));
   check_tdim_is_read_back(this->fptr, Fits::ColumnInfo<char, 2>("MULTI", "", {width, height}));
 }
 
-BOOST_FIXTURE_TEST_CASE(tdim_for_string_learning_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(tdim_for_string_learning_test, Fits::Test::MinimalFile)
+{
   int status = 0;
   Fits::String::CStrArray ttype({std::string("TEST")});
   Fits::String::CStrArray tform({std::string("10A")});
   int naxis = 0;
-  long naxes[] = {0, 0, 0};
+  Linx::Index naxes[] = {0, 0, 0};
   fits_create_tbl(this->fptr, BINARY_TBL, 0, 1, ttype.data(), tform.data(), nullptr, "EXTNAME", &status);
   BOOST_CHECK_EQUAL(status, 0);
   int dummy = 0;

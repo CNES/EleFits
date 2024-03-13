@@ -56,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(resize_char_image_learning_test, Euclid::Fits::Test::Min
 {
   // Fixture creates file and empty primary of type uchar
   int status = 0;
-  long naxes = 1;
+  Linx::Index naxes = 1;
   fits_resize_img(fptr, BYTE_IMG, 1, &naxes, &status);
   BOOST_TEST(status == 0);
   fits_resize_img(fptr, SBYTE_IMG, 1, &naxes, &status);
@@ -67,7 +67,7 @@ BOOST_FIXTURE_TEST_CASE(resize_ulonglong_image_learning_test, Euclid::Fits::Test
 {
   // Fixture creates file and empty primary of type uchar
   int status = 0;
-  long naxes = 1;
+  Linx::Index naxes = 1;
   fits_resize_img(fptr, LONGLONG_IMG, 1, &naxes, &status);
   BOOST_TEST(status == 0);
   fits_resize_img(fptr, ULONGLONG_IMG, 1, &naxes, &status);

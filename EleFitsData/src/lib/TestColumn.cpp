@@ -10,14 +10,14 @@ namespace Test {
 
 #define GENERATE_COLUMN(type, name) get_column<type>() = generate_column<type>(#name, repeat_count, row_count);
 
-RandomTable::RandomTable(long repeat_count, long row_count) : columns {}
+RandomTable::RandomTable(Linx::Index repeat_count, Linx::Index row_count) : columns {}
 {
   ELEFITS_FOREACH_COLUMN_TYPE(GENERATE_COLUMN)
 }
 
 #undef GENERATE_COLUMN
 
-constexpr long RandomTable::column_count;
+constexpr Linx::Index RandomTable::column_count;
 
 SmallTable::SmallTable() :
     extname("MESSIER"), nums {45, 7, 31}, radecs {{56.8500F, 24.1167F}, {268.4667F, -34.7928F}, {10.6833F, 41.2692F}},

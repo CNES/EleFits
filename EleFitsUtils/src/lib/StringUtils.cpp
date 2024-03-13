@@ -11,30 +11,35 @@ namespace Euclid {
 namespace Fits {
 namespace String {
 
-std::vector<std::string> split(const std::string& input, const std::string& delimiters) {
+std::vector<std::string> split(const std::string& input, const std::string& delimiters)
+{
   std::vector<std::string> res;
   boost::split(res, input, boost::is_any_of(delimiters));
   return res;
 }
 
-std::string trim(const std::string& input, const std::string& characters) {
+std::string trim(const std::string& input, const std::string& characters)
+{
   if (characters.length() > 0) {
     return boost::trim_copy_if(input, boost::is_any_of(characters));
   }
   return boost::trim_copy(input);
 }
 
-std::string read_file(const std::string& filename) {
+std::string read_file(const std::string& filename)
+{
   std::ifstream ifs(filename);
   return {std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>()};
 }
 
-std::string read_aux_file(const std::string& filename) {
+std::string read_aux_file(const std::string& filename)
+{
   return read_file(Elements::getAuxiliaryPath(filename).string());
 }
 
-std::unique_ptr<char[]> to_char_ptr(const std::string& str) {
-  const long size = str.length();
+std::unique_ptr<char[]> to_char_ptr(const std::string& str)
+{
+  const auto size = str.length();
   auto c_str = std::make_unique<char[]>(size + 1);
   strcpy(c_str.get(), str.c_str());
   return c_str;
@@ -44,11 +49,13 @@ CStrArray::CStrArray(const std::vector<std::string>& data) : CStrArray(data.begi
 
 CStrArray::CStrArray(const std::initializer_list<std::string>& data) : CStrArray(data.begin(), data.end()) {}
 
-std::size_t CStrArray::size() const {
+std::size_t CStrArray::size() const
+{
   return c_str_vector.size();
 }
 
-char** CStrArray::data() {
+char** CStrArray::data()
+{
   return c_str_vector.data();
 }
 

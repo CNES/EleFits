@@ -25,13 +25,13 @@ public:
   /**
    * @brief Constructor.
    */
-  GameOfLife(long width, long height, long turns);
+  GameOfLife(Linx::Index width, Linx::Index height, Linx::Index turns);
 
   /**
    * @brief Generate lives at random positions.
    * @param count The number of lives to generate (should be much smaller than the number of cells)
    */
-  const Linx::PtrRaster<Value, 2>& generate(long count);
+  const Linx::PtrRaster<Value, 2>& generate(Linx::Index count);
 
   /**
    * @brief Run the game.
@@ -41,7 +41,7 @@ public:
   /**
    * @brief Move to the next frame.
    */
-  long next();
+  Linx::Index next();
 
   /**
    * @brief Update the current frame.
@@ -51,7 +51,7 @@ public:
   /**
    * @brief Count lives around a given position.
    */
-  long count_lives(const Linx::Position<2>& p) const;
+  Linx::Index count_lives(const Linx::Position<2>& p) const;
 
   /**
    * @brief Check whether a given position is in the board domain.
@@ -63,17 +63,17 @@ private:
   /**
    * @brief The board width.
    */
-  long m_width;
+  Linx::Index m_width;
 
   /**
    * @brief The board height.
    */
-  long m_height;
+  Linx::Index m_height;
 
   /**
    * @brief The number of turns.
    */
-  long m_turns;
+  Linx::Index m_turns;
 
   /**
    * @brief The board and its evolution in time.
@@ -83,7 +83,7 @@ private:
   /**
    * @brief The current turn index (aka time).
    */
-  long m_t;
+  Linx::Index m_t;
 
   /**
    * @brief The previous frame.

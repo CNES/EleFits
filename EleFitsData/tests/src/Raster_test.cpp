@@ -78,9 +78,9 @@ BOOST_FIXTURE_TEST_CASE(small_raster_size_test, Test::SmallRaster)
 
 BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test)
 {
-  const long width = 4;
-  const long height = 3;
-  const long size = width * height;
+  const Linx::Index width = 4;
+  const Linx::Index height = 3;
+  const Linx::Index size = width * height;
   Test::RandomRaster<int, -1> raster({width, height});
   BOOST_TEST(raster.dimension() == 2);
   BOOST_TEST(raster.size() == size);
@@ -89,8 +89,8 @@ BOOST_AUTO_TEST_CASE(variable_dimension_raster_size_test)
 
 BOOST_AUTO_TEST_CASE(subscript_bounds_test)
 {
-  const long width = 4;
-  const long height = 3;
+  const Linx::Index width = 4;
+  const Linx::Index height = 3;
   Test::RandomRaster<int> raster({width, height});
   raster.at({1, -1}) = 1;
   BOOST_TEST(raster.at({1, -1}) == 1);
@@ -119,9 +119,9 @@ BOOST_FIXTURE_TEST_CASE(vecraster_move_test, Test::SmallRaster)
 
 BOOST_AUTO_TEST_CASE(make_raster_test)
 {
-  constexpr long width = 16;
-  constexpr long height = 9;
-  constexpr long depth = 3;
+  constexpr Linx::Index width = 16;
+  constexpr Linx::Index height = 9;
+  constexpr Linx::Index depth = 3;
   short data2[width * height] = {0};
   const short constData2[width * height] = {0};
   float data3[width * height * depth] = {0};

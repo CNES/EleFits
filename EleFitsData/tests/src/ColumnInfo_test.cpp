@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_SUITE(ColumnInfo_test)
 template <typename T>
 void check_element_count()
 {
-  constexpr long repeat = 17; // Not 1 ;)
+  constexpr Linx::Index repeat = 17; // Not 1 ;)
   ColumnInfo<T> info {"COL", "unit", repeat};
   BOOST_TEST(info.repeat_count() == repeat);
   if (std::is_same<T, std::string>::value) {
@@ -33,7 +33,7 @@ void check_element_count()
     check_element_count<T>(); \
   }
 
-template <long N>
+template <Linx::Index N>
 void check_repeat_count_from_shape(const Linx::Position<N>& shape)
 {
   ColumnInfo<float, N> info("NAME", "unit", shape);

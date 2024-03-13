@@ -7,18 +7,18 @@
 namespace Euclid {
 namespace Fits {
 
-GameOfLife::GameOfLife(long width, long height, long turns) :
+GameOfLife::GameOfLife(Linx::Index width, Linx::Index height, Linx::Index turns) :
     m_width(width), m_height(height), m_turns(turns), m_board({width, height, turns}), m_t(0),
     m_previous(m_board.section(0)), m_current(m_board.section(1))
 {
   // The board is filled with zeros
 }
 
-const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(long count)
+const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(Linx::Index count)
 {
-  long done = 0;
+  Linx::Index done = 0;
   while (done <= count) {
-    const long i = Test::generate_random_value<long>(0, m_width * m_height - 1);
+    const Linx::Index i = Test::generate_random_value<Linx::Index>(0, m_width * m_height - 1);
     if (not m_previous[i]) {
       m_previous[i] = 1;
       ++done;
@@ -36,7 +36,7 @@ const Linx::Raster<GameOfLife::Value, 3>& GameOfLife::run()
   return m_board;
 }
 
-long GameOfLife::next()
+Linx::Index GameOfLife::next()
 {
   m_previous = m_current;
   ++m_t;
@@ -64,10 +64,10 @@ const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::update()
   return m_current;
 }
 
-long GameOfLife::count_lives(const Linx::Position<2>& p) const
+Linx::Index GameOfLife::count_lives(const Linx::Position<2>& p) const
 {
   const Linx::Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
-  long count = 0;
+  Linx::Index count = 0;
   for (const auto& n : neighbors) {
     const auto q = p + n;
     if (is_in_domain(q) && m_previous[q]) {

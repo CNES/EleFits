@@ -14,7 +14,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace HduAccess {
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 void init_image(fitsfile* fptr, const std::string& name, const Linx::Position<N>& shape)
 {
   may_throw_readonly(fptr);
@@ -35,7 +35,7 @@ void assign_image(fitsfile* fptr, const std::string& name, const TRaster& raster
 template <typename... TInfos>
 void init_bintable(fitsfile* fptr, const std::string& name, const TInfos&... infos)
 {
-  constexpr long ncols = sizeof...(TInfos);
+  constexpr Linx::Index ncols = sizeof...(TInfos);
   Fits::String::CStrArray col_name {infos.name...};
   Fits::String::CStrArray col_format {TypeCode<typename TInfos::Value>::tform(infos.repeat_count())...};
   Fits::String::CStrArray col_unit {infos.unit...};
@@ -80,7 +80,7 @@ void assign_bintable(fitsfile* fptr, const std::string& name, const TTuple& colu
 template <typename TColumn>
 void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& column)
 { // TODO used?
-  constexpr long column_count = 1;
+  constexpr Linx::Index column_count = 1;
   std::string col_name = column.info().name;
   char* c_name = &col_name[0];
   std::string col_format = TypeCode<typename TColumn::Value>::tform(column.info().repeat_count());

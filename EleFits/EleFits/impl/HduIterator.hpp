@@ -10,18 +10,21 @@ namespace Euclid {
 namespace Fits {
 
 template <typename THdu>
-HduIterator<THdu>::HduIterator(MefFile& f, long index, HduFilter filter) :
-    m_f(f), m_index(index - 1), m_hdu(nullptr), m_filter(filter), m_dummy_hdu() {
+HduIterator<THdu>::HduIterator(MefFile& f, Linx::Index index, HduFilter filter) :
+    m_f(f), m_index(index - 1), m_hdu(nullptr), m_filter(filter), m_dummy_hdu()
+{
   next();
 }
 
 template <typename THdu>
-const THdu& HduIterator<THdu>::operator*() const {
+const THdu& HduIterator<THdu>::operator*() const
+{
   return m_hdu->as<THdu>();
 }
 
 template <typename THdu>
-const THdu* HduIterator<THdu>::operator->() const {
+const THdu* HduIterator<THdu>::operator->() const
+{
   if (not m_hdu) {
     return nullptr;
   }
@@ -29,30 +32,35 @@ const THdu* HduIterator<THdu>::operator->() const {
 }
 
 template <typename THdu>
-HduIterator<THdu>& HduIterator<THdu>::operator++() {
+HduIterator<THdu>& HduIterator<THdu>::operator++()
+{
   next();
   return *this;
 }
 
 template <typename THdu>
-HduIterator<THdu> HduIterator<THdu>::operator++(int) const {
+HduIterator<THdu> HduIterator<THdu>::operator++(int) const
+{
   auto out = *this;
   ++out;
   return out;
 }
 
 template <typename THdu>
-bool HduIterator<THdu>::operator==(const HduIterator<THdu>& rhs) const {
+bool HduIterator<THdu>::operator==(const HduIterator<THdu>& rhs) const
+{
   return m_index == rhs.m_index; // TODO Should we test m_f, too?
 }
 
 template <typename THdu>
-bool HduIterator<THdu>::operator!=(const HduIterator<THdu>& rhs) const {
+bool HduIterator<THdu>::operator!=(const HduIterator<THdu>& rhs) const
+{
   return not(*this == rhs);
 }
 
 template <typename THdu>
-void HduIterator<THdu>::next() {
+void HduIterator<THdu>::next()
+{
   do {
     m_index++;
     if (m_index >= m_f.hdu_count()) {
@@ -65,12 +73,14 @@ void HduIterator<THdu>::next() {
 }
 
 template <typename THdu>
-HduIterator<THdu> begin(HduSelector<THdu>& selector) {
+HduIterator<THdu> begin(HduSelector<THdu>& selector)
+{
   return {selector.mef, 0, selector.filter};
 }
 
 template <typename THdu>
-HduIterator<THdu> end(HduSelector<THdu>& selector) {
+HduIterator<THdu> end(HduSelector<THdu>& selector)
+{
   return {selector.mef, selector.mef.hdu_count(), selector.filter};
 }
 

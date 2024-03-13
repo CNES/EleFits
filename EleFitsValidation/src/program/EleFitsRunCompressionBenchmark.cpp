@@ -194,9 +194,9 @@ public:
 
     Fits::Validation::Chronometer<std::chrono::milliseconds> chrono;
     Fits::Validation::Chronometer<std::chrono::milliseconds> walltime;
-    long hdu_counter = 0;
+    Linx::Index hdu_counter = 0;
     std::vector<std::string> algos;
-    std::vector<long> bitpixs;
+    std::vector<Linx::Index> bitpixs;
     std::vector<std::size_t> hdu_sizes;
     std::vector<std::size_t> z_hdu_sizes;
     std::vector<double> hdu_ratios;
@@ -220,10 +220,10 @@ public:
     logger.info("Compressing file...");
     const auto hdu_count = f.hdu_count();
     for (const auto& hdu : f) {
-      long bitpix;
+      Linx::Index bitpix;
       std::string algo;
-      long hdu_size;
-      long z_hdu_size;
+      Linx::Index hdu_size;
+      Linx::Index z_hdu_size;
       double ratio;
 
       if (hdu.type() == Fits::HduCategory::Bintable) {
@@ -274,8 +274,8 @@ public:
     g.close();
     walltime.stop();
 
-    long input_size = boost::filesystem::file_size(input);
-    long output_size = boost::filesystem::file_size(output);
+    Linx::Index input_size = boost::filesystem::file_size(input);
+    Linx::Index output_size = boost::filesystem::file_size(output);
     double comp_ratio = static_cast<double>(input_size) / output_size;
 
     writer.write_row(

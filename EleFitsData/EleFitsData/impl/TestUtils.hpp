@@ -16,7 +16,8 @@ namespace Fits {
 namespace Test {
 
 template <typename T>
-T almost_min() {
+T almost_min()
+{
   return std::numeric_limits<T>::lowest() + std::numeric_limits<T>::epsilon();
 }
 
@@ -30,7 +31,8 @@ template <>
 std::string almost_min<std::string>();
 
 template <typename T>
-T almost_max() {
+T almost_max()
+{
   return std::numeric_limits<T>::max() - std::numeric_limits<T>::epsilon();
 }
 
@@ -44,7 +46,8 @@ template <>
 std::string almost_max<std::string>();
 
 template <typename T>
-T half_min() {
+T half_min()
+{
   return std::numeric_limits<T>::lowest() / 2;
 }
 
@@ -58,7 +61,8 @@ template <>
 std::string half_min<std::string>();
 
 template <typename T>
-T half_max() {
+T half_max()
+{
   return std::numeric_limits<T>::max() / 2;
 }
 
@@ -75,13 +79,15 @@ template <>
 std::string half_max<std::string>();
 
 template <typename T>
-T generate_random_value(T min, T max) {
+T generate_random_value(T min, T max)
+{
   const auto vec = generate_random_vector<T>(1, min, max);
   return vec[0];
 }
 
 template <typename T>
-std::vector<T> generate_random_vector(long size, T min, T max) {
+std::vector<T> generate_random_vector(Linx::Index size, T min, T max)
+{
   const auto seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
   std::uniform_real_distribution<long double> distribution(
@@ -96,17 +102,18 @@ std::vector<T> generate_random_vector(long size, T min, T max) {
 
 template <>
 std::vector<std::complex<float>>
-generate_random_vector<std::complex<float>>(long size, std::complex<float> min, std::complex<float> max);
+generate_random_vector<std::complex<float>>(Linx::Index size, std::complex<float> min, std::complex<float> max);
 
 template <>
 std::vector<std::complex<double>>
-generate_random_vector<std::complex<double>>(long size, std::complex<double> min, std::complex<double> max);
+generate_random_vector<std::complex<double>>(Linx::Index size, std::complex<double> min, std::complex<double> max);
 
 template <>
-std::vector<std::string> generate_random_vector<std::string>(long size, std::string min, std::string max);
+std::vector<std::string> generate_random_vector<std::string>(Linx::Index size, std::string min, std::string max);
 
 template <typename T>
-bool approx(T test, T ref, ELEMENTS_UNUSED double tol) {
+bool approx(T test, T ref, ELEMENTS_UNUSED double tol)
+{
   return test == ref;
 }
 

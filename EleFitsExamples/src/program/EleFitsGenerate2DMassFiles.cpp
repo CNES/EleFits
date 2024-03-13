@@ -20,7 +20,7 @@ using namespace Fits;
  * @brief Generate a random scalar column without unit.
  */
 template <typename T>
-VecColumn<T> random_column(const std::string& name, long rows)
+VecColumn<T> random_column(const std::string& name, Linx::Index rows)
 {
   return VecColumn<T>({name, "", 1}, Test::generate_random_vector<T>(rows, T(0), T(1)));
 }
@@ -30,7 +30,7 @@ VecColumn<T> random_column(const std::string& name, long rows)
  * @details
  * Random columns of type double ('D') and float ('E') are generated and written.
  */
-void write_bintable(const std::string& filename, long rows)
+void write_bintable(const std::string& filename, Linx::Index rows)
 {
   MefFile f(filename, FileMode::Overwrite);
   const auto col1 = random_column<double>("SHE_LENSMC_UPDATED_RA", rows);
@@ -95,10 +95,10 @@ public:
   {
     Euclid::Fits::ProgramOptions options("Generate random 2DMASS-like outputs.");
     options.named("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
-    options.named("rows", value<long>()->default_value(10), "Binary table row count");
+    options.named("rows", value<Linx::Index>()->default_value(10), "Binary table row count");
     options.named("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
-    options.named("width", value<long>()->default_value(10), "Image width");
-    options.named("height", value<long>()->default_value(10), "Image height");
+    options.named("width", value<Linx::Index>()->default_value(10), "Image width");
+    options.named("height", value<Linx::Index>()->default_value(10), "Image height");
     return options.as_pair();
   }
 
@@ -107,9 +107,9 @@ public:
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerate2DMassFiles");
 
     const std::string bintable = args["bintable"].as<std::string>();
-    const long rows = args["rows"].as<long>();
+    const Linx::Index rows = args["rows"].as<Linx::Index>();
     const std::string image = args["image"].as<std::string>();
-    const Linx::Position<3> shape {args["width"].as<long>(), args["height"].as<long>(), 3};
+    const Linx::Position<3> shape {args["width"].as<Linx::Index>(), args["height"].as<Linx::Index>(), 3};
 
     logger.info("Writing binary table...");
     write_bintable(bintable, rows);

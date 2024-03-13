@@ -27,12 +27,12 @@ const std::type_info& read_typeid(fitsfile* fptr);
 /**
  * @brief Read the cfitsio bitpix value of the current image HDU.
  */
-long read_bitpix(fitsfile* fptr);
+Linx::Index read_bitpix(fitsfile* fptr);
 
 /**
  * @brief Read the shape of the current image HDU.
  */
-template <long N = 2>
+template <Linx::Index N = 2>
 Linx::Position<N> read_shape(fitsfile* fptr);
 
 /**
@@ -43,13 +43,13 @@ inline bool is_compressed(fitsfile* fptr);
 /**
  * @brief Reshape the current image HDU.
  */
-template <typename T, long N = 2>
+template <typename T, Linx::Index N = 2>
 void update_shape(fitsfile* fptr, const Linx::Position<N>& shape);
 
 /**
  * @brief Read the whole raster of the current image HDU.
  */
-template <typename T, long N = 2>
+template <typename T, Linx::Index N = 2>
 Linx::Raster<T, N> read_raster(fitsfile* fptr);
 
 /**
@@ -61,7 +61,7 @@ void read_raster_to(fitsfile* fptr, TOut& out);
 /**
  * @brief Read a region of the current image HDU.
  */
-template <typename T, long M, long N>
+template <typename T, Linx::Index M, Linx::Index N>
 Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region);
 
 /**
@@ -72,7 +72,7 @@ Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region);
  * Similarly to a blit operation, this method reads the data line-by-line
  * directly into a destination raster or patch.
  */
-template <long N, typename TOut>
+template <Linx::Index N, typename TOut>
 void read_region_to(fitsfile* fptr, const Linx::Box<N>& region, TOut& out);
 
 /**
@@ -86,7 +86,7 @@ void write_raster(fitsfile* fptr, const TRaster& raster);
  * @param raster The raster to be written
  * @param destination The destination position (size is deduced from raster size)
  */
-template <typename TRaster, long N>
+template <typename TRaster, Linx::Index N>
 void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>& destination);
 
 /**
@@ -94,7 +94,7 @@ void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>
  * @param patch The patch to be written
  * @param destination The destination position (size is deduced from patch size)
  */
-template <typename T, long M, long N, typename TContainer> // FIXME where's M?
+template <typename T, Linx::Index M, Linx::Index N, typename TContainer> // FIXME where's M?
 void write_region(
     fitsfile* fptr,
     const typename Linx::Raster<const T, N, TContainer>::ConstTile& patch,

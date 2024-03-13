@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(small_rasters_with_different_shapes_differ_test)
 
 ELEFITS_FOREACH_RASTER_TYPE(RANDOM_RASTERS_WITH_DIFFERENT_SHAPES_DIFFER_TEST)
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 void checkRastersWithDifferentValuesDiffer(const Linx::Raster<T, N>& raster)
 {
   Linx::Raster<T, N> other(raster.shape());

@@ -54,10 +54,10 @@ BOOST_FIXTURE_TEST_CASE(columns_row_count_test, Test::SmallTable)
   const auto row_count = nums.size();
   BOOST_TEST(names.size() == row_count);
   const auto columns = std::make_tuple(num_col, radec_col, name_col, dist_mag_col);
-  BOOST_TEST(columns_row_count(columns) == static_cast<long>(row_count));
+  BOOST_TEST(columns_row_count(columns) == static_cast<Linx::Index>(row_count));
 }
 
-void check_insert_column(MefFile& f, long index)
+void check_insert_column(MefFile& f, Linx::Index index)
 {
   const Test::SmallTable table;
   const auto& ext = f.append_bintable("TABLE", {}, table.name_col, table.radec_col);
@@ -100,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(append_column_test, Test::TemporaryMefFile)
 BOOST_FIXTURE_TEST_CASE(append_rows_test, Test::TemporaryMefFile)
 {
   const Test::SmallTable table;
-  const auto init_size = static_cast<long>(table.names.size());
+  const auto init_size = static_cast<Linx::Index>(table.names.size());
   const auto& ext = append_bintable("TABLE", {}, table.name_col, table.radec_col);
   const auto& columns = ext.columns();
   BOOST_TEST(columns.read_row_count() == init_size);
@@ -165,8 +165,8 @@ template <typename T>
 void check_array_write_read(const BintableColumns& du)
 {
   /* Generate */
-  const long row_count = 10000;
-  const long repeat_count = 3;
+  const Linx::Index row_count = 10000;
+  const Linx::Index repeat_count = 3;
   std::array<ColumnInfo<T>, 2> infos {
       ColumnInfo<T> {"VECTOR", "m", repeat_count},
       ColumnInfo<T> {"SCALAR", "s", 1}}; // Inverted for robustness test
@@ -225,7 +225,7 @@ void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */)
   BOOST_TEST(status == 0);
 
   /* Write data */
-  constexpr long row_count = 10000;
+  constexpr Linx::Index row_count = 10000;
   auto data = Test::generate_random_vector<T>(row_count);
   fits_write_col(fptr, Euclid::Cfitsio::TypeCode<T>::for_bintable(), 1, 1, 1, row_count, data.data(), &status);
   BOOST_TEST(status == BAD_BTABLE_FORMAT); // FIXME CFITSIO bug (works with all other types)
@@ -238,8 +238,8 @@ template <typename T>
 void check_vector_write_read(const BintableColumns& du)
 {
   /* Generate */
-  const long row_count = 10000;
-  const long repeat_count = 3;
+  const Linx::Index row_count = 10000;
+  const Linx::Index repeat_count = 3;
   std::vector<ColumnInfo<T>> infos {{"VECTOR", "m", repeat_count}, {"SCALAR", "s", 1}}; // Inverted for robustness test
   std::vector<VecColumn<T>> seq {
       VecColumn<T>(infos[1], Test::generate_random_vector<T>(row_count)),

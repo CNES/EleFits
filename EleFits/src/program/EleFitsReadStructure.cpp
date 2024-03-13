@@ -81,7 +81,10 @@ public:
     auto options = ProgramOptions::from_aux_file("ReadStructure.txt");
     options.positional("input", value<std::string>(), "Input file");
     options.named("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter");
-    options.named("columns,C", value<long>()->default_value(0)->implicit_value(-1), "Maximum number of column names");
+    options.named(
+        "columns,C",
+        value<Linx::Index>()->default_value(0)->implicit_value(-1),
+        "Maximum number of column names");
     return options.as_pair();
   }
 
@@ -92,7 +95,7 @@ public:
     /* Read options */
     const auto filename = args["input"].as<std::string>();
     const auto keyword_filter = args["keywords"].as<std::string>();
-    const auto max_column_count = args["columns"].as<long>();
+    const auto max_column_count = args["columns"].as<Linx::Index>();
     KeywordCategory categories = parse_keyword_categories(keyword_filter);
 
     /* Read file */
@@ -101,7 +104,7 @@ public:
     logger.info() << "HDU count: " << hdu_count;
 
     /* Loop over HDUs */
-    for (long i = 0; i < hdu_count; ++i) {
+    for (Linx::Index i = 0; i < hdu_count; ++i) {
       logger.info();
 
       /* Read name (if present) */

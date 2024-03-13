@@ -7,7 +7,7 @@
 namespace Euclid {
 namespace Fits {
 
-BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
+BintableHdu::BintableHdu(Token token, fitsfile*& fptr, Linx::Index index, HduCategory status) :
     Hdu(token, fptr, index, HduCategory::Bintable, status),
     m_columns(
         m_fptr,
@@ -16,7 +16,8 @@ BintableHdu::BintableHdu(Token token, fitsfile*& fptr, long index, HduCategory s
         },
         [&]() {
           edit();
-        }) {}
+        })
+{}
 
 BintableHdu::BintableHdu() :
     Hdu(),
@@ -27,23 +28,28 @@ BintableHdu::BintableHdu() :
         },
         [&]() {
           edit();
-        }) {}
+        })
+{}
 
-const BintableColumns& BintableHdu::columns() const {
+const BintableColumns& BintableHdu::columns() const
+{
   return m_columns;
 }
 
-long BintableHdu::read_column_count() const {
+Linx::Index BintableHdu::read_column_count() const
+{
   touch();
   return Cfitsio::BintableIo::column_count(m_fptr);
 }
 
-long BintableHdu::read_row_count() const {
+Linx::Index BintableHdu::read_row_count() const
+{
   touch();
   return Cfitsio::BintableIo::row_count(m_fptr);
 }
 
-HduCategory BintableHdu::category() const {
+HduCategory BintableHdu::category() const
+{
   auto cat = Hdu::category();
   if (read_column_count() == 0 || read_row_count() == 0) {
     cat &= HduCategory::Metadata;
@@ -54,7 +60,8 @@ HduCategory BintableHdu::category() const {
 }
 
 template <>
-const BintableColumns& Hdu::as() const {
+const BintableColumns& Hdu::as() const
+{
   return as<BintableHdu>().columns();
 }
 

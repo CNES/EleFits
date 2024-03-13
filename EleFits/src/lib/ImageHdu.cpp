@@ -12,7 +12,7 @@
 namespace Euclid {
 namespace Fits {
 
-ImageHdu::ImageHdu(Token token, fitsfile*& fptr, long index, HduCategory status) :
+ImageHdu::ImageHdu(Token token, fitsfile*& fptr, Linx::Index index, HduCategory status) :
     Hdu(token, fptr, index, HduCategory::Image, status),
     m_raster(
         m_fptr,
@@ -64,7 +64,7 @@ const std::type_info& ImageHdu::read_typeid() const
   return m_raster.read_typeid();
 }
 
-long ImageHdu::read_size() const
+Linx::Index ImageHdu::read_size() const
 {
   return m_raster.read_size();
 }

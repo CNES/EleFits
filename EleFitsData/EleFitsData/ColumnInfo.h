@@ -129,7 +129,7 @@ namespace Fits {
  * @see `Column`
  * @see \ref optim
  */
-template <typename T, long N = 1>
+template <typename T, Linx::Index N = 1>
 struct ColumnInfo {
   /**
    * @brief The value decay type.
@@ -139,7 +139,7 @@ struct ColumnInfo {
   /**
    * @brief The dimension parameter.
    */
-  static constexpr long Dimension = N;
+  static constexpr Linx::Index Dimension = N;
 
   /**
    * @brief Create a column info with given field repeat count.
@@ -150,7 +150,8 @@ struct ColumnInfo {
    * The field shape is deduced from the repeat count
    * (first axis' lenght is the repeat count, others are set to 1).
    */
-  ColumnInfo(std::string n = "", std::string u = "", long r = 1) : name(n), unit(u), shape(Linx::Position<N>::one())
+  ColumnInfo(std::string n = "", std::string u = "", Linx::Index r = 1) :
+      name(n), unit(u), shape(Linx::Position<N>::one())
   {
     shape[0] = r;
   }
@@ -183,26 +184,26 @@ struct ColumnInfo {
   /**
    * @brief Get the repeat count.
    */
-  long repeat_count() const;
+  Linx::Index repeat_count() const;
 
   /**
    * @brief Get the number of elements per field.
    */
-  long element_count() const;
+  Linx::Index element_count() const;
 };
 
 /**
  * @relates ColumnInfo
  * @brief `ColumnInfo` equality operator.
  */
-template <typename T, long N>
+template <typename T, Linx::Index N>
 bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
 
 /**
  * @relates ColumnInfo
  * @brief `ColumnInfo` unequality operator.
  */
-template <typename T, long N>
+template <typename T, Linx::Index N>
 bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
 
 /**
@@ -212,7 +213,7 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs);
  * @tparam Longs The axes lengths, should not be specified (automatically deduced)
  * @param name The column name
  * @param unit The column unit, or `""` to omit it
- * @param shape The shape as a comma-separated list of `long`s
+ * @param shape The shape as a comma-separated list of `Linx::Index`s
  * can be left empty for scalar columns
  * 
  * @par_example

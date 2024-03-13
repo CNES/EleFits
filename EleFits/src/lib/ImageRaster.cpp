@@ -17,13 +17,13 @@ const std::type_info& ImageRaster::read_typeid() const
   return Cfitsio::ImageIo::read_typeid(m_fptr);
 }
 
-long ImageRaster::read_bitpix() const
+Linx::Index ImageRaster::read_bitpix() const
 {
   m_touch();
   return Cfitsio::ImageIo::read_bitpix(m_fptr);
 }
 
-long ImageRaster::read_size() const
+Linx::Index ImageRaster::read_size() const
 {
   return shape_size(read_shape<-1>());
 }

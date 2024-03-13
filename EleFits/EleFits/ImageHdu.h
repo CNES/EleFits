@@ -53,7 +53,7 @@ public:
     /**
      * @brief The extension index.
      */
-    long index;
+    Linx::Index index;
 
     /**
      * @brief The extension name, or an empty string.
@@ -83,7 +83,7 @@ public:
   /**
    * @see Hdu
    */
-  ImageHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
+  ImageHdu(Token, fitsfile*& fptr, Linx::Index index, HduCategory status = HduCategory::Untouched);
 
   /**
    * @see Hdu
@@ -131,12 +131,12 @@ public:
   /**
    * @copybrief ImageRaster::read_size
    */
-  long read_size() const;
+  Linx::Index read_size() const;
 
   /**
    * @copybrief ImageRaster::read_shape
    */
-  template <long N = 2>
+  template <Linx::Index N = 2>
   Linx::Position<N> read_shape() const;
 
   /**
@@ -147,13 +147,13 @@ public:
   /**
    * @brief Redefine the image shape and type.
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   void update_type_shape(const Linx::Position<N>& shape) const;
 
   /**
    * @brief Read the Raster.
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   Linx::Raster<T, N> read_raster() const;
 
   /**
@@ -175,7 +175,7 @@ public:
   /**
    * @deprecated
    */
-  long readSize() const
+  Linx::Index readSize() const
   {
     return read_size();
   }
@@ -183,7 +183,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   void updateShape(const Linx::Position<N>& shape) const
   {
     return update_type_shape<T, N>(shape);
@@ -192,7 +192,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   Linx::Raster<T, N> readRaster() const
   {
     return read_raster<T, N>();

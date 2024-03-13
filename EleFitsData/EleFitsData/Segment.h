@@ -18,35 +18,37 @@ namespace Fits {
  * where the lower bound is upward the upper bound.
  */
 struct Segment {
-
   /**
    * @brief Create a segment specified by a lower bound and size.
    */
-  static Segment fromSize(long front, long size) {
+  static Segment fromSize(Linx::Index front, Linx::Index size)
+  {
     return {front, front + size - 1};
   }
 
   /**
    * @brief Create a maximal segment (from index 0 to max).
    */
-  static Segment whole() {
+  static Segment whole()
+  {
     return {0, -1};
   }
 
   /**
    * @brief The lower bound.
    */
-  long front;
+  Linx::Index front;
 
   /**
    * @brief The upper bound.
    */
-  long back;
+  Linx::Index back;
 
   /**
    * @brief Get the number of elements.
    */
-  long size() const {
+  Linx::Index size() const
+  {
     return back - front + 1;
   }
 };
@@ -55,7 +57,8 @@ struct Segment {
  * @relates Segment
  * @brief Check whether two segments are equal.
  */
-inline bool operator==(const Segment& lhs, const Segment& rhs) {
+inline bool operator==(const Segment& lhs, const Segment& rhs)
+{
   return lhs.front == rhs.front && lhs.back == rhs.back;
 }
 
@@ -63,7 +66,8 @@ inline bool operator==(const Segment& lhs, const Segment& rhs) {
  * @relates Segment
  * @brief Check whether two segments are different.
  */
-inline bool operator!=(const Segment& lhs, const Segment& rhs) {
+inline bool operator!=(const Segment& lhs, const Segment& rhs)
+{
   return lhs.front != rhs.front || lhs.back != rhs.back;
 }
 
@@ -71,7 +75,8 @@ inline bool operator!=(const Segment& lhs, const Segment& rhs) {
  * @relates Segment
  * @brief Add a scalar.
  */
-inline Segment& operator+=(Segment& lhs, long rhs) {
+inline Segment& operator+=(Segment& lhs, Linx::Index rhs)
+{
   lhs.front += rhs;
   lhs.back += rhs;
   return lhs;
@@ -81,7 +86,8 @@ inline Segment& operator+=(Segment& lhs, long rhs) {
  * @relates Segment
  * @brief Subtract a scalar.
  */
-inline Segment& operator-=(Segment& lhs, long rhs) {
+inline Segment& operator-=(Segment& lhs, Linx::Index rhs)
+{
   lhs.front -= rhs;
   lhs.back -= rhs;
   return lhs;
@@ -91,7 +97,8 @@ inline Segment& operator-=(Segment& lhs, long rhs) {
  * @relates Segment
  * @brief Add 1.
  */
-inline Segment& operator++(Segment& lhs) {
+inline Segment& operator++(Segment& lhs)
+{
   lhs += 1;
   return lhs;
 }
@@ -100,7 +107,8 @@ inline Segment& operator++(Segment& lhs) {
  * @relates Segment
  * @brief Subtract 1.
  */
-inline Segment& operator--(Segment& lhs) {
+inline Segment& operator--(Segment& lhs)
+{
   lhs -= 1;
   return lhs;
 }
@@ -109,7 +117,8 @@ inline Segment& operator--(Segment& lhs) {
  * @relates Segment
  * @brief Return the current segment and then add 1.
  */
-inline Segment operator++(Segment& lhs, int) {
+inline Segment operator++(Segment& lhs, int)
+{
   auto res = lhs;
   ++lhs;
   return res;
@@ -119,7 +128,8 @@ inline Segment operator++(Segment& lhs, int) {
  * @relates Segment
  * @brief Return the current segment and then subtract 1.
  */
-inline Segment operator--(Segment& lhs, int) {
+inline Segment operator--(Segment& lhs, int)
+{
   auto res = lhs;
   --lhs;
   return res;
@@ -129,7 +139,8 @@ inline Segment operator--(Segment& lhs, int) {
  * @relates Segment
  * @brief Identity.
  */
-inline Segment operator+(const Segment& rhs) {
+inline Segment operator+(const Segment& rhs)
+{
   return rhs;
 }
 
@@ -137,7 +148,8 @@ inline Segment operator+(const Segment& rhs) {
  * @relates Segment
  * @brief Change the sign of each coordinate.
  */
-inline Segment operator-(const Segment& rhs) {
+inline Segment operator-(const Segment& rhs)
+{
   return {-rhs.front, -rhs.back};
 }
 
@@ -145,7 +157,8 @@ inline Segment operator-(const Segment& rhs) {
  * @relates Segment
  * @brief Add a segment and a scalar.
  */
-inline Segment operator+(const Segment& lhs, long rhs) {
+inline Segment operator+(const Segment& lhs, Linx::Index rhs)
+{
   auto res = lhs;
   res += rhs;
   return res;
@@ -155,7 +168,8 @@ inline Segment operator+(const Segment& lhs, long rhs) {
  * @relates Segment
  * @brief Subtract a segment and a scalar.
  */
-inline Segment operator-(const Segment& lhs, long rhs) {
+inline Segment operator-(const Segment& lhs, Linx::Index rhs)
+{
   auto res = lhs;
   res -= rhs;
   return res;

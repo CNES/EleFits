@@ -49,29 +49,29 @@ public:
   /**
    * @brief Read the `BITPIX` or `ZBITPIX` value.
    */
-  long read_bitpix() const;
+  Linx::Index read_bitpix() const;
 
   /**
    * @brief Read the number of pixels in the image.
    */
-  long read_size() const;
+  Linx::Index read_size() const;
 
   /**
    * @brief Read the image shape.
    */
-  template <long N = 2>
+  template <Linx::Index N = 2>
   Linx::Position<N> read_shape() const;
 
   /**
    * @brief Update the image shape.
    */
-  template <long N = 2>
+  template <Linx::Index N = 2>
   void update_shape(const Linx::Position<N>& shape) const;
 
   /**
    * @brief Update the image type and shape.
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   void update_type_shape(const Linx::Position<N>& shape) const;
 
   /// @}
@@ -93,7 +93,7 @@ public:
    * @warning
    * Filling a `Patch` is much slower than filling a `Raster`.
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   Linx::Raster<T, N> read() const;
 
   /**
@@ -138,7 +138,7 @@ public:
    * image.read_region_to<2>({{50, 80}, {100, 120}}, raster);
    * \endcode
    */
-  template <typename T, long M, long N>
+  template <typename T, Linx::Index M, Linx::Index N>
   Linx::Raster<T, M> read_region(const Linx::Box<N>& region) const;
 
   /**
@@ -189,7 +189,7 @@ public:
    * du.write_region<3>({{0, 0, 4}}, raster.section(2));
    * \endcode
    */
-  template <typename TRaster, long N>
+  template <typename TRaster, Linx::Index N>
   void write_region(FileMemRegions<N> regions, const TRaster& raster) const; // TODO return bool = is_contiguous()?
 
   /// @group_deprecated
@@ -205,12 +205,12 @@ public:
   /**
    * @deprecated
    */
-  long readSize() const
+  Linx::Index readSize() const
   {
     return read_size();
   }
 
-  template <long N = 2>
+  template <Linx::Index N = 2>
   Linx::Position<N> readShape() const
   {
     return read_shape<2>();
@@ -219,7 +219,7 @@ public:
   /**
    * @deprecated
    */
-  template <long N = 2>
+  template <Linx::Index N = 2>
   void updateShape(const Linx::Position<N>& shape) const
   {
     return update_shape(shape);
@@ -228,7 +228,7 @@ public:
   /**
    * @deprecated
   */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   [[deprecated("Use update_type_shape()")]] void reinit(const Linx::Position<N>& shape) const
   {
     return update_type_shape<T>(shape);
@@ -237,7 +237,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long M, long N>
+  template <typename T, Linx::Index M, Linx::Index N>
   Linx::Raster<T, M> readRegion(const Linx::Box<N>& region) const
   {
     read_region<T, M>(region);
@@ -255,7 +255,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename TRaster, long N>
+  template <typename TRaster, Linx::Index N>
   void writeRegion(FileMemRegions<N> regions, const TRaster& raster) const
   {
     return write_region(regions, raster);
@@ -269,14 +269,14 @@ private:
    * @brief Read a region of the data unit into an existing `Raster`.
    * @copydetails read_region()
    */
-  template <typename TRaster, long N>
+  template <typename TRaster, Linx::Index N>
   void read_region_to_slice(const Linx::Position<N>& front_position, TRaster& raster) const;
 
   /**
    * @brief Read a region of the data unit into an existing `Patch`.
    * @copydetails read_region()
    */
-  template <typename T, long M, long N, typename TContainer>
+  template <typename T, Linx::Index M, Linx::Index N, typename TContainer>
   void read_region_to_subraster(
       const Linx::Position<N>& front_position,
       typename Linx::Raster<T, M, TContainer>::Tile<M>& subraster) const; // FIXME rm?
@@ -291,13 +291,13 @@ private:
    * \endcode
    * where `region` would be the subraster region, and `raster` the subraster parent.
    */
-  template <typename T, long N, typename TContainer>
+  template <typename T, Linx::Index N, typename TContainer>
   void read_region_to(typename Linx::Raster<T, N, TContainer>::Tile<N>& subraster) const; // FIXME rm?
 
   /**
    * @brief Write a `Raster` at a given position of the data unit.
    */
-  template <typename TRaster, long N>
+  template <typename TRaster, Linx::Index N>
   void write_slice(const Linx::Position<N>& front_position, const TRaster& raster) const;
 
   /**
@@ -310,7 +310,7 @@ private:
   /**
    * @brief Write a `Patch` at a given position of the data unit.
    */
-  template <long N, typename TPatch>
+  template <Linx::Index N, typename TPatch>
   void write_subraster(
       const Linx::Position<N>& front_position,
       const TPatch& subraster) const; // FIXME rm?

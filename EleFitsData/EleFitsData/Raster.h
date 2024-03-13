@@ -40,7 +40,7 @@ namespace Fits {
  * @brief Get the `BITPIX` value of a given raster.
  */
 template <typename TRaster>
-constexpr long bitpix(const TRaster&)
+constexpr Linx::Index bitpix(const TRaster&)
 { // FIXME move to ImageHdu?
   return bitpix<std::decay_t<typename TRaster::Value>>();
 }

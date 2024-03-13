@@ -10,9 +10,11 @@ namespace Euclid {
 namespace Fits {
 namespace Validation {
 
-template <long i>
-TypedKey<typename std::tuple_element<i, BColumns>::type::Value, long> EleFitsColwiseBenchmark::col_indexed() const {
-  return TypedKey<typename std::tuple_element<i, BColumns>::type::Value, long>(i);
+template <Linx::Index I>
+TypedKey<typename std::tuple_element<I, BColumns>::type::Value, Linx::Index>
+EleFitsColwiseBenchmark::col_indexed() const
+{
+  return TypedKey<typename std::tuple_element<I, BColumns>::type::Value, Linx::Index>(I);
 }
 
 } // namespace Validation

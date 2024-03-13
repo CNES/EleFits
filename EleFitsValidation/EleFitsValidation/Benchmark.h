@@ -106,28 +106,28 @@ public:
    * @param count The number of HDUs
    * @param raster The raster to be written in each HDU
    */
-  const BChronometer& write_images(long count, const BRaster& raster);
+  const BChronometer& write_images(Linx::Index count, const BRaster& raster);
 
   /**
    * @brief Write the given columns in new binary table extensions.
    * @param count The number of HDUs
    * @param columns The columns to be written in each HDU
    */
-  const BChronometer& write_bintables(long count, const BColumns& columns);
+  const BChronometer& write_bintables(Linx::Index count, const BColumns& columns);
 
   /**
    * @brief Read the rasters in the given image extensions.
    * @param first The first (0-based) HDU index
    * @param count The number of HDUs
    */
-  const BChronometer& read_images(long first, long count);
+  const BChronometer& read_images(Linx::Index first, Linx::Index count);
 
   /**
    * @brief Read the columns in the given binary table extensions.
    * @param first The first (0-based) HDU index
    * @param count The number of HDUs
    */
-  const BChronometer& read_bintables(long first, long count);
+  const BChronometer& read_bintables(Linx::Index first, Linx::Index count);
 
   /**
    * @brief Write the given raster in a new image extension.
@@ -153,7 +153,7 @@ public:
    * @brief Read the image raster in the given image extension.
    * @copydetails write_image
    */
-  virtual BRaster read_image(long)
+  virtual BRaster read_image(Linx::Index)
   {
     throw TestCaseNotImplemented("Read image");
   }
@@ -162,7 +162,7 @@ public:
    * @brief Read the columns in the given binary table extension.
    * @copydetails write_image
    */
-  virtual BColumns read_bintable(long)
+  virtual BColumns read_bintable(Linx::Index)
   {
     throw TestCaseNotImplemented("Read binary table");
   }

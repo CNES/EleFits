@@ -31,7 +31,7 @@ public:
   /**
    * @brief Create a column key from an index.
    */
-  ColumnKey(long index); // FIXME make explicit?
+  ColumnKey(Linx::Index index); // FIXME make explicit?
 
   /**
    * @brief Create a column key from an index.
@@ -53,7 +53,7 @@ public:
   /**
    * @brief Get the evaluated index.
    */
-  long index(const BintableColumns& columns);
+  Linx::Index index(const BintableColumns& columns);
 
   /**
    * @brief Get the evaluated name.
@@ -67,7 +67,7 @@ private:
   /**
    * @brief The possibly missing index.
    */
-  boost::optional<long> m_index;
+  boost::optional<Linx::Index> m_index;
 
   /**
    * @brief The possibly missing name.

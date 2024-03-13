@@ -28,7 +28,7 @@ public:
   /**
    * @see Hdu
    */
-  BintableHdu(Token, fitsfile*& fptr, long index, HduCategory status = HduCategory::Untouched);
+  BintableHdu(Token, fitsfile*& fptr, Linx::Index index, HduCategory status = HduCategory::Untouched);
 
   /**
    * @see Hdu
@@ -62,17 +62,17 @@ public:
   /**
    * @brief Read the number of columns.
    */
-  long read_column_count() const;
+  Linx::Index read_column_count() const;
 
   /**
    * @brief Read the number of rows.
    */
-  long read_row_count() const;
+  Linx::Index read_row_count() const;
 
   /**
    * @brief Read a column with given name or index.
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   VecColumn<T, N> read_column(ColumnKey key) const;
 
   /**
@@ -86,7 +86,7 @@ public:
   /**
    * @deprecated
    */
-  long readColumnCount() const
+  Linx::Index readColumnCount() const
   {
     return read_column_count();
   }
@@ -94,7 +94,7 @@ public:
   /**
    * @deprecated
    */
-  long readRowCount() const
+  Linx::Index readRowCount() const
   {
     return read_row_count();
   }
@@ -102,7 +102,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 1>
+  template <typename T, Linx::Index N = 1>
   VecColumn<T, N> readColumn(ColumnKey key) const
   {
     return read_column<T, N>(key);

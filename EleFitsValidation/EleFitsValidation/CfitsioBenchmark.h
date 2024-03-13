@@ -21,6 +21,7 @@ namespace Validation {
  */
 class CfitsioBenchmark : public Benchmark {
 public:
+
   /**
    * @brief Destructor.
    */
@@ -33,12 +34,12 @@ public:
    * or -1 to write all rows at once,
    * or 0 for the buffer size.
    */
-  CfitsioBenchmark(const std::string& filename, long chunk_row_count);
+  CfitsioBenchmark(const std::string& filename, Linx::Index chunk_row_count);
 
   /**
    * @brief Get the chunk_row_count parameter.
    */
-  long chunk_row_count() const;
+  Linx::Index chunk_row_count() const;
 
   /**
    * @brief Open file.
@@ -63,14 +64,15 @@ public:
   /**
    * @copybrief Benchmark::read_image
    */
-  virtual BRaster read_image(long index) override;
+  virtual BRaster read_image(Linx::Index index) override;
 
   /**
    * @copybrief Benchmark::read_bintable
    */
-  virtual BColumns read_bintable(long index) override;
+  virtual BColumns read_bintable(Linx::Index index) override;
 
 private:
+
   /**
    * @brief Get or compute the row chunk size.
    * @details
@@ -79,7 +81,7 @@ private:
    * - >0: Use given value;
    * - 0: Compute size according to buffer size.
    */
-  long compute_chunk_row_count(long row_count);
+  Linx::Index compute_chunk_row_count(Linx::Index row_count);
 
   /**
    * @brief Throw a CfitsioError if m_status != 0.
@@ -100,27 +102,28 @@ private:
    * @brief Write a chunk of the i-th column.
    */
   template <std::size_t i>
-  void write_column(const BColumns& columns, long first_row, long row_count);
+  void write_column(const BColumns& columns, Linx::Index first_row, Linx::Index row_count);
 
   /**
    * @brief Read the size and metadata of the i-th column.
    */
   template <std::size_t i>
-  void init_column(BColumns& columns, long row_count);
+  void init_column(BColumns& columns, Linx::Index row_count);
 
   /**
    * @brief Read a chunk of the i-th column.
    */
   template <std::size_t i>
-  void read_column(BColumns& columns, long first_row, long row_count);
+  void read_column(BColumns& columns, Linx::Index first_row, Linx::Index row_count);
 
 private:
+
   /** @brief The FITS file. */
   fitsfile* m_fptr;
   /** @brief The CFITSIO status code. */
   int m_status;
   /** @brief The number of rows to write at once. */
-  long m_chunk_row_count;
+  Linx::Index m_chunk_row_count;
 };
 
 } // namespace Validation

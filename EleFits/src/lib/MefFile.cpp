@@ -9,22 +9,26 @@
 namespace Euclid {
 namespace Fits {
 
-void MefFile::open(const std::string& filename, FileMode permission) {
+void MefFile::open(const std::string& filename, FileMode permission)
+{
   open_impl(filename, permission);
 }
 
-void MefFile::open_impl(const std::string& filename, FileMode permission) {
+void MefFile::open_impl(const std::string& filename, FileMode permission)
+{
   FitsFile::open(filename, permission);
   for (const auto& hdu : *this) {
     m_strategy.opened(hdu);
   }
 }
 
-void MefFile::close() {
+void MefFile::close()
+{
   close_impl();
 }
 
-void MefFile::close_impl() {
+void MefFile::close_impl()
+{
   if (not m_fptr) {
     return;
   }
@@ -34,27 +38,31 @@ void MefFile::close_impl() {
   FitsFile::close();
 }
 
-MefFile::~MefFile() {
+MefFile::~MefFile()
+{
   close_impl();
 }
 
-long MefFile::hdu_count() const {
+Linx::Index MefFile::hdu_count() const
+{
   return m_hdus.size();
 }
 
-std::vector<std::string> MefFile::read_hdu_names() {
-  const long count = hdu_count();
+std::vector<std::string> MefFile::read_hdu_names()
+{
+  const auto count = hdu_count();
   std::vector<std::string> names(count);
-  for (long i = 0; i < count; ++i) {
+  for (Linx::Index i = 0; i < count; ++i) {
     names[i] = access<>(i).read_name();
   }
   return names;
 }
 
-std::vector<std::pair<std::string, long>> MefFile::read_hdu_names_versions() {
-  const long count = hdu_count();
-  std::vector<std::pair<std::string, long>> names_versions(count);
-  for (long i = 0; i < count; ++i) {
+std::vector<std::pair<std::string, Linx::Index>> MefFile::read_hdu_names_versions()
+{
+  const auto count = hdu_count();
+  std::vector<std::pair<std::string, Linx::Index>> names_versions(count);
+  for (Linx::Index i = 0; i < count; ++i) {
     const auto& hdu = access<>(i);
     const auto n = hdu.read_name();
     const auto v = hdu.read_version();
@@ -63,11 +71,13 @@ std::vector<std::pair<std::string, long>> MefFile::read_hdu_names_versions() {
   return names_versions;
 }
 
-const Hdu& MefFile::operator[](long index) {
+const Hdu& MefFile::operator[](Linx::Index index)
+{
   return access<Hdu>(index);
 }
 
-const ImageHdu& MefFile::primary() {
+const ImageHdu& MefFile::primary()
+{
   return access<ImageHdu>(0);
 }
 

@@ -31,8 +31,8 @@ void check_scalar()
 template <typename T>
 void check_vector()
 {
-  constexpr long row_count = 10;
-  constexpr long repeat_count = 2;
+  constexpr Linx::Index row_count = 10;
+  constexpr Linx::Index repeat_count = 2;
   Test::RandomScalarColumn<T> input(row_count * repeat_count);
   input.reshape(repeat_count);
   Test::TemporaryMefFile file;

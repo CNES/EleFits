@@ -17,8 +17,8 @@ namespace Fits {
  * @brief Base of all exceptions thrown directly by the library.
  */
 class FitsError : public std::exception {
-
 public:
+
   /**
    * @brief Destructor.
    */
@@ -43,6 +43,7 @@ public:
   void append(const std::string& line, std::size_t indent = 0);
 
 private:
+
   static const std::string m_prefix;
   std::string m_message;
 };
@@ -53,17 +54,18 @@ private:
  */
 class OutOfBoundsError : public FitsError {
 public:
+
   /**
    * @brief Constructor.
    * @details
    * The error message is of the form "<prefix>: <value> not in (<min>, <max>)".
    */
-  OutOfBoundsError(const std::string& prefix, long value, std::pair<long, long> bounds);
+  OutOfBoundsError(const std::string& prefix, Linx::Index value, std::pair<Linx::Index, Linx::Index> bounds);
 
   /**
    * @brief Throw if a value lies out of given bounds, included.
    */
-  static void may_throw(const std::string& prefix, long value, std::pair<long, long> bounds);
+  static void may_throw(const std::string& prefix, Linx::Index value, std::pair<Linx::Index, Linx::Index> bounds);
 };
 
 /**
@@ -71,7 +73,6 @@ public:
  * @brief Exception thrown if a checksum is missing or incorrect.
  */
 struct ChecksumError : public FitsError {
-
   /**
    * @brief Status of a checksum stored in a header unit.
    */
@@ -85,7 +86,8 @@ struct ChecksumError : public FitsError {
    * @brief Constructor.
    */
   ChecksumError(Status hdu_status, Status data_status) :
-      FitsError("Checksum error: "), hdu(hdu_status), data(data_status) {
+      FitsError("Checksum error: "), hdu(hdu_status), data(data_status)
+  {
     if (hdu == Missing) {
       append("Missing HDU checksum record. ");
     } else if (hdu == Incorrect) {
@@ -101,21 +103,24 @@ struct ChecksumError : public FitsError {
   /**
    * @brief Check whether at least one checksum is missing.
    */
-  bool missing() const {
+  bool missing() const
+  {
     return (hdu == Missing) || (data == Missing);
   }
 
   /**
    * @brief Check whether at least one checksum is incorrect.
    */
-  bool incorrect() const {
+  bool incorrect() const
+  {
     return (hdu == Incorrect) || (data == Incorrect);
   }
 
   /**
    * @brief Throw if at least one checksum is not correct (missing or incorrect).
    */
-  static void may_throw(Status hdu_status, Status data_status) {
+  static void may_throw(Status hdu_status, Status data_status)
+  {
     if (hdu_status != Correct || data_status != Correct) {
       throw ChecksumError(hdu_status, data_status);
     }

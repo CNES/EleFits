@@ -119,7 +119,7 @@ public:
    * This way, incomplete HDUs are also taken into account where CFITSIO would exclude them.
    * This means, for example, that the initial number of HDUs in a new file is 1 instead of 0 with CFITSIO.
    */
-  long hdu_count() const;
+  Linx::Index hdu_count() const;
 
   /**
    * @brief Read the name of each HDU.
@@ -134,7 +134,7 @@ public:
    * When there is no name specified, an empty string is returned.
    * When there is no version specified, 1 is returned.
    */
-  std::vector<std::pair<std::string, long>> read_hdu_names_versions();
+  std::vector<std::pair<std::string, Linx::Index>> read_hdu_names_versions();
 
   /**
    * @brief Get the strategy.
@@ -166,12 +166,12 @@ public:
    * @see operator[]
    */
   template <class T = Hdu>
-  const T& access(long index);
+  const T& access(Linx::Index index);
 
   /**
-   * @brief Shortcut for `access<Hdu>(long)`
+   * @brief Shortcut for `access<Hdu>(Linx::Index)`
    */
-  const Hdu& operator[](long index);
+  const Hdu& operator[](Linx::Index index);
 
   /**
    * @brief Access the first HDU with given name, type and version.
@@ -188,9 +188,9 @@ public:
    * In the case where several HDUs have the same type, name and version
    * (which is discouraged by the standard, but not forbidden),
    * method `read_hdu_names()` should be used to get the indices
-   * and then `access(long)` should be called.
+   * and then `access(Linx::Index)` should be called.
    * 
-   * @see access(long)
+   * @see access(Linx::Index)
    * @see access(const std::string&)
    */
   template <class T = Hdu>
@@ -276,7 +276,7 @@ public:
    * f.append_null_image<char, 3>("CUBE", {{"BLANK", 255}}, {28, 06, 1989});
    * \endcode
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   const ImageHdu& append_null_image(const std::string& name, const RecordSeq& records, const Linx::Position<N>& shape);
 
   /**
@@ -305,8 +305,11 @@ public:
    * - For real columns, the data unit is filled with NaNs.
    */
   template <typename... TInfos>
-  const BintableHdu&
-  append_null_bintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos);
+  const BintableHdu& append_null_bintable(
+      const std::string& name,
+      const RecordSeq& records,
+      Linx::Index row_count,
+      const TInfos&... infos);
 
   /**
    * @brief Append and write a new binary table extension.
@@ -323,14 +326,14 @@ public:
   /**
    * @brief Remove the HDU with given index.
    */
-  inline void remove(long index);
+  inline void remove(Linx::Index index);
 
   /// @group_deprecated
 
   /**
    * @deprecated
    */
-  long hduCount() const
+  Linx::Index hduCount() const
   {
     return hdu_count();
   }
@@ -346,7 +349,7 @@ public:
   /**
    * @deprecated
    */
-  std::vector<std::pair<std::string, long>> readHduNamesVersions()
+  std::vector<std::pair<std::string, Linx::Index>> readHduNamesVersions()
   {
     return read_hdu_names_versions();
   }
@@ -363,7 +366,7 @@ public:
   /**
    * @deprecated
    */
-  template <typename T, long N = 2>
+  template <typename T, Linx::Index N = 2>
   const ImageHdu& appendNullImage(const std::string& name, const RecordSeq& records, const Linx::Position<N>& shape)
   {
     return append_null_image(name, records, shape);
@@ -393,7 +396,7 @@ public:
    */
   template <typename... TInfos>
   const BintableHdu&
-  appendNullBintable(const std::string& name, const RecordSeq& records, long row_count, const TInfos&... infos)
+  appendNullBintable(const std::string& name, const RecordSeq& records, Linx::Index row_count, const TInfos&... infos)
   {
     return append_null_bintable(name, records, infos...);
   }

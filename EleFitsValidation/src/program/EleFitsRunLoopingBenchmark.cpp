@@ -13,7 +13,8 @@ using boost::program_options::value;
 
 using namespace Euclid::Fits;
 
-Validation::LoopingBenchmark::Duration loop(Validation::LoopingBenchmark& benchmark, char setup) {
+Validation::LoopingBenchmark::Duration loop(Validation::LoopingBenchmark& benchmark, char setup)
+{
   switch (setup) {
     case 'x':
       return benchmark.loop_over_xyz();
@@ -31,21 +32,22 @@ Validation::LoopingBenchmark::Duration loop(Validation::LoopingBenchmark& benchm
 }
 
 class EleFitsRunLoopingBenchmark : public Elements::Program {
-
 public:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
+
+  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
+  {
     ProgramOptions options;
     options.named("setup", value<char>(), "Test setup to be benchmarked (x, z, p, i, v)");
-    options.named("side", value<long>()->default_value(400), "Image width, height and depth (same value)");
+    options.named("side", value<Linx::Index>()->default_value(400), "Image width, height and depth (same value)");
     return options.as_pair();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
-
+  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
+  {
     Elements::Logging logger = Elements::Logging::getLogger("EleFitsRunLoopingBenchmark");
 
     logger.info("Generating random rasters...");
-    Validation::LoopingBenchmark benchmark(args["side"].as<long>());
+    Validation::LoopingBenchmark benchmark(args["side"].as<Linx::Index>());
 
     logger.info("Looping over them...");
     const auto duration = loop(benchmark, args["setup"].as<char>());

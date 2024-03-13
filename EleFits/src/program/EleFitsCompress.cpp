@@ -105,7 +105,7 @@ public:
     set_strategy(compressed, algo, lossless);
 
     /* Loop over HDUs or extensions */
-    for (long i = 1 - compress_primary; i < hdu_count; ++i) {
+    for (Linx::Index i = 1 - compress_primary; i < hdu_count; ++i) {
       const auto& hdu = raw[i];
       logger.info() << "  HDU #" << i << ": " << hdu.read_name();
       compressed.append(hdu);

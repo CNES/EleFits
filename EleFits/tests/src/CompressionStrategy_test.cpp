@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_SUITE(CompressionStrategy_test)
 
 //-----------------------------------------------------------------------------
 
-void check_index_to_position(long index, const Linx::Position<-1>& shape, const Linx::Position<-1>& expected)
+void check_index_to_position(Linx::Index index, const Linx::Position<-1>& shape, const Linx::Position<-1>& expected)
 {
   auto position = unravel_index(index, shape);
   BOOST_TEST(position == expected);
@@ -24,7 +24,7 @@ void check_index_to_position(long index, const Linx::Position<-1>& shape, const 
 
 BOOST_AUTO_TEST_CASE(index_to_position_1d_test)
 {
-  for (long i = 0; i < 1024; ++i) {
+  for (Linx::Index i = 0; i < 1024; ++i) {
     check_index_to_position(i, {1024}, {i});
   }
 }

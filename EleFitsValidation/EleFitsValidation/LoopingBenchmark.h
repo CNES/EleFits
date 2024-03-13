@@ -21,7 +21,7 @@ public:
   /**
    * @brief The raster dimension.
    */
-  static constexpr long Dimension = 3;
+  static constexpr Linx::Index Dimension = 3;
 
   /**
    * @brief The raster value type.
@@ -36,7 +36,7 @@ public:
   /**
    * @brief Constructor.
    */
-  LoopingBenchmark(long side);
+  LoopingBenchmark(Linx::Index side);
 
   /**
    * @brief Loop over positions built by looping over x, then y, and then z.
@@ -65,9 +65,9 @@ public:
 
 private:
 
-  const long m_width;
-  const long m_height;
-  const long m_depth;
+  const Linx::Index m_width;
+  const Linx::Index m_height;
+  const Linx::Index m_depth;
   const Test::RandomRaster<Value, Dimension> m_a;
   const Test::RandomRaster<Value, Dimension> m_b;
   Linx::Raster<Value, Dimension> m_c;

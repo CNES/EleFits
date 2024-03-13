@@ -20,7 +20,7 @@ namespace Fits {
  * @brief Get the `BITPIX` value of a given type.
  */
 template <typename T>
-constexpr long bitpix()
+constexpr Linx::Index bitpix()
 {
   if constexpr (std::is_integral_v<T>) {
     return 8 * static_cast<int>(sizeof(T));
@@ -79,7 +79,7 @@ constexpr ChangeSignedness<T> offset()
  * @ingroup data_classes
  * @brief A light structure to bind a return type and a key, e.g. for reading records and columns.
  * @tparam TReturn The desired return type
- * @tparam TKey The key type, typically `std::string` or `long`
+ * @tparam TKey The key type, typically `std::string` or `Linx::Index`
  * @details
  * `TypedKeys` should not be instantiated directly.
  * Instead maker `as()` should be used for clarity, e.g.:
@@ -125,24 +125,24 @@ struct TypedKey {
  * \endcode
  */
 template <typename TReturn>
-TypedKey<TReturn, long> as(long key)
+TypedKey<TReturn, Linx::Index> as(Linx::Index key)
 {
-  return TypedKey<TReturn, long> {key};
+  return TypedKey<TReturn, Linx::Index> {key};
 }
 
 /**
  * @relates TypedKey
- * @copydoc as(long)
+ * @copydoc as(Linx::Index)
  */
 template <typename TReturn>
-TypedKey<TReturn, long> as(int key)
+TypedKey<TReturn, Linx::Index> as(int key)
 {
-  return TypedKey<TReturn, long> {key};
+  return TypedKey<TReturn, Linx::Index> {key};
 }
 
 /**
  * @relates TypedKey
- * @copydoc as(long)
+ * @copydoc as(Linx::Index)
  */
 template <typename TReturn>
 TypedKey<TReturn, std::string> as(const std::string& key)
@@ -152,7 +152,7 @@ TypedKey<TReturn, std::string> as(const std::string& key)
 
 /**
  * @relates TypedKey
- * @copydoc as(long)
+ * @copydoc as(Linx::Index)
  */
 template <typename TReturn>
 TypedKey<TReturn, std::string> as(const char* key)

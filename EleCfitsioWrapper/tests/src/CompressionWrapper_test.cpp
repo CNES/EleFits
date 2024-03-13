@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 using namespace Euclid;
 
 template <typename TAlgo>
-void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype)
+void test_algo_mixin_compress(Linx::Index dimension, fitsfile* fptr, int comptype)
 {
   int status = 0;
 
@@ -45,7 +45,7 @@ void test_algo_mixin_compress(long dimension, fitsfile* fptr, int comptype)
 }
 
 template <>
-void test_algo_mixin_compress<Fits::NoCompression>(long, fitsfile* fptr, int comptype)
+void test_algo_mixin_compress<Fits::NoCompression>(Linx::Index, fitsfile* fptr, int comptype)
 {
   int status = 0;
 
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(default_values_learning_test)
   fits_get_compression_type(file.fptr, &default_algo, &status);
   BOOST_TEST(default_algo == int(NULL));
 
-  long default_tile_dim[MAX_COMPRESS_DIM];
+  Linx::Index default_tile_dim[MAX_COMPRESS_DIM];
   fits_get_tile_dim(file.fptr, MAX_COMPRESS_DIM, default_tile_dim, &status);
   for (int i = 0; i < MAX_COMPRESS_DIM; i++) {
     BOOST_TEST(default_tile_dim[i] == 0); // ie. default_tile_dim = {0,0,0,0,0,0}
@@ -182,8 +182,8 @@ BOOST_AUTO_TEST_CASE(default_tiling_following_hcompress_test)
   Fits::Test::MinimalFile file;
   int status = 0;
   int tile1, tile2;
-  long shape[2] = {100, 100};
-  long tiling[2] = {-1, 1};
+  Linx::Index shape[2] = {100, 100};
+  Linx::Index tiling[2] = {-1, 1};
   fits_set_compression_type(file.fptr, HCOMPRESS_1, &status);
   fits_set_tile_dim(file.fptr, 2, tiling, &status);
   fits_create_img(file.fptr, BYTE_IMG, 2, shape, &status);

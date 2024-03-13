@@ -14,7 +14,7 @@ namespace Euclid {
 namespace Cfitsio {
 namespace HduAccess {
 
-long count(fitsfile* fptr)
+Linx::Index count(fitsfile* fptr)
 {
   int count = 0;
   int status = 0;
@@ -23,7 +23,7 @@ long count(fitsfile* fptr)
   return count;
 }
 
-long current_index(fitsfile* fptr)
+Linx::Index current_index(fitsfile* fptr)
 {
   int index = 0;
   fits_get_hdu_num(fptr, &index);
@@ -99,7 +99,7 @@ bool current_is_primary(fitsfile* fptr)
   return current_index(fptr) == 1;
 }
 
-bool goto_index(fitsfile* fptr, long index)
+bool goto_index(fitsfile* fptr, Linx::Index index)
 {
   if (index == current_index(fptr)) {
     return false;
@@ -130,7 +130,7 @@ bool goto_name(fitsfile* fptr, const std::string& name, long version, Fits::HduC
   return true;
 }
 
-bool goto_next(fitsfile* fptr, long step)
+bool goto_next(fitsfile* fptr, Linx::Index step)
 {
   if (step == 0) {
     return false;
@@ -181,7 +181,7 @@ void copy_verbatim(fitsfile* from, fitsfile* to)
   Cfitsio::CfitsioError::may_throw(status, to, "Cannot copy HDU");
 }
 
-void remove(fitsfile* fptr, long index)
+void remove(fitsfile* fptr, Linx::Index index)
 {
   goto_index(fptr, index);
   int status = 0;

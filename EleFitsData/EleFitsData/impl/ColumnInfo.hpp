@@ -9,17 +9,17 @@
 namespace Euclid {
 namespace Fits {
 
-template <typename T, long N>
-constexpr long ColumnInfo<T, N>::Dimension;
+template <typename T, Linx::Index N>
+constexpr Linx::Index ColumnInfo<T, N>::Dimension;
 
-template <typename T, long N>
-long ColumnInfo<T, N>::repeat_count() const
+template <typename T, Linx::Index N>
+Linx::Index ColumnInfo<T, N>::repeat_count() const
 {
   return shape_size(shape);
 }
 
-template <typename T, long N>
-long ColumnInfo<T, N>::element_count() const
+template <typename T, Linx::Index N>
+Linx::Index ColumnInfo<T, N>::element_count() const
 {
   if (std::is_same<T, std::string>::value) {
     return 1;
@@ -27,13 +27,13 @@ long ColumnInfo<T, N>::element_count() const
   return repeat_count();
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 bool operator==(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs)
 {
   return lhs.name == rhs.name && lhs.unit == rhs.unit && lhs.shape == rhs.shape;
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs)
 {
   return not(lhs == rhs);

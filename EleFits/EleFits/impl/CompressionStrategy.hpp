@@ -67,7 +67,7 @@ bool can_compress(const Plio&, const ImageHdu::Initializer<T>& init)
 template <typename TAlgo, typename T>
 TAlgo& adapt_tiling(TAlgo& algo, const ImageHdu::Initializer<T>& init)
 {
-  static constexpr long min_size = 1024 * 1024 / sizeof(T);
+  static constexpr Linx::Index min_size = 1024 * 1024 / sizeof(T);
 
   // Small image
   if (shape_size(init.shape) <= min_size) {

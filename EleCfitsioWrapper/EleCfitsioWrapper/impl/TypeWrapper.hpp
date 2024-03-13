@@ -22,19 +22,21 @@ namespace Cfitsio {
 #ifndef DEF_RECORD_TYPE_CODE
 #define DEF_RECORD_TYPE_CODE(type, code) \
   template <> \
-  inline int TypeCode<type>::for_record() { \
+  inline int TypeCode<type>::for_record() \
+  { \
     return code; \
   } \
   template <> \
-  inline int TypeCode<const type>::for_record() { \
+  inline int TypeCode<const type>::for_record() \
+  { \
     return code; \
   }
 DEF_RECORD_TYPE_CODE(bool, TLOGICAL)
 DEF_RECORD_TYPE_CODE(char, TSBYTE)
 DEF_RECORD_TYPE_CODE(short, TSHORT)
 DEF_RECORD_TYPE_CODE(int, TINT)
-DEF_RECORD_TYPE_CODE(long, TLONG)
-DEF_RECORD_TYPE_CODE(long long, TLONGLONG)
+DEF_RECORD_TYPE_CODE(Linx::Index, TLONG)
+DEF_RECORD_TYPE_CODE(Linx::Index Linx::Index, TLONGLONG)
 DEF_RECORD_TYPE_CODE(float, TFLOAT)
 DEF_RECORD_TYPE_CODE(double, TDOUBLE)
 DEF_RECORD_TYPE_CODE(std::complex<float>, TCOMPLEX)
@@ -43,8 +45,8 @@ DEF_RECORD_TYPE_CODE(std::string, TSTRING)
 DEF_RECORD_TYPE_CODE(unsigned char, TBYTE)
 DEF_RECORD_TYPE_CODE(unsigned short, TUSHORT)
 DEF_RECORD_TYPE_CODE(unsigned int, TUINT)
-DEF_RECORD_TYPE_CODE(unsigned long, TULONG)
-DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
+DEF_RECORD_TYPE_CODE(unsigned Linx::Index, TULONG)
+DEF_RECORD_TYPE_CODE(unsigned Linx::Index Linx::Index, TULONGLONG)
 #undef DEF_RECORD_TYPE_CODE
 #endif
 
@@ -60,18 +62,20 @@ DEF_RECORD_TYPE_CODE(unsigned long long, TULONGLONG)
 #ifndef DEF_TABLE_TYPE_CODE
 #define DEF_TABLE_TYPE_CODE(type, code) \
   template <> \
-  inline int TypeCode<type>::for_bintable() { \
+  inline int TypeCode<type>::for_bintable() \
+  { \
     return code; \
   } \
   template <> \
-  inline int TypeCode<const type>::for_bintable() { \
+  inline int TypeCode<const type>::for_bintable() \
+  { \
     return code; \
   }
 DEF_TABLE_TYPE_CODE(bool, TBIT)
 DEF_TABLE_TYPE_CODE(char, TSBYTE)
 DEF_TABLE_TYPE_CODE(short, TSHORT)
 DEF_TABLE_TYPE_CODE(int, TINT)
-DEF_TABLE_TYPE_CODE(long, TLONG)
+DEF_TABLE_TYPE_CODE(Linx::Index, TLONG)
 DEF_TABLE_TYPE_CODE(float, TFLOAT)
 DEF_TABLE_TYPE_CODE(double, TDOUBLE)
 DEF_TABLE_TYPE_CODE(std::complex<float>, TCOMPLEX)
@@ -80,8 +84,8 @@ DEF_TABLE_TYPE_CODE(std::string, TSTRING)
 DEF_TABLE_TYPE_CODE(unsigned char, TBYTE)
 DEF_TABLE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_TABLE_TYPE_CODE(unsigned int, TUINT)
-DEF_TABLE_TYPE_CODE(unsigned long, TULONG)
-DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
+DEF_TABLE_TYPE_CODE(unsigned Linx::Index, TULONG)
+DEF_TABLE_TYPE_CODE(unsigned Linx::Index Linx::Index, TULONGLONG)
 #undef DEF_TABLE_TYPE_CODE
 #endif
 
@@ -100,11 +104,13 @@ DEF_TABLE_TYPE_CODE(unsigned long long, TULONGLONG)
 #ifndef DEF_TABLE_TFORM
 #define DEF_TABLE_TFORM(type, code) \
   template <> \
-  inline std::string TypeCode<type>::tform(long repeat_count) { \
+  inline std::string TypeCode<type>::tform(Linx::Index repeat_count) \
+  { \
     return std::to_string(repeat_count) + code; \
   } \
   template <> \
-  inline std::string TypeCode<const type>::tform(long repeat_count) { \
+  inline std::string TypeCode<const type>::tform(Linx::Index repeat_count) \
+  { \
     return std::to_string(repeat_count) + code; \
   }
 DEF_TABLE_TFORM(bool, 'X')
@@ -135,25 +141,27 @@ DEF_TABLE_TFORM(std::uint64_t, 'W')
 #ifndef DEF_IMAGE_TYPE_CODE
 #define DEF_IMAGE_TYPE_CODE(type, code) \
   template <> \
-  inline int TypeCode<type>::for_image() { \
+  inline int TypeCode<type>::for_image() \
+  { \
     return code; \
   } \
   template <> \
-  inline int TypeCode<const type>::for_image() { \
+  inline int TypeCode<const type>::for_image() \
+  { \
     return code; \
   }
 DEF_IMAGE_TYPE_CODE(char, TSBYTE)
 DEF_IMAGE_TYPE_CODE(short, TSHORT)
 DEF_IMAGE_TYPE_CODE(int, TINT)
-DEF_IMAGE_TYPE_CODE(long, TLONG)
-DEF_IMAGE_TYPE_CODE(long long, TLONGLONG)
+DEF_IMAGE_TYPE_CODE(Linx::Index, TLONG)
+DEF_IMAGE_TYPE_CODE(Linx::Index Linx::Index, TLONGLONG)
 DEF_IMAGE_TYPE_CODE(float, TFLOAT)
 DEF_IMAGE_TYPE_CODE(double, TDOUBLE)
 DEF_IMAGE_TYPE_CODE(unsigned char, TBYTE)
 DEF_IMAGE_TYPE_CODE(unsigned short, TUSHORT)
 DEF_IMAGE_TYPE_CODE(unsigned int, TUINT)
-DEF_IMAGE_TYPE_CODE(unsigned long, TULONG)
-DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
+DEF_IMAGE_TYPE_CODE(unsigned Linx::Index, TULONG)
+DEF_IMAGE_TYPE_CODE(unsigned Linx::Index Linx::Index, TULONGLONG)
 #undef DEF_IMAGE_TYPE_CODE
 #endif
 
@@ -167,11 +175,13 @@ DEF_IMAGE_TYPE_CODE(unsigned long long, TULONGLONG)
 #ifndef DEF_IMAGE_BITPIX
 #define DEF_IMAGE_BITPIX(type, code) \
   template <> \
-  inline int TypeCode<type>::bitpix() { \
+  inline int TypeCode<type>::bitpix() \
+  { \
     return code; \
   } \
   template <> \
-  inline int TypeCode<const type>::bitpix() { \
+  inline int TypeCode<const type>::bitpix() \
+  { \
     return code; \
   }
 DEF_IMAGE_BITPIX(char, SBYTE_IMG)

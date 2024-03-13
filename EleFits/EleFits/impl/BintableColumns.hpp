@@ -23,7 +23,7 @@ namespace Fits {
 
 // read_info
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 ColumnInfo<T, N> BintableColumns::read_info(ColumnKey key) const
 {
   return Cfitsio::BintableIo::read_column_info<T, N>(m_fptr, key.index(*this) + 1); // 1-based
@@ -31,7 +31,7 @@ ColumnInfo<T, N> BintableColumns::read_info(ColumnKey key) const
 
 // read
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 VecColumn<T, N> BintableColumns::read(ColumnKey key) const
 {
   return read_segment<T, N>({0, -1}, key);
@@ -53,7 +53,7 @@ void BintableColumns::read_to(ColumnKey key, TColumn& column) const
 
 // read_segment
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 VecColumn<T, N> BintableColumns::read_segment(const Segment& rows, ColumnKey key) const
 {
   const auto index = key.index(*this);
@@ -99,7 +99,7 @@ std::tuple<VecColumn<Ts>...> BintableColumns::read_n(const TypedKey<Ts, TKey>&..
   return res;
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 std::vector<VecColumn<T, N>> BintableColumns::read_n(std::vector<ColumnKey> keys) const
 {
   const auto row_count = read_row_count();
@@ -153,7 +153,7 @@ std::tuple<VecColumn<Ts, 1>...> BintableColumns::read_n_segments(Segment rows, c
   return columns;
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 std::vector<VecColumn<T, N>> BintableColumns::read_n_segments(Segment rows, std::vector<ColumnKey> keys) const
 {
   if (rows.back == -1) {
@@ -190,9 +190,9 @@ template <typename TSeq>
 void BintableColumns::read_n_segments_to(FileMemSegments rows, std::vector<ColumnKey> keys, TSeq&& columns) const
 {
   const auto buffer_size = read_buffer_row_count();
-  const long row_count = columns_row_count(LINX_FORWARD(columns));
+  const Linx::Index row_count = columns_row_count(LINX_FORWARD(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
-  const long last_mem_row = rows.memory().back;
+  const Linx::Index last_mem_row = rows.memory().back;
   for (Segment file = Segment::fromSize(rows.file().front, buffer_size), // FIXME use a FileMemSegments
        mem = Segment::fromSize(rows.memory().front, buffer_size);
        mem.front <= last_mem_row;
@@ -225,7 +225,7 @@ void BintableColumns::write(const TColumn& column) const
 // init
 
 template <typename TInfo>
-void BintableColumns::insert_null(long index, const TInfo& info) const
+void BintableColumns::insert_null(Linx::Index index, const TInfo& info) const
 {
   m_edit();
   auto name = Fits::String::to_char_ptr(info.name);
@@ -242,7 +242,7 @@ void BintableColumns::insert_null(long index, const TInfo& info) const
 }
 
 template <typename TInfo>
-void BintableColumns::init(const TInfo& info, long index) const
+void BintableColumns::init(const TInfo& info, Linx::Index index) const
 {
   m_edit();
   auto name = Fits::String::to_char_ptr(info.name);
@@ -289,7 +289,7 @@ void BintableColumns::write_n(const TColumns&... columns) const
 }
 
 template <typename TSeq>
-void BintableColumns::insert_n_null(long index, TSeq&& infos) const
+void BintableColumns::insert_n_null(Linx::Index index, TSeq&& infos) const
 {
   m_edit();
   const auto name_vec = Linx::seq_transform<std::vector<std::string>>(infos, [&](const auto& info) {
@@ -305,7 +305,7 @@ void BintableColumns::insert_n_null(long index, TSeq&& infos) const
   int cfitsio_index = index == -1 ? Cfitsio::BintableIo::column_count(m_fptr) + 1 : index + 1;
   fits_insert_cols(m_fptr, cfitsio_index, names.size(), names.data(), tforms.data(), &status);
   // TODO to Cfitsio
-  long i = cfitsio_index;
+  Linx::Index i = cfitsio_index;
   Linx::seq_foreach(LINX_FORWARD(infos), [&](const auto& info) { // FIXME duplication
     if (info.unit != "") {
       const Record<std::string> record {"TUNIT" + std::to_string(i), info.unit, "", "physical unit of field"};
@@ -317,7 +317,7 @@ void BintableColumns::insert_n_null(long index, TSeq&& infos) const
 }
 
 template <typename... TInfos>
-void BintableColumns::insert_n_null(long index, const TInfos&... infos) const
+void BintableColumns::insert_n_null(Linx::Index index, const TInfos&... infos) const
 {
   insert_n_null(index, std::forward_as_tuple(infos...));
 }
@@ -329,7 +329,7 @@ void BintableColumns::write_n_segments(FileMemSegments rows, TSeq&& columns) con
 {
   const auto row_count = columns_row_count(LINX_FORWARD(columns));
   rows.resolve(read_row_count() - 1, row_count - 1);
-  const long last_mem_row = rows.memory().back;
+  const Linx::Index last_mem_row = rows.memory().back;
   const auto buffer_size = read_buffer_row_count();
   for (auto mem = Segment::fromSize(rows.memory().front, buffer_size), // FIXME use a FileMemSegments
        file = Segment::fromSize(rows.file().front, buffer_size);
@@ -351,9 +351,9 @@ void BintableColumns::write_n_segments(FileMemSegments rows, const TColumns&... 
 }
 
 template <typename TSeq>
-long columns_row_count(TSeq&& columns)
+Linx::Index columns_row_count(TSeq&& columns)
 {
-  long rows = -1;
+  Linx::Index rows = -1;
   Linx::seq_foreach(LINX_FORWARD(columns), [&](const auto& c) {
     const auto c_rows = c.row_count();
     if (rows == -1) {

@@ -102,12 +102,12 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr)
 
   /* Tiling */
 
-  const auto dimension = std::min<long>(HeaderIo::parse_record<long>(fptr, "ZNAXIS"), MAX_COMPRESS_DIM);
+  const auto dimension = std::min<Linx::Index>(HeaderIo::parse_record<Linx::Index>(fptr, "ZNAXIS"), MAX_COMPRESS_DIM);
   Linx::Position<-1> shape(dimension);
-  for (long i = 0; i < dimension; ++i) {
+  for (Linx::Index i = 0; i < dimension; ++i) {
     shape[i] = 1;
     try {
-      shape[i] = HeaderIo::parse_record<long>(fptr, std::string("ZTILE") + std::to_string(i + 1));
+      shape[i] = HeaderIo::parse_record<Linx::Index>(fptr, std::string("ZTILE") + std::to_string(i + 1));
     } catch (CfitsioError&) {
     }
   }
@@ -118,8 +118,8 @@ std::unique_ptr<Fits::Compression> read_parameters(fitsfile* fptr)
   /* Quantization */
 
   bool quantized = false;
-  const long column_count = HeaderIo::parse_record<long>(fptr, "TFIELDS");
-  for (long i = 1; i <= column_count; ++i) {
+  const Linx::Index column_count = HeaderIo::parse_record<Linx::Index>(fptr, "TFIELDS");
+  for (Linx::Index i = 1; i <= column_count; ++i) {
     const std::string column_name = HeaderIo::parse_record<std::string>(fptr, std::string("TTYPE") + std::to_string(i));
     if (column_name == "ZSCALE") {
       quantized = true;

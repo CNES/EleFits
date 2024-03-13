@@ -21,7 +21,7 @@ namespace ImageIo {
 template <>
 Linx::Position<-1> read_shape<-1>(fitsfile* fptr);
 
-template <long N>
+template <Linx::Index N>
 Linx::Position<N> read_shape(fitsfile* fptr)
 {
   Linx::Position<N> shape;
@@ -39,7 +39,7 @@ bool is_compressed(fitsfile* fptr)
   return is_compressed;
 }
 
-template <long N>
+template <Linx::Index N>
 void update_shape(fitsfile* fptr, const Linx::Position<N>& shape)
 {
   int status = 0;
@@ -50,7 +50,7 @@ void update_shape(fitsfile* fptr, const Linx::Position<N>& shape)
   CfitsioError::may_throw(status, fptr, "Cannot reshape raster.");
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 void update_type_shape(fitsfile* fptr, const Linx::Position<N>& shape)
 {
   int status = 0;
@@ -59,7 +59,7 @@ void update_type_shape(fitsfile* fptr, const Linx::Position<N>& shape)
   CfitsioError::may_throw(status, fptr, "Cannot reshape raster.");
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 Linx::Raster<T, N> read_raster(fitsfile* fptr)
 {
   Linx::Raster<T, N> raster(read_shape<N>(fptr));
@@ -73,7 +73,7 @@ void read_raster_to(fitsfile* fptr, TOut& out)
   read_region_to(fptr, Linx::Box<TOut::Dimension>::from_shape(read_shape<TOut::Dimension>(fptr)), out);
 }
 
-template <typename T, long M, long N>
+template <typename T, Linx::Index M, Linx::Index N>
 Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
 {
   Linx::Raster<T, M> raster(region.shape().template slice<M>());
@@ -115,7 +115,7 @@ void write_raster(fitsfile* fptr, const TRaster& raster)
   CfitsioError::may_throw(status, fptr, "Cannot write image.");
 }
 
-template <typename TRaster, long N>
+template <typename TRaster, Linx::Index N>
 void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>& destination)
 {
   int status = 0;
@@ -130,7 +130,7 @@ void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>
   CfitsioError::may_throw(status, fptr, "Cannot write image region.");
 }
 
-template <typename T, long M, long N, typename TContainer>
+template <typename T, Linx::Index M, Linx::Index N, typename TContainer>
 void write_region(
     fitsfile* fptr,
     const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster,

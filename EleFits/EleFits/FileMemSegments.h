@@ -16,17 +16,17 @@ namespace Fits {
  * for reading and writing bintable segments.
  */
 class FileMemSegments {
-
 public:
+
   /**
    * @brief Create a mapping from an in-file segment and an in-memory position.
    */
-  FileMemSegments(const Segment& fileSegment, long memoryIndex = 0);
+  FileMemSegments(const Segment& fileSegment, Linx::Index memoryIndex = 0);
 
   /**
    * @brief Create a mapping from an in-file position and an in-file segment.
    */
-  FileMemSegments(long fileIndex, const Segment& memorySegment = Segment::whole());
+  FileMemSegments(Linx::Index fileIndex, const Segment& memorySegment = Segment::whole());
 
   /**
    * @brief Get the in-file segment.
@@ -41,24 +41,25 @@ public:
   /**
    * @brief Get the common segment size.
    */
-  long size() const;
+  Linx::Index size() const;
 
   /**
    * @brief Resolve the unknown (-1) indices, given known in-file and in-memory back indices.
    */
-  void resolve(long fileBack, long memoryBack);
+  void resolve(Linx::Index fileBack, Linx::Index memoryBack);
 
   /**
    * @brief Compute the index offset from in-file segment to in-memory segment.
    */
-  long fileToMemory() const;
+  Linx::Index fileToMemory() const;
 
   /**
    * @brief Compute the index offset from in-memory segment to in-file segment.
    */
-  long memoryToFile() const;
+  Linx::Index memoryToFile() const;
 
 private:
+
   /**
    * @brief The in-file segment.
    */

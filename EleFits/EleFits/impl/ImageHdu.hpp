@@ -9,19 +9,19 @@
 namespace Euclid {
 namespace Fits {
 
-template <long N>
+template <Linx::Index N>
 Linx::Position<N> ImageHdu::read_shape() const
 {
   return m_raster.read_shape<N>();
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 void ImageHdu::update_type_shape(const Linx::Position<N>& shape) const
 {
   return m_raster.update_type_shape<T, N>(shape);
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 Linx::Raster<T, N> ImageHdu::read_raster() const
 {
   return m_raster.read<T, N>();

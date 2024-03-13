@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(quantization_equality_test)
 }
 
 template <typename TAlgo>
-void test_algo_mixin_parameters(long dimension = 0)
+void test_algo_mixin_parameters(Linx::Index dimension = 0)
 {
   Linx::Position<-1> shape(dimension);
   std::fill(shape.begin(), shape.end(), 300);
@@ -140,7 +140,7 @@ void test_algo_mixin_parameters(long dimension = 0)
 
 // specific to the NoCompression algo
 template <>
-void test_algo_mixin_parameters<NoCompression>(long)
+void test_algo_mixin_parameters<NoCompression>(Linx::Index)
 {
   NoCompression algo;
   BOOST_TEST((algo.tiling() == Linx::Position<-1> {0}));
@@ -150,21 +150,21 @@ BOOST_AUTO_TEST_CASE(algo_mixin_test)
 {
   test_algo_mixin_parameters<NoCompression>();
 
-  for (long n = 0; n <= 6; ++n) {
+  for (Linx::Index n = 0; n <= 6; ++n) {
     test_algo_mixin_parameters<Rice>(n);
   }
 
   test_algo_mixin_parameters<HCompress>(2);
 
-  for (long n = 0; n <= 6; ++n) {
+  for (Linx::Index n = 0; n <= 6; ++n) {
     test_algo_mixin_parameters<Plio>(n);
   }
 
-  for (long n = 0; n <= 6; ++n) {
+  for (Linx::Index n = 0; n <= 6; ++n) {
     test_algo_mixin_parameters<Gzip>(n);
   }
 
-  for (long n = 0; n <= 6; ++n) {
+  for (Linx::Index n = 0; n <= 6; ++n) {
     test_algo_mixin_parameters<ShuffledGzip>(n);
   }
 }

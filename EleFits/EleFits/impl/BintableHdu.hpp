@@ -11,13 +11,15 @@
 namespace Euclid {
 namespace Fits {
 
-template <typename T, long N>
-VecColumn<T, N> BintableHdu::read_column(ColumnKey key) const {
+template <typename T, Linx::Index N>
+VecColumn<T, N> BintableHdu::read_column(ColumnKey key) const
+{
   return m_columns.read<T, N>(std::move(key));
 }
 
 template <typename TColumn>
-void BintableHdu::write_column(const TColumn& column) const {
+void BintableHdu::write_column(const TColumn& column) const
+{
   m_columns.write(column);
 }
 

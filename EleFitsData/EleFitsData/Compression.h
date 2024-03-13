@@ -58,7 +58,7 @@ struct Tile {
    * @brief Create a rowwise tiling.
    * @param row_count The number of rows per tile
    */
-  inline static Linx::Position<-1> rowwise(long row_count = 1)
+  inline static Linx::Position<-1> rowwise(Linx::Index row_count = 1)
   {
     return Linx::Position<-1> {-1, row_count};
   }

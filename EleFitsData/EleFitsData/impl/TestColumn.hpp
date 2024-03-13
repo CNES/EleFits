@@ -14,7 +14,7 @@ namespace Fits {
 namespace Test {
 
 template <typename T>
-VecColumn<T> RandomTable::generate_column(const std::string& type_name, long repeat_count, long row_count)
+VecColumn<T> RandomTable::generate_column(const std::string& type_name, Linx::Index repeat_count, Linx::Index row_count)
 {
   std::vector<std::string> type_chunks;
   std::string chunk;
@@ -50,16 +50,16 @@ VecColumn<T>& RandomTable::get_column()
 }
 
 template <typename T>
-RandomScalarColumn<T>::RandomScalarColumn(long size, T min, T max) :
+RandomScalarColumn<T>::RandomScalarColumn(Linx::Index size, T min, T max) :
     VecColumn<T>({"SCALAR", "m", 1}, generate_random_vector<T>(size, min, max))
 {}
 
 template <>
-RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, std::string max) :
+RandomScalarColumn<std::string>::RandomScalarColumn(Linx::Index size, std::string min, std::string max) :
     VecColumn<std::string>({"SCALAR", "m", 1}, generate_random_vector<std::string>(size, min, max))
 {
   for (const auto& v : container()) {
-    long current_size = static_cast<long>(v.length() + 1); // +1 for '\0'
+    Linx::Index current_size = static_cast<Linx::Index>(v.length() + 1); // +1 for '\0'
     if (current_size > info().repeat_count()) {
       reshape(current_size);
     }
@@ -67,7 +67,7 @@ RandomScalarColumn<std::string>::RandomScalarColumn(long size, std::string min, 
 }
 
 template <typename T>
-RandomVectorColumn<T>::RandomVectorColumn(long repeat_count, long row_count, T min, T max) :
+RandomVectorColumn<T>::RandomVectorColumn(Linx::Index repeat_count, Linx::Index row_count, T min, T max) :
     VecColumn<T>({"VECTOR", "m", repeat_count}, generate_random_vector<T>(repeat_count * row_count, min, max))
 {}
 

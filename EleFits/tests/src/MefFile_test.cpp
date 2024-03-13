@@ -280,7 +280,7 @@ void check_append_null_bintable(MefFile& f)
   const auto row_count = ext.read_row_count();
   BOOST_TEST(row_count == 10);
   const auto output = ext.columns().read_n(as<T>("ZERO"), as<T>("BLANK"));
-  for (long i = 0; i < row_count; ++i) {
+  for (Linx::Index i = 0; i < row_count; ++i) {
     BOOST_TEST(is_null(std::get<0>(output)[i] - offset));
     const auto value1 = std::get<1>(output)[1];
     if (std::is_floating_point<T>::value) {

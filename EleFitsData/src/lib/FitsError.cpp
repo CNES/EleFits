@@ -11,22 +11,32 @@ const std::string FitsError::m_prefix = "EleFits error: ";
 
 FitsError::FitsError(const std::string& message) : std::exception(), m_message(m_prefix + message) {}
 
-OutOfBoundsError::OutOfBoundsError(const std::string& prefix, long value, std::pair<long, long> bounds) :
+OutOfBoundsError::OutOfBoundsError(
+    const std::string& prefix,
+    Linx::Index value,
+    std::pair<Linx::Index, Linx::Index> bounds) :
     FitsError(
         prefix + ": " + std::to_string(value) + " not in (" + std::to_string(bounds.first) + ", " +
-        std::to_string(bounds.second) + ")") {}
+        std::to_string(bounds.second) + ")")
+{}
 
-void OutOfBoundsError::may_throw(const std::string& prefix, long value, std::pair<long, long> bounds) {
+void OutOfBoundsError::may_throw(
+    const std::string& prefix,
+    Linx::Index value,
+    std::pair<Linx::Index, Linx::Index> bounds)
+{
   if (value < bounds.first || value > bounds.second) {
     throw OutOfBoundsError(prefix, value, bounds);
   }
 }
 
-const char* FitsError::what() const noexcept {
+const char* FitsError::what() const noexcept
+{
   return m_message.c_str();
 }
 
-void FitsError::append(const std::string& text, std::size_t indent) {
+void FitsError::append(const std::string& text, std::size_t indent)
+{
   m_message += "\n";
   for (std::size_t i = 0; i < indent; ++i) {
     m_message += "  ";

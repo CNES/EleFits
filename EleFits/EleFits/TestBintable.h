@@ -23,7 +23,7 @@ struct TestBintable { // FIXME add multidimensional column
   /**
    * @brief Constructor.
    */
-  TestBintable(long rows = 10) :
+  TestBintable(Linx::Index rows = 10) :
       scalar_column(rows), vector_column(3, rows), first_column(scalar_column), last_column(vector_column), file(),
       hdu(file.append_bintable_header("BINTABLE", {}, first_column.info(), last_column.info())), columns(hdu.columns())
   {

@@ -69,7 +69,7 @@ public:
    */
   Hdu(Token,
       fitsfile*& file,
-      long index,
+      Linx::Index index,
       HduCategory type = HduCategory::Image,
       HduCategory status = HduCategory::Untouched);
 
@@ -92,7 +92,7 @@ public:
   /**
    * @brief Get the 0-based index of the HDU.
    */
-  long index() const;
+  Linx::Index index() const;
 
   /**
    * @brief Get the type of the HDU.
@@ -295,7 +295,7 @@ protected:
    * EleFits HDUs are 0-based in the public API and 1-based in the CfitsioWrapper namespace
    * because CFITSIO indices are 1-based.
    */
-  long m_cfitsio_index;
+  Linx::Index m_cfitsio_index;
 
   /**
    * @brief The HDU type.

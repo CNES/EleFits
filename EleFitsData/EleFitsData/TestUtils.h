@@ -51,7 +51,7 @@ T generate_random_value(T min = half_min<T>(), T max = half_max<T>());
  * @brief Generate a random vector of given type and size.
  */
 template <typename T>
-std::vector<T> generate_random_vector(long size, T min = half_min<T>(), T max = half_max<T>());
+std::vector<T> generate_random_vector(Linx::Index size, T min = half_min<T>(), T max = half_max<T>());
 
 /**
  * @brief Check whether a test value is approximately equal to a reference value.

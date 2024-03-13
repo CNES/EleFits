@@ -17,12 +17,12 @@ bool SmallRaster::approx(const TRaster& other, double tol) const
   return raster_approx(*this, other, tol);
 }
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 RandomRaster<T, N>::RandomRaster(Linx::Position<N> raster_shape, T min, T max) :
     Linx::Raster<T, N>(raster_shape, generate_random_vector<T>(shape_size(raster_shape), min, max))
 {}
 
-template <typename T, long N>
+template <typename T, Linx::Index N>
 template <typename TRaster>
 bool RandomRaster<T, N>::approx(const TRaster& other, double tol) const
 {

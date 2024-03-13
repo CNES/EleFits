@@ -18,8 +18,8 @@ namespace Validation {
  * Tests on image HDUs are not supported (use `EleFitsBenchmark` instead).
  */
 class EleFitsColwiseBenchmark : public Benchmark {
-
 public:
+
   /**
    * @brief Destructor.
    */
@@ -52,16 +52,18 @@ public:
    * @details
    * Read the columns one-by-one to disable buffering.
    */
-  virtual BColumns read_bintable(long index) override;
+  virtual BColumns read_bintable(Linx::Index index) override;
 
 protected:
+
   /**
    * @brief The type and index of the i-th column.
    */
-  template <long i>
-  TypedKey<typename std::tuple_element<i, BColumns>::type::Value, long> col_indexed() const;
+  template <Linx::Index I>
+  TypedKey<typename std::tuple_element<I, BColumns>::type::Value, Linx::Index> col_indexed() const;
 
 protected:
+
   /**
    * @brief The MEF file handler.
    */
@@ -72,8 +74,8 @@ protected:
  * @brief Standard EleFits.
  */
 class EleFitsBenchmark : public EleFitsColwiseBenchmark {
-
 public:
+
   /**
    * @brief Destructor.
    */
@@ -97,12 +99,12 @@ public:
   /**
    * @copybrief Benchmark::read_image
    */
-  virtual BRaster read_image(long index) override;
+  virtual BRaster read_image(Linx::Index index) override;
 
   /**
    * @copybrief Benchmark::read_bintable
    */
-  virtual BColumns read_bintable(long index) override;
+  virtual BColumns read_bintable(Linx::Index index) override;
 };
 
 } // namespace Validation

@@ -8,11 +8,11 @@ namespace Euclid {
 namespace Fits {
 namespace Test {
 
-SmallRaster::SmallRaster(long rasterWidth, long rasterHeight) :
+SmallRaster::SmallRaster(Linx::Index rasterWidth, Linx::Index rasterHeight) :
     Linx::Raster<float>({rasterWidth, rasterHeight}), width(rasterWidth), height(rasterHeight)
 {
-  for (long y = 0; y < shape()[1]; ++y) {
-    for (long x = 0; x < shape()[0]; ++x) {
+  for (Linx::Index y = 0; y < shape()[1]; ++y) {
+    for (Linx::Index x = 0; x < shape()[0]; ++x) {
       operator[]({x, y}) = 0.1F * float(y) + float(x);
     }
   }

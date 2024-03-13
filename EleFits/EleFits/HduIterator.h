@@ -59,7 +59,7 @@ public:
   /**
    * @brief Constructor.
    */
-  HduIterator(MefFile& f, long index, HduFilter filter = HduCategory::Any);
+  HduIterator(MefFile& f, Linx::Index index, HduFilter filter = HduCategory::Any);
 
   /// @group_operations
 
@@ -110,7 +110,7 @@ private:
   /**
    * @brief The current HDU index.
    */
-  long m_index;
+  Linx::Index m_index;
 
   /**
    * @brief The current HDU.

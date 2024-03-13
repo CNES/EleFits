@@ -34,12 +34,12 @@ namespace HduAccess {
  * @brief Read the number of HDUs in a FITS file.
  * @warning Empty or incomplete HDUs are not counted.
  */
-long count(fitsfile* fptr);
+Linx::Index count(fitsfile* fptr);
 
 /**
  * @brief Get the index of the current HDU.
  */
-long current_index(fitsfile* fptr);
+Linx::Index current_index(fitsfile* fptr);
 
 /**
  * @brief Get the name of the current HDU.
@@ -81,7 +81,7 @@ bool current_is_primary(fitsfile* fptr);
 /**
  * @brief Go to an HDU specified by its index.
  */
-bool goto_index(fitsfile* fptr, long index);
+bool goto_index(fitsfile* fptr, Linx::Index index);
 
 /**
  * @brief Go to an HDU specified by its name.
@@ -90,13 +90,13 @@ bool goto_index(fitsfile* fptr, long index);
 bool goto_name(
     fitsfile* fptr,
     const std::string& name,
-    long version = 0,
+    Linx::Index version = 0,
     Fits::HduCategory category = Fits::HduCategory::Any);
 
 /**
  * @brief Go to an HDU specified by incrementing the index by a given amount.
  */
-bool goto_next(fitsfile* fptr, long step = 1);
+bool goto_next(fitsfile* fptr, Linx::Index step = 1);
 
 /**
  * @brief Go to the Primary HDU.
@@ -121,7 +121,7 @@ bool update_version(fitsfile* fptr, long version);
 /**
  * @brief Create a new image HDU with given name, pixel type and shape.
  */
-template <typename T, long N = 2>
+template <typename T, Linx::Index N = 2>
 void init_image(fitsfile* fptr, const std::string& name, const Linx::Position<N>& shape);
 
 /**
@@ -160,7 +160,7 @@ void copy_verbatim(fitsfile* src, fitsfile* dst);
 /**
  * @brief Delete the HDU at given index.
  */
-void remove(fitsfile* fptr, long index);
+void remove(fitsfile* fptr, Linx::Index index);
 
 } // namespace HduAccess
 } // namespace Cfitsio

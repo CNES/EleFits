@@ -53,7 +53,7 @@ BChronometer::Unit EleFitsColwiseBenchmark::write_bintable(const BColumns& colum
   return m_chrono.stop();
 }
 
-BColumns EleFitsColwiseBenchmark::read_bintable(long index)
+BColumns EleFitsColwiseBenchmark::read_bintable(Linx::Index index)
 {
   m_chrono.start();
   const auto& ext = m_f.access<BintableHdu>(index);
@@ -91,7 +91,7 @@ BChronometer::Unit EleFitsBenchmark::write_bintable(const BColumns& columns)
   return m_chrono.stop();
 }
 
-BRaster EleFitsBenchmark::read_image(long index)
+BRaster EleFitsBenchmark::read_image(Linx::Index index)
 {
   m_chrono.start();
   const auto raster = m_f.access<ImageHdu>(index).read_raster<BRaster::Value, BRaster::Dimension>();
@@ -99,7 +99,7 @@ BRaster EleFitsBenchmark::read_image(long index)
   return raster;
 }
 
-BColumns EleFitsBenchmark::read_bintable(long index)
+BColumns EleFitsBenchmark::read_bintable(Linx::Index index)
 {
   m_chrono.start();
   const auto columns = m_f.access<BintableColumns>(index).read_n(
