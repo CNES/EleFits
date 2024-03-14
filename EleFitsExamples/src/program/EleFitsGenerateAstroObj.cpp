@@ -130,9 +130,9 @@ void insert_columns(const BintableColumns& du, const AstroObjInfo& info)
 
   /* Insert before variance columns */
 
-  du.init(comb_qual_info, du.read_index("COMBINED1D_VAR"));
-  du.init(dith1d_qual_info, du.read_index("DITH1D_VAR"));
-  du.init(dith2d_qual_info, du.read_index("DITH2D_VAR"));
+  du.insert_null(du.read_index("COMBINED1D_VAR"), comb_qual_info);
+  du.insert_null(du.read_index("DITH1D_VAR"), dith1d_qual_info);
+  du.insert_null(du.read_index("DITH2D_VAR"), dith2d_qual_info);
   du.write_n(
       make_column(std::move(comb_qual_info), std::move(comb_qual_data)),
       make_column(std::move(dith1d_qual_info), std::move(dith1d_qual_data)),

@@ -56,8 +56,7 @@ template <typename TInfo, typename T>
 void append_column(const Fits::BintableColumns& du, const TInfo& info, const T* data)
 {
   const auto rows = du.read_row_count();
-  du.init(info);
-  du.write(make_column(info, rows, data));
+  du.append(make_column(info, rows, data));
 }
 
 /**
