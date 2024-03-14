@@ -43,7 +43,7 @@ void check_raster_is_read_back<std::uint64_t>()
   }
 
 template <typename T>
-void check_slice3d_is_read_back()
+void check_slice_3d_is_read_back()
 {
   Linx::Raster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
@@ -62,23 +62,23 @@ void check_slice3d_is_read_back()
 }
 
 template <>
-void check_slice3d_is_read_back<char>()
+void check_slice_3d_is_read_back<char>()
 {} // CFITSIO bug
 
 template <>
-void check_slice3d_is_read_back<std::uint64_t>()
+void check_slice_3d_is_read_back<std::uint64_t>()
 {} // CFITSIO bug
 
 #define SLICE_3D_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_slice_3d_is_read_back_test) \
   { \
-    check_slice3d_is_read_back<type>(); \
+    check_slice_3d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(SLICE_3D_IS_READ_BACK_TEST)
 
 template <typename T>
-void check_slice2d_is_read_back()
+void check_slice_2d_is_read_back()
 {
   Linx::Raster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
@@ -92,29 +92,30 @@ void check_slice2d_is_read_back()
   du.write(input(slice3d));
   const auto output = du.read<T, 2>();
   BOOST_TEST(output.shape() == shape2d);
-  for (const auto& p : output) {
-    BOOST_TEST(output[p] == input[p + slice3d.front()]);
+  for (const auto& p : output.domain()) {
+    const auto q = Linx::extend<3>(p) + slice3d.front();
+    BOOST_TEST(output[p] == input[q]);
   }
 }
 
 template <>
-void check_slice2d_is_read_back<char>()
+void check_slice_2d_is_read_back<char>()
 {} // CFITSIO bug
 
 template <>
-void check_slice2d_is_read_back<std::uint64_t>()
+void check_slice_2d_is_read_back<std::uint64_t>()
 {} // CFITSIO bug
 
 #define SLICE_2D_IS_READ_BACK_TEST(type, name) \
   BOOST_AUTO_TEST_CASE(name##_slice_2d_is_read_back_test) \
   { \
-    check_slice2d_is_read_back<type>(); \
+    check_slice_2d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(SLICE_2D_IS_READ_BACK_TEST)
 
 template <typename T>
-void check_region2d_is_read_back()
+void check_region_2d_is_read_back()
 {
   Linx::Raster<T, 3> input({5, 6, 7});
   for (auto p : input.domain()) {
@@ -128,23 +129,24 @@ void check_region2d_is_read_back()
   du.write(input(region3d));
   const auto output = du.read<T, 2>();
   BOOST_TEST(output.shape() == shape2d);
-  for (const auto& p : output) {
-    BOOST_TEST(output[p] == input[p + region3d.front()]);
+  for (const auto& p : output.domain()) {
+    const auto q = Linx::extend<3>(p) + region3d.front();
+    BOOST_TEST(output[p] == input[q]);
   }
 }
 
 template <>
-void check_region2d_is_read_back<char>()
+void check_region_2d_is_read_back<char>()
 {} // CFITSIO bug
 
 template <>
-void check_region2d_is_read_back<std::uint64_t>()
+void check_region_2d_is_read_back<std::uint64_t>()
 {} // CFITSIO bug
 
 #define REGION_2D_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_subraster_2d_is_read_back_test) \
+  BOOST_AUTO_TEST_CASE(name##_region_2d_is_read_back_test) \
   { \
-    check_region2d_is_read_back<type>(); \
+    check_region_2d_is_read_back<type>(); \
   }
 
 ELEFITS_FOREACH_RASTER_TYPE(REGION_2D_IS_READ_BACK_TEST)
