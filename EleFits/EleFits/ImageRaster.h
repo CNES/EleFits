@@ -5,7 +5,6 @@
 #ifndef _ELEFITS_IMAGERASTER_H
 #define _ELEFITS_IMAGERASTER_H
 
-#include "EleFits/FileMemRegions.h"
 #include "EleFitsData/Raster.h"
 
 #include <fitsio.h>
@@ -17,13 +16,12 @@ namespace Fits {
 /**
  * @ingroup image_handlers
  * @brief Reader-writer for the image data unit.
- * @details
+ * 
  * This handler provides methods to access image metadata (image-related keyword records) and data.
  * 
  * Reading methods either return a `Raster` or fill an existing `Raster`.
  * 
  * Data can be read and written region-wise.
- * Source and destination regions are specified by a `FileMemRegions` object.
  * 
  * @see Linx
  */
@@ -66,13 +64,13 @@ public:
    * @brief Update the image shape.
    */
   template <Linx::Index N = 2>
-  void update_shape(const Linx::Position<N>& shape) const;
+  void update_shape(Linx::Position<N> shape) const;
 
   /**
    * @brief Update the image type and shape.
    */
   template <typename T, Linx::Index N = 2>
-  void update_type_shape(const Linx::Position<N>& shape) const;
+  void update_type_shape(Linx::Position<N> shape) const;
 
   /// @}
   /**
@@ -81,27 +79,24 @@ public:
   /// @{
 
   /**
-   * @brief Read the whole data unit as a new `Raster`.
-   * @details
+   * @brief Read the whole data unit as a new raster.
+   * 
    * There are several options to read the whole data unit:
    * - as a new `Raster` object;
    * - by filling an existing `Raster` object;
    * - by filling an existing `Patch` object.
    * 
-   * In the last two cases, the raster or subraster is assumed to already have a conforming shape.
-   * 
-   * @warning
-   * Filling a `Patch` is much slower than filling a `Raster`.
+   * In the latter two cases, the raster or patch is assumed to already have a conforming shape.
    */
   template <typename T, Linx::Index N = 2>
   Linx::Raster<T, N> read() const;
 
   /**
-   * @brief Read the whole data unit into an existing `Raster`.
+   * @brief Read the whole data unit into an existing raster or patch.
    * @copydetails read()
    */
-  template <typename TRaster>
-  void read_to(TRaster& raster) const;
+  template <typename TOut>
+  void read_to(TOut& out) const;
 
   /// @}
   /**
@@ -110,33 +105,28 @@ public:
   /// @{
 
   /**
-   * @brief Read a region as a new `Raster`.
+   * @brief Read a region as a new raster.
    * @tparam T The desired raster type
    * @tparam M The desired raster dimension, which can be smaller than the data dimension in file
-   * @tparam N The region dimension, which corresponds to the data dimension in file
    * @param region The in-file region
-   * @param regions The in-file and in-memory regions
-   * @param raster The destination raster
-   * @details
+   * @param front The front position in the file
+   * @param out The destination raster or patch
+   * 
    * There are several options to read a region of the data unit:
    * - as a new `Raster` object;
    * - by filling an existing `Raster` object;
    * - by filling an existing `Patch` object.
-   * In the last two cases, the in-file and in-memory regions are given as a `FileMemRegions` object.
+   * In the latter two cases, only the front position of the region to be read is given,
+   * and the shape of the region is deduced from that of `out`.
    * 
    * For example, to read the HDU region from position (50, 80) to position (100, 120)
-   * into an existing raster at position (25, 40), do:
+   * into an existing raster from position (25, 40) to position (75, 80), do:
    * \code
-   * const FileMemRegions<2> regions({25, 40}, {{50, 80}, {100, 120}});
-   * image.read_region_to(regions, raster);
+   * const Position<2> front {50, 80};
+   * auto patch = raster({{25, 40}, {75, 80}});
+   * image.read_region_to(front, patch);
    * \endcode
    * where `image` is the `ImageRaster` and `raster` is the `Raster`.
-   * 
-   * In simpler cases, where the in-file or in-memory front position is 0,
-   * factories can be used, e.g. to read into position 0 of the raster:
-   * \code
-   * image.read_region_to<2>({{50, 80}, {100, 120}}, raster);
-   * \endcode
    */
   template <typename T, Linx::Index M, Linx::Index N>
   Linx::Raster<T, M> read_region(const Linx::Box<N>& region) const;
@@ -145,8 +135,8 @@ public:
    * @brief Read a region of the data unit into a region of an existing `Raster`.
    * @copydetails read_region()
    */
-  template <typename TRaster>
-  void read_region_to(FileMemRegions<TRaster::Dimension> regions, TRaster& raster) const;
+  template <Linx::Index N, typename TOut>
+  void read_region_to(Linx::Position<N> front, TOut& out) const;
 
   /// @}
   /**
@@ -156,9 +146,10 @@ public:
 
   /**
    * @brief Write the whole data unit.
+   * @param in The raster or patch to be written
    */
-  template <typename TRaster>
-  void write(const TRaster& raster) const;
+  template <typename TIn>
+  void write(const TIn& in) const;
 
   /// @}
   /**
@@ -167,84 +158,21 @@ public:
   /// @{
 
   /**
-   * @brief Write a `Raster` at a given position of the data unit.
-   * @param regions The in-file and in-memory regions
-   * @param raster The raster to be written
-   * @details
-   * In-file and in-memory (raster) regions are specified as the first parameter.
-   * Max bounds (-1) can be used in one, several, or all axes.
-   * Shortcuts offered by `FileMemRegions` and `Box` can be used to implement special cases:
-   * \code
-   * // Write the whole raster at position (10, 20, 30)
-   * du.write_region<3>({10, 20, 30}, raster);
-   * 
-   * // Write the whole HDU with a region of the raster starting at (10, 20, 30)
-   * du.write_region<3>({Linx::Box<3>::whole(), {10, 20, 30}}, raster);
-   * \endcode
+   * @brief Write a raster at a given position of the data unit.
+   * @param front The in-file front position
+   * @param in The raster or patch to be written
    * 
    * Note that the raster dimension can be lower than the HDU dimension.
    * For example, it is possible to write a 2D raster in a 3D HDU.
    * \code
    * // Write the 3rd plane of raster into the 5th plane of the HDU
-   * du.write_region<3>({{0, 0, 4}}, raster.section(2));
+   * du.write_region<3>({0, 0, 4}, raster.section(2));
    * \endcode
    */
-  template <typename TRaster, Linx::Index N>
-  void write_region(FileMemRegions<N> regions, const TRaster& raster) const; // TODO return bool = is_contiguous()?
+  template <Linx::Index N, typename TIn>
+  void write_region(Linx::Position<N> front, const TIn& in) const;
 
   /// @}
-
-private:
-
-  /**
-   * @brief Read a region of the data unit into an existing `Raster`.
-   * @copydetails read_region()
-   */
-  template <typename TRaster, Linx::Index N>
-  void read_region_to_slice(const Linx::Position<N>& front_position, TRaster& raster) const;
-
-  /**
-   * @brief Read a region of the data unit into an existing `Patch`.
-   * @copydetails read_region()
-   */
-  template <typename T, Linx::Index M, Linx::Index N, typename TContainer>
-  void read_region_to_subraster(
-      const Linx::Position<N>& front_position,
-      typename Linx::Raster<T, M, TContainer>::Tile<M>& subraster) const; // FIXME rm?
-
-  /**
-   * @brief Read a region of the data unit into an existing `Patch`.
-   * @details
-   * The region is that of the subraster.
-   * This function is equivalent to:
-   * \code
-   * read_region_to({region, region}, raster);
-   * \endcode
-   * where `region` would be the subraster region, and `raster` the subraster parent.
-   */
-  template <typename T, Linx::Index N, typename TContainer>
-  void read_region_to(typename Linx::Raster<T, N, TContainer>::Tile<N>& subraster) const; // FIXME rm?
-
-  /**
-   * @brief Write a `Raster` at a given position of the data unit.
-   */
-  template <typename TRaster, Linx::Index N>
-  void write_slice(const Linx::Position<N>& front_position, const TRaster& raster) const;
-
-  /**
-   * @brief Write a `Patch` at a corresponding position of the data unit.
-   * @copydetails write_region()
-   */
-  template <typename TPatch>
-  void write_region(const TPatch& subraster) const; // FIXME rm?
-
-  /**
-   * @brief Write a `Patch` at a given position of the data unit.
-   */
-  template <Linx::Index N, typename TPatch>
-  void write_subraster(
-      const Linx::Position<N>& front_position,
-      const TPatch& subraster) const; // FIXME rm?
 
 private:
 

@@ -75,10 +75,6 @@ elements_add_unit_test(CompressionStrategy tests/src/CompressionStrategy_test.cp
                     EXECUTABLE EleFits_CompressionStrategy_test
                     LINK_LIBRARIES EleFits
                     TYPE Boost)
-elements_add_unit_test(FileMemRegions tests/src/FileMemRegions_test.cpp 
-                     EXECUTABLE EleFits_FileMemRegions_test
-                     LINK_LIBRARIES EleFits
-                     TYPE Boost)
 elements_add_unit_test(FileMemSegments tests/src/FileMemSegments_test.cpp 
                      EXECUTABLE EleFits_FileMemSegments_test
                      LINK_LIBRARIES EleFits

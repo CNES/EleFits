@@ -139,11 +139,9 @@ by mapping -- possibly non-contiguous -- in-file and in-memory regions, e.g.:
 ```cpp
 // Given:
 // - ImageRaster raster: The image data unit handler
-// - Raster data: The image container
 
-Region<2> in_file {{32, 16}, {64, 32}};
-Position<2> in_memory {8, 8};
-raster.read_region_to({in_file, in_memory}, data);
+Box<2> region {{32, 16}, {64, 32}};
+raster.read_region(region);
 ```
 
 For binary tables, multiple columns can be read or written at once
