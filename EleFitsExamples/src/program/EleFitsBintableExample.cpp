@@ -4,10 +4,8 @@
 
 #include "EleFits/MefFile.h"
 #include "EleFitsData/TestUtils.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
-
-using boost::program_options::value;
+#include "Linx/Run/ProgramOptions.h"
 
 using namespace Euclid;
 
@@ -104,54 +102,36 @@ void view_as_raster(const Fits::BintableColumns& du)
   du.write(col);
 }
 
-/*
- * The progam.
- */
-class EleFitsBintableExample : public Elements::Program {
-public:
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options("Generate, write and read a binary table.");
+  options.positional<std::string>("output", "Output file", "/tmp/bintable.fits");
+  options.named<Linx::Index>("rows", "Number of rows", 42);
+  options.parse(argc, argv);
 
-  /*
-   * Declare the program options.
-   */
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
-  {
-    Fits::ProgramOptions options("Generate, write and read a binary table.");
-    options.positional("output", value<std::string>()->default_value("/tmp/bintable.fits"), "Output file");
-    options.named("rows", value<Linx::Index>()->default_value(42), "Number of rows");
-    return options.as_pair();
-  }
+  auto logger = Elements::Logging::getLogger("EleFitsBintableExample");
+  const auto filename = options.as<std::string>("output");
+  const auto rows = options.as<Linx::Index>("rows");
 
-  /*
-   * Execute the program.
-   */
-  ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
-  {
-    Logging logger = Logging::getLogger("EleFitsBintableExample");
-    const auto filename = args["output"].as<std::string>();
-    const auto rows = args["rows"].as<Linx::Index>();
+  logger.info("Opening or creating the file...");
+  Fits::MefFile f(filename, Fits::FileMode::Write);
 
-    logger.info("Opening or creating the file...");
-    Fits::MefFile f(filename, Fits::FileMode::Write);
+  logger.info("Creating a binary table HDU...");
+  const auto ext_name = "TABLE" + std::to_string(f.hdu_count());
+  const auto& bintable = write_bintable(f, ext_name, rows);
 
-    logger.info("Creating a binary table HDU...");
-    const auto ext_name = "TABLE" + std::to_string(f.hdu_count());
-    const auto& bintable = write_bintable(f, ext_name, rows);
+  logger.info("Appending a column...");
+  Fits::ColumnInfo<double> info("BACK", "unit");
+  const auto vec = Fits::Test::generate_random_vector<double>(rows, -1, 1);
+  append_column(bintable.columns(), info, vec.data());
 
-    logger.info("Appending a column...");
-    Fits::ColumnInfo<double> info("BACK", "unit");
-    const auto vec = Fits::Test::generate_random_vector<double>(rows, -1, 1);
-    append_column(bintable.columns(), info, vec.data());
+  logger.info("Reading columns...");
+  auto result = read_columns(bintable.columns());
+  logger.info() << "  Result = " << result;
 
-    logger.info("Reading columns...");
-    auto result = read_columns(bintable.columns());
-    logger.info() << "  Result = " << result;
+  logger.info("Modifying a multidimensional column...");
+  view_as_raster(bintable.columns());
 
-    logger.info("Modifying a multidimensional column...");
-    view_as_raster(bintable.columns());
-
-    logger.info("Done.");
-    return ExitCode::OK;
-  }
-};
-
-MAIN_FOR(EleFitsBintableExample)
+  logger.info("Done.");
+  return 0;
+}

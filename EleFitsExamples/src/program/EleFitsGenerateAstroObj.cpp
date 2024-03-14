@@ -4,14 +4,11 @@
 
 #include "EleFits/MefFile.h"
 #include "EleFitsData/TestRaster.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
+#include "Linx/Run/ProgramOptions.h"
 
-#include <boost/program_options.hpp>
 #include <map>
 #include <string>
-
-using boost::program_options::value;
 
 using namespace Euclid::Fits;
 
@@ -139,62 +136,44 @@ void insert_columns(const BintableColumns& du, const AstroObjInfo& info)
       make_column(std::move(dith2d_qual_info), std::move(dith2d_qual_data)));
 }
 
-/*
- * The program.
- */
-class EleFitsGenerateAstroObj : public Elements::Program {
-public:
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options("Generate a random AstroObj file, as specified in the SpectrumLib.");
+  options.positional<std::string>("output", "Output file", "/tmp/astroobj.fits");
+  options.named<Linx::Index>("nobj", "AstroObj count per HDU", 1);
+  options.named<Linx::Index>("nhdu", "HDU count", 1);
+  options.named<Linx::Index>("nbin", "Wavelength bin count", 1000);
+  options.named<Linx::Index>("ndith", "Dither count per AstroObj", 4);
+  options.named<Linx::Index>("height", "Dither 2D height", 15);
+  options.flag("qual", "Flag to write quality columns");
+  options.parse(argc, argv);
 
-  /*
-   * Program options.
-   */
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
-  {
-    Euclid::Fits::ProgramOptions options("Generate a random AstroObj file, as specified in the SpectrumLib.");
-    options.positional("output", value<std::string>()->default_value("/tmp/astroobj.fits"), "Output file");
-    options.named("nobj", value<Linx::Index>()->default_value(1), "AstroObj count per HDU");
-    options.named("nhdu", value<Linx::Index>()->default_value(1), "HDU count");
-    options.named("nbin", value<Linx::Index>()->default_value(1000), "Wavelength bin count");
-    options.named("ndith", value<Linx::Index>()->default_value(4), "Dither count per AstroObj");
-    options.named("height", value<Linx::Index>()->default_value(15), "Dither 2D height");
-    options.flag("qual", "Flag to write quality columns");
-    return options.as_pair();
-  }
+  Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerateAstroObj");
 
-  /*
-   * Run!
-   */
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
-  {
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerateAstroObj");
+  std::string filename = options.as<std::string>("output");
+  const auto nobj = options.as<Linx::Index>("nobj");
+  const auto nhdu = options.as<Linx::Index>("nhdu");
+  const auto nbin = options.as<Linx::Index>("nbin");
+  const auto ndith = options.as<Linx::Index>("ndith");
+  const auto height = options.as<Linx::Index>("height");
+  const auto qual = options.as<bool>("qual");
 
-    std::string filename = args["output"].as<std::string>();
-    const auto nobj = args["nobj"].as<Linx::Index>();
-    const auto nhdu = args["nhdu"].as<Linx::Index>();
-    const auto nbin = args["nbin"].as<Linx::Index>();
-    const auto ndith = args["ndith"].as<Linx::Index>();
-    const auto height = args["height"].as<Linx::Index>();
-    const auto qual = args["qual"].as<bool>();
+  AstroObjInfo info {nbin, ndith, nbin, {nbin, height}};
 
-    AstroObjInfo info {nbin, ndith, nbin, {nbin, height}};
+  logger.info() << "Creating FITS file: " << filename;
+  MefFile f(filename, FileMode::Overwrite);
 
-    logger.info() << "Creating FITS file: " << filename;
-    MefFile f(filename, FileMode::Overwrite);
+  logger.info() << "Writing metadata";
+  write_primary_header(f.primary().header(), nobj * nhdu);
 
-    logger.info() << "Writing metadata";
-    write_primary_header(f.primary().header(), nobj * nhdu);
-
-    for (Linx::Index i = 0; i < nhdu; ++i) {
-      logger.info() << "Writing HDU " << i + 1;
-      const auto& ext = write_ext(f, std::to_string(i + 1), info, nobj);
-      if (qual) {
-        insert_columns(ext.columns(), info);
-      }
+  for (Linx::Index i = 0; i < nhdu; ++i) {
+    logger.info() << "Writing HDU " << i + 1;
+    const auto& ext = write_ext(f, std::to_string(i + 1), info, nobj);
+    if (qual) {
+      insert_columns(ext.columns(), info);
     }
-
-    logger.info() << "Done.";
-    return Elements::ExitCode::OK;
   }
-};
 
-MAIN_FOR(EleFitsGenerateAstroObj)
+  logger.info() << "Done.";
+  return 0;
+}

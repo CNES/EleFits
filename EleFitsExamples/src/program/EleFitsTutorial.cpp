@@ -7,10 +7,9 @@
  * @brief Basic usage of the main services of EleFits.
  */
 
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
+#include "Linx/Run/ProgramOptions.h"
 
-#include <boost/program_options.hpp>
 #include <map>
 #include <string>
 
@@ -28,10 +27,6 @@ using namespace Euclid;
 // We could have be using namespace Euclid::Fits instead,
 // but things would have been less obvious in the snippets.
 //! [Include]
-
-using boost::program_options::options_description;
-using boost::program_options::value;
-using boost::program_options::variable_value;
 
 static Elements::Logging logger = Elements::Logging::getLogger("EleFitsTutorial");
 
@@ -427,36 +422,27 @@ void read_columns(const Fits::BintableColumns& du)
 // PROGRAM //
 ////////////
 
-class EleFitsTutorial : public Elements::Program {
-public:
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options; // FIXME desc
+  options.positional<std::string>("output", "Output file", "/tmp/tuto.fits");
+  options.parse(argc, argv);
 
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
-  {
-    auto options = Fits::ProgramOptions::from_aux_file("Tutorial.txt");
-    options.positional("output", value<std::string>()->default_value("/tmp/tuto.fits"), "Output file");
-    return options.as_pair();
-  }
+  const auto filename = options.as<std::string>("output");
 
-  Elements::ExitCode mainMethod(std::map<std::string, variable_value>& args) override
-  {
-    const auto filename = args["output"].as<std::string>();
+  logger.info() << "---";
+  logger.info() << "Hello, EleFits " << Fits::version() << "!";
+  logger.info() << "---";
 
-    logger.info() << "---";
-    logger.info() << "Hello, EleFits " << Fits::version() << "!";
-    logger.info() << "---";
+  write_file(filename);
 
-    write_file(filename);
+  logger.info() << "---";
 
-    logger.info() << "---";
+  read_file(filename);
 
-    read_file(filename);
+  logger.info() << "---";
+  logger.info() << "The end!";
+  logger.info() << "---";
 
-    logger.info() << "---";
-    logger.info() << "The end!";
-    logger.info() << "---";
-
-    return Elements::ExitCode::OK;
-  }
-};
-
-MAIN_FOR(EleFitsTutorial)
+  return 0;
+}

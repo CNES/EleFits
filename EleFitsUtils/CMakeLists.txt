@@ -51,11 +51,7 @@ elements_add_library(EleFitsUtils src/lib/*.cpp
 #                       INCLUDE_DIRS ElementsExamples
 #                       LINK_LIBRARIES ElementsExamples TYPE Boost)
 #===============================================================================
-elements_add_unit_test(ProgramOptions tests/src/ProgramOptions_test.cpp 
-                     EXECUTABLE EleFitsUtils_ProgramOptions_test
-                     LINK_LIBRARIES EleFitsUtils
-                     TYPE Boost)
-elements_add_unit_test(StringUtils tests/src/StringUtils_test.cpp 
+elements_add_unit_test(StringUtils tests/src/StringUtils_test.cpp
                      EXECUTABLE EleFitsUtils_StringUtils_test
                      LINK_LIBRARIES EleFitsUtils
                      TYPE Boost)

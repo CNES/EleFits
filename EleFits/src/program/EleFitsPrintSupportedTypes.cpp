@@ -4,13 +4,12 @@
 #include "EleFitsData/Column.h"
 #include "EleFitsData/Raster.h"
 #include "EleFitsData/Record.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "EleFitsUtils/StringUtils.h"
 #include "ElementsKernel/ProgramHeaders.h"
 #include "ElementsKernel/Unused.h"
+#include "Linx/Run/ProgramOptions.h"
 
 #include <boost/algorithm/string.hpp>
-#include <boost/program_options.hpp>
 #include <map>
 #include <string>
 
@@ -18,37 +17,33 @@ using namespace Euclid::Fits;
 
 #define PRINT_SUPPORTED_TYPES(type, name) logger.info() << "  " << #type;
 
-class EleFitsPrintSupportedTypes : public Elements::Program {
+int main(int argc, char const* argv[])
+{
+  Elements::Logging logger = Elements::Logging::getLogger("EleFitsPrintSupportedTypes");
 
-public:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    auto options = ProgramOptions::from_aux_file("PrintSupportedTypes.txt");
-    return options.as_pair();
+  Linx::ProgramOptions options; // FIXME desc
+  options.parse(argc, argv);
+
+  std::string contents = String::read_aux_file("PrintSupportedTypes.txt");
+  std::vector<std::string> lines;
+  for (const auto& line : boost::split(lines, contents, boost::is_any_of("\n"))) {
+    logger.info(line);
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>&) override {
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsPrintSupportedTypes");
-    std::string contents = String::read_aux_file("PrintSupportedTypes.txt");
-    std::vector<std::string> lines;
-    for (const auto& line : boost::split(lines, contents, boost::is_any_of("\n"))) {
-      logger.info(line);
-    }
-    logger.info();
-    logger.info("----------------------------");
-    logger.info("Supported Record value types");
-    logger.info("----------------------------");
-    ELEFITS_FOREACH_RECORD_TYPE(PRINT_SUPPORTED_TYPES)
-    logger.info("----------------------------");
-    logger.info("Supported Raster value types");
-    logger.info("----------------------------");
-    ELEFITS_FOREACH_RASTER_TYPE(PRINT_SUPPORTED_TYPES)
-    logger.info("----------------------------");
-    logger.info("Supported Column value types");
-    logger.info("----------------------------");
-    ELEFITS_FOREACH_COLUMN_TYPE(PRINT_SUPPORTED_TYPES)
-    logger.info("----------------------------");
-    return Elements::ExitCode::OK;
-  }
-};
+  logger.info();
+  logger.info("----------------------------");
+  logger.info("Supported Record value types");
+  logger.info("----------------------------");
+  ELEFITS_FOREACH_RECORD_TYPE(PRINT_SUPPORTED_TYPES)
+  logger.info("----------------------------");
+  logger.info("Supported Raster value types");
+  logger.info("----------------------------");
+  ELEFITS_FOREACH_RASTER_TYPE(PRINT_SUPPORTED_TYPES)
+  logger.info("----------------------------");
+  logger.info("Supported Column value types");
+  logger.info("----------------------------");
+  ELEFITS_FOREACH_COLUMN_TYPE(PRINT_SUPPORTED_TYPES)
+  logger.info("----------------------------");
 
-MAIN_FOR(EleFitsPrintSupportedTypes)
+  return 0;
+}

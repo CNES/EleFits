@@ -3,16 +3,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "EleFits/MefFile.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
+#include "Linx/Run/ProgramOptions.h"
 
-#include <boost/program_options.hpp>
 #include <iomanip> // setw, setfill
 #include <ostream>
 #include <sstream>
 #include <string>
 
-using boost::program_options::value;
 using namespace Euclid::Fits;
 
 void set_strategy(MefFile& out, const std::string& algo, char lossless)
@@ -61,62 +59,50 @@ void set_strategy(MefFile& out, const std::string& algo, char lossless)
   }
 }
 
-class EleFitsCompress : public Elements::Program {
-public:
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options; // FIXME description
+  options.positional<std::string>("input", "Input file");
+  options.positional<std::string>("output", "Output file (if ends with .gz, compress externally)");
+  options.named<std::string>("algo", "Compression algorithm (NONE, GZIP, SGZIP, RICE, HCOMPRESS, PLIO, AUTO)", "AUTO");
+  options.named<char>("lossless", "Losslessness: yes (y), no (n), integers only (i)", 'y');
+  options.flag("primary", "Compress the Primary (as the first extension)");
+  options.parse(argc, argv);
 
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
-  {
-    auto options = ProgramOptions::from_aux_file("Compress.txt");
-    options.positional("input", value<std::string>(), "Input file");
-    options.positional("output", value<std::string>(), "Output file (if ends with .gz, compress externally)");
-    options.named(
-        "algo",
-        value<std::string>()->default_value("AUTO"),
-        "Compression algorithm (NONE, GZIP, SGZIP, RICE, HCOMPRESS, PLIO, AUTO)");
-    options.named("lossless", value<char>()->default_value('y'), "Losslessness: yes (y), no (n), integers only (i)");
-    options.flag("primary", "Compress the Primary (as the first extension)");
-    return options.as_pair();
+  Elements::Logging logger = Elements::Logging::getLogger("EleFitsCompress");
+
+  /* Read options */
+  const auto input = options.as<std::string>("input");
+  const auto output = options.as<std::string>("output");
+  const auto algo = options.as<std::string>("algo");
+  const auto lossless = options.as<char>("lossless");
+  const auto compress_primary = options.as<bool>("primary");
+
+  /* Open files */
+  MefFile raw(input, FileMode::Read);
+  const auto hdu_count = raw.hdu_count();
+  logger.info() << "HDU count: " << hdu_count;
+
+  MefFile compressed(output, FileMode::Create);
+
+  /* Copy raw Primary */
+  if (not compress_primary) {
+    compressed.primary() = raw.primary();
   }
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
-  {
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsCompress");
+  /* Enable compression (or not) */
+  set_strategy(compressed, algo, lossless);
 
-    /* Read options */
-    const auto input = args["input"].as<std::string>();
-    const auto output = args["output"].as<std::string>();
-    const auto algo = args["algo"].as<std::string>();
-    const auto lossless = args["lossless"].as<char>();
-    const auto compress_primary = args["primary"].as<bool>();
-
-    /* Open files */
-    MefFile raw(input, FileMode::Read);
-    const auto hdu_count = raw.hdu_count();
-    logger.info() << "HDU count: " << hdu_count;
-
-    MefFile compressed(output, FileMode::Create);
-
-    /* Copy raw Primary */
-    if (not compress_primary) {
-      compressed.primary() = raw.primary();
-    }
-
-    /* Enable compression (or not) */
-    set_strategy(compressed, algo, lossless);
-
-    /* Loop over HDUs or extensions */
-    for (Linx::Index i = 1 - compress_primary; i < hdu_count; ++i) {
-      const auto& hdu = raw[i];
-      logger.info() << "  HDU #" << i << ": " << hdu.read_name();
-      compressed.append(hdu);
-    }
-
-    raw.close();
-    compressed.close();
-    logger.info("Done.");
-
-    return Elements::ExitCode::OK;
+  /* Loop over HDUs or extensions */
+  for (Linx::Index i = 1 - compress_primary; i < hdu_count; ++i) {
+    const auto& hdu = raw[i];
+    logger.info() << "  HDU #" << i << ": " << hdu.read_name();
+    compressed.append(hdu);
   }
-};
 
-MAIN_FOR(EleFitsCompress)
+  raw.close();
+  compressed.close();
+  logger.info("Done.");
+
+  return 0;
+}

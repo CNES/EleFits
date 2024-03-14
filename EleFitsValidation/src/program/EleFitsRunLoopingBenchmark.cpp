@@ -2,14 +2,12 @@
 // This file is part of EleFits <github.com/CNES/EleFits>
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "EleFitsUtils/ProgramOptions.h"
 #include "EleFitsValidation/LoopingBenchmark.h"
 #include "ElementsKernel/ProgramHeaders.h"
+#include "Linx/Run/ProgramOptions.h"
 
 #include <map>
 #include <string>
-
-using boost::program_options::value;
 
 using namespace Euclid::Fits;
 
@@ -31,31 +29,22 @@ Validation::LoopingBenchmark::Duration loop(Validation::LoopingBenchmark& benchm
   }
 }
 
-class EleFitsRunLoopingBenchmark : public Elements::Program {
-public:
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options;
+  options.named<char>("setup", "Test setup to be benchmarked (x, z, p, i, v)");
+  options.named<Linx::Index>("side", "Image width, height and depth (same value)", 400);
+  options.parse(argc, argv);
 
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
-  {
-    ProgramOptions options;
-    options.named("setup", value<char>(), "Test setup to be benchmarked (x, z, p, i, v)");
-    options.named("side", value<Linx::Index>()->default_value(400), "Image width, height and depth (same value)");
-    return options.as_pair();
-  }
+  Elements::Logging logger = Elements::Logging::getLogger("EleFitsRunLoopingBenchmark");
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
-  {
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsRunLoopingBenchmark");
+  logger.info("Generating random rasters...");
+  Validation::LoopingBenchmark benchmark(options.as<Linx::Index>("side"));
 
-    logger.info("Generating random rasters...");
-    Validation::LoopingBenchmark benchmark(args["side"].as<Linx::Index>());
+  logger.info("Looping over them...");
+  const auto duration = loop(benchmark, options.as<char>("setup"));
 
-    logger.info("Looping over them...");
-    const auto duration = loop(benchmark, args["setup"].as<char>());
+  logger.info() << "Done in " << duration.count() << "ms";
 
-    logger.info() << "Done in " << duration.count() << "ms";
-
-    return Elements::ExitCode::OK;
-  }
-};
-
-MAIN_FOR(EleFitsRunLoopingBenchmark)
+  return 0;
+}

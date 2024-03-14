@@ -3,16 +3,14 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "EleFits/MefFile.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
+#include "Linx/Run/ProgramOptions.h"
 
-#include <boost/program_options.hpp>
 #include <iomanip> // setw, setfill
 #include <ostream>
 #include <sstream>
 #include <string>
 
-using boost::program_options::value;
 using namespace Euclid::Fits;
 
 #define RETURN_TYPENAME_IF_MATCH(type, name) \
@@ -73,98 +71,86 @@ KeywordCategory parse_keyword_categories(const std::string& filter)
   return categories;
 }
 
-class EleFitsReadStructure : public Elements::Program {
-public:
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options; // FIXME desc
+  options.positional<std::string>("input", "Input file");
+  options.named<std::string>("keywords,K", "Record filter", "mrcu"); // FIXME default "", implicit "mrcu"
+  options.named<Linx::Index>("columns,C", "Maximum number of column names", -1); // FIXME default 0, implicit -1
+  options.parse(argc, argv);
 
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
-  {
-    auto options = ProgramOptions::from_aux_file("ReadStructure.txt");
-    options.positional("input", value<std::string>(), "Input file");
-    options.named("keywords,K", value<std::string>()->default_value("")->implicit_value("mrcu"), "Record filter");
-    options.named(
-        "columns,C",
-        value<Linx::Index>()->default_value(0)->implicit_value(-1),
-        "Maximum number of column names");
-    return options.as_pair();
-  }
+  Elements::Logging logger = Elements::Logging::getLogger("EleFitsReadStructure");
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
-  {
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsReadStructure");
+  /* Read options */
+  const auto filename = options.as<std::string>("input");
+  const auto keyword_filter = options.as<std::string>("keywords");
+  const auto max_column_count = options.as<Linx::Index>("columns");
+  KeywordCategory categories = parse_keyword_categories(keyword_filter);
 
-    /* Read options */
-    const auto filename = args["input"].as<std::string>();
-    const auto keyword_filter = args["keywords"].as<std::string>();
-    const auto max_column_count = args["columns"].as<Linx::Index>();
-    KeywordCategory categories = parse_keyword_categories(keyword_filter);
+  /* Read file */
+  MefFile f(filename, FileMode::Read);
+  const auto hdu_count = f.hdu_count();
+  logger.info() << "HDU count: " << hdu_count;
 
-    /* Read file */
-    MefFile f(filename, FileMode::Read);
-    const auto hdu_count = f.hdu_count();
-    logger.info() << "HDU count: " << hdu_count;
+  /* Loop over HDUs */
+  for (Linx::Index i = 0; i < hdu_count; ++i) {
+    logger.info();
 
-    /* Loop over HDUs */
-    for (Linx::Index i = 0; i < hdu_count; ++i) {
-      logger.info();
+    /* Read name (if present) */
+    const auto& hdu = f[i];
+    logger.info() << "HDU #" << i << ": " << hdu.read_name();
+    logger.info() << "  Size: " << hdu.size_in_file() << " bytes";
 
-      /* Read name (if present) */
-      const auto& hdu = f[i];
-      logger.info() << "HDU #" << i << ": " << hdu.read_name();
-      logger.info() << "  Size: " << hdu.size_in_file() << " bytes";
-
-      /* Read type */
-      const auto hdu_type = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
-      if (hdu_type == HduCategory::Image) {
-        const auto shape = hdu.as<ImageHdu>().read_shape<-1>();
-        if (shape.size() > 0) {
-          std::ostringstream oss;
-          std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
-          oss << shape.container().back();
-          logger.info() << "  Image HDU:";
-          logger.info() << "    Type: " << read_type_name(hdu.as<ImageHdu>());
-          logger.info() << "    Shape: " << oss.str() << " px";
-          logger.info() << "    Compression: " << read_compression_name(hdu.as<ImageHdu>());
-        } else {
-          logger.info() << "  Metadata HDU";
-        }
+    /* Read type */
+    const auto hdu_type = hdu.type(); // FIXME use category() to distinguish metadata from image HDUs
+    if (hdu_type == HduCategory::Image) {
+      const auto shape = hdu.as<ImageHdu>().read_shape<-1>();
+      if (shape.size() > 0) {
+        std::ostringstream oss;
+        std::copy(shape.begin(), shape.end() - 1, std::ostream_iterator<int>(oss, " x "));
+        oss << shape.container().back();
+        logger.info() << "  Image HDU:";
+        logger.info() << "    Type: " << read_type_name(hdu.as<ImageHdu>());
+        logger.info() << "    Shape: " << oss.str() << " px";
+        logger.info() << "    Compression: " << read_compression_name(hdu.as<ImageHdu>());
       } else {
-        const auto column_count = hdu.as<BintableHdu>().read_column_count();
-        const auto row_count = hdu.as<BintableHdu>().read_row_count();
-        logger.info() << "  Binary table HDU:";
-        logger.info() << "    Shape: " << column_count << " columns x " << row_count << " rows";
-        if (max_column_count != 0) {
-          auto column_names = hdu.as<BintableHdu>().columns().read_all_names();
-          if (max_column_count > 0 && max_column_count < column_count) {
-            column_names.resize(max_column_count);
-            column_names.push_back("...");
-          }
-          logger.info() << "    Columns:";
-          for (const auto& n : column_names) {
-            logger.info() << "      " << n;
-          }
-        }
+        logger.info() << "  Metadata HDU";
       }
-
-      /* Read keywords */
-      if (categories) {
-        const auto records = hdu.header().read_all_keywords_values(categories);
-        if (records.size() == 0) {
-          logger.info() << "  No keywords";
-        } else {
-          logger.info() << "  Keywords:";
-          for (const auto& r : records) {
-            if (r.second.empty()) {
-              logger.info() << "    " << r.first;
-            } else {
-              logger.info() << "    " << std::left << std::setw(8) << std::setfill(' ') << r.first << " = " << r.second;
-            }
-          }
+    } else {
+      const auto column_count = hdu.as<BintableHdu>().read_column_count();
+      const auto row_count = hdu.as<BintableHdu>().read_row_count();
+      logger.info() << "  Binary table HDU:";
+      logger.info() << "    Shape: " << column_count << " columns x " << row_count << " rows";
+      if (max_column_count != 0) {
+        auto column_names = hdu.as<BintableHdu>().columns().read_all_names();
+        if (max_column_count > 0 && max_column_count < column_count) {
+          column_names.resize(max_column_count);
+          column_names.push_back("...");
+        }
+        logger.info() << "    Columns:";
+        for (const auto& n : column_names) {
+          logger.info() << "      " << n;
         }
       }
     }
 
-    return Elements::ExitCode::OK;
+    /* Read keywords */
+    if (categories) {
+      const auto records = hdu.header().read_all_keywords_values(categories);
+      if (records.size() == 0) {
+        logger.info() << "  No keywords";
+      } else {
+        logger.info() << "  Keywords:";
+        for (const auto& r : records) {
+          if (r.second.empty()) {
+            logger.info() << "    " << r.first;
+          } else {
+            logger.info() << "    " << std::left << std::setw(8) << std::setfill(' ') << r.first << " = " << r.second;
+          }
+        }
+      }
+    }
   }
-};
 
-MAIN_FOR(EleFitsReadStructure)
+  return 0;
+}

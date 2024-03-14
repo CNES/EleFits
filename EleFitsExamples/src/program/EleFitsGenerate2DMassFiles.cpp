@@ -4,14 +4,11 @@
 
 #include "EleFits/MefFile.h"
 #include "EleFitsData/TestRaster.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
+#include "Linx/Run/ProgramOptions.h"
 
-#include <boost/program_options.hpp>
 #include <map>
 #include <string>
-
-using boost::program_options::value;
 
 using namespace Euclid;
 using namespace Fits;
@@ -88,59 +85,50 @@ void write_image(const std::string& filename, const Linx::Position<3>& shape)
   write_some_records(ext.header());
 }
 
-class EleFitsGenerate2DMassFiles : public Elements::Program {
-public:
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options("Generate random 2DMASS-like outputs.");
+  options.named<std::string>("bintable", "Output binary table file", "/tmp/bintable.fits");
+  options.named<Linx::Index>("rows", "Binary table row count", 10);
+  options.named<std::string>("image", "Output image file", "/tmp/image.fits");
+  options.named<Linx::Index>("width", "Image width", 10);
+  options.named<Linx::Index>("height", "Image height", 10);
+  options.parse(argc, argv);
 
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override
-  {
-    Euclid::Fits::ProgramOptions options("Generate random 2DMASS-like outputs.");
-    options.named("bintable", value<std::string>()->default_value("/tmp/bintable.fits"), "Output binary table file");
-    options.named("rows", value<Linx::Index>()->default_value(10), "Binary table row count");
-    options.named("image", value<std::string>()->default_value("/tmp/image.fits"), "Output image file");
-    options.named("width", value<Linx::Index>()->default_value(10), "Image width");
-    options.named("height", value<Linx::Index>()->default_value(10), "Image height");
-    return options.as_pair();
-  }
+  Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerate2DMassFiles");
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override
-  {
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerate2DMassFiles");
+  const std::string bintable = options.as<std::string>("bintable");
+  const Linx::Index rows = options.as<Linx::Index>("rows");
+  const std::string image = options.as<std::string>("image");
+  const Linx::Position<3> shape {options.as<Linx::Index>("width"), options.as<Linx::Index>("height"), 3};
 
-    const std::string bintable = args["bintable"].as<std::string>();
-    const Linx::Index rows = args["rows"].as<Linx::Index>();
-    const std::string image = args["image"].as<std::string>();
-    const Linx::Position<3> shape {args["width"].as<Linx::Index>(), args["height"].as<Linx::Index>(), 3};
+  logger.info("Writing binary table...");
+  write_bintable(bintable, rows);
+  logger.info("Done.");
 
-    logger.info("Writing binary table...");
-    write_bintable(bintable, rows);
-    logger.info("Done.");
+  logger.info("Writing image...");
+  write_image(image, shape);
+  logger.info("Done.");
 
-    logger.info("Writing image...");
-    write_image(image, shape);
-    logger.info("Done.");
+  logger.info("Reading binary table...");
+  MefFile b(bintable, FileMode::Read);
+  const auto some_column = b.access<BintableHdu>(1).read_column<float>("SHE_LENSMC_G1");
+  logger.info() << "First value of SHE_LENSMC_G1 = " << some_column.container()[0];
 
-    logger.info("Reading binary table...");
-    MefFile b(bintable, FileMode::Read);
-    const auto some_column = b.access<BintableHdu>(1).read_column<float>("SHE_LENSMC_G1");
-    logger.info() << "First value of SHE_LENSMC_G1 = " << some_column.container()[0];
+  logger.info("Reading image...");
+  MefFile i(image, FileMode::Read);
+  const auto& ext = i.find<ImageHdu>("KAPPA_PATCH");
+  const auto raster = ext.read_raster<float, 3>();
+  const Linx::Position<3> center {raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2};
+  logger.info() << "Central pixel = " << raster[center];
 
-    logger.info("Reading image...");
-    MefFile i(image, FileMode::Read);
-    const auto& ext = i.find<ImageHdu>("KAPPA_PATCH");
-    const auto raster = ext.read_raster<float, 3>();
-    const Linx::Position<3> center {raster.length<0>() / 2, raster.length<1>() / 2, raster.length<2>() / 2};
-    logger.info() << "Central pixel = " << raster[center];
+  logger.info("Reading header...");
+  const auto records = ext.header().parse_all();
+  const auto int_record = records.as<int>("CRVAL1");
+  logger.info() << int_record.comment << " = " << int_record.value << " " << int_record.unit;
+  const auto str_record = records.as<std::string>("CUNIT1");
+  logger.info() << str_record.comment << " = " << str_record.value << " " << str_record.unit;
 
-    logger.info("Reading header...");
-    const auto records = ext.header().parse_all();
-    const auto int_record = records.as<int>("CRVAL1");
-    logger.info() << int_record.comment << " = " << int_record.value << " " << int_record.unit;
-    const auto str_record = records.as<std::string>("CUNIT1");
-    logger.info() << str_record.comment << " = " << str_record.value << " " << str_record.unit;
-
-    logger.info("The end!");
-    return Elements::ExitCode::OK;
-  }
-};
-
-MAIN_FOR(EleFitsGenerate2DMassFiles)
+  logger.info("The end!");
+  return 0;
+}

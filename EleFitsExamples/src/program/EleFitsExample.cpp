@@ -6,138 +6,129 @@
 #include "EleFits/MefFile.h"
 #include "EleFitsData/TestColumn.h"
 #include "EleFitsData/TestRaster.h"
-#include "EleFitsUtils/ProgramOptions.h"
 #include "ElementsKernel/ProgramHeaders.h"
+#include "Linx/Run/ProgramOptions.h"
 
-#include <boost/program_options.hpp>
 #include <map>
 #include <string>
-
-using boost::program_options::value;
 
 using namespace Euclid;
 using namespace Fits;
 
-class EleFitsExample : public Elements::Program {
+int main(int argc, char const* argv[])
+{
+  Linx::ProgramOptions options;
+  options.positional<std::string>("output", "Output file", "/tmp/elefits.fits");
+  options.parse(argc, argv);
 
-public:
-  std::pair<OptionsDescription, PositionalOptionsDescription> defineProgramArguments() override {
-    Euclid::Fits::ProgramOptions options;
-    options.positional("output", value<std::string>()->default_value("/tmp/test.fits"), "Output file");
-    return options.as_pair();
-  }
+  Elements::Logging logger = Elements::Logging::getLogger("EleFitsExample");
 
-  Elements::ExitCode mainMethod(std::map<std::string, VariableValue>& args) override {
+  const std::string filename = options.as<std::string>("output");
 
-    Elements::Logging logger = Elements::Logging::getLogger("EleFitsExample");
+  logger.info();
 
-    const std::string filename = args["output"].as<std::string>();
+  {
+    logger.info() << "Creating FITS file: " << filename;
+    //! [Create FITS]
+    MefFile f(filename, FileMode::Overwrite);
+    //! [Create FITS]
+    const auto& primary = f.primary();
+    logger.info() << "Writing new record: VALUE = 1";
+    //! [Write record]
+    primary.header().write("VALUE", 1);
+    //! [Write record]
+    logger.info() << "Updating record: VALUE = 2";
+    //! [Update record]
+    primary.header().write("VALUE", 2);
+    //! [Update record]
 
     logger.info();
-    {
-      logger.info() << "Creating FITS file: " << filename;
-      //! [Create FITS]
-      MefFile f(filename, FileMode::Overwrite);
-      //! [Create FITS]
-      const auto& primary = f.primary();
-      logger.info() << "Writing new record: VALUE = 1";
-      //! [Write record]
-      primary.header().write("VALUE", 1);
-      //! [Write record]
-      logger.info() << "Updating record: VALUE = 2";
-      //! [Update record]
-      primary.header().write("VALUE", 2);
-      //! [Update record]
 
-      logger.info();
+    Test::SmallTable table; // Predefined table for testing purpose
+    logger.info() << "Creating binary table extension: SMALLTBL";
+    //! [Create binary table ext]
+    f.append_bintable("SMALLTBL", {}, table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
+    //! [Create binary table ext]
 
-      Test::SmallTable table; // Predefined table for testing purpose
-      logger.info() << "Creating binary table extension: SMALLTBL";
-      //! [Create binary table ext]
-      f.append_bintable("SMALLTBL", {}, table.num_col, table.radec_col, table.name_col, table.dist_mag_col);
-      //! [Create binary table ext]
-
-      logger.info();
-
-      Test::SmallRaster raster; // Predefined image raster for testing purpose
-      logger.info() << "Creating image extension: SMALLIMG";
-      //! [Create image ext]
-      const auto& ext = f.append_image("SMALLIMG", {}, raster);
-      //! [Create image ext]
-      logger.info() << "Writing record: STRING = string";
-      Record<std::string> string_record("STRING", "string");
-      logger.info() << "Writing record: INTEGER = 8";
-      Record<int> integer_record("INTEGER", 8);
-      ext.header().write_n(string_record, integer_record);
-
-      logger.info();
-
-      logger.info() << "Closing file.";
-      //! [Close FITS]
-      f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
-      //! [Close FITS]
-    }
     logger.info();
-    {
 
-      logger.info() << "Reopening file.";
-      //! [Open FITS]
-      MefFile f(filename, FileMode::Read);
-      //! [Open FITS]
-      //! [Read record]
-      const auto record_value = f.primary().header().parse<int>("VALUE");
-      //! [Read record]
-      logger.info() << "Reading record: VALUE = " << record_value;
+    Test::SmallRaster raster; // Predefined image raster for testing purpose
+    logger.info() << "Creating image extension: SMALLIMG";
+    //! [Create image ext]
+    const auto& ext = f.append_image("SMALLIMG", {}, raster);
+    //! [Create image ext]
+    logger.info() << "Writing record: STRING = string";
+    Record<std::string> string_record("STRING", "string");
+    logger.info() << "Writing record: INTEGER = 8";
+    Record<int> integer_record("INTEGER", 8);
+    ext.header().write_n(string_record, integer_record);
 
-      logger.info();
+    logger.info();
 
-      logger.info() << "Reading binary table.";
-      //! [Find HDU by name]
-      const auto& bintable = f.find<BintableHdu>("SMALLTBL");
-      //! [Find HDU by name]
-      //! [Get HDU index]
-      const auto index = bintable.index();
-      //! [Get HDU index]
-      logger.info() << "HDU index: " << index;
-      //! [Read column]
-      const auto ids = bintable.columns().read<int>("ID").container();
-      const auto first_entry = ids[0];
-      //! [Read column]
-      logger.info() << "First id: " << first_entry;
-      const auto names = bintable.columns().read<std::string>("NAME").container();
-      logger.info() << "Last name: " << names[names.size() - 1];
-
-      logger.info();
-
-      logger.info() << "Reading image.";
-      //! [Find HDU by index]
-      const auto& ext2 = f[2];
-      //! [Find HDU by index]
-      //! [Get HDU name]
-      const auto extname = ext2.read_name();
-      //! [Get HDU name]
-      logger.info() << "Name of HDU #3: " << extname;
-      const auto records = ext2.header().parse_n(as<std::string>("STRING"), as<int>("INTEGER"));
-      logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
-      logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
-      const auto& image = f.find<ImageHdu>("SMALLIMG");
-      //! [Read raster]
-      const auto raster = image.read_raster<float>();
-      const auto first_pixel = raster[{0, 0}];
-      const auto last_pixel = raster.at({-1, -1}); // at() allows backward indexing
-      //! [Read raster]
-      logger.info() << "First pixel: " << first_pixel;
-      logger.info() << "Last pixel: " << last_pixel;
-
-      logger.info();
-
-      logger.info() << "File will be closed at execution end.";
-
-      logger.info();
-
-      return Elements::ExitCode::OK;
-    } // File is closed by destructor
+    logger.info() << "Closing file.";
+    //! [Close FITS]
+    f.close(); // We close the file manually for demo purpose, but this is done by the destructor otherwise
+    //! [Close FITS]
   }
-};
 
-MAIN_FOR(EleFitsExample)
+  logger.info();
+
+  {
+    logger.info() << "Reopening file.";
+    //! [Open FITS]
+    MefFile f(filename, FileMode::Read);
+    //! [Open FITS]
+    //! [Read record]
+    const auto record_value = f.primary().header().parse<int>("VALUE");
+    //! [Read record]
+    logger.info() << "Reading record: VALUE = " << record_value;
+
+    logger.info();
+
+    logger.info() << "Reading binary table.";
+    //! [Find HDU by name]
+    const auto& bintable = f.find<BintableHdu>("SMALLTBL");
+    //! [Find HDU by name]
+    //! [Get HDU index]
+    const auto index = bintable.index();
+    //! [Get HDU index]
+    logger.info() << "HDU index: " << index;
+    //! [Read column]
+    const auto ids = bintable.columns().read<int>("ID").container();
+    const auto first_entry = ids[0];
+    //! [Read column]
+    logger.info() << "First id: " << first_entry;
+    const auto names = bintable.columns().read<std::string>("NAME").container();
+    logger.info() << "Last name: " << names[names.size() - 1];
+
+    logger.info();
+
+    logger.info() << "Reading image.";
+    //! [Find HDU by index]
+    const auto& ext2 = f[2];
+    //! [Find HDU by index]
+    //! [Get HDU name]
+    const auto extname = ext2.read_name();
+    //! [Get HDU name]
+    logger.info() << "Name of HDU #3: " << extname;
+    const auto records = ext2.header().parse_n(as<std::string>("STRING"), as<int>("INTEGER"));
+    logger.info() << "Reading record: STRING = " << std::get<0>(records).value;
+    logger.info() << "Reading record: INTEGER = " << std::get<1>(records).value;
+    const auto& image = f.find<ImageHdu>("SMALLIMG");
+    //! [Read raster]
+    const auto raster = image.read_raster<float>();
+    const auto first_pixel = raster[{0, 0}];
+    const auto last_pixel = raster.at({-1, -1}); // at() allows backward indexing
+    //! [Read raster]
+    logger.info() << "First pixel: " << first_pixel;
+    logger.info() << "Last pixel: " << last_pixel;
+
+    logger.info();
+
+    logger.info() << "File will be closed at execution end.";
+
+    logger.info();
+  } // File is closed by destructor
+
+  return 0;
+}
