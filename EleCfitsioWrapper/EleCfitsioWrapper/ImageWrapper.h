@@ -82,23 +82,10 @@ template <typename TRaster>
 void write_raster(fitsfile* fptr, const TRaster& raster);
 
 /**
- * @brief Write a whole raster into a region of the current image HDU.
- * @param raster The raster to be written
- * @param destination The destination position (size is deduced from raster size)
+ * @brief Write a raster or patch into a region of the current image HDU.
  */
-template <typename TRaster, Linx::Index N>
-void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>& destination);
-
-/**
- * @brief Write a patch into a region of the current image HDU.
- * @param patch The patch to be written
- * @param destination The destination position (size is deduced from patch size)
- */
-template <typename T, Linx::Index M, Linx::Index N, typename TContainer> // FIXME where's M?
-void write_region(
-    fitsfile* fptr,
-    const typename Linx::Raster<const T, N, TContainer>::ConstTile& patch,
-    const Linx::Position<N>& destination);
+template <Linx::Index N, typename TIn>
+void write_region(fitsfile* fptr, const Linx::Box<N>& region, TIn& in);
 
 } // namespace ImageIo
 } // namespace Cfitsio

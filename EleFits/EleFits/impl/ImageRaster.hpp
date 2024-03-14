@@ -44,7 +44,7 @@ template <typename TOut>
 void ImageRaster::read_to(TOut& out) const
 {
   m_touch();
-  Cfitsio::ImageIo::read_raster_to(m_fptr, out); // FIXME region?
+  Cfitsio::ImageIo::read_raster_to(m_fptr, out);
 }
 
 template <typename T, Linx::Index M, Linx::Index N>
@@ -68,35 +68,15 @@ void ImageRaster::read_region_to(Linx::Position<N> front, TOut& out) const
 template <typename TIn>
 void ImageRaster::write(const TIn& in) const
 {
-  write_region(Linx::Position<TIn::Dimension>::zero(/*in.dimension()*/), in); // FIXME Add Patch::dimension()
+  write_region(Linx::Position<TIn::Dimension>::zero(in.domain().dimension()), in); // FIXME Add Patch::dimension()
+  // FIXME Cfitsio::ImageIo::write_raster() for performance?
 }
 
 template <Linx::Index N, typename TIn>
 void ImageRaster::write_region(Linx::Position<N> front, const TIn& in) const
 {
   m_edit();
-  int status = 0;
-  auto locus_front = Linx::Position<TIn::Dimension>::zero();
-  auto locus_back = in.domain().shape() - 1;
-  locus_back[0] = 0;
-  const Linx::Box<TIn::Dimension> locus {LINX_MOVE(locus_front), LINX_MOVE(locus_back)};
-  const auto nelem = in.domain().length(0);
-  Linx::Position<N> target;
-  for (const auto& source : locus) {
-    target = (Linx::extend(source, front) + front) + 1; // 1-based
-    const auto b = &in[source];
-    const auto e = b + nelem;
-    std::vector<std::decay_t<typename TIn::Value>> nonconst_data(b, e);
-    fits_write_pix(
-        m_fptr,
-        Cfitsio::TypeCode<typename TIn::Value>::for_image(),
-        target.data(),
-        nelem,
-        nonconst_data.data(),
-        &status);
-    // TODO to ImageWrapper
-    // FIXME refactor analogously to read_region_to
-  }
+  Cfitsio::ImageIo::write_region(m_fptr, Linx::Box<N>::from_shape(LINX_MOVE(front), in.domain().shape()), in);
 }
 
 } // namespace Fits

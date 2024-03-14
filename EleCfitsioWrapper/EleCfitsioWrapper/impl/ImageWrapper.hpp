@@ -115,51 +115,19 @@ void write_raster(fitsfile* fptr, const TRaster& raster)
   CfitsioError::may_throw(status, fptr, "Cannot write image.");
 }
 
-template <typename TRaster, Linx::Index N>
-void write_region(fitsfile* fptr, const TRaster& raster, const Linx::Position<N>& destination)
+template <Linx::Index N, typename TIn>
+void write_region(fitsfile* fptr, const Linx::Box<N>& region, TIn& in)
 {
   int status = 0;
-  auto front = destination + 1;
-  const auto shape = raster.shape().extend(destination);
-  auto back = destination + shape; // = front + raster.shape() - 1
-  const auto begin = raster.data();
-  const auto end = begin + raster.size();
-  using Value = std::decay_t<typename TRaster::Value>;
-  std::vector<Value> nonconst_data(begin, end); // For const-correctness issue
-  fits_write_subset(fptr, TypeCode<Value>::for_image(), front.data(), back.data(), nonconst_data.data(), &status);
-  CfitsioError::may_throw(status, fptr, "Cannot write image region.");
-}
+  auto step = region.step();
+  auto row_fronts = project(region);
+  ++row_fronts; // 1-based
 
-template <typename T, Linx::Index M, Linx::Index N, typename TContainer>
-void write_region(
-    fitsfile* fptr,
-    const typename Linx::Raster<const T, N, TContainer>::ConstTile& subraster,
-    const Linx::Position<N>& destination)
-{
-  /* 1-based, flatten region (beginning of each line) */
-  const auto shape = subraster.shape().extend(destination);
-  auto front = destination + 1;
-  auto back = destination + shape;
-  back[0] = front[0];
-
-  /* Screening positions */
-  const auto dst_size = shape[0];
-  const auto delta = extend(subraster.region().front(), front) - front;
-
-  /* Process each line */
-  int status = 0;
-  Linx::Position<N> dst_back;
-  Linx::Position<N> src_front;
-  std::vector<std::decay_t<T>> line(dst_size);
-  Linx::Box<N> dst_region {LINX_MOVE(front), LINX_MOVE(back)};
-  for (auto dst_front : dst_region) {
-    dst_back = dst_front;
-    dst_back[0] += dst_size - 1;
-    src_front = dst_front + delta;
-    line.assign(&subraster[src_front], &subraster[src_front] + dst_size);
-    fits_write_pix(fptr, TypeCode<T>::for_image(), dst_front.data(), dst_size, line.data(), &status);
-    // fits_write_subset(fptr, TypeCode<T>::for_image(), dst_front.data(), dst_back.data(), line.data(), &status);
-    CfitsioError::may_throw(status, fptr, "Cannot write image region.");
+  const auto size = region.length(0);
+  std::vector<std::decay_t<typename TIn::Value>> nonconst_data(size);
+  for (auto p : row_fronts) {
+    std::copy_n(&in[p - row_fronts.front()], size, nonconst_data.data());
+    fits_write_pix(fptr, TypeCode<typename TIn::Value>::for_image(), p.data(), size, nonconst_data.data(), &status);
   }
 }
 
