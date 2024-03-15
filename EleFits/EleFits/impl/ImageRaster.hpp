@@ -78,6 +78,14 @@ void ImageRaster::write_region(Linx::Position<N> front, const TIn& in) const
   Cfitsio::ImageIo::write_region(m_fptr, Linx::Box<N>::from_shape(LINX_MOVE(front), in.domain().shape()), in);
 }
 
+template <typename TIn>
+void ImageRaster::update(const TIn& in) const
+{
+  update_type_shape<typename std::decay_t<TIn>::Value>(
+      in.domain().shape()); // FIXME avoid domain() for rasters or have it return a light wrapper of position
+  write(in);
+}
+
 } // namespace Fits
 
 #endif

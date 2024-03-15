@@ -171,6 +171,12 @@ public:
   template <Linx::Index N, typename TIn>
   void write_region(Linx::Position<N> front, const TIn& in) const;
 
+  /**
+   * @brief Update the type and shape and write somr raster or patch.
+   */
+  template <typename TIn>
+  void update(const TIn& in) const;
+
   /// @}
 
 private:
