@@ -4,22 +4,58 @@
 
 ## Purpose
 
-For each major version, this page lists the breaking changes,
-details the underlying rationale,
-the status in the previous version (e.g. what's there already and what's deprecated),
-and how to adapt the client code.
+For each major version, this page lists the breaking changes and details:
+* the rationale,
+* the status in the previous version (e.g. what's there already and what's deprecated),
+* how to adapt the client code.
 
-## Expected breaking changes in 6.0
+## Breaking changes in 6.0
 
 ### Introduction
 
 With the increasing amount of supported features, EleFits is no more the right place to hold advanced data designs and processing services.
-Therefore, implementation of `Raster` and associated classes relies on Linx, a dedicated ND image processing library.
-Many interfaces were inherited from EleFits but this still comes with a lot of breaking chages, e.g. namespaces.
+Therefore, implementation of `Raster` and associated classes relies on [Linx](github.com/kabasset/Linx), a dedicated ND image processing library.
+Many interfaces were inherited from EleFits but this still comes with a few breaking chages, like constructors and namespaces.
 Speaking of which, namespace `Euclid` is removed because it adds little value.
 
 For integration purpose, Linx follows the standard library naming conventions for functions, which allows working with standard algorithms.
-So does EleFits.
+So does EleFits now.
+This motivated the switch to `snake_case` for functions and variables, as required to use modern C++ features related to metaprogramming
+(which we use a lot internally to Linx and EleFits).
+
+### Euclid namespace is removed
+
+**Rationale**
+
+It added little value.
+
+**Impact on cliend code**
+
+Remove `Euclid::` and `using namespace Euclid;`.
+
+### Functions and variables are written in snake_case
+
+**Rationale**
+
+Metaprogramming with the standard library requires function names to match standard concepts, which use snake case.
+
+**Impact on client code**
+
+Change the function casing at call sites.
+
+### Raster and associated classes moved to Linx
+
+**Rationale**
+
+The class embeded too many image processing features for an IO library.
+
+**Impact on client code**
+
+The main changes are for `Raster` and `Position`.
+Parent classes have also moved, but there should be no impact on client code for such low-level components.
+
+Include relevant headers, use `Linx` namespace.
+Read [Linx' documentation](kabasset.github.io/Linx) ;)
 
 ## Breaking changes in 5.0
 

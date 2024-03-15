@@ -4,7 +4,9 @@
 
 ### Breaking changes
 
+* Removed `Euclid` namespace
 * Rely on Linx for data classes and low level tools
+* `FileMemRegions` was removed, in favor of Linx' patches
 * Refactored `Column` constructors, and make them all `explicit`
 * Deprecated functions were removed
 
