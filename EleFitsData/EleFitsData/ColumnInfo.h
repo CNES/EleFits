@@ -147,7 +147,7 @@ struct ColumnInfo {
    * @param r The repeat count
    * @details
    * The field shape is deduced from the repeat count
-   * (first axis' lenght is the repeat count, others are set to 1).
+   * (first axis' length is the repeat count, others are set to 1).
    */
   ColumnInfo(std::string n = "", std::string u = "", Linx::Index r = 1) :
       name(n), unit(u), shape(Linx::Position<N>::one())
