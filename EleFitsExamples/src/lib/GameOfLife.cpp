@@ -71,26 +71,15 @@ const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::update()
 
 Linx::Index GameOfLife::count_lives(const Linx::Position<2>& p) const
 {
-  const Linx::Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+  static const Linx::Position<2> neighbors[] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
   Linx::Index count = 0;
   for (const auto& n : neighbors) {
     const auto q = p + n;
-    if (is_in_domain(q) && m_previous[q]) {
+    if (m_previous.domain().contains(q) && m_previous[q]) {
       ++count;
     }
   }
   return count;
-}
-
-bool GameOfLife::is_in_domain(const Linx::Position<2>& p) const
-{
-  if (p[0] < 0 || p[0] >= m_width) {
-    return false;
-  }
-  if (p[1] < 0 || p[1] >= m_height) {
-    return false;
-  }
-  return true;
 }
 
 } // namespace Fits

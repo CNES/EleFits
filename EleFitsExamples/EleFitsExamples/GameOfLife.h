@@ -53,11 +53,6 @@ public:
    */
   Linx::Index count_lives(const Linx::Position<2>& p) const;
 
-  /**
-   * @brief Check whether a given position is in the board domain.
-   */
-  bool is_in_domain(const Linx::Position<2>& p) const;
-
 private:
 
   /**
