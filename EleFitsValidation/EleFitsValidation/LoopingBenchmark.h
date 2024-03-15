@@ -8,7 +8,6 @@
 #include "EleFitsData/TestRaster.h"
 #include "EleFitsValidation/Chronometer.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -76,6 +75,5 @@ private:
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 #endif

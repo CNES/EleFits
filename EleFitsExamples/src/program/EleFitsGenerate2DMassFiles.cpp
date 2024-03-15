@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-using namespace Euclid;
 using namespace Fits;
 
 /**

@@ -1,10 +1,10 @@
-# Project overview
+# The elegant FITS processor!
 
 <br/>![EleFits logo](doc/diagrams/out/elefits_square.svg)
 
 ## Purpose and scope
 
-EleFits (Euclid libraries and executables for FITS) is a modern C++ package to read and write FITS files which focuses on safety, user-friendliness, and performance.
+EleFits is a modern C++ package to read and write FITS files which focuses on safety, user-friendliness, and performance.
 EleFits provides the only C++ FITS library which features a fully consistent and optimal internal type management system.
 Nevertheless, the API is templated and agnostic of the underlying architecture, which makes usage straightforward.
 EleFits is compact and involves as few parameters as possible, which makes it both simple and robust.

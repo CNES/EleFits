@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -140,6 +139,5 @@ struct ChecksumError : public FitsError {
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

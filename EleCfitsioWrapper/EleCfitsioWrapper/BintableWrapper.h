@@ -12,7 +12,6 @@
 #include <tuple>
 #include <vector>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -190,7 +189,6 @@ void write_column_data(
 
 } // namespace BintableIo
 } // namespace Cfitsio
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELECFITSIOWRAPPER_BINTABLEWRAPPER_IMPL

@@ -4,7 +4,6 @@
 
 #include "EleFitsExamples/GameOfLife.h"
 
-namespace Euclid {
 namespace Fits {
 
 GameOfLife::GameOfLife(Linx::Index width, Linx::Index height, Linx::Index turns) :
@@ -89,4 +88,3 @@ bool GameOfLife::is_in_domain(const Linx::Position<2>& p) const
 }
 
 } // namespace Fits
-} // namespace Euclid

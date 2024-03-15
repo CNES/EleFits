@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <limits>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 template <typename T>
 struct PassBySpy {

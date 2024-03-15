@@ -7,7 +7,6 @@
 
 #include "Linx/Base/TypeUtils.h" // Index
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -178,6 +177,5 @@ inline Segment operator-(const Segment& lhs, Linx::Index rhs)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif // _ELEFITSDATA_SEGMENT_H

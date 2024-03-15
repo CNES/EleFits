@@ -7,7 +7,6 @@
 #include <boost/algorithm/string.hpp>
 #include <fstream>
 
-namespace Euclid {
 namespace Fits {
 namespace String {
 
@@ -61,4 +60,3 @@ char** CStrArray::data()
 
 } // namespace String
 } // namespace Fits
-} // namespace Euclid

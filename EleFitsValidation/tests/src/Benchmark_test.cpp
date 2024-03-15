@@ -6,7 +6,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 struct ParamBenchmark : Validation::Benchmark {
   ParamBenchmark(const std::string& filename, int i, double d) : Validation::Benchmark(filename), m_i(i), m_d(d) {}
@@ -22,8 +22,8 @@ BOOST_AUTO_TEST_SUITE(Benchmark_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(factory_test) {
-
+BOOST_AUTO_TEST_CASE(factory_test)
+{
   Validation::BenchmarkFactory factory;
   factory.register_benchmark<ParamBenchmark>("0, 3.14", 0, 3.14);
   factory.register_benchmark<ParamBenchmark>("-1, 0.", -1, 0.);

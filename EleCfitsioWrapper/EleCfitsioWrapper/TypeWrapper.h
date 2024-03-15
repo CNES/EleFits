@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -52,7 +51,6 @@ struct TypeCode {
 };
 
 } // namespace Cfitsio
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELECFITSIOWRAPPER_TYPEWRAPPER_IMPL

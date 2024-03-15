@@ -9,7 +9,6 @@
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleFitsUtils/StringUtils.h"
 
-namespace Euclid {
 namespace Cfitsio {
 namespace ImageCompression {
 
@@ -296,6 +295,5 @@ void compress(fitsfile* fptr, const Fits::Plio& algo)
 
 } // namespace ImageCompression
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

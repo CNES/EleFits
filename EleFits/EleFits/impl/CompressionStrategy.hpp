@@ -7,7 +7,6 @@
 #include "EleFits/CompressionStrategy.h"
 #include "EleFitsData/DataUtils.h"
 
-namespace Euclid {
 namespace Fits {
 
 /// @cond
@@ -252,6 +251,5 @@ Scaling CompressAuto::hcompress_scaling() const
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

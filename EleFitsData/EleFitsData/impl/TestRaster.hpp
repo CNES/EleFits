@@ -7,7 +7,6 @@
 #include "EleFitsData/TestRaster.h"
 #include "EleFitsData/TestUtils.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -45,6 +44,5 @@ bool raster_approx(const TRaster& test, const URaster& ref, double tol)
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 #endif

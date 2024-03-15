@@ -8,7 +8,6 @@
 #include "EleCfitsioWrapper/HeaderWrapper.h"
 #include "EleCfitsioWrapper/ImageWrapper.h"
 
-namespace Euclid {
 namespace Fits {
 
 Hdu::Hdu(Token, fitsfile*& fptr, Linx::Index index, HduCategory type, HduCategory status) :
@@ -129,4 +128,3 @@ const Header& Hdu::as() const
 }
 
 } // namespace Fits
-} // namespace Euclid

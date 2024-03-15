@@ -4,7 +4,6 @@
 
 #include "EleFitsData/TestRecord.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -127,4 +126,3 @@ RecordSeq RandomHeader::all_record() const
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid

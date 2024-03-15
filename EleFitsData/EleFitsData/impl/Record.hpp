@@ -8,7 +8,6 @@
 
 #include <type_traits> // enable_if & co
 
-namespace Euclid {
 namespace Fits {
 
 /// @cond INTERNAL
@@ -96,18 +95,21 @@ struct CasterImpl<TFrom, VariantValue, EnableIfDifferent<TFrom, VariantValue>> {
 };
 
 template <typename TFrom, typename TTo, class TValid>
-TTo CasterImpl<TFrom, TTo, TValid>::cast(TFrom value) {
+TTo CasterImpl<TFrom, TTo, TValid>::cast(TFrom value)
+{
   return static_cast<TTo>(value);
 }
 
 template <typename TFrom>
-TFrom CasterImpl<TFrom, TFrom, void>::cast(TFrom value) {
+TFrom CasterImpl<TFrom, TFrom, void>::cast(TFrom value)
+{
   return value;
 }
 
 template <typename TFrom, typename TTo>
 std::complex<TTo>
-CasterImpl<std::complex<TFrom>, std::complex<TTo>, EnableIfDifferent<TFrom, TTo>>::cast(std::complex<TFrom> value) {
+CasterImpl<std::complex<TFrom>, std::complex<TTo>, EnableIfDifferent<TFrom, TTo>>::cast(std::complex<TFrom> value)
+{
   return {CasterImpl<TFrom, TTo>::cast(value.real()), CasterImpl<TFrom, TTo>::cast(value.imag())};
 }
 
@@ -119,7 +121,8 @@ CasterImpl<std::complex<TFrom>, std::complex<TTo>, EnableIfDifferent<TFrom, TTo>
  * Another option is to rely on a map<typeid, function>
  */
 template <typename TTo>
-TTo CasterImpl<VariantValue, TTo, EnableIfScalar<TTo>>::cast(VariantValue value) {
+TTo CasterImpl<VariantValue, TTo, EnableIfScalar<TTo>>::cast(VariantValue value)
+{
   const auto& id = value.type();
   if (id == typeid(TTo)) {
     return boost::any_cast<TTo>(value);
@@ -155,7 +158,8 @@ TTo CasterImpl<VariantValue, TTo, EnableIfScalar<TTo>>::cast(VariantValue value)
 }
 
 template <typename TTo>
-std::complex<TTo> CasterImpl<VariantValue, std::complex<TTo>, EnableIfScalar<TTo>>::cast(VariantValue value) {
+std::complex<TTo> CasterImpl<VariantValue, std::complex<TTo>, EnableIfScalar<TTo>>::cast(VariantValue value)
+{
   const auto& id = value.type();
   if (id == typeid(std::complex<TTo>)) {
     return boost::any_cast<std::complex<TTo>>(value);
@@ -168,12 +172,14 @@ std::complex<TTo> CasterImpl<VariantValue, std::complex<TTo>, EnableIfScalar<TTo
   }
 }
 
-std::string CasterImpl<VariantValue, std::string, void>::cast(VariantValue value) {
+std::string CasterImpl<VariantValue, std::string, void>::cast(VariantValue value)
+{
   return boost::any_cast<std::string>(value);
 }
 
 template <typename TFrom>
-VariantValue CasterImpl<TFrom, VariantValue, EnableIfDifferent<TFrom, VariantValue>>::cast(TFrom value) {
+VariantValue CasterImpl<TFrom, VariantValue, EnableIfDifferent<TFrom, VariantValue>>::cast(TFrom value)
+{
   return VariantValue(value);
 }
 
@@ -182,17 +188,20 @@ VariantValue CasterImpl<TFrom, VariantValue, EnableIfDifferent<TFrom, VariantVal
 
 template <typename T>
 Record<T>::Record(const std::string& k, T v, const std::string& u, const std::string& c) :
-    keyword(k), value(v), unit(u), comment(c) {}
+    keyword(k), value(v), unit(u), comment(c)
+{}
 
 template <typename T>
 template <typename TFrom>
 Record<T>::Record(const Record<TFrom>& other) :
     keyword(other.keyword), value(Internal::CasterImpl<TFrom, T>::cast(other.value)), unit(other.unit),
-    comment(other.comment) {}
+    comment(other.comment)
+{}
 
 template <typename T>
 template <typename TFrom>
-Record<T>& Record<T>::assign(const std::string& k, TFrom v, const std::string& u, const std::string& c) {
+Record<T>& Record<T>::assign(const std::string& k, TFrom v, const std::string& u, const std::string& c)
+{
   keyword = k;
   value = Internal::CasterImpl<TFrom, T>::cast(v);
   unit = u;
@@ -202,23 +211,27 @@ Record<T>& Record<T>::assign(const std::string& k, TFrom v, const std::string& u
 
 template <typename T>
 template <typename TFrom>
-Record<T>& Record<T>::assign(const Record<TFrom>& other) {
+Record<T>& Record<T>::assign(const Record<TFrom>& other)
+{
   return assign(other.keyword, other.value, other.unit, other.comment);
 }
 
 template <typename T>
-Record<T>::operator T() const {
+Record<T>::operator T() const
+{
   return value;
 }
 
 template <typename T>
 template <typename TFrom>
-T Record<T>::cast(TFrom value) {
+T Record<T>::cast(TFrom value)
+{
   return Internal::CasterImpl<TFrom, T>::cast(value);
 }
 
 template <typename T>
-std::string Record<T>::raw_comment() const {
+std::string Record<T>::raw_comment() const
+{
   if (unit.empty()) {
     return comment;
   }
@@ -226,12 +239,14 @@ std::string Record<T>::raw_comment() const {
 }
 
 template <typename T>
-bool Record<T>::has_long_keyword() const {
+bool Record<T>::has_long_keyword() const
+{
   return keyword.length() > 8;
 }
 
 template <typename T>
-bool Record<T>::has_long_string_value() const {
+bool Record<T>::has_long_string_value() const
+{
   return false;
 }
 
@@ -251,6 +266,5 @@ ELEFITS_FOREACH_RECORD_TYPE(DECLARE_RECORD_CLASS)
 #endif
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

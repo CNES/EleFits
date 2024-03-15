@@ -12,8 +12,6 @@
 #include <map>
 #include <string>
 
-using namespace Euclid;
-
 struct SmallTable {
   static constexpr long column_count = 4;
   static constexpr long row_count = 3;
@@ -53,19 +51,19 @@ int main(int argc, char const* argv[])
   fits_create_file(&fptr, (std::string("!") + filename).c_str(), &status);
   long naxis0 = 0;
   fits_create_img(fptr, BYTE_IMG, 1, &naxis0, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot create file");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot create file");
   //! [Create FITS]
   logger.info() << "Writing new record: VALUE = 1";
   //! [Write record]
   int record_value = 1;
   fits_write_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write VALUE");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write VALUE");
   //! [Write record]
   logger.info() << "Updating record: VALUE = 2";
   //! [Update record]
   record_value = 2;
   fits_update_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot update VALUE");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot update VALUE");
   //! [Update record]
 
   logger.info();
@@ -83,12 +81,12 @@ int main(int argc, char const* argv[])
       table.column_units.data(),
       "SMALLTBL",
       &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot create binary table extension");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot create binary table extension");
   fits_write_col(fptr, TINT, 1, 1, 1, table.row_count, table.ids, &status);
   fits_write_col(fptr, TCOMPLEX, 2, 1, 1, table.row_count, table.radecs, &status);
   fits_write_col(fptr, TSTRING, 3, 1, 1, table.row_count, table.names.data(), &status);
   fits_write_col(fptr, TDOUBLE, 4, 1, 1, table.row_count * 2, table.dists_mags, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write column_count");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write column_count");
   //! [Create binary table ext]
 
   logger.info();
@@ -99,25 +97,25 @@ int main(int argc, char const* argv[])
   fits_create_img(fptr, FLOAT_IMG, 2, image.naxes, &status);
   char* extname = const_cast<char*>("SMALLIMG");
   fits_write_key(fptr, TSTRING, "EXTNAME", extname, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot create image extension");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot create image extension");
   fits_write_img(fptr, TFLOAT, 1, 6, image.data, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write raster");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write raster");
   //! [Create image ext]
   char* string_record = const_cast<char*>("string");
   int integer_record = 8;
   logger.info() << "Writing record: STRING = string";
   fits_write_key(fptr, TSTRING, "STRING", string_record, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write STRING");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write STRING");
   logger.info() << "Writing record: INTEGER = 8";
   fits_write_key(fptr, TINT, "INTEGER", &integer_record, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write INTEGER");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot write INTEGER");
 
   logger.info();
 
   logger.info() << "Closing file.";
   //! [Close FITS]
   fits_close_file(fptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot close file");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot close file");
   //! [Close FITS]
 
   logger.info();
@@ -126,10 +124,10 @@ int main(int argc, char const* argv[])
   //! [Open FITS]
   fits_open_file(&fptr, filename.c_str(), READONLY, &status);
   //! [Open FITS]
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot reopen file");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot reopen file");
   //! [Read record]
   fits_read_key(fptr, TINT, "VALUE", &record_value, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read VALUE");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read VALUE");
   //! [Read record]
   logger.info() << "Reading record: VALUE = " << record_value;
 
@@ -138,7 +136,7 @@ int main(int argc, char const* argv[])
   logger.info() << "Reading binary table.";
   //! [Find HDU by name]
   fits_movnam_hdu(fptr, ANY_HDU, const_cast<char*>("SMALLTBL"), 0, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot move to binary table extension");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot move to binary table extension");
   //! [Find HDU by name]
   //! [Get HDU index]
   int index;
@@ -148,21 +146,21 @@ int main(int argc, char const* argv[])
   //! [Read column]
   int colnum;
   fits_get_colnum(fptr, CASESEN, const_cast<char*>("ID"), &colnum, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot find column ID");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot find column ID");
   int ids[table.row_count];
   fits_read_col(fptr, TINT, colnum, 1, 1, table.row_count, nullptr, ids, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read column ID");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read column ID");
   const auto first_entry = ids[0];
   //! [Read column]
   logger.info() << "First id: " << first_entry;
   fits_get_colnum(fptr, CASESEN, const_cast<char*>("NAME"), &colnum, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot find column NAME");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot find column NAME");
   char* names[table.row_count];
   for (int i = 0; i < table.row_count; ++i) {
     names[i] = (char*)malloc(68);
   }
   fits_read_col(fptr, TSTRING, colnum, 1, 1, table.row_count, nullptr, names, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read column NAME");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read column NAME");
   logger.info() << "Last name: " << names[table.row_count - 1];
   for (int i = 0; i < table.row_count; ++i) {
     free(names[i]);
@@ -173,28 +171,28 @@ int main(int argc, char const* argv[])
   logger.info() << "Reading image.";
   //! [Find HDU by index]
   fits_movabs_hdu(fptr, 3, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot move to image extension");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot move to image extension");
   //! [Find HDU by index]
   //! [Get HDU name]
   char* extname_read = (char*)malloc(69);
   fits_read_key(fptr, TSTRING, "EXTNAME", extname_read, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read extension name");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read extension name");
   //! [Get HDU name]
   logger.info() << "Name of HDU #3: " << extname_read;
   free(extname_read);
   char* string_read = (char*)malloc(69);
   fits_read_key(fptr, TSTRING, "STRING", string_read, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read STRING record");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read STRING record");
   logger.info() << "Reading record: STRING = " << string_read;
   free(string_read);
   int integer_read;
   fits_read_key(fptr, TINT, "INTEGER", &integer_read, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read INTEGER record");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read INTEGER record");
   logger.info() << "Reading record: INTEGER = " << integer_read;
   //! [Read raster]
   float data[image.size];
   fits_read_img(fptr, TFLOAT, 1, image.size, nullptr, data, nullptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read image raster");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot read image raster");
   const auto first_pixel = data[0];
   const auto last_pixel = data[image.size - 1];
   //! [Read raster]
@@ -205,7 +203,7 @@ int main(int argc, char const* argv[])
 
   logger.info() << "Reclosing file.";
   fits_close_file(fptr, &status);
-  Euclid::Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot close file");
+  Cfitsio::CfitsioError::may_throw(status, fptr, "Cannot close file");
 
   logger.info();
 

@@ -9,7 +9,6 @@
 #include "EleFits/ImageHdu.h"
 #include "Linx/Base/TypeUtils.h"
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -90,7 +89,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_SIFFILE_IMPL

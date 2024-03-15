@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -23,8 +22,8 @@ namespace Fits {
  * \endcode
  */
 class KeywordCategory {
-
 public:
+
   static const KeywordCategory Mandatory; ///< Mandatory standard keyword.
   static const KeywordCategory Reserved; ///< Optional standard keywords excluding COMMENT and HISTORY.
   static const KeywordCategory Comment; ///< COMMENT and HISTORY keywords (non-valued reserved keywords).
@@ -33,12 +32,14 @@ public:
   static const KeywordCategory All; ///< All keywords.
 
 protected:
+
   /**
    * @brief Constructor.
    */
   explicit KeywordCategory(int category);
 
 public:
+
   /**
    * @brief Keep only keywords of given categories.
    * @param keywords The keyword vector to be filtered
@@ -74,21 +75,24 @@ public:
   /**
    * @brief Check equality.
    */
-  bool operator==(KeywordCategory rhs) const {
+  bool operator==(KeywordCategory rhs) const
+  {
     return m_category == rhs.m_category;
   }
 
   /**
    * @brief Check inequality.
    */
-  bool operator!=(KeywordCategory rhs) const {
+  bool operator!=(KeywordCategory rhs) const
+  {
     return m_category != rhs.m_category;
   }
 
   /**
    * @brief Bit-wise OR operator for masking.
    */
-  KeywordCategory operator|(KeywordCategory rhs) const {
+  KeywordCategory operator|(KeywordCategory rhs) const
+  {
     KeywordCategory res(*this);
     res |= rhs;
     return res;
@@ -97,7 +101,8 @@ public:
   /**
    * @brief In-place bit-wise OR operator for masking.
    */
-  KeywordCategory& operator|=(KeywordCategory rhs) {
+  KeywordCategory& operator|=(KeywordCategory rhs)
+  {
     m_category |= rhs.m_category;
     return *this;
   }
@@ -105,7 +110,8 @@ public:
   /**
    * @brief Bit-wise AND operator for masking.
    */
-  KeywordCategory operator&(KeywordCategory rhs) const {
+  KeywordCategory operator&(KeywordCategory rhs) const
+  {
     KeywordCategory res(*this);
     res &= rhs;
     return res;
@@ -115,7 +121,8 @@ public:
    * @brief In-place bit-wise AND operator for masking.
    * @see KeywordCategory
    */
-  KeywordCategory& operator&=(KeywordCategory rhs) {
+  KeywordCategory& operator&=(KeywordCategory rhs)
+  {
     m_category &= rhs.m_category;
     return *this;
   }
@@ -124,7 +131,8 @@ public:
    * @brief Bit-wise binary NOT operator for masking.
    * @see KeywordCategory
    */
-  KeywordCategory operator~() const {
+  KeywordCategory operator~() const
+  {
     return KeywordCategory(~m_category);
   }
 
@@ -132,11 +140,13 @@ public:
    * @brief Cast to bool.
    * @return False for KeywordCategory::None; true otherwise.
    */
-  operator bool() const {
+  operator bool() const
+  {
     return m_category;
   }
 
 private:
+
   /**
    * @brief Check whether a test keyword matches an indexed reference keyword.
    * @details
@@ -177,6 +187,5 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

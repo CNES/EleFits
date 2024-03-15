@@ -4,16 +4,16 @@
 
 #include "EleFits/MefFile.h"
 
-namespace Euclid {
 namespace Fits {
 
-HduIterator<> begin(MefFile& f) {
+HduIterator<> begin(MefFile& f)
+{
   return {f, 0};
 }
 
-HduIterator<> end(MefFile& f) {
+HduIterator<> end(MefFile& f)
+{
   return {f, f.hdu_count()};
 }
 
 } // namespace Fits
-} // namespace Euclid

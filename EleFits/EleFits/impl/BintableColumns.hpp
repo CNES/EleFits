@@ -9,7 +9,6 @@
 #include "EleFits/BintableColumns.h"
 #include "Linx/Base/SeqUtils.h" // seq_foreach
 
-namespace Euclid {
 namespace Fits {
 
 // Implementation rules for overloads
@@ -349,6 +348,5 @@ Linx::Index columns_row_count(TSeq&& columns)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

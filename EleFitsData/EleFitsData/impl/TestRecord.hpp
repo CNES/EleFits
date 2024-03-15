@@ -10,12 +10,12 @@
 #include <algorithm> // transform
 #include <cctype> // toupper
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
 template <typename T>
-Record<T> generate_random_record(const std::string& type_name) {
+Record<T> generate_random_record(const std::string& type_name)
+{
   std::vector<std::string> type_chunks;
   std::string chunk;
   std::istringstream chunk_stream(type_name);
@@ -37,7 +37,8 @@ Record<T> generate_random_record(const std::string& type_name) {
 }
 
 template <typename T>
-Record<T> generate_random_record(const std::string& k, const std::string& u, const std::string& c) {
+Record<T> generate_random_record(const std::string& k, const std::string& u, const std::string& c)
+{
   return Record<T>(k, generate_random_value<T>(), u, c);
 }
 
@@ -93,12 +94,12 @@ template <>
 const Record<const char*>& RandomHeader::get_record<const char*>() const;
 
 template <typename T>
-Record<T>& RandomHeader::get_record() {
+Record<T>& RandomHeader::get_record()
+{
   return const_cast<Record<T>&>(const_cast<const RandomHeader*>(this)->get_record<T>());
 }
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 #endif

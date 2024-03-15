@@ -7,7 +7,6 @@
 #include "EleFitsData/FitsError.h"
 #include "EleFitsData/Scaling.h"
 
-namespace Euclid {
 namespace Fits {
 
 Scaling::Scaling() : Scaling(1, Type::Factor) {}
@@ -115,6 +114,5 @@ Scaling Scaling::operator/(double value)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

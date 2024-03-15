@@ -10,7 +10,6 @@
 #include <boost/optional.hpp>
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 
 // Forward declaration for lazy evaluation
@@ -78,6 +77,5 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

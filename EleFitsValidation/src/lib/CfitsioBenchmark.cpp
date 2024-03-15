@@ -4,7 +4,6 @@
 
 #include "EleFitsValidation/CfitsioBenchmark.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -194,4 +193,3 @@ void CfitsioBenchmark::may_throw(const std::string& context) const
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid

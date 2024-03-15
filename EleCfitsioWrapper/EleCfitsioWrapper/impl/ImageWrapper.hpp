@@ -11,7 +11,6 @@
 
 #include <iostream> // FIXME rm
 
-namespace Euclid {
 namespace Cfitsio {
 namespace ImageIo {
 
@@ -133,6 +132,5 @@ void write_region(fitsfile* fptr, const Linx::Box<N>& region, TIn& in)
 
 } // namespace ImageIo
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

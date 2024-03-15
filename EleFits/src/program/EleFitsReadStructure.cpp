@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 #define RETURN_TYPENAME_IF_MATCH(type, name) \
   if (typeid(type) == id) { \

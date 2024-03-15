@@ -11,7 +11,6 @@
 #include "EleFitsData/Compression.h"
 #include "EleFitsData/Raster.h"
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -173,7 +172,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_IMAGEHDU_IMPL

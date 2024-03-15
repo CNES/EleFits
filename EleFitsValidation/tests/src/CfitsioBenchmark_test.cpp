@@ -6,7 +6,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_SUITE(CfitsioBenchmark_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(parameter_test) {
-
+BOOST_AUTO_TEST_CASE(parameter_test)
+{
   Validation::BenchmarkFactory factory;
   factory.register_benchmark<Validation::CfitsioBenchmark>("colwise", -1);
   factory.register_benchmark<Validation::CfitsioBenchmark>("optimal", 0);

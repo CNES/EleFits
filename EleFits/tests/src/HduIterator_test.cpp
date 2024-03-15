@@ -7,7 +7,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -15,7 +15,8 @@ BOOST_AUTO_TEST_SUITE(HduIterator_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile)
+{
   this->append_image_header("1");
   this->append_image_header("2");
   int count = 0;
@@ -26,7 +27,8 @@ BOOST_FIXTURE_TEST_CASE(range_loop_over_all_hdus, Test::TemporaryMefFile) {
   BOOST_TEST(count == this->hdu_count());
 }
 
-BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile) {
+BOOST_FIXTURE_TEST_CASE(range_loop_over_selected_hdus, Test::TemporaryMefFile)
+{
   ColumnInfo<float> info {"COL", "", 1};
   std::vector<std::string> names {"", "BINTABLE1", "BINTABLE2", "IMAGE"};
   this->append_bintable_header(names[1], {}, info);

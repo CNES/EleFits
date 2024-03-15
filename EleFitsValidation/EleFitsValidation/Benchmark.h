@@ -15,7 +15,6 @@
 #include <tuple>
 #include <unordered_map>
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -229,6 +228,5 @@ private:
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 #endif

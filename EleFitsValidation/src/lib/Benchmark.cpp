@@ -4,7 +4,6 @@
 
 #include "EleFitsValidation/Benchmark.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -104,4 +103,3 @@ std::vector<std::string> BenchmarkFactory::keys() const
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid

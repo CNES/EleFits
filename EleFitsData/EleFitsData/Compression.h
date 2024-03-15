@@ -13,7 +13,6 @@
 #include <memory>
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -334,7 +333,6 @@ public:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_COMPRESSION_IMPL

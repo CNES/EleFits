@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /// @cond
@@ -282,7 +281,6 @@ PtrColumn<T, std::decay_t<TInfo>::Dimension> make_column(TInfo&& info, Linx::Ind
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_COLUMN_IMPL

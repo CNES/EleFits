@@ -10,7 +10,6 @@
 #include <fitsio.h>
 #include <memory> // unique_ptr
 
-namespace Euclid {
 namespace Cfitsio {
 namespace ImageCompression {
 
@@ -71,7 +70,6 @@ inline void compress(fitsfile* fptr, const Fits::Plio& algo);
 
 } // namespace ImageCompression
 } // namespace Cfitsio
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELECFITSIOWRAPPER_COMPRESSIONWRAPPER_IMPL

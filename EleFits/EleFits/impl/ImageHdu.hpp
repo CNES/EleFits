@@ -6,7 +6,6 @@
 
 #include "EleFits/ImageHdu.h"
 
-namespace Euclid {
 namespace Fits {
 
 template <Linx::Index N>
@@ -40,6 +39,5 @@ template <>
 const ImageRaster& Hdu::as() const;
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

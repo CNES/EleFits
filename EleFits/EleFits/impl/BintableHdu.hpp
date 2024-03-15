@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-namespace Euclid {
 namespace Fits {
 
 template <typename T, Linx::Index N>
@@ -45,6 +44,5 @@ ELEFITS_FOREACH_COLUMN_TYPE(DECLARE_WRITE_COLUMN)
 #endif
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

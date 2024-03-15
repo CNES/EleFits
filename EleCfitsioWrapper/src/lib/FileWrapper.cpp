@@ -7,11 +7,11 @@
 #include "EleCfitsioWrapper/ErrorWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 
-namespace Euclid {
 namespace Cfitsio {
 namespace FileAccess {
 
-fitsfile* create_open(const std::string& filename, CreatePolicy policy) {
+fitsfile* create_open(const std::string& filename, CreatePolicy policy)
+{
   std::string cfitsio_name = filename;
   if (policy == CreatePolicy::OverWrite) {
     cfitsio_name.insert(0, 1, '!'); // CFITSIO convention
@@ -24,7 +24,8 @@ fitsfile* create_open(const std::string& filename, CreatePolicy policy) {
   return fptr;
 }
 
-fitsfile* open(const std::string& filename, OpenPolicy policy) {
+fitsfile* open(const std::string& filename, OpenPolicy policy)
+{
   fitsfile* fptr;
   int status = 0;
   int permission = READONLY;
@@ -36,7 +37,8 @@ fitsfile* open(const std::string& filename, OpenPolicy policy) {
   return fptr;
 }
 
-void close(fitsfile*& fptr) {
+void close(fitsfile*& fptr)
+{
   if (not fptr) {
     return;
   }
@@ -46,7 +48,8 @@ void close(fitsfile*& fptr) {
   fptr = nullptr;
 }
 
-void close_delete(fitsfile*& fptr) {
+void close_delete(fitsfile*& fptr)
+{
   if (not fptr) {
     return;
   }
@@ -57,7 +60,8 @@ void close_delete(fitsfile*& fptr) {
   CfitsioError::may_throw(status, fptr, "Cannot close and delete file");
 }
 
-std::string name(fitsfile* fptr) {
+std::string name(fitsfile* fptr)
+{
   int status = 0;
   char filename[FLEN_FILENAME];
   fits_file_name(fptr, filename, &status);
@@ -65,7 +69,8 @@ std::string name(fitsfile* fptr) {
   return filename;
 }
 
-bool is_writable(fitsfile* fptr) {
+bool is_writable(fitsfile* fptr)
+{
   int status = 0;
   int filemode;
   fits_file_mode(fptr, &filemode, &status);
@@ -74,4 +79,3 @@ bool is_writable(fitsfile* fptr) {
 
 } // namespace FileAccess
 } // namespace Cfitsio
-} // namespace Euclid

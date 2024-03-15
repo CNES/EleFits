@@ -9,7 +9,6 @@
 #include "EleFits/SifFile.h"
 #include "ElementsKernel/Temporary.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -63,6 +62,5 @@ public:
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 #endif

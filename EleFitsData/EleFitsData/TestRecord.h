@@ -13,7 +13,6 @@
 #include <complex>
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -44,7 +43,6 @@ static Record<T> generate_random_record(const std::string& k, const std::string&
  * All compatible types of Records are generated, but `VariantValue`.
  */
 struct RandomHeader {
-
   /**
    * @brief Constructor.
    */
@@ -106,7 +104,6 @@ struct RandomHeader {
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_TESTRECORD_IMPL

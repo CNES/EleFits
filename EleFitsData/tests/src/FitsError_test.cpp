@@ -6,7 +6,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -14,7 +14,8 @@ BOOST_AUTO_TEST_SUITE(FitsError_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(message_test) {
+BOOST_AUTO_TEST_CASE(message_test)
+{
   const std::string prefix = "EleFits";
   const std::string message = "MESSAGE!";
   FitsError error(message);

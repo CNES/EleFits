@@ -10,15 +10,14 @@
 #include <fitsio.h>
 #include <string>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /**
  * @brief The error class which is thrown when an error occurs in a CFITSIO routine.
  */
 class CfitsioError : public Fits::FitsError {
-
 public:
+
   /**
    * @brief Destructor.
    */
@@ -56,6 +55,7 @@ public:
   static void may_throw(int cfitsio_status, fitsfile* fptr, const std::string& context);
 
 public:
+
   /**
    * @brief The CFITSIO error code.
    */
@@ -73,6 +73,5 @@ void may_throw_invalid_file(fitsfile* fptr);
 void may_throw_readonly(fitsfile* fptr);
 
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

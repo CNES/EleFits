@@ -10,7 +10,6 @@
 #include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/Raster.h"
 
-namespace Euclid {
 namespace Cfitsio {
 namespace HduAccess {
 
@@ -191,4 +190,3 @@ void remove(fitsfile* fptr, Linx::Index index)
 
 } // namespace HduAccess
 } // namespace Cfitsio
-} // namespace Euclid

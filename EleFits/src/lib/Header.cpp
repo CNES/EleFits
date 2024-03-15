@@ -7,7 +7,6 @@
 
 #include <algorithm> // find
 
-namespace Euclid {
 namespace Fits {
 
 Header::Header(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit) :
@@ -147,4 +146,3 @@ void KeywordNotFoundError::may_throw(const std::vector<std::string>& missing_key
 }
 
 } // namespace Fits
-} // namespace Euclid

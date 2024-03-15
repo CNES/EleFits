@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -166,6 +165,5 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

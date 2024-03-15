@@ -12,7 +12,6 @@
 #include <map>
 #include <string>
 
-using namespace Euclid;
 using namespace Fits;
 
 int main(int argc, char const* argv[])

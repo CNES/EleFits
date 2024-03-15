@@ -9,7 +9,6 @@
 
 #include <algorithm>
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -73,6 +72,5 @@ RandomVectorColumn<T>::RandomVectorColumn(Linx::Index repeat_count, Linx::Index 
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 #endif

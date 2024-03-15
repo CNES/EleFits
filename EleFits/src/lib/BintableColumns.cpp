@@ -6,7 +6,6 @@
 
 #include <algorithm> // sort
 
-namespace Euclid {
 namespace Fits {
 
 BintableColumns::BintableColumns(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit) :
@@ -98,4 +97,3 @@ void BintableColumns::remove_n(std::vector<ColumnKey> keys) const
 }
 
 } // namespace Fits
-} // namespace Euclid

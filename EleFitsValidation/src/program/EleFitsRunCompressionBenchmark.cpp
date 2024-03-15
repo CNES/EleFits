@@ -15,8 +15,6 @@
 #include <map>
 #include <string>
 
-using namespace Euclid;
-
 #define IF_TYPEID_MATCHES_RETURN_BITPIX(type, name) \
   if (typeid(type) == hdu.read_typeid()) \
     return Cfitsio::TypeCode<type>::bitpix();

@@ -7,7 +7,6 @@
 #include "EleCfitsioWrapper/HduWrapper.h"
 #include "EleFits/SifFile.h"
 
-namespace Euclid {
 namespace Fits {
 
 template <typename TRaster>
@@ -19,6 +18,5 @@ void SifFile::write(const RecordSeq& records, const TRaster& raster)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

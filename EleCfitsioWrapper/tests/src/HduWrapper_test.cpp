@@ -10,7 +10,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid;
 using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------

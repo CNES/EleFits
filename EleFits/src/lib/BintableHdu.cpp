@@ -4,7 +4,6 @@
 
 #include "EleFits/BintableHdu.h"
 
-namespace Euclid {
 namespace Fits {
 
 BintableHdu::BintableHdu(Token token, fitsfile*& fptr, Linx::Index index, HduCategory status) :
@@ -81,4 +80,3 @@ ELEFITS_FOREACH_COLUMN_TYPE(COMPILE_WRITE_COLUMN)
 #endif
 
 } // namespace Fits
-} // namespace Euclid

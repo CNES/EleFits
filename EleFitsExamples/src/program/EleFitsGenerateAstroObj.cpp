@@ -10,7 +10,7 @@
 #include <map>
 #include <string>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 /*
  * Some properties of an `AstroObj`.

@@ -7,7 +7,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -15,8 +15,8 @@ BOOST_AUTO_TEST_SUITE(FitsFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(empty_file_test) {
-
+BOOST_AUTO_TEST_CASE(empty_file_test)
+{
   Elements::TempPath tmp("%%%%%%.fits");
   std::string filename = tmp.path().string();
   BOOST_TEST(not boost::filesystem::exists(filename));

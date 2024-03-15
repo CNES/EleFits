@@ -8,7 +8,6 @@
 
 #include <cstdint>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /*
@@ -198,6 +197,5 @@ DEF_IMAGE_BITPIX(std::uint64_t, ULONGLONG_IMG)
 #endif
 
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

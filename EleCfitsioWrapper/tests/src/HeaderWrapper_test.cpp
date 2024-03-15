@@ -9,7 +9,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid;
 using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
@@ -21,34 +20,40 @@ BOOST_AUTO_TEST_SUITE(HeaderWrapper_test)
 const double atol = 1e-4;
 
 template <typename T>
-void check_close(T value, T expected) {
+void check_close(T value, T expected)
+{
   BOOST_TEST(value == expected);
 }
 
 template <>
-void check_close(float value, float expected) {
+void check_close(float value, float expected)
+{
   BOOST_CHECK_CLOSE(value, expected, atol);
 }
 
 template <>
-void check_close(double value, double expected) {
+void check_close(double value, double expected)
+{
   BOOST_CHECK_CLOSE(value, expected, atol);
 }
 
 template <>
-void check_close(std::complex<float> value, std::complex<float> expected) {
+void check_close(std::complex<float> value, std::complex<float> expected)
+{
   BOOST_CHECK_CLOSE(value.real(), expected.real(), atol);
   BOOST_CHECK_CLOSE(value.imag(), expected.imag(), atol);
 }
 
 template <>
-void check_close(std::complex<double> value, std::complex<double> expected) {
+void check_close(std::complex<double> value, std::complex<double> expected)
+{
   BOOST_CHECK_CLOSE(value.real(), expected.real(), atol);
   BOOST_CHECK_CLOSE(value.imag(), expected.imag(), atol);
 }
 
 template <typename T>
-void check_record_is_read_back(const std::string& label) {
+void check_record_is_read_back(const std::string& label)
+{
   Fits::Test::MinimalFile file;
   T value = Fits::Test::generate_random_value<T>();
   std::string keyword = label.substr(0, 8);
@@ -62,19 +67,22 @@ void check_record_is_read_back(const std::string& label) {
 }
 
 template <>
-void check_record_is_read_back<unsigned long>(const std::string& label) {
+void check_record_is_read_back<unsigned long>(const std::string& label)
+{
   // Known CFITSIO bug: error if value is > max(long)
   (void)(label); // Silent "unused parameter" warning
 }
 
 #define RECORD_IS_READ_BACK_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_record_is_read_back_test) { \
+  BOOST_AUTO_TEST_CASE(name##_record_is_read_back_test) \
+  { \
     check_record_is_read_back<type>(#name); \
   }
 
 ELEFITS_FOREACH_RECORD_TYPE(RECORD_IS_READ_BACK_TEST)
 
-BOOST_AUTO_TEST_CASE(empty_value_test) {
+BOOST_AUTO_TEST_CASE(empty_value_test)
+{
   Fits::Test::MinimalFile file;
   Fits::Record<std::string> empty("EMPTY", "", "", "");
   HeaderIo::write_record(file.fptr, empty);
@@ -82,7 +90,8 @@ BOOST_AUTO_TEST_CASE(empty_value_test) {
   BOOST_TEST(output.value == "");
 }
 
-BOOST_AUTO_TEST_CASE(missing_keyword_test) {
+BOOST_AUTO_TEST_CASE(missing_keyword_test)
+{
   Fits::Test::MinimalFile file;
   BOOST_CHECK_THROW(HeaderIo::parse_record<std::string>(file.fptr, "MISSING"), Fits::FitsError);
 }
@@ -101,13 +110,15 @@ struct ValueList {
   std::string s;
 };
 
-void check_contains(const std::vector<std::string>& list, const std::vector<std::string>& values) {
+void check_contains(const std::vector<std::string>& list, const std::vector<std::string>& values)
+{
   for (const auto& v : values) {
     BOOST_TEST((std::find(list.begin(), list.end(), v) != list.end()));
   }
 }
 
-BOOST_FIXTURE_TEST_CASE(struct_io_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(struct_io_test, Fits::Test::MinimalFile)
+{
   RecordList input {{"BOOL", true}, {"INT", 2}, {"DOUBLE", 3.}, {"STRING", "four"}};
   HeaderIo::write_records<bool, int, double, std::string>(
       this->fptr,
@@ -116,7 +127,7 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, Fits::Test::MinimalFile) {
       {"DOUBLE", 3.},
       {"STRING", "four"});
   std::vector<std::string> keywords {"BOOL", "INT", "DOUBLE", "STRING"};
-  const auto categories = ~Euclid::Fits::KeywordCategory::Comment;
+  const auto categories = ~Fits::KeywordCategory::Comment;
   const auto found = HeaderIo::list_keywords(this->fptr, categories);
   check_contains(found, keywords);
   auto records = HeaderIo::parse_records_as<RecordList, bool, int, double, std::string>(this->fptr, keywords);
@@ -131,7 +142,8 @@ BOOST_FIXTURE_TEST_CASE(struct_io_test, Fits::Test::MinimalFile) {
   BOOST_TEST(values.s == input.s.value);
 }
 
-BOOST_FIXTURE_TEST_CASE(several_records_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(several_records_test, Fits::Test::MinimalFile)
+{
   Fits::Record<std::string> str_ecord {"STR", "VALUE"};
   Fits::Record<bool> bool_record {"BOOL", true};
   Fits::Record<int> int_record {"INT", 42};
@@ -156,7 +168,8 @@ BOOST_FIXTURE_TEST_CASE(several_records_test, Fits::Test::MinimalFile) {
 }
 
 template <typename T>
-void check_record_typeid(T value, const std::vector<std::size_t>& valid_type_codes) {
+void check_record_typeid(T value, const std::vector<std::size_t>& valid_type_codes)
+{
   Fits::Test::MinimalFile f;
   Fits::Record<T> record {"KEYWORD", value};
   HeaderIo::write_record(f.fptr, record);
@@ -166,16 +179,19 @@ void check_record_typeid(T value, const std::vector<std::size_t>& valid_type_cod
 }
 
 template <typename T>
-void check_record_typeid_min(const std::vector<std::size_t>& valid_type_codes) {
+void check_record_typeid_min(const std::vector<std::size_t>& valid_type_codes)
+{
   check_record_typeid(Fits::Test::almost_min<T>(), valid_type_codes);
 }
 
 template <typename T>
-void check_record_typeid_max(const std::vector<std::size_t>& valid_type_codes) {
+void check_record_typeid_max(const std::vector<std::size_t>& valid_type_codes)
+{
   check_record_typeid(Fits::Test::almost_max<T>(), valid_type_codes);
 }
 
-BOOST_AUTO_TEST_CASE(record_type_test) {
+BOOST_AUTO_TEST_CASE(record_type_test)
+{
   check_record_typeid_min<bool>({typeid(bool).hash_code()});
   check_record_typeid_min<char>({typeid(char).hash_code(), typeid(unsigned char).hash_code()});
   check_record_typeid_min<short>({typeid(short).hash_code()});
@@ -204,7 +220,8 @@ BOOST_AUTO_TEST_CASE(record_type_test) {
       {typeid(std::complex<double>).hash_code()});
 }
 
-BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(parse_vector_and_map_test, Fits::Test::MinimalFile)
+{
   Fits::Record<short> short_record("SHORT", 0);
   Fits::Record<long> long_record("LONG", 1);
   Fits::Record<long long> longlong_record("LONGLONG", 2);

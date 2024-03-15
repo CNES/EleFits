@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -115,7 +114,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_QUANTIZATION_IMPL

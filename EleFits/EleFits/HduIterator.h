@@ -9,7 +9,6 @@
 
 #include <iterator>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -157,7 +156,6 @@ template <typename THdu = Hdu>
 HduIterator<THdu> end(HduSelector<THdu>& selector);
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_HDUITERATOR_IMPL

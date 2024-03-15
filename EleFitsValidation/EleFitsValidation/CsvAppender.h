@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -18,6 +17,7 @@ namespace Validation {
  */
 class CsvAppender {
 public:
+
   /**
    * @brief Constructor.
    * @param header The file header
@@ -49,6 +49,7 @@ public:
   CsvAppender& write_row(const Ts&... values);
 
 private:
+
   /** @brief The output stream. */
   std::ofstream m_file;
 
@@ -58,7 +59,6 @@ private:
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_VALIDATION_CSVAPPENDER_IMPL

@@ -21,11 +21,6 @@
 
 //! [Include]
 #include "EleFits/MefFile.h"
-
-using namespace Euclid;
-// EleFits API is in the Euclid::Fits namespace.
-// We could have be using namespace Euclid::Fits instead,
-// but things would have been less obvious in the snippets.
 //! [Include]
 
 static Elements::Logging logger = Elements::Logging::getLogger("EleFitsTutorial");

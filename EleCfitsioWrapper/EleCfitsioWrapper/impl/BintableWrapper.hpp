@@ -13,7 +13,6 @@
 
 #include <algorithm> // transform
 
-namespace Euclid {
 namespace Cfitsio {
 namespace BintableIo {
 
@@ -376,6 +375,5 @@ void write_column_data(
 
 } // namespace BintableIo
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

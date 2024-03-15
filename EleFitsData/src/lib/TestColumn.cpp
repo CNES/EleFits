@@ -4,7 +4,6 @@
 
 #include "EleFitsData/TestColumn.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -29,4 +28,3 @@ SmallTable::SmallTable() :
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid

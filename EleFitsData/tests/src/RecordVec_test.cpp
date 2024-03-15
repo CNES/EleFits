@@ -6,7 +6,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -14,7 +14,8 @@ BOOST_AUTO_TEST_SUITE(RecordVec_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(records_are_found_by_their_keyword_test) {
+BOOST_AUTO_TEST_CASE(records_are_found_by_their_keyword_test)
+{
   RecordVec<int> records(3);
   for (std::size_t i = 0; i < records.vector.size(); ++i) {
     records.vector[i].assign(std::to_string(i), int(i));
@@ -24,7 +25,8 @@ BOOST_AUTO_TEST_CASE(records_are_found_by_their_keyword_test) {
   BOOST_CHECK_THROW(records["OOPS!"], std::exception);
 }
 
-BOOST_AUTO_TEST_CASE(records_are_cast_while_found_by_their_keyword_test) {
+BOOST_AUTO_TEST_CASE(records_are_cast_while_found_by_their_keyword_test)
+{
   RecordVec<double> records(1);
   records.vector[0].assign("PI", 3.14);
   auto pi_record = records.as<int>("PI");

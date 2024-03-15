@@ -7,7 +7,6 @@
 #include "EleFitsData/Compression.h"
 #include "EleFitsData/FitsError.h"
 
-namespace Euclid {
 namespace Fits {
 
 inline Scaling Tile::rms; // Definition
@@ -117,6 +116,5 @@ Plio::Plio(Linx::Position<-1> tiling, Quantization quantization) :
 {}
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

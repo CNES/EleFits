@@ -9,7 +9,6 @@
 #include <functional> // multiplies
 #include <numeric> // accumulate
 
-namespace Euclid {
 namespace Fits {
 
 ImageHdu::ImageHdu(Token token, fitsfile*& fptr, Linx::Index index, HduCategory status) :
@@ -110,4 +109,3 @@ const ImageRaster& Hdu::as() const
 }
 
 } // namespace Fits
-} // namespace Euclid

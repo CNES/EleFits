@@ -10,7 +10,6 @@
 #include <numeric> // inner_product
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -31,6 +30,7 @@ namespace Validation {
 template <typename TUnit>
 class Chronometer {
 public:
+
   /**
    * @brief The time unit.
    */
@@ -102,6 +102,7 @@ public:
   double max() const;
 
 private:
+
   /**
    * @brief The time at which start() was called.
    */
@@ -130,7 +131,6 @@ private:
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_VALIDATION_CHRONOMETER_IMPL

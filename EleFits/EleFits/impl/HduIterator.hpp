@@ -6,7 +6,6 @@
 
 #include "EleFits/HduIterator.h"
 
-namespace Euclid {
 namespace Fits {
 
 template <typename THdu>
@@ -85,6 +84,5 @@ HduIterator<THdu> end(HduSelector<THdu>& selector)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

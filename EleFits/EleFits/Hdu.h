@@ -15,7 +15,6 @@
 #include <fitsio.h>
 #include <memory>
 
-namespace Euclid {
 namespace Fits {
 
 class MefFile; // necessary for friend class declaration in Hdu
@@ -32,7 +31,7 @@ class MefFile; // necessary for friend class declaration in Hdu
 class Hdu {
   // A non-parent MefFile can be wanting to access the fitsfile of the parent MefFile of the hdu
   // FIXME: approach might be changed in the future
-  friend class Euclid::Fits::MefFile;
+  friend class Fits::MefFile;
 
 public:
 
@@ -266,7 +265,6 @@ protected:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_HDU_IMPL

@@ -9,7 +9,6 @@
 #include <complex>
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -99,7 +98,6 @@ using VariantValue = boost::any;
  */
 template <typename T>
 struct Record {
-
   /**
    * @brief The value type.
    */
@@ -228,7 +226,8 @@ struct Record {
  * Equality of keyword, value, unit and comment is tested.
  */
 template <typename T>
-bool operator==(const Record<T>& lhs, const Record<T>& rhs) {
+bool operator==(const Record<T>& lhs, const Record<T>& rhs)
+{
   if (lhs.keyword != rhs.keyword) {
     return false;
   }
@@ -249,7 +248,8 @@ bool operator==(const Record<T>& lhs, const Record<T>& rhs) {
  * @brief Check whether two records are different.
  */
 template <typename T>
-bool operator!=(const Record<T>& lhs, const Record<T>& rhs) {
+bool operator!=(const Record<T>& lhs, const Record<T>& rhs)
+{
   return not(lhs == rhs);
 }
 
@@ -258,7 +258,8 @@ bool operator!=(const Record<T>& lhs, const Record<T>& rhs) {
  * @brief Serialize a record.
  */
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const Record<T>& r) {
+std::ostream& operator<<(std::ostream& os, const Record<T>& r)
+{
   os << r.keyword << " = " << r.value;
   const auto rc = r.raw_comment();
   if (not rc.empty()) {
@@ -268,7 +269,6 @@ std::ostream& operator<<(std::ostream& os, const Record<T>& r) {
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_RECORD_IMPL

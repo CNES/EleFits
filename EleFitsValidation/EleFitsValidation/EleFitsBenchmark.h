@@ -8,7 +8,6 @@
 #include "EleFits/MefFile.h"
 #include "EleFitsValidation/Benchmark.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -109,7 +108,6 @@ public:
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 #define _ELEFITS_VALIDATION_ELEFITSBENCHMARK_IMPL
 #include "EleFitsValidation/impl/EleFitsBenchmark.hpp"

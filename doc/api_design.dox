@@ -1,4 +1,3 @@
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -174,5 +173,4 @@ but the <a href="modules.html">Module pages</a>, in which related classes are ga
 
 */
 
-}
 }

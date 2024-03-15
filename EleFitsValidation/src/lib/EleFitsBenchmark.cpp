@@ -4,7 +4,6 @@
 
 #include "EleFitsValidation/EleFitsBenchmark.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -119,4 +118,3 @@ BColumns EleFitsBenchmark::read_bintable(Linx::Index index)
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid

@@ -9,27 +9,32 @@
 
 #include <algorithm> // find_if
 
-namespace Euclid {
 namespace Fits {
 
 template <typename T>
-RecordVec<T>::RecordVec(std::size_t size) : vector(size) {}
+RecordVec<T>::RecordVec(std::size_t size) : vector(size)
+{}
 
 template <typename T>
-RecordVec<T>::RecordVec(const std::vector<Record<T>>& records) : vector(records) {}
+RecordVec<T>::RecordVec(const std::vector<Record<T>>& records) : vector(records)
+{}
 
 template <typename T>
-RecordVec<T>::RecordVec(std::vector<Record<T>>&& records) : vector(std::move(records)) {}
+RecordVec<T>::RecordVec(std::vector<Record<T>>&& records) : vector(std::move(records))
+{}
 
 template <typename T>
-RecordVec<T>::RecordVec(std::initializer_list<Record<T>> records) : vector(std::move(records)) {}
+RecordVec<T>::RecordVec(std::initializer_list<Record<T>> records) : vector(std::move(records))
+{}
 
 template <typename T>
 template <typename... Ts>
-RecordVec<T>::RecordVec(const Record<Ts>&... records) : vector {Record<T>(records)...} {}
+RecordVec<T>::RecordVec(const Record<Ts>&... records) : vector {Record<T>(records)...}
+{}
 
 template <typename T>
-bool RecordVec<T>::has(const std::string& keyword) const {
+bool RecordVec<T>::has(const std::string& keyword) const
+{
   const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T>& r) {
     return r.keyword == keyword;
   });
@@ -37,7 +42,8 @@ bool RecordVec<T>::has(const std::string& keyword) const {
 }
 
 template <typename T>
-const Record<T>& RecordVec<T>::operator[](const std::string& keyword) const {
+const Record<T>& RecordVec<T>::operator[](const std::string& keyword) const
+{
   const auto it = std::find_if(vector.begin(), vector.end(), [&](const Record<T>& r) {
     return r.keyword == keyword;
   });
@@ -48,17 +54,18 @@ const Record<T>& RecordVec<T>::operator[](const std::string& keyword) const {
 }
 
 template <typename T>
-Record<T>& RecordVec<T>::operator[](const std::string& keyword) {
+Record<T>& RecordVec<T>::operator[](const std::string& keyword)
+{
   return const_cast<Record<T>&>(const_cast<const RecordVec<T>*>(this)->operator[](keyword));
 }
 
 template <typename T>
 template <typename TValue>
-Record<TValue> RecordVec<T>::as(const std::string& keyword) const {
+Record<TValue> RecordVec<T>::as(const std::string& keyword) const
+{
   return Record<TValue>(operator[](keyword));
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

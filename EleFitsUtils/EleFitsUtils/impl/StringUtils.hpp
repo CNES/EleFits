@@ -8,13 +8,12 @@
 
 #include <algorithm>
 
-namespace Euclid {
 namespace Fits {
 namespace String {
 
 template <typename T>
-CStrArray::CStrArray(const T begin, const T end) : smart_ptr_vector(end - begin), c_str_vector(end - begin) {
-
+CStrArray::CStrArray(const T begin, const T end) : smart_ptr_vector(end - begin), c_str_vector(end - begin)
+{
   /* Build the vector of smart pointers */
   std::transform(begin, end, smart_ptr_vector.begin(), [](const std::string& str) {
     auto ptr = std::make_unique<char[]>(str.length() + 1);
@@ -23,13 +22,16 @@ CStrArray::CStrArray(const T begin, const T end) : smart_ptr_vector(end - begin)
   });
 
   /* Build the vector of raw pointers */
-  std::transform(smart_ptr_vector.begin(), smart_ptr_vector.end(), c_str_vector.begin(), [](std::unique_ptr<char[]>& ptr) {
-    return ptr.get();
-  });
+  std::transform(
+      smart_ptr_vector.begin(),
+      smart_ptr_vector.end(),
+      c_str_vector.begin(),
+      [](std::unique_ptr<char[]>& ptr) {
+        return ptr.get();
+      });
 }
 
 } // namespace String
 } // namespace Fits
-} // namespace Euclid
 
 #endif

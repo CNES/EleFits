@@ -7,7 +7,6 @@
 #include "EleFitsData/Column.h"
 #include "EleFitsData/FitsError.h"
 
-namespace Euclid {
 namespace Fits {
 
 template <typename T, Linx::Index N, typename TContainer>
@@ -106,6 +105,5 @@ PtrColumn<T, N> Column<T, N, TContainer>::slice(const Segment& rows)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

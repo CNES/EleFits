@@ -11,7 +11,6 @@
 #include <chrono> // chrono
 #include <random> // default_random_engine, uniform_real_distribution
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -131,6 +130,5 @@ bool approx<std::complex<double>>(std::complex<double> test, std::complex<double
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 #endif

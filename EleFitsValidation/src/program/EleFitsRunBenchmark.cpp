@@ -16,7 +16,7 @@
 #include <map>
 #include <string>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 Validation::BenchmarkFactory init_factory()
 {

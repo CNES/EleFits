@@ -6,7 +6,6 @@
 
 #include "EleFitsData/HduCategory.h"
 
-namespace Euclid {
 namespace Fits {
 
 class Hdu;
@@ -35,6 +34,5 @@ template <>
 HduCategory HduCategory::forClass<BintableColumns>();
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

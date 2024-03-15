@@ -10,7 +10,6 @@
 
 #include <utility> // index_sequence, make_index_sequence
 
-namespace Euclid {
 namespace Cfitsio {
 namespace HduAccess {
 
@@ -95,6 +94,5 @@ void assign_bintable(fitsfile* fptr, const std::string& name, const TColumn& col
 
 } // namespace HduAccess
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

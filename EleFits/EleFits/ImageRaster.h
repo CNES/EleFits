@@ -10,7 +10,6 @@
 #include <fitsio.h>
 #include <functional>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -193,7 +192,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_IMAGERASTER_IMPL

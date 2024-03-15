@@ -12,7 +12,6 @@
 
 #include <fitsio.h>
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -128,7 +127,6 @@ private:
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 #define _ELEFITS_VALIDATION_CFITSIOBENCHMARK_IMPL
 #include "EleFitsValidation/impl/CfitsioBenchmark.hpp"

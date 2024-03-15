@@ -9,7 +9,6 @@
 
 #include <chrono>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -212,6 +211,5 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

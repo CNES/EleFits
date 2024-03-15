@@ -10,39 +10,45 @@
 
 #include <filesystem>
 
-namespace Euclid {
 namespace Fits {
 
-std::string version() {
+std::string version()
+{
   return Elements::Project::versionString();
 }
 
 ReadOnlyError::ReadOnlyError(const std::string& prefix) : FitsError(prefix + ": Trying to write a read-only file.") {}
 
-void ReadOnlyError::may_throw(const std::string& prefix, FileMode mode) {
+void ReadOnlyError::may_throw(const std::string& prefix, FileMode mode)
+{
   if (mode == FileMode::Read) {
     throw ReadOnlyError(prefix);
   }
 }
 
 FitsFile::FitsFile(const std::string& filename, FileMode permission) :
-    m_fptr(nullptr), m_filename(filename), m_permission(permission) {
+    m_fptr(nullptr), m_filename(filename), m_permission(permission)
+{
   open_impl(filename, permission);
 }
 
-FitsFile::~FitsFile() {
+FitsFile::~FitsFile()
+{
   close_impl();
 }
 
-std::string FitsFile::filename() const {
+std::string FitsFile::filename() const
+{
   return m_filename;
 }
 
-bool FitsFile::is_open() const {
+bool FitsFile::is_open() const
+{
   return m_fptr;
 }
 
-void FitsFile::reopen() {
+void FitsFile::reopen()
+{
   if (not m_fptr) {
     switch (m_permission) {
       case FileMode::Create:
@@ -59,11 +65,13 @@ void FitsFile::reopen() {
   }
 }
 
-void FitsFile::open(const std::string& filename, FileMode permission) {
+void FitsFile::open(const std::string& filename, FileMode permission)
+{
   open_impl(filename, permission);
 }
 
-void FitsFile::open_impl(const std::string& filename, FileMode permission) {
+void FitsFile::open_impl(const std::string& filename, FileMode permission)
+{
   if (m_fptr) {
     throw FitsError("Cannot open file '" + filename + "' because '" + m_filename + "' is still open.");
   }
@@ -94,11 +102,13 @@ void FitsFile::open_impl(const std::string& filename, FileMode permission) {
   m_permission = permission;
 }
 
-void FitsFile::close() {
+void FitsFile::close()
+{
   close_impl();
 }
 
-void FitsFile::close_impl() {
+void FitsFile::close_impl()
+{
   if (not m_fptr) {
     return;
   }
@@ -111,18 +121,19 @@ void FitsFile::close_impl() {
   }
 }
 
-void FitsFile::close_remove() {
+void FitsFile::close_remove()
+{
   if (not m_fptr) {
     return; // TODO should we delete if not open?
   }
   Cfitsio::FileAccess::close_delete(m_fptr);
 }
 
-fitsfile* FitsFile::handover_to_cfitsio() {
+fitsfile* FitsFile::handover_to_cfitsio()
+{
   auto fptr = m_fptr;
   m_fptr = nullptr;
   return fptr;
 }
 
 } // namespace Fits
-} // namespace Euclid

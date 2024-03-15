@@ -9,7 +9,6 @@
 
 #include <limits>
 
-namespace Euclid {
 namespace Cfitsio {
 namespace HeaderIo {
 
@@ -430,4 +429,3 @@ void write_history(fitsfile* fptr, const std::string& history)
 
 } // namespace HeaderIo
 } // namespace Cfitsio
-} // namespace Euclid

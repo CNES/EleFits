@@ -11,7 +11,7 @@
 #include <boost/test/unit_test.hpp>
 #include <cstdio>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 

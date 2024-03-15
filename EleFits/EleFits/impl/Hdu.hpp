@@ -8,7 +8,6 @@
 #include "EleFits/Hdu.h"
 #include "EleFitsData/RecordVec.h"
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -18,11 +17,11 @@ template <>
 const Header& Hdu::as() const;
 
 template <typename T>
-const T& Hdu::as() const {
+const T& Hdu::as() const
+{
   return dynamic_cast<const T&>(*this);
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

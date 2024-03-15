@@ -8,12 +8,11 @@
 #include "EleCfitsioWrapper/TypeWrapper.h"
 #include "EleFitsData/Raster.h" // ELEFITS_FOREACH_RASTER_TYPE
 
-namespace Euclid {
 namespace Cfitsio {
 namespace ImageIo {
 
 #define RETURN_TYPEID_IF_MATCH(type, name) \
-  if (Euclid::Cfitsio::TypeCode<type>::bitpix() == bitpix) { \
+  if (Cfitsio::TypeCode<type>::bitpix() == bitpix) { \
     return typeid(type); \
   }
 
@@ -50,4 +49,3 @@ Linx::Position<-1> read_shape<-1>(fitsfile* fptr)
 
 } // namespace ImageIo
 } // namespace Cfitsio
-} // namespace Euclid

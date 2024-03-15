@@ -11,7 +11,6 @@
 #include <string>
 #include <typeinfo>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -89,7 +88,6 @@ void write_region(fitsfile* fptr, const Linx::Box<N>& region, TIn& in);
 
 } // namespace ImageIo
 } // namespace Cfitsio
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELECFITSIOWRAPPER_IMAGEWRAPPER_IMPL

@@ -6,7 +6,6 @@
 
 #include "EleFitsData/ColumnInfo.h"
 
-namespace Euclid {
 namespace Fits {
 
 template <typename T, Linx::Index N>
@@ -40,6 +39,5 @@ bool operator!=(const ColumnInfo<T, N>& lhs, const ColumnInfo<T, N>& rhs)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

@@ -4,7 +4,6 @@
 
 #include "EleFitsData/TestUtils.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -159,4 +158,3 @@ bool approx<std::complex<double>>(std::complex<double> test, std::complex<double
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid

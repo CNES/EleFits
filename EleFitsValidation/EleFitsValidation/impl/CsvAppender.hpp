@@ -6,18 +6,19 @@
 
 #if defined(_ELEFITS_VALIDATION_CSVAPPENDER_IMPL) || defined(CHECK_QUALITY)
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
 template <typename T>
-CsvAppender& CsvAppender::operator<<(const T& value) {
+CsvAppender& CsvAppender::operator<<(const T& value)
+{
   m_file << value << m_sep;
   return *this;
 }
 
 template <typename... Ts>
-CsvAppender& CsvAppender::write_row(const Ts&... values) {
+CsvAppender& CsvAppender::write_row(const Ts&... values)
+{
   // TODO check size
   using mock_unpack = int[];
   (void)mock_unpack {(operator<<(values), 0)...};
@@ -26,6 +27,5 @@ CsvAppender& CsvAppender::write_row(const Ts&... values) {
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 #endif

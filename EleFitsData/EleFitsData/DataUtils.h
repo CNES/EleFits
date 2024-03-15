@@ -15,7 +15,6 @@
 #include <type_traits>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -163,6 +162,5 @@ TypedKey<TReturn, std::string> as(const char* key)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

@@ -9,7 +9,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -18,7 +18,8 @@ BOOST_AUTO_TEST_SUITE(ImageHdu_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_2d() {
+void check_2d()
+{
   Test::RandomRaster<T, 2> input({16, 9});
   const std::string filename = Elements::TempFile().path().string();
   MefFile file(filename, FileMode::Temporary);
@@ -31,7 +32,8 @@ void check_2d() {
  * We test only one type here to check the flow from the top-level API to CFITSIO.
  * Support for other types is tested in EleCfitsioWrapper.
  */
-BOOST_AUTO_TEST_CASE(float_test) {
+BOOST_AUTO_TEST_CASE(float_test)
+{
   check_2d<float>();
 }
 

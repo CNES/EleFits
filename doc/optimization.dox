@@ -1,4 +1,3 @@
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -182,5 +181,4 @@ then internal compression might be a very valuable option (see \ref compression)
 
 */
 
-}
 }

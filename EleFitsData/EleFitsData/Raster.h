@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -46,6 +45,5 @@ constexpr Linx::Index bitpix(const TRaster&)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

@@ -15,7 +15,6 @@
 #include <memory>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /// @cond
@@ -327,7 +326,7 @@ public:
    * @brief Remove the HDU with given index.
    */
   inline void remove(Linx::Index index);
-  
+
   /// @}
 
 protected:
@@ -363,7 +362,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #include "EleFits/HduIterator.h"
 

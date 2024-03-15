@@ -4,7 +4,6 @@
 
 #include "EleFits/ImageRaster.h"
 
-namespace Euclid {
 namespace Fits {
 
 ImageRaster::ImageRaster(fitsfile*& fptr, std::function<void(void)> touch, std::function<void(void)> edit) :
@@ -29,4 +28,3 @@ Linx::Index ImageRaster::read_size() const
 }
 
 } // namespace Fits
-} // namespace Euclid

@@ -11,7 +11,6 @@
 #include <string> // for debug printing
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -40,8 +39,8 @@ namespace Fits {
  * More complex, multi-category filters can be created as `HduFilter` objects.
  */
 class HduCategory {
-
 protected:
+
   /**
    * @brief Trinary values.
    */
@@ -67,6 +66,7 @@ protected:
   };
 
 public:
+
   /**
    * @brief The exception thrown when trying to combine incompatible trits.
    */
@@ -75,6 +75,7 @@ public:
   };
 
 protected:
+
   /**
    * @brief Create an unconstrained category.
    */
@@ -86,6 +87,7 @@ protected:
   HduCategory(TritPosition position, Trit value);
 
 public:
+
   /**
    * @brief Get the HDU type: either `Image` or `Bintable` or `Any` if unknown.
    * 
@@ -157,6 +159,7 @@ public:
   static HduCategory forClass();
 
 protected:
+
   /**
    * @brief The trinary flag mask.
    * 
@@ -165,6 +168,7 @@ protected:
   std::vector<Trit> m_mask;
 
 private:
+
   /**
    * @brief Toggle if flag is constrained, do nothing otherwise.
    * 
@@ -218,6 +222,7 @@ private:
   HduCategory& transform(const HduCategory& rhs, std::function<Trit(Trit, Trit)> op);
 
 public:
+
   /* Basic categories */
   static const HduCategory Any; ///< Any HDU
   static const HduCategory Image; ///< Image HDU
@@ -263,8 +268,8 @@ public:
  * and of no rejected categories.
  */
 class HduFilter {
-
 public:
+
   /**
    * @brief Casting constructor to make a HduFilter from a HduCategory.
    */
@@ -337,6 +342,7 @@ public:
   bool accepts(const HduCategory& input) const;
 
 private:
+
   /**
    * @brief Accepted categories.
    */
@@ -352,7 +358,8 @@ private:
  * @relates HduFilter
  * @brief Combine two accepted categories as a filter.
  */
-inline HduFilter operator+(HduCategory lhs, HduCategory rhs) {
+inline HduFilter operator+(HduCategory lhs, HduCategory rhs)
+{
   return HduFilter({lhs, rhs}, {});
 }
 
@@ -360,7 +367,8 @@ inline HduFilter operator+(HduCategory lhs, HduCategory rhs) {
  * @relates HduFilter
  * @brief Combine an accepted and rejected categories as a filter.
  */
-inline HduFilter operator-(HduCategory lhs, HduCategory rhs) {
+inline HduFilter operator-(HduCategory lhs, HduCategory rhs)
+{
   return HduFilter({lhs}, {rhs});
 }
 
@@ -368,7 +376,8 @@ inline HduFilter operator-(HduCategory lhs, HduCategory rhs) {
  * @relates HduFilter
  * @brief Consider a category as a filter with only this category as the accepted category.
  */
-inline HduFilter operator+(HduCategory rhs) {
+inline HduFilter operator+(HduCategory rhs)
+{
   return HduFilter({rhs}, {});
 }
 
@@ -376,12 +385,12 @@ inline HduFilter operator+(HduCategory rhs) {
  * @relates HduFilter
  * @brief Consider a category as a filter with only this category as the rejected category.
  */
-inline HduFilter operator-(HduCategory rhs) {
+inline HduFilter operator-(HduCategory rhs)
+{
   return HduFilter({}, {rhs});
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_HDUCATEGORY_IMPL

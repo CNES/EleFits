@@ -4,7 +4,6 @@
 
 #include "EleFitsData/TestRaster.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -20,4 +19,3 @@ SmallRaster::SmallRaster(Linx::Index rasterWidth, Linx::Index rasterHeight) :
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid

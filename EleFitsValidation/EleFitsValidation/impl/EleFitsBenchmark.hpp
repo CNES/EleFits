@@ -6,7 +6,6 @@
 
 #if defined(_ELEFITS_VALIDATION_ELEFITSBENCHMARK_IMPL) || defined(CHECK_QUALITY)
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -19,6 +18,5 @@ EleFitsColwiseBenchmark::col_indexed() const
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 #endif

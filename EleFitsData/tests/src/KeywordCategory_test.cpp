@@ -6,7 +6,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -14,7 +14,8 @@ BOOST_AUTO_TEST_SUITE(KeywordCategory_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(standard_keyword_matching_test) {
+BOOST_AUTO_TEST_CASE(standard_keyword_matching_test)
+{
   BOOST_TEST(KeywordCategory::matches("KEY", "KEY"));
   BOOST_TEST(not KeywordCategory::matches("KEY", "KEYn"));
   BOOST_TEST(KeywordCategory::matches("KEYn", "KEYn"));
@@ -23,8 +24,8 @@ BOOST_AUTO_TEST_CASE(standard_keyword_matching_test) {
   BOOST_TEST(not KeywordCategory::matches("KEYWORD", "KEYn"));
 }
 
-BOOST_AUTO_TEST_CASE(arithmetics_test) {
-
+BOOST_AUTO_TEST_CASE(arithmetics_test)
+{
   BOOST_TEST(KeywordCategory::All);
   BOOST_TEST((KeywordCategory::All & KeywordCategory::None) == KeywordCategory::None);
   BOOST_TEST((KeywordCategory::All & KeywordCategory::Mandatory) == KeywordCategory::Mandatory);
@@ -44,7 +45,8 @@ BOOST_AUTO_TEST_CASE(arithmetics_test) {
   BOOST_TEST(KeywordCategory::Reserved & (KeywordCategory::Mandatory | KeywordCategory::Reserved));
 }
 
-BOOST_AUTO_TEST_CASE(mandatory_categorization_test) {
+BOOST_AUTO_TEST_CASE(mandatory_categorization_test)
+{
   const std::string mandatory = "SIMPLE";
   BOOST_TEST(KeywordCategory::belongsCategories(mandatory, KeywordCategory::Mandatory));
   BOOST_TEST(KeywordCategory::belongsCategories(mandatory, KeywordCategory::Mandatory | KeywordCategory::User));
@@ -56,7 +58,8 @@ BOOST_AUTO_TEST_CASE(mandatory_categorization_test) {
       KeywordCategory::Reserved | KeywordCategory::Comment | KeywordCategory::User));
 }
 
-BOOST_AUTO_TEST_CASE(reserved_categorization_test) {
+BOOST_AUTO_TEST_CASE(reserved_categorization_test)
+{
   const std::string reserved = "TFORM1";
   BOOST_TEST(KeywordCategory::belongsCategories(reserved, KeywordCategory::Reserved));
   BOOST_TEST(KeywordCategory::belongsCategories(reserved, KeywordCategory::Reserved | KeywordCategory::User));
@@ -68,7 +71,8 @@ BOOST_AUTO_TEST_CASE(reserved_categorization_test) {
       KeywordCategory::Mandatory | KeywordCategory::Comment | KeywordCategory::User));
 }
 
-BOOST_AUTO_TEST_CASE(comment_categorization_test) {
+BOOST_AUTO_TEST_CASE(comment_categorization_test)
+{
   const std::string comment = "COMMENT";
   BOOST_TEST(KeywordCategory::belongsCategories(comment, KeywordCategory::Comment));
   BOOST_TEST(KeywordCategory::belongsCategories(comment, KeywordCategory::Comment | KeywordCategory::User));
@@ -80,7 +84,8 @@ BOOST_AUTO_TEST_CASE(comment_categorization_test) {
       KeywordCategory::Reserved | KeywordCategory::Mandatory | KeywordCategory::User));
 }
 
-BOOST_AUTO_TEST_CASE(user_categorization_test) {
+BOOST_AUTO_TEST_CASE(user_categorization_test)
+{
   const std::string user = "MINE";
   BOOST_TEST(KeywordCategory::belongsCategories(user, KeywordCategory::User));
   BOOST_TEST(not KeywordCategory::belongsCategories(

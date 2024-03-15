@@ -11,7 +11,6 @@
 #include <cstdint>
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -241,7 +240,6 @@ ColumnInfo<T> make_column_info(const std::string& name, const std::string& unit 
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #define _ELEFITSDATA_COLUMNINFO_IMPL
 #include "EleFitsData/impl/ColumnInfo.hpp"

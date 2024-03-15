@@ -8,14 +8,11 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
 
-using namespace Euclid;
 using namespace Cfitsio;
 
 BOOST_AUTO_TEST_SUITE(CompressionWrapper_test)
 
 //-----------------------------------------------------------------------------
-
-using namespace Euclid;
 
 template <typename TAlgo>
 void test_algo_mixin_compress(Linx::Index dimension, fitsfile* fptr, int comptype)

@@ -12,8 +12,6 @@
 #include <fitsio.h>
 #include <string>
 
-namespace Euclid {
-
 /**
  * @brief Wrapper classes to read and write FITS file contents.
  * @details
@@ -206,6 +204,5 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

@@ -9,7 +9,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid;
 using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
@@ -19,34 +18,40 @@ BOOST_AUTO_TEST_SUITE(TypeWrapper_test)
 //-----------------------------------------------------------------------------
 
 template <typename T>
-void check_cfitsio_record_type_exists() {
+void check_cfitsio_record_type_exists()
+{
   BOOST_CHECK_NO_THROW(TypeCode<T>::for_record());
 }
 
 template <typename T>
-void check_cfitsio_bintable_type_exists() {
+void check_cfitsio_bintable_type_exists()
+{
   BOOST_CHECK_NO_THROW(TypeCode<T>::for_bintable());
   BOOST_CHECK_NO_THROW(TypeCode<T>::tform(1));
 }
 
 template <typename T>
-void check_cfitsio_image_type_exists() {
+void check_cfitsio_image_type_exists()
+{
   BOOST_CHECK_NO_THROW(TypeCode<T>::for_image());
   BOOST_CHECK_NO_THROW(TypeCode<T>::bitpix());
 }
 
 #define RECORD_TYPECODE_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_record_typecode_test) { \
+  BOOST_AUTO_TEST_CASE(name##_record_typecode_test) \
+  { \
     check_cfitsio_record_type_exists<type>(); \
   }
 
 #define BINTABLE_TFORM_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_bintable_tform_test) { \
+  BOOST_AUTO_TEST_CASE(name##_bintable_tform_test) \
+  { \
     check_cfitsio_bintable_type_exists<type>(); \
   }
 
 #define IMAGE_BITPIX_TEST(type, name) \
-  BOOST_AUTO_TEST_CASE(name##_image_bitpix_test) { \
+  BOOST_AUTO_TEST_CASE(name##_image_bitpix_test) \
+  { \
     check_cfitsio_image_type_exists<type>(); \
   }
 

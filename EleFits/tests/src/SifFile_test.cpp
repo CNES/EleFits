@@ -9,7 +9,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -17,7 +17,8 @@ BOOST_AUTO_TEST_SUITE(SifFile_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile) {
+BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile)
+{
   BOOST_TEST(boost::filesystem::is_regular_file(this->filename()));
   Test::SmallRaster input; // TODO RandomRaster
   const std::string keyword = "KEYWORD";
@@ -34,7 +35,8 @@ BOOST_FIXTURE_TEST_CASE(simple_image_test, Test::NewSifFile) {
   remove(this->filename().c_str());
 }
 
-BOOST_AUTO_TEST_CASE(write_all_test) {
+BOOST_AUTO_TEST_CASE(write_all_test)
+{
   Test::SmallRaster input;
   const Record<int> i {"INT", 1, "i", "integer"};
   const Record<std::string> s {"STR", "TWO", "s", "text"};
@@ -48,7 +50,8 @@ BOOST_AUTO_TEST_CASE(write_all_test) {
   BOOST_TEST(output.container() == input.container());
 }
 
-BOOST_FIXTURE_TEST_CASE(checksum_test, Test::TemporarySifFile) {
+BOOST_FIXTURE_TEST_CASE(checksum_test, Test::TemporarySifFile)
+{
   BOOST_CHECK_THROW(this->verify_checksums(), ChecksumError);
   this->update_checksums();
   BOOST_CHECK_NO_THROW(this->verify_checksums());

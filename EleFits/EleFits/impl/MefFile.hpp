@@ -9,7 +9,6 @@
 #include "EleCfitsioWrapper/ImageWrapper.h"
 #include "EleFits/MefFile.h"
 
-namespace Euclid {
 namespace Fits {
 
 template <typename... TActions>
@@ -282,6 +281,5 @@ void MefFile::remove(Linx::Index index)
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

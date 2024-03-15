@@ -8,7 +8,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 // read_segment_to(rows, key, column)
 //   read_to(key, column)
@@ -216,7 +216,7 @@ void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */)
   std::string ttype_str = "SCALAR";
   auto ttype_ptr = String::to_char_ptr(ttype_str);
   auto* ttype = ttype_ptr.get();
-  std::string tform_str = Euclid::Cfitsio::TypeCode<T>::tform(1); // 1W
+  std::string tform_str = Cfitsio::TypeCode<T>::tform(1); // 1W
   auto tform_ptr = String::to_char_ptr(tform_str);
   auto* tform = tform_ptr.get();
   // fits_create_tbl(fptr, BINARY_TBL, 0, 1, &ttype, &tform, nullptr, "CFITSIO", &status); // Works this way...
@@ -227,7 +227,7 @@ void check_array_write_read<std::uint64_t>(const BintableColumns& /* du */)
   /* Write data */
   constexpr Linx::Index row_count = 10000;
   auto data = Test::generate_random_vector<T>(row_count);
-  fits_write_col(fptr, Euclid::Cfitsio::TypeCode<T>::for_bintable(), 1, 1, 1, row_count, data.data(), &status);
+  fits_write_col(fptr, Cfitsio::TypeCode<T>::for_bintable(), 1, 1, 1, row_count, data.data(), &status);
   BOOST_TEST(status == BAD_BTABLE_FORMAT); // FIXME CFITSIO bug (works with all other types)
 
   /* Tear down */

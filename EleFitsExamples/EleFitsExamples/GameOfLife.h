@@ -8,7 +8,6 @@
 #include "EleFitsData/Raster.h"
 #include "EleFitsData/TestUtils.h"
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -97,6 +96,5 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

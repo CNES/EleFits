@@ -7,7 +7,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -15,29 +15,34 @@ BOOST_FIXTURE_TEST_SUITE(ColumnKey_test, Test::TestBintable<float>)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(from_resolved_index_test) {
+BOOST_AUTO_TEST_CASE(from_resolved_index_test)
+{
   ColumnKey key(0);
   BOOST_TEST(key.index(columns) == 0);
   BOOST_TEST(key.name(columns) == scalar_column.info().name);
 }
 
-BOOST_AUTO_TEST_CASE(from_unresolved_index_test) {
+BOOST_AUTO_TEST_CASE(from_unresolved_index_test)
+{
   ColumnKey key(-1);
   BOOST_TEST(key.index(columns) == 1);
   BOOST_TEST(key.name(columns) == vector_column.info().name);
 }
 
-BOOST_AUTO_TEST_CASE(from_name_test) {
+BOOST_AUTO_TEST_CASE(from_name_test)
+{
   ColumnKey key(scalar_column.info().name);
   BOOST_TEST(key.name(columns) == scalar_column.info().name);
   BOOST_TEST(key.index(columns) == 0);
 }
 
-void check_is_last(ColumnKey key, const BintableColumns& columns) {
+void check_is_last(ColumnKey key, const BintableColumns& columns)
+{
   BOOST_TEST(key.index(columns) == 1);
 }
 
-BOOST_AUTO_TEST_CASE(implicit_cast_test) {
+BOOST_AUTO_TEST_CASE(implicit_cast_test)
+{
   check_is_last(1, columns);
   check_is_last(-1, columns);
   check_is_last(last_column.info().name, columns);

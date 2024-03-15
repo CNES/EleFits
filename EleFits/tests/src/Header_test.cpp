@@ -7,7 +7,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 //-----------------------------------------------------------------------------
 
@@ -15,8 +15,8 @@ BOOST_FIXTURE_TEST_SUITE(Header_test, Test::TemporarySifFile)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(long_string_record_is_read_back_test) {
-
+BOOST_AUTO_TEST_CASE(long_string_record_is_read_back_test)
+{
   /* From the FITS standard */
   const std::string keyword = "STRKEY";
   const std::string long_value = "This keyword value is continued over multiple keyword records.";
@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE(long_string_record_is_read_back_test) {
   BOOST_TEST(output.value == long_value);
 }
 
-BOOST_AUTO_TEST_CASE(long_comment_hierarch_record_is_read_back_test) {
-
+BOOST_AUTO_TEST_CASE(long_comment_hierarch_record_is_read_back_test)
+{
   /* From the FITS standard */
   const std::string long_keyword = "123456789";
   const int value = 10;
@@ -62,7 +62,8 @@ BOOST_AUTO_TEST_CASE(long_comment_hierarch_record_is_read_back_test) {
   BOOST_TEST(output.value == value);
 }
 
-BOOST_AUTO_TEST_CASE(keyword_error_test) {
+BOOST_AUTO_TEST_CASE(keyword_error_test)
+{
   const std::string keyword = "TEST";
   KeywordExistsError kee(keyword);
   KeywordNotFoundError knfe(keyword);
@@ -70,8 +71,8 @@ BOOST_AUTO_TEST_CASE(keyword_error_test) {
   BOOST_TEST(knfe.keyword == keyword);
 }
 
-BOOST_AUTO_TEST_CASE(syntax_test) {
-
+BOOST_AUTO_TEST_CASE(syntax_test)
+{
   /* Setup */
   const auto& h = header();
   const Record<int> i("I", 1);

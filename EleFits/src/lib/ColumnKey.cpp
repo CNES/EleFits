@@ -6,7 +6,6 @@
 
 #include "EleFits/BintableColumns.h"
 
-namespace Euclid {
 namespace Fits {
 
 ColumnKey::ColumnKey(Linx::Index index) : m_index(index), m_name() {}
@@ -38,4 +37,3 @@ const std::string& ColumnKey::name(const BintableColumns& columns)
 }
 
 } // namespace Fits
-} // namespace Euclid

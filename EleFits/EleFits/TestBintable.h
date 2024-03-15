@@ -8,7 +8,6 @@
 #include "EleFits/FitsFileFixture.h" // FIXME rename as TestFitsFile.h
 #include "EleFitsData/TestColumn.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -68,6 +67,5 @@ struct TestBintable { // FIXME add multidimensional column
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 #endif

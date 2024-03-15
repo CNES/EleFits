@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -67,7 +66,6 @@ bool approx(T test, T ref, double tol = 0.01);
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_TESTUTILS_IMPL

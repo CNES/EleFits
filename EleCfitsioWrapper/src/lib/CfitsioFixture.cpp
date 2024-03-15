@@ -6,18 +6,18 @@
 
 #include "EleCfitsioWrapper/FileWrapper.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
-MinimalFile::MinimalFile() : tmp(), filename(tmp.path().string()), fptr(nullptr) {
+MinimalFile::MinimalFile() : tmp(), filename(tmp.path().string()), fptr(nullptr)
+{
   fptr = Cfitsio::FileAccess::create_open(filename, Cfitsio::FileAccess::CreatePolicy::OverWrite);
 }
 
-MinimalFile::~MinimalFile() {
+MinimalFile::~MinimalFile()
+{
   Cfitsio::FileAccess::close(fptr);
 }
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid

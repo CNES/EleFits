@@ -7,13 +7,13 @@
 #include "EleCfitsioWrapper/FileWrapper.h"
 #include "EleCfitsioWrapper/HduWrapper.h"
 
-namespace Euclid {
 namespace Cfitsio {
 
 CfitsioError::CfitsioError(int cfitsio_status) : FitsError(message(cfitsio_status)), status(cfitsio_status) {}
 
 CfitsioError::CfitsioError(int cfitsio_status, fitsfile* fptr, const std::string& context) :
-    FitsError(context), status(cfitsio_status) {
+    FitsError(context), status(cfitsio_status)
+{
   append("");
   if (not fptr) {
     append("CFITSIO fitsfile pointer is null.");
@@ -42,7 +42,8 @@ CfitsioError::CfitsioError(int cfitsio_status, fitsfile* fptr, const std::string
   };
 }
 
-std::string CfitsioError::message(int cfitsio_status) {
+std::string CfitsioError::message(int cfitsio_status)
+{
   float cfitsio_version = 0;
   fits_get_version(&cfitsio_version);
   char cfitsio_message[FLEN_ERRMSG];
@@ -53,29 +54,32 @@ std::string CfitsioError::message(int cfitsio_status) {
   return message;
 }
 
-void CfitsioError::may_throw(int cfitsio_status) {
+void CfitsioError::may_throw(int cfitsio_status)
+{
   if (cfitsio_status != 0) {
     throw CfitsioError(cfitsio_status);
   }
 }
 
-void CfitsioError::may_throw(int cfitsio_status, fitsfile* fptr, const std::string& message) {
+void CfitsioError::may_throw(int cfitsio_status, fitsfile* fptr, const std::string& message)
+{
   if (cfitsio_status != 0) {
     throw CfitsioError(cfitsio_status, fptr, message);
   }
 }
 
-void may_throw_readonly(fitsfile* fptr) {
+void may_throw_readonly(fitsfile* fptr)
+{
   if (not FileAccess::is_writable(fptr)) {
     throw CfitsioError(READONLY_FILE);
   }
 }
 
-void may_throw_invalid_file(fitsfile* fptr) {
+void may_throw_invalid_file(fitsfile* fptr)
+{
   if (not fptr) {
     throw CfitsioError(BAD_FILEPTR);
   }
 }
 
 } // namespace Cfitsio
-} // namespace Euclid

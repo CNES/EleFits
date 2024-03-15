@@ -8,8 +8,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid::Cfitsio;
-using namespace Euclid::Fits::Test;
+using namespace Cfitsio;
+using namespace Fits::Test;
 
 //-----------------------------------------------------------------------------
 
@@ -17,7 +17,8 @@ BOOST_AUTO_TEST_SUITE(CfitsioFixture_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_AUTO_TEST_CASE(temporary_file_is_removed_by_destructor_test) {
+BOOST_AUTO_TEST_CASE(temporary_file_is_removed_by_destructor_test)
+{
   std::string filename;
   {
     MinimalFile f;

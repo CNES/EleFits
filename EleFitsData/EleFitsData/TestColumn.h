@@ -12,7 +12,6 @@
 #include <string>
 #include <tuple>
 
-namespace Euclid {
 namespace Fits {
 namespace Test {
 
@@ -187,7 +186,6 @@ public:
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_TESTCOLUMN_IMPL

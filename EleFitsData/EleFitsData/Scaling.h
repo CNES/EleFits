@@ -5,7 +5,6 @@
 #ifndef _ELEFITSDATA_SCALING_H
 #define _ELEFITSDATA_SCALING_H
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -107,7 +106,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_SCALING_IMPL

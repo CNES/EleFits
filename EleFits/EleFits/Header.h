@@ -16,7 +16,6 @@
 #include <tuple>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -552,7 +551,6 @@ struct KeywordNotFoundError : public FitsError {
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 //// @cond INTERNAL
 #define _ELEFITS_HEADER_IMPL

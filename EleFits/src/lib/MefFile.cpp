@@ -6,7 +6,6 @@
 
 #include "EleCfitsioWrapper/HduWrapper.h"
 
-namespace Euclid {
 namespace Fits {
 
 void MefFile::open(const std::string& filename, FileMode permission)
@@ -82,4 +81,3 @@ const ImageHdu& MefFile::primary()
 }
 
 } // namespace Fits
-} // namespace Euclid

@@ -6,28 +6,31 @@
 
 #include "EleFits/ImageHdu.h"
 
-namespace Euclid {
 namespace Fits {
 
 SifFile::SifFile(const std::string& filename, FileMode permission) :
     FitsFile(filename, permission), m_hdu(ImageHdu::Token {}, m_fptr, 0), m_header(m_hdu.header()),
-    m_raster(m_hdu.raster()) {}
+    m_raster(m_hdu.raster())
+{}
 
-const Header& SifFile::header() const {
+const Header& SifFile::header() const
+{
   return m_header;
 }
 
-const ImageRaster& SifFile::raster() const {
+const ImageRaster& SifFile::raster() const
+{
   return m_raster;
 }
 
-void SifFile::verify_checksums() const {
+void SifFile::verify_checksums() const
+{
   m_hdu.verify_checksums();
 }
 
-void SifFile::update_checksums() const {
+void SifFile::update_checksums() const
+{
   m_hdu.update_checksums();
 }
 
 } // namespace Fits
-} // namespace Euclid

@@ -13,7 +13,7 @@
 #include <map>
 #include <string>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 #define PRINT_SUPPORTED_TYPES(type, name) logger.info() << "  " << #type;
 

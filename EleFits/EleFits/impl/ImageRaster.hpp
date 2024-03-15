@@ -8,7 +8,6 @@
 #include "EleFits/ImageRaster.h"
 #include "Linx/Data/Box.h"
 
-namespace Euclid {
 namespace Fits {
 
 template <Linx::Index N>
@@ -80,6 +79,5 @@ void ImageRaster::write_region(Linx::Position<N> front, const TIn& in) const
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

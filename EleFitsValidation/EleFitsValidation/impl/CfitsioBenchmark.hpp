@@ -6,7 +6,6 @@
 
 #if defined(_ELEFITS_VALIDATION_CFITSIOBENCHMARK_IMPL) || defined(CHECK_QUALITY)
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -15,7 +14,8 @@ void CfitsioBenchmark::setup_column_info(
     const BColumns& columns,
     std::vector<std::string>& names,
     std::vector<std::string>& formats,
-    std::vector<std::string>& units) {
+    std::vector<std::string>& units)
+{
   const auto& col = std::get<i>(columns);
   names[i] = col.info().name;
   formats[i] = Cfitsio::TypeCode<typename std::decay_t<decltype(col)>::Value>::tform(col.info().repeat_count());
@@ -23,7 +23,8 @@ void CfitsioBenchmark::setup_column_info(
 }
 
 template <std::size_t i>
-void CfitsioBenchmark::write_column(const BColumns& columns, long first_row, long row_count) {
+void CfitsioBenchmark::write_column(const BColumns& columns, long first_row, long row_count)
+{
   const auto& col = std::get<i>(columns);
   const auto b = col.container().begin() + first_row;
   const auto e = b + row_count;
@@ -42,7 +43,8 @@ void CfitsioBenchmark::write_column(const BColumns& columns, long first_row, lon
 }
 
 template <std::size_t i>
-void CfitsioBenchmark::init_column(BColumns& columns, long row_count) {
+void CfitsioBenchmark::init_column(BColumns& columns, long row_count)
+{
   auto& col = std::get<i>(columns);
   int colnum = i + 1;
   long repeat = 0;
@@ -54,7 +56,8 @@ void CfitsioBenchmark::init_column(BColumns& columns, long row_count) {
 }
 
 template <std::size_t i>
-void CfitsioBenchmark::read_column(BColumns& columns, long first_row, long row_count) {
+void CfitsioBenchmark::read_column(BColumns& columns, long first_row, long row_count)
+{
   auto& col = std::get<i>(columns);
   auto data = col.data() + first_row;
   using Value = typename std::decay_t<decltype(col)>::Value;
@@ -74,6 +77,5 @@ void CfitsioBenchmark::read_column(BColumns& columns, long first_row, long row_c
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid
 
 #endif

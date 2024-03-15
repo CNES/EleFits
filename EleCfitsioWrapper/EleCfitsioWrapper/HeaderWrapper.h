@@ -15,7 +15,6 @@
 #include <typeinfo> // type_info
 #include <vector>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -141,7 +140,6 @@ void write_history(fitsfile* fptr, const std::string& history);
 
 } // namespace HeaderIo
 } // namespace Cfitsio
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELECFITSIOWRAPPER_HEADERWRAPPER_IMPL

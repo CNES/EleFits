@@ -4,8 +4,6 @@
 
 #include "EleFitsData/ColumnInfo.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Internal {} // namespace Internal
 } // namespace Fits
-} // namespace Euclid

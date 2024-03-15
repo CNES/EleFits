@@ -7,7 +7,6 @@
 
 #include "EleFitsData/Segment.h"
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -72,6 +71,5 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

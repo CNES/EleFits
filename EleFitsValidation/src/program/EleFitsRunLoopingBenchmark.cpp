@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 Validation::LoopingBenchmark::Duration loop(Validation::LoopingBenchmark& benchmark, char setup)
 {

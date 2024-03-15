@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -73,7 +72,6 @@ std::unique_ptr<char[]> to_char_ptr(const std::string& str);
  * The `CStrArray` owns the data, and must therefore not be destroyed before the user function ends.
  */
 struct CStrArray {
-
   /// @group_construction
 
   /**
@@ -125,7 +123,6 @@ struct CStrArray {
 
 } // namespace String
 } // namespace Fits
-} // namespace Euclid
 
 #define _ELEFITSUTILS_STRINGUTILS_IMPL
 #include "EleFitsUtils/impl/StringUtils.hpp"

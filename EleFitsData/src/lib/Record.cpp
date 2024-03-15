@@ -4,7 +4,6 @@
 
 #include "EleFitsData/Record.h"
 
-namespace Euclid {
 namespace Fits {
 
 /*
@@ -13,17 +12,20 @@ namespace Fits {
 constexpr std::size_t max_short_value_length = 68;
 
 template <>
-bool Record<std::string>::has_long_string_value() const {
+bool Record<std::string>::has_long_string_value() const
+{
   return value.length() > max_short_value_length;
 }
 
 template <>
-bool Record<const char*>::has_long_string_value() const {
+bool Record<const char*>::has_long_string_value() const
+{
   return std::strlen(value) > max_short_value_length;
 }
 
 template <>
-bool Record<VariantValue>::has_long_string_value() const {
+bool Record<VariantValue>::has_long_string_value() const
+{
   const auto& id = value.type();
   if (id == typeid(std::string)) {
     return boost::any_cast<std::string>(value).length() > max_short_value_length;
@@ -41,4 +43,3 @@ ELEFITS_FOREACH_RECORD_TYPE(COMPILE_RECORD_CLASS)
 #endif
 
 } // namespace Fits
-} // namespace Euclid

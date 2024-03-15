@@ -13,7 +13,6 @@
 #include <fitsio.h>
 #include <functional>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -531,7 +530,6 @@ template <typename TSeq>
 Linx::Index columns_row_count(TSeq&& columns);
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_BINTABLECOLUMNS_IMPL

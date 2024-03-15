@@ -8,7 +8,6 @@
 #include "EleFits/Header.h"
 #include "Linx/Base/SeqUtils.h" // seq_foreach
 
-namespace Euclid {
 namespace Fits {
 
 template <typename T>
@@ -219,6 +218,5 @@ void Header::write_n_in(const std::vector<std::string>& keywords, TSeq&& records
 // TODO extern declare more?
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

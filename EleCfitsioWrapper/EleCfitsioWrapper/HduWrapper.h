@@ -13,7 +13,6 @@
 #include <string>
 #include <tuple>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -164,7 +163,6 @@ void remove(fitsfile* fptr, Linx::Index index);
 
 } // namespace HduAccess
 } // namespace Cfitsio
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELECFITSIOWRAPPER_HDUWRAPPER_IMPL

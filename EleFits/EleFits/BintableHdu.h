@@ -11,7 +11,6 @@
 
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -92,7 +91,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_BINTABLEHDU_IMPL

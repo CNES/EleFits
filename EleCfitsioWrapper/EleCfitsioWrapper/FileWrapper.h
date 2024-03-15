@@ -8,7 +8,6 @@
 #include <fitsio.h>
 #include <string>
 
-namespace Euclid {
 namespace Cfitsio {
 
 /**
@@ -65,6 +64,5 @@ bool is_writable(fitsfile* fptr);
 
 } // namespace FileAccess
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

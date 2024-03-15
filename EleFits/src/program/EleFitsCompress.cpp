@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 void set_strategy(MefFile& out, const std::string& algo, char lossless)
 {

@@ -17,13 +17,11 @@
 /**
  * @brief Euclid SGS namespace.
  */
-namespace Euclid {
 
 /**
  * @brief Internal functions to use CFITSIO with a modern C++ API.
- * @see Euclid::Fits for an Object-Oriented API.
+ * @see Fits for an Object-Oriented API.
  */
 namespace Cfitsio {}
-} // namespace Euclid
 
 #endif

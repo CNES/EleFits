@@ -7,8 +7,6 @@
 #include "ElementsKernel/ProgramHeaders.h"
 #include "Linx/Run/ProgramOptions.h"
 
-using namespace Euclid;
-
 /*
  * Create a binary table extension.
  * 

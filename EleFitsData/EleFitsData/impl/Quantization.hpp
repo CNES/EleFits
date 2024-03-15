@@ -6,18 +6,19 @@
 
 #include "EleFitsData/Quantization.h"
 
-namespace Euclid {
 namespace Fits {
 
 Quantization::Quantization() : Quantization(Scaling(0), Dithering::None) {}
 
 Quantization::Quantization(Scaling level) : Quantization(level, level ? Dithering::EveryPixel : Dithering::None) {}
 
-Quantization::Quantization(Scaling level, Dithering method) : m_level(std::move(level)), m_dithering(Dithering::None) {
+Quantization::Quantization(Scaling level, Dithering method) : m_level(std::move(level)), m_dithering(Dithering::None)
+{
   dithering(method); // Enables compatibility check
 }
 
-Quantization& Quantization::level(Scaling level) {
+Quantization& Quantization::level(Scaling level)
+{
   m_level = std::move(level);
   if (not m_level) {
     m_dithering = Dithering::None;
@@ -25,7 +26,8 @@ Quantization& Quantization::level(Scaling level) {
   return *this;
 }
 
-Quantization& Quantization::dithering(Dithering method) {
+Quantization& Quantization::dithering(Dithering method)
+{
   if (not m_level && method != Dithering::None) {
     throw FitsError("Cannot set dithering method when quantization is deactivated");
   }
@@ -33,27 +35,31 @@ Quantization& Quantization::dithering(Dithering method) {
   return *this;
 }
 
-const Scaling& Quantization::level() const {
+const Scaling& Quantization::level() const
+{
   return m_level;
 }
 
-Quantization::Dithering Quantization::dithering() const {
+Quantization::Dithering Quantization::dithering() const
+{
   return m_dithering;
 }
 
-Quantization::operator bool() const {
+Quantization::operator bool() const
+{
   return bool(m_level);
 }
 
-bool Quantization::operator==(const Quantization& rhs) const {
+bool Quantization::operator==(const Quantization& rhs) const
+{
   return (m_level == rhs.m_level) && (m_dithering == rhs.m_dithering);
 }
 
-bool Quantization::operator!=(const Quantization& rhs) const {
+bool Quantization::operator!=(const Quantization& rhs) const
+{
   return not(*this == rhs);
 }
 
 } // namespace Fits
-} // namespace Euclid
 
 #endif

@@ -6,7 +6,6 @@
 
 #include <algorithm> // copy_if, find_if
 
-namespace Euclid {
 namespace Fits {
 
 const KeywordCategory KeywordCategory::Mandatory {0b0001};
@@ -28,14 +27,16 @@ const std::vector<std::string> KeywordCategory::m_reserveds = {
 
 const std::vector<std::string> KeywordCategory::m_comments = {"COMMENT", "HISTORY"};
 
-const std::map<int, const std::vector<std::string>&> KeywordCategory::byCategory() {
+const std::map<int, const std::vector<std::string>&> KeywordCategory::byCategory()
+{
   return {{Mandatory.m_category, m_mandatories}, {Reserved.m_category, m_reserveds}, {Comment.m_category, m_comments}};
 }
 
 KeywordCategory::KeywordCategory(int category) : m_category(category) {}
 
 std::vector<std::string>
-KeywordCategory::filterCategories(const std::vector<std::string>& keywords, KeywordCategory categories) {
+KeywordCategory::filterCategories(const std::vector<std::string>& keywords, KeywordCategory categories)
+{
   std::vector<std::string> res;
   const auto it = std::copy_if(keywords.begin(), keywords.end(), res.begin(), [&](const std::string& k) {
     return belongsCategories(k, categories);
@@ -44,7 +45,8 @@ KeywordCategory::filterCategories(const std::vector<std::string>& keywords, Keyw
   return res;
 }
 
-bool KeywordCategory::belongsCategories(const std::string& keyword, KeywordCategory categories) {
+bool KeywordCategory::belongsCategories(const std::string& keyword, KeywordCategory categories)
+{
   if (keyword == "CONTINUE") { // Spuriously returned by CFITSIO
     return false;
   }
@@ -70,14 +72,16 @@ bool KeywordCategory::belongsCategories(const std::string& keyword, KeywordCateg
   return false;
 }
 
-bool KeywordCategory::matches(const std::string& test, const std::string& ref) {
+bool KeywordCategory::matches(const std::string& test, const std::string& ref)
+{
   if (test == ref) {
     return true;
   }
   return matchesIndexed(test, ref);
 }
 
-bool KeywordCategory::matchesIndexed(const std::string& test, const std::string& ref) {
+bool KeywordCategory::matchesIndexed(const std::string& test, const std::string& ref)
+{
   const auto split = ref.length() - 1;
   if (test.length() <= split) {
     return false;
@@ -98,7 +102,8 @@ bool KeywordCategory::matchesIndexed(const std::string& test, const std::string&
   return true;
 }
 
-bool KeywordCategory::matchesOneOf(const std::string& keyword, const std::vector<std::string>& refs) {
+bool KeywordCategory::matchesOneOf(const std::string& keyword, const std::vector<std::string>& refs)
+{
   const auto pos = std::find_if(refs.begin(), refs.end(), [&](const std::string& test) {
     return matches(keyword, test);
   });
@@ -106,4 +111,3 @@ bool KeywordCategory::matchesOneOf(const std::string& keyword, const std::vector
 }
 
 } // namespace Fits
-} // namespace Euclid

@@ -10,7 +10,6 @@
 #include <fitsio.h>
 #include <string>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -22,14 +21,15 @@ namespace Test {
  * @brief A minimal and temporary FITS file removed by destructor.
  */
 class MinimalFile {
-
 protected:
+
   /**
    * @brief The handler which generates the name and removes the file at destruction.
    */
   Elements::TempFile tmp;
 
 public:
+
   /**
    * @brief Create a file with generated filename.
    */
@@ -53,6 +53,5 @@ public:
 
 } // namespace Test
 } // namespace Fits
-} // namespace Euclid
 
 #endif

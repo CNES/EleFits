@@ -4,7 +4,6 @@
 
 #include "EleFitsValidation/LoopingBenchmark.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
@@ -73,4 +72,3 @@ LoopingBenchmark::Duration LoopingBenchmark::loop_over_values()
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid

@@ -9,7 +9,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 
-using namespace Euclid;
 using namespace Cfitsio;
 
 //-----------------------------------------------------------------------------
@@ -18,7 +17,8 @@ BOOST_AUTO_TEST_SUITE(FileWrapper_test)
 
 //-----------------------------------------------------------------------------
 
-BOOST_FIXTURE_TEST_CASE(file_operations_test, Fits::Test::MinimalFile) {
+BOOST_FIXTURE_TEST_CASE(file_operations_test, Fits::Test::MinimalFile)
+{
   BOOST_CHECK_THROW(FileAccess::create_open(filename, FileAccess::CreatePolicy::CreateOnly), CfitsioError);
   BOOST_TEST(fptr);
   FileAccess::close(fptr);

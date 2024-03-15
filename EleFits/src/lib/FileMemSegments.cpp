@@ -4,7 +4,6 @@
 
 #include "EleFits/FileMemSegments.h"
 
-namespace Euclid {
 namespace Fits {
 
 FileMemSegments::FileMemSegments(const Segment& fileSegment, Linx::Index memoryIndex) :
@@ -66,4 +65,3 @@ Linx::Index FileMemSegments::memoryToFile() const
 }
 
 } // namespace Fits
-} // namespace Euclid

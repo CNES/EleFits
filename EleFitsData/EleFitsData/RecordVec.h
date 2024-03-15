@@ -10,7 +10,6 @@
 
 #include <vector>
 
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -22,8 +21,8 @@ namespace Fits {
  */
 template <typename T>
 class RecordVec {
-
 public:
+
   /**
    * @brief Destructor.
    */
@@ -63,28 +62,32 @@ public:
   /**
    * @brief Get an iterator to the beginning.
    */
-  typename std::vector<Record<T>>::const_iterator begin() const {
+  typename std::vector<Record<T>>::const_iterator begin() const
+  {
     return vector.begin();
   }
 
   /**
    * @copydoc begin()const
    */
-  typename std::vector<Record<T>>::iterator begin() {
+  typename std::vector<Record<T>>::iterator begin()
+  {
     return vector.begin();
   }
 
   /**
    * @brief Get an iterator to the end.
    */
-  typename std::vector<Record<T>>::const_iterator end() const {
+  typename std::vector<Record<T>>::const_iterator end() const
+  {
     return vector.end();
   }
 
   /**
    * @copydoc end()const
    */
-  typename std::vector<Record<T>>::iterator end() {
+  typename std::vector<Record<T>>::iterator end()
+  {
     return vector.end();
   }
 
@@ -126,7 +129,6 @@ public:
 using RecordSeq = RecordVec<VariantValue>;
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITSDATA_RECORDVECTOR_IMPL

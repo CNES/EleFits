@@ -1,4 +1,3 @@
-namespace Euclid {
 namespace Fits {
 
 /**
@@ -43,10 +42,9 @@ which consists in C++ wrapper functions of selected CFITSIO functions, not inten
 
 The API is organized in namespaces as follows:
 
-- `Euclid` is the top level namespace, which contains everything;
-- `Cfitsio` corresponds to the low-level layer module:
+- Namespace `Cfitsio` corresponds to the low-level layer module:
   - It is organized in thematic namespaces like `Cfitsio::FileAccess` or `Cfitsio::ImageIo`;
-- `Fits` is the end-user namespace:
+- Namespace `Fits` is the end-user namespace:
   - Data classes and service classes are implemented in it,
   - `Fits::Test` contains test helper classes and functions like fixtures;
 - Whatever the level, `Internal` namespaces contain implementation details, not displayed to the end-user.
@@ -220,5 +218,4 @@ To be documented:
 
 */
 
-}
 }

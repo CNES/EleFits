@@ -10,7 +10,6 @@
 
 #include <utility> // index_sequence, make_index_sequence
 
-namespace Euclid {
 namespace Cfitsio {
 namespace HeaderIo {
 
@@ -87,7 +86,8 @@ namespace Internal {
  * @brief Use index_sequence to loop on keywords.
  */
 template <class TReturn, typename... Ts, std::size_t... Is>
-TReturn parse_records_as_impl(fitsfile* fptr, const std::vector<std::string>& keywords, std::index_sequence<Is...>) {
+TReturn parse_records_as_impl(fitsfile* fptr, const std::vector<std::string>& keywords, std::index_sequence<Is...>)
+{
   return {parse_record<Ts>(fptr, keywords[Is])...};
 }
 
@@ -95,7 +95,8 @@ TReturn parse_records_as_impl(fitsfile* fptr, const std::vector<std::string>& ke
  * @brief Use index_sequence to loop on records.
  */
 template <typename... Ts, std::size_t... Is>
-void write_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>) {
+void write_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>)
+{
   using mock_unpack = int[];
   (void)mock_unpack {(write_record<Ts>(fptr, std::get<Is>(records)), 0)...};
 }
@@ -104,7 +105,8 @@ void write_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& r
  * @brief Use index_sequence to loop on records.
  */
 template <typename... Ts, std::size_t... Is>
-void update_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>) {
+void update_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records, std::index_sequence<Is...>)
+{
   using mock_unpack = int[];
   (void)mock_unpack {(update_record<Ts>(fptr, std::get<Is>(records)), 0)...};
 }
@@ -113,7 +115,8 @@ void update_records_impl(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& 
 /// @endcond
 
 template <typename T>
-Fits::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
+Fits::Record<T> parse_record(fitsfile* fptr, const std::string& keyword)
+{
   int status = 0;
   /* Read value and comment */
   T value;
@@ -139,17 +142,20 @@ Fits::Record<T> parse_record(fitsfile* fptr, const std::string& keyword) {
 }
 
 template <typename... Ts>
-std::tuple<Fits::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords) {
+std::tuple<Fits::Record<Ts>...> parse_records(fitsfile* fptr, const std::vector<std::string>& keywords)
+{
   return parse_records_as<std::tuple<Fits::Record<Ts>...>, Ts...>(fptr, keywords);
 }
 
 template <class Return, typename... Ts>
-Return parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords) {
+Return parse_records_as(fitsfile* fptr, const std::vector<std::string>& keywords)
+{
   return Internal::parse_records_as_impl<Return, Ts...>(fptr, keywords, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
-Fits::RecordVec<T> parse_record_vec(fitsfile* fptr, const std::vector<std::string>& keywords) {
+Fits::RecordVec<T> parse_record_vec(fitsfile* fptr, const std::vector<std::string>& keywords)
+{
   Fits::RecordVec<T> records(keywords.size());
   std::transform(keywords.begin(), keywords.end(), records.vector.begin(), [&](const std::string& k) {
     return parse_record<T>(fptr, k);
@@ -158,7 +164,8 @@ Fits::RecordVec<T> parse_record_vec(fitsfile* fptr, const std::vector<std::strin
 }
 
 template <typename T>
-void write_record(fitsfile* fptr, const Fits::Record<T>& record) {
+void write_record(fitsfile* fptr, const Fits::Record<T>& record)
+{
   int status = 0;
   T nonconst_value = record.value;
   fits_write_key(
@@ -172,25 +179,29 @@ void write_record(fitsfile* fptr, const Fits::Record<T>& record) {
 }
 
 template <typename... Ts>
-void write_records(fitsfile* fptr, const Fits::Record<Ts>&... records) {
+void write_records(fitsfile* fptr, const Fits::Record<Ts>&... records)
+{
   using mock_unpack = int[];
   (void)mock_unpack {(write_record(fptr, records), 0)...};
 }
 
 template <typename... Ts>
-void write_records(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records) {
+void write_records(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records)
+{
   Internal::write_records_impl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
-void write_records(fitsfile* fptr, const std::vector<Fits::Record<T>>& records) {
+void write_records(fitsfile* fptr, const std::vector<Fits::Record<T>>& records)
+{
   for (const auto& r : records) {
     write_record(fptr, r);
   }
 }
 
 template <typename T>
-void update_record(fitsfile* fptr, const Fits::Record<T>& record) {
+void update_record(fitsfile* fptr, const Fits::Record<T>& record)
+{
   int status = 0;
   std::string comment = record.raw_comment();
   T value = record.value;
@@ -199,18 +210,21 @@ void update_record(fitsfile* fptr, const Fits::Record<T>& record) {
 }
 
 template <typename... Ts>
-void update_records(fitsfile* fptr, const Fits::Record<Ts>&... records) {
+void update_records(fitsfile* fptr, const Fits::Record<Ts>&... records)
+{
   using mock_unpack = int[];
   (void)mock_unpack {(update_record(fptr, records), 0)...};
 }
 
 template <typename... Ts>
-void update_records(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records) {
+void update_records(fitsfile* fptr, const std::tuple<Fits::Record<Ts>...>& records)
+{
   Internal::update_records_impl(fptr, records, std::make_index_sequence<sizeof...(Ts)>());
 }
 
 template <typename T>
-void update_records(fitsfile* fptr, const std::vector<Fits::Record<T>>& records) {
+void update_records(fitsfile* fptr, const std::vector<Fits::Record<T>>& records)
+{
   for (const auto& r : records) {
     update_record(fptr, r);
   }
@@ -218,6 +232,5 @@ void update_records(fitsfile* fptr, const std::vector<Fits::Record<T>>& records)
 
 } // namespace HeaderIo
 } // namespace Cfitsio
-} // namespace Euclid
 
 #endif

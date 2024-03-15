@@ -4,12 +4,12 @@
 
 #include "EleFitsValidation/CsvAppender.h"
 
-namespace Euclid {
 namespace Fits {
 namespace Validation {
 
 CsvAppender::CsvAppender(const std::string& filename, const std::vector<std::string>& header, const std::string& sep) :
-    m_file(filename, std::ios::out | std::ios::app), m_sep(sep) {
+    m_file(filename, std::ios::out | std::ios::app), m_sep(sep)
+{
   if (header.empty()) {
     return;
   }
@@ -25,11 +25,11 @@ CsvAppender::CsvAppender(const std::string& filename, const std::vector<std::str
   }
 }
 
-CsvAppender& CsvAppender::operator<<(std::ostream& (*pf)(std::ostream&)) {
+CsvAppender& CsvAppender::operator<<(std::ostream& (*pf)(std::ostream&))
+{
   m_file << pf;
   return *this;
 }
 
 } // namespace Validation
 } // namespace Fits
-} // namespace Euclid

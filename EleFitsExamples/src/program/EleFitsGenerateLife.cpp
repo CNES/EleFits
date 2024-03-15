@@ -10,7 +10,7 @@
 #include <map>
 #include <string>
 
-using namespace Euclid::Fits;
+using namespace Fits;
 
 int main(int argc, char const* argv[])
 {

@@ -9,7 +9,6 @@
 #include "EleFits/ImageHdu.h"
 #include "EleFitsData/Compression.h"
 
-namespace Euclid {
 namespace Fits {
 
 /// @cond
@@ -340,7 +339,6 @@ private:
 };
 
 } // namespace Fits
-} // namespace Euclid
 
 /// @cond INTERNAL
 #define _ELEFITS_COMPRESSIONSTRATEGY_IMPL
