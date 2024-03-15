@@ -2,15 +2,11 @@
 // This file is part of EleFits <github.com/CNES/EleFits>
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "EleFits/SifFile.h"
+#include "EleFits/MefFile.h"
 #include "EleFitsExamples/GameOfLife.h"
-#include "ElementsKernel/ProgramHeaders.h"
 #include "Linx/Run/ProgramOptions.h"
 
-#include <map>
 #include <string>
-
-using namespace Fits;
 
 int main(int argc, char const* argv[])
 {
@@ -22,19 +18,27 @@ int main(int argc, char const* argv[])
   options.named<Linx::Index>("init", "Initial number of lives", 200);
   options.parse(argc, argv);
 
-  Elements::Logging logger = Elements::Logging::getLogger("EleFitsGenerateLife");
+  std::cout << "Generating lives..." << std::endl;
+  Fits::GameOfLife gol(
+      options.as<Linx::Index>("width"),
+      options.as<Linx::Index>("height"),
+      options.as<Linx::Index>("turns"));
+  const auto card = options.as<Linx::Index>("init");
+  const auto& positions = gol.generate(card);
 
-  logger.info("Generating lives...");
-  GameOfLife gol(options.as<Linx::Index>("width"), options.as<Linx::Index>("height"), options.as<Linx::Index>("turns"));
-  gol.generate(options.as<Linx::Index>("init"));
-
-  logger.info("Playing...");
+  std::cout << "Playing..." << std::endl;
   const auto& board = gol.run();
 
-  logger.info("Saving board...");
-  SifFile f(options.as<std::string>("output"), FileMode::Overwrite);
-  f.write({}, board);
+  std::cout << "Saving board..." << std::endl;
+  Fits::MefFile f(options.as<std::string>("output"), Fits::FileMode::Overwrite);
+  const auto& du = f.primary().raster();
+  du.update(board);
 
-  logger.info("Done.");
+  std::cout << "Saving initial positions..." << std::endl;
+  const auto x_col = Fits::make_column(Fits::make_column_info<Linx::Index>("X"), card, positions.row(0).data());
+  const auto y_col = Fits::make_column(Fits::make_column_info<Linx::Index>("Y"), card, positions.row(1).data());
+  f.append_bintable("INIT", {}, x_col, y_col);
+
+  std::cout << "Done." << std::endl;
   return 0;
 }

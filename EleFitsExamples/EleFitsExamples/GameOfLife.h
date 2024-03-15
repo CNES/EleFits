@@ -29,8 +29,9 @@ public:
   /**
    * @brief Generate lives at random positions.
    * @param count The number of lives to generate (should be much smaller than the number of cells)
+   * @return The generated positions with the first row for x and second row for y
    */
-  const Linx::PtrRaster<Value, 2>& generate(Linx::Index count);
+  Linx::Raster<Linx::Index> generate(Linx::Index count);
 
   /**
    * @brief Run the game.

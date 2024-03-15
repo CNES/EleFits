@@ -13,17 +13,23 @@ GameOfLife::GameOfLife(Linx::Index width, Linx::Index height, Linx::Index turns)
   // The board is filled with zeros
 }
 
-const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::generate(Linx::Index count)
+Linx::Raster<Linx::Index> GameOfLife::generate(Linx::Index count)
 {
-  Linx::Index done = 0;
-  while (done <= count) {
-    const Linx::Index i = Test::generate_random_value<Linx::Index>(0, m_width * m_height - 1);
-    if (not m_previous[i]) {
-      m_previous[i] = 1;
-      ++done;
-    }
+  Linx::Raster<Linx::Index> lives({count, 2});
+
+  for (Linx::Index i = 0; i < count; ++i) {
+    auto& x = lives[{i, 0}];
+    auto& y = lives[{i, 1}];
+    Value* p = nullptr;
+    do {
+      x = Test::generate_random_value<Linx::Index>(0, m_width - 1); // FIXME as Linx::random_value()
+      y = Test::generate_random_value<Linx::Index>(0, m_height - 1);
+      p = &m_previous[{x, y}];
+    } while (*p);
+    *p = 1;
   }
-  return m_previous;
+
+  return lives;
 }
 
 const Linx::Raster<GameOfLife::Value, 3>& GameOfLife::run()
@@ -52,7 +58,7 @@ const Linx::PtrRaster<GameOfLife::Value, 2>& GameOfLife::update()
         m_current[p] = 0;
       } else {
         const Value inc = m_previous[p] + 1;
-        m_current[p] = std::min(inc, std::numeric_limits<GameOfLife::Value>::max());
+        m_current[p] = std::min(inc, std::numeric_limits<Value>::max());
       }
     } else { // Dead in previous frame
       if (lives == 3) {
