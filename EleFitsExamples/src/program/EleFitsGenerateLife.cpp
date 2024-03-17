@@ -30,19 +30,15 @@ int main(int argc, char const* argv[])
   const auto width = options.as<Linx::Index>("width");
   const auto height = options.as<Linx::Index>("height");
   const auto turns = options.as<Linx::Index>("turns");
-  const auto seed_count = options.as<Linx::Index>("init");
+  const auto init_count = options.as<Linx::Index>("init");
   //! [Parse options]
 
   std::cout << "Generating lives..." << std::endl;
-  //! [Setup board]
   Fits::GameOfLife gol(width, height, turns);
-  const auto& positions = gol.generate(seed_count);
-  //! [Setup board]
+  const auto& positions = gol.generate(init_count);
 
   std::cout << "Playing..." << std::endl;
-  //! [Play game]
   const auto& board = gol.run();
-  //! [Play game]
 
   if (options.has("cat")) {
     std::cout << "Saving board..." << std::endl;
@@ -56,8 +52,8 @@ int main(int argc, char const* argv[])
 
     std::cout << "Saving initial positions..." << std::endl;
     //! [Create columns]
-    const auto x_col = Fits::make_column(Fits::make_column_info<Linx::Index>("X"), seed_count, positions.row(0).data());
-    const auto y_col = Fits::make_column(Fits::make_column_info<Linx::Index>("Y"), seed_count, positions.row(1).data());
+    const auto x_col = Fits::make_column(Fits::make_column_info<Linx::Index>("X"), init_count, positions.row(0).data());
+    const auto y_col = Fits::make_column(Fits::make_column_info<Linx::Index>("Y"), init_count, positions.row(1).data());
     //! [Create columns]
 
     //! [Append Bintable]
@@ -69,8 +65,12 @@ int main(int argc, char const* argv[])
     Fits::SifFile f(filename, Fits::FileMode::Overwrite);
     //! [Create SIF]
 
+    //! [Create record]
+    Fits::Record<Linx::Index> init_record {"NINIT", init_count, "", "Initial number of lives"};
+    //! [Create record]
+
     //! [Write SIF]
-    f.write({}, board);
+    f.write({init_record}, board);
     //! [Write SIF]
   }
 
