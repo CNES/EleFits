@@ -4,6 +4,8 @@
 
 #include "EleFitsExamples/GameOfLife.h"
 
+#include "Linx/Base/Random.h"
+
 namespace Fits {
 
 GameOfLife::GameOfLife(Linx::Index width, Linx::Index height, Linx::Index turns) :
@@ -16,15 +18,18 @@ GameOfLife::GameOfLife(Linx::Index width, Linx::Index height, Linx::Index turns)
 Linx::Raster<Linx::Index> GameOfLife::generate(Linx::Index count)
 {
   Linx::Raster<Linx::Index> lives({count, 2});
+  auto x = lives.row(0).data();
+  auto y = lives.row(1).data();
+  Value* p = nullptr;
 
-  for (Linx::Index i = 0; i < count; ++i) {
-    auto& x = lives[{i, 0}];
-    auto& y = lives[{i, 1}];
-    Value* p = nullptr;
+  Linx::UniformNoise<Linx::Index> x_generator(0, m_width - 1);
+  Linx::UniformNoise<Linx::Index> y_generator(0, m_height - 1);
+
+  for (Linx::Index i = 0; i < count; ++i, ++x, ++y) {
     do {
-      x = Test::generate_random_value<Linx::Index>(0, m_width - 1); // FIXME as Linx::random_value()
-      y = Test::generate_random_value<Linx::Index>(0, m_height - 1);
-      p = &m_previous[{x, y}];
+      *x = x_generator();
+      *y = y_generator();
+      p = &m_previous[{*x, *y}];
     } while (*p);
     *p = 1;
   }
