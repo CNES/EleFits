@@ -17,8 +17,8 @@ int main(int argc, char const* argv[])
   //! [Declare options]
   Linx::ProgramOptions options("Generate and play a Game of Life.");
   options.positional<std::string>("output", "Output file", "/tmp/life.fits");
-  options.named<Linx::Index>("width,w", "Board width", 36);
-  options.named<Linx::Index>("height,h", "Board height", 24);
+  options.named<Linx::Index>("width,x", "Board width", 36);
+  options.named<Linx::Index>("height,y", "Board height", 24);
   options.named<Linx::Index>("turns,t", "Number of turns", 100);
   options.named<Linx::Index>("init,n", "Initial number of lives", 200);
   options.flag("cat", "Save the list of initial positions");
