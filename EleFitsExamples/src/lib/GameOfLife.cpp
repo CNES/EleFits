@@ -15,15 +15,15 @@ GameOfLife::GameOfLife(Linx::Index width, Linx::Index height, Linx::Index turns)
   // The board is filled with zeros
 }
 
-Linx::Raster<Linx::Index> GameOfLife::generate(Linx::Index count)
+Linx::Raster<Linx::Index> GameOfLife::generate(Linx::Index count, std::size_t seed)
 {
   Linx::Raster<Linx::Index> lives({count, 2});
   auto x = lives.row(0).data();
   auto y = lives.row(1).data();
   Value* p = nullptr;
 
-  Linx::UniformNoise<Linx::Index> x_generator(0, m_width - 1);
-  Linx::UniformNoise<Linx::Index> y_generator(0, m_height - 1);
+  Linx::UniformNoise<Linx::Index> x_generator(0, m_width - 1, seed);
+  Linx::UniformNoise<Linx::Index> y_generator(0, m_height - 1, seed);
 
   for (Linx::Index i = 0; i < count; ++i, ++x, ++y) {
     do {

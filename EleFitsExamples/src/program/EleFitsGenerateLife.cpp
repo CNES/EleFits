@@ -21,6 +21,7 @@ int main(int argc, char const* argv[])
   options.named<Linx::Index>("height,y", "Board height", 24);
   options.named<Linx::Index>("turns,t", "Number of turns", 100);
   options.named<Linx::Index>("init,n", "Initial number of lives", 200);
+  options.named<std::size_t>("seed", "Random seed or -1 for current timestamp", -1);
   options.flag("cat", "Save the list of initial positions");
   //! [Declare options]
 
@@ -31,13 +32,14 @@ int main(int argc, char const* argv[])
   const auto height = options.as<Linx::Index>("height");
   const auto turns = options.as<Linx::Index>("turns");
   const auto init_count = options.as<Linx::Index>("init");
+  const auto seed = options.as<std::size_t>("seed");
   const auto save_catalog = options.has("cat");
   //! [Parse options]
 
   std::cout << "Generating lives..." << std::endl;
   //! [Initialize]
   Fits::GameOfLife game(width, height, turns);
-  const auto& positions = game.generate(init_count);
+  const auto& positions = game.generate(init_count, seed);
   //! [Initialize]
 
   std::cout << "Playing..." << std::endl;

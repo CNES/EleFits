@@ -31,7 +31,7 @@ public:
    * @param count The number of lives to generate (should be much smaller than the number of cells)
    * @return The generated positions with the first row for x and second row for y
    */
-  Linx::Raster<Linx::Index> generate(Linx::Index count);
+  Linx::Raster<Linx::Index> generate(Linx::Index count, std::size_t seed);
 
   /**
    * @brief Run the game.
