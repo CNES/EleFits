@@ -54,8 +54,13 @@ The class embeded too many image processing features for an IO library.
 The main changes are for `Raster` and `Position`.
 Parent classes have also moved, but there should be no impact on client code for such low-level components.
 
-Include relevant headers, use `Linx` namespace.
-Read [Linx' documentation](kabasset.github.io/Linx) ;)
+* Read [Linx' documentation](kabasset.github.io/Linx) ;)
+* Include relevant headers, use `Linx` namespace;
+* Rename `Dim` members as `Dimension`;
+* Rename `Region` as `Box`, replace variables `front` and `back` with methods `front()` and `back()`;
+* Replace `VecRaster` with `Raster` and `VecColumn` with `Column`;
+* Remove `FileMemRegions`, use `Patch` and updated `ImageRaster` methods instead; 
+* Use `Index` instead of `long` for indexing data classes.
 
 ## Breaking changes in 5.0
 

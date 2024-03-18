@@ -4,11 +4,16 @@
 
 ### Breaking changes
 
-* Removed `Euclid` namespace
-* Rely on Linx for data classes and low level tools
-* `FileMemRegions` was removed, in favor of Linx' patches
-* Refactored `Column` constructors, and make them all `explicit`
-* Deprecated functions were removed
+* Namespace `Euclid` removed
+* Rely on Linx for data classes and low level tools, in namespace `Linx`
+  * Functions written in `snake_case`
+  * Member variables `Dim` renamed as `Dimension`
+  * `Region` replaced with `Box`
+  * `VecRaster` replaced with `Raster` thanks to default parameter compatible with `bool`
+  * `FileMemRegions` removed in favor of Linx' patches
+* `Column` constructors refactored and made `explicit`
+* `VecColumn` replaced with `Column`, analogously to `Raster`
+* Deprecated functions removed
 
 ### Cleaning
 
