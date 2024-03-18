@@ -39,6 +39,7 @@ Linx::Raster<Linx::Index> GameOfLife::generate(Linx::Index count, std::size_t se
 
 const Linx::Raster<GameOfLife::Value, 3>& GameOfLife::run()
 {
+  // FIXME reset to enable rerunning
   while (m_t < m_turns) {
     update();
     next();

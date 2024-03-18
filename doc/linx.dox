@@ -1,0 +1,48 @@
+/**
+ * @brief Linx is an ND image processing library
+ * @see <a href="https://kabasset.github.io/Linx">Linx documentation</a>
+ */
+namespace Linx {
+
+/**
+ * @brief ND index
+ * @copydoc Linx
+ */
+template <Linx::Index N>
+class Position;
+
+/**
+ * @brief ND axis-aligned bounding box
+ * @copydoc Linx
+ */
+template <Linx::Index N>
+class Box;
+
+/**
+ * @brief ND image data
+ * @copydoc Linx
+ */
+template <typename T, Linx::Index N, typename THolder>
+class Raster;
+
+/**
+ * @brief View on a raster, possibly non contiguous.
+ * @copydoc Linx
+ */
+template <typename T, typename TParent, typename TRegion, bool IsContiguous>
+class Patch;
+
+/**
+ * @brief 1D sequence data.
+ * @copydoc Linx
+ */
+template <typename T, typename THolder>
+class Sequence;
+
+/**
+ * @brief Program options handler.
+ * @copydoc Linx
+ */
+class ProgramOptions;
+
+} // namespace Linx

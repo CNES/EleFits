@@ -136,7 +136,6 @@ Images in FITS are _n_-dimensional arrays.
 `Raster` is a class which represents this kind of data and provides constant time pixel accessors.
 From version 6 on, rasters belong to a dedicated ND image processing library: Linx.
 
-\see kabasset.github.io/Linx
 \see \ref image_data_classes
 
 
