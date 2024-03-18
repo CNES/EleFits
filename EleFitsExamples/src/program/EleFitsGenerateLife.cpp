@@ -31,16 +31,21 @@ int main(int argc, char const* argv[])
   const auto height = options.as<Linx::Index>("height");
   const auto turns = options.as<Linx::Index>("turns");
   const auto init_count = options.as<Linx::Index>("init");
+  const auto save_catalog = options.has("cat");
   //! [Parse options]
 
   std::cout << "Generating lives..." << std::endl;
-  Fits::GameOfLife gol(width, height, turns);
-  const auto& positions = gol.generate(init_count);
+  //! [Initialize]
+  Fits::GameOfLife game(width, height, turns);
+  const auto& positions = game.generate(init_count);
+  //! [Initialize]
 
   std::cout << "Playing..." << std::endl;
-  const auto& board = gol.run();
+  //! [Play]
+  const auto& board = game.run();
+  //! [Play]
 
-  if (options.has("cat")) {
+  if (save_catalog) {
     std::cout << "Saving board..." << std::endl;
     //! [Create MEF]
     Fits::MefFile f(filename, Fits::FileMode::Overwrite);
@@ -52,8 +57,8 @@ int main(int argc, char const* argv[])
 
     std::cout << "Saving initial positions..." << std::endl;
     //! [Create columns]
-    const auto x_col = Fits::make_column(Fits::make_column_info<Linx::Index>("X"), init_count, positions.row(0).data());
-    const auto y_col = Fits::make_column(Fits::make_column_info<Linx::Index>("Y"), init_count, positions.row(1).data());
+    const auto x_col = Fits::make_column("X", positions.row(0));
+    const auto y_col = Fits::make_column("Y", init_count, positions.row(1).data());
     //! [Create columns]
 
     //! [Append Bintable]

@@ -115,6 +115,17 @@ public:
   {}
 
   /**
+   * @brief Create a column from iterators.
+   * @param info The column metadata
+   * @param list The row-major ordered list of elements
+   * @param args Optional data holder arguments
+   */
+  template <typename TIt, typename... TArgs>
+  explicit Column(Info info, TIt begin, TIt end, TArgs&&... args) :
+      Container(begin, end, LINX_FORWARD(args)...), m_info(LINX_MOVE(info))
+  {}
+
+  /**
    * @brief Create a column from given initialization list.
    * @param info The column metadata
    * @param list The row-major ordered list of elements
@@ -122,7 +133,7 @@ public:
    */
   template <typename TRange, typename... TArgs>
   explicit Column(Info info, std::initializer_list<T> list, TArgs&&... args) :
-      Container(list.begin(), list.end(), std::forward<TArgs>(args)...), m_info(LINX_MOVE(info))
+      Container(list.begin(), list.end(), LINX_FORWARD(args)...), m_info(LINX_MOVE(info))
   {}
 
   /**
@@ -133,7 +144,7 @@ public:
    */
   template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr, typename... TArgs>
   explicit Column(Info info, TRange&& range, TArgs&&... args) :
-      Container(range.size(), LINX_FORWARD(range), std::forward<TArgs>(args)...), m_info(LINX_MOVE(info))
+      Container(range.size(), LINX_FORWARD(range), LINX_FORWARD(args)...), m_info(LINX_MOVE(info))
   {}
 
   /**
@@ -144,8 +155,7 @@ public:
    */
   template <typename TRange, std::enable_if_t<Linx::IsRange<TRange>::value>* = nullptr, typename... TArgs>
   explicit Column(Info info, const TRange& range, TArgs&&... args) :
-      Container(LINX_FORWARD(range).begin(), LINX_FORWARD(range).end(), std::forward<TArgs>(args)...),
-      m_info(LINX_MOVE(info))
+      Container(LINX_FORWARD(range).begin(), LINX_FORWARD(range).end(), LINX_FORWARD(args)...), m_info(LINX_MOVE(info))
   {}
 
   /// @group_properties
@@ -249,25 +259,71 @@ private:
   Info m_info;
 };
 
+/// @cond
+template <typename T>
+struct IsStdHolderCompatible : std::false_type {}; // FIXME move to Linx
+
+template <typename T, typename TAlloc>
+struct IsStdHolderCompatible<std::vector<T, TAlloc>> : std::true_type {};
+
+template <typename T, std::size_t N>
+struct IsStdHolderCompatible<std::array<T, N>> : std::true_type {};
+
+template <typename T>
+struct IsStdHolderCompatible<std::valarray<T>> : std::true_type {};
+
+template <typename T>
+constexpr bool is_std_holder_compatible()
+{
+  return IsStdHolderCompatible<std::decay_t<T>>::value;
+}
+
+template <typename T>
+struct ColumnDimensionImpl {
+  static constexpr Linx::Index Value = 1;
+};
+
+template <typename T, Linx::Index N>
+struct ColumnDimensionImpl<ColumnInfo<T, N>> {
+  static constexpr Linx::Index Value = N;
+};
+
+template <typename T>
+constexpr Linx::Index column_dimension()
+{
+  return ColumnDimensionImpl<std::decay_t<T>>::Value;
+}
+/// @endcond
+
 /**
  * @relates Column
  * @brief Shortcut to create a column from a column info and data without specifying the template parameters.
  * @tparam T The value type, should not be specified (automatically deduced)
- * @param info The column info
- * @param data The column values, which can be either a pointer (or C array) or a vector
+ * @param info The column name or full info
+ * @param range A range of column values
+ * @param row_count The number of rows
+ * @param data A pointer to the column values
  * @details
  * Example usage:
  * \code
- * auto column = make_column(std::move(info), std::move(vector)); // Copy-less
+ * auto column = make_column(std::move(info), std::move(vector)); // Copy-less initialization of owning column
+ * auto ptr_column = make_column(std::move(info), vector.size(), vector.data()); // Initialization of non-owning column
  * \endcode
  */
-template <typename TInfo, typename TContainer>
-Column<typename TContainer::value_type, std::decay_t<TInfo>::Dimension, Linx::StdHolder<TContainer>>
-make_column(TInfo info, TContainer&& data)
+template <typename TInfo, typename TRange>
+auto make_column(TInfo&& info, TRange&& range)
 {
-  return Column<typename TContainer::value_type, std::decay_t<TInfo>::Dimension, Linx::StdHolder<TContainer>> {
-      std::forward<TInfo>(info),
-      std::forward<TContainer>(data)};
+  using T = std::remove_reference_t<decltype(*range.begin())>;
+  using Value = std::decay_t<T>;
+  static constexpr auto N = column_dimension<TInfo>();
+  if constexpr (is_std_holder_compatible<TRange>()) {
+    return Column<T, N, Linx::StdHolder<TRange>>(ColumnInfo<Value, N>(LINX_FORWARD(info)), LINX_FORWARD(range));
+  } else {
+    return Column<Value, N, Linx::DefaultHolder<Value>>(
+        ColumnInfo<Value, N>(LINX_FORWARD(info)),
+        range.begin(),
+        range.end());
+  }
 }
 
 /**
@@ -275,9 +331,10 @@ make_column(TInfo info, TContainer&& data)
  * @brief Pointer specialization.
  */
 template <typename T, typename TInfo>
-PtrColumn<T, std::decay_t<TInfo>::Dimension> make_column(TInfo&& info, Linx::Index row_count, T* data)
+auto make_column(TInfo&& info, Linx::Index row_count, T* data)
 {
-  return PtrColumn<T, std::decay_t<TInfo>::Dimension> {std::forward<TInfo>(info), row_count, data};
+  static constexpr auto N = column_dimension<TInfo>();
+  return PtrColumn<T, N>(ColumnInfo<std::decay_t<T>, N>(LINX_FORWARD(info)), row_count, data);
 }
 
 } // namespace Fits
