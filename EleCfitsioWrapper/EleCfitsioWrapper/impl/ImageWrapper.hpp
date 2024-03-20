@@ -75,7 +75,7 @@ void read_raster_to(fitsfile* fptr, TOut& out)
 template <typename T, Linx::Index M, Linx::Index N>
 Linx::Raster<T, M> read_region(fitsfile* fptr, const Linx::Box<N>& region)
 {
-  Linx::Raster<T, M> raster(region.shape().template slice<M>());
+  Linx::Raster<T, M> raster(Linx::slice<M>(region.shape()));
   read_region_to(fptr, region, raster);
   return raster;
 }
